@@ -1,2 +1,0 @@
-while true ; do rsync -i -r -h --progress -v /home/tenhunen/scratch/information-package-tools/ ingest:/srv/information-package-tools ; sleep 2 ; done
-scp /home/tenhunen/scratch/information-package-tools/ ingest:/srv/information-package-tools
