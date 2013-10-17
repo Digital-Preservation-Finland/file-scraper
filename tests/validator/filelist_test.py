@@ -22,7 +22,7 @@ import string
 import re
 import testcommon.shell
 
-TOOLSPATH = testcommon.settings.TOOLSPATH
+PROJECTDIR = testcommon.settings.PROJECTDIR
 
 TESTDATADIR_BASE = os.path.abspath(os.path.join(
                         os.path.dirname(__file__),
@@ -42,7 +42,7 @@ TEST_CONFIG_FILENAME = os.path.join(SHARE_PATH, 'validators/validators.json')
 class TestMetsFileValidator:
     
     def test_run_tests(self):
-    	testcasefile = os.path.join(TOOLSPATH, TESTDATADIR, 'testcases.json')
+    	testcasefile = os.path.join(PROJECTDIR, TESTDATADIR, 'testcases.json')
 
         json_data = open(testcasefile)
         testcases = json.load(json_data)
@@ -183,19 +183,19 @@ class TestCommandLineTools:
 ##        filename = os.path.join(TESTDATADIR_BASE, 'test-sips',
 ##                                input["filename"], 'mets.xml')
 
-##        configfile =  os.path.abspath(os.path.join(TOOLSPATH, '../' 'include/share',
+##        configfile =  os.path.abspath(os.path.join(PROJECTDIR, '../' 'include/share',
 ##                'validators', 'validators.json'))
 
         # TODO: Remove this!
         #command = "check-sip-digital-objects -c'%s' '%s'" % (
-        #                            os.path.join(TOOLSPATH, '../../../'
+        #                            os.path.join(PROJECTDIR, '../../../'
         #                                         'include/share',
         #                                         'validators',
         #                                         'validators.json'),
         ##                             filename)
 
         #options = {
-        #    'config_filename': os.path.join(TOOLSPATH,
+        #    'config_filename': os.path.join(PROJECTDIR,
         #                                    '../../../'
         #                                    'include/share',
         #                                    'validators',
@@ -213,7 +213,7 @@ class TestCommandLineTools:
     def do(self, command, arguments, expected):
 
         # TODO: Remove this
-        #cmd = ["PATH=%s/../bin:$PATH ; %s" % (TOOLSPATH, command)]
+        #cmd = ["PATH=%s/../bin:$PATH ; %s" % (PROJECTDIR, command)]
         #proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
         #                        stderr=subprocess.PIPE, shell=True)
         #(stdout, stderr) = proc.communicate()

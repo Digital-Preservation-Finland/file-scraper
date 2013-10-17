@@ -63,9 +63,9 @@ class TestMetsValidation:
     def test_mets_validation(self, testcase, expected):
 
         validate = validator.plugin.xmllint.XSDCatalog(CATALOGPATH, SCHEMAPATH)
-        print "TESTDATAPATH", testcommon.settings.TESTDATAPATH
+        print "TESTDATADIR", testcommon.settings.TESTDATADIR
         mets_path = os.path.join(
-            testcommon.settings.TESTDATAPATH, testcase["metspath"])
+            testcommon.settings.TESTDATADIR, testcase["metspath"])
         result = validate.validate_file(mets_path)
         print "mets_path", mets_path
         print result.returncode, result.messages, result.errors

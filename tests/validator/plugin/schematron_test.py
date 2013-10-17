@@ -13,16 +13,8 @@ import validator.plugin.schematron
 import shutil
 import tempfile
 
-SHARE_PATH = os.path.abspath(os.path.os.path.join(
-                             os.path.dirname(__file__),
-                             '../../../',
-                             'include/share'))
-
-SCHEMATRON_PATH = os.path.join(SHARE_PATH, 'kdk-schematron')
-TESTROOT = os.path.join(
-    os.path.abspath(os.path.dirname(__file__)), '../../',
-    'data/test-sips')
-
+SCHEMATRON_PATH = os.path.join(testcommon.settings.SHAREDIR, 'kdk-schematron')
+TESTDATADIR = os.path.join(testcommon.settings.TESTDATADIR, 'test-sips')
 
 class TestSchematronValidator:
 
@@ -94,8 +86,8 @@ class TestSchematronValidator:
         try:
 
             validate = validator.plugin.schematron.XSLT()
-            validator.cachepath = temppath
-            validator.sharepath = SHARE_PATH
+            validate.cachepath = temppath
+            validate.sharepath = testcommon.settings.SHAREDIR
 
             xslt_filename = validate.schematron_to_xslt(filename)
 
@@ -140,15 +132,15 @@ class TestSchematronValidator:
         try:
 
             validate = validator.plugin.schematron.XSLT()
-            validator.cachepath = temppath
-            validator.sharepath = SHARE_PATH
+            validate.cachepath = temppath
+            validate.sharepath = testcommon.settings.SHAREDIR
 
             schemas = ["mets_internal.sch", "mets_mdtype.sch", "mets_mix.sch"]
 
             i = 0
             for schema in schemas:
 
-                mets_path = os.path.join(TESTROOT, filename)
+                mets_path = os.path.join(TESTDATADIR, filename)
                 schema_path = os.path.join(SCHEMATRON_PATH, schema)
 
                 result = validate.validate_file(schema_path, mets_path)
