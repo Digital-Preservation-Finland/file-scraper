@@ -12,7 +12,7 @@ import validator.filelist
 import mets.parser
 import mets.manifest
 
-#import pas_scripts.check_sip_digital_objects
+import pas_scripts.check_sip_digital_objects
 #import pas_scripts.jhove_pas
 import validator.plugin.mockup
 
@@ -109,28 +109,28 @@ class TestMetsFileValidator:
 
 class TestCommandLineTools:
 
-    @pytest.mark.parametrize(("input", "expected"), [
-        ({
-            "filename":"pdf_1_4/sample_1_4.pdf",
-            "version":"1.4",
-            "mimetype":"application/pdf"
-        }, {
-            "stdout":["Status: Well-Formed and valid"],
-            "stderr":[],
-            "returncode": 0
-        }),
-        ({
-            "filename":"pdf_1_4/sample_invalid_1_4.pdf",
-            "version":"1.4",
-            "mimetype":"application/pdf"
-        }, {
-            "stdout":["Not well-formed"],
-            "stderr":[],
-            "returncode": 1
-        }),
-
-    ])
-
+##    @pytest.mark.parametrize(("input", "expected"), [
+##        ({
+##            "filename":"pdf_1_4/sample_1_4.pdf",
+##            "version":"1.4",
+##            "mimetype":"application/pdf"
+##        }, {
+##            "stdout":["Status: Well-Formed and valid"],
+##            "stderr":[],
+##            "returncode": 0
+##        }),
+##        ({
+##            "filename":"pdf_1_4/sample_invalid_1_4.pdf",
+##            "version":"1.4",
+##            "mimetype":"application/pdf"
+##        }, {
+##            "stdout":["Not well-formed"],
+##            "stderr":[],
+##            "returncode": 1
+##        }),
+##
+##    ])
+##
 ##    def test_jhove_pas(self, input, expected):
 ##        filename = os.path.join(TESTDATADIR, input["filename"])
         #TODO: Remove this!
@@ -178,13 +178,13 @@ class TestCommandLineTools:
 
     ])
 
-##    def test_check_sip_digital_objects(self, input, expected):
+    def test_check_sip_digital_objects(self, input, expected):
 
-##        filename = os.path.join(TESTDATADIR_BASE, 'test-sips',
-##                                input["filename"], 'mets.xml')
+        filename = os.path.join(TESTDATADIR_BASE, 'test-sips',
+                                input["filename"], 'mets.xml')
 
-##        configfile =  os.path.abspath(os.path.join(PROJECTDIR, '../' 'include/share',
-##                'validators', 'validators.json'))
+        configfile =  os.path.abspath(os.path.join(PROJECTDIR, 'include/share',
+                'validators', 'validators.json'))
 
         # TODO: Remove this!
         #command = "check-sip-digital-objects -c'%s' '%s'" % (
@@ -203,12 +203,12 @@ class TestCommandLineTools:
         #arguments = [filename]
 
         # TODO: Remove this!
-##        arguments = [
-##                "-c%s" % configfile,
-##                "%s" % filename]
+        arguments = [
+                "-c%s" % configfile,
+                "%s" % filename]
         
-##        self.do(pas_scripts.check_sip_digital_objects.main, arguments,
-##                expected)
+        self.do(pas_scripts.check_sip_digital_objects.main, arguments,
+                expected)
 
     def do(self, command, arguments, expected):
 
