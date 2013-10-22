@@ -70,7 +70,7 @@ class TestMetsFileValidator:
 
                 validate.load_config(TEST_CONFIG_FILENAME)
 
-                (ret, report, errors) = validate.validate_files(filelist)
+                (ret, report, errors, xml) = validate.validate_files(filelist)
 
                 for match_stdout in test_config["match_stdout"]:
                     match = re.match('(?s).*%s' % match_stdout, report) != None
@@ -169,10 +169,10 @@ class TestCommandLineTools:
         ({
             "filename":"fd2009-00002919-preservation",
         }, {
-            "stdout":["Status: Well-Formed and valid"],
-            "stderr":["No validator for mimetype\:image/jpeg version\:1.01",
+            "stdout":["Status: Well-Formed and valid",
                       "No validator for mimetype:text/xml version:ALTO " +
                       "schema Version 1.4"],
+            "stderr":[""],
             "returncode": 1
         }),
 
