@@ -70,7 +70,14 @@ class TestMetsFileValidator:
 
                 validate.load_config(TEST_CONFIG_FILENAME)
 
-                (ret, report, errors, xml) = validate.validate_files(filelist)
+                (returns, reports, errors) = validate.validate_files(filelist)
+                
+                ret = 0
+                for r in returns:
+                    if r != 0: ret = r
+                
+                report = "\n".join(reports)
+                error = "\n".join(errors)
 
                 for match_stdout in test_config["match_stdout"]:
                     match = re.match('(?s).*%s' % match_stdout, report) != None
@@ -80,7 +87,7 @@ class TestMetsFileValidator:
 
                 for match_stderr in test_config["match_stderr"]:
                     match = re.match('(?s).*%s' % match_stderr, report) != None
-                    message = ''.join(['---%s--- ' % errors,
+                    message = ''.join(['---%s--- ' % error,
                                        "No match for: '%s'" % match_stderr]) 
                     assert match, message
 
