@@ -116,48 +116,6 @@ class TestMetsFileValidator:
 
 class TestCommandLineTools:
 
-##    @pytest.mark.parametrize(("input", "expected"), [
-##        ({
-##            "filename":"pdf_1_4/sample_1_4.pdf",
-##            "version":"1.4",
-##            "mimetype":"application/pdf"
-##        }, {
-##            "stdout":["Status: Well-Formed and valid"],
-##            "stderr":[],
-##            "returncode": 0
-##        }),
-##        ({
-##            "filename":"pdf_1_4/sample_invalid_1_4.pdf",
-##            "version":"1.4",
-##            "mimetype":"application/pdf"
-##        }, {
-##            "stdout":["Not well-formed"],
-##            "stderr":[],
-##            "returncode": 1
-##        }),
-##
-##    ])
-##
-##    def test_jhove_pas(self, input, expected):
-##        filename = os.path.join(TESTDATADIR, input["filename"])
-        #TODO: Remove this!
-        #command = "jhove-pas -t %s -v %s '%s'" % (input["mimetype"],
-        #                                         input["version"],
-        #                                         filename)
-
-        #options = {
-        #        "mimetype":input["mimetype"],
-        #        "formatversion":input["version"]
-        #        }
-
-        #arguments = [filename]
-
-##        arguments = ["-t%s" % input["mimetype"],
-##                     "-v%s" % input["version"],
-##                     filename]
-
-##        self.do(pas_scripts.jhove_pas.main, arguments, expected)
-
     @pytest.mark.parametrize(("input", "expected"), [
         ({
             "filename":"CSC_test001",
