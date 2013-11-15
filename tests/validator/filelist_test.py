@@ -41,7 +41,8 @@ TEST_CONFIG_FILENAME = os.path.join(SHARE_PATH, 'validators/validators.json')
 class TestMetsFileValidator:
     
     def test_run_tests(self):
-    	testcasefile = os.path.join(PROJECTDIR, TESTDATADIR, 'testcases.json')
+    	testcasefile = os.path.join(PROJECTDIR, TESTDATADIR,
+                                    'filelist_testcases.json')
 
         json_data = open(testcasefile)
         testcases = json.load(json_data)
