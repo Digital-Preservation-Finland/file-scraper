@@ -9,7 +9,7 @@ import pytest
 import testcommon.settings
 
 # Module to test
-import validator.plugin.jhove
+import validator.plugin.warctools
 
 PROJECTDIR = testcommon.settings.PROJECTDIR
 
@@ -19,13 +19,13 @@ TESTDATADIR_BASE = os.path.abspath(os.path.join(os.path.dirname(__file__),
 TESTDATADIR = os.path.abspath(os.path.join(TESTDATADIR_BASE,
                                            '02_filevalidation_data'))
 
-class TestJhoveFilevalidator:
+class TestJWarcToolsFilevalidator:
 
     def test_validate(self):
 
 
         testcasefile = os.path.join(PROJECTDIR, TESTDATADIR,
-                                    'jhove_testcases.json')
+                                    'warctools_testcases.json')
         print "\nLoading test configuration from %s\n" % testcasefile
                             
         json_data = open(testcasefile)
@@ -39,7 +39,7 @@ class TestJhoveFilevalidator:
 
             testcase["filename"] = os.path.join(testcommon.settings.TESTDATADIR,
                                                 testcase["filename"])
-            val = validator.plugin.jhove.Jhove()
+            val = validator.plugin.warctools.WarcTools()
         
 
             (status, stdout, stderr) = val.validate(testcase["mimetype"],

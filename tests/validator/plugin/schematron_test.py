@@ -29,7 +29,7 @@ class TestSchematronValidator:
         ],
         "test_validate_file": [
             {"casename": "Kervinen",
-             "filename": "fd2009-00002919-preservation/mets.xml",
+             "filename": "CSC_test004/mets.xml",
              "expect_errors": [False, False, False]}
         ]
     }
