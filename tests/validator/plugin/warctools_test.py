@@ -39,15 +39,18 @@ class TestJWarcToolsFilevalidator:
 
             testcase["filename"] = os.path.join(testcommon.settings.TESTDATADIR,
                                                 testcase["filename"])
-            val = validator.plugin.warctools.WarcTools()
+            val = validator.plugin.warctools.WarcTools(testcase["mimetype"],
+                                                       testcase["formatVersion"],
+                                                       testcase["filename"])
         
 
-            (status, stdout, stderr) = val.validate(testcase["mimetype"],
-                                               testcase["formatVersion"],
-                                               testcase["filename"])
+            (status, stdout, stderr) = val.validate()
 
-            assert testcase["expected_result"]["status"] == status
-        
+            if testcase["expected_result"]["status"] == 0:
+                assert testcase["expected_result"]["status"] == status
+            else:
+                assert testcase["expected_result"]["status"] != 0
+
             for match_string in testcase["expected_result"]["stdout"]:
                 message = "\n".join(["got:", stdout.decode('utf-8'), "expected:", match_string])
                 assert re.match('(?s).*' + match_string, stdout), message

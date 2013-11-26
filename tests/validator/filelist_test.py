@@ -80,16 +80,17 @@ class TestMetsFileValidator:
                 error = "\n".join(errors)
 
                 for match_stdout in test_config["match_stdout"]:
-                    match = re.match('(?s).*%s' % match_stdout, report) != None
-                    message = ''.join(['---%s--- ' % report,
-                                       "No match for: '%s'" % match_stdout]) 
-                    assert match, message
+                    #match = re.match('(?s).*%s' % match_stdout, report) != None
+                    #message = ''.join(['---%s--- ' % report,
+                    #                   "No match for: '%s'" % match_stdout])
+                    assert match_stdout in report
+                    #match, message
 
                 for match_stderr in test_config["match_stderr"]:
-                    match = re.match('(?s).*%s' % match_stderr, report) != None
-                    message = ''.join(['---%s--- ' % error,
-                                       "No match for: '%s'" % match_stderr]) 
-                    assert match, message
+                    #match = re.match('(?s).*%s' % match_stderr, report) != None
+                    #message = ''.join(['---%s--- ' % error,
+                    #                   "No match for: '%s'" % match_stderr])
+                    assert match_stderr in report
 
                 assert ret == test_config["exitstatus"]
                 

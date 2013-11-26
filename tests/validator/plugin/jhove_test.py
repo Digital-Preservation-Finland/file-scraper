@@ -39,24 +39,28 @@ class TestJhoveFilevalidator:
 
             testcase["filename"] = os.path.join(testcommon.settings.TESTDATADIR,
                                                 testcase["filename"])
-            val = validator.plugin.jhove.Jhove()
-        
-
-            (status, stdout, stderr) = val.validate(testcase["mimetype"],
+            val = validator.plugin.jhove.Jhove(testcase["mimetype"],
                                                testcase["formatVersion"],
-                                               testcase["filename"])
+                                               testcase["filename"])        
 
-            assert testcase["expected_result"]["status"] == status
-        
+            (status, stdout, stderr) = val.validate()
+
+            if testcase["expected_result"]["status"] == 0:
+                assert testcase["expected_result"]["status"] == status
+            else:
+                assert testcase["expected_result"]["status"] != 0
+            
             for match_string in testcase["expected_result"]["stdout"]:
-                message = "\n".join(["got:", stdout.decode('utf-8'), "expected:", match_string])
-                assert re.match('(?s).*' + match_string, stdout), message
+                stdout = stdout.decode('utf-8')
+                assert match_string in stdout
         
             for match_string in testcase["expected_result"]["stderr"]:
-                message = "\n".join(["got:", stderr.decode('utf-8'), "expected:", match_string])
-                assert re.match('(?s).*' + match_string, stderr), message
+                stderr = stderr.decode('utf-8')
+                assert match_string in stderr
         
-        if "profile" in testcase["expected_result"]:
-            assert val.check_profile( expected_result["profile"] ) == None
+            if "profile" in testcase["expected_result"]:
+                assert val.check_profile( testcase["expected_result"]["profile"] ) == None
+    
+            del val
         
         return None
