@@ -9,7 +9,7 @@ import pytest
 import testcommon.settings
 
 # Module to test
-import validator.plugin.jhove
+import validator.plugin.libxml
 
 PROJECTDIR = testcommon.settings.PROJECTDIR
 
@@ -19,13 +19,15 @@ TESTDATADIR_BASE = os.path.abspath(os.path.join(os.path.dirname(__file__),
 TESTDATADIR = os.path.abspath(os.path.join(TESTDATADIR_BASE,
                                            '02_filevalidation_data'))
 
-class TestJhoveFilevalidator:
+CATALOGPATH = os.path.join(testcommon.settings.SHAREDIR, 'schema/catalog-local.xml')
+
+class TestXmllibFilevalidator:
 
     def test_validate(self):
 
 
         testcasefile = os.path.join(PROJECTDIR, TESTDATADIR,
-                                    'jhove_testcases.json')
+                                    'xmllib_testcases.json')
         print "\nLoading test configuration from %s\n" % testcasefile
                             
         json_data = open(testcasefile)
@@ -39,10 +41,11 @@ class TestJhoveFilevalidator:
 
             testcase["filename"] = os.path.join(testcommon.settings.TESTDATADIR,
                                                 testcase["filename"])
-            val = validator.plugin.jhove.Jhove(testcase["mimetype"],
+            val = validator.plugin.libxml.Libxml(testcase["mimetype"],
                                                testcase["formatVersion"],
                                                testcase["filename"])        
 
+            val.addCatalog(CATALOGPATH)
             (status, stdout, stderr) = val.validate()
 
             if testcase["expected_result"]["status"] == 0:

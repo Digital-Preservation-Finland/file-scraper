@@ -62,16 +62,22 @@ class TestMetsValidation:
 
     def test_mets_validation(self, testcase, expected):
 
-        validate = validator.plugin.xmllint.XSDCatalog(CATALOGPATH, SCHEMAPATH)
+        
         print "TESTDATADIR", testcommon.settings.TESTDATADIR
         mets_path = os.path.join(
             testcommon.settings.TESTDATADIR, testcase["metspath"])
-        result = validate.validate_file(mets_path)
-        print "mets_path", mets_path
-        print result.returncode, result.messages, result.errors
 
-        assert result.returncode == expected["returncode"]
+        validate = validator.plugin.xmllint.Xmllint("text/xml", "1.0", mets_path)
+
+        validate.addCatalog(CATALOGPATH)
+        validate.addSchema(SCHEMAPATH)
+    
+        (returncode, messages, errors) = validate.validate()
+        print "mets_path", mets_path
+        print returncode, errors
+
+        assert returncode == expected["returncode"]
         assert self.output_has_error(
-            result.messages) == expected["stdout_has_errors"]
+            messages) == expected["stdout_has_errors"]
         assert self.output_has_error(
-            result.errors) == expected["stderr_has_errors"]
+            errors) == expected["stderr_has_errors"]
