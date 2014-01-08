@@ -70,7 +70,7 @@ class TestMetsFileValidator:
 
                 validate.load_config(TEST_CONFIG_FILENAME)
 
-                (returns, reports, errors) = validate.validate_files(filelist)
+                (returns, reports, errors, validators) = validate.validate_files(filelist)
                 
                 ret = 0
                 for r in returns:
