@@ -30,7 +30,10 @@ class TestSchematronValidator:
         "test_validate_file": [
             {"casename": "Kervinen",
              "filename": "CSC_test004/mets.xml",
-             "expect_errors": [False, False, False]}
+             "expect_errors": [False, False, False, True]},
+            {"casename": "Seminaari",
+             "filename": "CSC_test006/mets.xml",
+             "expect_errors": [False, False, False, False]}
         ]
     }
 
@@ -135,7 +138,7 @@ class TestSchematronValidator:
             validate.cachepath = temppath
             validate.sharepath = testcommon.settings.SHAREDIR
 
-            schemas = ["mets_internal.sch", "mets_mdtype.sch", "mets_mix.sch"]
+            schemas = ["mets_internal.sch", "mets_mdtype.sch", "mets_mix.sch", "premis.sch"]
 
             i = 0
             for schema in schemas:
