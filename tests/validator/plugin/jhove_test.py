@@ -46,20 +46,20 @@ class TestJhoveFilevalidator:
             (status, stdout, stderr) = val.validate()
 
             if testcase["expected_result"]["status"] == 0:
-                assert testcase["expected_result"]["status"] == status
+                assert testcase["expected_result"]["status"] == status, "OUTPUT:%s:%s" %  (stdout, stderr)
             else:
-                assert testcase["expected_result"]["status"] != 0
+                assert testcase["expected_result"]["status"] != 0, "OUTPUT:%s:%s" %  (stdout, stderr)
             
             for match_string in testcase["expected_result"]["stdout"]:
                 stdout = stdout.decode('utf-8')
-                assert match_string in stdout
+                assert match_string in stdout, "OUTPUT:%s:%s" %  (stdout, stderr)
         
             for match_string in testcase["expected_result"]["stderr"]:
                 stderr = stderr.decode('utf-8')
-                assert match_string in stderr
+                assert match_string in stderr, "OUTPUT:%s:%s" %  (stdout, stderr)
         
             if "profile" in testcase["expected_result"]:
-                assert val.check_profile( testcase["expected_result"]["profile"] ) == None
+                assert val.check_profile( testcase["expected_result"]["profile"] ) == None, "OUTPUT:%s:%s" %  (stdout, stderr)
     
             del val
         
