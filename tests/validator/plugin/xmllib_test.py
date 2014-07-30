@@ -45,7 +45,6 @@ class TestXmllibFilevalidator:
                                                testcase["formatVersion"],
                                                testcase["filename"])        
 
-            val.addCatalog(CATALOGPATH)
             (status, stdout, stderr) = val.validate()
 
             if testcase["expected_result"]["status"] == 0:
