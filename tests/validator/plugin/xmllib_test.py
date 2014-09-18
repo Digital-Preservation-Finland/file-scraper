@@ -19,31 +19,33 @@ TESTDATADIR_BASE = os.path.abspath(os.path.join(os.path.dirname(__file__),
 TESTDATADIR = os.path.abspath(os.path.join(TESTDATADIR_BASE,
                                            '02_filevalidation_data'))
 
-CATALOGPATH = os.path.join(testcommon.settings.SHAREDIR, 'schema/catalog-local.xml')
+CATALOGPATH = os.path.join(
+    testcommon.settings.SHAREDIR,
+    'schema/catalog-local.xml')
+
 
 class TestXmllibFilevalidator:
 
     def test_validate(self):
 
-
         testcasefile = os.path.join(PROJECTDIR, TESTDATADIR,
                                     'xmllib_testcases.json')
         print "\nLoading test configuration from %s\n" % testcasefile
-                            
+
         json_data = open(testcasefile)
         testcases = json.load(json_data)
         json_data.close()
-        
-        
+
         for testcase in testcases["test_validate"]:
-            
+
             print "%s: %s" % (testcase["testcase"], testcase["filename"])
 
-            testcase["filename"] = os.path.join(testcommon.settings.TESTDATADIR,
-                                                testcase["filename"])
+            testcase[
+                "filename"] = os.path.join(testcommon.settings.TESTDATADIR,
+                                           testcase["filename"])
             val = validator.plugin.libxml.Libxml(testcase["mimetype"],
-                                               testcase["formatVersion"],
-                                               testcase["filename"])        
+                                                 testcase["formatVersion"],
+                                                 testcase["filename"])
 
             (status, stdout, stderr) = val.validate()
 
@@ -51,18 +53,19 @@ class TestXmllibFilevalidator:
                 assert testcase["expected_result"]["status"] == status
             else:
                 assert testcase["expected_result"]["status"] != 0
-            
+
             for match_string in testcase["expected_result"]["stdout"]:
                 stdout = stdout.decode('utf-8')
                 assert match_string in stdout
-        
+
             for match_string in testcase["expected_result"]["stderr"]:
                 stderr = stderr.decode('utf-8')
                 assert match_string in stderr
-        
+
             if "profile" in testcase["expected_result"]:
-                assert val.check_profile( testcase["expected_result"]["profile"] ) == None
-    
+                assert val.check_profile(
+                    testcase["expected_result"]["profile"]) is None
+
             del val
-        
+
         return None
