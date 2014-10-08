@@ -12,7 +12,6 @@ import validator.filelist
 import mets.parser
 import mets.manifest
 
-import pas_scripts.check_sip_digital_objects
 import validator.plugin.mockup
 
 # Other imports
