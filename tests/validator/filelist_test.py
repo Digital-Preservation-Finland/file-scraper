@@ -8,11 +8,11 @@ import testcommon.settings
 import json
 
 # Module to test
-import validator.filelist
-import mets.parser
-import mets.manifest
+import ipt.validator.filelist
+import ipt.mets.parser
+import ipt.mets.manifest
 
-import validator.plugin.mockup
+import ipt.validator.plugin.mockup
 
 # Other imports
 import random
@@ -57,14 +57,14 @@ class TestMetsFileValidator:
 
             for test_config in test_configs:
                 
-                manifest = mets.manifest.File(os.path.join(
+                manifest = ipt.mets.manifest.File(os.path.join(
                                                 TESTDATADIR,
                                                 test_config["path"],
                                                 'MANIFEST'))
 
                 filelist = manifest.get_filelist()
 
-                validate = validator.filelist.Validator(
+                validate = ipt.validator.filelist.Validator(
                                 base_path=os.path.join(TESTDATADIR, mimetype))
 
                 validate.load_config(TEST_CONFIG_FILENAME)
@@ -94,12 +94,12 @@ class TestMetsFileValidator:
                 assert ret == test_config["exitstatus"]
                 
     def test_validate_file(self):
-        fileinfo = validator.filelist.FileInfo()
+        fileinfo = ipt.validator.filelist.FileInfo()
         fileinfo.format_mimetype = "application/pdf"
         fileinfo.filename = "abc"
         
         validator_path = "validator.plugin.mockup.ValidatorMockup"
-        validate = validator.filelist.Validator() 
+        validate = ipt.validator.filelist.Validator()
 
         # Generate expected return values randomly
         random_int = 50
@@ -110,6 +110,6 @@ class TestMetsFileValidator:
             random_int = random.randint(0,100)
 
     def test_get_class_instance_by_name(self):
-        validate = validator.filelist.Validator()
+        validate = ipt.validator.filelist.Validator()
         instance = validate.get_class_instance_by_name("json.JSONDecoder", None)
-        assert isinstance( instance, json.JSONDecoder)
+        assert isinstance(instance, json.JSONDecoder)

@@ -9,7 +9,7 @@ import pytest
 import testcommon.settings
 
 # Module to test
-import validator.plugin.warctools
+import ipt.validator.plugin.warctools
 
 PROJECTDIR = testcommon.settings.PROJECTDIR
 
@@ -38,7 +38,7 @@ class TestJWarcToolsFilevalidator:
 
             testcase["filename"] = os.path.join(
                 testcommon.settings.TESTDATADIR, testcase["filename"])
-            val = validator.plugin.warctools.WarcTools(
+            val = ipt.validator.plugin.warctools.WarcTools(
                 testcase["mimetype"],
                 testcase["formatVersion"],
                 testcase["filename"])

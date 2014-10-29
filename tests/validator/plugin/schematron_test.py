@@ -7,7 +7,7 @@ import testcommon.settings
 from testcommon.casegenerator import pytest_generate_tests
 
 # Module to test
-import validator.plugin.schematron
+import ipt.validator.plugin.schematron
 
 # Other imports
 import shutil
@@ -88,7 +88,7 @@ class TestSchematronValidator:
 
         try:
 
-            validate = validator.plugin.schematron.XSLT()
+            validate = ipt.validator.plugin.schematron.XSLT()
             validate.cachepath = temppath
             validate.sharepath = testcommon.settings.SHAREDIR
 
@@ -134,7 +134,7 @@ class TestSchematronValidator:
 
         try:
 
-            validate = validator.plugin.schematron.XSLT()
+            validate = ipt.validator.plugin.schematron.XSLT()
             validate.cachepath = temppath
             validate.sharepath = testcommon.settings.SHAREDIR
 

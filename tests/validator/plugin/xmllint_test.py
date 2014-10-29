@@ -7,7 +7,7 @@ import testcommon.settings
 from testcommon.casegenerator import pytest_generate_tests
 
 # Module to test
-import validator.plugin.xmllint
+import ipt.validator.plugin.xmllint
 
 # Other imports
 import subprocess
@@ -146,7 +146,7 @@ class TestXmllintValidation:
         file_path = os.path.join(
             testcommon.settings.TESTDATADIR, testcase["filepath"])
 
-        validate = validator.plugin.xmllint.Xmllint(
+        validate = ipt.validator.plugin.xmllint.Xmllint(
             "text/xml",
             "1.0",
             file_path)

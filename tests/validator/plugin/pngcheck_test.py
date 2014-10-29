@@ -9,7 +9,7 @@ import testcommon.settings
 from testcommon.casegenerator import pytest_generate_tests
 
 # Module to test
-import validator.plugin.pngcheck
+import ipt.validator.plugin.pngcheck
 
 #VALIDATORS_CONFIG_FILENAME = os.path.join(testcommon.settings.SHAREDIR,
 #                                          'validators/validators.json')
@@ -54,7 +54,7 @@ class TestJhoveFilevalidator:
     
             testcase["filename"] = os.path.join(testcommon.settings.TESTDATADIR,
                                                 testcase["filename"])
-            val = validator.plugin.pngcheck.Pngcheck(testcase["mimetype"],
+            val = ipt.validator.plugin.pngcheck.Pngcheck(testcase["mimetype"],
                                                testcase["formatVersion"],
                                                testcase["filename"])
                                                                            
