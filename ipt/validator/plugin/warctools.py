@@ -34,19 +34,15 @@ class WarcTools(BaseValidator):
         """
         warc_fd = gzip.open(self.filename)
         try:
-            warc_content = warc_fd.read()
+            line = warc_fd.readline()
         except IOError:
             warc_fd.close()
             warc_fd = open(self.filename)
-            warc_content = warc_fd.read()
+            line = warc_fd.readline()
 
-        split_list = warc_content.splitlines()
-        if split_list[0].find("WARC/%s" % version) != -1:
-            check_done = "File version checked"
-            print check_done
+        if line.find("WARC/%s" % version) != -1:
             return None
-        else:
-            return "File version check error"
+        return "File version check error"
 
     def check_profile(self, profile):
         """ WARC file format does not have profiles """
