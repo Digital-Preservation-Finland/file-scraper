@@ -44,8 +44,8 @@ class TestXmllibFilevalidator:
                 "filename"] = os.path.join(testcommon.settings.TESTDATADIR,
                                            testcase["filename"])
             val = ipt.validator.plugin.libxml.Libxml(testcase["mimetype"],
-                                                 testcase["formatVersion"],
-                                                 testcase["filename"])
+                                                     testcase["formatVersion"],
+                                                     testcase["filename"])
 
             (status, stdout, stderr) = val.validate()
 

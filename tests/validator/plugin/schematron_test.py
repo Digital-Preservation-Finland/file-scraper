@@ -16,6 +16,7 @@ import tempfile
 SCHEMATRON_PATH = os.path.join(testcommon.settings.SHAREDIR, 'kdk-schematron')
 TESTDATADIR = os.path.join(testcommon.settings.TESTDATADIR, 'test-sips')
 
+
 class TestSchematronValidator:
 
     testcases = {
@@ -37,20 +38,20 @@ class TestSchematronValidator:
         ]
     }
 
-       #
-       # "test_validate_file": [
-      #      {"casename": "Good METS document",
-      #       "filename": "CSC_test001/mets.xml",
-      #       "expect_errors" : [False, False, False] },
-      #      {"casename": "Good METS document",
-      #       "filename": "metsrights-error/mets.xml",
-      #       "expect_errors" : [False, True, False] },
-      #      {"casename" : "Kervinen",
-             #
-      #       "filename" : "fd2009-00002919-preservation/mets.xml",
-      #       "expect_errors" : [False, False, False]}
-             #
-      #  ]
+    #
+    # "test_validate_file": [
+    #      {"casename": "Good METS document",
+    #       "filename": "CSC_test001/mets.xml",
+    #       "expect_errors" : [False, False, False] },
+    #      {"casename": "Good METS document",
+    #       "filename": "metsrights-error/mets.xml",
+    #       "expect_errors" : [False, True, False] },
+    #      {"casename" : "Kervinen",
+    #
+    #       "filename" : "fd2009-00002919-preservation/mets.xml",
+    #       "expect_errors" : [False, False, False]}
+    #
+    #  ]
    # }
     def file_contains_string(self, filename, search_strings):
 
@@ -117,7 +118,7 @@ class TestSchematronValidator:
             start_position = svrl_text.find(start_tag, end_position +
                                             len(end_tag))
             if start_position == -1:
-                    break
+                break
 
             end_position = svrl_text.find(end_tag, start_position)
 
@@ -138,7 +139,8 @@ class TestSchematronValidator:
             validate.cachepath = temppath
             validate.sharepath = testcommon.settings.SHAREDIR
 
-            schemas = ["mets_internal.sch", "mets_mdtype.sch", "mets_mix.sch", "premis.sch"]
+            schemas = [
+                "mets_internal.sch", "mets_mdtype.sch", "mets_mix.sch", "premis.sch"]
 
             i = 0
             for schema in schemas:
