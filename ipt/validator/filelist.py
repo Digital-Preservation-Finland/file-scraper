@@ -22,6 +22,7 @@ CONFIG_FILENAME = os.path.join('/usr/share/',
                                'information-package-tools/validators',
                                'validators.json')
 
+
 class FileInfo:
 
     format_version = None
@@ -36,7 +37,6 @@ class FileInfo:
             self.from_dict(fileinfo)
         if type(fileinfo) is list:
             self.from_array(fileinfo)
-
 
     def from_array(self, fileinfo):
         # FIXME: replace fileinfo array with dict
@@ -55,13 +55,12 @@ class FileInfo:
     def from_dict(self, fileinfo):
         self.filename = fileinfo['filename']
         self.object_id = fileinfo['object_id']
-        
+
         self.digest_algorithm = fileinfo['fixity']['algorithm']
         self.digest_hex = fileinfo['fixity']['digest']
         self.format_mimetype = fileinfo['format']['mimetype']
         self.format_version = fileinfo['format']['version']
         self.format_registry_key = fileinfo['format']['registery_key']
-    
 
     def __str__(self):
         return "ipt.validator.plugin.FileInfo(%s, %s, %s, %s, %s, %s, %s)" % (
@@ -75,9 +74,9 @@ class Validator:
     def __init__(self, base_path=""):
         self.basepath = base_path
         self.validators_config = None
-        
+
     def load_config(self, config_filename=None):
-        if config_filename == None:
+        if config_filename is None:
             config_filename = CONFIG_FILENAME
         json_data = open(config_filename)
         self.validators_config = json.load(json_data)
@@ -85,27 +84,27 @@ class Validator:
 
     def get_class_instance_by_name(self, path, params):
         """ Return instance of class declared in path argument """
-        
+
         modules = path.split(".")
-        instance = globals()[ modules[0] ]
+        instance = globals()[modules[0]]
 
         for module in modules[1:]:
-            instance = getattr( instance, module )
-        
+            instance = getattr(instance, module)
+
         if params:
             return instance(*params)
 
         return instance()
 
-
-    def validate_file(self, fileinfo, validator_name, validator_params = None):
+    def validate_file(self, fileinfo, validator_name, validator_params=None):
         validator_params = (fileinfo.format_mimetype,
                             fileinfo.format_version,
                             os.path.join(self.basepath,
                                          fileinfo.filename))
-                                         
-        validate = self.get_class_instance_by_name(validator_name, validator_params)
-        
+
+        validate = self.get_class_instance_by_name(
+            validator_name, validator_params)
+
         (returnstatus, messages, errors) = validate.validate()
 
         return (returnstatus, messages, errors)
@@ -119,7 +118,8 @@ class Validator:
             for format_mimetype, validator_configs in config.iteritems():
                 if fileinfo.format_mimetype == format_mimetype:
                     for validator in validator_configs:
-                        if fileinfo.format_version == validator["formatVersion"]:
+                        if fileinfo.format_version == \
+                                validator["formatVersion"]:
                             if len(validator["validator"]) > 0:
                                 found_validators.append(validator["validator"])
 
@@ -134,11 +134,12 @@ class Validator:
         errors = []
         validators = []
 
-        for file in filelist:
-            fileinfo = FileInfo(file)
+        for file_ in filelist:
+            fileinfo = FileInfo(file_)
             validators_for_file = self.get_validators(fileinfo)
             if len(validators_for_file) == 0:
-                error = 'INVALID:%s:No validator for mimetype:%s version:%s' % (
+                error = \
+                    'INVALID:%s:No validator for mimetype:%s version:%s' % (
                     fileinfo.filename, fileinfo.format_mimetype,
                     fileinfo.format_version)
 

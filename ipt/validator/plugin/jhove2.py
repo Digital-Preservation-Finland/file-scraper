@@ -16,21 +16,22 @@ NAMESPACES = {'j2': 'http://jhove2.org/xsd/1.0.0'}
 
 
 class Jhove2(BaseValidator):
+
     """ Initializes JHove 2 validator and set ups everything so that
         methods from base class (BaseValidator) can be called, such as
-        validate() for file validation. 
-    
+        validate() for file validation.
+
         .. note:: The following mimetypes and JHove modules are supported:
                   'application/pdf': 'PDF-hul', 'image/tiff': 'TIFF-hul',
-                  'image/jpeg': 'JPEG-hul', 'image/jp2': 'JPEG2000-hul', 
+                  'image/jpeg': 'JPEG-hul', 'image/jp2': 'JPEG2000-hul',
                   'image/gif': 'GIF-hul'
-                  
+
         .. seealso:: http://jhove.sourceforge.net/documentation.html
     """
 
     def __init__(self, mimetype, fileversion, filename):
         super(Jhove2, self).__init__()
-        
+
         # Create temp dir for jhove
         tempdir = tempfile.mkdtemp()
         self.exec_cmd = ['jhove2',  '--display', 'XML', '--temp', tempdir]
@@ -42,11 +43,10 @@ class Jhove2(BaseValidator):
         if not mimetype in JHOVE_MODULES:
             raise Exception("Unknown mimetype: %s" % mimetype)
 
-
     def check_validity(self):
         """ Check if file is valid according to JHove output.
-            
-            Returns: 
+
+            Returns:
                 None if file is valid, otherwise returns JHove's error message.
         """
 
@@ -60,12 +60,12 @@ class Jhove2(BaseValidator):
         return None
 
     def check_version(self, version):
-        """ Check if version string matches JHove output. 
-            
+        """ Check if version string matches JHove output.
+
             Arguments:
                 version: version string
-            
-            Returns: 
+
+            Returns:
                 None if version matches, else returns JHove's error message.
         """
 
@@ -83,39 +83,38 @@ class Jhove2(BaseValidator):
         return None
 
     def check_profile(self, profile):
-        """ Check if profile string matches JHove output. 
-            
+        """ Check if profile string matches JHove output.
+
             Arguments:
                 profile: profile string
-            
+
             Returns:
                 None if profile matches, else returns JHove's error message.
         """
         return None
 
-
     def get_report_field(self, field):
         """ Return field value from JHoves XML output. This method assumes that
-            JHove's XML output handler is used: jhove -h XML. Method uses XPath 
-            for querying JHoves output. This method is mainly used by validator 
+            JHove's XML output handler is used: jhove -h XML. Method uses XPath
+            for querying JHoves output. This method is mainly used by validator
             class itself. Example usage:
-            
+
             .. code-block:: python
-            
+
                 get_report_field("Version", report)
                 1.2
-               
+
                 get_report_field("Status", report)
                 "Well formed"
-                
-            Arguments: 
-                field: Field name which content we are looking for. In practise 
+
+            Arguments:
+                field: Field name which content we are looking for. In practise
                 field is an element in XML document.
-                
-            Returns: 
-                Concatenated string where each result is on own line. An empty 
+
+            Returns:
+                Concatenated string where each result is on own line. An empty
                 string is returned if there's no results.
-        
+
         """
         root = lxml.etree.fromstring(self.stdout)
 
@@ -136,8 +135,7 @@ class Jhove2(BaseValidator):
     def validate(self):
         """This overrides Basevalidators validate() method because of
            https://jira.csc.fi/browse/KDKPAS-432 """
-        
-        (status, message, error) = super(Jhove2, self).validate()
-        
-        return status, "", error
 
+        (status, message, error) = super(Jhove2, self).validate()
+
+        return status, "", error

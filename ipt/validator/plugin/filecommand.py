@@ -7,28 +7,30 @@ import subprocess
 
 from ipt.validator.basevalidator import BaseValidator
 
+
 class Filecommand(BaseValidator):
 
     """ Initializes validator and set ups everything so that
         methods from base class (BaseValidator) can be called, such as
         validate() for file validation.
-    
-    
+
+
     .. seealso:: http://linux.die.net/man/1/file
     """
+
     def __init__(self, mimetype, fileversion, filename):
         self.exec_cmd = ['file', '-e', 'soft']
         self.filename = filename
         self.fileversion = fileversion
         self.mimetype = mimetype
-        
+
         if mimetype != "text/plain":
             raise Exception("Unknown mimetype: %s" % mimetype)
 
     def check_validity(self):
         filename = os.path.basename(self.filename)
 
-        if not "text" in self.stdout:
+        if "text" not in self.stdout:
             return "ERROR: File '%s' does not validate." % filename
 
         return None
@@ -49,8 +51,7 @@ class Filecommand(BaseValidator):
 
         return "ERROR: File version is '%s', expected '%s'" % \
                (self.stdout, version)
-  
-    
+
     def check_profile(self, profile):
         """ FIXME: Remove this from BaseValidator class. """
         return None
