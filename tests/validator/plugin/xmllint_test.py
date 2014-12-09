@@ -157,7 +157,8 @@ class TestXmllintValidation:
 
         (returncode, messages, errors) = validate.validate()
 
-        assert returncode == expected["returncode"]
+        assert returncode == expected["returncode"], '\n'.join([
+            'stdout:', validate.stdout, 'stderr:', validate.stderr])
         assert self.output_has_error(
             messages) == expected["stdout_has_errors"]
         assert self.output_has_error(
