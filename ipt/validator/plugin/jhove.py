@@ -15,6 +15,11 @@ JHOVE_MODULES = {
 NAMESPACES = {'j': 'http://hul.harvard.edu/ois/xml/ns/jhove'}
 
 
+class UnknownReturnCode(Exception):
+    """Raised when any validation returns unknown returncode."""
+    pass
+
+
 class Jhove(BaseValidator):
 
     """ Initializes JHove 1 validator and set ups everything so that
@@ -55,7 +60,9 @@ class Jhove(BaseValidator):
             Returns:
                 None if file is valid, otherwise returns JHove's error message.
         """
-
+        if self.statuscode != 0:
+            raise UnknownReturnCode("Jhove returned unknown returncode: \
+                %s %s %s" % (self.statuscode, self.stdout, self.stderr))
         status = self.get_report_field("status")
         filename = self.get_report_field("repInfo")
         filename = os.path.basename(filename)
