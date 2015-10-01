@@ -60,7 +60,7 @@ class Jhove(BaseValidator):
             Returns:
                 None if file is valid, otherwise returns JHove's error message.
         """
-        if self.statuscode != 0:
+        if self.statuscode != 255:
             raise UnknownReturnCode("Jhove returned unknown returncode: \
                 %s %s %s" % (self.statuscode, self.stdout, self.stderr))
         status = self.get_report_field("status")
