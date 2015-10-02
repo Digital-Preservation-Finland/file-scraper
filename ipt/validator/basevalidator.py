@@ -66,6 +66,12 @@ class BaseValidator(object):
         self.exec_cmd += filename_in_list
         self.exec_validator()
 
+        if self.statuscode != 0:
+            return (
+                self.statuscode, self.stdout,
+                "Validator returned error: %s\n%s" %
+                (self.statuscode, self.stderr))
+
         errors = []
 
         error = self.check_validity()
@@ -79,12 +85,6 @@ class BaseValidator(object):
         error = self.check_profile(self.profile)
         if error is not None:
             errors.append(error)
-
-        if self.statuscode != 0:
-            return (
-                self.statuscode, self.stdout,
-                "Validator returned error: %s\n%s" %
-                (self.statuscode, self.stderr))
 
         if len(errors) == 0:
             return (0, self.stdout, '')
