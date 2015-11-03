@@ -137,6 +137,19 @@ class TestXmllintValidation:
                  "stdout_has_errors": False,
                  "stderr_has_errors": True,
             }
+            },
+            {"testcase": {
+             "name": "Test mets not in sip root",
+                "filepath": "06_mets_validation/sips/mets_not_in_root/mets.xml",
+                "catalog": OBJECT_CATALOGPATH,
+                "schema": SCHEMAPATH
+
+             },
+             "expected": {
+                 "returncode": 117,
+                 "stdout_has_errors": False,
+                 "stderr_has_errors": False,
+            }
             }
         ]
     }
