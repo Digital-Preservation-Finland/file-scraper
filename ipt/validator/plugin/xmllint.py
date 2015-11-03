@@ -73,9 +73,17 @@ class Xmllint(BaseValidator):
             tree = etree.parse(fd, parser=parser)
             self.used_version = tree.docinfo.xml_version
             fd.close()
-        except IOError as e:
-            # System error, do something!
-            raise
+        except IOError as error:
+            # if mets.xml is not found in SIP root, it is not a system error
+            # case. Instead, it should be interpreted as wrong sip structure.
+            if "No such file or directory" in error:
+                self.statuscode = 117
+                self.stdout = "mets.xml has to be located in submission"\
+                              "information package root"
+                self.stderr = error
+                return self.statuscode, self.stdout, self.stderr
+            # System error
+            raise IOError(error)
         except etree.XMLSyntaxError:
             self.statuscode = 1
             self.stderr = "Validation failed: document is not well formed."
