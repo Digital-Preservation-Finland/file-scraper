@@ -2,7 +2,7 @@
 
 import os
 import tempfile
-
+import errno
 from lxml import etree
 
 from ipt.validator.basevalidator import BaseValidator
@@ -76,9 +76,9 @@ class Xmllint(BaseValidator):
         except IOError as error:
             # if mets.xml is not found in SIP root, it is not a system error
             # case. Instead, it should be interpreted as wrong sip structure.
-            if "No such file or directory" in error:
+            if error.errno == errno.ENOENT:
                 self.statuscode = 117
-                self.stdout = "mets.xml has to be located in submission"\
+                self.stdout = "mets.xml has to be located in submission "\
                               "information package root"
                 self.stderr = error
                 return self.statuscode, self.stdout, self.stderr
