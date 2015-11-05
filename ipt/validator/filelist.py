@@ -134,7 +134,31 @@ class Validator:
         errors = []
         validators = []
 
+        # Check that there are no extra or missing files
+        # in mets <mets:FLocat>-field
+        found_files = []
+        for directory, _, files in os.walk(self.basepath):
+            for file_name in files:
+                file_rel_path = self.get_file_rel_dir_path(
+                    directory, file_name)
+                found_files.append(str(file_rel_path))
+
+        filelist_files = []
         for file_ in filelist:
+            filelist_files.append(str(file_[0]))
+        print "found_files", found_files
+        print "filelist_files", filelist_files
+        if set(found_files) != set(filelist_files):
+            return (
+                [117],
+                ["Validation error",
+                 "Extranous or missing files in <mets:FLocat>-field"],
+                ["Extranous or missing files in <mets:FLocat>-field"],
+                [None])
+
+        # Validate files
+        for file_ in filelist:
+
             fileinfo = FileInfo(file_)
             validators_for_file = self.get_validators(fileinfo)
             if len(validators_for_file) == 0:
@@ -157,3 +181,20 @@ class Validator:
                 errors.append(error)
 
         return (return_status, messages, errors, validators)
+
+
+    def get_file_rel_dir_path(self, directory, filename):
+        """ util function get file relative path inside sip.
+        :directory: base directory path of the SIP.
+        :filename: base name of the digital object"""
+        processing_directory = os.path.dirname(self.basepath) + "/"
+        file_rel_path_with_sip_dir = directory.replace(
+            processing_directory, "")
+        slash_location = file_rel_path_with_sip_dir.find("/")
+        if slash_location == -1:
+            file_rel_path = ""
+        else:
+            file_rel_path = file_rel_path_with_sip_dir[
+                slash_location+1 : len(file_rel_path_with_sip_dir)-1]
+
+        return  os.path.join(file_rel_path, str(filename))
