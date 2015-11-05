@@ -10,7 +10,6 @@ import json
 # Module to test
 import ipt.validator.filelist
 import ipt.mets.parser
-import ipt.mets.manifest
 
 import ipt.validator.plugin.mockup
 
@@ -58,20 +57,13 @@ class TestMetsFileValidator:
 
             for test_config in test_configs:
 
-                manifest = ipt.mets.manifest.File(os.path.join(
-                    TESTDATADIR,
-                    test_config["path"],
-                    'MANIFEST'))
-
-                filelist = manifest.get_filelist()
-
                 validate = ipt.validator.filelist.Validator(
                     base_path=os.path.join(TESTDATADIR, mimetype))
 
                 validate.load_config(TEST_CONFIG_FILENAME)
 
                 (returns, reports, errors, validators) = validate.validate_files(
-                    filelist)
+                    test_config["filelist"])
 
                 ret = 0
                 for r in returns:
