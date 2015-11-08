@@ -146,8 +146,6 @@ class Validator:
         filelist_files = []
         for file_ in filelist:
             filelist_files.append(str(file_[0]))
-        print "found_files", found_files
-        print "filelist_files", filelist_files
         if set(found_files) != set(filelist_files):
             return (
                 [117],
