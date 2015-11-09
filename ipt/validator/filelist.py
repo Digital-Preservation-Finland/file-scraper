@@ -158,7 +158,13 @@ class Validator:
         # Check that there are no extra or missing files
         # in mets <mets:FLocat>-field
         found_files = []
-        for directory, _, files in os.walk(self.basepath):
+        for directory, dirs, files in os.walk(self.basepath):
+            # Check for empty directories
+            if not files and not dirs:
+                validators.append("")
+                return_status.append(117)
+                messages.append("ERROR: empty directory %s" % directory)
+                errors.append("ERROR: empty directory %s" % directory)
             for file_name in files:
                 file_rel_path = self.get_file_rel_dir_path(
                     directory, file_name)
