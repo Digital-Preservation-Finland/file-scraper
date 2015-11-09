@@ -50,42 +50,31 @@ class TestMetsFileValidator:
         folder(equals a sip folder). mets.xml is not in folder since its not
         relevant for this test"""
 
-        for mimetype, test_configs in testcases.iteritems():
+        for case in testcases:
 
-            print "Testing files with mimetype: %s" % mimetype
+            validate = ipt.validator.filelist.Validator(
+                base_path=os.path.join(TESTDATADIR, case["path"]))
 
-            for test_config in test_configs:
+            validate.load_config(TEST_CONFIG_FILENAME)
+            print "CONFIG", case
+            (returns, reports, errors, validators) = validate.validate_files(
+                case["filelist"])
 
-                validate = ipt.validator.filelist.Validator(
-                    base_path=os.path.join(TESTDATADIR, mimetype))
+            ret = 0
+            for r in returns:
+                if r != 0:
+                    ret = r
 
-                validate.load_config(TEST_CONFIG_FILENAME)
+            report = "\n".join(reports)
+            error = "\n".join(errors)
 
-                (returns, reports, errors, validators) = validate.validate_files(
-                    test_config["filelist"])
+            for match_stdout in case["match_stdout"]:
+                assert match_stdout in report
 
-                ret = 0
-                for r in returns:
-                    if r != 0:
-                        ret = r
+            for match_stderr in case["match_stderr"]:
+                assert match_stderr in report
 
-                report = "\n".join(reports)
-                error = "\n".join(errors)
-
-                for match_stdout in test_config["match_stdout"]:
-                    #match = re.match('(?s).*%s' % match_stdout, report) != None
-                    # message = ''.join(['---%s--- ' % report,
-                    #                   "No match for: '%s'" % match_stdout])
-                    assert match_stdout in report
-                    #match, message
-
-                for match_stderr in test_config["match_stderr"]:
-                    #match = re.match('(?s).*%s' % match_stderr, report) != None
-                    # message = ''.join(['---%s--- ' % error,
-                    #                   "No match for: '%s'" % match_stderr])
-                    assert match_stderr in report
-
-                assert ret == test_config["exitstatus"]
+            assert ret == case["exitstatus"]
 
     def test_validate_file(self):
         fileinfo = ipt.validator.filelist.FileInfo()
