@@ -2,15 +2,12 @@
 import os
 import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
-import pytest
 import testcommon.settings
 from testcommon.casegenerator import pytest_generate_tests
 
 # Module to test
 import ipt.validator.plugin.xmllint
 
-# Other imports
-import subprocess
 
 ROOTPATH = os.path.abspath(os.path.join(
     os.path.dirname(__file__),

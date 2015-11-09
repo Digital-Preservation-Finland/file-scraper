@@ -1,16 +1,7 @@
-import sys
 import os
 import os.path
 import json
-import time
-from pprint import pprint
 #import antigravity
-
-import trace
-
-from datetime import datetime
-import subprocess
-from doctest import REPORT_CDIFF
 
 import ipt
 import ipt.validator.plugin.jhove
