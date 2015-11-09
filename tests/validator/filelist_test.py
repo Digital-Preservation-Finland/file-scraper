@@ -58,7 +58,6 @@ class TestMetsFileValidator:
                 base_path=os.path.join(TESTDATADIR, case["path"]))
 
             validate.load_config(TEST_CONFIG_FILENAME)
-            print "CONFIG", case
             (returns, reports, errors, validators) = validate.validate_files(
                 case["filelist"])
 
