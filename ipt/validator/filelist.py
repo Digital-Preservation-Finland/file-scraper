@@ -173,12 +173,12 @@ class Validator:
                     found_files.append(str(file_rel_path))
 
         if set(found_files) != set(filelist_files):
-            return (
-                [117],
-                ["Validation error",
-                 "Extranous or missing files in <mets:FLocat>-field"],
-                ["Extranous or missing files in <mets:FLocat>-field"],
-                [None])
+            return_status.append(117)
+            messages.append(
+                "Validation error " \
+                 "Extranous or missing files in <mets:FLocat>-field")
+            errors.append("Extranous or missing files in <mets:FLocat>-field")
+            validators.append(None)
 
         return (return_status, messages, errors, validators)
 
