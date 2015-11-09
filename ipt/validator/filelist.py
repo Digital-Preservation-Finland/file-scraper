@@ -184,6 +184,6 @@ class Validator:
             file_rel_path = ""
         else:
             file_rel_path = file_rel_path_with_sip_dir[
-                slash_location+1 : len(file_rel_path_with_sip_dir)-1]
+                slash_location+1 : len(file_rel_path_with_sip_dir)]
 
         return  os.path.join(file_rel_path, str(filename))
