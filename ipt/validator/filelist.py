@@ -60,7 +60,7 @@ class FileInfo:
         self.digest_hex = fileinfo['fixity']['digest']
         self.format_mimetype = fileinfo['format']['mimetype']
         self.format_version = fileinfo['format']['version']
-        self.format_registry_key = fileinfo['format']['registery_key']
+        self.format_registry_key = fileinfo['format']['registry_key']
 
     def __str__(self):
         return "ipt.validator.plugin.FileInfo(%s, %s, %s, %s, %s, %s, %s)" % (
