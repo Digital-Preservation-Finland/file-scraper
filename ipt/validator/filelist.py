@@ -124,29 +124,16 @@ class Validator:
         messages = []
         errors = []
         validators = []
-
-        # Check that there are no extra or missing files
-        # in mets <mets:FLocat>-field
-        found_files = []
-        for directory, _, files in os.walk(self.basepath):
-            for file_name in files:
-                file_rel_path = self.get_file_rel_dir_path(
-                    directory, file_name)
-                found_files.append(str(file_rel_path))
-
         filelist_files = []
-        for file_ in filelist:
-            filelist_files.append(str(file_[0]))
-        if set(found_files) != set(filelist_files):
-            return (
-                [117],
-                ["Validation error",
-                 "Extranous or missing files in <mets:FLocat>-field"],
-                ["Extranous or missing files in <mets:FLocat>-field"],
-                [None])
 
         # Validate files
         for file_ in filelist:
+
+            # create a
+            filename = str(file_["filename"])
+            if filename.startswith("./"):
+                filename = filename[2:]
+            filelist_files.append(filename)
 
             fileinfo = FileInfo(file_)
             validators_for_file = self.get_validators(fileinfo)
@@ -160,7 +147,6 @@ class Validator:
                 return_status.append(1)
                 messages.append("\n")
                 errors.append(error)
-
             for validator in validators_for_file:
                 (status, message, error) = self.validate_file(
                     fileinfo, validator)
@@ -168,6 +154,25 @@ class Validator:
                 return_status.append(status)
                 messages.append(message)
                 errors.append(error)
+
+        # Check that there are no extra or missing files
+        # in mets <mets:FLocat>-field
+        found_files = []
+        for directory, _, files in os.walk(self.basepath):
+            for file_name in files:
+                file_rel_path = self.get_file_rel_dir_path(
+                    directory, file_name)
+                if "mets.xml" not in str(file_rel_path) and \
+                   "varmiste.sig" not in str(file_rel_path):
+                    found_files.append(str(file_rel_path))
+
+        if set(found_files) != set(filelist_files):
+            return (
+                [117],
+                ["Validation error",
+                 "Extranous or missing files in <mets:FLocat>-field"],
+                ["Extranous or missing files in <mets:FLocat>-field"],
+                [None])
 
         return (return_status, messages, errors, validators)
 
