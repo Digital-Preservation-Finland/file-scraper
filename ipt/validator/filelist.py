@@ -1,13 +1,13 @@
 import os
 import os.path
 import json
-#import antigravity
 
 import ipt
 import ipt.validator.plugin.jhove
 import ipt.validator.plugin.jhove2
 import ipt.validator.plugin.libxml
 import ipt.validator.plugin.filecommand
+import ipt.validator.plugin.xmllint
 
 CONFIG_FILENAME = os.path.join('/usr/share/',
                                'information-package-tools/validators',
