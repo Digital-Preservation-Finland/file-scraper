@@ -1,7 +1,5 @@
 """Module for vallidating files with JHove 2 Validator"""
 import os
-import re
-import subprocess
 import tempfile
 import lxml.etree
 
@@ -41,7 +39,7 @@ class Jhove2(BaseValidator):
         self.fileversion = fileversion
         self.mimetype = mimetype
 
-        if not mimetype in JHOVE_MODULES:
+        if mimetype not in JHOVE_MODULES:
             raise Exception("Unknown mimetype: %s" % mimetype)
 
     def check_validity(self):
@@ -118,7 +116,7 @@ class Jhove2(BaseValidator):
 
         """
         root = lxml.etree.fromstring(self.stdout)
-        print self.stdout
+
         query = ""
         if self.mimetype == 'application/x-internet-archive':
             query = '//j2:feature[@ftid = "http://jhove2.org/terms/' \
@@ -129,11 +127,11 @@ class Jhove2(BaseValidator):
                     'reportable/org/jhove2/module/format/utf8/UTF8Module"]/' \
                     'j2:features/j2:feature[@name="%s"]/j2:value/text()' % field
         elif self.mimetype == 'application/warc':
-            query = '//j2:feature[@fid = "http://jhove2.org/terms/' \
+            query = '//j2:feature[@ftid = "http://jhove2.org/terms/' \
                     'reportable/org/jhove2/module/format/warc/WarcModule"]/' \
                     'j2:features/j2:feature[@name="%s"]/j2:value/text()' % field
         results = root.xpath(query, namespaces=NAMESPACES)
-        print results
+
         return '\n'.join(results)
 
     def validate(self):
