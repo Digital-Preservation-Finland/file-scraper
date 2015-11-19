@@ -9,7 +9,7 @@ import pytest
 import testcommon.settings
 
 # Module to test
-from ipt.validator.plugin import jhove2
+import ipt.validator.plugin.jhove2
 
 PROJECTDIR = testcommon.settings.PROJECTDIR
 
@@ -17,24 +17,47 @@ TESTDATADIR_BASE = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                 '../../data'))
 
 TESTDATADIR = os.path.abspath(os.path.join(TESTDATADIR_BASE,
-                                           '02_filevalidation_data',
-                                           'warc_1_0'))
+                                           '02_filevalidation_data'))
 
-@pytest.mark.parametrize('case', [
-#    'converted-KK-20131120090606-00002-ark8.lib.helsinki.fi.warc',
-#    'KK-20131120090606-00002-ark8.lib.helsinki.fi.arc.gz',
-#    'IAH-20131121091702-00000-ark8.lib.helsinki.fi.warc.gz',
-    'valid.warc.gz'
-    ])
-def test_valid_warcs(case):
-    """Test cases for valid warcs."""
-    path = os.path.join(TESTDATADIR, case)
-    print path
-    os.path.isfile(path)
-    validator = jhove2.Jhove2(
-        mimetype='application/warc',
-        fileversion='1.0',
-        filename=path)
-    result = validator.validate()
-    #print result
-    #assert 1 == 0
+
+class TestJhove2Validator:
+
+    def test_validate(self):
+
+        testcasefile = os.path.join(PROJECTDIR, TESTDATADIR,
+                                    'jhove2_testcases.json')
+        print "\nLoading test configuration from %s\n" % testcasefile
+
+        json_data = open(testcasefile)
+        testcases = json.load(json_data)
+        json_data.close()
+
+        for testcase in testcases["test_validate"]:
+
+            print "%s: %s" % (testcase["testcase"], testcase["filename"])
+
+            testcase["filename"] = os.path.join(
+                testcommon.settings.TESTDATADIR, testcase["filename"])
+            val = ipt.validator.plugin.jhove2.Jhove2(
+                testcase["mimetype"],
+                testcase["formatVersion"],
+                testcase["filename"])
+
+            (status, stdout, stderr) = val.validate()
+
+            if testcase["expected_result"]["status"] == 0:
+                assert testcase["expected_result"]["status"] == status
+            else:
+                assert testcase["expected_result"]["status"] != 0
+
+            for match_string in testcase["expected_result"]["stdout"]:
+                message = "\n".join(
+                    ["got:", stdout.decode('utf-8'), "expected:",
+                     match_string])
+                assert re.match('(?s).*' + match_string, stdout), message
+
+            for match_string in testcase["expected_result"]["stderr"]:
+                message = "\n".join(
+                    ["got:", stderr.decode('utf-8'), "expected:",
+                     match_string])
+                assert re.match('(?s).*' + match_string, stderr), message
