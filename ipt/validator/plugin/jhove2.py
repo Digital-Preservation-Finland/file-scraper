@@ -9,7 +9,8 @@ from ipt.validator.basevalidator import BaseValidator
 
 JHOVE_MODULES = [
     'application/x-internet-archive',
-    'text/plain'
+    'text/plain',
+    'application/warc'
 ]
 
 NAMESPACES = {'j2': 'http://jhove2.org/xsd/1.0.0'}
@@ -117,7 +118,7 @@ class Jhove2(BaseValidator):
 
         """
         root = lxml.etree.fromstring(self.stdout)
-
+        print self.stdout
         query = ""
         if self.mimetype == 'application/x-internet-archive':
             query = '//j2:feature[@ftid = "http://jhove2.org/terms/' \
@@ -127,9 +128,12 @@ class Jhove2(BaseValidator):
             query = '//j2:feature[@ftid = "http://jhove2.org/terms/' \
                     'reportable/org/jhove2/module/format/utf8/UTF8Module"]/' \
                     'j2:features/j2:feature[@name="%s"]/j2:value/text()' % field
-
+        elif self.mimetype == 'application/warc':
+            query = '//j2:feature[@fid = "http://jhove2.org/terms/' \
+                    'reportable/org/jhove2/module/format/warc/WarcModule"]/' \
+                    'j2:features/j2:feature[@name="%s"]/j2:value/text()' % field
         results = root.xpath(query, namespaces=NAMESPACES)
-
+        print results
         return '\n'.join(results)
 
     def validate(self):
