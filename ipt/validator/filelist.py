@@ -8,6 +8,7 @@ import ipt.validator.plugin.jhove2
 import ipt.validator.plugin.libxml
 import ipt.validator.plugin.filecommand
 import ipt.validator.plugin.xmllint
+import ipt.validator.plugin.warctools
 
 CONFIG_FILENAME = os.path.join('/usr/share/',
                                'information-package-tools/validators',
