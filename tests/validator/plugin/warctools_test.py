@@ -62,7 +62,4 @@ class TestJWarcToolsFilevalidator:
                      match_string])
                 assert re.match('(?s).*' + match_string, stderr), message
 
-        if "profile" in testcase["expected_result"]:
-            assert val.check_profile(expected_result["profile"]) == None
-
         return None
