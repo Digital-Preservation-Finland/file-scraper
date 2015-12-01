@@ -10,12 +10,12 @@ class WarcError(Exception):
 
 class WarcTools(object):
 
-    """ Initializes warctools validator and set ups everything so that
-        methods from base class (BaseValidator) can be called, such as
+    """ Implements filevalidation or warc/arc files. use by calling
+    validate.
         validate() for file validation.
 
 
-    .. seealso:: http://code.hanzoarchives.com/warc-tools
+    .. seealso:: https://github.com/internetarchive/warctools
     """
 
     def __init__(self, mimetype, fileversion, filename):
@@ -95,6 +95,7 @@ class WarcTools(object):
     def validate_arc(self):
         """Valdiate arc by transforming it to warc first. WarcTools does not
         support direct validation of arc.
+        :returns: (statuscode, stdout, stderr)
 
         """
         # create covnersion from arc tp warc
