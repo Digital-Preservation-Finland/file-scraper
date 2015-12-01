@@ -43,10 +43,9 @@ def test_validate_warc():
 
         (status, stdout, stderr) = val.validate()
 
-        if testcase["expected_result"]["status"] == 0:
-            assert testcase["expected_result"]["status"] == status
-        else:
-            assert testcase["expected_result"]["status"] != 0
+
+        assert testcase["expected_result"]["status"] == status
+
 
         for match_string in testcase["expected_result"]["stdout"]:
             message = "\n".join(
@@ -59,5 +58,3 @@ def test_validate_warc():
                 ["got:", stderr.decode('utf-8'), "expected:",
                  match_string])
             assert re.match('(?s).*' + match_string, stderr), message
-
-    return None
