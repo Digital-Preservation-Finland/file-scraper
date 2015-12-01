@@ -1,8 +1,6 @@
 """Module for validating files with warc-tools warc validator"""
 import gzip
-import subprocess
 import tempfile
-import os
 
 from ipt.utils import run_command
 
@@ -21,17 +19,12 @@ class WarcTools(object):
     """
 
     def __init__(self, mimetype, fileversion, filename):
-        super(WarcTools, self).__init__()
-
         if mimetype != "application/warc" and mimetype != "application/x-internet-archive":
             raise Exception("Unknown mimetype: %s" % mimetype)
         self.filename = str(filename)
         self.fileversion = fileversion
         self.mimetype = mimetype
         self.profile = None
-        self.statuscode = None
-        self.stdout = ""
-        self.stderr = ""
 
     def check_version(self, version, filename):
         """ Check the file version of given file. In WARC format version string
