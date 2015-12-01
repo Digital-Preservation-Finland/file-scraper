@@ -93,6 +93,9 @@ class WarcTools(object):
         (statuscode,
             stdout_validation,
             stderr_validation) = run_command(cmd=exec_cmd1)
+        print (statuscode,
+            stdout_validation,
+            stderr_validation)
         stdout.append(stdout_validation)
         stderr.append(stderr_validation)
 
@@ -152,6 +155,7 @@ class WarcTools(object):
     def error_handler(self):
         """IOError handler, IOError is not system error in every case.
         Warctools somehow raises IOError in case of corrupted file"""
+        error = ""
         try:
             yield
         except IOError as error:
@@ -160,4 +164,14 @@ class WarcTools(object):
             self.statuscode = 117
             self.stdout = ""
             self.stderr = str(error)
+        except Exception as error:
+            for message in [
+                    'zero length field name in format',
+                    'Error -3 while decompressing: invalid distance code']:
+                if message in str(error):
+                    self.statuscode = 117
+                    self.stdout = ""
+                    self.stderr = str(error)
+            if self.statuscode != 117:
+                raise Exception(error)
 
