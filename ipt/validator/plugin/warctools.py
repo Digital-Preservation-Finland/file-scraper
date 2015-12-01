@@ -40,11 +40,13 @@ class WarcTools(object):
         """
         warc_fd = gzip.open(filename)
         try:
+            # First assume archive is compressed
             line = warc_fd.readline()
         except IOError:
+            # Not compressed archive
             warc_fd.close()
-            warc_fd = open(filename)
-            line = warc_fd.readline()
+            with open(filename, 'r') as warc_fd:
+                line = warc_fd.readline()
 
         if line.find("WARC/%s" % version) != -1:
             return (0, "")
