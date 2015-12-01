@@ -104,8 +104,8 @@ class WarcTools(object):
             stdout_conversion,
             stderr_conversion) = run_command(
             cmd=exec_cmd1, stdout=temp_file)
-        stdout.append(stdout_conversion)
-        stderr.append(stderr_conversion)
+        stdout.append(str(stdout_conversion))
+        stderr.append(str(stderr_conversion))
 
         # Successful conversion from arc to warc, valdiation can
         # now be made.
