@@ -60,28 +60,16 @@ class WarcTools(object):
             errors -- errors if encountered, else None
         """
 
-        warc_path = None
-
         if self.mimetype == "application/x-internet-archive":
             (statuscode, stdout, stderr) = self.validate_arc()
 
         elif self.mimetype == "application/warc":
-            warc_path = self.filename
-            exec_cmd1 = ['warcvalid', warc_path]
+            exec_cmd1 = ['warcvalid', self.filename]
             (statuscode, stdout, stderr) = run_command(cmd=exec_cmd1)
         else:
             raise Exception("Unknown mimetype: %s" % self.mimetype)
 
-        if statuscode != 0:
-            return (
-                statuscode, stdout,
-                "Validator returned error: %s\n%s" %
-                (statuscode, stderr))
-
-        if not stderr:
-            return (0, stdout, '')
-        else:
-            return (117, stdout, stderr)
+        return (statuscode, stdout, stderr)
 
     def validate_arc(self):
         """Valdiate arc by transforming it to warc first. WarcTools does not
