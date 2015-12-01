@@ -60,7 +60,7 @@ class WarcTools(object):
         version and profile matches with validator.
 
         :returns: Tuple (status, report, errors) where
-            status -- 0 is success, anything else failure
+            status -- 0 is success, 117 failure, anything else failure
             report -- generated report
             errors -- errors if encountered, else None
         """
