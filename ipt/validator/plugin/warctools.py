@@ -4,6 +4,8 @@ import subprocess
 import tempfile
 import os
 
+from ipt.utils import run_command
+
 
 class WarcTools(object):
 
@@ -23,7 +25,6 @@ class WarcTools(object):
         self.filename = str(filename)
         self.fileversion = fileversion
         self.mimetype = mimetype
-        self.environment = os.environ.copy()
         self.profile = None
         self.statuscode = None
         self.stdout = ""
@@ -57,26 +58,33 @@ class WarcTools(object):
             report -- generated report
             errors -- errors if encountered, else None
         """
+
         warc_path = None
+        statuscode = 1
+        stdout = ""
+        stderr = ""
+
         if self.mimetype == "application/x-internet-archive":
             (temp_file, warc_path) = tempfile.mkstemp()
-            exec_cmd1 = [
-                'arc2warc', self.filename, '>', warc_path]
-            self.exec_validator(exec_cmd1, temp_file)
+            exec_cmd1 = ['arc2warc', self.filename]
+            run_command(cmd=exec_cmd1, stdout=temp_file)
 
             exec_cmd2 = ['warcvalid', warc_path]
-            self.exec_validator(exec_cmd2)
+            (statuscode, stdout, stderr) = run_command(exec_cmd2)
 
-        if self.mimetype == "application/warc":
+
+        elif self.mimetype == "application/warc":
             warc_path = self.filename
             exec_cmd1 = ['warcvalid', warc_path]
-            self.exec_validator(exec_cmd1)
+            (statuscode, stdout, stderr) = run_command(cmd=exec_cmd1)
+        else:
+            raise Exception("Unknown mimetype: %s" % self.mimetype)
 
-        if self.statuscode != 0:
+        if statuscode != 0:
             return (
-                self.statuscode, self.stdout,
+                statuscode, stdout,
                 "Validator returned error: %s\n%s" %
-                (self.statuscode, self.stderr))
+                (statuscode, stderr))
 
         errors = []
 
@@ -85,23 +93,6 @@ class WarcTools(object):
             errors.append(error)
 
         if len(errors) == 0:
-            return (0, self.stdout, '')
+            return (0, stdout, '')
         else:
-            return (1, self.stdout, '\n'.join(errors))
-
-    def exec_validator(self, exec_, tempfile=subprocess.PIPE):
-        """Execute validator command given in self.self.exec_cmd.
-
-        :returns: Tuple (statuscode, stdout, stderr)
-        """
-
-        proc = subprocess.Popen(exec_,
-                                stdout=tempfile,
-                                stderr=subprocess.PIPE,
-                                shell=False,
-                                env=self.environment)
-
-        (self.stdout, self.stderr) = proc.communicate()
-        self.statuscode = proc.returncode
-
-        return self.statuscode, self.stdout, self.stderr
+            return (1, stdout, '\n'.join(errors))
