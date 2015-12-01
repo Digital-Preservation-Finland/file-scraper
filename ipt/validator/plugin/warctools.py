@@ -19,7 +19,9 @@ class WarcTools(object):
     """
 
     def __init__(self, mimetype, fileversion, filename):
-        if mimetype != "application/warc" and mimetype != "application/x-internet-archive":
+        """init."""
+        if mimetype != "application/warc" and \
+                mimetype != "application/x-internet-archive":
             raise Exception("Unknown mimetype: %s" % mimetype)
         self.filename = str(filename)
         self.fileversion = fileversion
