@@ -1,6 +1,7 @@
 """Module for validating files with warc-tools warc validator"""
 import gzip
 import tempfile
+import contextlib
 
 from ipt.utils import run_command
 
@@ -27,6 +28,9 @@ class WarcTools(object):
         self.fileversion = fileversion
         self.mimetype = mimetype
         self.profile = None
+        self.statuscode = 1
+        self.stdout = ""
+        self.stderr = ""
 
     def _check_version(self, version, filename):
         """ Check the file version of given file. In WARC format version string
@@ -61,14 +65,21 @@ class WarcTools(object):
         """
 
         if self.mimetype == "application/x-internet-archive":
-            (statuscode, stdout, stderr) = self._validate_arc()
+            with self.error_handler():
+                (self.statuscode,
+                    self.stdout,
+                    self.stderr) = self._validate_arc()
 
         elif self.mimetype == "application/warc":
-            (statuscode, stdout, stderr) = self._validate_warc()
+            with self.error_handler():
+                (self.statuscode,
+                    self.stdout,
+                    self.stderr) = self._validate_warc()
         else:
             raise WarcError("Unknown mimetype: %s" % self.mimetype)
 
-        return (statuscode, stdout, stderr)
+        return (self.statuscode, self.stdout, self.stderr)
+
 
     def _validate_warc(self):
         """Validate warc with WarcTools.
@@ -94,6 +105,7 @@ class WarcTools(object):
 
         return (statuscode_version, ''.join(stdout), ''.join(stderr))
 
+
     def _validate_arc(self):
         """Valdiate arc by transforming it to warc first. WarcTools does not
         support direct validation of arc.
@@ -104,8 +116,10 @@ class WarcTools(object):
         stdout = []
         stderr = []
         statuscode_validation = 1
+        statuscode_conversion = 1
 
         (temp_file, warc_path) = tempfile.mkstemp()
+
         exec_cmd1 = ['arc2warc', self.filename]
         (statuscode_conversion,
             stdout_conversion,
@@ -132,3 +146,18 @@ class WarcTools(object):
             stderr.append(messages)
 
         return (statuscode_validation, ''.join(stdout), ''.join(stderr))
+
+
+    @contextlib.contextmanager
+    def error_handler(self):
+        """IOError handler, IOError is not system error in every case.
+        Warctools somehow raises IOError in case of corrupted file"""
+        try:
+            yield
+        except IOError as error:
+            if 'Not a gzipped file' not in str(error):
+                raise IOError(error)
+            self.statuscode = 117
+            self.stdout = ""
+            self.stderr = str(error)
+
