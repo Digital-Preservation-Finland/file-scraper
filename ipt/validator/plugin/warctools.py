@@ -69,12 +69,35 @@ class WarcTools(object):
             (statuscode, stdout, stderr) = self.validate_arc()
 
         elif self.mimetype == "application/warc":
-            exec_cmd1 = ['warcvalid', self.filename]
-            (statuscode, stdout, stderr) = run_command(cmd=exec_cmd1)
+            (statuscode, stdout, stderr) = self.validate_warc()
         else:
             raise WarcError("Unknown mimetype: %s" % self.mimetype)
 
         return (statuscode, stdout, stderr)
+
+    def validate_warc(self):
+        """Validate warc with WarcTools.
+        :returns: (statuscode, stdout, stderr)"""
+        stdout = []
+        stderr = []
+        statuscode_version = 1
+
+        # Validate warc
+        exec_cmd1 = ['warcvalid', self.filename]
+        (statuscode,
+            stdout_validation,
+            stderr_validation) = run_command(cmd=exec_cmd1)
+        stdout.append(stdout_validation)
+        stderr.append(stderr_validation)
+
+        if statuscode == 0:
+            # Check that version is correct
+            (statuscode_version, messages) = self.check_version(
+                self.fileversion, self.filename)
+            if statuscode_version != 0:
+                stderr.append(messages)
+
+        return (statuscode_version, ''.join(stdout), ''.join(stderr))
 
     def validate_arc(self):
         """Valdiate arc by transforming it to warc first. WarcTools does not
