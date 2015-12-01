@@ -88,33 +88,34 @@ class WarcTools(object):
         else:
             return (1, stdout, '\n'.join(errors))
 
-def validate_arc(self):
-    """Valdiate arc by transforming it to warc first. WarcTools does not
-    support direct validation of arc.
+    def validate_arc(self):
+        """Valdiate arc by transforming it to warc first. WarcTools does not
+        support direct validation of arc.
 
-    """
-    # create covnersion from arc tp warc
-    stdout = []
-    stderr = []
+        """
+        # create covnersion from arc tp warc
+        stdout = []
+        stderr = []
+        statuscode_validation = 1
 
-    (temp_file, warc_path) = tempfile.mkstemp()
-    exec_cmd1 = ['arc2warc', self.filename]
-    (statuscode_conversion,
-        stdout_conversion,
-        stderr_conversion) = run_command(
-        cmd=exec_cmd1, stdout=temp_file)
-    stdout.append(stdout_conversion)
-    stderr.append(stderr_conversion)
+        (temp_file, warc_path) = tempfile.mkstemp()
+        exec_cmd1 = ['arc2warc', self.filename]
+        (statuscode_conversion,
+            stdout_conversion,
+            stderr_conversion) = run_command(
+            cmd=exec_cmd1, stdout=temp_file)
+        stdout.append(stdout_conversion)
+        stderr.append(stderr_conversion)
 
-    # Successful conversion from arc to warc, valdiation can
-    # now be made.
-    if statuscode_conversion == 0:
-        exec_cmd2 = ['warcvalid', warc_path]
-        (statuscode_validation,
-            stdout_validation,
-            stderr_validation) = run_command(exec_cmd2)
+        # Successful conversion from arc to warc, valdiation can
+        # now be made.
+        if statuscode_conversion == 0:
+            exec_cmd2 = ['warcvalid', warc_path]
+            (statuscode_validation,
+                stdout_validation,
+                stderr_validation) = run_command(exec_cmd2)
 
-        stdout.append(stdout_validation)
-        stderr.append(stderr_validation)
+            stdout.append(stdout_validation)
+            stderr.append(stderr_validation)
 
-    return (statuscode_validation, ' '.join(stdout), ' '.join(stderr))
+        return (statuscode_validation, ' '.join(stdout), ' '.join(stderr))
