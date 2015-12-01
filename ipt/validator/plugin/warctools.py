@@ -48,10 +48,10 @@ class WarcTools(object):
             with open(filename, 'r') as warc_fd:
                 line = warc_fd.readline()
 
-        if line.find("WARC/%s" % version) != -1:
-            return (0, "")
-        else:
+        if "WARC/%s" % version in line:
             return (117, "File version check error")
+        return (0, "")
+
 
 
     def validate(self):
