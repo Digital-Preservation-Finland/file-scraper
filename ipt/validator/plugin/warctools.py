@@ -3,7 +3,6 @@ import gzip
 import subprocess
 import tempfile
 import os
-from ipt.validator.basevalidator import BaseValidator
 
 
 class WarcTools(object):
@@ -47,9 +46,6 @@ class WarcTools(object):
             return None
         return "File version check error"
 
-    def check_profile(self, profile):
-        """ WARC file format does not have profiles """
-        return None
 
     def validate(self):
         """Validate file with command given in variable self.exec_cmd and with
@@ -85,10 +81,6 @@ class WarcTools(object):
         errors = []
 
         error = self.check_version(self.fileversion, warc_path)
-        if error is not None:
-            errors.append(error)
-
-        error = self.check_profile(self.profile)
         if error is not None:
             errors.append(error)
 
