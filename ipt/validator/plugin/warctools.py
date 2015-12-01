@@ -44,8 +44,9 @@ class WarcTools(object):
             line = warc_fd.readline()
 
         if line.find("WARC/%s" % version) != -1:
-            return None
-        return "File version check error"
+            return (0, "")
+        else:
+            return (117, "File version check error")
 
 
     def validate(self):
@@ -77,16 +78,10 @@ class WarcTools(object):
                 "Validator returned error: %s\n%s" %
                 (statuscode, stderr))
 
-        errors = []
-
-        error = self.check_version(self.fileversion, warc_path)
-        if error is not None:
-            errors.append(error)
-
-        if len(errors) == 0:
+        if not stderr:
             return (0, stdout, '')
         else:
-            return (1, stdout, '\n'.join(errors))
+            return (117, stdout, stderr)
 
     def validate_arc(self):
         """Valdiate arc by transforming it to warc first. WarcTools does not
@@ -118,4 +113,10 @@ class WarcTools(object):
             stdout.append(stdout_validation)
             stderr.append(stderr_validation)
 
-        return (statuscode_validation, ' '.join(stdout), ' '.join(stderr))
+        # Check that version is correct
+        (statuscode_version, messages) = self.check_version(
+            self.fileversion, warc_path)
+        if statuscode_version != 0:
+            stderr.append(messages)
+
+        return (statuscode_validation, ''.join(stdout), ''.join(stderr))
