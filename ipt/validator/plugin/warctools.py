@@ -6,7 +6,7 @@ import os
 from ipt.validator.basevalidator import BaseValidator
 
 
-class WarcTools(BaseValidator):
+class WarcTools(object):
 
     """ Initializes warctools validator and set ups everything so that
         methods from base class (BaseValidator) can be called, such as
@@ -24,10 +24,11 @@ class WarcTools(BaseValidator):
         self.filename = str(filename)
         self.fileversion = fileversion
         self.mimetype = mimetype
-
-
-    def check_validity(self):
-        return None
+        self.environment = os.environ.copy()
+        self.profile = None
+        self.statuscode = None
+        self.stdout = ""
+        self.stderr = ""
 
     def check_version(self, version, filename):
         """ Check the file version of given file. In WARC format version string
@@ -82,10 +83,6 @@ class WarcTools(BaseValidator):
                 (self.statuscode, self.stderr))
 
         errors = []
-
-        error = self.check_validity()
-        if error is not None:
-            errors.append(error)
 
         error = self.check_version(self.fileversion, warc_path)
         if error is not None:
