@@ -28,7 +28,7 @@ class WarcTools(object):
         self.mimetype = mimetype
         self.profile = None
 
-    def check_version(self, version, filename):
+    def _check_version(self, version, filename):
         """ Check the file version of given file. In WARC format version string
             is stored at the first line of file so this methdos read the first
             line and check that it matches.
@@ -61,16 +61,16 @@ class WarcTools(object):
         """
 
         if self.mimetype == "application/x-internet-archive":
-            (statuscode, stdout, stderr) = self.validate_arc()
+            (statuscode, stdout, stderr) = self._validate_arc()
 
         elif self.mimetype == "application/warc":
-            (statuscode, stdout, stderr) = self.validate_warc()
+            (statuscode, stdout, stderr) = self._validate_warc()
         else:
             raise WarcError("Unknown mimetype: %s" % self.mimetype)
 
         return (statuscode, stdout, stderr)
 
-    def validate_warc(self):
+    def _validate_warc(self):
         """Validate warc with WarcTools.
         :returns: (statuscode, stdout, stderr)"""
         stdout = []
@@ -87,14 +87,14 @@ class WarcTools(object):
 
         if statuscode == 0:
             # Check that version is correct
-            (statuscode_version, messages) = self.check_version(
+            (statuscode_version, messages) = self._check_version(
                 self.fileversion, self.filename)
             if statuscode_version != 0:
                 stderr.append(messages)
 
         return (statuscode_version, ''.join(stdout), ''.join(stderr))
 
-    def validate_arc(self):
+    def _validate_arc(self):
         """Valdiate arc by transforming it to warc first. WarcTools does not
         support direct validation of arc.
         :returns: (statuscode, stdout, stderr)
@@ -126,7 +126,7 @@ class WarcTools(object):
             stderr.append(stderr_validation)
 
         # Check that version is correct
-        (statuscode_version, messages) = self.check_version(
+        (statuscode_version, messages) = self._check_version(
             self.fileversion, warc_path)
         if statuscode_version != 0:
             stderr.append(messages)
