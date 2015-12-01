@@ -62,7 +62,7 @@ class WarcTools(object):
         warc_path = None
 
         if self.mimetype == "application/x-internet-archive":
-
+            (statuscode, stdout, stderr) = self.validate_arc()
 
         elif self.mimetype == "application/warc":
             warc_path = self.filename
@@ -88,7 +88,7 @@ class WarcTools(object):
         else:
             return (1, stdout, '\n'.join(errors))
 
-def validate_arc():
+def validate_arc(self):
     """Valdiate arc by transforming it to warc first. WarcTools does not
     support direct validation of arc.
 
