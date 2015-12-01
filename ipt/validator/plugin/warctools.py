@@ -6,6 +6,9 @@ import os
 
 from ipt.utils import run_command
 
+class WarcError(Exception):
+    """Warc validation error."""
+    pass
 
 class WarcTools(object):
 
@@ -67,7 +70,7 @@ class WarcTools(object):
             exec_cmd1 = ['warcvalid', self.filename]
             (statuscode, stdout, stderr) = run_command(cmd=exec_cmd1)
         else:
-            raise Exception("Unknown mimetype: %s" % self.mimetype)
+            raise WarcError("Unknown mimetype: %s" % self.mimetype)
 
         return (statuscode, stdout, stderr)
 
