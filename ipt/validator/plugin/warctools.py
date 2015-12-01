@@ -35,12 +35,12 @@ class WarcTools(object):
             is stored at the first line of file so this methdos read the first
             line and check that it matches.
         """
-        warc_fd = gzip.open(self.filename)
+        warc_fd = gzip.open(filename)
         try:
             line = warc_fd.readline()
         except IOError:
             warc_fd.close()
-            warc_fd = open(self.filename)
+            warc_fd = open(filename)
             line = warc_fd.readline()
 
         if line.find("WARC/%s" % version) != -1:
