@@ -60,18 +60,28 @@ class WarcTools(object):
         """
 
         warc_path = None
-        statuscode = 1
-        stdout = ""
-        stderr = ""
 
         if self.mimetype == "application/x-internet-archive":
+
+            # create covnersion from arc tp warc
             (temp_file, warc_path) = tempfile.mkstemp()
             exec_cmd1 = ['arc2warc', self.filename]
-            run_command(cmd=exec_cmd1, stdout=temp_file)
+            (statuscode_conversion,
+                stdout_conversion,
+                stderr_conversion) = run_command(
+                cmd=exec_cmd1, stdout=temp_file)
 
-            exec_cmd2 = ['warcvalid', warc_path]
-            (statuscode, stdout, stderr) = run_command(exec_cmd2)
+            # Successful conversion from arc to warc, valdiation can
+            # now be made.
+            if statuscode_conversion == 0:
+                exec_cmd2 = ['warcvalid', warc_path]
+                (statuscode_validation,
+                    stdout_validation,
+                    stderr_validation) = run_command(exec_cmd2)
 
+                stdout = str(stdout_conversion) + str(stdout_validation)
+                stderr = str(stderr_conversion) + str(stderr_validation)
+                statuscode = statuscode_conversion + statuscode_validation
 
         elif self.mimetype == "application/warc":
             warc_path = self.filename
