@@ -94,12 +94,17 @@ def validate_arc():
 
     """
     # create covnersion from arc tp warc
+    stdout = []
+    stderr = []
+
     (temp_file, warc_path) = tempfile.mkstemp()
     exec_cmd1 = ['arc2warc', self.filename]
     (statuscode_conversion,
         stdout_conversion,
         stderr_conversion) = run_command(
         cmd=exec_cmd1, stdout=temp_file)
+    stdout.append(stdout_conversion)
+    stderr.append(stderr_conversion)
 
     # Successful conversion from arc to warc, valdiation can
     # now be made.
@@ -109,6 +114,7 @@ def validate_arc():
             stdout_validation,
             stderr_validation) = run_command(exec_cmd2)
 
-        stdout = str(stdout_conversion) + str(stdout_validation)
-        stderr = str(stderr_conversion) + str(stderr_validation)
-        statuscode = statuscode_conversion + statuscode_validation
+        stdout.append(stdout_validation)
+        stderr.append(stderr_validation)
+
+    return (statuscode_validation, ' '.join(stdout), ' '.join(stderr))
