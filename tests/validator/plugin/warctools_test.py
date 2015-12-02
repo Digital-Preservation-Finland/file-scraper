@@ -44,3 +44,14 @@ def test_validate(filename, mimetype, version, exitcode, stdout, stderr):
     assert exitcode == exitcode_result
     assert stdout in stdout_result
     assert stderr in stderr_result
+
+def test_system_error():
+    """
+    Test for system error(missing file)
+    """
+    with pytest.raises(UnknownException):
+        validator = WarcTools("application/warc", "1.0", "foo")
+        validator.validate()
+
+    with pytest.raises(WarcError):
+        validator = WarcTools("foo", "1.0", "foo")
