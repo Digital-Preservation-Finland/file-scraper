@@ -76,8 +76,6 @@ class WarcTools(object):
                 (self.statuscode,
                     self.stdout,
                     self.stderr) = self._validate_warc()
-        else:
-            raise WarcError("Unknown mimetype: %s" % self.mimetype)
 
         return (self.statuscode, self.stdout, self.stderr)
 
