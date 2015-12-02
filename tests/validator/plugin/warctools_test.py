@@ -21,41 +21,24 @@ TESTDATADIR = os.path.abspath(os.path.join(TESTDATADIR_BASE,
                                            '02_filevalidation_data'))
 
 
-def test_validate_warc():
-
-    testcasefile = os.path.join(PROJECTDIR, TESTDATADIR,
-                                'warctools_testcases.json')
-    print "\nLoading test configuration from %s\n" % testcasefile
-
-    json_data = open(testcasefile)
-    testcases = json.load(json_data)
-    json_data.close()
-
-    for testcase in testcases["test_validate"]:
-
-        print "%s: %s" % (testcase["testcase"], testcase["filename"])
-
-        testcase["filename"] = os.path.join(
-            testcommon.settings.TESTDATADIR, testcase["filename"])
-        val = ipt.validator.plugin.warctools.WarcTools(
-            testcase["mimetype"],
-            testcase["formatVersion"],
-            testcase["filename"])
-
-        (status, stdout, stderr) = val.validate()
-
-
-        assert testcase["expected_result"]["status"] == status
-
-
-        for match_string in testcase["expected_result"]["stdout"]:
-            message = "\n".join(
-                ["got:", stdout.decode('utf-8'), "expected:",
-                 match_string])
-            assert re.match('(?s).*' + match_string, stdout), message
-
-        for match_string in testcase["expected_result"]["stderr"]:
-            message = "\n".join(
-                ["got:", stderr.decode('utf-8'), "expected:",
-                 match_string])
-            assert re.match('(?s).*' + match_string, stderr), message
+@pytest.mark.parametrize(
+    ["filename", "mimetype", "version", "exitcode", "stdout", "stderr"],
+    [("warc_0_17/valid.warc", "application/warc", "0.17", 0, "", ""),
+     ("warc_0_17/valid.warc", "application/warc", "0.99", 117, "", ""),
+     ("warc_0_17/invalid.warc", "application/warc", "0.17", 117, "",
+        "zero length field name in format"),
+     ("warc_1_0/valid.warc.gz", "application/warc", "1.0", 0, "", ""),
+     ("warc_1_0/invalid.warc.gz", "application/warc", "1.0", 117, "",
+        "invalid distance code"),
+     ("arc/valid_arc.gz", "application/x-internet-archive",
+        "1.0", 0, "", "DrinkingWithBob-MadonnaAdoptsAfricanBaby"),
+     ("arc/invalid_arc.gz", "application/x-internet-archive",
+        "1.0", 117, "", "Not a gzipped file")])
+def test_validate(filename, mimetype, version, exitcode, stdout, stderr):
+    """Test cases for valid/invalid warcs and arcs."""
+    file_path = os.path.join(TESTDATADIR, filename)
+    validator = WarcTools(mimetype, version, file_path)
+    (exitcode_result, stdout_result, stderr_result) = validator.validate()
+    assert exitcode == exitcode_result
+    assert stdout in stdout_result
+    assert stderr in stderr_result
