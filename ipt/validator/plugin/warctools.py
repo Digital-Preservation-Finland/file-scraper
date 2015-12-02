@@ -3,7 +3,8 @@ import gzip
 import tempfile
 import contextlib
 
-from ipt.utils import run_command
+from ipt.utils import run_command, UnknownException
+
 
 class WarcError(Exception):
     """Warc validation error."""
@@ -23,7 +24,7 @@ class WarcTools(object):
         """init."""
         if mimetype != "application/warc" and \
                 mimetype != "application/x-internet-archive":
-            raise Exception("Unknown mimetype: %s" % mimetype)
+            raise WarcError("Unknown mimetype: %s" % mimetype)
         self.filename = str(filename)
         self.fileversion = fileversion
         self.mimetype = mimetype
@@ -164,7 +165,7 @@ class WarcTools(object):
             self.statuscode = 117
             self.stdout = ""
             self.stderr = str(error)
-        except Exception as error:
+        except UnknownException as error:
             for message in [
                     'zero length field name in format',
                     'Error -3 while decompressing: invalid distance code']:
@@ -173,5 +174,5 @@ class WarcTools(object):
                     self.stdout = ""
                     self.stderr = str(error)
             if self.statuscode != 117:
-                raise Exception(error)
+                raise UnknownException(error)
 
