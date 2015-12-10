@@ -78,8 +78,7 @@ class Xmllint(BaseValidator):
             # case. Instead, it should be interpreted as wrong sip structure.
             if error.errno == errno.ENOENT:
                 self.statuscode = 117
-                self.stdout = "mets.xml has to be located in submission "\
-                              "information package root"
+                self.stdout = "xml file is missing or mislocated"
                 self.stderr = error
                 return self.statuscode, self.stdout, self.stderr
             # System error
