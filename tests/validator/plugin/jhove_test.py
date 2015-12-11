@@ -1,70 +1,40 @@
-# Common boilerplate
 import os
 import sys
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
-
-import re
-import json
+#sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 import pytest
-import testcommon.settings
+#import testcommon.settings
 
-# Module to test
-import ipt.validator.plugin.jhove
-
-PROJECTDIR = testcommon.settings.PROJECTDIR
+from ipt.validator.plugin.jhove import Jhove
 
 TESTDATADIR_BASE = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                 '../../data'))
-
 TESTDATADIR = os.path.abspath(os.path.join(TESTDATADIR_BASE,
                                            '02_filevalidation_data'))
 
 
-class TestJhoveFilevalidator:
+@pytest.mark.parametrize(
+    ["filename", "mimetype", "version", "exitcode", "stdout", "stderr"],
+    [("test-sips/CSC_test001/kuvat/P1020137.JPG", "image/gif", "", 117,
+        "Invalid GIF header", "")])
+def test_validate(filename, mimetype, version, exitcode, stdout, stderr):
+    """Test cases of Jhove validation"""
+    file_path = os.path.join(TESTDATADIR, filename)
+    validator = Jhove(mimetype, version, file_path)
+    (exitcode_result, stdout_result, stderr_result) = validator.validate()
+    assert exitcode == exitcode_result
+    assert stdout in stdout_result
+    assert stderr in stderr_result
 
-    def test_validate(self):
 
-        testcasefile = os.path.join(PROJECTDIR, TESTDATADIR,
-                                    'jhove_testcases.json')
-        print "\nLoading test configuration from %s\n" % testcasefile
+"""
+def test_system_error():
 
-        json_data = open(testcasefile)
-        testcases = json.load(json_data)
-        json_data.close()
+    Test for system error(missing file)
 
-        for testcase in testcases["test_validate"]:
+    with pytest.raises(UnknownException):
+        validator = WarcTools("application/warc", "1.0", "foo")
+        validator.validate()
 
-            print "%s: %s" % (testcase["testcase"], testcase["filename"])
-
-            testcase["filename"] = os.path.join(testcommon.settings.TESTDATADIR,
-                                                testcase["filename"])
-            val = ipt.validator.plugin.jhove.Jhove(testcase["mimetype"],
-                                                   testcase["formatVersion"],
-                                                   testcase["filename"])
-
-            (status, stdout, stderr) = val.validate()
-
-            if testcase["expected_result"]["status"] == 0:
-                assert testcase["expected_result"][
-                    "status"] == status, "OUTPUT:%s:%s" % (stdout, stderr)
-            else:
-                assert testcase["expected_result"][
-                    "status"] != 0, "OUTPUT:%s:%s" % (stdout, stderr)
-
-            for match_string in testcase["expected_result"]["stdout"]:
-                stdout = stdout.decode('utf-8')
-                assert match_string in stdout, "OUTPUT:%s:%s" % (
-                    stdout, stderr)
-
-            for match_string in testcase["expected_result"]["stderr"]:
-                stderr = stderr.decode('utf-8')
-                assert match_string in stderr, "OUTPUT:%s:%s" % (
-                    stdout, stderr)
-
-            if "profile" in testcase["expected_result"]:
-                assert val.check_profile(
-                    testcase["expected_result"]["profile"]) == None, "OUTPUT:%s:%s" % (stdout, stderr)
-
-            del val
-
-        return None
+    with pytest.raises(WarcError):
+        validator = WarcTools("foo", "1.0", "foo")
+"""
