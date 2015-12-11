@@ -14,7 +14,7 @@ TESTDATADIR = os.path.abspath(os.path.join(TESTDATADIR_BASE,
 
 @pytest.mark.parametrize(
     ["filename", "mimetype", "version", "exitcode", "stdout", "stderr"],
-    [("test-sips/CSC_test001/kuvat/P1020137.JPG", "image/gif", "", 117,
+    [("gif_87a/wrong_mime.JPG", "image/gif", "", 117,
         "Invalid GIF header", "")])
 def test_validate(filename, mimetype, version, exitcode, stdout, stderr):
     """Test cases of Jhove validation"""
