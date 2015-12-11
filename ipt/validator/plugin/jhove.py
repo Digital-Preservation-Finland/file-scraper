@@ -54,6 +54,52 @@ class Jhove(BaseValidator):
         else:
             raise Exception("Unknown mimetype: %s" % mimetype)
 
+
+    def validate(self):
+            """Validate file with command given in variable self.exec_cmd and with
+            options set in self.exec_options. Also check that validated file
+            version and profile matches with validator.
+
+            :returns: Tuple (status, report, errors) where
+                status -- 0 is success, anything else failure
+                report -- generated report
+                errors -- errors if encountered, else None
+            """
+
+            filename_in_list = [self.filename]
+            self.exec_cmd += filename_in_list
+            self.exec_validator()
+
+            if self.statuscode != 0:
+                return (
+                    self.statuscode, self.stdout,
+                    "Validator returned error: %s\n%s" %
+                    (self.statuscode, self.stderr))
+
+            errors = []
+
+            # Check file validity
+            (validity_exitcode, stdout, stderr) = self.check_validity()
+            errors.append(stderr)
+
+            # Check file version
+            (version_exitcode, version_errors) = self.check_version(
+                self.fileversion)
+            if version_exitcode != 0:
+                errors.append(version_errors)
+
+            # Check file profile
+            (profile_exitcode, profile_errors) = self.check_profile(
+                self.profile)
+            if profile_exitcode != 0:
+                errors.append(profile_errors)
+
+            if len(errors) == 0:
+                return (0, self.stdout, '')
+            else:
+                return (117, self.stdout, '\n'.join(errors))
+
+
     def check_validity(self):
         """ Check if file is valid according to JHove output.
 
