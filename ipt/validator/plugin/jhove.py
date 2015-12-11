@@ -3,6 +3,7 @@ import os
 import lxml.etree
 
 from ipt.validator.basevalidator import BaseValidator
+from ipt.utils import UnknownException, ValidationException
 
 JHOVE_MODULES = {
     'application/pdf': 'PDF-hul',
@@ -13,11 +14,6 @@ JHOVE_MODULES = {
 }
 
 NAMESPACES = {'j': 'http://hul.harvard.edu/ois/xml/ns/jhove'}
-
-
-class UnknownReturnCode(Exception):
-    """Raised when any validation returns unknown returncode."""
-    pass
 
 
 class Jhove(BaseValidator):
@@ -52,7 +48,8 @@ class Jhove(BaseValidator):
             command = ['-m', validator_module]
             self.exec_cmd += command
         else:
-            raise Exception("Unknown mimetype: %s" % mimetype)
+            raise ValidationException(
+                "jhove.py does not seem to support mimetype: %s" % mimetype)
 
 
     def validate(self):
@@ -109,7 +106,7 @@ class Jhove(BaseValidator):
         print
         print "RESULT", self.stderr, self.stdout, self.statuscode
         if self.statuscode == 254 or self.statuscode == 255:
-            raise UnknownReturnCode("Jhove returned returncode: \
+            raise UnknownException("Jhove returned returncode: \
                 %s %s %s" % (self.statuscode, self.stdout, self.stderr))
         status = self.get_report_field("status")
         filename = self.get_report_field("repInfo")
