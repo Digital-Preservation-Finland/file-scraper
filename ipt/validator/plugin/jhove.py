@@ -106,6 +106,8 @@ class Jhove(BaseValidator):
             Returns:
                 None if file is valid, otherwise returns JHove's error message.
         """
+        print
+        print "RESULT", self.stderr, self.stdout, self.statuscode
         if self.statuscode == 254 or self.statuscode == 255:
             raise UnknownReturnCode("Jhove returned returncode: \
                 %s %s %s" % (self.statuscode, self.stdout, self.stderr))
@@ -114,10 +116,10 @@ class Jhove(BaseValidator):
         filename = os.path.basename(filename)
 
         if status != 'Well-Formed and valid':
-            return "ERROR: File '%s' does not validate: %s" % (filename,
-                                                               status)
+            return (117, "", "ERROR: File '%s' does not validate: %s" % (filename,
+                                                               status))
+        return (0, "", "")
 
-        return None
 
     def check_version(self, version):
         """ Check if version string matches JHove output.
@@ -133,16 +135,17 @@ class Jhove(BaseValidator):
         report_version = report_version.replace(" ", ".")
 
         if version is None:
-            return None
+            return (0, "")
 
         if self.mimetype == "application/pdf" and "A-1" in version:
             self.profile = "ISO PDF/A-1"
             version = "1.4"
 
         if report_version != version:
-            return "ERROR: File version is '%s', expected '%s'" \
-                % (report_version, version)
-        return None
+            return (117, ("ERROR: File version is '%s', expected '%s'" \
+                % (report_version, version)))
+        return (0, "")
+
 
     def check_profile(self, profile):
         """ Check if profile string matches JHove output.
@@ -156,12 +159,12 @@ class Jhove(BaseValidator):
 
         report_profile = self.get_report_field("profile")
         if profile is None:
-            return None
+            return (0, "")
 
         if profile not in report_profile:
-            return "ERROR: File profile is '%s', expected '%s'" % (
-                report_profile, profile)
-        return None
+            return (117, "ERROR: File profile is '%s', expected '%s'" % (
+                report_profile, profile))
+        return (0, "")
 
     def get_report_field(self, field):
         """ Return field value from JHoves XML output. This method assumes that
