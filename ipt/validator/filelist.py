@@ -125,12 +125,20 @@ class Validator:
         messages = []
         errors = []
         validators = []
+
+        def append_results(validator, ret, stdout, stderr):
+            """A simple append function to avoid boilerplate."""
+            validators.append(validator)
+            return_status.append(ret)
+            messages.append(stdout)
+            errors.append(stderr)
         filelist_files = []
+
 
         # Validate files
         for file_ in filelist:
 
-            # create a
+            # create a filelist
             filename = str(file_["filename"])
             if filename.startswith("./"):
                 filename = filename[2:]
@@ -143,18 +151,12 @@ class Validator:
                     'INVALID:%s:No validator for mimetype:%s version:%s' % (
                     fileinfo.filename, fileinfo.format_mimetype,
                     fileinfo.format_version)
+                append_results(validator="", ret=1, stdout="\n", stderr=error)
 
-                validators.append("")
-                return_status.append(1)
-                messages.append("\n")
-                errors.append(error)
             for validator in validators_for_file:
                 (status, message, error) = self.validate_file(
                     fileinfo, validator)
-                validators.append(validator)
-                return_status.append(status)
-                messages.append(message)
-                errors.append(error)
+                append_results(validator, status, message, error)
 
         # Check that there are no extra or missing files
         # in mets <mets:FLocat>-field
@@ -162,10 +164,8 @@ class Validator:
         for directory, dirs, files in os.walk(self.basepath):
             # Check for empty directories
             if not files and not dirs:
-                validators.append("")
-                return_status.append(117)
-                messages.append("ERROR: empty directory %s" % directory)
-                errors.append("ERROR: empty directory %s" % directory)
+                append_results(
+                    "", 117, "", "ERROR: empty directory %s" % directory)
             for file_name in files:
                 file_rel_path = self.get_file_rel_dir_path(
                     directory, file_name)
@@ -174,12 +174,8 @@ class Validator:
                     found_files.append(str(file_rel_path))
 
         if set(found_files) != set(filelist_files):
-            return_status.append(117)
-            messages.append(
-                "Validation error " \
-                 "Extranous or missing files in <mets:FLocat>-field")
-            errors.append("Extranous or missing files in <mets:FLocat>-field")
-            validators.append(None)
+            append_results(None, 117, "",
+                "Extranous or missing files in <mets:FLocat>-field")
 
         return (return_status, messages, errors, validators)
 
