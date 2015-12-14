@@ -151,7 +151,8 @@ class Validator:
                     'INVALID:%s:No validator for mimetype:%s version:%s' % (
                     fileinfo.filename, fileinfo.format_mimetype,
                     fileinfo.format_version)
-                append_results(validator="", ret=1, stdout="\n", stderr=error)
+                append_results(
+                    validator="", ret=1, stdout="\n", stderr=error)
 
             for validator in validators_for_file:
                 (status, message, error) = self.validate_file(
