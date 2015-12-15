@@ -15,11 +15,19 @@ TESTDATADIR = os.path.abspath(os.path.join(TESTDATADIR_BASE,
 
 @pytest.mark.parametrize(
     ["filename", "mimetype", "version", "exitcode", "stdout", "stderr"],
-    [("gif_87a/wrong_mime.JPG", "image/gif", "", 117,
-        "Invalid GIF header", "")])
+    [
+    ("02_filevalidation_data/gif_87a/wrong_mime.JPG", "image/gif", "", 117,
+        "Invalid GIF header", ""),
+    ("test-sips/CSC_test001/kuvat/P1020137.JPG", "image/jpeg", "", 0,
+        "Well-Formed and valid", ""),
+    ("02_filevalidation_data/html/valid.htm", "text/html", "HTML.4.01", 0,
+        "Well-Formed and valid", ""),
+    ("02_filevalidation_data/html/notvalid.htm", "text/html", "HTML.4.01", 117,
+        "Well-Formed, but not valid", "")
+    ])
 def test_validate(filename, mimetype, version, exitcode, stdout, stderr):
     """Test cases of Jhove validation"""
-    file_path = os.path.join(TESTDATADIR, filename)
+    file_path = os.path.join(TESTDATADIR_BASE, filename)
     validator = Jhove(mimetype, version, file_path)
     (exitcode_result, stdout_result, stderr_result) = validator.validate()
     assert exitcode == exitcode_result
