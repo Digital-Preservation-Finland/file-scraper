@@ -5,6 +5,7 @@ import pytest
 #import testcommon.settings
 
 from ipt.validator.plugin.jhove import Jhove
+from ipt.utils import UnknownException, ValidationException
 
 TESTDATADIR_BASE = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                 '../../data'))
@@ -26,15 +27,20 @@ def test_validate(filename, mimetype, version, exitcode, stdout, stderr):
     assert stderr in stderr_result
 
 
-"""
-def test_system_error():
-
+def test_system_error(monkeypatch):
+    """
     Test for system error(missing file)
+    """
 
-    with pytest.raises(UnknownException):
-        validator = WarcTools("application/warc", "1.0", "foo")
+    # Jhove module not found for mimetype
+    with pytest.raises(ValidationException):
+        file_path = os.path.join(TESTDATADIR, "gif_87a/valid.gif")
+        Jhove("foo", "1.0", file_path)
+
+    # jhove command not found
+    with pytest.raises(OSError):
+        file_path = os.path.join(TESTDATADIR, "gif_87a/valid.gif")
+        validator = Jhove("image/gif", "1.0", file_path)
+        monkeypatch.setattr(validator, 'exec_cmd', ['foo'])
         validator.validate()
 
-    with pytest.raises(WarcError):
-        validator = WarcTools("foo", "1.0", "foo")
-"""
