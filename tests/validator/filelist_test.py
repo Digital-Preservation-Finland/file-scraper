@@ -73,7 +73,7 @@ class TestMetsFileValidator:
                 assert match_stdout in report
 
             for match_stderr in case["match_stderr"]:
-                assert match_stderr in report
+                assert match_stderr in error
 
             assert ret == case["exitstatus"]
 
