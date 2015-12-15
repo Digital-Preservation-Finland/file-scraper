@@ -10,7 +10,8 @@ JHOVE_MODULES = {
     'image/tiff': 'TIFF-hul',
     'image/jpeg': 'JPEG-hul',
     'image/jp2': 'JPEG2000-hul',
-    'image/gif': 'GIF-hul'
+    'image/gif': 'GIF-hul',
+    'text/html': 'HTML-hul'
 }
 
 NAMESPACES = {'j': 'http://hul.harvard.edu/ois/xml/ns/jhove'}
