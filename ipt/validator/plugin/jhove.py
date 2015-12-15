@@ -74,13 +74,16 @@ class Jhove(object):
                 return (
                     self.statuscode, self.stdout,
                     "Validator returned error: %s\n%s" %
-                    (self.statuscode, self.stderr))
+                    (statuscode, stderr))
 
             errors = []
 
             # Check file validity
-            (validity_exitcode, stdout, stderr) = self.check_validity()
-            errors.append(stderr)
+            (validity_exitcode,
+                validity_stdout,
+                validity_stderr) = self.check_validity()
+            if validity_exitcode != 0:
+                errors.append(validity_stderr)
 
             # Check file version
             (version_exitcode, version_errors) = self.check_version(
