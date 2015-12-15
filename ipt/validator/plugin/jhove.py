@@ -16,7 +16,7 @@ JHOVE_MODULES = {
 NAMESPACES = {'j': 'http://hul.harvard.edu/ois/xml/ns/jhove'}
 
 
-class Jhove(BaseValidator):
+class Jhove(object):
 
     """ Initializes JHove 1 validator and set ups everything so that
         methods from base class (BaseValidator) can be called, such as
@@ -31,9 +31,12 @@ class Jhove(BaseValidator):
     """
 
     def __init__(self, mimetype, fileversion, filename):
-        super(Jhove, self).__init__()
         self.exec_cmd = ['jhove', '-h', 'XML']
         self.filename = filename
+        self.statuscode = 1
+        self.stderr = ""
+        self.stdout = ""
+        self.profile = None
         # only names with whitespace are quoted. this might break the
         # filename otherwise ::
         if filename.find(" ") != -1:
