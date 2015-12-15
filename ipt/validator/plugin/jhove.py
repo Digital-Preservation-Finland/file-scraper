@@ -118,8 +118,7 @@ class Jhove(object):
             raise UnknownException("Jhove returned returncode: \
                 %s %s %s" % (self.statuscode, self.stdout, self.stderr))
         status = self.get_report_field("status")
-        filename = self.get_report_field("repInfo")
-        filename = os.path.basename(filename)
+        filename = os.path.basename(self.filename)
 
         if status != 'Well-Formed and valid':
             return (117, "", "ERROR: File '%s' does not validate: %s" % (filename,
