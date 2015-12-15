@@ -3,7 +3,7 @@ import os
 import lxml.etree
 
 from ipt.validator.basevalidator import BaseValidator
-from ipt.utils import UnknownException, ValidationException
+from ipt.utils import UnknownException, ValidationException, run_command
 
 JHOVE_MODULES = {
     'application/pdf': 'PDF-hul',
@@ -68,7 +68,9 @@ class Jhove(object):
 
             filename_in_list = [self.filename]
             self.exec_cmd += filename_in_list
-            self.exec_validator()
+            (self.statuscode,
+            self.stdout,
+            self.stderr) = run_command(cmd=self.exec_cmd)
 
             if self.statuscode != 0:
                 return (
