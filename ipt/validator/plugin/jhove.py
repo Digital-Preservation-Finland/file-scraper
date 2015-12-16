@@ -17,7 +17,6 @@ NAMESPACES = {'j': 'http://hul.harvard.edu/ois/xml/ns/jhove'}
 
 
 class Jhove(object):
-
     """ Initializes JHove 1 validator and set ups everything so that
         methods from base class (BaseValidator) can be called, such as
         validate() for file validation.
@@ -31,20 +30,19 @@ class Jhove(object):
     """
 
     def __init__(self, mimetype, fileversion, filename):
+        """init"""
         self.exec_cmd = ['jhove', '-h', 'XML']
         self.filename = filename
         self.statuscode = 1
         self.stderr = ""
         self.stdout = ""
-        self.profile = None
+        self.fileversion = fileversion
+        self.mimetype = mimetype
         # only names with whitespace are quoted. this might break the
         # filename otherwise ::
         if filename.find(" ") != -1:
             if not (filename[0] == '"' and filename[-1] == '"'):
                 self.filename = '%s%s%s' % ('"', filename, '"')
-
-        self.fileversion = fileversion
-        self.mimetype = mimetype
 
         if mimetype in JHOVE_MODULES.keys():
             validator_module = JHOVE_MODULES[mimetype]
@@ -54,65 +52,57 @@ class Jhove(object):
             raise ValidationException(
                 "jhove.py does not seem to support mimetype: %s" % mimetype)
 
-
     def validate(self):
-            """Validate file with command given in variable self.exec_cmd and with
-            options set in self.exec_options. Also check that validated file
-            version and profile matches with validator.
+        """Validate file with command given in variable self.exec_cmd and with
+        options set in self.exec_options. Also check that validated file
+        version and profile matches with validator.
 
-            :returns: Tuple (status, report, errors) where
-                status -- 0 is success, anything else failure
-                report -- generated report
-                errors -- errors if encountered, else None
-            """
+        :returns: Tuple (status, report, errors) where
+            status -- 0 is success, 117 validation failure,
+                      anything else system error.
+            report -- generated report
+            errors -- errors if encountered, else None
+        """
 
-            filename_in_list = [self.filename]
-            self.exec_cmd += filename_in_list
-            (self.statuscode,
-            self.stdout,
-            self.stderr) = run_command(cmd=self.exec_cmd)
+        filename_in_list = [self.filename]
+        self.exec_cmd += filename_in_list
+        (self.statuscode,
+         self.stdout,
+         self.stderr) = run_command(cmd=self.exec_cmd)
 
-            if self.statuscode != 0:
-                return (
-                    self.statuscode, self.stdout,
-                    "Validator returned error: %s\n%s" %
-                    (statuscode, stderr))
+        if self.statuscode != 0:
+            return (self.statuscode, self.stdout,
+                    "Validator returned error: %s\n%s" % (
+                        self.statuscode, self.stderr))
 
-            errors = []
+        errors = []
 
-            # Check file validity
-            (validity_exitcode,
-                validity_stdout,
-                validity_stderr) = self.check_validity()
-            if validity_exitcode != 0:
-                errors.append(validity_stderr)
+        # Check file validity
+        (validity_exitcode, validity_stderr) = self.check_validity()
+        if validity_exitcode != 0:
+            errors.append(validity_stderr)
 
-            # Check file version
-            (version_exitcode, version_errors) = self.check_version(
-                self.fileversion)
-            if version_exitcode != 0:
-                errors.append(version_errors)
+        # Check file version
+        (version_exitcode, version_errors) = self.check_version(
+            self.fileversion)
+        if version_exitcode != 0:
+            errors.append(version_errors)
 
-            # Check file profile
-            (profile_exitcode, profile_errors) = self.check_profile(
-                self.profile)
-            if profile_exitcode != 0:
-                errors.append(profile_errors)
+        # Check file profile
+        (profile_exitcode, profile_errors) = self.check_profile(
+            self.fileversion)
+        if profile_exitcode != 0:
+            errors.append(profile_errors)
 
-            if len(errors) == 0:
-                return (0, self.stdout, '')
-            else:
-                return (117, self.stdout, '\n'.join(errors))
-
+        if len(errors) == 0:
+            return (0, self.stdout, '')
+        else:
+            return (117, self.stdout, '\n'.join(errors))
 
     def check_validity(self):
         """ Check if file is valid according to JHove output.
-
-            Returns:
-                None if file is valid, otherwise returns JHove's error message.
+        :returns: a tuple (0/117, errormessage)
         """
-        print
-        print "RESULT", self.stderr, self.stdout, self.statuscode
         if self.statuscode == 254 or self.statuscode == 255:
             raise UnknownException("Jhove returned returncode: \
                 %s %s %s" % (self.statuscode, self.stdout, self.stderr))
@@ -120,19 +110,14 @@ class Jhove(object):
         filename = os.path.basename(self.filename)
 
         if status != 'Well-Formed and valid':
-            return (117, "", "ERROR: File '%s' does not validate: %s" % (filename,
-                                                               status))
-        return (0, "", "")
-
+            return (117, "ERROR: File '%s' does not validate: %s" % (
+                filename, status))
+        return (0, "")
 
     def check_version(self, version):
         """ Check if version string matches JHove output.
-
-            Arguments:
-                version: version string
-
-            Returns:
-                None if version matches, else returns JHove's error message.
+        :version: version string
+        :returns: a tuple (0/117, errormessage)
         """
 
         report_version = self.get_report_field("version")
@@ -142,24 +127,22 @@ class Jhove(object):
             return (0, "")
 
         if self.mimetype == "application/pdf" and "A-1" in version:
-            self.profile = "ISO PDF/A-1"
             version = "1.4"
 
         if report_version != version:
-            return (117, ("ERROR: File version is '%s', expected '%s'" \
+            return (117, (
+                "ERROR: File version is '%s', expected '%s'"
                 % (report_version, version)))
         return (0, "")
 
-
-    def check_profile(self, profile):
+    def check_profile(self, version):
         """ Check if profile string matches JHove output.
-
-            Arguments:
-                profile: profile string
-
-            Returns:
-                None if profile matches, else returns JHove's error message.
+        :version: version number
+        :returns: a tuple (0/117, errormessage)
         """
+        profile = None
+        if self.mimetype == "application/pdf" and "A-1" in version:
+            profile = "ISO PDF/A-1"
 
         report_profile = self.get_report_field("profile")
         if profile is None:
@@ -171,27 +154,25 @@ class Jhove(object):
         return (0, "")
 
     def get_report_field(self, field):
-        """ Return field value from JHoves XML output. This method assumes that
-            JHove's XML output handler is used: jhove -h XML. Method uses XPath
-            for querying JHoves output. This method is mainly used by validator
-            class itself. Example usage:
+        """
+        Return field value from JHoves XML output. This method assumes that
+        JHove's XML output handler is used: jhove -h XML. Method uses XPath
+        for querying JHoves output. This method is mainly used by validator
+        class itself. Example usage:
 
-            .. code-block:: python
+        .. code-block:: python
 
-                get_report_field("Version", report)
-                1.2
+            get_report_field("Version", report)
+            1.2
 
-                get_report_field("Status", report)
-                "Well formed"
+            get_report_field("Status", report)
+            "Well formed"
 
-            Arguments:
-                field: Field name which content we are looking for. In practise
-                field is an element in XML document.
-
-            Returns:
-                Concatenated string where each result is on own line. An empty
-                string is returned if there's no results.
-
+        :field: Field name which content we are looking for. In practise
+            field is an element in XML document.
+        :returns:
+            Concatenated string where each result is on own line. An empty
+            string is returned if there's no results.
         """
 
         root = lxml.etree.fromstring(self.stdout)
