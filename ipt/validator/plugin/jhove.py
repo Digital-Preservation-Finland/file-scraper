@@ -2,7 +2,6 @@
 import os
 import lxml.etree
 
-from ipt.validator.basevalidator import BaseValidator
 from ipt.utils import UnknownException, ValidationException, run_command
 
 JHOVE_MODULES = {
