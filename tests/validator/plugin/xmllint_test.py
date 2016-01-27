@@ -45,7 +45,7 @@ class TestXmllintValidation:
              },
              "expected": {
                  "returncode": 0,
-                 "stdout_has_errors": True,
+                 "stdout_has_errors": False,
                  "stderr_has_errors": False,
             }
             },

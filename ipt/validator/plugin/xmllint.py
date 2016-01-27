@@ -33,7 +33,7 @@ class Xmllint(BaseValidator):
     def __init__(self, mimetype, fileversion, filename):
         super(Xmllint, self).__init__()
 
-        self.exec_cmd = ['xmllint', '--huge']
+        self.exec_cmd = ['xmllint', '--huge', '--noout']
         self.filename = filename
         self.fileversion = fileversion
         self.mimetype = mimetype
