@@ -173,9 +173,18 @@ class TestXmllintValidation:
             messages) == expected["stdout_has_errors"]
         assert self.output_has_error(
             errors) == expected["stderr_has_errors"]
+        assert not self.output_has_already_import_warn(errors)
 
     def output_has_error(self, lines):
         if "failed" in lines or "error" in lines:
+            return True
+
+        return False
+
+    def output_has_already_import_warn(self, lines):
+        """The output should not have the 'namespace was already imported with
+        the schema' warning"""
+        if "namespace was already imported with the schema" in lines:
             return True
 
         return False
