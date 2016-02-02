@@ -32,8 +32,12 @@ TESTDATADIR = os.path.abspath(os.path.join(TESTDATADIR_BASE,
         "invalid distance code"),
      ("arc/valid_arc.gz", "application/x-internet-archive",
         "1.0", 0, "", "DrinkingWithBob-MadonnaAdoptsAfricanBaby"),
+     ("arc/valid_arc_no_compress", "application/x-internet-archive",
+        "1.0", 0, "", "DrinkingWithBob-MadonnaAdoptsAfricanBaby"),
      ("arc/invalid_arc.gz", "application/x-internet-archive",
-        "1.0", 117, "", "Not a gzipped file")])
+        "1.0", 117, "", "Not a gzipped file"),
+     ("warc_1_0/valid_no_compress.warc", "application/warc", "1.0", 0,
+        "", "")])
 def test_validate(filename, mimetype, version, exitcode, stdout, stderr):
     """Test cases for valid/invalid warcs and arcs."""
     file_path = os.path.join(TESTDATADIR, filename)
@@ -42,6 +46,8 @@ def test_validate(filename, mimetype, version, exitcode, stdout, stderr):
     assert exitcode == exitcode_result
     assert stdout in stdout_result
     assert stderr in stderr_result
+    print stdout, stderr
+
 
 def test_system_error():
     """
