@@ -33,7 +33,7 @@ class WarcTools(object):
         self.stdout = ""
         self.stderr = ""
 
-    def _check_version(self, version, filename):
+    def _check_warc_version(self, version, filename):
         """ Check the file version of given file. In WARC format version string
             is stored at the first line of file so this methdos read the first
             line and check that it matches.
@@ -100,7 +100,7 @@ class WarcTools(object):
 
         if statuscode == 0:
             # Check that version is correct
-            (statuscode_version, messages) = self._check_version(
+            (statuscode_version, messages) = self._check_warc_version(
                 self.fileversion, self.filename)
             if statuscode_version != 0:
                 stderr.append(messages)
@@ -140,12 +140,6 @@ class WarcTools(object):
 
             stdout.append(stdout_validation)
             stderr.append(stderr_validation)
-
-        # Check that version is correct
-        (statuscode_version, messages) = self._check_version(
-            self.fileversion, warc_path)
-        if statuscode_version != 0:
-            stderr.append(messages)
 
         return (statuscode_validation, ''.join(stdout), ''.join(stderr))
 
