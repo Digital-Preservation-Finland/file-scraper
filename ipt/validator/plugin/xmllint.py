@@ -115,8 +115,7 @@ class Xmllint(BaseValidator):
                 os.remove(self.schema_path)
                 self.schema_path = None
 
-        # Remove the unneeded warnings from self.stderr
-        self.filter_namespace_imported()
+        self.stderr = remove_unneeded_warnings(self.stderr)
 
         return self.statuscode, self.stdout, self.stderr
 
@@ -234,10 +233,11 @@ class Xmllint(BaseValidator):
 
         return None
 
-    def filter_namespace_imported(self):
-        """Remove the warning which we do not need to see from self.stderr.
-           See KDKPAS-1190."""
-        self.stderr = "\n".join(
-            [line for line in self.stderr.splitlines()
-             if "this namespace was already imported with the "
-             "schema" not in line])
+
+def remove_unneeded_warnings(stderr):
+    """Remove the warning which we do not need to see from self.stderr.
+       See KDKPAS-1190."""
+    return "\n".join(
+        [line for line in stderr.splitlines()
+         if "this namespace was already imported with the "
+         "schema" not in line])
