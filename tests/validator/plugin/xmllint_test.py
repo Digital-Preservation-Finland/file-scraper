@@ -174,6 +174,9 @@ class TestXmllintValidation:
         assert self.output_has_error(
             errors) == expected["stderr_has_errors"]
         assert not self.output_has_already_import_warn(errors)
+        # xmllint is using --noout, so the METS XML should not be printed to
+        # stdout (KDKPAS-1190)
+        assert "mets:mets" not in validate.stdout
 
     def output_has_error(self, lines):
         if "failed" in lines or "error" in lines:
