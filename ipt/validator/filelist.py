@@ -134,20 +134,3 @@ class Validator:
                 "Extranous or missing files in <mets:FLocat>-field")
 
         return (return_status, messages, errors, validators)
-
-
-    def get_file_rel_dir_path(self, directory, filename):
-        """ util function get file relative path inside sip.
-        :directory: base directory path of the SIP.
-        :filename: base name of the digital object"""
-        processing_directory = os.path.dirname(self.basepath) + "/"
-        file_rel_path_with_sip_dir = directory.replace(
-            processing_directory, "")
-        slash_location = file_rel_path_with_sip_dir.find("/")
-        if slash_location == -1:
-            file_rel_path = ""
-        else:
-            file_rel_path = file_rel_path_with_sip_dir[
-                slash_location+1 : len(file_rel_path_with_sip_dir)]
-
-        return  os.path.join(file_rel_path, str(filename))
