@@ -1,4 +1,5 @@
 """Module for validating files with warc-tools warc validator"""
+import os
 import gzip
 import tempfile
 import contextlib
@@ -120,8 +121,8 @@ class WarcTools(object):
         statuscode_validation = 1
         statuscode_conversion = 1
 
-        (temp_file, warc_path) = tempfile.mkstemp()
-
+        temp_file = tempfile.NamedTemporaryFile(prefix="temp-warc.")
+        warc_path = temp_file.name
         exec_cmd1 = ['arc2warc', self.filename]
         (statuscode_conversion,
             stdout_conversion,
