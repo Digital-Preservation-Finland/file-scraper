@@ -42,7 +42,8 @@ class Validator:
 
         return instance()
 
-    def validate_file(self, fileinfo, validator_name, validator_params=None):
+    def validate_file(self, fileinfo, validator_name):
+
         validator_params = (fileinfo['format']['mimetype'],
                             fileinfo['format']['version'],
                             os.path.join(self.basepath,
@@ -112,25 +113,5 @@ class Validator:
                 (status, message, error) = self.validate_file(
                     fileinfo, validator)
                 append_results(validator, status, message, error)
-
-        # Check that there are no extra or missing files
-        # in mets <mets:FLocat>-field
-        found_files = []
-        for directory, dirs, files in os.walk(self.basepath):
-            # Check for empty directories
-            if not files and not dirs:
-                append_results(
-                    "", 117, "", "ERROR: empty directory %s" % directory)
-            for file_name in files:
-                file_rel_path = self.get_file_rel_dir_path(
-                    directory, file_name)
-                if "mets.xml" not in str(file_rel_path) and \
-                   "varmiste.sig" not in str(file_rel_path) and \
-                   "signature.sig" not in str(file_rel_path):
-                    found_files.append(str(file_rel_path))
-
-        if set(found_files) != set(filelist_files):
-            append_results(None, 117, "Validation error",
-                "Extranous or missing files in <mets:FLocat>-field")
 
         return (return_status, messages, errors, validators)
