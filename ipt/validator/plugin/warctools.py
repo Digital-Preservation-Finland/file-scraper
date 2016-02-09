@@ -1,5 +1,4 @@
 """Module for validating files with warc-tools warc validator"""
-import os
 import gzip
 import tempfile
 import contextlib
