@@ -15,52 +15,6 @@ CONFIG_FILENAME = os.path.join('/usr/share/',
                                'validators.json')
 
 
-class FileInfo:
-
-    format_version = None
-    format_registry_key = None
-    filename = None
-    digest_hex = None
-    digest_algorithm = None
-    object_id = ""
-
-    def __init__(self, fileinfo=None):
-        if type(fileinfo) is dict:
-            self.from_dict(fileinfo)
-        if type(fileinfo) is list:
-            self.from_array(fileinfo)
-
-    def from_array(self, fileinfo):
-        # FIXME: replace fileinfo array with dict
-        self.filename = fileinfo[0]
-        self.digest_algorithm = fileinfo[1]
-        self.digest_hex = fileinfo[2]
-        self.format_mimetype = fileinfo[3]
-        self.format_version = fileinfo[4]
-        self.format_registry_key = fileinfo[5]
-        if len(fileinfo) > 6:
-            self.object_id = dict()
-            self.object_id['type'] = fileinfo[6]
-        if len(fileinfo) > 7:
-            self.object_id['value'] = fileinfo[7]
-
-    def from_dict(self, fileinfo):
-        self.filename = fileinfo['filename']
-        self.object_id = fileinfo['object_id']
-
-        self.digest_algorithm = fileinfo['fixity']['algorithm']
-        self.digest_hex = fileinfo['fixity']['digest']
-        self.format_mimetype = fileinfo['format']['mimetype']
-        self.format_version = fileinfo['format']['version']
-        self.format_registry_key = fileinfo['format']['registry_key']
-
-    def __str__(self):
-        return "ipt.validator.plugin.FileInfo(%s, %s, %s, %s, %s, %s, %s)" % (
-            self.filename, self.digest_algorithm, self.digest_hex,
-            self.format_mimetype, self.format_version,
-            self.format_registry_key, self.object_id)
-
-
 class Validator:
 
     def __init__(self, base_path=""):
@@ -89,10 +43,10 @@ class Validator:
         return instance()
 
     def validate_file(self, fileinfo, validator_name, validator_params=None):
-        validator_params = (fileinfo.format_mimetype,
-                            fileinfo.format_version,
+        validator_params = (fileinfo['format']['mimetype'],
+                            fileinfo['format']['version'],
                             os.path.join(self.basepath,
-                                         fileinfo.filename))
+                                         fileinfo['filename']))
 
         validate = self.get_class_instance_by_name(
             validator_name, validator_params)
@@ -108,9 +62,9 @@ class Validator:
 
         for config in self.validators_config["formatNameList"]:
             for format_mimetype, validator_configs in config.iteritems():
-                if fileinfo.format_mimetype == format_mimetype:
+                if fileinfo['format']['mimetype'] == format_mimetype:
                     for validator in validator_configs:
-                        if fileinfo.format_version == \
+                        if fileinfo['format']['version'] == \
                                 validator["formatVersion"]:
                             if len(validator["validator"]) > 0:
                                 found_validators.append(validator["validator"])
@@ -144,13 +98,13 @@ class Validator:
                 filename = filename[2:]
             filelist_files.append(filename)
 
-            fileinfo = FileInfo(file_)
+            fileinfo = file_
             validators_for_file = self.get_validators(fileinfo)
             if len(validators_for_file) == 0:
                 error = \
                     'INVALID:%s:No validator for mimetype:%s version:%s' % (
-                    fileinfo.filename, fileinfo.format_mimetype,
-                    fileinfo.format_version)
+                    fileinfo['filename'], fileinfo['format']['mimetype'],
+                    fileinfo['format']['version'])
                 append_results(
                     validator="", ret=1, stdout="\n", stderr=error)
 

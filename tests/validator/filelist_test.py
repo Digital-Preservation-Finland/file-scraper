@@ -78,9 +78,12 @@ class TestMetsFileValidator:
             assert ret == case["exitstatus"]
 
     def test_validate_file(self):
-        fileinfo = ipt.validator.filelist.FileInfo()
-        fileinfo.format_mimetype = "application/pdf"
-        fileinfo.filename = "abc"
+        fileinfo = {
+            'filename': 'abc.pdf',
+            'format': {
+                'mimetype': 'application/pdf'
+            }
+        }
 
         validator_path = "validator.plugin.mockup.ValidatorMockup"
         validate = ipt.validator.filelist.Validator()
