@@ -171,7 +171,8 @@ class Validator:
                 file_rel_path = self.get_file_rel_dir_path(
                     directory, file_name)
                 if "mets.xml" not in str(file_rel_path) and \
-                   "varmiste.sig" not in str(file_rel_path):
+                   "varmiste.sig" not in str(file_rel_path) and \
+                   "signature.sig" not in str(file_rel_path):
                     found_files.append(str(file_rel_path))
 
         if set(found_files) != set(filelist_files):
