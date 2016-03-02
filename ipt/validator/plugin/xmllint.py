@@ -30,13 +30,10 @@ class Xmllint(BaseValidator):
     .. seealso:: http://xmlsoft.org/xmllint.html
     """
 
-    def __init__(self, mimetype, fileversion, filename):
-        super(Xmllint, self).__init__()
+    def __init__(self, fileinfo):
+        super(Xmllint, self).__init__(fileinfo)
 
         self.exec_cmd = ['xmllint', '--huge', '--noout']
-        self.filename = filename
-        self.fileversion = fileversion
-        self.mimetype = mimetype
         self.schema_path = None
         self.used_version = None
         self.has_constructed_schema = False
@@ -44,8 +41,8 @@ class Xmllint(BaseValidator):
         # Prevent network access
         self.exec_cmd += ["--nonet"]
 
-        if mimetype != "text/xml":
-            raise ValidatorError("Unknown mimetype: %s" % mimetype)
+        if self.mimetype != "text/xml":
+            raise ValidatorError("Unknown mimetype: %s" % self.mimetype)
 
     def validate(self):
         """Validate XML file with Xmllint and return a tuple of results.
@@ -223,15 +220,6 @@ class Xmllint(BaseValidator):
 
         return "ERROR: File version is '%s', expected '%s'" % (
             self.used_version, version)
-
-    def check_profile(self, profile):
-        """XML file format does not have profiles. This is stale method to
-        satisfy BaseValidator interface.
-
-        :returns: Returns always None
-        """
-
-        return None
 
 
 def remove_unneeded_warnings(stderr):

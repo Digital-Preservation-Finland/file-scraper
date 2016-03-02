@@ -2,6 +2,7 @@
 import os
 import lxml.etree
 
+from ipt.validator.basevalidator import BaseValidator
 from ipt.utils import UnknownException, ValidationException, run_command
 
 JHOVE_MODULES = {
@@ -16,7 +17,7 @@ JHOVE_MODULES = {
 NAMESPACES = {'j': 'http://hul.harvard.edu/ois/xml/ns/jhove'}
 
 
-class Jhove(object):
+class Jhove(BaseValidator):
     """ Initializes JHove 1 validator and set ups everything so that
         methods from base class (BaseValidator) can be called, such as
         validate() for file validation.
@@ -29,28 +30,33 @@ class Jhove(object):
         .. seealso:: http://jhove.sourceforge.net/documentation.html
     """
 
-    def __init__(self, mimetype, fileversion, filename):
+    def __init__(self, fileinfo):
         """init"""
+        super(Jhove, self).__init__(fileinfo)
+
+        self.filename = fileinfo['filename']
+        self.fileversion = fileinfo['format']['version']
+        self.mimetype = fileinfo['format']['mimetype']
+
         self.exec_cmd = ['jhove', '-h', 'XML']
-        self.filename = filename
         self.statuscode = 1
         self.stderr = ""
         self.stdout = ""
-        self.fileversion = fileversion
-        self.mimetype = mimetype
+
         # only names with whitespace are quoted. this might break the
         # filename otherwise ::
-        if filename.find(" ") != -1:
-            if not (filename[0] == '"' and filename[-1] == '"'):
-                self.filename = '%s%s%s' % ('"', filename, '"')
+        if self.filename.find(" ") != -1:
+            if not (self.filename[0] == '"' and self.filename[-1] == '"'):
+                self.filename = '%s%s%s' % ('"', self.filename, '"')
 
-        if mimetype in JHOVE_MODULES.keys():
-            validator_module = JHOVE_MODULES[mimetype]
+        if self.mimetype in JHOVE_MODULES.keys():
+            validator_module = JHOVE_MODULES[self.mimetype]
             command = ['-m', validator_module]
             self.exec_cmd += command
         else:
             raise ValidationException(
-                "jhove.py does not seem to support mimetype: %s" % mimetype)
+                "jhove.py does not seem to support mimetype: %s" %
+                self.mimetype)
 
     def validate(self):
         """Validate file with command given in variable self.exec_cmd and with

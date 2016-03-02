@@ -2,8 +2,6 @@
 this module is more like identifying file formats. At the moment this is used
 only for validating text files. """
 import os
-import re
-import subprocess
 
 from ipt.validator.basevalidator import BaseValidator
 
@@ -51,7 +49,3 @@ class Filecommand(BaseValidator):
 
         return "ERROR: File version is '%s', expected '%s'" % \
                (self.stdout, version)
-
-    def check_profile(self, profile):
-        """ FIXME: Remove this from BaseValidator class. """
-        return None

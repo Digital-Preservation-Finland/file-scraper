@@ -17,7 +17,8 @@ CONFIG_FILENAME = os.path.join('/usr/share/',
 
 class Validator:
 
-    def __init__(self, base_path=""):
+    def __init__(self, base_path=None):
+        #FIXME: Remove basepath
         self.basepath = base_path
         self.validators_config = None
 
@@ -38,19 +39,17 @@ class Validator:
             instance = getattr(instance, module)
 
         if params:
-            return instance(*params)
+            return instance(params)
 
         return instance()
 
     def validate_file(self, fileinfo, validator_name):
 
-        validator_params = (fileinfo['format']['mimetype'],
-                            fileinfo['format']['version'],
-                            os.path.join(self.basepath,
-                                         fileinfo['filename']))
-
+        if self.basepath:
+            fileinfo["filename"] = os.path.join(
+                self.basepath, fileinfo["filename"])
         validate = self.get_class_instance_by_name(
-            validator_name, validator_params)
+            validator_name, fileinfo)
 
         (returnstatus, messages, errors) = validate.validate()
 

@@ -34,14 +34,12 @@ class TestJhove2Validator:
 
         for testcase in testcases["test_validate"]:
 
-            print "%s: %s" % (testcase["testcase"], testcase["filename"])
+            print "Testcase: ", testcase["testcase"]
 
-            testcase["filename"] = os.path.join(
-                testcommon.settings.TESTDATADIR, testcase["filename"])
-            val = ipt.validator.plugin.jhove2.Jhove2(
-                testcase["mimetype"],
-                testcase["formatVersion"],
-                testcase["filename"])
+            testcase["fileinfo"]["filename"] = os.path.join(
+                testcommon.settings.TESTDATADIR,
+                testcase["fileinfo"]["filename"])
+            val = ipt.validator.plugin.jhove2.Jhove2(testcase["fileinfo"])
 
             (status, stdout, stderr) = val.validate()
 

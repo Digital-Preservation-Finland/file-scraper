@@ -31,21 +31,17 @@ class BaseValidator(object):
     def check_version(self):
         pass
 
-    @abc.abstractmethod
-    def check_profile(self):
-        pass
-
-    def __init__(self):
+    def __init__(self, fileinfo):
         """Init method for BaseValidator class which sets environment
         variables.
         """
 
-        self.exec_cmd = list()
+        self.exec_cmd = []
         self.environment = os.environ.copy()
-        self.filename = None
-        self.fileversion = None
-        self.mimetype = None
-        self.profile = None
+
+        self.filename = fileinfo['filename']
+        self.fileversion = fileinfo['format']['version']
+        self.mimetype = fileinfo['format']['mimetype']
 
         self.statuscode = None
         self.stdout = ""
@@ -62,8 +58,8 @@ class BaseValidator(object):
             errors -- errors if encountered, else None
         """
 
-        filename_in_list = [self.filename]
-        self.exec_cmd += filename_in_list
+
+        self.exec_cmd += [self.filename]
         self.exec_validator()
 
         if self.statuscode != 0:
@@ -79,10 +75,6 @@ class BaseValidator(object):
             errors.append(error)
 
         error = self.check_version(self.fileversion)
-        if error is not None:
-            errors.append(error)
-
-        error = self.check_profile(self.profile)
         if error is not None:
             errors.append(error)
 

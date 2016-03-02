@@ -20,18 +20,17 @@ class WarcTools(object):
     .. seealso:: https://github.com/internetarchive/warctools
     """
 
-    def __init__(self, mimetype, fileversion, filename):
+    def __init__(self, fileinfo):
         """init."""
-        if mimetype != "application/warc" and \
-                mimetype != "application/x-internet-archive":
-            raise WarcError("Unknown mimetype: %s" % mimetype)
-        self.filename = str(filename)
-        self.fileversion = fileversion
-        self.mimetype = mimetype
-        self.profile = None
+        super(WarcTools, self, fileinfo).__init__()
+
+
+        if self.mimetype != "application/warc" and \
+                self.mimetype != "application/x-internet-archive":
+            raise WarcError("Unknown mimetype: %s" % self.mimetype)
+
+        #FIXME: Why this is 1
         self.statuscode = 1
-        self.stdout = ""
-        self.stderr = ""
 
     def _check_warc_version(self, version, filename):
         """ Check the file version of given file. In WARC format version string
@@ -167,4 +166,3 @@ class WarcTools(object):
                     self.stderr = str(error)
             if self.statuscode != 117:
                 raise UnknownException(error)
-

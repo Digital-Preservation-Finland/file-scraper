@@ -152,13 +152,16 @@ class TestXmllintValidation:
     }
 
     def test_validation(self, testcase, expected):
-        file_path = os.path.join(
-            testcommon.settings.TESTDATADIR, testcase["filepath"])
+        fileinfo = {
+            "filename": os.path.join(
+                testcommon.settings.TESTDATADIR, testcase["filepath"]),
+            "format": {
+                "mimetype": "text/xml",
+                "version": "1.0"
+            }
+        }
 
-        validate = ipt.validator.plugin.xmllint.Xmllint(
-            "text/xml",
-            "1.0",
-            file_path)
+        validate = ipt.validator.plugin.xmllint.Xmllint(fileinfo)
 
         if "catalog" in testcase:
             validate.set_catalog(testcase["catalog"])

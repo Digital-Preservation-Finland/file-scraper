@@ -28,19 +28,16 @@ class Jhove2(BaseValidator):
         .. seealso:: http://jhove.sourceforge.net/documentation.html
     """
 
-    def __init__(self, mimetype, fileversion, filename):
-        super(Jhove2, self).__init__()
+    def __init__(self, fileinfo):
+        super(Jhove2, self).__init__(fileinfo)
 
         # Create temp dir for jhove
         tempdir = tempfile.mkdtemp()
         self.exec_cmd = ['jhove2',  '--display', 'XML', '--temp', tempdir]
         self.environment['JAVA_OPTS'] = "-Djava.io.tmpdir=%s" % tempdir
-        self.filename = filename
-        self.fileversion = fileversion
-        self.mimetype = mimetype
 
-        if mimetype not in JHOVE_MODULES:
-            raise Exception("Unknown mimetype: %s" % mimetype)
+        if self.mimetype not in JHOVE_MODULES:
+            raise Exception("Unknown mimetype: %s" % self.mimetype)
 
     def check_validity(self):
         """ Check if file is valid according to JHove output.
@@ -81,16 +78,6 @@ class Jhove2(BaseValidator):
                 version)
         return None
 
-    def check_profile(self, profile):
-        """ Check if profile string matches JHove output.
-
-            Arguments:
-                profile: profile string
-
-            Returns:
-                None if profile matches, else returns JHove's error message.
-        """
-        return None
 
     def get_report_field(self, field):
         """ Return field value from JHoves XML output. This method assumes that

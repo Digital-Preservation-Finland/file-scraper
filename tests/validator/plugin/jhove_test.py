@@ -44,7 +44,15 @@ TESTDATADIR = os.path.abspath(
 def test_validate(filename, mimetype, version, exitcode, stdout, stderr):
     """Test cases of Jhove validation"""
     file_path = os.path.join(TESTDATADIR_BASE, filename)
-    validator = Jhove(mimetype, version, file_path)
+    fileinfo = {
+        "filename": file_path,
+        "format": {
+            "mimetype": mimetype,
+            "version": version
+        }
+    }
+
+    validator = Jhove(fileinfo)
     (exitcode_result, stdout_result, stderr_result) = validator.validate()
     assert exitcode == exitcode_result
     assert stdout in stdout_result
@@ -59,11 +67,27 @@ def test_system_error(monkeypatch):
     # Jhove module not found for mimetype
     with pytest.raises(ValidationException):
         file_path = os.path.join(TESTDATADIR, "gif_87a/valid.gif")
-        Jhove("foo", "1.0", file_path)
+        fileinfo = {
+            "filename": file_path,
+            "format": {
+                "mimetype": "foo",
+                "version": "100"
+            }
+        }
+
+        Jhove(fileinfo)
 
     # jhove command not found
     with pytest.raises(OSError):
         file_path = os.path.join(TESTDATADIR, "gif_87a/valid.gif")
-        validator = Jhove("image/gif", "1.0", file_path)
+        fileinfo = {
+            "filename": file_path,
+            "format": {
+                "mimetype": "image/tiff",
+                "version": "1.0"
+            }
+        }
+
+        validator = Jhove(fileinfo)
         monkeypatch.setattr(validator, 'exec_cmd', ['foo'])
         validator.validate()

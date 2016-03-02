@@ -3,7 +3,6 @@ import os
 import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
-import re
 import json
 import pytest
 import testcommon.settings
@@ -38,14 +37,12 @@ class TestXmllibFilevalidator:
 
         for testcase in testcases["test_validate"]:
 
-            print "%s: %s" % (testcase["testcase"], testcase["filename"])
+            print "Testcase", testcase["fileinfo"]
 
-            testcase[
-                "filename"] = os.path.join(testcommon.settings.TESTDATADIR,
-                                           testcase["filename"])
-            val = ipt.validator.plugin.libxml.Libxml(testcase["mimetype"],
-                                                     testcase["formatVersion"],
-                                                     testcase["filename"])
+            testcase["fileinfo"]["filename"] = os.path.join(
+                testcommon.settings.TESTDATADIR,
+                testcase["fileinfo"]["filename"])
+            val = ipt.validator.plugin.libxml.Libxml(testcase["fileinfo"])
 
             (status, stdout, stderr) = val.validate()
 

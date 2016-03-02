@@ -1,7 +1,6 @@
 """Module for validating files with Pythons lxml library """
 import os
-import re
-import subprocess
+
 from lxml import etree
 
 from ipt.validator.basevalidator import BaseValidator
@@ -30,15 +29,11 @@ class Libxml(BaseValidator):
         .. seealso:: http://lxml.de
     """
 
-    def __init__(self, mimetype, fileversion, filename):
-        super(Libxml, self).__init__()
+    def __init__(self, fileinfo):
+        super(Libxml, self).__init__(fileinfo)
 
-        self.filename = filename
-        self.fileversion = fileversion
-        self.mimetype = mimetype
-
-        if mimetype != "text/xml":
-            raise Exception("Unknown mimetype: %s" % mimetype)
+        if self.mimetype != "text/xml":
+            raise Exception("Unknown mimetype: %s" % self.mimetype)
 
     def exec_validator(self):
         try:
@@ -163,13 +158,9 @@ class Libxml(BaseValidator):
             return None
         return ""
 
-    def check_profile(self, profile):
-        """ TODO: Move this away from BaseValidator """
-        return None
 
     def set_catalog(self, catalogpath):
         """
         Set catalogpath.
         """
         pass
-        os.environ['XML_CATALOG_FILES'] = catalogpath

@@ -54,8 +54,7 @@ class TestMetsFileValidator:
 
         for case in testcases:
 
-            validate = ipt.validator.filelist.Validator(
-                base_path=os.path.join(TESTDATADIR, case["path"]))
+            validate = ipt.validator.filelist.Validator(base_path=TESTDATADIR)
 
             validate.load_config(TEST_CONFIG_FILENAME)
             (returns, reports, errors, validators) = validate.validate_files(

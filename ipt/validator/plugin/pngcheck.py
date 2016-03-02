@@ -12,15 +12,13 @@ class Pngcheck(BaseValidator):
     .. seealso:: http://www.libpng.org/pub/png/apps/pngcheck.html
     """
 
-    def __init__(self, mimetype, fileversion, filename):
-        super(Pngcheck, self).__init__()
+    def __init__(self, fileinfo):
+        super(Pngcheck, self).__init__(fileinfo)
         self.exec_cmd = ['pngcheck']
-        self.filename = filename
-        self.fileversion = fileversion
-        self.mimetype = mimetype
+        self.profile = None
 
-        if mimetype != "image/png":
-            raise Exception("Unknown mimetype: %s" % mimetype)
+        if self.mimetype != "image/png":
+            raise Exception("Unknown mimetype: %s" % self.mimetype)
 
     def check_validity(self):
         if self.statuscode == 0:
@@ -31,8 +29,4 @@ class Pngcheck(BaseValidator):
         """ pngcheck does not offer information about version but supports al
             of them (via pnglib).
             """
-        return None
-
-    def check_profile(self, profile):
-        """ PNG file format does not have profiles """
         return None
