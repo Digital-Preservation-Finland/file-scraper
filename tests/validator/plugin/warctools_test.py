@@ -40,8 +40,16 @@ TESTDATADIR = os.path.abspath(os.path.join(TESTDATADIR_BASE,
         "", "")])
 def test_validate(filename, mimetype, version, exitcode, stdout, stderr):
     """Test cases for valid/invalid warcs and arcs."""
-    file_path = os.path.join(TESTDATADIR, filename)
-    validator = WarcTools(mimetype, version, file_path)
+
+    fileinfo = {
+        "filename": os.path.join(TESTDATADIR, filename),
+        "format": {
+            "mimetype": mimetype,
+            "version": version
+        }
+    }
+
+    validator = WarcTools(fileinfo)
     (exitcode_result, stdout_result, stderr_result) = validator.validate()
     assert exitcode == exitcode_result
     assert stdout in stdout_result
@@ -54,8 +62,24 @@ def test_system_error():
     Test for system error(missing file)
     """
     with pytest.raises(UnknownException):
-        validator = WarcTools("application/warc", "1.0", "foo")
+
+        fileinfo = {
+            "filename": "foo",
+            "format": {
+                "mimetype": "application/warc",
+                "version": "1.0"
+            }
+        }
+        validator = WarcTools(fileinfo)
         validator.validate()
 
     with pytest.raises(WarcError):
-        validator = WarcTools("foo", "1.0", "foo")
+        fileinfo = {
+            "filename": "foo",
+            "format": {
+                "mimetype": "foo",
+                "version": "1.0"
+            }
+        }
+
+        validator = WarcTools(fileinfo)

@@ -10,7 +10,7 @@ class WarcError(Exception):
     """Warc validation error."""
     pass
 
-class WarcTools(object):
+class WarcTools():
 
     """ Implements filevalidation or warc/arc files. use by calling
     validate.
@@ -22,8 +22,11 @@ class WarcTools(object):
 
     def __init__(self, fileinfo):
         """init."""
-        super(WarcTools, self, fileinfo).__init__()
 
+        #FIXME: Inherit Basevalidator and remove these
+        self.filename = fileinfo['filename']
+        self.fileversion = fileinfo['format']['version']
+        self.mimetype = fileinfo['format']['mimetype']
 
         if self.mimetype != "application/warc" and \
                 self.mimetype != "application/x-internet-archive":
