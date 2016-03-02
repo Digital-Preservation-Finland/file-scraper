@@ -35,4 +35,5 @@ class Csv(object):
                     pass
             return (0, "", "")
         except csv.Error, err:
-            return (1, "", repr(err))
+            return (1, "", "CSV validation error on line %s: %s" %
+                    (reader.line_num, err))
