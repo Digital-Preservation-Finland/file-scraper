@@ -27,7 +27,6 @@ class Csv(object):
         """The actual validation. Runs the CSV file through cvs.reader and
         returns (statuscode, messages, errors)
         """
-        csv.register_dialect("strict-excel", StrictDialect)
         try:
             with open(self.filename, 'rb') as csvfile:
                 reader = csv.reader(csvfile, StrictDialect)
