@@ -63,12 +63,31 @@ def test_validate():
 def test_check_charset():
 
     fileinfo = {
-        "filename": "x",
+        "filename": "tests/data/02_filevalidation_data/text/utf8.txt",
         "format": {
             "mimetype": "text/plain",
             "version": "1.0",
-            "charset": "text/xml"
+            "charset": "UTF-8"
         }
     }
     validator =  ipt.validator.plugin.jhove2.Jhove2(fileinfo)
     validator.validate()
+    assert validator.check_charset()
+
+
+@pytest.mark.usefixtures("monkeypatch_Popen")
+def test_check_charset_failure():
+
+    fileinfo = {
+        "filename": "tests/data/02_filevalidation_data/text/utf8.txt",
+        "format": {
+            "mimetype": "text/plain",
+            "version": "1.0",
+            "charset": "WRONG_CHARSET"
+        }
+    }
+    validator =  ipt.validator.plugin.jhove2.Jhove2(fileinfo)
+    validator.validate()
+
+    assert not validator.check_charset()
+

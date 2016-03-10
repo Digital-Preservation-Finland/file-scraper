@@ -39,6 +39,9 @@ class Jhove2(BaseValidator):
         if self.mimetype not in JHOVE_MODULES:
             raise Exception("Unknown mimetype: %s" % self.mimetype)
 
+        if self.mimetype == 'text/plain':
+            self.charset = fileinfo['format']['charset']
+
     def check_validity(self):
         """ Check if file is valid according to JHove output.
 
@@ -53,6 +56,11 @@ class Jhove2(BaseValidator):
         if status != 'true':
             return "ERROR: File '%s' does not validate: %s" % (filename, status)
 
+        if self.mimetype == 'text/plain':
+            if self.check_charset():
+                return "ERROR: File '%s' does not validate: wrong " \
+                    "charset" % filename
+
         return None
 
     def check_version(self, version):
@@ -65,11 +73,6 @@ class Jhove2(BaseValidator):
                 None if version matches, else returns JHove's error message.
         """
 
-        # If mimetype is text/plain don't check version. This validator can only
-        # validate UTF-8 charset.
-        if self.mimetype == 'text/plain':
-            return None
-
         report_version = self.get_report_field("FileVersion")
 
         if report_version != version:
@@ -78,6 +81,20 @@ class Jhove2(BaseValidator):
                 version)
         return None
 
+
+    def check_charset(self):
+        """Check text files' charset matches with given charset."""
+
+        root = lxml.etree.fromstring(self.stdout)
+
+        query = '//j2:feature[@fid = "http://jhove2.org/terms/' \
+            'property/org/jhove2/core/format/Format/Name"]/j2:value/text()'
+        results = root.xpath(query, namespaces=NAMESPACES)
+
+        if self.charset not in results:
+            return False
+
+        return True
 
     def get_report_field(self, field):
         """ Return field value from JHoves XML output. This method assumes that
