@@ -7,7 +7,9 @@ from ipt.utils import run_command
 SYSTEM_ERRORS = [
     'Invalid argument',
     'Missing argument for option',
-    'No such file or directory']
+    'No such file or directory',
+    'Permission denied']
+
 FORMATS = [
     {"format_string": "mpeg1video",
      "format": {
@@ -55,6 +57,7 @@ class FFMpeg(object):
             Stream #0:0[0x1e0]: Video: mpeg2video (Main), yuv420p, ...
         """
         (_, _, stderr) = run_command(self.version_cmd)
+        self.check_system_errors(stderr)
         if "Video: " not in stderr:
             self.append_results(117, "", "No version could be found")
             return
@@ -73,6 +76,7 @@ class FFMpeg(object):
     def check_validity(self):
         """Check file validity."""
         (exitcode, stdout, stderr) = run_command(self.validation_cmd)
+        self.check_system_errors(stderr)
         if stderr:
             exitcode = 117
         for error in SYSTEM_ERRORS:
@@ -87,3 +91,9 @@ class FFMpeg(object):
         self.exitcode.append(exitcode)
         self.stdout.append(stdout)
         self.stderr.append(stderr)
+
+    def check_system_errors(self, text):
+        """Check for system errors."""
+        for error in SYSTEM_ERRORS:
+            if error in text:
+                self.append_results(1, "", text)
