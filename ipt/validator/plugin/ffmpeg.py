@@ -3,6 +3,12 @@ for file validation purposes. Validation is achieved by doing a conversion.
 If conversion is succesful, file is interpred as a valid file."""
 from ipt.utils import run_command
 
+
+SYSTEM_ERRORS = [
+    'Invalid argument',
+    'Missing argument for option',
+    'No such file or directory']
+
 class FFMpeg(object):
     """FFMpeg plugin class."""
 
@@ -30,6 +36,18 @@ class FFMpeg(object):
         else:
             validity = 117
         return (validity, '\n'.join(self.stdout), '\n'.join(self.stderr))
+
+    def check_validity(self):
+        """Check file validity."""
+        (exitcode, stdout, stderr) = run_command(self.validation_cmd)
+        if stderr:
+            exitcode = 117
+        for error in SYSTEM_ERRORS:
+            if error in stderr:
+                print "SYSTEM_ERRORS"
+                exitcode = 1
+                break
+        self.append_results(exitcode, stdout, stderr)
 
     def append_results(self, exitcode, stdout, stderr):
         """append intermediate results."""
