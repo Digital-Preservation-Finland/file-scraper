@@ -12,11 +12,13 @@ class FFMpeg(object):
         self.filename = fileinfo['filename']
         self.fileversion = fileinfo['format']['version']
         self.mimetype = fileinfo['format']['mimetype']
-        self.exec_cmd = ['ffmpeg',  '-v', 'error', '-i', self.filename,
-            '-f', 'null', '-']
         self.stdout = ""
         self.stderr = ""
         self.exitcode = 1
+        self.validation_cmd = [
+            'ffmpeg', '-v', 'error', '-i', self.filename, '-f', 'null', '-']
+        self.version_cmd = [
+            'ffprobe', '-show_format', self.filename, '-print_format', 'json']
 
     def validate(self):
         """validate file."""
