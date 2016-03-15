@@ -11,13 +11,13 @@ class FFMpeg(object):
         self.filename = fileinfo['filename']
         self.fileversion = fileinfo['format']['version']
         self.mimetype = fileinfo['format']['mimetype']
-        self.stdout = ""
-        self.stderr = ""
-        self.exitcode = 1
         self.validation_cmd = [
             'ffmpeg', '-v', 'error', '-i', self.filename, '-f', 'null', '-']
         self.version_cmd = [
             'ffprobe', '-show_format', self.filename, '-print_format', 'json']
+        self.stdout = []
+        self.stderr = []
+        self.exitcode = []
 
     def validate(self):
         """validate file."""
@@ -29,3 +29,9 @@ class FFMpeg(object):
         else:
             self.exitcode = 0
         return (self.exitcode, self.stdout, self.stderr)
+
+    def append_results(self, exitcode, stdout, stderr):
+        """append intermediate results."""
+        self.exitcode.append(exitcode)
+        self.stdout.append(stdout)
+        self.stderr.append(stderr)
