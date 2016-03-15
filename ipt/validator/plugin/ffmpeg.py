@@ -21,14 +21,15 @@ class FFMpeg(object):
 
     def validate(self):
         """validate file."""
-        print self.exec_cmd
-        (self.exitcode, self.stdout, self.stderr) = run_command(self.exec_cmd)
-
-        if self.stderr:
-            self.exitcode = 117
+        self.check_version()
+        self.check_validity()
+        if set(self.exitcode).issubset(set([0])):
+            validity = 0
+        elif not set(self.exitcode).issubset([0, 117]):
+            validity = 1
         else:
-            self.exitcode = 0
-        return (self.exitcode, self.stdout, self.stderr)
+            validity = 117
+        return (validity, '\n'.join(self.stdout), '\n'.join(self.stderr))
 
     def append_results(self, exitcode, stdout, stderr):
         """append intermediate results."""
