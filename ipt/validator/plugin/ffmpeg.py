@@ -8,6 +8,19 @@ SYSTEM_ERRORS = [
     'Invalid argument',
     'Missing argument for option',
     'No such file or directory']
+FORMATS = [
+    {"format_string": "mpeg1video",
+     "format": {
+         "version": "1", "mimetype": "video/mpeg"
+         }
+    },
+    {"format_string": "mpeg2video",
+     "format": {
+         "version": "2", "mimetype": "video/mpeg"
+         }
+    }
+]
+
 
 class FFMpeg(object):
     """FFMpeg plugin class."""
@@ -15,8 +28,7 @@ class FFMpeg(object):
     def __init__(self, fileinfo):
         """init"""
         self.filename = fileinfo['filename']
-        self.fileversion = fileinfo['format']['version']
-        self.mimetype = fileinfo['format']['mimetype']
+        self.file_format = fileinfo['format']
         self.validation_cmd = [
             'ffmpeg', '-v', 'error', '-i', self.filename, '-f', 'null', '-']
         self.version_cmd = [
@@ -36,6 +48,27 @@ class FFMpeg(object):
         else:
             validity = 117
         return (validity, '\n'.join(self.stdout), '\n'.join(self.stderr))
+
+    def check_version(self):
+        """parse version from stderr, which is in such format:
+
+            Stream #0:0[0x1e0]: Video: mpeg2video (Main), yuv420p, ...
+        """
+        (_, _, stderr) = run_command(self.version_cmd)
+        if "Video: " not in stderr:
+            self.append_results(117, "", "No version could be found")
+            return
+        line = stderr.split("Video: ")[1].split(' ')[0]
+        for format_ in FORMATS:
+            if format_["format_string"] == line:
+                if format_["format"] == self.file_format:
+                    self.append_results(0, "", "")
+                else:
+                    self.append_results(
+                        117,
+                        "",
+                        "Wrong format, got %s, "
+                        "expected %s." % (format_["format"], self.file_format))
 
     def check_validity(self):
         """Check file validity."""
