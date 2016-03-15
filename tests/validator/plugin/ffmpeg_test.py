@@ -31,4 +31,4 @@ def test_mark_ffmpeg(filename, stdout, stderr, exitcode):
 
     assert stdout in result_stdout
     assert stderr in result_stderr
-    assert exitcode == result_exitcode, result_exitcode
+    assert exitcode == result_exitcode
