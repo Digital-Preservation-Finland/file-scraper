@@ -2,7 +2,6 @@
 for file validation purposes. Validation is achieved by doing a conversion.
 If conversion is succesful, file is interpred as a valid file."""
 from ipt.utils import run_command
-from ipt.validator.basevalidator import BaseValidator
 
 class FFMpeg(object):
     """FFMpeg plugin class."""
