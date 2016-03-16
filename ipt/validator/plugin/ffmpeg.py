@@ -39,8 +39,7 @@ class FFMpeg(object):
         self.file_format = fileinfo['format']
         self.validation_cmd = [
             'ffmpeg', '-v', 'error', '-i', self.filename, '-f', 'null', '-']
-        self.version_cmd = [
-            'ffprobe', '-show_format', self.filename, '-print_format', 'json']
+        self.version_cmd = ['ffprobe', self.filename]
         self.stdout = []
         self.stderr = []
         self.exitcode = []
