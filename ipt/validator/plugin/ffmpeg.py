@@ -20,7 +20,13 @@ FORMATS = [
      "format": {
          "version": "2", "mimetype": "video/mpeg"
          }
+    },
+    {"format_string": "h264",
+     "format": {
+         "version": "4", "mimetype": "video/mpeg"
+         }
     }
+
 ]
 
 
