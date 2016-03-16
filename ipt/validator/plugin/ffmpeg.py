@@ -64,19 +64,31 @@ class FFMpeg(object):
         (_, _, stderr) = run_command(self.version_cmd)
         self.check_system_errors(stderr)
         if "Video: " not in stderr:
-            self.append_results(117, "", "No version could be found")
+            self.append_results(
+                117, "", "No version information could be found")
             return
-        line = stderr.split("Video: ")[1].split(' ')[0]
+
+        detected_format = self.resolve_format(stderr)
+        if not detected_format:
+            return
+        if detected_format == self.file_format:
+            self.append_results(0, "", "")
+        else:
+            self.append_results(
+                117, "", "Wrong format version, got %s version %s, "
+                "expected %s version %s." % (
+                    detected_format["mimetype"],
+                    detected_format["version"],
+                    self.file_format["mimetype"],
+                    self.file_format["version"]))
+
+    def resolve_format(self, info):
+        """Resolve format name and version."""
+        line = info.split("Video: ")[1].split(' ')[0].replace(",", "")
         for format_ in FORMATS:
             if format_["format_string"] == line:
-                if format_["format"] == self.file_format:
-                    self.append_results(0, "", "")
-                else:
-                    self.append_results(
-                        117,
-                        "",
-                        "Wrong format, got %s, "
-                        "expected %s." % (format_["format"], self.file_format))
+                return format_["format"]
+        self.append_results(117, "", "Unknown mimetype or version")
 
     def check_validity(self):
         """Check file validity."""
