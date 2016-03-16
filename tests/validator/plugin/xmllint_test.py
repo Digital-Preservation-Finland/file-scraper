@@ -5,6 +5,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 import testcommon.settings
 from testcommon.casegenerator import pytest_generate_tests
 
+import pytest
 # Module to test
 import ipt.validator.plugin.xmllint
 
@@ -151,6 +152,7 @@ class TestXmllintValidation:
         ]
     }
 
+    @pytest.mark.usefixtures("monkeypatch_Popen")
     def test_validation(self, testcase, expected):
         fileinfo = {
             "filename": os.path.join(

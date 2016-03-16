@@ -17,6 +17,8 @@ SCHEMATRON_PATH = os.path.join(testcommon.settings.SHAREDIR, 'kdk-schematron')
 TESTDATADIR = os.path.join(testcommon.settings.TESTDATADIR, 'test-sips')
 
 
+@pytest.mark.skipif("not pytest.config.getoption('--monkeypatch-popen')",
+                    reason="This test can't be run with monkeypatched Popen")
 class TestSchematronValidator:
 
     testcases = {
@@ -132,6 +134,7 @@ class TestSchematronValidator:
 
     def test_validate_file(self, casename, filename, expect_errors):
         temppath = tempfile.mkdtemp()
+
 
         try:
 

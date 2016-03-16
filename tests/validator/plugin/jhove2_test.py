@@ -19,43 +19,56 @@ TESTDATADIR_BASE = os.path.abspath(os.path.join(os.path.dirname(__file__),
 TESTDATADIR = os.path.abspath(os.path.join(TESTDATADIR_BASE,
                                            '02_filevalidation_data'))
 
+@pytest.mark.usefixtures("monkeypatch_Popen")
+def test_validate():
 
-class TestJhove2Validator:
+    testcasefile = os.path.join(PROJECTDIR, TESTDATADIR,
+                                'jhove2_testcases.json')
+    print "\nLoading test configuration from %s\n" % testcasefile
 
-    def test_validate(self):
+    json_data = open(testcasefile)
+    testcases = json.load(json_data)
+    json_data.close()
 
-        testcasefile = os.path.join(PROJECTDIR, TESTDATADIR,
-                                    'jhove2_testcases.json')
-        print "\nLoading test configuration from %s\n" % testcasefile
+    for testcase in testcases["test_validate"]:
 
-        json_data = open(testcasefile)
-        testcases = json.load(json_data)
-        json_data.close()
+        print "Testcase: ", testcase["testcase"]
 
-        for testcase in testcases["test_validate"]:
+        testcase["fileinfo"]["filename"] = os.path.join(
+            testcommon.settings.TESTDATADIR,
+            testcase["fileinfo"]["filename"])
+        val = ipt.validator.plugin.jhove2.Jhove2(testcase["fileinfo"])
 
-            print "Testcase: ", testcase["testcase"]
+        (status, stdout, stderr) = val.validate()
 
-            testcase["fileinfo"]["filename"] = os.path.join(
-                testcommon.settings.TESTDATADIR,
-                testcase["fileinfo"]["filename"])
-            val = ipt.validator.plugin.jhove2.Jhove2(testcase["fileinfo"])
+        if testcase["expected_result"]["status"] == 0:
+            assert testcase["expected_result"]["status"] == status
+        else:
+            assert testcase["expected_result"]["status"] != 0
 
-            (status, stdout, stderr) = val.validate()
+        for match_string in testcase["expected_result"]["stdout"]:
+            message = "\n".join(
+                ["got:", stdout.decode('utf-8'), "expected:",
+                match_string])
+            assert re.match('(?s).*' + match_string, stdout), message
 
-            if testcase["expected_result"]["status"] == 0:
-                assert testcase["expected_result"]["status"] == status
-            else:
-                assert testcase["expected_result"]["status"] != 0
+        for match_string in testcase["expected_result"]["stderr"]:
+            message = "\n".join(
+                ["got:", stderr.decode('utf-8'), "expected:",
+                match_string])
+            assert re.match('(?s).*' + match_string, stderr), message
 
-            for match_string in testcase["expected_result"]["stdout"]:
-                message = "\n".join(
-                    ["got:", stdout.decode('utf-8'), "expected:",
-                     match_string])
-                assert re.match('(?s).*' + match_string, stdout), message
 
-            for match_string in testcase["expected_result"]["stderr"]:
-                message = "\n".join(
-                    ["got:", stderr.decode('utf-8'), "expected:",
-                     match_string])
-                assert re.match('(?s).*' + match_string, stderr), message
+@pytest.mark.usefixtures("monkeypatch_Popen")
+def test_check_charset():
+
+    fileinfo = {
+        "filename": "x",
+        "format": {
+            "mimetype": "text/plain",
+            "version": "1.0",
+            "charset": "text/xml"
+        }
+    }
+    validator =  ipt.validator.plugin.jhove2.Jhove2(fileinfo)
+    validator.validate()

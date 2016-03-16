@@ -11,6 +11,7 @@ TESTDATADIR = os.path.abspath(
     os.path.join(TESTDATADIR_BASE, '02_filevalidation_data'))
 
 
+@pytest.mark.usefixtures("monkeypatch_Popen")
 @pytest.mark.parametrize(
     ["filename", "mimetype", "version", "exitcode", "stdout", "stderr"],
     [
@@ -59,6 +60,7 @@ def test_validate(filename, mimetype, version, exitcode, stdout, stderr):
     assert stderr in stderr_result
 
 
+@pytest.mark.usefixtures("monkeypatch_Popen")
 def test_system_error(monkeypatch):
     """
     Test for system error(missing file)
