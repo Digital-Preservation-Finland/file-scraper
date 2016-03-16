@@ -13,22 +13,24 @@ TEST_DATA_PATH = os.path.abspath(
 
 
 @pytest.mark.parametrize(
-    ["filename", "stdout", "stderr", "exitcode"], [
-        ("system_error", "", "", 1),
-        ("mpg1.mpg", "", "", 0),
-        ("mpg1_error.mpg", "", "Missing picture start code", 117),
-        ("mpg1_error2.mpg", "", "", 117),
-        ("mp4.mp4", "", "", 0),
-        ("mp4_error.mp4", "", "Invalid data found", 117),
-        ("mpg2.mpg", "", "", 0),
-        ("mpg2_error.mpg", "", "", 117)])
-def test_mark_ffmpeg(filename, stdout, stderr, exitcode):
+    ["filename", "version", "stdout", "stderr", "exitcode"], [
+        ("system_error", "1", "", "", 1),
+        ("mpg1.mpg", "1", "", "", 0),
+        ("mpg1_error.mpg", "1", "", "Missing picture start code", 117),
+        ("mpg1_error2.mpg", "1", "", "", 117),
+        ("mp4.mp4", "4", "", "", 0),
+        ("mp4_error.mp4", "4", "", "Invalid data found", 117),
+        ("mpg2.mpg", "2", "", "", 0),
+        ("mpg2_error.mpg", "2", "", "", 117),
+        ("mpg1.mpg", "4", "", "Wrong format version", 117),
+        ("unknown_mimetype.3gp", "2", "", "Unknown mimetype or version", 117)])
+def test_mark_ffmpeg(filename, version, stdout, stderr, exitcode):
     """FFMpeg test."""
     file_path = os.path.join(TEST_DATA_PATH, filename)
     fileinfo = {
         "filename": file_path,
         "format": {
-            "version": "2",
+            "version": version,
             "mimetype": "video/mpeg"}
         }
     validator = FFMpeg(fileinfo=fileinfo)
