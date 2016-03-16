@@ -23,7 +23,9 @@ TEST_DATA_PATH = os.path.abspath(
         ("mpg2.mpg", "2", "", "", 0),
         ("mpg2_error.mpg", "2", "", "", 117),
         ("mpg1.mpg", "4", "", "Wrong format version", 117),
-        ("unknown_mimetype.3gp", "2", "", "Unknown mimetype or version", 117)])
+        ("unknown_mimetype.3gp", "2", "", "Unknown mimetype or version", 117),
+        ("no_video.wav", "1", "", "No version information could be found",
+            117)])
 def test_mark_ffmpeg(filename, version, stdout, stderr, exitcode):
     """FFMpeg test."""
     file_path = os.path.join(TEST_DATA_PATH, filename)

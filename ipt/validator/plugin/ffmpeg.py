@@ -65,7 +65,8 @@ class FFMpeg(object):
         self.check_system_errors(stderr)
         if "Video: " not in stderr:
             self.append_results(
-                117, "", "No version information could be found")
+                117, "", "No version information could be found,"
+                "file might not be video: %s" % stderr)
             return
 
         detected_format = self.resolve_format(stderr)
