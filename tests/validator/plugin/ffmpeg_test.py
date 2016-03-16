@@ -15,8 +15,13 @@ TEST_DATA_PATH = os.path.abspath(
 @pytest.mark.parametrize(
     ["filename", "stdout", "stderr", "exitcode"], [
         ("system_error", "", "", 1),
-        ("hubble.mpg", "", "", 0),
-        ("hubble_error.mpg", "", "Missing picture start code", 117)])
+        ("mpg1.mpg", "", "", 0),
+        ("mpg1_error.mpg", "", "Missing picture start code", 117),
+        ("mpg1_error2.mpg", "", "", 117),
+        ("mp4.mp4", "", "", 0),
+        ("mp4_error.mp4", "", "Invalid data found", 117),
+        ("mpg2.mpg", "", "", 0),
+        ("mpg2_error.mpg", "", "", 117)])
 def test_mark_ffmpeg(filename, stdout, stderr, exitcode):
     """FFMpeg test."""
     file_path = os.path.join(TEST_DATA_PATH, filename)
