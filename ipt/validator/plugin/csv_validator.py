@@ -34,14 +34,33 @@ class Csv(object):
 
     def validate(self):
         """The actual validation. Runs the CSV file through cvs.reader and
-        returns (statuscode, messages, errors)
+        :returns: (statuscode, messages, errors)
         """
         try:
+            dialect = dialect_factory(self.record_separator, self.delimiter)
             with open(self.filename, 'rb') as csvfile:
-                reader = csv.reader(csvfile, StrictDialect)
+                reader = csv.reader(csvfile, dialect)
                 for _ in reader:
                     pass
             return (0, "", "")
         except csv.Error, err:
             return (1, "", "CSV validation error on line %s: %s" %
                     (reader.line_num, err))
+
+
+def dialect_factory(record_separator, delimiter):
+    """A factory pattern for creating dialect class.
+    :record_separator: csv line separator
+    :delimiter: a character separating different items within a record.
+    :returns: a csv Dialect class."""
+
+    class StrictDialect(csv.excel):
+        """A strict csv dialect.
+        This should work in Python 2.6 although it's only documented in 2.7"""
+        def __init__(self):
+            super(csv.excel, self).__init__()
+            self.strict = True
+            self.delimiter = delimiter
+            self.lineterminator = record_separator
+
+    return StrictDialect
