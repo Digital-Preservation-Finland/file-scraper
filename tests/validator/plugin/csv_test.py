@@ -1,5 +1,5 @@
 """
-Test for WarcTools.
+Test for python CSV validation.
 """
 import os
 import sys
@@ -9,20 +9,18 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 import pytest
 import testcommon.settings
 
-# Module to test
 from ipt.validator.plugin.csv_validator import Csv, CsvValidationError
 
 PROJECTDIR = testcommon.settings.PROJECTDIR
-
 TESTDATADIR_BASE = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                 '../../data'))
-
 TESTDATADIR = os.path.abspath(os.path.join(TESTDATADIR_BASE,
                                            '02_filevalidation_data'))
 JPEG_PATH = os.path.abspath(
     os.path.join(
         os.path.dirname(__file__),
-        '../../data/06_mets_validation/sips/fd2009-00002919-preservation/access_img/img0008-access.jpg'))
+        '../../data/06_mets_validation/sips/fd2009-00002919-preservation'
+        '/access_img/img0008-access.jpg'))
 
 
 def test_validate_success_wikipedia(testpath):

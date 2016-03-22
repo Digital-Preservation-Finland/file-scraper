@@ -2,12 +2,6 @@
 import csv
 
 
-class StrictDialect(csv.excel):
-    """A strict csv dialect.
-    This should work in Python 2.6 although it's only documented in 2.7"""
-    strict = True
-
-
 class CsvValidationError(Exception):
     """CSV validation error"""
     pass
@@ -18,9 +12,7 @@ class Csv(object):
 
     def __init__(self, techmd):
         """
-        :mimetype: mimetype of digital object.
-        :filename: Full path of digital object.
-        :techmd: Dictionary which
+        :techmd: Dictionary which holds techical metadata.
         """
         if techmd["mimetype"] != "text/csv":
             raise CsvValidationError(
