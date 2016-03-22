@@ -40,6 +40,10 @@ class Csv(object):
             dialect = dialect_factory(self.record_separator, self.delimiter)
             with open(self.filename, 'rb') as csvfile:
                 reader = csv.reader(csvfile, dialect)
+                first_line = reader.next()
+                if self.header_fields and not self.header_fields == first_line:
+                    return (1, "",
+                        "CSV validation error on line 1, header mismatch")
                 for _ in reader:
                     pass
             return (0, "", "")

@@ -50,6 +50,47 @@ air, moon roof, loaded",4799.00''' + u'\n')
     assert len(stderr_result) == 0
 
 
+def test_validate_success_wikipedia_header(testpath):
+    """Test the validator with valid and invalid data from Wikipedia's CSV
+    article with added header"""
+    csv_path = os.path.join(testpath, 'csv.csv')
+    techmd = {
+        "mimetype": "text/csv",
+        "filename": csv_path,
+        "separator": "CR+LF",
+        "delimiter": ";",
+        "charset": "UTF-8",
+        "header_fields": ["year", "brand", "model", "detail", "other"]}
+    with io.open(csv_path, 'w', newline='\r\n') as target:
+        target.write(u'year,brand,model,detail,other\n')
+        target.write(u'1997,Ford,E350,"ac, abs, moon",3000.00\n')
+        target.write(u'1999,Chevy,"Venture ""Extended Edition""","",4900.00\n')
+        target.write(u'1999,Chevy,"Venture ""Extended Edition, Very Large""",,'
+                     '5000.00\n')
+        target.write(u'''1996,Jeep,Grand Cherokee,"MUST SELL!
+air, moon roof, loaded",4799.00''' + u'\n')
+
+    validator = Csv(techmd)
+    (exitcode_result, stdout_result, stderr_result) = validator.validate()
+    assert exitcode_result == 0
+    assert len(stdout_result) == 0
+    assert len(stderr_result) == 0
+
+    # Test wrong header
+    techmd = {
+        "mimetype": "text/csv",
+        "filename": csv_path,
+        "separator": "CR+LF",
+        "delimiter": ";",
+        "charset": "UTF-8",
+        "header_fields": ["year", "brand", "model", "detail"]}
+    validator = Csv(techmd)
+    (exitcode_result, stdout_result, stderr_result) = validator.validate()
+    assert exitcode_result == 1
+    assert len(stdout_result) == 0
+    assert "CSV validation error on line 1, header mismatch" in stderr_result
+
+
 def test_validate_fail_jpeg():
     """Test case for invalid csv"""
     # It's hard to get the csv module to fail, feed it a JPG file and it will
