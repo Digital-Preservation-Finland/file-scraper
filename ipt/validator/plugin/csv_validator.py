@@ -16,12 +16,21 @@ class CsvValidationError(Exception):
 class Csv(object):
     """The CSV validator plugin"""
 
-    def __init__(self, mimetype, fileversion, filename):
-        if mimetype != "text/csv":
-            raise CsvValidationError("Unknown mimetype: %s" % mimetype)
-        self.filename = str(filename)
-        self.fileversion = fileversion
-        self.mimetype = mimetype
+    def __init__(self, techmd):
+        """
+        :mimetype: mimetype of digital object.
+        :filename: Full path of digital object.
+        :techmd: Dictionary which
+        """
+        if techmd["mimetype"] != "text/csv":
+            raise CsvValidationError(
+                "Unknown mimetype: %s" % techmd["mimetype"])
+        self.filename = str(techmd["filename"])
+        self.mimetype = techmd["mimetype"]
+        self.record_separator = techmd["separator"]
+        self.delimiter = techmd["delimiter"]
+        self.header_fields = techmd["header_fields"]
+        self.charset = techmd["charset"]
 
     def validate(self):
         """The actual validation. Runs the CSV file through cvs.reader and
