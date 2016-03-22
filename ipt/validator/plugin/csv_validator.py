@@ -42,13 +42,13 @@ class Csv(object):
                 reader = csv.reader(csvfile, dialect)
                 first_line = reader.next()
                 if self.header_fields and not self.header_fields == first_line:
-                    return (1, "",
+                    return (117, "",
                         "CSV validation error on line 1, header mismatch")
                 for _ in reader:
                     pass
             return (0, "", "")
         except csv.Error, err:
-            return (1, "", "CSV validation error on line %s: %s" %
+            return (117, "", "CSV validation error on line %s: %s" %
                     (reader.line_num, err))
 
 

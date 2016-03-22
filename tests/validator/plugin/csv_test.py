@@ -10,7 +10,7 @@ import pytest
 import testcommon.settings
 
 # Module to test
-from ipt.validator.plugin.csv_validator import Csv
+from ipt.validator.plugin.csv_validator import Csv, CsvValidationError
 
 PROJECTDIR = testcommon.settings.PROJECTDIR
 
@@ -86,7 +86,7 @@ air, moon roof, loaded",4799.00''' + u'\n')
         "header_fields": ["year", "brand", "model", "detail"]}
     validator = Csv(techmd)
     (exitcode_result, stdout_result, stderr_result) = validator.validate()
-    assert exitcode_result == 1
+    assert exitcode_result == 117
     assert len(stdout_result) == 0
     assert "CSV validation error on line 1, header mismatch" in stderr_result
 
@@ -103,7 +103,7 @@ def test_validate_fail_jpeg():
         "header_fields": ""}
     validator = Csv(techmd)
     (exitcode_result, stdout_result, stderr_result) = validator.validate()
-    assert exitcode_result == 1
+    assert exitcode_result == 117
     assert len(stdout_result) == 0
     assert len(stderr_result) != 0
     print stderr_result
@@ -124,7 +124,30 @@ def test_validate_fail_wikipedia(testpath):
 
     validator = Csv(techmd)
     (exitcode_result, stdout_result, stderr_result) = validator.validate()
-    assert exitcode_result == 1
+    assert exitcode_result == 117
     assert len(stdout_result) == 0
     assert len(stderr_result) != 0
     print stderr_result
+
+
+def test_system_errors():
+    """test system errors."""
+    techmd = {
+        "mimetype": "text/csv",
+        "filename": "foo",
+        "separator": "CR+LF",
+        "delimiter": ";",
+        "charset": "UTF-8",
+        "header_fields": ""}
+    with pytest.raises(IOError):
+        validator = Csv(techmd)
+        validator.validate()
+
+    techmd["mimetype"] = "foo"
+    with pytest.raises(CsvValidationError):
+        validator = Csv(techmd)
+        validator.validate()
+
+    with pytest.raises(TypeError):
+        validator = Csv(None)
+        validator.validate()
