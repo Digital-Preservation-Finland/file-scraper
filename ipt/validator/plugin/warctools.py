@@ -73,37 +73,24 @@ class WarcTools(object):
         """
 
         if self.mimetype == "application/x-internet-archive":
-            (self.statuscode,
-                self.stdout,
-                self.stderr) = self._validate_arc()
+            self._validate_arc()
 
         elif self.mimetype == "application/warc":
-            (self.statuscode,
-                self.stdout,
-                self.stderr) = self._validate_warc()
+            self._validate_warc()
 
-        return (self.statuscode, self.stdout, self.stderr)
-
+        if set(self.exitcode).issubset(set([0])):
+            validity = 0
+        elif not set(self.exitcode).issubset([0, 117]):
+            validity = 1
+        else:
+            validity = 117
+        return (validity, '\n'.join(self.stdout), '\n'.join(self.stderr))
 
     def _validate_warc(self):
         """Validate warc with WarcTools.
         :returns: (statuscode, stdout, stderr)"""
-        stdout = []
-        stderr = []
-        statuscode_version = 1
-
-        # Validate warc
-        exec_cmd1 = ['warcvalid', self.filename]
-        (statuscode,
-            stdout_validation,
-            stderr_validation) = run_command(cmd=exec_cmd1)
-        print (statuscode,
-            stdout_validation,
-            stderr_validation)
-        stdout.append(stdout_validation)
-        stderr.append(stderr_validation)
-
         (exitcode, stdout, stderr) = run_command(['warcvalid', self.filename])
+        self._check_for_errors(exitcode, stdout, stderr)
         if exitcode == 0:
             self._check_warc_version()
 
@@ -113,34 +100,18 @@ class WarcTools(object):
         :returns: (statuscode, stdout, stderr)
 
         """
-        # create covnersion from arc tp warc
-        stdout = []
-        stderr = []
-        statuscode_validation = 1
-        statuscode_conversion = 1
-
+        # create covnersion from arc to warc
         temp_file = tempfile.NamedTemporaryFile(prefix="temp-warc.")
         warc_path = temp_file.name
-        exec_cmd1 = ['arc2warc', self.filename]
-        (statuscode_conversion,
-            stdout_conversion,
-            stderr_conversion) = run_command(
-            cmd=exec_cmd1, stdout=temp_file)
-        stdout.append(str(stdout_conversion))
-        stderr.append(str(stderr_conversion))
+        (exitcode, stdout, stderr) = run_command(
+            cmd=['arc2warc', self.filename], stdout=temp_file)
+        self._check_for_errors(exitcode, stdout, stderr)
 
         # Successful conversion from arc to warc, valdiation can
         # now be made.
-        if statuscode_conversion == 0:
-            exec_cmd2 = ['warcvalid', warc_path]
-            (statuscode_validation,
-                stdout_validation,
-                stderr_validation) = run_command(exec_cmd2)
-
-            stdout.append(stdout_validation)
-            stderr.append(stderr_validation)
-
-        return (statuscode_validation, ''.join(stdout), ''.join(stderr))
+        if exitcode == 0:
+            (exitcode, stdout, stderr) = run_command(['warcvalid', warc_path])
+            self._check_for_errors(exitcode, stdout, stderr)
 
     def _check_for_errors(self, exitcode, stdout, stderr):
         """Check if outcome was failure or success."""
