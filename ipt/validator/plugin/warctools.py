@@ -135,8 +135,18 @@ class WarcTools(object):
 
         return (statuscode_validation, ''.join(stdout), ''.join(stderr))
 
+    def _check_for_errors(self, exitcode, stdout, stderr):
+        """Check if outcome was failure or success."""
+        if exitcode == 0:
+            self._append_results(0, stdout, stderr)
+            return
+        for message in self.failures:
+            if message in stderr:
+                self._append_results(117, "", stderr)
+        for error in self.system_errors:
+            if error in stderr:
+                self._append_results(1, "", stderr)
 
-    def check_outcome(self):
     def _append_results(self, exitcode, stdout, stderr):
         """append intermediate results."""
         self.exitcode.append(exitcode)
