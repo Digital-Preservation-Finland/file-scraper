@@ -62,17 +62,18 @@ def test_system_error():
     """
     Test for system error(missing file)
     """
-    with pytest.raises(UnknownException):
-
-        fileinfo = {
-            "filename": "foo",
-            "format": {
-                "mimetype": "application/warc",
-                "version": "1.0"
-            }
+    fileinfo = {
+        "filename": "foo",
+        "format": {
+            "mimetype": "application/warc",
+            "version": "1.0"
         }
-        validator = WarcTools(fileinfo)
-        validator.validate()
+    }
+    validator = WarcTools(fileinfo)
+    (exitcode, stdout, stderr) = validator.validate()
+    assert exitcode == 1
+    assert not stdout
+    assert "No such file or directory" in stderr
 
     with pytest.raises(WarcError):
         fileinfo = {
