@@ -45,14 +45,14 @@ class WarcTools(object):
         except IOError:
             # Not compressed archive
             warc_fd.close()
-            with open(filename, 'r') as warc_fd:
+            with open(self.filename, 'r') as warc_fd:
                 line = warc_fd.readline()
-
-        if "WARC/%s" % version not in line:
-            return (117, "File version check error, version %s "
-                         "not found from warc: %s" % (version, line))
-        return (0, "")
-
+        print "CHECKING FOR", self.fileversion, "IN", line
+        if "WARC/%s" % self.fileversion not in line:
+            print "VERSION CHECK FAILED"
+            self._append_results(117, "", "File version check error, version %s "
+                         "not found from warc: %s" % (self.fileversion, line))
+        self._append_results(0, "", "")
 
     def validate(self):
         """Validate file with command given in variable self.exec_cmd and with
