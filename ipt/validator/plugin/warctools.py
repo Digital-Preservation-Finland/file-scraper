@@ -68,16 +68,14 @@ class WarcTools():
         """
 
         if self.mimetype == "application/x-internet-archive":
-            with self.error_handler():
-                (self.statuscode,
-                    self.stdout,
-                    self.stderr) = self._validate_arc()
+            (self.statuscode,
+                self.stdout,
+                self.stderr) = self._validate_arc()
 
         elif self.mimetype == "application/warc":
-            with self.error_handler():
-                (self.statuscode,
-                    self.stdout,
-                    self.stderr) = self._validate_warc()
+            (self.statuscode,
+                self.stdout,
+                self.stderr) = self._validate_warc()
 
         return (self.statuscode, self.stdout, self.stderr)
 
@@ -146,26 +144,4 @@ class WarcTools():
         return (statuscode_validation, ''.join(stdout), ''.join(stderr))
 
 
-    @contextlib.contextmanager
-    def error_handler(self):
-        """IOError handler, IOError is not system error in every case.
-        Warctools somehow raises IOError in case of corrupted file"""
-        error = ""
-        try:
-            yield
-        except IOError as error:
-            if 'Not a gzipped file' not in str(error):
-                raise IOError(error)
-            self.statuscode = 117
-            self.stdout = ""
-            self.stderr = str(error)
-        except UnknownException as error:
-            for message in [
-                    'zero length field name in format',
-                    'Error -3 while decompressing: invalid distance code']:
-                if message in str(error):
-                    self.statuscode = 117
-                    self.stdout = ""
-                    self.stderr = str(error)
-            if self.statuscode != 117:
-                raise UnknownException(error)
+    def check_outcome(self):
