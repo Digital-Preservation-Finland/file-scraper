@@ -33,12 +33,12 @@ class WarcTools(object):
                 self.mimetype != "application/x-internet-archive":
             raise WarcError("Unknown mimetype: %s" % self.mimetype)
 
-    def _check_warc_version(self, version, filename):
+    def _check_warc_version(self):
         """ Check the file version of given file. In WARC format version string
             is stored at the first line of file so this methdos read the first
             line and check that it matches.
         """
-        warc_fd = gzip.open(filename)
+        warc_fd = gzip.open(self.filename)
         try:
             # First assume archive is compressed
             line = warc_fd.readline()
@@ -96,15 +96,9 @@ class WarcTools(object):
         stdout.append(stdout_validation)
         stderr.append(stderr_validation)
 
-        if statuscode == 0:
-            # Check that version is correct
-            (statuscode_version, messages) = self._check_warc_version(
-                self.fileversion, self.filename)
-            if statuscode_version != 0:
-                stderr.append(messages)
-
-        return (statuscode_version, ''.join(stdout), ''.join(stderr))
-
+        (exitcode, stdout, stderr) = run_command(['warcvalid', self.filename])
+        if exitcode == 0:
+            self._check_warc_version()
 
     def _validate_arc(self):
         """Valdiate arc by transforming it to warc first. WarcTools does not
