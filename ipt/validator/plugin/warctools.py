@@ -33,9 +33,6 @@ class WarcTools(object):
                 self.mimetype != "application/x-internet-archive":
             raise WarcError("Unknown mimetype: %s" % self.mimetype)
 
-        #FIXME: Why this is 1
-        self.statuscode = 1
-
     def _check_warc_version(self, version, filename):
         """ Check the file version of given file. In WARC format version string
             is stored at the first line of file so this methdos read the first
