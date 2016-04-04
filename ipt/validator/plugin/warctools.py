@@ -137,3 +137,8 @@ class WarcTools(object):
 
 
     def check_outcome(self):
+    def _append_results(self, exitcode, stdout, stderr):
+        """append intermediate results."""
+        self.exitcode.append(exitcode)
+        self.stdout.append(stdout)
+        self.stderr.append(stderr)
