@@ -28,7 +28,14 @@ class WarcTools(object):
         self.filename = fileinfo['filename']
         self.fileversion = fileinfo['format']['version']
         self.mimetype = fileinfo['format']['mimetype']
-
+        self.stdout = []
+        self.stderr = []
+        self.exitcode = []
+        self.failures = ['zero length field name in format',
+            'Error -3 while decompressing: invalid distance code',
+            'Not a gzipped file',
+            'CRC check failed']
+        self.system_errors = ['Permission denied', 'No such file or directory']
         if self.mimetype != "application/warc" and \
                 self.mimetype != "application/x-internet-archive":
             raise WarcError("Unknown mimetype: %s" % self.mimetype)
