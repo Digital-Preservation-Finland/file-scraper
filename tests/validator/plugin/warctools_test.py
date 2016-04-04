@@ -38,7 +38,9 @@ TESTDATADIR = os.path.abspath(os.path.join(TESTDATADIR_BASE,
      ("arc/invalid_arc.gz", "application/x-internet-archive",
         "1.0", 117, "", "Not a gzipped file"),
      ("warc_1_0/valid_no_compress.warc", "application/warc", "1.0", 0,
-        "", "")])
+        "", ""),
+     ("arc/invalid_arc_crc.gz", "application/x-internet-archive", "1.0",
+        117, "", "CRC check failed")])
 def test_validate(filename, mimetype, version, exitcode, stdout, stderr):
     """Test cases for valid/invalid warcs and arcs."""
 
