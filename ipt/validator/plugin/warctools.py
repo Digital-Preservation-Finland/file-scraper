@@ -10,7 +10,8 @@ class WarcError(Exception):
     """Warc validation error."""
     pass
 
-class WarcTools():
+
+class WarcTools(object):
 
     """ Implements filevalidation or warc/arc files. use by calling
     validate.
