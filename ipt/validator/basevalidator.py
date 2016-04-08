@@ -22,6 +22,7 @@ class BaseValidator(object):
     """
 
     __metaclass__ = abc.ABCMeta
+    _supported_mimetypes = []
 
     @abc.abstractmethod
     def check_validity(self):
@@ -47,6 +48,16 @@ class BaseValidator(object):
         self.stdout = ""
         self.stderr = ""
 
+    @classmethod
+    def is_supported_mimetype(cls, fileinfo):
+        mimetype = fileinfo['format']['mimetype']
+        version = fileinfo['format']['version']
+
+        if mimetype in cls._supported_mimetypes:
+            if version in cls._supported_mimetypes[mimetype]:
+                return True
+        return False
+
     def validate(self):
         """Validate file with command given in variable self.exec_cmd and with
         options set in self.exec_options. Also check that validated file
@@ -57,7 +68,6 @@ class BaseValidator(object):
             report -- generated report
             errors -- errors if encountered, else None
         """
-
 
         self.exec_cmd += [self.filename]
         self.exec_validator()

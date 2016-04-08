@@ -77,13 +77,4 @@ def test_system_error():
     assert not stdout
     assert "No such file or directory" in stderr
 
-    with pytest.raises(WarcError):
-        fileinfo = {
-            "filename": "foo",
-            "format": {
-                "mimetype": "foo",
-                "version": "1.0"
-            }
-        }
-
-        validator = WarcTools(fileinfo)
+    validator = WarcTools(fileinfo)

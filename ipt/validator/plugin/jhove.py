@@ -30,6 +30,15 @@ class Jhove(BaseValidator):
         .. seealso:: http://jhove.sourceforge.net/documentation.html
     """
 
+    _supported_mimetypes = {
+        'application/pdf': ['1.3', '1.4', 'A-1a', 'A-1b'],
+        'image/tiff': ['6.0'],
+        'image/jpeg': ['', '1.0', '1.01'],
+        'image/jp2': [],
+        'image/gif': ['1987a', '1989a'],
+        'text/html': []
+    }
+
     def __init__(self, fileinfo):
         """init"""
         super(Jhove, self).__init__(fileinfo)

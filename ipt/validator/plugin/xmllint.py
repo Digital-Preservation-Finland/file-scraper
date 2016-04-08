@@ -6,7 +6,6 @@ import errno
 from lxml import etree
 
 from ipt.validator.basevalidator import BaseValidator
-from ipt.validator.basevalidator import ValidatorError
 
 XSI = 'http://www.w3.org/2001/XMLSchema-instance'
 XS = '{http://www.w3.org/2001/XMLSchema}'
@@ -30,6 +29,10 @@ class Xmllint(BaseValidator):
     .. seealso:: http://xmlsoft.org/xmllint.html
     """
 
+    _supported_mimetypes = {
+        'text/xml': ['1.0']
+    }
+
     def __init__(self, fileinfo):
         super(Xmllint, self).__init__(fileinfo)
 
@@ -41,8 +44,6 @@ class Xmllint(BaseValidator):
         # Prevent network access
         self.exec_cmd += ["--nonet"]
 
-        if self.mimetype != "text/xml":
-            raise ValidatorError("Unknown mimetype: %s" % self.mimetype)
 
     def validate(self):
         """Validate XML file with Xmllint and return a tuple of results.

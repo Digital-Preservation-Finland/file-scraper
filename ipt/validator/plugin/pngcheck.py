@@ -12,13 +12,14 @@ class Pngcheck(BaseValidator):
     .. seealso:: http://www.libpng.org/pub/png/apps/pngcheck.html
     """
 
+    _supported_mimetypes = {
+        'image/png': []
+    }
+
     def __init__(self, fileinfo):
         super(Pngcheck, self).__init__(fileinfo)
         self.exec_cmd = ['pngcheck']
         self.profile = None
-
-        if self.mimetype != "image/png":
-            raise Exception("Unknown mimetype: %s" % self.mimetype)
 
     def check_validity(self):
         if self.statuscode == 0:

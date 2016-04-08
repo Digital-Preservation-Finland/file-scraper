@@ -33,6 +33,10 @@ FORMATS = [
 class FFMpeg(object):
     """FFMpeg plugin class."""
 
+    _supported_mimetypes = {
+        'video/mpeg': ['1', '2', '4']
+    }
+
     def __init__(self, fileinfo):
         """init"""
         self.filename = fileinfo['filename']

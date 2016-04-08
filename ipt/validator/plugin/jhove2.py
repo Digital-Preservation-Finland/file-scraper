@@ -5,14 +5,7 @@ import lxml.etree
 
 from ipt.validator.basevalidator import BaseValidator
 
-JHOVE_MODULES = [
-    'application/x-internet-archive',
-    'text/plain',
-    'application/warc'
-]
-
 NAMESPACES = {'j2': 'http://jhove2.org/xsd/1.0.0'}
-
 
 class Jhove2(BaseValidator):
 
@@ -28,6 +21,12 @@ class Jhove2(BaseValidator):
         .. seealso:: http://jhove.sourceforge.net/documentation.html
     """
 
+    _supported_mimetypes = {
+        'application/x-internet-archive': [],
+        'text/plain': ['UTF-8'],
+        'application/warc': []
+    }
+
     def __init__(self, fileinfo):
         super(Jhove2, self).__init__(fileinfo)
 
@@ -35,9 +34,6 @@ class Jhove2(BaseValidator):
         tempdir = tempfile.mkdtemp()
         self.exec_cmd = ['jhove2',  '--display', 'XML', '--temp', tempdir]
         self.environment['JAVA_OPTS'] = "-Djava.io.tmpdir=%s" % tempdir
-
-        if self.mimetype not in JHOVE_MODULES:
-            raise Exception("Unknown mimetype: %s" % self.mimetype)
 
         if self.mimetype == 'text/plain':
             self.charset = fileinfo['format']['charset']

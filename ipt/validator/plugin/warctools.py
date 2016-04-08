@@ -21,6 +21,11 @@ class WarcTools(object):
     .. seealso:: https://github.com/internetarchive/warctools
     """
 
+    _supported_mimetypes = {
+        'application/warc': ['0.17', '1.0'],
+        'application/x-internet-archive': ['1.0', '1.1']
+    }
+
     def __init__(self, fileinfo):
         """init."""
 

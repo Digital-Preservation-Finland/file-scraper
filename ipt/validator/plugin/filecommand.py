@@ -16,14 +16,15 @@ class Filecommand(BaseValidator):
     .. seealso:: http://linux.die.net/man/1/file
     """
 
+    _supported_mimetypes = {
+        'text/plain': ['ISO-8859-15']
+    }
+
     def __init__(self, mimetype, fileversion, filename):
         self.exec_cmd = ['file', '-e', 'soft']
         self.filename = filename
         self.fileversion = fileversion
         self.mimetype = mimetype
-
-        if mimetype != "text/plain":
-            raise Exception("Unknown mimetype: %s" % mimetype)
 
     def check_validity(self):
         filename = os.path.basename(self.filename)

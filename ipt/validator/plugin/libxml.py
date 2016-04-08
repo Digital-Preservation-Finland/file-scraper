@@ -29,11 +29,12 @@ class Libxml(BaseValidator):
         .. seealso:: http://lxml.de
     """
 
+    _supported_mimetypes = {
+        'text/xml': []
+    }
+
     def __init__(self, fileinfo):
         super(Libxml, self).__init__(fileinfo)
-
-        if self.mimetype != "text/xml":
-            raise Exception("Unknown mimetype: %s" % self.mimetype)
 
     def exec_validator(self):
         try:
