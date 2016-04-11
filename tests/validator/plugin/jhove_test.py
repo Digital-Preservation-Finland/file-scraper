@@ -2,7 +2,7 @@
 import os
 import pytest
 
-from ipt.validator.plugin.jhove import Jhove
+from ipt.validator.jhove import Jhove
 from ipt.utils import ValidationException
 
 TESTDATADIR_BASE = os.path.abspath(

@@ -8,7 +8,7 @@ import testcommon.settings
 from testcommon.casegenerator import pytest_generate_tests
 
 # Module to test
-import ipt.validator.plugin.pngcheck
+import ipt.validator.pngcheck
 
 class TestPngcheckValidator:
 
@@ -51,7 +51,7 @@ class TestPngcheckValidator:
     def test_validate(self, testcase, fileinfo, expected_result):
 
         for testcase in self.testcases["test_validate"]:
-            val = ipt.validator.plugin.pngcheck.Pngcheck(testcase["fileinfo"])
+            val = ipt.validator.pngcheck.Pngcheck(testcase["fileinfo"])
 
             (status, stdout, stderr) = val.validate()
 

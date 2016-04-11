@@ -9,7 +9,7 @@ import pytest
 import testcommon.settings
 
 # Module to test
-from ipt.validator.plugin.warctools import WarcTools, WarcError
+from ipt.validator.warctools import WarcTools, WarcError
 from ipt.utils import UnknownException
 
 PROJECTDIR = testcommon.settings.PROJECTDIR

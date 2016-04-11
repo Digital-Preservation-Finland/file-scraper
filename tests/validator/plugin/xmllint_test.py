@@ -7,7 +7,7 @@ from testcommon.casegenerator import pytest_generate_tests
 
 import pytest
 # Module to test
-import ipt.validator.plugin.xmllint
+import ipt.validator.xmllint
 
 
 ROOTPATH = os.path.abspath(os.path.join(
@@ -163,7 +163,7 @@ class TestXmllintValidation:
             }
         }
 
-        validate = ipt.validator.plugin.xmllint.Xmllint(fileinfo)
+        validate = ipt.validator.xmllint.Xmllint(fileinfo)
 
         if "catalog" in testcase:
             validate.set_catalog(testcase["catalog"])

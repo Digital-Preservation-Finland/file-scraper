@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 import pytest
 import testcommon.settings
 
-from ipt.validator.plugin.csv_validator import Csv, CsvValidationError
+from ipt.validator.csv_validator import Csv, CsvValidationError
 
 PROJECTDIR = testcommon.settings.PROJECTDIR
 TESTDATADIR_BASE = os.path.abspath(os.path.join(os.path.dirname(__file__),

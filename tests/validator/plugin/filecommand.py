@@ -9,7 +9,7 @@ import pytest
 import testcommon.settings
 
 # Module to test
-import validator.plugin.filecommand
+import validator.filecommand
 
 PROJECTDIR = testcommon.settings.PROJECTDIR
 
@@ -38,8 +38,9 @@ class TestFilecommandFilevalidator:
 
             testcase["filename"] = os.path.join(testcommon.settings.TESTDATADIR,
                                                 testcase["filename"])
-            val = validator.plugin.filecommand.Filecommand(testcase["mimetype"],
-                                                           testcase["formatVersion"], testcase["filename"])
+            val = validator.filecommand.Filecommand(
+                testcase["mimetype"],
+                testcase["formatVersion"], testcase["filename"])
 
             (status, stdout, stderr) = val.validate()
 
@@ -59,6 +60,7 @@ class TestFilecommandFilevalidator:
                 assert re.match('(?s).*' + match_string, stderr), message
 
         if "profile" in testcase["expected_result"]:
-            assert val.check_profile(expected_result["profile"]) == None
+            assert val.check_profile(testcase["expected_result"]["profile"]) \
+                is None
 
         return None

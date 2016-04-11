@@ -1,6 +1,6 @@
 """Test the remove_unneeded_warnings function. Needs to be in a separate file,
 because xmllint_test.py uses the test case generator:"""
-from ipt.validator.plugin.xmllint import remove_unneeded_warnings
+from ipt.validator.xmllint import remove_unneeded_warnings
 
 
 TEXT = (

@@ -4,7 +4,7 @@ This is a test for ffmpeg.py.
 import os
 import pytest
 
-from ipt.validator.plugin.ffmpeg import FFMpeg
+from ipt.validator.ffmpeg import FFMpeg
 
 TEST_DATA_DIR_BASE = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '../../data'))

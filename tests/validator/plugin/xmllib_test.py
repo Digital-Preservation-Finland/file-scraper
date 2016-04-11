@@ -8,7 +8,7 @@ import pytest
 import testcommon.settings
 
 # Module to test
-import ipt.validator.plugin.libxml
+import ipt.validator.libxml
 
 PROJECTDIR = testcommon.settings.PROJECTDIR
 
@@ -42,7 +42,7 @@ class TestXmllibFilevalidator:
             testcase["fileinfo"]["filename"] = os.path.join(
                 testcommon.settings.TESTDATADIR,
                 testcase["fileinfo"]["filename"])
-            val = ipt.validator.plugin.libxml.Libxml(testcase["fileinfo"])
+            val = ipt.validator.libxml.Libxml(testcase["fileinfo"])
 
             (status, stdout, stderr) = val.validate()
 

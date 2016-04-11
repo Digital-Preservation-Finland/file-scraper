@@ -9,7 +9,7 @@ import pytest
 import testcommon.settings
 
 # Module to test
-import ipt.validator.plugin.jhove2
+import ipt.validator.jhove2
 
 PROJECTDIR = testcommon.settings.PROJECTDIR
 
@@ -37,7 +37,7 @@ def test_validate():
         testcase["fileinfo"]["filename"] = os.path.join(
             testcommon.settings.TESTDATADIR,
             testcase["fileinfo"]["filename"])
-        val = ipt.validator.plugin.jhove2.Jhove2(testcase["fileinfo"])
+        val = ipt.validator.jhove2.Jhove2(testcase["fileinfo"])
 
         (status, stdout, stderr) = val.validate()
 
@@ -70,7 +70,7 @@ def test_check_charset():
             "charset": "UTF-8"
         }
     }
-    validator =  ipt.validator.plugin.jhove2.Jhove2(fileinfo)
+    validator =  ipt.validator.jhove2.Jhove2(fileinfo)
     validator.validate()
     assert validator.check_charset()
 
@@ -86,7 +86,7 @@ def test_check_charset_failure():
             "charset": "WRONG_CHARSET"
         }
     }
-    validator =  ipt.validator.plugin.jhove2.Jhove2(fileinfo)
+    validator =  ipt.validator.jhove2.Jhove2(fileinfo)
     validator.validate()
 
     assert not validator.check_charset()
