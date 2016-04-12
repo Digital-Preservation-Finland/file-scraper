@@ -141,7 +141,7 @@ class TestSchematronValidator:
             validate.sharepath = testcommon.settings.SHAREDIR
 
             schemas = [
-                "mets_internal.sch", "mets_mdtype.sch", "mets_mix.sch", "premis.sch"]
+                "mets_internal.sch", "mets_mdtype.sch", "mets_mix.sch", "mets_premis.sch"]
 
             i = 0
             for schema in schemas:
