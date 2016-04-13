@@ -12,13 +12,26 @@ class UnknownMimetypeError(Exception):
     pass
 
 
-def Validator(fileinfo):
+class UnknownFileformat(object):
+    ERROR_MSG = 'No validator for mimetype: %s version: %s'
+
+    def __init__(self, fileinfo):
+        self.mimetype = fileinfo['format']['mimetype']
+        self.version = fileinfo['format']['version']
+
+    def validate(self):
+        return (1, '', self.ERROR_MSG % (self.mimetype, self.version))
+
+
+def validate(fileinfo):
     # Implementation of class factory pattern from
     # http://stackoverflow.com/questions/456672/class-factory-in-python
 
+    found_validator = False
     for cls in BaseValidator.__subclasses__():
         if cls.is_supported_mimetype(fileinfo):
-            return cls(fileinfo)
-    raise UnknownMimetypeError('No validator for mimetype: %s version: %s' %
-                               (fileinfo['format']['mimetype'],
-                                fileinfo['format']['version']))
+            found_validator = True
+            yield cls(fileinfo).validate()
+
+    if not found_validator:
+        yield UnknownFileformat(fileinfo).validate()
