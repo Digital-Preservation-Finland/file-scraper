@@ -144,6 +144,11 @@ class Jhove(BaseValidator):
         if self.mimetype == "application/pdf" and "A-1" in version:
             version = "1.4"
 
+        # There is no version tag in TIFF images.
+        # TIFF 4.0 and 5.0 is also valid TIFF 6.0.
+        if self.mimetype == "image/tiff" and report_version in ["4.0", "5.0"]:
+            report_version = "6.0"
+
         if report_version != version:
             return (117, (
                 "ERROR: File version is '%s', expected '%s'"
