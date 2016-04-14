@@ -31,7 +31,7 @@ class TestSchematronValidator:
         "test_validate_file": [
             {"casename": "Kervinen",
              "filename": "CSC_test004/mets.xml",
-             "expect_errors": [False, False, False, True]},
+             "expect_errors": [False, False, False, False]},
             {"casename": "Seminaari",
              "filename": "CSC_test006/mets.xml",
              "expect_errors": [False, False, False, False]}
