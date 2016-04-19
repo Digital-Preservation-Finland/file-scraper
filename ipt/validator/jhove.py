@@ -31,7 +31,7 @@ class Jhove(BaseValidator):
     """
 
     _supported_mimetypes = {
-        'application/pdf': ['1.3', '1.4', 'A-1a', 'A-1b'],
+        'application/pdf': ['1.3', '1.4', '1.5', '1.6', 'A-1a', 'A-1b'],
         'image/tiff': ['6.0'],
         'image/jpeg': ['', '1.0', '1.01'],
         'image/jp2': [],
