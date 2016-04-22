@@ -1,7 +1,5 @@
 """General interface for building a file validator plugin. """
 import abc
-import subprocess
-import os
 
 
 class ValidatorError(Exception):
@@ -22,31 +20,24 @@ class BaseValidator(object):
     """
 
     __metaclass__ = abc.ABCMeta
+
     _supported_mimetypes = []
+    _messages = None
+    _errors = None
+    _is_valid = None
 
     @abc.abstractmethod
-    def check_validity(self):
-        pass
-
-    @abc.abstractmethod
-    def check_version(self):
+    def validate(self):
         pass
 
     def __init__(self, fileinfo):
-        """Init method for BaseValidator class which sets environment
-        variables.
-        """
-
-        self.exec_cmd = []
-        self.environment = os.environ.copy()
+        """Init """
 
         self.filename = fileinfo['filename']
         self.fileversion = fileinfo['format']['version']
         self.mimetype = fileinfo['format']['mimetype']
 
-        self.statuscode = None
-        self.stdout = ""
-        self.stderr = ""
+        self._is_valid = None
 
     @classmethod
     def is_supported_mimetype(cls, fileinfo):
@@ -58,54 +49,23 @@ class BaseValidator(object):
                 return True
         return False
 
-    def validate(self):
-        """Validate file with command given in variable self.exec_cmd and with
-        options set in self.exec_options. Also check that validated file
-        version and profile matches with validator.
+    def messages(self):
+        if self._is_valid is None:
+            self.validate()
 
-        :returns: Tuple (status, report, errors) where
-            status -- 0 is success, anything else failure
-            report -- generated report
-            errors -- errors if encountered, else None
-        """
+        for message in self._messages:
+            yield message
 
-        self.exec_cmd += [self.filename]
-        self.exec_validator()
+    def errors(self):
+        if self._is_valid is None:
+            self.validate()
 
-        if self.statuscode != 0:
-            return (
-                self.statuscode, self.stdout,
-                "Validator returned error: %s\n%s" %
-                (self.statuscode, self.stderr))
+        for error in self._errors:
+            yield error
 
-        errors = []
+    def is_valid(self):
+        if self._is_valid is None:
+            self.validate()
 
-        error = self.check_validity()
-        if error is not None:
-            errors.append(error)
+        return self._is_valid
 
-        error = self.check_version(self.fileversion)
-        if error is not None:
-            errors.append(error)
-
-        if len(errors) == 0:
-            return (0, self.stdout, '')
-        else:
-            return (1, self.stdout, '\n'.join(errors))
-
-    def exec_validator(self):
-        """Execute validator command given in self.self.exec_cmd.
-
-        :returns: Tuple (statuscode, stdout, stderr)
-        """
-
-        proc = subprocess.Popen(self.exec_cmd,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE,
-                                shell=False,
-                                env=self.environment)
-
-        (self.stdout, self.stderr) = proc.communicate()
-        self.statuscode = proc.returncode
-
-        return self.statuscode, self.stdout, self.stderr
