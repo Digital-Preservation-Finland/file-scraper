@@ -20,7 +20,7 @@ class UnknownFileformat(object):
         self.version = fileinfo['format']['version']
 
     def validate(self):
-        return (1, '', self.ERROR_MSG % (self.mimetype, self.version))
+        return (117, '', self.ERROR_MSG % (self.mimetype, self.version))
 
 
 def validate(fileinfo):
