@@ -22,7 +22,7 @@ class WarcTools(object):
     """
 
     _supported_mimetypes = {
-        'application/warc': ['0.17', '1.0'],
+        'application/warc': ['0.17', '0.18', '1.0'],
         'application/x-internet-archive': ['1.0', '1.1']
     }
 

@@ -24,7 +24,8 @@ TESTDATADIR = os.path.abspath(os.path.join(TESTDATADIR_BASE,
 @pytest.mark.usefixtures("monkeypatch_Popen")
 @pytest.mark.parametrize(
     ["filename", "mimetype", "version", "exitcode", "stdout", "stderr"],
-    [("warc_0_17/valid.warc", "application/warc", "0.17", 0, "", ""),
+    [("warc_0_18/warc.0.18.warc", "application/warc", "0.18", 0, "", ""),
+     ("warc_0_17/valid.warc", "application/warc", "0.17", 0, "", ""),
      ("warc_0_17/valid.warc", "application/warc", "0.99", 117, "", ""),
      ("warc_0_17/invalid.warc", "application/warc", "0.17", 117, "",
         "zero length field name in format"),
