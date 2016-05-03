@@ -24,7 +24,7 @@ class BaseValidator(object):
     _supported_mimetypes = []
     _messages = None
     _errors = None
-    _is_valid = None
+    _is_valid = True
 
     @abc.abstractmethod
     def validate(self):
@@ -50,27 +50,20 @@ class BaseValidator(object):
         return False
 
     def messages(self):
-        if self._is_valid is None:
-            self.validate()
-
         for message in self._messages:
             yield message
 
     def errors(self):
-        if self._is_valid is None:
-            self.validate()
-
         for error in self._errors:
             yield error
 
     def is_valid(self, validity=None):
-        """Return validator validity state (True/False) or set is as given
-        in parameter"""
+        """Return validator validity state (True/False)"""
 
         if validity is not None:
-            self._is_valid = bool(validity)
+            self._is_valid = validity
 
-        if self._is_valid is None:
-            self.validate()
+        return self._is_valid
 
+    def not_valid(self):
         return self._is_valid

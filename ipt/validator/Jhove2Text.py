@@ -58,9 +58,13 @@ class Jhove2Text(BaseValidator):
         self._check_version()
         self._check_charset()
 
+        return (self.is_valid(),
+                ("\n".join(message) for message in self.messages()),
+                ("\n".join(error) for error in self.errors()))
+
     def _check_report(self):
         if self.get_report_field("isValid") != 'true':
-            self.is_valid(False)
+            self.not_valid()
             self.errors.append("ERROR: File '%s' does not validate: %s" %
                                (self.filename, self.status))
 
@@ -68,7 +72,7 @@ class Jhove2Text(BaseValidator):
         found_version = self._get_report_field("FileVersion")
 
         if found_version != self.version:
-            self.is_valid(False)
+            self.not_valid()
             self.erros.append("ERROR: File '%s' version is %s, expected %s" %
                               (self.filename, found_version, self.version))
 
@@ -82,7 +86,7 @@ class Jhove2Text(BaseValidator):
         results = root.xpath(query, namespaces=NAMESPACES)
 
         if self.charset not in results:
-            self.is_valid(False)
+            self.not_valid()
             self.erros.append("ERROR: File '%s' charset is not expected %s" %
                               (self.filename, self.charset))
 
