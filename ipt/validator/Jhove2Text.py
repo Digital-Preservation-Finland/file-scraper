@@ -52,7 +52,7 @@ class Jhove2Text(BaseValidator):
         returncode = proc.returncode
 
         # Determine validity
-        self._is_valid = bool(returncode)
+        self.is_valid(returncode)
 
         self._check_report()
         self._check_version()
@@ -60,15 +60,17 @@ class Jhove2Text(BaseValidator):
 
     def _check_report(self):
         if self.get_report_field("isValid") != 'true':
-            self.errors.append("ERROR: File '%s' does not validate: %s" % (filename, status))
-
+            self.is_valid(False)
+            self.errors.append("ERROR: File '%s' does not validate: %s" %
+                               (self.filename, self.status))
 
     def _check_version(self):
-        if self._get_report_field("FileVersion") != self.version:
-            return "ERROR: File version is '%s', expected '%s'" % (
-                report_version,
-                version)
+        found_version = self._get_report_field("FileVersion")
 
+        if found_version != self.version:
+            self.is_valid(False)
+            self.erros.append("ERROR: File '%s' version is %s, expected %s" %
+                              (self.filename, found_version, self.version))
 
     def _check_charset(self):
         """Check text files' charset matches with given charset."""
@@ -80,8 +82,9 @@ class Jhove2Text(BaseValidator):
         results = root.xpath(query, namespaces=NAMESPACES)
 
         if self.charset not in results:
-            return False
-
+            self.is_valid(False)
+            self.erros.append("ERROR: File '%s' charset is not expected %s" %
+                              (self.filename, self.charset))
 
     def _get_report_field(self, field):
         """
@@ -89,8 +92,8 @@ class Jhove2Text(BaseValidator):
         """
         root = lxml.etree.fromstring(self.stdout)
         query = '//j2:feature[@ftid = "http://jhove2.org/terms/' \
-                    'reportable/org/jhove2/module/format/utf8/UTF8Module"]/' \
-                    'j2:features/j2:feature[@name="%s"]/j2:value/text()' % field
+            'reportable/org/jhove2/module/format/utf8/UTF8Module"]/' \
+            'j2:features/j2:feature[@name="%s"]/j2:value/text()' % field
 
         results = root.xpath(query, namespaces=NAMESPACES)
         return '\n'.join(results)

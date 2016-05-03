@@ -63,9 +63,14 @@ class BaseValidator(object):
         for error in self._errors:
             yield error
 
-    def is_valid(self):
+    def is_valid(self, validity=None):
+        """Return validator validity state (True/False) or set is as given
+        in parameter"""
+
+        if validity is not None:
+            self._is_valid = bool(validity)
+
         if self._is_valid is None:
             self.validate()
 
         return self._is_valid
-
