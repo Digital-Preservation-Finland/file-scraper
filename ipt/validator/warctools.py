@@ -1,17 +1,12 @@
 """Module for validating files with warc-tools warc validator"""
 import gzip
 import tempfile
-import contextlib
 
-from ipt.utils import run_command, UnknownException
-
-
-class WarcError(Exception):
-    """Warc validation error."""
-    pass
+from ipt.utils import run_command
+from ipt.validator.basevalidator import BaseValidator, ValidatorError
 
 
-class WarcTools(object):
+class WarcTools(BaseValidator):
 
     """ Implements filevalidation or warc/arc files. use by calling
     validate.
@@ -29,21 +24,15 @@ class WarcTools(object):
     def __init__(self, fileinfo):
         """init."""
 
-        #FIXME: Inherit Basevalidator and remove these
+        super(WarcTools, self).__init__(fileinfo)
         self.filename = fileinfo['filename']
         self.fileversion = fileinfo['format']['version']
         self.mimetype = fileinfo['format']['mimetype']
-        self.stdout = []
-        self.stderr = []
-        self.exitcode = []
         self.failures = ['zero length field name in format',
             'Error -3 while decompressing: invalid distance code',
             'Not a gzipped file',
-            'CRC check failed']
-        self.system_errors = ['Permission denied', 'No such file or directory']
-        if self.mimetype != "application/warc" and \
-                self.mimetype != "application/x-internet-archive":
-            raise WarcError("Unknown mimetype: %s" % self.mimetype)
+            'CRC check failed',
+            'incorrect newline in header']
 
     def _check_warc_version(self):
         """ Check the file version of given file. In WARC format version string
@@ -59,12 +48,12 @@ class WarcTools(object):
             warc_fd.close()
             with open(self.filename, 'r') as warc_fd:
                 line = warc_fd.readline()
-        print "CHECKING FOR", self.fileversion, "IN", line
+
         if "WARC/%s" % self.fileversion not in line:
             print "VERSION CHECK FAILED"
-            self._append_results(117, "", "File version check error, version %s "
+            self.is_valid(False)
+            self._errors.append("File version check error, version %s "
                          "not found from warc: %s" % (self.fileversion, line))
-        self._append_results(0, "", "")
 
     def validate(self):
         """Validate file with command given in variable self.exec_cmd and with
@@ -82,21 +71,16 @@ class WarcTools(object):
 
         elif self.mimetype == "application/warc":
             self._validate_warc()
-
-        if set(self.exitcode).issubset(set([0])):
-            validity = 0
-        elif not set(self.exitcode).issubset([0, 117]):
-            validity = 1
-        else:
-            validity = 117
-        return (validity, '\n'.join(self.stdout), '\n'.join(self.stderr))
+        messages = "\n".join(message for message in self.messages())
+        errors = "\n".join(error for error in self.errors())
+        return (self.is_valid(), messages, errors)
 
     def _validate_warc(self):
         """Validate warc with WarcTools.
         :returns: (statuscode, stdout, stderr)"""
         (exitcode, stdout, stderr) = run_command(['warcvalid', self.filename])
         self._check_for_errors(exitcode, stdout, stderr)
-        if exitcode == 0:
+        if self.is_valid():
             self._check_warc_version()
 
     def _validate_arc(self):
@@ -110,28 +94,24 @@ class WarcTools(object):
         warc_path = temp_file.name
         (exitcode, stdout, stderr) = run_command(
             cmd=['arc2warc', self.filename], stdout=temp_file)
+        self.is_valid(exitcode)
         self._check_for_errors(exitcode, stdout, stderr)
 
-        # Successful conversion from arc to warc, valdiation can
+        # Successful conversion from arc to warc, validation can
         # now be made.
-        if exitcode == 0:
+        if self.is_valid():
             (exitcode, stdout, stderr) = run_command(['warcvalid', warc_path])
             self._check_for_errors(exitcode, stdout, stderr)
 
     def _check_for_errors(self, exitcode, stdout, stderr):
         """Check if outcome was failure or success."""
-        if exitcode == 0:
-            self._append_results(0, stdout, stderr)
+        if stdout == "" and exitcode == 0:
+            self.is_valid(True)
             return
+        self.not_valid()
+        self._errors.append(stderr)
+
         for message in self.failures:
             if message in stderr:
-                self._append_results(117, "", stderr)
-        for error in self.system_errors:
-            if error in stderr:
-                self._append_results(1, "", stderr)
-
-    def _append_results(self, exitcode, stdout, stderr):
-        """append intermediate results."""
-        self.exitcode.append(exitcode)
-        self.stdout.append(stdout)
-        self.stderr.append(stderr)
+                return
+        raise ValidatorError(stdout)

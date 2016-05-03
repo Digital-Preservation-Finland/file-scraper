@@ -22,8 +22,8 @@ class BaseValidator(object):
     __metaclass__ = abc.ABCMeta
 
     _supported_mimetypes = []
-    _messages = None
-    _errors = None
+    _messages = []
+    _errors = []
     _is_valid = True
 
     @abc.abstractmethod
@@ -59,11 +59,10 @@ class BaseValidator(object):
 
     def is_valid(self, validity=None):
         """Return validator validity state (True/False)"""
-
         if validity is not None:
             self._is_valid = validity
-
         return self._is_valid
 
     def not_valid(self):
-        return self._is_valid
+        """Set validity to invalid"""
+        self._is_valid = False

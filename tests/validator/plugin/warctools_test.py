@@ -9,8 +9,9 @@ import pytest
 import testcommon.settings
 
 # Module to test
-from ipt.validator.warctools import WarcTools, WarcError
+from ipt.validator.warctools import WarcTools
 from ipt.utils import UnknownException
+from ipt.validator.basevalidator import ValidatorError
 
 PROJECTDIR = testcommon.settings.PROJECTDIR
 
@@ -24,24 +25,24 @@ TESTDATADIR = os.path.abspath(os.path.join(TESTDATADIR_BASE,
 @pytest.mark.usefixtures("monkeypatch_Popen")
 @pytest.mark.parametrize(
     ["filename", "mimetype", "version", "exitcode", "stdout", "stderr"],
-    [("warc_0_18/warc.0.18.warc", "application/warc", "0.18", 0, "", ""),
-     ("warc_0_17/valid.warc", "application/warc", "0.17", 0, "", ""),
-     ("warc_0_17/valid.warc", "application/warc", "0.99", 117, "", ""),
-     ("warc_0_17/invalid.warc", "application/warc", "0.17", 117, "",
+    [("warc_0_18/warc.0.18.warc", "application/warc", "0.18", True, "", ""),
+     ("warc_0_17/valid.warc", "application/warc", "0.17", True, "", ""),
+     ("warc_0_17/valid.warc", "application/warc", "0.99", False, "", ""),
+     ("warc_0_17/invalid.warc", "application/warc", "0.17", False, "",
         "zero length field name in format"),
-     ("warc_1_0/valid.warc.gz", "application/warc", "1.0", 0, "", ""),
-     ("warc_1_0/invalid.warc.gz", "application/warc", "1.0", 117, "",
+     ("warc_1_0/valid.warc.gz", "application/warc", "1.0", True, "", ""),
+     ("warc_1_0/invalid.warc.gz", "application/warc", "1.0", False, "",
         "invalid distance code"),
      ("arc/valid_arc.gz", "application/x-internet-archive",
-        "1.0", 0, "", "DrinkingWithBob-MadonnaAdoptsAfricanBaby"),
+        "1.0", True, "", "DrinkingWithBob-MadonnaAdoptsAfricanBaby"),
      ("arc/valid_arc_no_compress", "application/x-internet-archive",
-        "1.0", 0, "", "DrinkingWithBob-MadonnaAdoptsAfricanBaby"),
+        "1.0", True, "", "DrinkingWithBob-MadonnaAdoptsAfricanBaby"),
      ("arc/invalid_arc.gz", "application/x-internet-archive",
-        "1.0", 117, "", "Not a gzipped file"),
-     ("warc_1_0/valid_no_compress.warc", "application/warc", "1.0", 0,
+        "1.0", False, "", "Not a gzipped file"),
+     ("warc_1_0/valid_no_compress.warc", "application/warc", "1.0", True,
         "", ""),
      ("arc/invalid_arc_crc.gz", "application/x-internet-archive", "1.0",
-        117, "", "CRC check failed")])
+        False, "", "CRC check failed")])
 def test_validate(filename, mimetype, version, exitcode, stdout, stderr):
     """Test cases for valid/invalid warcs and arcs."""
 
@@ -54,7 +55,7 @@ def test_validate(filename, mimetype, version, exitcode, stdout, stderr):
     }
 
     validator = WarcTools(fileinfo)
-    (exitcode_result, stdout_result, stderr_result) = validator.validate()
+    (exitcode_result, stderr_result, stdout_result) = validator.validate()
     assert exitcode == exitcode_result
     assert stdout in stdout_result
     assert stderr in stderr_result
@@ -73,9 +74,6 @@ def test_system_error():
         }
     }
     validator = WarcTools(fileinfo)
-    (exitcode, stdout, stderr) = validator.validate()
-    assert exitcode == 1
-    assert not stdout
-    assert "No such file or directory" in stderr
-
-    validator = WarcTools(fileinfo)
+    with pytest.raises(ValidatorError) as error:
+        validator.validate()
+        assert "No such file or directory" in str(error.value)
