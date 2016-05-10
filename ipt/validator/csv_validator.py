@@ -1,47 +1,57 @@
 """The CSV validator plugin"""
 import csv
 
+from ipt.validator.basevalidator import BaseValidator
+
 
 class CsvValidationError(Exception):
     """CSV validation error"""
     pass
 
 
-class Csv(object):
+class PythonCsv(BaseValidator):
     """The CSV validator plugin"""
 
-    def __init__(self, techmd):
-        """
-        :techmd: Dictionary which holds techical metadata.
-        """
-        if techmd["mimetype"] != "text/csv":
-            raise CsvValidationError(
-                "Unknown mimetype: %s" % techmd["mimetype"])
-        self.filename = str(techmd["filename"])
-        self.mimetype = techmd["mimetype"]
-        self.record_separator = techmd["separator"]
-        self.delimiter = techmd["delimiter"]
-        self.header_fields = techmd["header_fields"]
-        self.charset = techmd["charset"]
+    _supported_mimetypes = {
+        'text/csv': ['UTF-8'],
+    }
+
+    def __init__(self, fileinfo):
+        super(PythonCsv, self).__init__(fileinfo)
+        self.charset = fileinfo['format']['charset']
+
+        self.record_separator = fileinfo['addml']['separator']
+        self.delimiter = fileinfo['addml']['delimiter']
+        self.header_fields = fileinfo['addml']['header_fields']
 
     def validate(self):
-        """The actual validation. Runs the CSV file through cvs.reader and
+        """Try to read CSV file through cvs.reader and if that can be done file
+        is valid.
         :returns: (statuscode, messages, errors)
         """
+
+        dialect = dialect_factory(self.record_separator, self.delimiter)
+
         try:
-            dialect = dialect_factory(self.record_separator, self.delimiter)
             with open(self.filename, 'rb') as csvfile:
                 reader = csv.reader(csvfile, dialect)
                 first_line = reader.next()
                 if self.header_fields and not self.header_fields == first_line:
-                    return (117, "",
-                        "CSV validation error on line 1, header mismatch")
+
+                    self.not_valid()
+                    self.errors.append("CSV validation error: no header at "
+                                       "first line")
                 for _ in reader:
                     pass
-            return (0, "", "")
-        except csv.Error, err:
-            return (117, "", "CSV validation error on line %s: %s" %
-                    (reader.line_num, err))
+
+        except csv.Error as exception:
+            self.not_valid()
+            self.errors.append("CSV validation error on line %s: %s" %
+                               (reader.line_num, exception))
+
+        return (self.is_valid(),
+                ("\n".join(message) for message in self.messages()),
+                ("\n".join(error) for error in self.errors()))
 
 
 def dialect_factory(record_separator, delimiter):
