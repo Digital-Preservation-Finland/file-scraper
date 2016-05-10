@@ -57,9 +57,14 @@ def test_validate(filename, mimetype, version, exitcode, stdout, stderr):
     validator = WarcTools(fileinfo)
     (exitcode_result, stderr_result, stdout_result) = validator.validate()
     assert exitcode == exitcode_result
-    assert stdout in stdout_result
-    assert stderr in stderr_result
-    print stdout, stderr
+    if stdout == "":
+        assert stdout == stdout_result
+    else:
+        assert stdout in stdout_result
+    if stderr == "":
+        assert stderr == stderr_result
+    else:
+        assert stderr in stderr_result
 
 
 def test_system_error():
