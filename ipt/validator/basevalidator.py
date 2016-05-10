@@ -21,11 +21,6 @@ class BaseValidator(object):
 
     __metaclass__ = abc.ABCMeta
 
-    _supported_mimetypes = []
-    _messages = []
-    _errors = []
-    _is_valid = True
-
     @abc.abstractmethod
     def validate(self):
         pass
@@ -36,7 +31,9 @@ class BaseValidator(object):
         self.filename = fileinfo['filename']
         self.fileversion = fileinfo['format']['version']
         self.mimetype = fileinfo['format']['mimetype']
-
+        self._supported_mimetypes = []
+        self._messages = []
+        self._errors = []
         self._is_valid = None
 
     @classmethod
