@@ -22,7 +22,18 @@ class WarcTools(BaseValidator):
     }
 
     def __init__(self, fileinfo):
-        """init."""
+        """init.
+        :fileinfo: a dictionary with format
+
+            fileinfo["filename"]
+            fileinfo["algorithm"]
+            fileinfo["digest"]
+            fileinfo["format"]["version"]
+            fileinfo["format"]["mimetype"]
+            fileinfo["format"]["format_registry_key"]
+            fileinfo["object_id"]["type"]
+            fileinfo["object_id"]["value"]
+        """
 
         super(WarcTools, self).__init__(fileinfo)
         self.filename = fileinfo['filename']
@@ -76,7 +87,8 @@ class WarcTools(BaseValidator):
         return (self.is_valid(), messages, errors)
 
     def _validate_warc(self):
-        """Validate warc with WarcTools.
+        """
+        Validate warc with WarcTools.
         :returns: (statuscode, stdout, stderr)"""
         (exitcode, stdout, stderr) = run_command(['warcvalid', self.filename])
         self._check_for_errors(exitcode, stdout, stderr)
@@ -84,10 +96,10 @@ class WarcTools(BaseValidator):
             self._check_warc_version()
 
     def _validate_arc(self):
-        """Valdiate arc by transforming it to warc first. WarcTools does not
+        """
+        Valdiate arc by transforming it to warc first. WarcTools does not
         support direct validation of arc.
         :returns: (statuscode, stdout, stderr)
-
         """
         # create covnersion from arc to warc
         temp_file = tempfile.NamedTemporaryFile(prefix="temp-warc.")
@@ -104,7 +116,11 @@ class WarcTools(BaseValidator):
             self._check_for_errors(exitcode, stdout, stderr)
 
     def _check_for_errors(self, exitcode, stdout, stderr):
-        """Check if outcome was failure or success."""
+        """Check if outcome was failure or success.
+        :exitcode: exitcode
+        :stdout: stdoutstdout
+        :stderr: stderr
+        """
         if stdout == "" and exitcode == 0:
             self.is_valid(True)
             return
