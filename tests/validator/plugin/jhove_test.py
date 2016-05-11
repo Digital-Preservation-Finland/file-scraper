@@ -47,6 +47,10 @@ TESTDATADIR = os.path.abspath(
          "application/pdf", "1.6", 0, "Well-Formed and valid", ""),
         ("02_filevalidation_data/tiff/valid_version5.tif",
          "image/tiff", "6.0", 0, "Well-Formed and valid", ""),
+        ("02_filevalidation_data/text/utf8.txt",
+         "text/plain", "UTF-8", 0, "Well-Formed and valid", ""),
+        ("02_filevalidation_data/text/utf8.csv",
+         "text/plain", "UTF-8", 0, "Well-Formed and valid", ""),
     ])
 def test_validate(filename, mimetype, version, exitcode, stdout, stderr):
     """Test cases of Jhove validation"""

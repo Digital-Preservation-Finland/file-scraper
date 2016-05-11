@@ -11,7 +11,8 @@ JHOVE_MODULES = {
     'image/jpeg': 'JPEG-hul',
     'image/jp2': 'JPEG2000-hul',
     'image/gif': 'GIF-hul',
-    'text/html': 'HTML-hul'
+    'text/html': 'HTML-hul',
+    'text/plain': 'UTF8-hul'
 }
 
 NAMESPACES = {'j': 'http://hul.harvard.edu/ois/xml/ns/jhove'}
@@ -36,7 +37,8 @@ class Jhove(BaseValidator):
         'image/jpeg': ['', '1.0', '1.01'],
         'image/jp2': [],
         'image/gif': ['1987a', '1989a'],
-        'text/html': []
+        'text/html': [],
+        'text/plain': ['UTF-8']
     }
 
     def __init__(self, fileinfo):
@@ -134,9 +136,11 @@ class Jhove(BaseValidator):
         :version: version string
         :returns: a tuple (0/117, errormessage)
         """
-
-        report_version = self.get_report_field("version")
-        report_version = report_version.replace(" ", ".")
+        if self.mimetype == 'text/plain':
+            report_version = self.get_report_field("format")
+        else:
+            report_version = self.get_report_field("version")
+            report_version = report_version.replace(" ", ".")
 
         if version is None:
             return (0, "")
@@ -161,6 +165,7 @@ class Jhove(BaseValidator):
         :returns: a tuple (0/117, errormessage)
         """
         profile = None
+
         if self.mimetype == "application/pdf" and "A-1" in version:
             profile = "ISO PDF/A-1"
 

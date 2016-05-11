@@ -23,7 +23,6 @@ class Jhove2(BaseValidator):
 
     _supported_mimetypes = {
         'application/x-internet-archive': [],
-        'text/plain': ['UTF-8'],
         'application/warc': []
     }
 
