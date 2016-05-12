@@ -1,11 +1,14 @@
 """ Class for XML file validation with Xmllint. """
 
 import os
+import subprocess
 import tempfile
-import errno
 from lxml import etree
 
 from ipt.validator.basevalidator import BaseValidator
+
+DEFAULT_CATALOG = os.path.join('/usr/share/information-package-tools',
+                               'xmlobjectcatalog/catalog-local.xml')
 
 XSI = 'http://www.w3.org/2001/XMLSchema-instance'
 XS = '{http://www.w3.org/2001/XMLSchema}'
@@ -36,14 +39,9 @@ class Xmllint(BaseValidator):
     def __init__(self, fileinfo):
         super(Xmllint, self).__init__(fileinfo)
 
-        self.exec_cmd = ['xmllint', '--huge', '--noout']
-        self.schema_path = None
+        self.schema = fileinfo.get('schema', None)
         self.used_version = None
         self.has_constructed_schema = False
-
-        # Prevent network access
-        self.exec_cmd += ["--nonet"]
-
 
     def validate(self):
         """Validate XML file with Xmllint and return a tuple of results.
@@ -63,59 +61,49 @@ class Xmllint(BaseValidator):
         .. seealso:: https://wiki.csc.fi/wiki/KDK/XMLTiedostomuotojenSkeemat
         """
 
-        self.exec_cmd += [self.filename]
-
+        # Try to validate well-formedness by opening file in XML parser
         try:
             fd = open(self.filename)
             parser = etree.XMLParser(dtd_validation=False, no_network=True)
             tree = etree.parse(fd, parser=parser)
             self.used_version = tree.docinfo.xml_version
             fd.close()
-        except IOError as error:
-            # if mets.xml is not found in SIP root, it is not a system error
-            # case. Instead, it should be interpreted as wrong sip structure.
-            if error.errno == errno.ENOENT:
-                self.statuscode = 117
-                self.stdout = "xml file is missing or mislocated"
-                self.stderr = error
-                return self.statuscode, self.stdout, self.stderr
-            # System error
-            raise IOError(error)
         except etree.XMLSyntaxError:
-            self.statuscode = 1
-            self.stderr = "Validation failed: document is not well formed."
-            return self.statuscode, "", self.stderr
+            self.not_valid()
+            self.errors("Validation failed: document is not well formed.")
+
+            return self.result()
 
         # Try validate against DTD
         if tree.docinfo.doctype:
-            self.exec_cmd += ['--valid']
-            self.exec_validator()
+            (exitcode, stdout, stderr) = self.exec_xmllint(validate=True)
 
         # Try validate againts XSD
         else:
-            if not self.schema_path:
-                schema_path = self.construct_xsd(tree)
-                if schema_path:
-                    self.add_schema(schema_path)
-                else:
+            if not self.schema:
+                self.schema = self.construct_xsd(tree)
+
+                if not self.schema:
                     # No given schema and didn't find included schemas but XML
                     # was well formed.
-                    self.statuscode = 0
-                    self.stdout = "Validation success: Document is " \
-                        "well-formed but does not contain schema."
-                    self.stderr = ""
-                    return self.statuscode, self.stdout, self.stderr
+                    self.messages("Validation success: Document is "
+                                  "well-formed but does not contain schema.")
+                    return self.result()
 
-            self.exec_validator()
+            (exitcode, stdout, stderr) = self.exec_xmllint(schema=self.schema)
 
-            # Clean up constructed schema
+        self.messages(stdout)
+        self.errors(stderr)
+
+        if exitcode != 0:
+            self.not_valid()
+
+            # Clean up constructed schemas
             if self.has_constructed_schema:
-                os.remove(self.schema_path)
-                self.schema_path = None
+                    os.remove(self.schema)
 
-        self.stderr = remove_unneeded_warnings(self.stderr)
 
-        return self.statuscode, self.stdout, self.stderr
+        return self.result()
 
     def construct_xsd(self, document_tree):
         """This method constructs one schema file which collects all used
@@ -160,73 +148,54 @@ class Xmllint(BaseValidator):
             schema_tree.append(xs_import)
         if xsd_exists:
             # Contstruct the schema
-            fd, schema_path = tempfile.mkstemp(
+            fd, schema = tempfile.mkstemp(
                 prefix='information-package-tools-', suffix='.tmp')
             et = etree.ElementTree(schema_tree)
-            et.write(schema_path)
+            et.write(schema)
 
             self.has_constructed_schema = True
 
-            return schema_path
+            return schema
 
-        return False
+        return []
 
-    def set_catalog(self, catalogpath):
-        """ Set XML Catalog for Xmllint """
-        self.exec_cmd += ['--catalogs']
-        self.environment['SGML_CATALOG_FILES'] = catalogpath
+    def exec_xmllint(self, huge=True, no_output=True, no_network=True,
+                     validate=False, catalog=DEFAULT_CATALOG, schema=None):
 
-    def add_schema(self, schemapath):
-        """Add schema file for validator.
+        option_validation = ['--valid'] if validate else []
+        option_huge = ['--huge'] if huge else []
+        option_no_output = ['--noout'] if no_output else []
+        option_no_network = ['--nonet'] if no_network else []
+        option_catalog = ['--catalogs'] if catalog else []
+        option_schema = ['--schema', schema] if schema else []
 
-        :schemapath: Path to the schema file
-        :returns: No returned values
-        """
-        self.schema_path = schemapath
-        self.exec_cmd += ['--schema', schemapath]
+        command = ['xmllint'] + option_huge + option_no_output + \
+            option_no_network + option_catalog + option_schema + \
+            option_validation + [self.filename]
 
-    def check_validity(self):
-        """Check validation result of this parser.
+        environment = {
+            'SGML_CATALOG_FILES': catalog
+        }
 
-        :returns: Tuple (status, report, errors) where
-            status -- 0 is success, anything else failure
-            report -- generated report
-            errors -- errors if encountered, else None
+        proc = subprocess.Popen(
+            command,
+            env=environment,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=False)
 
-        """
-        if self.statuscode is not None:
-            return self.statuscode, self.stderr, self.stdout
-        return self.validate()
+        (stdout, stderr) = proc.communicate()
+        returncode = proc.returncode
 
-    def check_version(self, version):
-        """Check version of given XML document. The version number is in  XML
-        document header <?xml version='xx'?> so this method reads the first
-        line and queries version string.
-
-        .. note:: XML header is not required and so there might not be a
-        version string. If that happens this method returns None.
-
-        .. seelaso:: http://www.w3.org/TR/xml/#sec-prolog-dtd
-
-        :version: Version number to compare with
-        :returns: If given version number matches return None, otherwise return
-                  an error string.
-        """
-
-        if not self.used_version:
-            self.validate()
-
-        if self.used_version == version:
-            return None
-
-        return "ERROR: File version is '%s', expected '%s'" % (
-            self.used_version, version)
+        return (returncode, stdout, stderr)
 
 
-def remove_unneeded_warnings(stderr):
-    """Remove the warning which we do not need to see from self.stderr.
-       See KDKPAS-1190."""
-    return "\n".join(
-        [line for line in stderr.splitlines()
-         if "this namespace was already imported with the "
-         "schema" not in line])
+    def errors(self, error=None):
+        """Remove the warning which we do not need to see from self.stderr.
+        See KDKPAS-1190."""
+
+
+        if error and "this namespace was already imported with the" in error:
+            return []
+
+        return super(Xmllint, self).errors(error)

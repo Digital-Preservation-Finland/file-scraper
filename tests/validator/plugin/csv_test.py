@@ -1,151 +1,154 @@
-"""
-Test for python CSV validation.
-"""
+"""Test for python CSV validation"""
 import os
-import sys
-import io
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
-
 import pytest
-import testcommon.settings
 
-from ipt.validator.csv_validator import Csv, CsvValidationError
+from tempfile import NamedTemporaryFile
 
-PROJECTDIR = testcommon.settings.PROJECTDIR
-TESTDATADIR_BASE = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                                '../../data'))
-TESTDATADIR = os.path.abspath(os.path.join(TESTDATADIR_BASE,
-                                           '02_filevalidation_data'))
-JPEG_PATH = os.path.abspath(
-    os.path.join(
-        os.path.dirname(__file__),
-        '../../data/06_mets_validation/sips/fd2009-00002919-preservation'
-        '/access_img/img0008-access.jpg'))
+from ipt.validator.csv_validator import PythonCsv
+
+JPEG_PATH = os.path.join('tests/data/06_mets_validation/sips/',
+                         'fd2009-00002919-preservation/access_img/',
+                         'img0008-access.jpg')
 
 
-def test_validate_success_wikipedia(testpath):
+VALID_CSV = \
+    '1997,Ford,E350,"ac, abs, moon",3000.00\n'
+'1999,Chevy,"Venture ""Extended Edition""","",4900.00\n'
+'1999,Chevy,"Venture ""Extended Edition, Very Large""",,' '5000.00\n'
+'1996,Jeep,Grand Cherokee,"MUST SELL!' 'air, moon roof, loaded",4799.00\n'''
+
+VALID_WITH_HEADER = \
+    'year,brand,model,detail,other\n' + VALID_CSV
+
+
+INVALID_CSV = VALID_CSV + \
+    '1999,Chevy,"Venture ""Extended Edition"","",4900.00\n'
+
+
+def write_testdata(infile, data=VALID_CSV):
+
+    infile.write(data)
+    infile.close()
+    return infile.name
+
+
+def test_validate_success_wikipedia():
     """Test the validator with valid data from Wikipedia's CSV article"""
-    csv_path = os.path.join(testpath, 'csv.csv')
-    techmd = {
-        "mimetype": "text/csv",
-        "filename": csv_path,
-        "separator": "CR+LF",
-        "delimiter": ";",
-        "charset": "UTF-8",
-        "header_fields": ""}
-    with io.open(csv_path, 'w', newline='\r\n') as target:
-        target.write(u'1997,Ford,E350,"ac, abs, moon",3000.00\n')
-        target.write(u'1999,Chevy,"Venture ""Extended Edition""","",4900.00\n')
-        target.write(u'1999,Chevy,"Venture ""Extended Edition, Very Large""",,'
-                     '5000.00\n')
-        target.write(u'''1996,Jeep,Grand Cherokee,"MUST SELL!
-air, moon roof, loaded",4799.00''' + u'\n')
 
-    validator = Csv(techmd)
-    (exitcode_result, stdout_result, stderr_result) = validator.validate()
-    assert exitcode_result == 0
-    assert len(stdout_result) == 0
-    assert len(stderr_result) == 0
+    with NamedTemporaryFile(delete=False) as csv_file:
+        fileinfo = {
+            "filename": write_testdata(csv_file, VALID_CSV),
+            "format": {
+                "mimetype": "text/csv",
+                "version": "",
+                "charset": "UTF-8"
+            },
+            "addml": {
+                "charset": "UTF-8",
+                "separator": "CR+LF",
+                "delimiter": ";",
+                "header_fields": ""
+            }
+        }
 
+        validator = PythonCsv(fileinfo)
+        (status, messages, errors) = validator.validate()
 
-def test_validate_success_wikipedia_header(testpath):
-    """Test the validator with valid and invalid data from Wikipedia's CSV
-    article with added header"""
-    csv_path = os.path.join(testpath, 'csv.csv')
-    techmd = {
-        "mimetype": "text/csv",
-        "filename": csv_path,
-        "separator": "CR+LF",
-        "delimiter": ";",
-        "charset": "UTF-8",
-        "header_fields": ["year", "brand", "model", "detail", "other"]}
-    with io.open(csv_path, 'w', newline='\r\n') as target:
-        target.write(u'year,brand,model,detail,other\n')
-        target.write(u'1997,Ford,E350,"ac, abs, moon",3000.00\n')
-        target.write(u'1999,Chevy,"Venture ""Extended Edition""","",4900.00\n')
-        target.write(u'1999,Chevy,"Venture ""Extended Edition, Very Large""",,'
-                     '5000.00\n')
-        target.write(u'''1996,Jeep,Grand Cherokee,"MUST SELL!
-air, moon roof, loaded",4799.00''' + u'\n')
+        assert status
+        assert len(messages) == 0
+        assert len(errors) == 0
 
-    validator = Csv(techmd)
-    (exitcode_result, stdout_result, stderr_result) = validator.validate()
-    assert exitcode_result == 0
-    assert len(stdout_result) == 0
-    assert len(stderr_result) == 0
+    with NamedTemporaryFile(delete=False) as csv_file:
+        fileinfo = {
+            "filename": write_testdata(csv_file, VALID_WITH_HEADER),
+            "format": {
+                "mimetype": "text/csv",
+                "version": "",
+                "charset": "UTF-8"
+            },
+            "addml": {
+                "charset": "UTF-8",
+                "separator": "CR+LF",
+                "delimiter": ";",
+                "header_fields": ["year", "brand", "model", "detail", "other"]
+            }
+        }
 
-    # Test wrong header
-    techmd = {
-        "mimetype": "text/csv",
-        "filename": csv_path,
-        "separator": "CR+LF",
-        "delimiter": ";",
-        "charset": "UTF-8",
-        "header_fields": ["year", "brand", "model", "detail"]}
-    validator = Csv(techmd)
-    (exitcode_result, stdout_result, stderr_result) = validator.validate()
-    assert exitcode_result == 117
-    assert len(stdout_result) == 0
-    assert "CSV validation error on line 1, header mismatch" in stderr_result
+        validator = PythonCsv(fileinfo)
+        (status, messages, errors) = validator.validate()
+
+        assert status
+        assert len(messages) == 0
+        assert len(errors) == 0
 
 
-def test_validate_fail_jpeg():
-    """Test case for invalid csv"""
-    # It's hard to get the csv module to fail, feed it a JPG file and it will
-    techmd = {
-        "mimetype": "text/csv",
-        "filename": JPEG_PATH,
-        "separator": "CR+LF",
-        "delimiter": ";",
-        "charset": "UTF-8",
-        "header_fields": ""}
-    validator = Csv(techmd)
-    (exitcode_result, stdout_result, stderr_result) = validator.validate()
-    assert exitcode_result == 117
-    assert len(stdout_result) == 0
-    assert len(stderr_result) != 0
-    print stderr_result
+def test_validate_failure():
 
+    with NamedTemporaryFile(delete=False) as csv_file:
+        fileinfo = {
+            "filename": write_testdata(csv_file, VALID_WITH_HEADER),
+            "format": {
+                "mimetype": "text/csv",
+                "version": "",
+                "charset": "UTF-8"
+            },
+            "addml": {
+                "charset": "UTF-8",
+                "separator": "CR+LF",
+                "delimiter": ";",
+                "header_fields": ["MISSING HEADER"]
+            }
+        }
 
-def test_validate_fail_wikipedia(testpath):
-    """Test the validator with invalid data based on Wikipedia's CSV article"""
-    csv_path = os.path.join(testpath, 'csv.csv')
-    techmd = {
-        "mimetype": "text/csv",
-        "filename": csv_path,
-        "separator": "CR+LF",
-        "delimiter": ";",
-        "charset": "UTF-8",
-        "header_fields": ""}
-    with io.open(csv_path, 'w', newline='\r\n') as target:
-        target.write(u'1999,Chevy,"Venture ""Extended Edition"","",4900.00\n')
+        validator = PythonCsv(fileinfo)
+        (status, messages, errors) = validator.validate()
 
-    validator = Csv(techmd)
-    (exitcode_result, stdout_result, stderr_result) = validator.validate()
-    assert exitcode_result == 117
-    assert len(stdout_result) == 0
-    assert len(stderr_result) != 0
-    print stderr_result
+        assert not status
+        assert len(messages) == 0
+        assert "CSV validation error: no header at first line" in errors
 
+    with NamedTemporaryFile(delete=False) as csv_file:
+        fileinfo = {
+            "filename": JPEG_PATH,
+            "format": {
+                "mimetype": "text/csv",
+                "version": "",
+                "charset": "UTF-8"
+            },
+            "addml": {
+                "charset": "UTF-8",
+                "separator": "CR+LF",
+                "delimiter": ";",
+                "header_fields": ""
+            }
+        }
 
-def test_system_errors():
-    """test system errors."""
-    techmd = {
-        "mimetype": "text/csv",
-        "filename": "foo",
-        "separator": "CR+LF",
-        "delimiter": ";",
-        "charset": "UTF-8",
-        "header_fields": ""}
-    with pytest.raises(IOError):
-        validator = Csv(techmd)
-        validator.validate()
+        validator = PythonCsv(fileinfo)
+        (status, messages, errors) = validator.validate()
 
-    techmd["mimetype"] = "foo"
-    with pytest.raises(CsvValidationError):
-        validator = Csv(techmd)
-        validator.validate()
+        assert not status
+        assert len(messages) == 0
+        assert len(errors) != 0
 
-    with pytest.raises(TypeError):
-        validator = Csv(None)
-        validator.validate()
+    with NamedTemporaryFile(delete=False) as csv_file:
+        fileinfo = {
+            "filename": write_testdata(csv_file, INVALID_CSV),
+            "format": {
+                "mimetype": "text/csv",
+                "version": "",
+                "charset": "UTF-8"
+            },
+            "addml": {
+                "charset": "UTF-8",
+                "separator": "CR+LF",
+                "delimiter": ";",
+                "header_fields": ""
+            }
+        }
+
+        validator = PythonCsv(fileinfo)
+        (status, messages, errors) = validator.validate()
+
+        assert not status
+        assert len(messages) == 0
+        assert len(errors) != 0

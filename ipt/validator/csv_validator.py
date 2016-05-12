@@ -18,8 +18,8 @@ class PythonCsv(BaseValidator):
 
     def __init__(self, fileinfo):
         super(PythonCsv, self).__init__(fileinfo)
-        self.charset = fileinfo['format']['charset']
 
+        self.charset = fileinfo['addml']['charset']
         self.record_separator = fileinfo['addml']['separator']
         self.delimiter = fileinfo['addml']['delimiter']
         self.header_fields = fileinfo['addml']['header_fields']
@@ -39,19 +39,20 @@ class PythonCsv(BaseValidator):
                 if self.header_fields and not self.header_fields == first_line:
 
                     self.not_valid()
-                    self.errors.append("CSV validation error: no header at "
-                                       "first line")
+                    self.errors("CSV validation error: no header at "
+                                "first line")
                 for _ in reader:
                     pass
 
         except csv.Error as exception:
             self.not_valid()
-            self.errors.append("CSV validation error on line %s: %s" %
-                               (reader.line_num, exception))
+
+            self.errors("CSV validation error on line %s: %s" %
+                        (reader.line_num, exception))
 
         return (self.is_valid(),
-                ("\n".join(message) for message in self.messages()),
-                ("\n".join(error) for error in self.errors()))
+                "\n".join([message for message in self.messages()]),
+                "\n".join(self.errors()))
 
 
 def dialect_factory(record_separator, delimiter):

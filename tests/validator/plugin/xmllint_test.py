@@ -32,7 +32,7 @@ class TestXmllintValidation:
 
              },
              "expected": {
-                 "returncode": 0,
+                 "status": True,
                  "stdout_has_errors": False,
                  "stderr_has_errors": False,
             }
@@ -45,7 +45,7 @@ class TestXmllintValidation:
                 "schema": SCHEMAPATH
              },
              "expected": {
-                 "returncode": 0,
+                 "status": True,
                  "stdout_has_errors": False,
                  "stderr_has_errors": False,
             }
@@ -57,7 +57,7 @@ class TestXmllintValidation:
                 "catalog": OBJECT_CATALOGPATH
              },
              "expected": {
-                 "returncode": 0,
+                 "status": True,
                  "stdout_has_errors": False,
                  "stderr_has_errors": False,
             }
@@ -69,7 +69,7 @@ class TestXmllintValidation:
                 "catalog": OBJECT_CATALOGPATH
              },
              "expected": {
-                 "returncode": 3,
+                 "status": False,
                  "stdout_has_errors": False,
                  "stderr_has_errors": True,
             }
@@ -80,7 +80,7 @@ class TestXmllintValidation:
                 "catalog": OBJECT_CATALOGPATH
              },
              "expected": {
-                 "returncode": 0,
+                 "status": True,
                  "stdout_has_errors": False,
                  "stderr_has_errors": False,
             }
@@ -91,7 +91,7 @@ class TestXmllintValidation:
                 "catalog": OBJECT_CATALOGPATH
              },
              "expected": {
-                 "returncode": 3,
+                 "status": False,
                  "stdout_has_errors": False,
                  "stderr_has_errors": True,
             }
@@ -101,7 +101,7 @@ class TestXmllintValidation:
                 "filepath": '02_filevalidation_data/xml/valid_wellformed.xml'
              },
              "expected": {
-                 "returncode": 0,
+                 "status": True,
                  "stdout_has_errors": False,
                  "stderr_has_errors": False,
             }
@@ -111,7 +111,7 @@ class TestXmllintValidation:
                 "filepath": '02_filevalidation_data/xml/invalid_wellformed.xml'
              },
              "expected": {
-                 "returncode": 1,
+                 "status": False,
                  "stdout_has_errors": False,
                  "stderr_has_errors": True,
             }
@@ -121,7 +121,7 @@ class TestXmllintValidation:
                 "filepath": '02_filevalidation_data/xml/valid_dtd.xml'
              },
              "expected": {
-                 "returncode": 0,
+                 "status": True,
                  "stdout_has_errors": False,
                  "stderr_has_errors": False,
             }
@@ -131,24 +131,12 @@ class TestXmllintValidation:
                 "filepath": '02_filevalidation_data/xml/invalid_dtd.xml'
              },
              "expected": {
-                 "returncode": 4,
+                 "status": False,
                  "stdout_has_errors": False,
                  "stderr_has_errors": True,
             }
-            },
-            {"testcase": {
-             "name": "Test mets not in sip root",
-                "filepath": "06_mets_validation/sips/mets_not_in_root/mets.xml",
-                "catalog": OBJECT_CATALOGPATH,
-                "schema": SCHEMAPATH
+            }
 
-             },
-             "expected": {
-                 "returncode": 117,
-                 "stdout_has_errors": False,
-                 "stderr_has_errors": False,
-            }
-            }
         ]
     }
 
@@ -160,20 +148,18 @@ class TestXmllintValidation:
             "format": {
                 "mimetype": "text/xml",
                 "version": "1.0"
-            }
+            },
         }
+
+        if 'METS' in testcase['name']:
+            fileinfo['schema'] = SCHEMAPATH
 
         validate = ipt.validator.xmllint.Xmllint(fileinfo)
 
-        if "catalog" in testcase:
-            validate.set_catalog(testcase["catalog"])
-        if "schema" in testcase:
-            validate.add_schema(testcase["schema"])
 
-        (returncode, messages, errors) = validate.validate()
+        (status, messages, errors) = validate.validate()
 
-        assert returncode == expected["returncode"], '\n'.join([
-            'stdout:', validate.stdout, 'stderr:', validate.stderr])
+        assert status == expected["status"], messages + errors
         assert self.output_has_error(
             messages) == expected["stdout_has_errors"]
         assert self.output_has_error(
@@ -181,7 +167,7 @@ class TestXmllintValidation:
         assert not self.output_has_already_import_warn(errors)
         # xmllint is using --noout, so the METS XML should not be printed to
         # stdout (KDKPAS-1190)
-        assert "mets:mets" not in validate.stdout
+        assert "mets:mets" not in messages
 
     def output_has_error(self, lines):
         if "failed" in lines or "error" in lines:

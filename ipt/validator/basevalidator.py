@@ -46,13 +46,18 @@ class BaseValidator(object):
                 return True
         return False
 
-    def messages(self):
-        for message in self._messages:
-            yield message
+    def messages(self, message=None):
 
-    def errors(self):
-        for error in self._errors:
-            yield error
+        if message is not None:
+            self._messages.append(message)
+
+        return self._messages
+
+    def errors(self, error=None):
+        if error is not None:
+            self._errors.append(error)
+
+        return self._errors
 
     def is_valid(self, validity=None):
         """Return validator validity state (True/False)"""
@@ -63,3 +68,8 @@ class BaseValidator(object):
     def not_valid(self):
         """Set validity to invalid"""
         self._is_valid = False
+
+    def result(self):
+        return (self.is_valid(),
+                "\n".join([message for message in self.messages()]),
+                "\n".join([error for error in self.errors()]))
