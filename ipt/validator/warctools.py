@@ -89,9 +89,9 @@ class WarcTools(BaseValidator):
     def _validate_warc(self):
         """
         Validate warc with WarcTools.
-        :returns: (statuscode, stdout, stderr)"""
-        (exitcode, stdout, stderr) = run_command(['warcvalid', self.filename])
-        self._check_for_errors(exitcode, stdout, stderr)
+        :returns: (statuscode, messages, errors)"""
+        (validity, messages, errors) = run_command(['warcvalid', self.filename])
+        self._check_for_errors(validity, messages, errors)
         if self.is_valid():
             self._check_warc_version()
 
@@ -99,32 +99,32 @@ class WarcTools(BaseValidator):
         """
         Valdiate arc by transforming it to warc first. WarcTools does not
         support direct validation of arc.
-        :returns: (statuscode, stdout, stderr)
+        :returns: (statuscode, messages, errors)
         """
         # create covnersion from arc to warc
         temp_file = tempfile.NamedTemporaryFile(prefix="temp-warc.")
         warc_path = temp_file.name
-        (exitcode, stdout, stderr) = run_command(
+        (validity, messages, errors) = run_command(
             cmd=['arc2warc', self.filename], stdout=temp_file)
-        self._check_for_errors(exitcode, stdout, stderr)
+        self._check_for_errors(validity, messages, errors)
 
         # Successful conversion from arc to warc, validation can
         # now be made.
         if self.is_valid():
-            (exitcode, stdout, stderr) = run_command(['warcvalid', warc_path])
-            self._check_for_errors(exitcode, stdout, stderr)
+            (validity, messages, errors) = run_command(['warcvalid', warc_path])
+            self._check_for_errors(validity, messages, errors)
 
-    def _check_for_errors(self, exitcode, stdout, stderr):
+    def _check_for_errors(self, validity, messages, errors):
         """Check if outcome was failure or success.
-        :exitcode: exitcode
-        :stdout: stdoutstdout
-        :stderr: stderr
+        :validity: validity
+        :messages: messages
+        :errors: errors
         """
-        if exitcode != 0:
+        if validity != 0:
             self.is_valid(False)
-            self._errors.append(stderr)
+            self._errors.append(errors)
 
             for message in self.failures:
-                if message in stderr:
+                if message in errors:
                     return
-            raise ValidatorError(stderr)
+            raise ValidatorError(errors)

@@ -24,7 +24,7 @@ TESTDATADIR = os.path.abspath(os.path.join(TESTDATADIR_BASE,
 
 @pytest.mark.usefixtures("monkeypatch_Popen")
 @pytest.mark.parametrize(
-    ["filename", "mimetype", "version", "exitcode", "stdout", "stderr"],
+    ["filename", "mimetype", "version", "validity", "messages", "errors"],
     [("warc_0_18/warc.0.18.warc", "application/warc", "0.18", True, "", ""),
      ("warc_0_17/valid.warc", "application/warc", "0.17", True, "",
         ""),
@@ -45,7 +45,7 @@ TESTDATADIR = os.path.abspath(os.path.join(TESTDATADIR_BASE,
         "", ""),
      ("arc/invalid_arc_crc.gz", "application/x-internet-archive", "1.0",
         False, "CRC check failed", "")])
-def test_validate(filename, mimetype, version, exitcode, stdout, stderr):
+def test_validate(filename, mimetype, version, validity, messages, errors):
     """Test cases for valid/invalid warcs and arcs."""
 
     fileinfo = {
@@ -57,16 +57,16 @@ def test_validate(filename, mimetype, version, exitcode, stdout, stderr):
     }
 
     validator = WarcTools(fileinfo)
-    (exitcode_result, stderr_result, stdout_result) = validator.validate()
-    assert exitcode == exitcode_result
-    if stdout == "":
-        assert stdout == stdout_result
+    (validity_result, errors_result, messages_result) = validator.validate()
+    assert validity == validity_result
+    if messages == "":
+        assert messages == messages_result
     else:
-        assert stdout in stdout_result
-    if stderr == "":
-        assert stderr == stderr_result
+        assert messages in messages_result
+    if errors == "":
+        assert errors == errors_result
     else:
-        assert stderr in stderr_result
+        assert errors in errors_result
 
 
 def test_system_error():
