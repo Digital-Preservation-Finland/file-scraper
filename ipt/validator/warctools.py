@@ -106,7 +106,6 @@ class WarcTools(BaseValidator):
         warc_path = temp_file.name
         (exitcode, stdout, stderr) = run_command(
             cmd=['arc2warc', self.filename], stdout=temp_file)
-        self.is_valid(exitcode)
         self._check_for_errors(exitcode, stdout, stderr)
 
         # Successful conversion from arc to warc, validation can
@@ -121,13 +120,11 @@ class WarcTools(BaseValidator):
         :stdout: stdoutstdout
         :stderr: stderr
         """
-        if stdout == "" and exitcode == 0:
-            self.is_valid(True)
-            return
-        self.not_valid()
-        self._errors.append(stderr)
+        if exitcode != 0:
+            self.is_valid(False)
+            self._errors.append(stderr)
 
-        for message in self.failures:
-            if message in stderr:
-                return
-        raise ValidatorError(stdout)
+            for message in self.failures:
+                if message in stderr:
+                    return
+            raise ValidatorError(stderr)

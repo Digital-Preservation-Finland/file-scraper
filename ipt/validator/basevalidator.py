@@ -34,7 +34,7 @@ class BaseValidator(object):
         self._supported_mimetypes = []
         self._messages = []
         self._errors = []
-        self._is_valid = None
+        self._is_valid = True
 
     @classmethod
     def is_supported_mimetype(cls, fileinfo):
