@@ -53,7 +53,8 @@ class JHove(BaseValidator):
         if 'charset' in fileinfo['format']:
             self.charset = fileinfo['format']['charset']
         validator_module = JHOVE_MODULES[self.mimetype]
-        self.exec_cmd = ['jhove', '-h', 'XML', '-m', validator_module]
+        self.exec_cmd = [
+            'jhove', '-h', 'XML', '-m', validator_module, self.filename]
         self.statuscode = None
         self.stdout = None
         self.stderr = None
@@ -62,8 +63,6 @@ class JHove(BaseValidator):
         """ Check if file is valid according to JHove output.
         :returns: a tuple (0/117, errormessage)
         """
-        filename_in_list = [self.filename]
-        self.exec_cmd += filename_in_list
         (self.statuscode,
          self.stdout,
          self.stderr) = run_command(cmd=self.exec_cmd)
