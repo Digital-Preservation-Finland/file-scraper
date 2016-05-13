@@ -15,8 +15,6 @@ TESTDATADIR = os.path.abspath(
 @pytest.mark.parametrize(
     ["filename", "mimetype", "version", "exitcode", "stdout", "stderr"],
     [
-        ("02_filevalidation_data/gif_87a/wrong_mime.JPG",
-         "image/gif", "", 117, "Invalid GIF header", ""),
         ("test-sips/CSC_test001/kuvat/P1020137.JPG",
          "image/jpeg", "", 0, "Well-Formed and valid", ""),
         ("02_filevalidation_data/html/valid.htm",

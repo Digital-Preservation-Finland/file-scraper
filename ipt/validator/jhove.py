@@ -64,10 +64,6 @@ class Jhove(BaseValidator):
             validator_module = JHOVE_MODULES[self.mimetype]
             command = ['-m', validator_module]
             self.exec_cmd += command
-        else:
-            raise ValidationException(
-                "jhove.py does not seem to support mimetype: %s" %
-                self.mimetype)
 
     def validate(self):
         """Validate file with command given in variable self.exec_cmd and with
