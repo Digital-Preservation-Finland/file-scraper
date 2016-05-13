@@ -63,9 +63,6 @@ class JHove(BaseValidator):
         """ Check if file is valid according to JHove output.
         :returns: a tuple (0/117, errormessage)
         """
-        (self.statuscode,
-         self.stdout,
-         self.stderr) = run_command(cmd=self.exec_cmd)
 
         if self.statuscode != 0:
             self.is_valid(False)
@@ -124,6 +121,10 @@ class JHove(BaseValidator):
             report -- generated report
             errors -- errors if encountered, else None
         """
+        (self.statuscode,
+         self.stdout,
+         self.stderr) = run_command(cmd=self.exec_cmd)
+
         self._check_charset()
         self._check_validity()
         self._check_version()
