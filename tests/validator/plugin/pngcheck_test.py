@@ -64,8 +64,3 @@ class TestPngcheckValidator:
             for match_string in expected_result["stderr"]:
                 stderr = stderr.decode('utf-8')
                 assert match_string in stderr
-
-            if "profile" in testcase["expected_result"]:
-                assert val.check_profile( testcase["expected_result"]["profile"] ) == None
-
-
