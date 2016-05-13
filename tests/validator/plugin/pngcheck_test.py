@@ -25,9 +25,9 @@ class TestPngcheckValidator:
                 }
             },
             "expected_result": {
-                "status": 0,
+                "status": True,
                 "stdout": ['OK'],
-                "stderr": ''
+                "stderr": ['']
             }
          },
          {
@@ -41,30 +41,27 @@ class TestPngcheckValidator:
                 }
              },
              "expected_result": {
-                "status": 2,
-                "stdout": ['ERROR'],
-                "stderr": ['Validator returned error']
+                "status": False,
+                "stdout": [''],
+                "stderr": ['ERROR']
             }
          }]
     }
 
-    def test_validate(self, testcase, fileinfo, expected_result):
+    def test_validate(self, testcase, fileinfo, expected_result, capsys):
 
         for testcase in self.testcases["test_validate"]:
-            val = ipt.validator.pngcheck.Pngcheck(testcase["fileinfo"])
+            val = ipt.validator.pngcheck.Pngcheck(fileinfo)
 
             (status, stdout, stderr) = val.validate()
+            print capsys.readouterr()
+            assert expected_result["status"] == status
 
-            if testcase["expected_result"]["status"] == 0:
-                assert testcase["expected_result"]["status"] == status
-            else:
-                assert testcase["expected_result"]["status"] != 0
-
-            for match_string in testcase["expected_result"]["stdout"]:
+            for match_string in expected_result["stdout"]:
                 stdout = stdout.decode('utf-8')
                 assert match_string in stdout
 
-            for match_string in testcase["expected_result"]["stderr"]:
+            for match_string in expected_result["stderr"]:
                 stderr = stderr.decode('utf-8')
                 assert match_string in stderr
 
