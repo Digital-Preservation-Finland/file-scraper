@@ -3,7 +3,7 @@ import os
 import lxml.etree
 
 from ipt.validator.basevalidator import BaseValidator
-from ipt.utils import UnknownException, ValidationException, run_command
+from ipt.utils import UnknownException, run_command
 
 JHOVE_MODULES = {
     'application/pdf': 'PDF-hul',
@@ -18,118 +18,89 @@ JHOVE_MODULES = {
 NAMESPACES = {'j': 'http://hul.harvard.edu/ois/xml/ns/jhove'}
 
 
-class Jhove(BaseValidator):
-    """ Initializes JHove 1 validator and set ups everything so that
-        methods from base class (BaseValidator) can be called, such as
-        validate() for file validation.
-
-        .. note:: The following mimetypes and JHove modules are supported:
-                  'application/pdf': 'PDF-hul', 'image/tiff': 'TIFF-hul',
-                  'image/jpeg': 'JPEG-hul', 'image/jp2': 'JPEG2000-hul',
-                  'image/gif': 'GIF-hul'
-
-        .. seealso:: http://jhove.sourceforge.net/documentation.html
+class JHove(BaseValidator):
     """
-
+    """
     _supported_mimetypes = {
         'application/pdf': ['1.3', '1.4', '1.5', '1.6', 'A-1a', 'A-1b'],
-        'image/tiff': ['6.0'],
         'image/jpeg': ['', '1.0', '1.01'],
         'image/jp2': [],
         'image/gif': ['1987a', '1989a'],
-        'text/html': [],
-        'text/plain': ['UTF-8']
+        'text/plain': ['UTF-8'],
+        'text/html': ['HTML.4.01']
     }
 
     def __init__(self, fileinfo):
-        """init"""
-        super(Jhove, self).__init__(fileinfo)
+        """init.
+        :fileinfo: a dictionary with format
 
+            fileinfo["filename"]
+            fileinfo["algorithm"]
+            fileinfo["digest"]
+            fileinfo["format"]["version"]
+            fileinfo["format"]["mimetype"]
+            fileinfo["format"]["charset"]
+            fileinfo["format"]["format_registry_key"]
+            fileinfo["object_id"]["type"]
+            fileinfo["object_id"]["value"]
+        """
+
+        super(JHove, self).__init__(fileinfo)
         self.filename = fileinfo['filename']
         self.fileversion = fileinfo['format']['version']
         self.mimetype = fileinfo['format']['mimetype']
+        if 'charset' in fileinfo['format']:
+            self.charset = fileinfo['format']['charset']
+        validator_module = JHOVE_MODULES[self.mimetype]
+        self.exec_cmd = ['jhove', '-h', 'XML', '-m', validator_module]
+        self.statuscode = None
+        self.stdout = None
+        self.stderr = None
 
-        self.exec_cmd = ['jhove', '-h', 'XML']
-        self.statuscode = 1
-        self.stderr = ""
-        self.stdout = ""
-
-        # only names with whitespace are quoted. this might break the
-        # filename otherwise ::
-        if self.filename.find(" ") != -1:
-            if not (self.filename[0] == '"' and self.filename[-1] == '"'):
-                self.filename = '%s%s%s' % ('"', self.filename, '"')
-
-        if self.mimetype in JHOVE_MODULES.keys():
-            validator_module = JHOVE_MODULES[self.mimetype]
-            command = ['-m', validator_module]
-            self.exec_cmd += command
-
-    def validate(self):
-        """Validate file with command given in variable self.exec_cmd and with
-        options set in self.exec_options. Also check that validated file
-        version and profile matches with validator.
-
-        :returns: Tuple (status, report, errors) where
-            status -- 0 is success, 117 validation failure,
-                      anything else system error.
-            report -- generated report
-            errors -- errors if encountered, else None
+    def _check_validity(self):
+        """ Check if file is valid according to JHove output.
+        :returns: a tuple (0/117, errormessage)
         """
-
         filename_in_list = [self.filename]
         self.exec_cmd += filename_in_list
         (self.statuscode,
          self.stdout,
          self.stderr) = run_command(cmd=self.exec_cmd)
-
+        print self.statuscode, self.stdout, self.stderr
         if self.statuscode != 0:
-            return (self.statuscode, self.stdout,
-                    "Validator returned error: %s\n%s" % (
-                        self.statuscode, self.stderr))
+            self.is_valid(False)
+            self._errors.append(
+                "Validator returned error: %s\n%s" % (
+                    self.statuscode, self.stderr))
 
-        errors = []
-
-        # Check file validity
-        (validity_exitcode, validity_stderr) = self.check_validity()
-        if validity_exitcode != 0:
-            errors.append(validity_stderr)
-
-        # Check file version
-        (version_exitcode, version_errors) = self.check_version(
-            self.fileversion)
-        if version_exitcode != 0:
-            errors.append(version_errors)
-
-        # Check file profile
-        (profile_exitcode, profile_errors) = self.check_profile(
-            self.fileversion)
-        if profile_exitcode != 0:
-            errors.append(profile_errors)
-
-        if len(errors) == 0:
-            return (0, self.stdout, '')
-        else:
-            return (117, self.stdout, '\n'.join(errors))
-
-    def check_validity(self):
-        """ Check if file is valid according to JHove output.
-        :returns: a tuple (0/117, errormessage)
-        """
         if self.statuscode == 254 or self.statuscode == 255:
             raise UnknownException("Jhove returned returncode: \
                 %s %s %s" % (self.statuscode, self.stdout, self.stderr))
+
         status = self.get_report_field("status")
         filename = os.path.basename(self.filename)
 
         if status != 'Well-Formed and valid':
-            return (117, "ERROR: File '%s' does not validate: %s" % (
+            self._errors.append("ERROR: File '%s' does not validate: %s" % (
                 filename, status))
-        return (0, "")
+            self.is_valid(False)
 
-    def check_version(self, version):
-        """ Check if version string matches JHove output.
-        :version: version string
+        self._messages.append(status)
+
+    def _check_profile(self):
+        """
+        """
+        pass
+
+    def _check_charset(self):
+        """
+        """
+        pass
+
+    def _check_version(self):
+        """
+        _check_version abstract method
+        Check if version string matches JHove output.
         :returns: a tuple (0/117, errormessage)
         """
         if self.mimetype == 'text/plain':
@@ -138,41 +109,27 @@ class Jhove(BaseValidator):
             report_version = self.get_report_field("version")
             report_version = report_version.replace(" ", ".")
 
-        if version is None:
-            return (0, "")
+        if report_version != self.fileversion:
+            self.is_valid(False)
+            self._errors.append("ERROR: File version is '%s', expected '%s'"
+                % (report_version, self.fileversion))
 
-        if self.mimetype == "application/pdf" and "A-1" in version:
-            version = "1.4"
+    def validate(self):
+        """Validate file with command given in variable self.exec_cmd and with
+        options set in self.exec_options. Also check that validated file
+        version and profile matches with validator.
 
-        # There is no version tag in TIFF images.
-        # TIFF 4.0 and 5.0 is also valid TIFF 6.0.
-        if self.mimetype == "image/tiff" and report_version in ["4.0", "5.0"]:
-            report_version = "6.0"
-
-        if report_version != version:
-            return (117, (
-                "ERROR: File version is '%s', expected '%s'"
-                % (report_version, version)))
-        return (0, "")
-
-    def check_profile(self, version):
-        """ Check if profile string matches JHove output.
-        :version: version number
-        :returns: a tuple (0/117, errormessage)
+        :returns: Tuple (status, report, errors) where
+            status -- 0 is success, 117 failure, anything else failure
+            report -- generated report
+            errors -- errors if encountered, else None
         """
-        profile = None
-
-        if self.mimetype == "application/pdf" and "A-1" in version:
-            profile = "ISO PDF/A-1"
-
-        report_profile = self.get_report_field("profile")
-        if profile is None:
-            return (0, "")
-
-        if profile not in report_profile:
-            return (117, "ERROR: File profile is '%s', expected '%s'" % (
-                report_profile, profile))
-        return (0, "")
+        self._check_charset()
+        self._check_validity()
+        self._check_version()
+        messages = "\n".join(message for message in self.messages())
+        errors = "\n".join(error for error in self.errors())
+        return (self.is_valid(), messages, errors)
 
     def get_report_field(self, field):
         """
@@ -201,3 +158,120 @@ class Jhove(BaseValidator):
         results = root.xpath(query, namespaces=NAMESPACES)
 
         return '\n'.join(results)
+
+
+class JHoveTextUTF8(JHove):
+    """
+    Initializes JHove 1 validator and set ups everything so that
+        methods from base class (BaseValidator) can be called, such as
+        validate() for file validation.
+
+        .. note:: The following mimetypes and JHove modules are supported:
+                  'text/plain':
+
+        .. seealso:: http://jhove.sourceforge.net/documentation.html
+    """
+    _supported_mimetypes = {
+        'text/plain': []
+    }
+
+    def __init__(self, fileinfo):
+        """
+        init.
+        :fileinfo: a dictionary with fileinfo
+        """
+        super(JHoveTextUTF8, self).__init__(fileinfo)
+
+    def is_supported_mimetype(self, fileinfo):
+        """
+        Check suported mimetypes.
+        :fileinfo: fileinfo
+        """
+        if fileinfo['format']['mimetype'] == 'text/plain':
+            if fileinfo['format']['charset'] == 'UTF-8':
+                return True
+        return False
+
+    def _check_version(self):
+        pass
+
+
+class JHovePDF(JHove):
+    """
+    JHove validator for PDF
+    """
+
+    _supported_mimetypes = {
+        'application/pdf': ['1.3', '1.4', '1.5', '1.6', 'A-1a', 'A-1b']
+    }
+
+    def __init__(self, fileinfo):
+        """
+        init.
+        :fileinfo: a dictionary with fileinfo
+        """
+        super(JHovePDF, self).__init__(fileinfo)
+
+    def _check_version(self):
+        """ Check if version string matches JHove output.
+        :version: version string
+        :returns: a tuple (0/117, errormessage)
+        """
+
+        report_version = self.get_report_field("version")
+        report_version = report_version.replace(" ", ".")
+
+        if self.mimetype == "application/pdf" and "A-1" in self.fileversion:
+            self.fileversion = "1.4"
+
+        if report_version != self.fileversion:
+            self.is_valid(False)
+            self._errors.append("ERROR: File version is '%s', expected '%s'"
+                % (report_version, self.fileversion))
+
+    def _check_profile(self):
+        """ Check if profile string matches JHove output.
+        :returns: a tuple (0/117, errormessage)
+        """
+        if "A-1" not in self.fileversion:
+            return
+        profile = "ISO PDF/A-1"
+        report_profile = self.get_report_field("profile")
+        if profile not in report_profile:
+            self.is_valid(False)
+            self._errors.append(
+                "ERROR: File profile is '%s', expected '%s'" % (
+                    report_profile, profile))
+
+
+class JHoveTiff(JHove):
+    """
+    JHove validator for tiff
+    """
+    _supported_mimetypes = {
+        'image/tiff': ['6.0']
+    }
+
+    def __init__(self, fileinfo):
+        """
+        init.
+        :fileinfo: a dictionary with fileinfo
+        """
+        super(JHoveTiff, self).__init__(fileinfo)
+
+    def _check_version(self):
+        """ Check if version string matches JHove output.
+        :version: version string
+        :returns: a tuple (0/117, errormessage)
+        """
+
+        report_version = self.get_report_field("version")
+        report_version = report_version.replace(" ", ".")
+        # There is no version tag in TIFF images.
+        # TIFF 4.0 and 5.0 is also valid TIFF 6.0.
+        if self.mimetype == "image/tiff" and report_version in ["4.0", "5.0"]:
+            return
+        if report_version != self.fileversion:
+            self.is_valid(False)
+            self._errors.append("ERROR: File version is '%s', expected '%s'"
+                % (report_version, self.fileversion))
