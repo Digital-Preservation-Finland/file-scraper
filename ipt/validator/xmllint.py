@@ -70,7 +70,7 @@ class Xmllint(BaseValidator):
             fd.close()
         except etree.XMLSyntaxError:
             self.not_valid()
-            self.errors("Validation failed: document is not well formed.")
+            self.errors("Validation failed: document is not well-formed.")
 
             return self.result()
 
@@ -94,14 +94,14 @@ class Xmllint(BaseValidator):
 
         self.messages(stdout)
         self.errors(stderr)
-
+        print "messages", stdout
+        print "errors", stderr
         if exitcode != 0:
             self.not_valid()
 
-            # Clean up constructed schemas
-            if self.has_constructed_schema:
-                    os.remove(self.schema)
-
+        # Clean up constructed schemas
+        if self.has_constructed_schema:
+            os.remove(self.schema)
 
         return self.result()
 
@@ -162,16 +162,14 @@ class Xmllint(BaseValidator):
     def exec_xmllint(self, huge=True, no_output=True, no_network=True,
                      validate=False, catalog=DEFAULT_CATALOG, schema=None):
 
-        option_validation = ['--valid'] if validate else []
-        option_huge = ['--huge'] if huge else []
-        option_no_output = ['--noout'] if no_output else []
-        option_no_network = ['--nonet'] if no_network else []
-        option_catalog = ['--catalogs'] if catalog else []
-        option_schema = ['--schema', schema] if schema else []
-
-        command = ['xmllint'] + option_huge + option_no_output + \
-            option_no_network + option_catalog + option_schema + \
-            option_validation + [self.filename]
+        command = ['xmllint']
+        command += ['--valid'] if validate else []
+        command += ['--huge'] if huge else []
+        command += ['--noout'] if no_output else []
+        command += ['--nonet'] if no_network else []
+        command += ['--catalogs'] if catalog else []
+        command += ['--schema', schema] if schema else []
+        command += [self.filename]
 
         environment = {
             'SGML_CATALOG_FILES': catalog
@@ -193,9 +191,12 @@ class Xmllint(BaseValidator):
     def errors(self, error=None):
         """Remove the warning which we do not need to see from self.stderr.
         See KDKPAS-1190."""
-
-
-        if error and "this namespace was already imported with the" in error:
-            return []
+        if error:
+            filtered_errors = []
+            for line in error.splitlines():
+                if 'this namespace was already imported' in line:
+                    continue
+                filtered_errors.append(line)
+            error = "\n".join(filtered_errors)
 
         return super(Xmllint, self).errors(error)
