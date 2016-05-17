@@ -17,6 +17,8 @@ TESTDATADIR = os.path.abspath(
     [
         ("test-sips/CSC_test001/kuvat/P1020137.JPG",
          "image/jpeg", None, None, True, "Well-Formed and valid", ""),
+        ("test-sips/CSC_test001/kuvat/P1020137.JPG",
+         "image/jpeg", "1.01", None, True, "Well-Formed and valid", ""),
         ("02_filevalidation_data/html/valid.htm",
          "text/html", "HTML.4.01", None, True, "Well-Formed and valid", ""),
         ("02_filevalidation_data/html/notvalid.htm",
