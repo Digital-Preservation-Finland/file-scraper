@@ -24,10 +24,8 @@ class JHove(BaseValidator):
     """
     _supported_mimetypes = {
         'application/pdf': ['1.3', '1.4', '1.5', '1.6', 'A-1a', 'A-1b'],
-        'image/jpeg': ['', '1.0', '1.01'],
         'image/jp2': [],
         'image/gif': ['1987a', '1989a'],
-        'text/plain': ['UTF-8'],
         'text/html': ['HTML.4.01']
     }
 
@@ -286,7 +284,7 @@ class JHoveJPEG(JHove):
     JHove validator for JPEG
     """
     _supported_mimetypes = {
-        'image/jpeg': []
+        'image/jpeg': [],
     }
 
     def _check_version(self):
