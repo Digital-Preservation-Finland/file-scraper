@@ -58,8 +58,8 @@ class JHove(BaseValidator):
         self.stderr = None
 
     def _check_validity(self):
-        """ Check if file is valid according to JHove output.
-        :returns: a tuple (0/117, errormessage)
+        """
+        Check if file is valid according to JHove output.
         """
 
         if self.statuscode != 0:
@@ -96,7 +96,6 @@ class JHove(BaseValidator):
         """
         _check_version abstract method
         Check if version string matches JHove output.
-        :returns: a tuple (0/117, errormessage)
         """
         if self.mimetype == 'text/plain':
             report_version = self.get_report_field("format")
@@ -114,9 +113,9 @@ class JHove(BaseValidator):
         options set in self.exec_options. Also check that validated file
         version and profile matches with validator.
 
-        :returns: Tuple (status, report, errors) where
-            status -- 0 is success, 117 failure, anything else failure
-            report -- generated report
+        :returns: Tuple (validity, messages, errors) where
+            validity -- True is success, False failure, anything else failure
+            messages -- generated report
             errors -- errors if encountered, else None
         """
         (self.statuscode,
@@ -161,14 +160,7 @@ class JHove(BaseValidator):
 
 class JHoveTextUTF8(JHove):
     """
-    Initializes JHove 1 validator and set ups everything so that
-        methods from base class (BaseValidator) can be called, such as
-        validate() for file validation.
-
-        .. note:: The following mimetypes and JHove modules are supported:
-                  'text/plain':
-
-        .. seealso:: http://jhove.sourceforge.net/documentation.html
+    JHove validator fir text/plain UTF-8
     """
     _supported_mimetypes = {
         'text/plain': []
