@@ -2,7 +2,8 @@
 import os
 import pytest
 
-from ipt.validator.jhove import JHove, JHoveTiff, JHovePDF, JHoveTextUTF8
+from ipt.validator.jhove import JHove, JHoveTiff, JHovePDF, JHoveTextUTF8, \
+    JHoveJPEG
 
 TESTDATADIR_BASE = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '../../data'))
@@ -60,12 +61,17 @@ def test_validate(filename, mimetype, version, charset, exitcode, stdout, stderr
     }
     if charset:
         fileinfo["format"]["charset"] = charset
+    if version:
+        fileinfo["format"]["version"] = version
+
     if mimetype == 'image/tiff':
         validator = JHoveTiff(fileinfo)
     elif mimetype == 'application/pdf':
         validator = JHovePDF(fileinfo)
     elif mimetype == 'text/plain':
         validator = JHoveTextUTF8(fileinfo)
+    elif mimetype == 'image/jpeg':
+        validator = JHoveJPEG(fileinfo)
     else:
         validator = JHove(fileinfo)
     print capsys.readouterr()

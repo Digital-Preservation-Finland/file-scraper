@@ -27,9 +27,7 @@ class BaseValidator(object):
 
     def __init__(self, fileinfo):
         """Init """
-
         self.filename = fileinfo['filename']
-        self.fileversion = fileinfo['format']['version']
         self.mimetype = fileinfo['format']['mimetype']
         self._supported_mimetypes = []
         self._messages = []

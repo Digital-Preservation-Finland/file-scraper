@@ -48,8 +48,10 @@ class JHove(BaseValidator):
 
         super(JHove, self).__init__(fileinfo)
         self.filename = fileinfo['filename']
-        self.fileversion = fileinfo['format']['version']
         self.mimetype = fileinfo['format']['mimetype']
+        if "version" in fileinfo["format"]:
+            self.fileversion = fileinfo['format']['version']
+
         validator_module = JHOVE_MODULES[self.mimetype]
         self.exec_cmd = [
             'jhove', '-h', 'XML', '-m', validator_module, self.filename]
@@ -211,6 +213,7 @@ class JHovePDF(JHove):
         :fileinfo: a dictionary with fileinfo
         """
         super(JHovePDF, self).__init__(fileinfo)
+        self.fileversion = fileinfo['format']['version']
 
     def _check_version(self):
         """ Check if version string matches JHove output.
@@ -258,6 +261,7 @@ class JHoveTiff(JHove):
         :fileinfo: a dictionary with fileinfo
         """
         super(JHoveTiff, self).__init__(fileinfo)
+        self.fileversion = fileinfo['format']['version']
 
     def _check_version(self):
         """ Check if version string matches JHove output.
@@ -275,3 +279,18 @@ class JHoveTiff(JHove):
             self.is_valid(False)
             self._errors.append("ERROR: File version is '%s', expected '%s'"
                 % (report_version, self.fileversion))
+
+
+class JHoveJPEG(JHove):
+    """
+    JHove validator for JPEG
+    """
+    _supported_mimetypes = {
+        'image/jpeg': []
+    }
+
+    def _check_version(self):
+        """
+        JPEG version is not checked.
+        """
+        pass
