@@ -50,8 +50,6 @@ class JHove(BaseValidator):
         self.filename = fileinfo['filename']
         self.fileversion = fileinfo['format']['version']
         self.mimetype = fileinfo['format']['mimetype']
-        if 'charset' in fileinfo['format']:
-            self.charset = fileinfo['format']['charset']
         validator_module = JHOVE_MODULES[self.mimetype]
         self.exec_cmd = [
             'jhove', '-h', 'XML', '-m', validator_module, self.filename]
@@ -182,6 +180,7 @@ class JHoveTextUTF8(JHove):
         :fileinfo: a dictionary with fileinfo
         """
         super(JHoveTextUTF8, self).__init__(fileinfo)
+        self.charset = fileinfo['format']['charset']
 
     def is_supported_mimetype(self, fileinfo):
         """
