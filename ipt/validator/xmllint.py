@@ -94,8 +94,6 @@ class Xmllint(BaseValidator):
 
         self.messages(stdout)
         self.errors(stderr)
-        print "messages", stdout
-        print "errors", stderr
         if exitcode != 0:
             self.not_valid()
 
