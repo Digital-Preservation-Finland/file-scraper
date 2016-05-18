@@ -2,6 +2,7 @@ import ipt.validator.jhove
 import ipt.validator.filecommand
 import ipt.validator.xmllint
 import ipt.validator.warctools
+import ipt.validator.ghost_script
 
 from ipt.validator.basevalidator import BaseValidator
 from ipt.validator.jhove import JHove
