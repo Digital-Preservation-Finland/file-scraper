@@ -176,7 +176,8 @@ class JHoveTextUTF8(JHove):
         super(JHoveTextUTF8, self).__init__(fileinfo)
         self.charset = fileinfo['format']['charset']
 
-    def is_supported_mimetype(self, fileinfo):
+    @classmethod
+    def is_supported_mimetype(cls, fileinfo):
         """
         Check suported mimetypes.
         :fileinfo: fileinfo

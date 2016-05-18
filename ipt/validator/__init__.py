@@ -4,6 +4,7 @@ import ipt.validator.xmllint
 import ipt.validator.warctools
 
 from ipt.validator.basevalidator import BaseValidator
+from ipt.validator.jhove import JHove
 
 
 class UnknownMimetypeError(Exception):
@@ -27,6 +28,11 @@ def validate(fileinfo):
 
     found_validator = False
     for cls in BaseValidator.__subclasses__():
+        if cls.is_supported_mimetype(fileinfo):
+            found_validator = True
+            yield cls(fileinfo).validate()
+
+    for cls in JHove.__subclasses__():
         if cls.is_supported_mimetype(fileinfo):
             found_validator = True
             yield cls(fileinfo).validate()
