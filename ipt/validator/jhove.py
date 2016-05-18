@@ -211,7 +211,6 @@ class JHovePDF(JHove):
     def _check_version(self):
         """ Check if version string matches JHove output.
         :version: version string
-        :returns: a tuple (0/117, errormessage)
         """
 
         report_version = self.get_report_field("version")
@@ -226,7 +225,6 @@ class JHovePDF(JHove):
 
     def _check_profile(self):
         """ Check if profile string matches JHove output.
-        :returns: a tuple (0/117, errormessage)
         """
         if "A-1" not in self.fileversion:
             return
