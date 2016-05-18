@@ -26,7 +26,6 @@ class JHove(BaseValidator):
     JHove base class, implement basic functionalities of JHove validation.
     """
     _supported_mimetypes = {
-        'application/pdf': ['1.3', '1.4', '1.5', '1.6', 'A-1a', 'A-1b'],
         'image/jp2': [],
         'image/gif': ['1987a', '1989a'],
         'text/html': ['HTML.4.01']
@@ -216,8 +215,7 @@ class JHovePDF(JHove):
 
         report_version = self.get_report_field("version")
         report_version = report_version.replace(" ", ".")
-
-        if self.mimetype == "application/pdf" and "A-1" in self.fileversion:
+        if "A-1" in self.fileversion:
             self.fileversion = "1.4"
 
         if report_version != self.fileversion:
@@ -279,7 +277,7 @@ class JHoveJPEG(JHove):
     JHove validator for JPEG
     """
     _supported_mimetypes = {
-        'image/jpeg': [],
+        'image/jpeg': [''],
     }
 
     def _check_version(self):
