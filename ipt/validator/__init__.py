@@ -1,5 +1,4 @@
 import ipt.validator.jhove
-import ipt.validator.libxml
 import ipt.validator.filecommand
 import ipt.validator.xmllint
 import ipt.validator.warctools
