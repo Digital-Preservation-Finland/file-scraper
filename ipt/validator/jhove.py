@@ -16,6 +16,9 @@ JHOVE_MODULES = {
 }
 
 NAMESPACES = {'j': 'http://hul.harvard.edu/ois/xml/ns/jhove'}
+JHOVE_HOME = '/usr/share/java/jhove'
+EXTRA_JARS = os.path.join(JHOVE_HOME, '/bin/JhoveView.jar')
+CP = os.path.join(JHOVE_HOME, 'bin/JhoveApp.jar') + ':' + EXTRA_JARS
 
 
 class JHove(BaseValidator):
@@ -51,8 +54,8 @@ class JHove(BaseValidator):
             self.fileversion = fileinfo['format']['version']
 
         validator_module = JHOVE_MODULES[self.mimetype]
-        self.exec_cmd = [
-            'jhove', '-h', 'XML', '-m', validator_module, self.filename]
+        self.exec_cmd = ['java', '-classpath', CP, 'Jhove', '-h', 'XML', '-m',
+            validator_module, self.filename]
         self.statuscode = None
         self.stdout = None
         self.stderr = None
