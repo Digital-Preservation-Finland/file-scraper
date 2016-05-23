@@ -31,15 +31,15 @@ class GhostScript(BaseValidator):
         """
         super(GhostScript, self).__init__(fileinfo)
         self.filename = fileinfo["filename"]
+        self.cmd_exec = [
+            'gs', '-o', '/dev/null', '-sDEVICE=nullpage', '%s' % self.filename]
+        self.file_cmd_exec = 'file'
 
     def validate(self):
         """
         Validate file
         :returns: tuple(validity, messages, errors)
         """
-        cmd_exec = [
-            'gs', '-o', '/dev/null', '-sDEVICE=nullpage', '%s' % self.filename]
-        (exitcode, stdout, stderr) = run_command(cmd_exec)
 
         if 'error' in stderr or 'Error' in stdout or exitcode != 0:
             self.is_valid(False)
@@ -56,7 +56,8 @@ class GhostScript(BaseValidator):
         """
         Check pdf version
         """
-        (exitcode, stdout, stderr) = run_command(['file', self.filename])
+        (exitcode, stdout, stderr) = run_command(
+            [self.file_cmd_exec, self.filename])
         if exitcode != 0:
             self.is_valid(False)
             self.errors("ERROR:%s" % stderr)
