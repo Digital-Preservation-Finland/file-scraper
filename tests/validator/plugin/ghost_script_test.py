@@ -12,50 +12,48 @@ from ipt.validator.ghost_script import GhostScript
 
 BASEPATH = os.path.join(TESTDATADIR, '02_filevalidation_data', 'pdf_1_7')
 
+FILEINFO = {
+    "filename": "",
+    "format": {
+        "version": "1.7",
+        "mimetype": "application/pdf"
+    }
+}
 
-def test_pdf_1_7():
+
+def test_pdf_1_7_ok():
     """
     test pdf 1.7
     """
-
-    # OK
-    fileinfo = {
-        "filename": os.path.join(BASEPATH, "valid_1_7.pdf"),
-        "format": {
-            "version": "1.7",
-            "mimetype": "application/pdf"
-        }
-    }
-    validator = GhostScript(fileinfo)
+    FILEINFO["filename"] = os.path.join(BASEPATH, "valid_1_7.pdf")
+    validator = GhostScript(FILEINFO)
     (validity, messages, errors) = validator.validate()
     assert 'error' not in errors
     assert 'Error' not in messages
     assert validity is True
 
-    # Validity error
-    fileinfo = {
-        "filename": os.path.join(BASEPATH, "invalid_1_7.pdf"),
-        "format": {
-            "version": "1.7",
-            "mimetype": "application/pdf"
-        }
-    }
-    validator = GhostScript(fileinfo)
+
+def test_pdf_1_7_validity_error():
+    """
+    test pdf 1.7
+    """
+    FILEINFO["filename"] = os.path.join(BASEPATH, "invalid_1_7.pdf")
+
+    validator = GhostScript(FILEINFO)
     (validity, messages, errors) = validator.validate()
 
     assert 'Unrecoverable error, exit code 1' in errors
     assert 'Error: /undefined in obj' in messages
     assert validity is False
 
-    # Version error
-    fileinfo = {
-        "filename": os.path.join(BASEPATH, "invalid_wrong_version.pdf"),
-        "format": {
-            "version": "1.7",
-            "mimetype": "application/pdf"
-        }
-    }
-    validator = GhostScript(fileinfo)
+
+def test_pdf_1_7_version_error():
+    """
+    test pdf 1.7
+    """
+    FILEINFO["filename"] = os.path.join(BASEPATH, "invalid_wrong_version.pdf")
+
+    validator = GhostScript(FILEINFO)
     (validity, messages, errors) = validator.validate()
 
     assert 'ERROR: wrong PDF version' in errors
