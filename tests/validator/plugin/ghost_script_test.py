@@ -26,7 +26,7 @@ FILEINFO = {
 
 def test_pdf_1_7_ok():
     """
-    test pdf 1.7
+    test pdf 1.7 ok case
     """
     FILEINFO["filename"] = os.path.join(BASEPATH, "valid_1_7.pdf")
     validator = GhostScript(FILEINFO)
@@ -38,7 +38,7 @@ def test_pdf_1_7_ok():
 
 def test_pdf_1_7_validity_error():
     """
-    test pdf 1.7
+    test pdf 1.7 invalid case
     """
     FILEINFO["filename"] = os.path.join(BASEPATH, "invalid_1_7.pdf")
 
@@ -52,7 +52,7 @@ def test_pdf_1_7_validity_error():
 
 def test_pdf_1_7_version_error():
     """
-    test pdf 1.7
+    test pdf 1.7 wrong version case
     """
     FILEINFO["filename"] = os.path.join(BASEPATH, "invalid_wrong_version.pdf")
 
