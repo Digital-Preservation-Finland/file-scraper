@@ -67,5 +67,8 @@ class GhostScript(BaseValidator):
 
         if 'PDF document, version 1.7' not in stdout:
             self.is_valid(False)
-            self.errors("ERROR: wrong PDF version")
+            version = stdout.split(':')[1]
+            self.errors(
+                "ERROR: wrong file version. Expected PDF 1.7, found%s"
+                % version)
             self.messages(stdout)

@@ -59,7 +59,8 @@ def test_pdf_1_7_version_error():
     validator = GhostScript(FILEINFO)
     (validity, messages, errors) = validator.validate()
 
-    assert 'ERROR: wrong PDF version' in errors
+    assert 'ERROR: wrong file version. Expected PDF 1.7,' \
+        ' found PDF document, version 1.3' in errors
     assert 'PDF document, version 1.3' in messages
     assert validity is False
 
