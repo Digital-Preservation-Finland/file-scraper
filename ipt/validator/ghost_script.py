@@ -3,7 +3,7 @@ This is a PDF 1.7 valdiator implemented with ghostscript.
 """
 
 from ipt.validator.basevalidator import BaseValidator
-from ipt.utils import run_command
+from ipt.utils import run_command, UnknownException
 
 
 class GhostScript(BaseValidator):
@@ -41,10 +41,16 @@ class GhostScript(BaseValidator):
         :returns: tuple(validity, messages, errors)
         """
 
-        if 'error' in stderr or 'Error' in stdout or exitcode != 0:
+        (exitcode, stdout, stderr) = run_command(self.cmd_exec)
+        if 'error' in stderr or 'Error' in stdout or exitcode != 0 or \
+                'Processing page' not in stdout:
             self.is_valid(False)
             self.errors(stderr)
             self.messages(stdout)
+
+        if 'Error: /undefined in' not in stdout and exitcode != 0:
+            raise UnknownException(
+                "stderr:%s stdout:%s" % (stderr, stdout))
 
         self._check_version()
 
@@ -62,6 +68,8 @@ class GhostScript(BaseValidator):
             self.is_valid(False)
             self.errors("ERROR:%s" % stderr)
             self.messages(stdout)
+            raise UnknownException(
+                "stderr:%s stdout:%s" % (self.errors(), self.messages()))
 
         if 'PDF document, version 1.7' not in stdout:
             self.is_valid(False)
