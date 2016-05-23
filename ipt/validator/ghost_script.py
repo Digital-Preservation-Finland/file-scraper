@@ -20,14 +20,8 @@ class GhostScript(BaseValidator):
         :fileinfo: a dictionary with format
 
             fileinfo["filename"]
-            fileinfo["algorithm"]
-            fileinfo["digest"]
             fileinfo["format"]["version"]
             fileinfo["format"]["mimetype"]
-            fileinfo["format"]["charset"]
-            fileinfo["format"]["format_registry_key"]
-            fileinfo["object_id"]["type"]
-            fileinfo["object_id"]["value"]
         """
         super(GhostScript, self).__init__(fileinfo)
         self.filename = fileinfo["filename"]
