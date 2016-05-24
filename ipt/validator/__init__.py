@@ -1,7 +1,10 @@
-from ipt.validator import *
-
 from ipt.validator.basevalidator import BaseValidator
 from ipt.validator.jhove import JHove
+from ipt.validator.dummytextvalidator import DummyTextValidator
+from ipt.validator.xmllint import Xmllint
+from ipt.validator.warctools import WarcTools
+from ipt.validator.ghost_script import GhostScript
+from ipt.validator.pngcheck import Pngcheck
 
 
 class UnknownMimetypeError(Exception):
