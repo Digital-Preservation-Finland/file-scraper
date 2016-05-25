@@ -68,9 +68,10 @@ class Xmllint(BaseValidator):
             tree = etree.parse(fd, parser=parser)
             self.used_version = tree.docinfo.xml_version
             fd.close()
-        except etree.XMLSyntaxError:
+        except etree.XMLSyntaxError as exception:
             self.not_valid()
             self.errors("Validation failed: document is not well-formed.")
+            self.errors(str(exception))
 
             return self.result()
 
@@ -184,7 +185,6 @@ class Xmllint(BaseValidator):
         returncode = proc.returncode
 
         return (returncode, stdout, stderr)
-
 
     def errors(self, error=None):
         """Remove the warning which we do not need to see from self.stderr.
