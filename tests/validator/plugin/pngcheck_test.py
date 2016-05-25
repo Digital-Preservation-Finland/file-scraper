@@ -1,66 +1,40 @@
-# Common boilerplate
+"""Test the ipt.validator.pngcheck module"""
+
 import os
-import sys
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
-import pytest
-import testcommon.settings
-from testcommon.casegenerator import pytest_generate_tests
-
-# Module to test
 import ipt.validator.pngcheck
 
-class TestPngcheckValidator:
 
-    testcases = {
-        "test_validate":
-        [{
-            "testcase": 'Test validation for valid PNG file',
-            "fileinfo": {
-                "filename": os.path.join(testcommon.settings.TESTDATADIR,
-                                    '02_filevalidation_data/png/valid.png'),
-                "format": {
-                    "mimetype": 'image/png',
-                    "version": ''
-                }
-            },
-            "expected_result": {
-                "status": True,
-                "stdout": ['OK'],
-                "stderr": ['']
-            }
-         },
-         {
-            "testcase": 'Test validation for invalid PNG file',
-             "fileinfo": {
-                "filename": os.path.join(testcommon.settings.TESTDATADIR,
-                                     '02_filevalidation_data/png/invalid.png'),
-                "format": {
-                    "mimetype": 'image/png',
-                    "version": ''
-                }
-             },
-             "expected_result": {
-                "status": False,
-                "stdout": [''],
-                "stderr": ['ERROR']
-            }
-         }]
-    }
+def validate(filename):
+    """Return validator with given filename"""
 
-    def test_validate(self, testcase, fileinfo, expected_result, capsys):
+    fileinfo = {
+        "filename": os.path.join(
+            'tests/data/02_filevalidation_data/png', filename),
+        "format": {
+            "mimetype": 'image/png',
+            "version": ''}}
 
-        for testcase in self.testcases["test_validate"]:
-            val = ipt.validator.pngcheck.Pngcheck(fileinfo)
+    val = ipt.validator.pngcheck.Pngcheck(fileinfo)
+    val.validate()
+    return val
 
-            (status, stdout, stderr) = val.validate()
-            print capsys.readouterr()
-            assert expected_result["status"] == status
 
-            for match_string in expected_result["stdout"]:
-                stdout = stdout.decode('utf-8')
-                assert match_string in stdout
+def test_pngcheck_valid():
+    """Test valid PNG file"""
 
-            for match_string in expected_result["stderr"]:
-                stderr = stderr.decode('utf-8')
-                assert match_string in stderr
+    val = validate('valid.png')
+
+    assert val.is_valid
+    assert 'OK' in val.messages()
+    assert val.errors() == ""
+
+
+def test_pngcheck_invalid():
+    """Test corrupted PNG file"""
+
+    val = validate('invalid.png')
+
+    assert not val.is_valid
+    assert 'OK' not in val.messages()
+    assert 'ERROR' in val.errors()

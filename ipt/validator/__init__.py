@@ -1,3 +1,5 @@
+"""Validate digital objects"""
+
 from ipt.validator.basevalidator import BaseValidator
 from ipt.validator.jhove import JHove
 from ipt.validator.dummytextvalidator import DummyTextValidator
@@ -7,35 +9,49 @@ from ipt.validator.ghost_script import GhostScript
 from ipt.validator.pngcheck import Pngcheck
 
 
-class UnknownMimetypeError(Exception):
-    pass
-
-
 class UnknownFileformat(object):
-    ERROR_MSG = 'No validator for mimetype: %s version: %s'
+    """Validator class for unknown filetypes. This will always result as
+    invalid validation result"""
 
     def __init__(self, fileinfo):
-        self.mimetype = fileinfo['format']['mimetype']
-        self.version = fileinfo['format']['version']
+        """Initialize object"""
+        self.fileinfo = fileinfo
 
     def validate(self):
-        return (117, '', self.ERROR_MSG % (self.mimetype, self.version))
+        """No implementation"""
+        pass
+
+    def result(self):
+        """Return validation result"""
+        error_message = 'No validator for mimetype: %s version: %s' % (
+            self.fileinfo['format']['mimetype'],
+            self.fileinfo['format']['version'])
+
+        return {
+            'is_valid': False,
+            'messages': [],
+            'errors':  [error_message]}
 
 
 def validate(fileinfo):
-    # Implementation of class factory pattern from
-    # http://stackoverflow.com/questions/456672/class-factory-in-python
+    """Validate digital object from given `fileinfo` record, using any of the
+    validator classes.
 
+    Implementation of class factory pattern from
+    http://stackoverflow.com/questions/456672/class-factory-in-python
+
+    """
+
+    base_validators = [BaseValidator, JHove]
     found_validator = False
-    for cls in BaseValidator.__subclasses__():
-        if cls.is_supported_mimetype(fileinfo):
-            found_validator = True
-            yield cls(fileinfo).validate()
 
-    for cls in JHove.__subclasses__():
-        if cls.is_supported_mimetype(fileinfo):
-            found_validator = True
-            yield cls(fileinfo).validate()
+    for base_validator in base_validators:
+        for cls in base_validator.__subclasses__():
+            if cls.is_supported_mimetype(fileinfo):
+                found_validator = True
+                validator = cls(fileinfo)
+                yield validator.result()
 
     if not found_validator:
-        yield UnknownFileformat(fileinfo).validate()
+        validator = UnknownFileformat(fileinfo)
+        yield validator.result()

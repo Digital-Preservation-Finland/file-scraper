@@ -1,15 +1,71 @@
 """General interface for building a file validator plugin. """
 import abc
 
+from ipt.utils import run_command
+
 
 class ValidatorError(Exception):
-
-    """Validator error exception which should be thrown when validator is not
-    able to continue with given parametres. For example unknown mimetype for
-    validator should throw this exception.
-    """
-
+    """Unrecoverable error in validator"""
     pass
+
+
+class Shell(object):
+
+    """Docstring for ShellTarget. """
+
+    def __init__(self, command):
+        """Initialize instance.
+
+        :command: Command to execute as list
+        """
+        self.command = command
+
+        self._stdout = None
+        self._stderr = None
+        self._returncode = None
+
+    @property
+    def returncode(self):
+        """Returncode from the command
+
+        :returns: Returncode
+
+        """
+        return self.run()["returncode"]
+
+    @property
+    def stderr(self):
+        """Standard error output from the command
+
+        :returns: Stdout as string
+
+        """
+        return self.run()["stderr"]
+
+    @property
+    def stdout(self):
+        """Command standard error output.
+
+        :returns: Stderr as string
+
+        """
+        return self.run()["stdout"]
+
+    def run(self):
+        """Run the command and store results to class attributes for caching.
+
+        :returns: Returncode, stdout, stderr as dictionary
+
+        """
+        if self._returncode is None:
+            (self._returncode, self._stdout,
+             self._stderr) = run_command(cmd=self.command)
+
+        return {
+            'returncode': self._returncode,
+            'stderr': self._stderr,
+            'stdout': self._stdout
+            }
 
 
 class BaseValidator(object):
@@ -20,54 +76,68 @@ class BaseValidator(object):
     """
 
     __metaclass__ = abc.ABCMeta
-
-    @abc.abstractmethod
-    def validate(self):
-        pass
+    _supported_mimetypes = None
 
     def __init__(self, fileinfo):
-        """Init """
-        self.filename = fileinfo['filename']
-        self.mimetype = fileinfo['format']['mimetype']
-        self._supported_mimetypes = []
+        """Setup the base validator object"""
+
+        self.fileinfo = fileinfo
         self._messages = []
         self._errors = []
-        self._is_valid = True
 
     @classmethod
-    def is_supported_mimetype(cls, fileinfo):
+    def is_supported(cls, fileinfo):
+        """Return True if this validator class supports digital object with
+        given fileinfo record.
+
+        Default implementation checks the mimetype and version. Other
+        implementations may override this for other selection criteria"""
+
         mimetype = fileinfo['format']['mimetype']
         version = fileinfo['format']['version']
 
-        if mimetype in cls._supported_mimetypes:
-            if version in cls._supported_mimetypes[mimetype]:
-                return True
-        return False
+        return mimetype in cls._supported_mimetypes and \
+            version in cls._supported_mimetypes[mimetype]
 
     def messages(self, message=None):
-
+        """Return validation diagnostic messages"""
         if message is not None:
             self._messages.append(message)
-
-        return self._messages
+        return concat(self._messages)
 
     def errors(self, error=None):
+        """Return validation error messages"""
         if error is not None:
             self._errors.append(error)
+        return concat(self._errors, 'ERROR: ')
 
-        return self._errors
-
-    def is_valid(self, validity=None):
-        """Return validator validity state (True/False)"""
-        if validity is not None:
-            self._is_valid = validity
-        return self._is_valid
-
-    def not_valid(self):
-        """Set validity to invalid"""
-        self._is_valid = False
+    @property
+    def is_valid(self):
+        """Validation result is valid when there are more than one messages and
+        no error messages.
+        """
+        return len(self._messages) > 0 and len(self._errors) == 0
 
     def result(self):
-        return (self.is_valid(),
-                "\n".join([message for message in self.messages()]),
-                "\n".join([error for error in self.errors()]))
+        """Return the validation result"""
+
+        if len(self._messages) == 0:
+            self.validate()
+
+        return (self.is_valid, self.messages(), self.errors())
+
+    @abc.abstractmethod
+    def validate(self):
+        """All validator classes must implement the validate() method"""
+        pass
+
+
+def concat(lines, prefix=""):
+    """Join given list of strings to single string separated with newlines.
+
+    :lines: List of string to join
+    :prefix: Prefix to prepend each line with
+    :returns: Joined lines as string
+
+    """
+    return "\n".join(["%s%s" % (prefix, line) for line in lines])
