@@ -81,7 +81,7 @@ class JHove(BaseValidator):
             self._errors.append("ERROR: File '%s' does not validate: %s" % (
                 filename, status))
             self._errors.append("Validator returned error: %s\n%s" % (
-                self.statuscode, self.stderr))
+                self.stdout, self.stderr))
             self.is_valid(False)
 
         self._messages.append(status)
