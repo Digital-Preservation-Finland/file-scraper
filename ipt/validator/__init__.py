@@ -33,6 +33,14 @@ class UnknownFileformat(object):
             'errors':  [error_message]}
 
 
+def iter_validator_classes():
+    """Return all validator classes as iterable"""
+    for cls in BaseValidator.__subclasses__():
+        yield cls
+    for cls in JHove.__subclasses__():
+        yield cls
+
+
 def validate(fileinfo):
     """Validate digital object from given `fileinfo` record, using any of the
     validator classes.
@@ -42,15 +50,12 @@ def validate(fileinfo):
 
     """
 
-    base_validators = [BaseValidator, JHove]
     found_validator = False
-
-    for base_validator in base_validators:
-        for cls in base_validator.__subclasses__():
-            if cls.is_supported_mimetype(fileinfo):
-                found_validator = True
-                validator = cls(fileinfo)
-                yield validator.result()
+    for cls in iter_validator_classes():
+        if cls.is_supported_mimetype(fileinfo):
+            found_validator = True
+            validator = cls(fileinfo)
+            yield validator.result()
 
     if not found_validator:
         validator = UnknownFileformat(fileinfo)
