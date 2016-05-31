@@ -82,9 +82,6 @@ class WarcTools(BaseValidator):
 
         elif self.mimetype == "application/warc":
             self._validate_warc()
-        messages = "\n".join(message for message in self.messages())
-        errors = "\n".join(error for error in self.errors())
-        return (self.is_valid(), messages, errors)
 
     def _validate_warc(self):
         """
