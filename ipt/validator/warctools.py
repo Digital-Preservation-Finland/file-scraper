@@ -3,7 +3,7 @@ import gzip
 import tempfile
 
 from ipt.utils import run_command
-from ipt.validator.basevalidator import BaseValidator, ValidatorError
+from ipt.validator.basevalidator import BaseValidator, ValidatorError, Shell
 
 
 class WarcTools(BaseValidator):
@@ -90,9 +90,9 @@ class WarcTools(BaseValidator):
         """
         Validate warc with WarcTools.
         :returns: (statuscode, messages, errors)"""
-        (validity, messages, errors) = run_command(['warcvalid', self.filename])
-        self._check_for_errors(validity, messages, errors)
-        if self.is_valid():
+        shell = Shell(['warcvalid', self.filename])
+        self._check_for_errors(shell.returncode, shell.stdout, shell.stderr)
+        if shell.returncode == 0:
             self._check_warc_version()
 
     def _validate_arc(self):
@@ -104,15 +104,14 @@ class WarcTools(BaseValidator):
         # create covnersion from arc to warc
         temp_file = tempfile.NamedTemporaryFile(prefix="temp-warc.")
         warc_path = temp_file.name
-        (validity, messages, errors) = run_command(
-            cmd=['arc2warc', self.filename], stdout=temp_file)
-        self._check_for_errors(validity, messages, errors)
+        shell = Shell(command=['arc2warc', self.filename], output_file=temp_file)
+        self._check_for_errors(shell.returncode, shell.stdout, shell.stderr)
 
         # Successful conversion from arc to warc, validation can
         # now be made.
-        if self.is_valid():
-            (validity, messages, errors) = run_command(['warcvalid', warc_path])
-            self._check_for_errors(validity, messages, errors)
+        if shell.returncode == 0:
+            shell = Shell(['warcvalid', warc_path])
+            self._check_for_errors(shell.returncode, shell.stderr, shell.stdout)
 
     def _check_for_errors(self, validity, messages, errors):
         """Check if outcome was failure or success.

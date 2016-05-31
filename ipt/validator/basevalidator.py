@@ -2,6 +2,7 @@
 import abc
 
 from ipt.utils import run_command
+import subprocess
 
 
 class ValidatorError(Exception):
@@ -13,7 +14,7 @@ class Shell(object):
 
     """Docstring for ShellTarget. """
 
-    def __init__(self, command):
+    def __init__(self, command, output_file=subprocess.PIPE):
         """Initialize instance.
 
         :command: Command to execute as list
@@ -23,6 +24,7 @@ class Shell(object):
         self._stdout = None
         self._stderr = None
         self._returncode = None
+        self.output_file = output_file
 
     @property
     def returncode(self):
@@ -59,7 +61,8 @@ class Shell(object):
         """
         if self._returncode is None:
             (self._returncode, self._stdout,
-             self._stderr) = run_command(cmd=self.command)
+             self._stderr) = run_command(
+             cmd=self.command, stdout=self.output_file)
 
         return {
             'returncode': self._returncode,
