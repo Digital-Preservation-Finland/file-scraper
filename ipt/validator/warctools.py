@@ -61,10 +61,10 @@ class WarcTools(BaseValidator):
                 line = warc_fd.readline()
 
         if "WARC/%s" % self.fileversion not in line:
-            print "VERSION CHECK FAILED"
-            self.is_valid(False)
-            self._errors.append("File version check error, version %s "
+            self.errors("File version check error, version %s "
                          "not found from warc: %s" % (self.fileversion, line))
+        else:
+            self.messages("OK")
 
     def validate(self):
         """Validate file with command given in variable self.exec_cmd and with
@@ -112,6 +112,8 @@ class WarcTools(BaseValidator):
         if shell.returncode == 0:
             shell = Shell(['warcvalid', warc_path])
             self._check_for_errors(shell.returncode, shell.stderr, shell.stdout)
+            if shell.returncode == 0:
+                self.messages("OK")
 
     def _check_for_errors(self, validity, messages, errors):
         """Check if outcome was failure or success.
@@ -120,10 +122,9 @@ class WarcTools(BaseValidator):
         :errors: errors
         """
         if validity != 0:
-            self.is_valid(False)
-            self._errors.append(errors)
+            self.errors(errors)
 
-            for message in self.failures:
-                if message in errors:
+            for failure in self.failures:
+                if failure in errors:
                     return
-            raise ValidatorError(errors)
+            raise ValidatorError(self.errors())
