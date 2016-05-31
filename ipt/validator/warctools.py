@@ -2,7 +2,6 @@
 import gzip
 import tempfile
 
-from ipt.utils import run_command
 from ipt.validator.basevalidator import BaseValidator, ValidatorError, Shell
 
 
@@ -39,11 +38,71 @@ class WarcTools(BaseValidator):
         self.filename = fileinfo['filename']
         self.fileversion = fileinfo['format']['version']
         self.mimetype = fileinfo['format']['mimetype']
-        self.failures = ['zero length field name in format',
+        self.failures = [
+            'zero length field name in format',
             'Error -3 while decompressing: invalid distance code',
             'Not a gzipped file',
             'CRC check failed',
             'incorrect newline in header']
+
+    def validate(self):
+        """Validate file with command given in variable self.exec_cmd and with
+        options set in self.exec_options. Also check that validated file
+        version and profile matches with validator.
+
+        :returns: Tuple (status, report, errors) where
+            status -- 0 is success, 117 failure, anything else failure
+            report -- generated report
+            errors -- errors if encountered, else None
+        """
+
+        if self.mimetype == "application/x-internet-archive":
+            self._validate_arc()
+            self._check_warc_version()
+
+        elif self.mimetype == "application/warc":
+            self._validate_arc()
+
+    def _validate_warc(self, path=None):
+        """
+        Validate warc with WarcTools.
+        :returns: (statuscode, messages, errors)"""
+        if path is None:
+            path = self.filename
+        shell = Shell(['warcvalid', path])
+        self._check_shell_output(
+            "WARC validation", shell.returncode, shell.stderr)
+
+    def _validate_arc(self):
+        """
+        Valdiate arc by transforming it to warc first. WarcTools does not
+        support direct validation of arc.
+        :returns: (statuscode, messages, errors)
+        """
+
+        with tempfile.NamedTemporaryFile(prefix="temp-warc.") as outfile:
+            shell = Shell(
+                command=['arc2warc', self.filename], output_file=outfile.name)
+            self._check_shell_output(
+                'ARC->WARC conversion', shell.returncode, shell.stderr)
+            self._validate_warc(outfile.name)
+
+    def _check_shell_output(self, reason, returncode, stderr):
+        """Check if outcome was failure or success.
+        :validity: validity
+        :messages: messages
+        :errors: errors
+        """
+
+        if returncode == 0:
+            self.messages("OK: %s successful!" % reason)
+        else:
+            self.errors("ERROR: %s failed!" % reason)
+            self.errors(stderr)
+            for failure in self.failures:
+                if failure in stderr:
+                    return
+            raise ValidatorError(self.errors())
 
     def _check_warc_version(self):
         """ Check the file version of given file. In WARC format version string
@@ -60,68 +119,9 @@ class WarcTools(BaseValidator):
             with open(self.filename, 'r') as warc_fd:
                 line = warc_fd.readline()
 
-        if "WARC/%s" % self.fileversion not in line:
-            self.errors("File version check error, version %s "
-                         "not found from warc: %s" % (self.fileversion, line))
+        if "WARC/%s" % self.fileversion in line:
+            self.messages("OK: WARC version good")
         else:
-            self.messages("OK")
-
-    def validate(self):
-        """Validate file with command given in variable self.exec_cmd and with
-        options set in self.exec_options. Also check that validated file
-        version and profile matches with validator.
-
-        :returns: Tuple (status, report, errors) where
-            status -- 0 is success, 117 failure, anything else failure
-            report -- generated report
-            errors -- errors if encountered, else None
-        """
-
-        if self.mimetype == "application/x-internet-archive":
-            self._validate_arc()
-
-        elif self.mimetype == "application/warc":
-            self._validate_warc()
-
-    def _validate_warc(self):
-        """
-        Validate warc with WarcTools.
-        :returns: (statuscode, messages, errors)"""
-        shell = Shell(['warcvalid', self.filename])
-        self._check_for_errors(shell.returncode, shell.stdout, shell.stderr)
-        if shell.returncode == 0:
-            self._check_warc_version()
-
-    def _validate_arc(self):
-        """
-        Valdiate arc by transforming it to warc first. WarcTools does not
-        support direct validation of arc.
-        :returns: (statuscode, messages, errors)
-        """
-        # create covnersion from arc to warc
-        temp_file = tempfile.NamedTemporaryFile(prefix="temp-warc.")
-        warc_path = temp_file.name
-        shell = Shell(command=['arc2warc', self.filename], output_file=temp_file)
-        self._check_for_errors(shell.returncode, shell.stdout, shell.stderr)
-
-        # Successful conversion from arc to warc, validation can
-        # now be made.
-        if shell.returncode == 0:
-            shell = Shell(['warcvalid', warc_path])
-            self._check_for_errors(shell.returncode, shell.stderr, shell.stdout)
-            if shell.returncode == 0:
-                self.messages("OK")
-
-    def _check_for_errors(self, validity, messages, errors):
-        """Check if outcome was failure or success.
-        :validity: validity
-        :messages: messages
-        :errors: errors
-        """
-        if validity != 0:
-            self.errors(errors)
-
-            for failure in self.failures:
-                if failure in errors:
-                    return
-            raise ValidatorError(self.errors())
+            self.errors(
+                "File version check error, version %s "
+                "not found from warc: %s" % (self.fileversion, line))
