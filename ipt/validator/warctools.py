@@ -52,7 +52,6 @@ class WarcTools(BaseValidator):
 
         if self.mimetype == "application/x-internet-archive":
             self._validate_arc()
-            self._check_warc_version()
 
         elif self.mimetype == "application/warc":
             self._validate_arc()
