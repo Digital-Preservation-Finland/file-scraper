@@ -52,21 +52,30 @@ def iter_validator_classes():
 
 
 def validate(fileinfo):
-    """Validate digital object from given `fileinfo` record, using any of the
-    validator classes.
+    """
+    Validate sip with fileinfo.
+    :returns: tuple (is_valid, messages, errors)
+    """
+    validator = find_validator(fileinfo)
+    return validator.result()
+
+
+def find_validator(fileinfo):
+    """
+    Find a validator for digital object from given `fileinfo` record.
+    :returns: validator class
 
     Implementation of class factory pattern from
     http://stackoverflow.com/questions/456672/class-factory-in-python
-
     """
 
     found_validator = False
     for cls in iter_validator_classes():
-        if cls.is_supported_mimetype(fileinfo):
+        if cls.is_supported(fileinfo):
             found_validator = True
             validator = cls(fileinfo)
-            yield validator.result()
+            return validator
 
     if not found_validator:
         validator = UnknownFileformat(fileinfo)
-        yield validator.result()
+        return validator
