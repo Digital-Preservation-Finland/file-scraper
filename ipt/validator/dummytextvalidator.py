@@ -4,7 +4,7 @@ from ipt.validator import BaseValidator
 class DummyTextValidator(BaseValidator):
 
     @classmethod
-    def is_supported_mimetype(cls, fileinfo):
+    def is_supported(cls, fileinfo):
         """
         Check suported mimetypes.
         :fileinfo: fileinfo
