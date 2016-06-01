@@ -75,7 +75,7 @@ class WarcTools(BaseValidator):
 
         with tempfile.NamedTemporaryFile(prefix="temp-warc.") as outfile:
             shell = Shell(
-                command=['arc2warc', self.filename], output_file=outfile.name)
+                command=['arc2warc', self.filename], output_file=outfile)
             self._check_shell_output(
                 'ARC->WARC conversion', shell.returncode, shell.stderr)
             self._validate_warc(outfile.name)
