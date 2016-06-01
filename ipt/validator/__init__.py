@@ -1,4 +1,6 @@
-"""Validate digital objects"""
+"""
+Validate digital objects
+"""
 
 from ipt.validator.basevalidator import BaseValidator
 from ipt.validator.jhove import JHove
@@ -10,19 +12,27 @@ from ipt.validator.pngcheck import Pngcheck
 
 
 class UnknownFileformat(object):
-    """Validator class for unknown filetypes. This will always result as
-    invalid validation result"""
+    """
+    Validator class for unknown filetypes. This will always result as
+    invalid validation result.
+    """
 
     def __init__(self, fileinfo):
-        """Initialize object"""
+        """
+        Initialize object
+        """
         self.fileinfo = fileinfo
 
     def validate(self):
-        """No implementation"""
+        """
+        No implementation
+        """
         pass
 
     def result(self):
-        """Return validation result"""
+        """
+        Return validation result
+        """
         error_message = 'No validator for mimetype: %s version: %s' % (
             self.fileinfo['format']['mimetype'],
             self.fileinfo['format']['version'])
