@@ -1,4 +1,6 @@
-"""Module for validating files with warc-tools warc validator"""
+"""
+Module for validating arc and warc files with warc-tools warc validator.
+"""
 import gzip
 import tempfile
 
@@ -8,9 +10,7 @@ from ipt.validator.basevalidator import BaseValidator, ValidatorError, Shell
 class WarcTools(BaseValidator):
 
     """ Implements filevalidation or warc/arc files. use by calling
-    validate.
-        validate() for file validation.
-
+    validate() for file validation.
 
     .. seealso:: https://github.com/internetarchive/warctools
     """
@@ -30,8 +30,6 @@ class WarcTools(BaseValidator):
             fileinfo["format"]["version"]
             fileinfo["format"]["mimetype"]
             fileinfo["format"]["format_registry_key"]
-            fileinfo["object_id"]["type"]
-            fileinfo["object_id"]["value"]
         """
 
         super(WarcTools, self).__init__(fileinfo)
@@ -46,14 +44,10 @@ class WarcTools(BaseValidator):
             'incorrect newline in header']
 
     def validate(self):
-        """Validate file with command given in variable self.exec_cmd and with
+        """
+        Validate file with command given in variable self.exec_cmd and with
         options set in self.exec_options. Also check that validated file
         version and profile matches with validator.
-
-        :returns: Tuple (status, report, errors) where
-            status -- 0 is success, 117 failure, anything else failure
-            report -- generated report
-            errors -- errors if encountered, else None
         """
 
         if self.mimetype == "application/x-internet-archive":
@@ -66,7 +60,7 @@ class WarcTools(BaseValidator):
     def _validate_warc(self, path=None):
         """
         Validate warc with WarcTools.
-        :returns: (statuscode, messages, errors)"""
+        """
         if path is None:
             path = self.filename
         shell = Shell(['warcvalid', path])
@@ -77,7 +71,6 @@ class WarcTools(BaseValidator):
         """
         Valdiate arc by transforming it to warc first. WarcTools does not
         support direct validation of arc.
-        :returns: (statuscode, messages, errors)
         """
 
         with tempfile.NamedTemporaryFile(prefix="temp-warc.") as outfile:
@@ -88,8 +81,9 @@ class WarcTools(BaseValidator):
             self._validate_warc(outfile.name)
 
     def _check_shell_output(self, reason, returncode, stderr):
-        """Check if outcome was failure or success.
-        :validity: validity
+        """
+        Check if outcome was failure or success.
+        :reason: Description of the shell command
         :messages: messages
         :errors: errors
         """
@@ -105,9 +99,10 @@ class WarcTools(BaseValidator):
             raise ValidatorError(self.errors())
 
     def _check_warc_version(self):
-        """ Check the file version of given file. In WARC format version string
-            is stored at the first line of file so this methdos read the first
-            line and check that it matches.
+        """
+        Check the file version of given file. In WARC format version string
+        is stored at the first line of file so this methdos read the first
+        line and check that it matches.
         """
         warc_fd = gzip.open(self.filename)
         try:
