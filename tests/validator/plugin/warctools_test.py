@@ -37,16 +37,10 @@ TESTDATADIR = os.path.abspath(os.path.join(TESTDATADIR_BASE,
 def test_validate_valid(filename, mimetype, version, validity, messages):
     """Test cases for valid warcs and arcs."""
 
-    fileinfo = {
-        "filename": os.path.join(TESTDATADIR, filename),
-        "format": {
-            "mimetype": mimetype,
-            "version": version
-        }
-    }
-
-    validator = WarcTools(fileinfo)
-    validator.validate()
+    validator = validate(
+        os.path.join("tests/data/02_filevalidation_data", filename),
+        mimetype,
+        version)
     assert validator.is_valid, validator.errors() + validator.messages()
     assert 'OK' in validator.messages()
     assert validator.errors() == ""
@@ -69,16 +63,10 @@ def test_validate_valid(filename, mimetype, version, validity, messages):
 def test_validate_invalid(filename, mimetype, version, validity, errors):
     """Test cases for invalid warcs and arcs."""
 
-    fileinfo = {
-        "filename": os.path.join(TESTDATADIR, filename),
-        "format": {
-            "mimetype": mimetype,
-            "version": version
-        }
-    }
-
-    validator = WarcTools(fileinfo)
-    validator.validate()
+    validator = validate(
+        os.path.join("tests/data/02_filevalidation_data", filename),
+        mimetype,
+        version)
     assert not validator.is_valid, validator.errors()
     assert 'OK' not in validator.messages()
     assert errors in validator.errors()
@@ -89,15 +77,23 @@ def test_system_error():
     """
     Test for system error(missing file)
     """
+
+    with pytest.raises(ValidatorError) as error:
+        validator = validate("foo", "application/warc", "1.0")
+    assert "No such file or directory" in str(error.value)
+
+
+def validate(filename, mimetype, version):
+    """Return validator with given filename"""
+
     fileinfo = {
-        "filename": "foo",
+        "filename": filename,
         "format": {
-            "mimetype": "application/warc",
-            "version": "1.0"
+            "mimetype": mimetype,
+            "version": version
         }
     }
-    validator = WarcTools(fileinfo)
-    with pytest.raises(ValidatorError) as error:
-        validator.validate()
-        assert "No such file or directory" in str(error.value)
 
+    validator = WarcTools(fileinfo)
+    validator.validate()
+    return validator
