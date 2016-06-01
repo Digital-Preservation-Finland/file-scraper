@@ -60,7 +60,6 @@ def test_validate_invalid(filename, mimetype, version, validity, errors):
         mimetype,
         version)
     assert not validator.is_valid, validator.errors()
-    assert 'OK' not in validator.messages()
     assert errors in validator.errors()
     
 
