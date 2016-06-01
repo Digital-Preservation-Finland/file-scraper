@@ -54,7 +54,9 @@ class WarcTools(BaseValidator):
             self._validate_arc()
 
         elif self.mimetype == "application/warc":
-            self._validate_arc()
+            self._validate_warc()
+            if self.is_valid:
+                self._check_warc_version()
 
     def _validate_warc(self, path=None):
         """
