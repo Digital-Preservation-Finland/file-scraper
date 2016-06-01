@@ -26,7 +26,7 @@ class JHove(BaseValidator):
     JHove base class, implement basic functionalities of JHove validation.
     """
     _supported_mimetypes = {
-        'image/jp2': [],
+        'image/jp2': [""],
         'image/gif': ['1987a', '1989a'],
         'text/html': ['HTML.4.01']
     }
