@@ -2,7 +2,7 @@
 This is a PDF 1.7 valdiator implemented with ghostscript.
 """
 
-from ipt.validator.basevalidator import BaseValidator
+from ipt.validator.basevalidator import BaseValidator, Shell
 from ipt.utils import run_command, UnknownException
 
 
@@ -35,40 +35,34 @@ class GhostScript(BaseValidator):
         :returns: tuple(validity, messages, errors)
         """
 
-        (exitcode, stdout, stderr) = run_command(self.cmd_exec)
-        if 'error' in stderr or 'Error' in stdout or exitcode != 0 or \
-                'Processing page' not in stdout:
-            self.is_valid(False)
-            self.errors(stderr)
-            self.messages(stdout)
+        shell = Shell(self.cmd_exec)
+        if 'error' in shell.stderr or 'Error' in shell.stdout or \
+            shell.returncode != 0 or 'Processing page' not in shell.stdout:
+            self.errors(shell.stderr)
+            self.messages(shell.stdout)
 
-        if 'Error: /undefined in' not in stdout and exitcode != 0:
+        if 'Error: /undefined in' not in shell.stdout and shell.returncode != 0:
             raise UnknownException(
-                "stderr:%s stdout:%s" % (stderr, stdout))
+                "stderr:%s stdout:%s" % (shell.stderr, shell.stdout))
 
         self._check_version()
+        self.messages('OK')
 
-        messages = "\n".join(message for message in self.messages())
-        errors = "\n".join(error for error in self.errors())
-        return (self.is_valid(), messages, errors)
 
     def _check_version(self):
         """
         Check pdf version
         """
-        (exitcode, stdout, stderr) = run_command(
-            [self.file_cmd_exec, self.filename])
-        if exitcode != 0:
-            self.is_valid(False)
+        shell = Shell([self.file_cmd_exec, self.filename])
+        if shell.returncode != 0:
             self.errors("ERROR:%s" % stderr)
             self.messages(stdout)
             raise UnknownException(
-                "stderr:%s stdout:%s" % (self.errors(), self.messages()))
+                "stderr:%s stdout:%s" % (shell.errors(), shell.messages()))
 
-        if 'PDF document, version 1.7' not in stdout:
-            self.is_valid(False)
-            version = stdout.split(':')[1]
+        if 'PDF document, version 1.7' not in shell.stdout:
+            version = shell.stdout.split(':')[1]
             self.errors(
                 "ERROR: wrong file version. Expected PDF 1.7, found%s"
                 % version)
-            self.messages(stdout)
+            self.messages(shell.stdout)

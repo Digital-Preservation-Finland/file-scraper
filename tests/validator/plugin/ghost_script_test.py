@@ -6,14 +6,10 @@ import os
 import sys
 import pytest
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
-
-from testcommon.settings import TESTDATADIR
-
 from ipt.validator.ghost_script import GhostScript
 from ipt.utils import UnknownException
 
-BASEPATH = os.path.join(TESTDATADIR, '02_filevalidation_data', 'pdf_1_7')
+BASEPATH = "tests/data/02_filevalidation_data/pdf_1_7"
 
 FILEINFO = {
     "filename": "",
@@ -30,10 +26,11 @@ def test_pdf_1_7_ok():
     """
     FILEINFO["filename"] = os.path.join(BASEPATH, "valid_1_7.pdf")
     validator = GhostScript(FILEINFO)
-    (validity, messages, errors) = validator.validate()
-    assert 'error' not in errors
-    assert 'Error' not in messages
-    assert validity is True
+    validator.validate()
+    assert 'Error' not in validator.messages()
+    assert validator.is_valid
+    assert 'OK' in validator.messages()
+    assert validator.errors() == ""
 
 
 def test_pdf_1_7_validity_error():
@@ -43,11 +40,11 @@ def test_pdf_1_7_validity_error():
     FILEINFO["filename"] = os.path.join(BASEPATH, "invalid_1_7.pdf")
 
     validator = GhostScript(FILEINFO)
-    (validity, messages, errors) = validator.validate()
+    validator.validate()
 
-    assert 'Unrecoverable error, exit code 1' in errors
-    assert 'Error: /undefined in obj' in messages
-    assert validity is False
+    assert 'Unrecoverable error, exit code 1' in validator.errors()
+    assert 'Error: /undefined in obj' in validator.messages()
+    assert not validator.is_valid
 
 
 def test_pdf_1_7_version_error():
@@ -57,12 +54,12 @@ def test_pdf_1_7_version_error():
     FILEINFO["filename"] = os.path.join(BASEPATH, "invalid_wrong_version.pdf")
 
     validator = GhostScript(FILEINFO)
-    (validity, messages, errors) = validator.validate()
+    validator.validate()
 
     assert 'ERROR: wrong file version. Expected PDF 1.7,' \
-        ' found PDF document, version 1.3' in errors
-    assert 'PDF document, version 1.3' in messages
-    assert validity is False
+        ' found PDF document, version 1.3' in validator.errors()
+    assert 'PDF document, version 1.3' in validator.messages()
+    assert not validator.is_valid
 
 
 def test_system_error(monkeypatch):
