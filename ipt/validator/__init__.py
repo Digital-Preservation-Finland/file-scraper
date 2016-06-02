@@ -48,7 +48,7 @@ def validate(fileinfo):
     Validate sip with fileinfo.
     :returns: tuple (is_valid, messages, errors)
     """
-    validator = find_validator(fileinfo)
+    validator = iter_validator_classes(fileinfo)
     return validator.result()
 
 
