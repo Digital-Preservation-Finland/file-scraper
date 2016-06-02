@@ -5,7 +5,6 @@ import os
 import lxml.etree
 
 from ipt.validator.basevalidator import BaseValidator, Shell
-from ipt.utils import UnknownException, run_command
 
 
 NAMESPACES = {'j': 'http://hul.harvard.edu/ois/xml/ns/jhove'}
@@ -14,11 +13,24 @@ EXTRA_JARS = os.path.join(JHOVE_HOME, '/bin/JhoveView.jar')
 CP = os.path.join(JHOVE_HOME, 'bin/JhoveApp.jar') + ':' + EXTRA_JARS
 
 
-class JHoveUtils(object):
+class JHoveBase(BaseValidator):
     """
     Basic methods for jhove validation.
     """
-    def jhove_validation(self, validator_module, filename):
+
+    def __init__(self, fileinfo):
+        """TODO: Docstring for __init__.
+        :returns: TODO
+
+        """
+
+        super(JHoveBase).__init__(fileinfo)
+
+        self.filename = None
+        self.report = None
+        self.shell = None
+
+    def jhove_command(self, validator_module, filename):
         """
         Validate file with jhove.
         :validator_module: Jhove validatormodule.
@@ -28,25 +40,39 @@ class JHoveUtils(object):
             :stdout: xml based jhove report for other validation steps.
             :errors: errors
         """
-        exec_cmd = ['java', '-classpath', CP, 'Jhove', '-h', 'XML', '-m',
+
+        self.filename = filename
+
+        exec_cmd = [
+            'java', '-classpath', CP, 'Jhove', '-h', 'XML', '-m',
             validator_module, filename]
-        shell = Shell(exec_cmd)
+        self.shell = Shell(exec_cmd)
 
         errors = []
-        if shell.returncode != 0:
-            errors.append("Validator returned error: %s\n%s" % (
-                shell.returncode, shell.stderr))
-        status = self.get_report_field("status", shell.stdout)
-        filename = os.path.basename(filename)
+
+        if self.shell.returncode != 0:
+            errors.append("JHove returned error: %s\n%s" % (
+                self.shell.returncode, self.shell.stderr))
+
+        self.report = lxml.etree.fromstring(self.shell.stdout)
+
+    def check_well_formed(self):
+        """TODO: Docstring for check_well_formed.
+
+        :arg1: TODO
+        :returns: TODO
+
+        """
+
+        status = self.report_field("status")
+
         if status != 'Well-Formed and valid':
-            errors.append("File '%s' does not validate: %s" % (
-                filename, status))
-            errors.append("Validator returned error: %s\n%s" % (
-                shell.stdout, shell.stderr))
-        return status, shell.stdout, '\n'.join(errors)
+            self.errors("File '%s' does not validate: %s" % (
+                self.filename, status))
+            self.errors("Validator returned error: %s\n%s" % (
+                self.shell.stdout, self.shell.stderr))
 
-
-    def get_report_field(self, field, stdout):
+    def report_field(self, field):
         """
         Return field value from JHoves XML output. This method assumes that
         JHove's XML output handler is used: jhove -h XML. Method uses XPath
@@ -68,14 +94,13 @@ class JHoveUtils(object):
             Concatenated string where each result is on own line. An empty
             string is returned if there's no results.
         """
-        root = lxml.etree.fromstring(stdout)
-        query = '//j:%s/text()' % field
-        results = root.xpath(query, namespaces=NAMESPACES)
 
+        query = '//j:%s/text()' % field
+        results = self.report.xpath(query, namespaces=NAMESPACES)
         return '\n'.join(results)
 
 
-class JHoveTextUTF8(BaseValidator, JHoveUtils):
+class JHoveTextUTF8(JHoveBase):
     """
     JHove validator fir text/plain UTF-8
     """
@@ -87,9 +112,9 @@ class JHoveTextUTF8(BaseValidator, JHoveUtils):
         """
         Check if file is valid according to JHove output.
         """
-        (message, _, error)  = self.jhove_validation('UTF8-hul', self.fileinfo["filename"])
-        self.messages(message)
-        self.errors(error)
+
+        self.jhove_command('UTF8-hul', self.fileinfo["filename"])
+        self.check_well_formed()
 
     @classmethod
     def is_supported_mimetype(cls, fileinfo):
@@ -103,7 +128,7 @@ class JHoveTextUTF8(BaseValidator, JHoveUtils):
         return False
 
 
-class JHovePDF(BaseValidator, JHoveUtils):
+class JHovePDF(JHoveBase):
     """
     JHove validator for PDF
     """
@@ -116,41 +141,42 @@ class JHovePDF(BaseValidator, JHoveUtils):
         """
         Check if file is valid according to JHove output.
         """
-        (message, stdout, error) = self.jhove_validation('PDF-hul', self.fileinfo["filename"])
-        self.messages(message)
-        self.errors(error)
-        self._check_version(stdout)
-        self._check_profile()
 
+        self.jhove_command('PDF-hul', self.fileinfo["filename"])
 
-    def _check_version(self, shell):
+        self.check_well_formed()
+        self.check_version()
+        self.check_profile()
+
+    def check_version(self):
         """ Check if version string matches JHove output.
         :shell: shell utility tool
         """
 
-        report_version = self.get_report_field("version", shell)
+        report_version = self.report_field("version")
         report_version = report_version.replace(" ", ".")
         if "A-1" in self.fileinfo["format"]["version"]:
             self.fileinfo["format"]["version"] = "1.4"
 
         if report_version != self.fileinfo["format"]["version"]:
-            self.errors("ERROR: File version is '%s', expected '%s'"
+            self.errors(
+                "ERROR: File version is '%s', expected '%s'"
                 % (report_version, self.fileinfo["format"]["version"]))
 
-    def _check_profile(self):
+    def check_profile(self):
         """ Check if profile string matches JHove output.
         """
         if "A-1" not in self.fileinfo["format"]["version"]:
             return
         profile = "ISO PDF/A-1"
-        report_profile = self.get_report_field("profile")
+        report_profile = self.report_field("profile")
         if profile not in report_profile:
             self.errors(
                 "ERROR: File profile is '%s', expected '%s'" % (
                     report_profile, profile))
 
 
-class JHoveTiff(BaseValidator, JHoveUtils):
+class JHoveTiff(BaseValidator, JHoveBase):
     """
     JHove validator for tiff
     """
@@ -185,7 +211,7 @@ class JHoveTiff(BaseValidator, JHoveUtils):
                 % (report_version, self.fileinfo["format"]["version"]))
 
 
-class JHoveJPEG(BaseValidator, JHoveUtils):
+class JHoveJPEG(BaseValidator, JHoveBase):
     """
     JHove validator for JPEG
     """
@@ -202,7 +228,7 @@ class JHoveJPEG(BaseValidator, JHoveUtils):
         self.errors(error)
 
 
-class JHoveBasic(BaseValidator, JHoveUtils):
+class JHoveBasic(BaseValidator, JHoveBase):
     """
     JHove basic class, implement JHove validation.
     """
