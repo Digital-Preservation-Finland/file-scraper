@@ -1,4 +1,6 @@
-"""Module for vallidating files with JHove 1 Validator"""
+"""
+Module for vallidating files with JHove 1 Validator
+"""
 import os
 import lxml.etree
 
@@ -74,7 +76,7 @@ class JHovePDF(BaseValidator):
 
     def _check_version(self, shell):
         """ Check if version string matches JHove output.
-        :version: version string
+        :shell: shell utility tool
         """
 
         report_version = get_report_field("version", shell)
@@ -121,6 +123,7 @@ class JHoveTiff(BaseValidator):
     def _check_version(self, shell):
         """
         Check if version string matches JHove output.
+        :shell: shell utility tool
         """
 
         report_version = get_report_field("version", shell)
@@ -178,8 +181,8 @@ class JHoveBasic(BaseValidator):
 
     def _check_version(self, shell):
         """
-        _check_version abstract method
-        Check if version string matches JHove output.
+        Check if fileinfo version matches JHove output.
+        :shell: shell utility tool
         """
         if self.fileinfo["format"]["mimetype"] == 'text/plain':
             report_version = get_report_field("format", shell)
@@ -193,6 +196,7 @@ class JHoveBasic(BaseValidator):
 
 def check_jhove_errors(shell, validator):
     """
+    Check if JHove output has errors.
     """
     if shell.returncode != 0:
         validator.errors("Validator returned error: %s\n%s" % (
@@ -228,6 +232,7 @@ def get_report_field(field, shell):
 
     :field: Field name which content we are looking for. In practise
         field is an element in XML document.
+    :shell: shell utility tool
     :returns:
         Concatenated string where each result is on own line. An empty
         string is returned if there's no results.
