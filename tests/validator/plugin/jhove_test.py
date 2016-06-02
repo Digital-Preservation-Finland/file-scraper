@@ -5,11 +5,7 @@ import pytest
 from ipt.validator.jhove import JHoveBasic, JHoveTiff, JHovePDF, JHoveTextUTF8, \
     JHoveJPEG
 
-TESTDATADIR_BASE = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '../../data'))
-TESTDATADIR = os.path.abspath(
-    os.path.join(TESTDATADIR_BASE, '02_filevalidation_data'))
-
+TESTDATADIR_BASE = 'tests/data'
 
 @pytest.mark.usefixtures("monkeypatch_Popen")
 @pytest.mark.parametrize(
