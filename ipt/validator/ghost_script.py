@@ -13,26 +13,13 @@ class GhostScript(BaseValidator):
         'application/pdf': ['1.7']
     }
 
-    def __init__(self, fileinfo):
-        """
-        init
-        :fileinfo: a dictionary with format
-
-            fileinfo["filename"]
-            fileinfo["format"]["version"]
-            fileinfo["format"]["mimetype"]
-        """
-        super(GhostScript, self).__init__(fileinfo)
-        self.filename = fileinfo["filename"]
-        self.version = fileinfo["format"]["version"]
-
     def validate(self):
         """
         Validate file
         """
 
         shell = Shell([
-            'gs', '-o', '/dev/null', '-sDEVICE=nullpage', self.filename])
+            'gs', '-o', '/dev/null', '-sDEVICE=nullpage', self.fileinfo["filename"]])
         if shell.returncode != 0:
             self.errors(shell.stderr)
         else:
@@ -43,9 +30,9 @@ class GhostScript(BaseValidator):
         """
         Check pdf version
         """
-        shell = Shell(['file', self.filename])
-        if 'PDF document, version %s' % self.version not in shell.stdout:
+        shell = Shell(['file', self.fileinfo["filename"]])
+        if 'PDF document, version %s' % self.fileinfo["format"]["version"] not in shell.stdout:
             found_version = shell.stdout.split(':')[1]
             self.errors("wrong file version. Expected PDF %s, found%s"
-                        % (self.version, found_version))
+                        % (self.fileinfo["format"]["version"], found_version))
             self.messages(shell.stdout)
