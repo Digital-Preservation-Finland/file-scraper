@@ -3,7 +3,7 @@ Validate digital objects
 """
 
 from ipt.validator.basevalidator import BaseValidator
-from ipt.validator.jhove import JHove
+from ipt.validator.jhove import JHoveBasic, JHoveTextUTF8, JHovePDF, JHoveTiff, JHoveJPEG
 from ipt.validator.dummytextvalidator import DummyTextValidator
 from ipt.validator.xmllint import Xmllint
 from ipt.validator.warctools import WarcTools
@@ -43,14 +43,6 @@ class UnknownFileformat(object):
             'errors':  [error_message]}
 
 
-def iter_validator_classes():
-    """Return all validator classes as iterable"""
-    for cls in BaseValidator.__subclasses__():
-        yield cls
-    for cls in JHove.__subclasses__():
-        yield cls
-
-
 def validate(fileinfo):
     """
     Validate sip with fileinfo.
@@ -60,7 +52,7 @@ def validate(fileinfo):
     return validator.result()
 
 
-def find_validator(fileinfo):
+def iter_validator_classes(fileinfo):
     """
     Find a validator for digital object from given `fileinfo` record.
     :returns: validator class
@@ -70,7 +62,7 @@ def find_validator(fileinfo):
     """
 
     found_validator = False
-    for cls in iter_validator_classes():
+    for cls in BaseValidator.__subclasses__():
         if cls.is_supported(fileinfo):
             found_validator = True
             validator = cls(fileinfo)

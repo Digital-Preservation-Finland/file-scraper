@@ -1,26 +1,17 @@
 """
 Test for ipt/validator/__init__.py. The purpose of this test is to make sure that all validators are able to be found.
 """
-from ipt.validator.jhove import JHove, JHoveTextUTF8, JHovePDF, JHoveTiff, JHoveJPEG
+from ipt.validator.jhove import JHoveBasic, JHoveTextUTF8, JHovePDF, JHoveTiff, JHoveJPEG
 from ipt.validator.dummytextvalidator import DummyTextValidator
 from ipt.validator.xmllint import Xmllint
 from ipt.validator.warctools import WarcTools
 from ipt.validator.ghost_script import GhostScript
 from ipt.validator.pngcheck import Pngcheck
 from ipt.validator.csv_validator import PythonCsv
-from ipt.validator import UnknownFileformat
+from ipt.validator import UnknownFileformat, BaseValidator
 
 import ipt.validator
 import pytest
-
-
-def test_iter_validator_classes():
-    """
-    test_iter_validator_classes
-    """
-    classes = [x for x in ipt.validator.iter_validator_classes()]
-    assert set(classes) == set([JHove, JHoveTextUTF8, JHovePDF, JHoveTiff, JHoveJPEG, 
-        DummyTextValidator, Xmllint, WarcTools, GhostScript, Pngcheck, PythonCsv])
     
 
 @pytest.mark.usefixtures("monkeypatch_Popen")
@@ -43,10 +34,10 @@ def test_iter_validator_classes():
         ("application/pdf", "1.7", "", GhostScript),
         ("image/tiff", "6.0", "", JHoveTiff),
         ("image/jpeg", "", "", JHoveJPEG),
-        ("image/jp2", "", "", JHove),
-        ("image/gif", "1987a", "", JHove),
-        ("image/gif", "1989a", "", JHove),
-        ("text/html", "HTML.4.01", "UTF-8", JHove),
+        ("image/jp2", "", "", JHoveBasic),
+        ("image/gif", "1987a", "", JHoveBasic),
+        ("image/gif", "1989a", "", JHoveBasic),
+        ("text/html", "HTML.4.01", "UTF-8", JHoveBasic),
         ("image/png", "", "", Pngcheck),
         ("application/warc", "0.17", "", WarcTools),
         ("application/warc", "0.18", "", WarcTools),
@@ -55,7 +46,7 @@ def test_iter_validator_classes():
         ("application/x-internet-archive", "1.1", "", WarcTools),
         ("text/xml", "1.0", "UTF-8", Xmllint)
     ])
-def tests_validate_validator_found(monkeypatch, mimetype, version, charset, validator_class, capsys):
+def tests_iter_validator_classes(monkeypatch, mimetype, version, charset, validator_class, capsys):
     fileinfo = {
         "filename": "foo",
         "format": {
@@ -70,7 +61,7 @@ def tests_validate_validator_found(monkeypatch, mimetype, version, charset, vali
             "header_fields": "foo" 
         }
     }
-    print validator_class, ipt.validator.find_validator(fileinfo)
-    assert isinstance(ipt.validator.find_validator(fileinfo), validator_class)
+    print validator_class, ipt.validator.iter_validator_classes(fileinfo)
+    assert isinstance(ipt.validator.iter_validator_classes(fileinfo), validator_class)
 
   
