@@ -16,31 +16,34 @@ CP = os.path.join(JHOVE_HOME, 'bin/JhoveApp.jar') + ':' + EXTRA_JARS
 
 class JHoveUtils(object):
     """
+    Basic methods for jhove validation.
     """
     def jhove_validation(self, validator_module, filename):
         """
+        Validate file with jhove.
+        :validator_module: Jhove validatormodule.
+        :filename: filename
+        :returns: tuple (status, stdout, errors)
+            :status: status for report
+            :stdout: xml based jhove report for other validation steps.
+            :errors: errors
         """
         exec_cmd = ['java', '-classpath', CP, 'Jhove', '-h', 'XML', '-m',
             validator_module, filename]
         shell = Shell(exec_cmd)
-        return shell.returncode, shell.stdout, shell.stderr
 
-    def check_jhove_errors(self, returncode, stdout, stderr, filename):
-        """
-        Check if JHove output has errors.
-        """
         errors = []
-        if returncode != 0:
+        if shell.returncode != 0:
             errors.append("Validator returned error: %s\n%s" % (
-                returncode, stderr))
-        status = self.get_report_field("status", stdout)
+                shell.returncode, shell.stderr))
+        status = self.get_report_field("status", shell.stdout)
         filename = os.path.basename(filename)
         if status != 'Well-Formed and valid':
             errors.append("File '%s' does not validate: %s" % (
                 filename, status))
             errors.append("Validator returned error: %s\n%s" % (
-                stdout, stderr))
-        return status, '\n'.join(errors)
+                shell.stdout, shell.stderr))
+        return status, shell.stdout, '\n'.join(errors)
 
 
     def get_report_field(self, field, stdout):
@@ -84,9 +87,7 @@ class JHoveTextUTF8(BaseValidator, JHoveUtils):
         """
         Check if file is valid according to JHove output.
         """
-        returncode, stdout, stderr = self.jhove_validation('UTF8-hul', self.fileinfo["filename"])
-        (message, error) = self.check_jhove_errors(
-            returncode, stdout, stderr, self.fileinfo["filename"])
+        (message, _, error)  = self.jhove_validation('UTF8-hul', self.fileinfo["filename"])
         self.messages(message)
         self.errors(error)
 
@@ -115,10 +116,7 @@ class JHovePDF(BaseValidator, JHoveUtils):
         """
         Check if file is valid according to JHove output.
         """
-        returncode, stdout, stderr = self.jhove_validation(
-            'PDF-hul', self.fileinfo["filename"])
-        (message, error) = self.check_jhove_errors(
-            returncode, stdout, stderr, self.fileinfo["filename"])
+        (message, stdout, error) = self.jhove_validation('PDF-hul', self.fileinfo["filename"])
         self.messages(message)
         self.errors(error)
         self._check_version(stdout)
@@ -164,10 +162,7 @@ class JHoveTiff(BaseValidator, JHoveUtils):
         """
         Check if file is valid according to JHove output.
         """
-        returncode, stdout, stderr = self.jhove_validation(
-            'TIFF-hul', self.fileinfo["filename"])
-        (message, error) = self.check_jhove_errors(
-            returncode, stdout, stderr, self.fileinfo["filename"])
+        (message, stdout, error) = self.jhove_validation('TIFF-hul', self.fileinfo["filename"])
         self.messages(message)
         self.errors(error)
         self._check_version(stdout)
@@ -202,9 +197,7 @@ class JHoveJPEG(BaseValidator, JHoveUtils):
         """
         Check if file is valid according to JHove output.
         """
-        returncode, stdout, stderr = self.jhove_validation('JPEG-hul', self.fileinfo["filename"])
-        (message, error) = self.check_jhove_errors(
-            returncode, stdout, stderr, self.fileinfo["filename"])
+        (message, _, error) = self.jhove_validation('JPEG-hul', self.fileinfo["filename"])
         self.messages(message)
         self.errors(error)
 
@@ -230,11 +223,9 @@ class JHoveBasic(BaseValidator, JHoveUtils):
         Check if file is valid according to JHove output.
         """
         validator_module = self._jhove_modules[self.fileinfo["format"]["mimetype"]]
-        returncode, stdout, stderr = self.jhove_validation(
+        (message, stdout, error) = self.jhove_validation(
             validator_module, self.fileinfo["filename"])
-        
-        (message, error) = self.check_jhove_errors(
-            returncode, stdout, stderr, self.fileinfo["filename"])
+
         self.messages(message)
         self.errors(error)
         self._check_version(stdout)
