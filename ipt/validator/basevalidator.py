@@ -110,7 +110,7 @@ class BaseValidator(object):
 
     def errors(self, error=None):
         """Return validation error messages"""
-        if error is not None:
+        if error is not None and error != "":
             self._errors.append(error)
         return concat(self._errors, 'ERROR: ')
 
