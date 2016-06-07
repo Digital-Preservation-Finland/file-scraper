@@ -63,46 +63,42 @@ class Xmllint(BaseValidator):
 
         # Try to validate well-formedness by opening file in XML parser
         try:
-            fd = open(self.filename)
+            fd = open(self.fileinfo["filename"])
             parser = etree.XMLParser(dtd_validation=False, no_network=True)
             tree = etree.parse(fd, parser=parser)
             self.used_version = tree.docinfo.xml_version
             fd.close()
         except etree.XMLSyntaxError as exception:
-            self.not_valid()
             self.errors("Validation failed: document is not well-formed.")
             self.errors(str(exception))
-
-            return self.result()
+            return
 
         # Try validate against DTD
         if tree.docinfo.doctype:
-            (exitcode, stdout, stderr) = self.exec_xmllint(validate=True)
+            (exitcode, stdout, stderr) = self.exec_xmllint(validate=True)       
 
         # Try validate againts XSD
         else:
             if not self.schema:
                 self.schema = self.construct_xsd(tree)
-
                 if not self.schema:
                     # No given schema and didn't find included schemas but XML
                     # was well formed.
                     self.messages("Validation success: Document is "
                                   "well-formed but does not contain schema.")
-                    return self.result()
+                    return
 
             (exitcode, stdout, stderr) = self.exec_xmllint(schema=self.schema)
-
-        self.messages(stdout)
-        self.errors(stderr)
-        if exitcode != 0:
-            self.not_valid()
+        if exitcode == 0:
+            self.messages(
+                "%s Validation success%s" % (
+                    self.fileinfo["filename"], stdout))
+        else:
+            self.errors(stderr)
 
         # Clean up constructed schemas
         if self.has_constructed_schema:
             os.remove(self.schema)
-
-        return self.result()
 
     def construct_xsd(self, document_tree):
         """This method constructs one schema file which collects all used
@@ -137,7 +133,7 @@ class Xmllint(BaseValidator):
             xsd_exists = True
 
             # Check if XSD file is included in SIP
-            local_schema_location = os.path.dirname(self.filename) + '/' + \
+            local_schema_location = os.path.dirname(self.fileinfo["filename"]) + '/' + \
                 schema_location
             if os.path.isfile(local_schema_location):
                 schema_location = local_schema_location
@@ -168,7 +164,7 @@ class Xmllint(BaseValidator):
         command += ['--nonet'] if no_network else []
         command += ['--catalogs'] if catalog else []
         command += ['--schema', schema] if schema else []
-        command += [self.filename]
+        command += [self.fileinfo["filename"]]
 
         environment = {
             'SGML_CATALOG_FILES': catalog
