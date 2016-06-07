@@ -3,7 +3,6 @@ import os
 import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 import testcommon.settings
-from testcommon.casegenerator import pytest_generate_tests
 
 import pytest
 # Module to test
@@ -22,163 +21,74 @@ SCHEMAPATH = os.path.join(SHAREPATH, 'schema/mets/mets.xsd')
 
 class TestXmllintValidation:
 
-    testcases = {
-        "test_validation": [
-            {"testcase": {
-             "name": "Test XSD validation with KDK METS schema 1",
-                "filepath": '06_mets_validation/sips/CSC_test001/mets.xml',
-                "catalog": OBJECT_CATALOGPATH,
-                "schema": SCHEMAPATH
-
-             },
-             "expected": {
-                 "status": True,
-                 "stdout_has_errors": False,
-                 "stderr_has_errors": False,
-            }
-            },
-            {"testcase": {
-             "name": "Test XSD validation with KDK METS schema 2",
-                "filepath":
-             '06_mets_validation/sips/fd2009-00002919-preservation/mets.xml',
-                "catalog": OBJECT_CATALOGPATH,
-                "schema": SCHEMAPATH
-             },
-             "expected": {
-                 "status": True,
-                 "stdout_has_errors": False,
-                 "stderr_has_errors": False,
-            }
-            },
-            {"testcase": {
-             "name": "Test XSD validation with schema from object catalog",
-                "filepath":
-             '02_filevalidation_data/xml/catalog_schema_valid.xml',
-                "catalog": OBJECT_CATALOGPATH
-             },
-             "expected": {
-                 "status": True,
-                 "stdout_has_errors": False,
-                 "stderr_has_errors": False,
-            }
-            },
-            {"testcase": {
-             "name": "Test XSD validation with non existing schema",
-                "filepath":
-             '02_filevalidation_data/xml/catalog_schema_invalid.xml',
-                "catalog": OBJECT_CATALOGPATH
-             },
-             "expected": {
-                 "status": False,
-                 "stdout_has_errors": False,
-                 "stderr_has_errors": True,
-            }
-            },
-            {"testcase": {
-             "name": "Test XSD validation with valid XML file",
-                "filepath": '02_filevalidation_data/xml/valid_xsd.xml',
-                "catalog": OBJECT_CATALOGPATH
-             },
-             "expected": {
-                 "status": True,
-                 "stdout_has_errors": False,
-                 "stderr_has_errors": False,
-            }
-            },
-            {"testcase": {
-             "name": "Test XSD validation with invalid XML file",
-                "filepath": '02_filevalidation_data/xml/invalid_xsd.xml',
-                "catalog": OBJECT_CATALOGPATH
-             },
-             "expected": {
-                 "status": False,
-                 "stdout_has_errors": False,
-                 "stderr_has_errors": True,
-            }
-            },
-            {"testcase": {
-             "name": "Test validation with well-formed XML file",
-                "filepath": '02_filevalidation_data/xml/valid_wellformed.xml'
-             },
-             "expected": {
-                 "status": True,
-                 "stdout_has_errors": False,
-                 "stderr_has_errors": False,
-            }
-            },
-            {"testcase": {
-             "name": "Test validation with not well-formed XML file",
-                "filepath": '02_filevalidation_data/xml/invalid_wellformed.xml'
-             },
-             "expected": {
-                 "status": False,
-                 "stdout_has_errors": False,
-                 "stderr_has_errors": True,
-            }
-            },
-            {"testcase": {
-             "name": "Test DTD validation with valid XML file",
-                "filepath": '02_filevalidation_data/xml/valid_dtd.xml'
-             },
-             "expected": {
-                 "status": True,
-                 "stdout_has_errors": False,
-                 "stderr_has_errors": False,
-            }
-            },
-            {"testcase": {
-             "name": "Test DTD validation with invalid XML file",
-                "filepath": '02_filevalidation_data/xml/invalid_dtd.xml'
-             },
-             "expected": {
-                 "status": False,
-                 "stdout_has_errors": False,
-                 "stderr_has_errors": True,
-            }
-            }
-
-        ]
-    }
-
     @pytest.mark.usefixtures("monkeypatch_Popen")
-    def test_validation(self, testcase, expected):
+    @pytest.mark.parametrize(
+        ["filename", "schema"],
+        [
+            ("06_mets_validation/sips/CSC_test001/mets.xml", True),
+            ("06_mets_validation/sips/fd2009-00002919-preservation/mets.xml", True),
+            ("02_filevalidation_data/xml/catalog_schema_valid.xml", False),
+            ("02_filevalidation_data/xml/valid_xsd.xml", False),
+            ("02_filevalidation_data/xml/valid_wellformed.xml", False),
+            ("02_filevalidation_data/xml/valid_dtd.xml", False),
+        ])
+    def test_validation_valid(self, filename, schema, capsys):
+        """
+        test valid cases
+        """
         fileinfo = {
             "filename": os.path.join(
-                testcommon.settings.TESTDATADIR, testcase["filepath"]),
+                testcommon.settings.TESTDATADIR, filename),
             "format": {
                 "mimetype": "text/xml",
                 "version": "1.0"
             },
         }
 
-        if 'METS' in testcase['name']:
-            fileinfo['schema'] = SCHEMAPATH
+        if schema is True:
+            fileinfo["schema"] = SCHEMAPATH
 
-        validate = ipt.validator.xmllint.Xmllint(fileinfo)
+        validator = ipt.validator.xmllint.Xmllint(fileinfo)
 
-
-        (status, messages, errors) = validate.validate()
-
-        assert status == expected["status"], messages + errors
-        assert self.output_has_error(
-            messages) == expected["stdout_has_errors"]
-        assert self.output_has_error(
-            errors) == expected["stderr_has_errors"]
-        assert not self.output_has_already_import_warn(errors)
+        validator.validate()
+        print capsys.readouterr()
+        assert validator.is_valid
+        assert "Validation success" in validator.messages()
+        assert validator.errors() == ""
         # xmllint is using --noout, so the METS XML should not be printed to
         # stdout (KDKPAS-1190)
-        assert "mets:mets" not in messages
+        assert "mets:mets" not in validator.messages()
 
-    def output_has_error(self, lines):
-        if "failed" in lines or "error" in lines:
-            return True
 
-        return False
+    @pytest.mark.usefixtures("monkeypatch_Popen")
+    @pytest.mark.parametrize(
+        "filename",
+        [
+            ("02_filevalidation_data/xml/catalog_schema_invalid.xml"),
+            ("02_filevalidation_data/xml/invalid_xsd.xml"),
+            ("02_filevalidation_data/xml/invalid_wellformed.xml"),
+            ("02_filevalidation_data/xml/invalid_dtd.xml")
+        ])
+    def test_validation_invalid(self, filename, capsys):
+        """
+        test valid cases
+        """
+        fileinfo = {
+            "filename": os.path.join(
+                testcommon.settings.TESTDATADIR, filename),
+            "format": {
+                "mimetype": "text/xml",
+                "version": "1.0"
+            },
+        }
 
-    def output_has_already_import_warn(self, lines):
-        """The output should not have the 'namespace was already imported with
-        the schema' warning"""
-        if "namespace was already imported with the schema" in lines:
-            return True
+        validator = ipt.validator.xmllint.Xmllint(fileinfo)
 
-        return False
+        validator.validate()
+        print capsys.readouterr()
+        assert not validator.is_valid
+
+        # xmllint is using --noout, so the METS XML should not be printed to
+        # stdout (KDKPAS-1190)
+        assert "mets:mets" not in validator.messages()
+
