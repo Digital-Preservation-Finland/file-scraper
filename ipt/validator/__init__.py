@@ -1,6 +1,5 @@
 from ipt.validator.basevalidator import BaseValidator
-from ipt.validator.jhove import JHoveBasic, JHoveTextUTF8, JHovePDF, \
-    JHoveTiff, JHoveJPEG
+from ipt.validator.jhove import JHoveBase, JHoveBasic, JHoveTextUTF8, JHovePDF, JHoveTiff, JHoveJPEG
 from ipt.validator.dummytextvalidator import DummyTextValidator
 from ipt.validator.xmllint import Xmllint
 from ipt.validator.warctools import WarctoolsWARC, WarctoolsARC
@@ -60,6 +59,12 @@ def iter_validator_classes(fileinfo):
 
     found_validator = False
     for cls in BaseValidator.__subclasses__():
+        if cls.is_supported(fileinfo):
+            found_validator = True
+            validator = cls(fileinfo)
+            return validator
+
+    for cls in JHoveBase.__subclasses__():
         if cls.is_supported(fileinfo):
             found_validator = True
             validator = cls(fileinfo)

@@ -2,10 +2,11 @@
 import os
 import pytest
 
-from ipt.validator.jhove import JHoveBasic, JHoveTiff, JHovePDF, JHoveTextUTF8, \
-    JHoveJPEG
+from ipt.validator.jhove import JHoveBasic, JHoveTiff, JHovePDF, \
+    JHoveTextUTF8, JHoveJPEG
 
 TESTDATADIR_BASE = 'tests/data'
+
 
 @pytest.mark.usefixtures("monkeypatch_Popen")
 @pytest.mark.parametrize(
@@ -58,6 +59,7 @@ def test_validate_valid(validator_class, filename, mimetype, version, charset, s
     assert stdout in validator.messages()
     assert validator.errors() == ""
 
+
 @pytest.mark.usefixtures("monkeypatch_Popen")
 @pytest.mark.parametrize(
     ["validator_class", "filename", "mimetype", "version", "charset",
@@ -74,9 +76,8 @@ def test_validate_valid(validator_class, filename, mimetype, version, charset, s
         (JHoveTiff, "02_filevalidation_data/tiff/invalid.tif",
          "image/tiff", "6.0", None, "Not well-formed")
     ])
-
 def test_validate_invalid(validator_class, filename, mimetype, version,
-        charset, stdout):
+                          charset, stdout):
     """Test cases of Jhove validation"""
     file_path = os.path.join(TESTDATADIR_BASE, filename)
     fileinfo = {

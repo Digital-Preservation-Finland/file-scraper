@@ -17,14 +17,14 @@ class JHoveBase(BaseValidator):
     """
     Basic methods for jhove validation.
     """
+    _supported_mimetypes = {}
 
     def __init__(self, fileinfo):
-        """TODO: Docstring for __init__.
-        :returns: TODO
-
+        """
+        init
         """
 
-        super(JHoveBase).__init__(fileinfo)
+        super(JHoveBase, self).__init__(fileinfo)
 
         self.filename = None
         self.report = None
@@ -35,10 +35,6 @@ class JHoveBase(BaseValidator):
         Validate file with jhove.
         :validator_module: Jhove validatormodule.
         :filename: filename
-        :returns: tuple (status, stdout, errors)
-            :status: status for report
-            :stdout: xml based jhove report for other validation steps.
-            :errors: errors
         """
 
         self.filename = filename
@@ -57,11 +53,8 @@ class JHoveBase(BaseValidator):
         self.report = lxml.etree.fromstring(self.shell.stdout)
 
     def check_well_formed(self):
-        """TODO: Docstring for check_well_formed.
-
-        :arg1: TODO
-        :returns: TODO
-
+        """
+        Check_well_formed.
         """
 
         status = self.report_field("status")
@@ -105,7 +98,7 @@ class JHoveTextUTF8(JHoveBase):
     JHove validator fir text/plain UTF-8
     """
     _supported_mimetypes = {
-        'text/plain': []
+        'text/plain': ['']
     }
 
     def validate(self):
@@ -176,7 +169,7 @@ class JHovePDF(JHoveBase):
                     report_profile, profile))
 
 
-class JHoveTiff(BaseValidator, JHoveBase):
+class JHoveTiff(JHoveBase):
     """
     JHove validator for tiff
     """
@@ -188,30 +181,30 @@ class JHoveTiff(BaseValidator, JHoveBase):
         """
         Check if file is valid according to JHove output.
         """
-        (message, stdout, error) = self.jhove_validation('TIFF-hul', self.fileinfo["filename"])
-        self.messages(message)
-        self.errors(error)
-        self._check_version(stdout)
+        self.jhove_command('TIFF-hul', self.fileinfo["filename"])
+        self.messages()
+        self.errors()
+        self._check_version()
 
-    def _check_version(self, shell):
+    def _check_version(self):
         """
         Check if version string matches JHove output.
         :shell: shell utility tool
         """
 
-        report_version = self.get_report_field("version", shell)
+        report_version = self.report_field("version")
         report_version = report_version.replace(" ", ".")
         # There is no version tag in TIFF images.
         # TIFF 4.0 and 5.0 is also valid TIFF 6.0.
         if self.fileinfo["format"]["mimetype"] == "image/tiff" and \
-            report_version in ["4.0", "5.0"]:
+                report_version in ["4.0", "5.0"]:
             return
         if report_version != self.fileinfo["format"]["version"]:
-            self.errors("File version is '%s', expected '%s'"
-                % (report_version, self.fileinfo["format"]["version"]))
+            self.errors("File version is '%s', expected '%s'" % (
+                report_version, self.fileinfo["format"]["version"]))
 
 
-class JHoveJPEG(BaseValidator, JHoveBase):
+class JHoveJPEG(JHoveBase):
     """
     JHove validator for JPEG
     """
@@ -223,12 +216,13 @@ class JHoveJPEG(BaseValidator, JHoveBase):
         """
         Check if file is valid according to JHove output.
         """
-        (message, _, error) = self.jhove_validation('JPEG-hul', self.fileinfo["filename"])
+        (message, _, error) = self.jhove_command(
+            'JPEG-hul', self.fileinfo["filename"])
         self.messages(message)
         self.errors(error)
 
 
-class JHoveBasic(BaseValidator, JHoveBase):
+class JHoveBasic(JHoveBase):
     """
     JHove basic class, implement JHove validation.
     """
@@ -239,35 +233,34 @@ class JHoveBasic(BaseValidator, JHoveBase):
     }
 
     _jhove_modules = {
-    'image/jp2': 'JPEG2000-hul',
-    'image/gif': 'GIF-hul',
-    'text/html': 'HTML-hul'
+        'image/jp2': 'JPEG2000-hul',
+        'image/gif': 'GIF-hul',
+        'text/html': 'HTML-hul'
     }
 
     def validate(self):
         """
         Check if file is valid according to JHove output.
         """
-        validator_module = self._jhove_modules[self.fileinfo["format"]["mimetype"]]
-        (message, stdout, error) = self.jhove_validation(
-            validator_module, self.fileinfo["filename"])
+        validator_module = self._jhove_modules[
+            self.fileinfo["format"]["mimetype"]]
+        self.jhove_command(validator_module, self.fileinfo["filename"])
 
-        self.messages(message)
-        self.errors(error)
-        self._check_version(stdout)
- 
+        self.messages()
+        self.errors()
+        self._check_version()
 
-    def _check_version(self, stdout):
+    def _check_version(self):
         """
         Check if fileinfo version matches JHove output.
         :stdout: jhove xml report in a string
         """
         if self.fileinfo["format"]["mimetype"] == 'text/plain':
-            report_version = self.get_report_field("format", stdout)
+            report_version = self.report_field("format")
         else:
-            report_version = self.get_report_field("version", stdout)
+            report_version = self.report_field("version")
             report_version = report_version.replace(" ", ".")
 
         if report_version != self.fileinfo["format"]["version"]:
-            self.errors("ERROR: File version is '%s', expected '%s'"
-                % (report_version, self.fileinfo["format"]["version"]))
+            self.errors("ERROR: File version is '%s', expected '%s'" % (
+                report_version, self.fileinfo["format"]["version"]))
