@@ -64,6 +64,7 @@ class JHoveBase(BaseValidator):
                 self.filename, status))
             self.errors("Validator returned error: %s\n%s" % (
                 self.shell.stdout, self.shell.stderr))
+        self.messages(status)
 
     def report_field(self, field):
         """
@@ -182,8 +183,7 @@ class JHoveTiff(JHoveBase):
         Check if file is valid according to JHove output.
         """
         self.jhove_command('TIFF-hul', self.fileinfo["filename"])
-        self.messages()
-        self.errors()
+        self.check_well_formed()
         self._check_version()
 
     def _check_version(self):
@@ -216,10 +216,8 @@ class JHoveJPEG(JHoveBase):
         """
         Check if file is valid according to JHove output.
         """
-        (message, _, error) = self.jhove_command(
-            'JPEG-hul', self.fileinfo["filename"])
-        self.messages(message)
-        self.errors(error)
+        self.jhove_command('JPEG-hul', self.fileinfo["filename"])
+        self.check_well_formed()
 
 
 class JHoveBasic(JHoveBase):
@@ -245,9 +243,7 @@ class JHoveBasic(JHoveBase):
         validator_module = self._jhove_modules[
             self.fileinfo["format"]["mimetype"]]
         self.jhove_command(validator_module, self.fileinfo["filename"])
-
-        self.messages()
-        self.errors()
+        self.check_well_formed()
         self._check_version()
 
     def _check_version(self):
