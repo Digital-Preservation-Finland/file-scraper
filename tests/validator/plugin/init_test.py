@@ -4,7 +4,7 @@ Test for ipt/validator/__init__.py. The purpose of this test is to make sure tha
 from ipt.validator.jhove import JHoveBasic, JHoveTextUTF8, JHovePDF, JHoveTiff, JHoveJPEG
 from ipt.validator.dummytextvalidator import DummyTextValidator
 from ipt.validator.xmllint import Xmllint
-from ipt.validator.warctools import WarcTools
+from ipt.validator.warctools import WarctoolsWARC, WarctoolsARC
 from ipt.validator.ghost_script import GhostScript
 from ipt.validator.pngcheck import Pngcheck
 from ipt.validator.csv_validator import PythonCsv
@@ -18,7 +18,7 @@ import pytest
 @pytest.mark.parametrize(
     ["mimetype", "version", "charset", "validator_class"],
     [
-        ("application/warc", "1.0", "", WarcTools),
+        ("application/warc", "1.0", "", WarctoolsWARC),
         ("text/csv", "", "UTF-8", PythonCsv),
         ("text/plain", "", "ISO-8859-15", DummyTextValidator),
         ("video/mpeg", "1", "", UnknownFileformat),
@@ -39,11 +39,11 @@ import pytest
         ("image/gif", "1989a", "", JHoveBasic),
         ("text/html", "HTML.4.01", "UTF-8", JHoveBasic),
         ("image/png", "", "", Pngcheck),
-        ("application/warc", "0.17", "", WarcTools),
-        ("application/warc", "0.18", "", WarcTools),
-        ("application/warc", "1.0", "", WarcTools),
-        ("application/x-internet-archive", "1.0", "", WarcTools),
-        ("application/x-internet-archive", "1.1", "", WarcTools),
+        ("application/warc", "0.17", "", WarctoolsWARC),
+        ("application/warc", "0.18", "", WarctoolsWARC),
+        ("application/warc", "1.0", "", WarctoolsWARC),
+        ("application/x-internet-archive", "1.0", "", WarctoolsARC),
+        ("application/x-internet-archive", "1.1", "", WarctoolsARC),
         ("text/xml", "1.0", "UTF-8", Xmllint)
     ])
 def tests_iter_validator_classes(monkeypatch, mimetype, version, charset, validator_class, capsys):
