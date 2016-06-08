@@ -1,12 +1,9 @@
-"""
-Validate digital objects
-"""
-
 from ipt.validator.basevalidator import BaseValidator
-from ipt.validator.jhove import JHoveBasic, JHoveTextUTF8, JHovePDF, JHoveTiff, JHoveJPEG
+from ipt.validator.jhove import JHoveBasic, JHoveTextUTF8, JHovePDF, \
+    JHoveTiff, JHoveJPEG
 from ipt.validator.dummytextvalidator import DummyTextValidator
 from ipt.validator.xmllint import Xmllint
-from ipt.validator.warctools import WarcTools
+from ipt.validator.warctools import WarctoolsWARC, WarctoolsARC
 from ipt.validator.ghost_script import GhostScript
 from ipt.validator.pngcheck import Pngcheck
 
