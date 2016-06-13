@@ -7,10 +7,11 @@ from ipt.validator.jhove import JHoveBasic, JHoveTiff, JHovePDF, \
 
 TESTDATADIR_BASE = 'tests/data'
 
+
 @pytest.mark.usefixtures("monkeypatch_Popen")
 @pytest.mark.parametrize(
     ["validator_class", "filename", "mimetype", "version"],
-    [    
+    [
         (JHoveHTML, "02_filevalidation_data/html/valid.htm",
          "text/html", "HTML.4.01"),
         (JHovePDF, "test-sips/CSC_test004/fd2009-00002919-pdf001.pdf",
@@ -30,7 +31,8 @@ TESTDATADIR_BASE = 'tests/data'
         (JHoveHTML, "02_filevalidation_data/html/valid.htm",
          "text/html", "HTML.4.01"),
     ])
-def test_validate_valid_form_and_version(validator_class, filename, mimetype, version):
+def test_validate_valid_form_and_version(
+        validator_class, filename, mimetype, version):
     """Test cases of Jhove validation"""
     file_path = os.path.join(TESTDATADIR_BASE, filename)
     fileinfo = {
@@ -52,18 +54,19 @@ def test_validate_valid_form_and_version(validator_class, filename, mimetype, ve
 
 @pytest.mark.usefixtures("monkeypatch_Popen")
 @pytest.mark.parametrize(
-    ["validator_class", "filename", "mimetype", "version", "charset", "stdout"],
+    ["validator_class", "filename", "mimetype", "version", "charset"],
     [
         (JHoveJPEG, "test-sips/CSC_test001/kuvat/P1020137.JPG",
-         "image/jpeg", None, None, "Well-Formed and valid"),
+         "image/jpeg", None, None),
         (JHoveJPEG, "test-sips/CSC_test001/kuvat/P1020137.JPG",
-         "image/jpeg", "1.01", None, "Well-Formed and valid"),
+         "image/jpeg", "1.01", None),
         (JHoveTextUTF8, "02_filevalidation_data/text/utf8.txt",
-         "text/plain", None, "UTF-8", ["Well-Formed and valid"]),
+         "text/plain", None, "UTF-8"),
         (JHoveTextUTF8, "02_filevalidation_data/text/utf8.csv",
-         "text/plain", None, "UTF-8", ["Well-Formed and valid"]),
+         "text/plain", None, "UTF-8"),
     ])
-def test_validate_valid_only_form(validator_class, filename, mimetype, version, charset, stdout):
+def test_validate_valid_only_form(validator_class, filename, mimetype, version,
+                                  charset):
     """Test cases of Jhove validation"""
     file_path = os.path.join(TESTDATADIR_BASE, filename)
     fileinfo = {
@@ -86,40 +89,106 @@ def test_validate_valid_only_form(validator_class, filename, mimetype, version, 
     assert validator.errors() == ""
 
 
-
 @pytest.mark.usefixtures("monkeypatch_Popen")
 @pytest.mark.parametrize(
-    ["validator_class", "filename", "mimetype", "version", "charset",
+    ["validator_class", "filename", "mimetype", "version",
      "stdout"],
     [
         (JHoveHTML, "02_filevalidation_data/html/notvalid.htm",
-         "text/html", "HTML.4.01", None, "Well-Formed, but not valid"),
+         "text/html", "HTML.4.01", "Well-Formed, but not valid"),
         (JHoveBasic, "02_filevalidation_data/gif_89a/invalid.gif",
-         "image/gif", "89a", None, "Not well-formed"),
+         "image/gif", "89a", "Not well-formed"),
         (JHoveBasic, "02_filevalidation_data/gif_87a/invalid.gif",
-         "image/gif", "87a", None, "Not well-formed"),
+         "image/gif", "87a", "Not well-formed"),
         (JHovePDF, "02_filevalidation_data/pdfa-1/invalid.pdf",
-         "application/pdf", "1.4", None, "Not well-formed"),
+         "application/pdf", "1.4", "Not well-formed"),
         (JHoveTiff, "02_filevalidation_data/tiff/invalid.tif",
-         "image/tiff", "6.0", None, "Not well-formed")
+         "image/tiff", "6.0", "Not well-formed"),
+        (JHovePDF, "test-sips/CSC_test004/fd2009-00002919-pdf001.pdf",
+         "application/pdf", "PDF/A-1a", ""),
     ])
 def test_validate_invalid(validator_class, filename, mimetype, version,
-                          charset, stdout):
+                          stdout):
     """Test cases of Jhove validation"""
     file_path = os.path.join(TESTDATADIR_BASE, filename)
     fileinfo = {
         "filename": file_path,
         "format": {
             "mimetype": mimetype,
+            "version": version
         }
     }
-    if charset:
-        fileinfo["format"]["charset"] = charset
-    if version:
-        fileinfo["format"]["version"] = version
 
     validator = validator_class(fileinfo)
     validator.validate()
-    assert not validator.is_valid
+    assert not validator.is_valid, validator.messages() + validator.errors()
     assert stdout in validator.messages()
     assert validator.errors() != ""
+
+
+@pytest.mark.usefixtures("monkeypatch_Popen")
+@pytest.mark.parametrize(
+    ["validator_class", "filename", "mimetype", "version"],
+    [
+        (JHoveBasic, "02_filevalidation_data/gif_89a/valid.gif",
+         "image/gif", "87a"),
+        (JHoveHTML, "02_filevalidation_data/html/valid.htm",
+         "text/html", "HTML.3.2"),
+    ])
+def test_validate_version_error(validator_class, filename, mimetype, version):
+    """
+    test_validate_version_error
+    """
+    file_path = os.path.join(TESTDATADIR_BASE, filename)
+    fileinfo = {
+        "filename": file_path,
+        "format": {
+            "mimetype": mimetype,
+            "version": version
+        }
+    }
+    validator = validator_class(fileinfo)
+    validator.validate()
+    assert not validator.is_valid
+    assert "ERROR: File version is" in validator.errors()
+
+
+def test_utf8_supported():
+    """
+    test_utf8_supported
+    """
+    fileinfo = {
+        "filename": "foo",
+        "format": {
+            "mimetype": "text/plain",
+            "charset": "UTF-8"
+        }
+    }
+    validator = JHoveTextUTF8(fileinfo)
+    assert validator.is_supported_mimetype(fileinfo)
+
+    fileinfo["format"]["charset"] = "foo"
+    validator = JHoveTextUTF8(fileinfo)
+    assert not validator.is_supported_mimetype(fileinfo)
+
+
+def test_pdf_profile():
+    """
+    test_pdf_profile
+    """
+    file_path = os.path.join(
+        TESTDATADIR_BASE, "02_filevalidation_data/pdfa-1/valid.pdf")
+    fileinfo = {
+        "filename": file_path,
+        "format": {
+            "mimetype": "application/pdf",
+            "version": "PDF/A-1a"
+        }
+    }
+    validator = JHovePDF(fileinfo)
+    validator.validate()
+    assert validator.is_valid, validator.messages() + validator.errors()
+    for text in [
+            "Well-Formed and valid", "Version check OK", "Profile check OK"]:
+        assert text in validator.messages()
+    assert validator.errors() == ""
