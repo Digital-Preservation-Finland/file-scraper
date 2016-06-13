@@ -66,6 +66,18 @@ class JHoveBase(BaseValidator):
                 self.shell.stdout, self.shell.stderr))
         self.messages(status)
 
+    def check_version(self):
+        """
+        Check if fileinfo version matches JHove output.
+        """
+        report_version = self.report_field("version")
+
+        if report_version == self.fileinfo["format"]["version"]:
+            self.messages("Version check OK")
+            return
+        self.errors("File version is '%s', expected '%s'" % (
+            report_version, self.fileinfo["format"]["version"]))
+
     def report_field(self, field):
         """
         Return field value from JHoves XML output. This method assumes that
@@ -144,30 +156,40 @@ class JHovePDF(JHoveBase):
 
     def check_version(self):
         """ Check if version string matches JHove output.
-        :shell: shell utility tool
         """
 
         report_version = self.report_field("version")
         report_version = report_version.replace(" ", ".")
-        if "A-1" in self.fileinfo["format"]["version"]:
-            self.fileinfo["format"]["version"] = "1.4"
+        fileinfo_version = self.fileinfo["format"]["version"]
 
-        if report_version != self.fileinfo["format"]["version"]:
-            self.errors(
-                "ERROR: File version is '%s', expected '%s'"
-                % (report_version, self.fileinfo["format"]["version"]))
+        if report_version == fileinfo_version:
+            self.messages(
+                "Version check OK PDF %s" % fileinfo_version)
+            return
+        if report_version == '1.4' and \
+                fileinfo_version in [
+                        '1.4', 'PDF/A-1a', 'PDF/A-1b']:
+            self.messages("Version check OK")
+            return
+        self.errors(
+            "File version is '%s', expected '%s'" % (
+                report_version, fileinfo_version))
 
     def check_profile(self):
         """ Check if profile string matches JHove output.
         """
         if "A-1" not in self.fileinfo["format"]["version"]:
             return
-        profile = "ISO PDF/A-1"
         report_profile = self.report_field("profile")
-        if profile not in report_profile:
-            self.errors(
-                "ERROR: File profile is '%s', expected '%s'" % (
-                    report_profile, profile))
+        version = self.fileinfo["format"]["version"]
+        if "A-1" in report_profile:
+            self.messages("Profile check OK")
+            return
+        print "report_profile", report_profile
+        print "fileinfo version", version
+        self.errors(
+            "File profile is '%s', expected '%s'" % (
+                report_profile, version))
 
 
 class JHoveTiff(JHoveBase):
@@ -184,9 +206,9 @@ class JHoveTiff(JHoveBase):
         """
         self.jhove_command('TIFF-hul', self.fileinfo["filename"])
         self.check_well_formed()
-        self._check_version()
+        self.check_version()
 
-    def _check_version(self):
+    def check_version(self):
         """
         Check if version string matches JHove output.
         :shell: shell utility tool
@@ -198,10 +220,13 @@ class JHoveTiff(JHoveBase):
         # TIFF 4.0 and 5.0 is also valid TIFF 6.0.
         if self.fileinfo["format"]["mimetype"] == "image/tiff" and \
                 report_version in ["4.0", "5.0"]:
+            self.messages("Version check OK")
             return
-        if report_version != self.fileinfo["format"]["version"]:
-            self.errors("File version is '%s', expected '%s'" % (
-                report_version, self.fileinfo["format"]["version"]))
+        if report_version == self.fileinfo["format"]["version"]:
+            self.messages("Version check OK")
+            return
+        self.errors("File version is '%s', expected '%s'" % (
+            report_version, self.fileinfo["format"]["version"]))
 
 
 class JHoveJPEG(JHoveBase):
@@ -218,6 +243,8 @@ class JHoveJPEG(JHoveBase):
         """
         self.jhove_command('JPEG-hul', self.fileinfo["filename"])
         self.check_well_formed()
+        # Currently no validator seems to be able to detec version
+        # self.check_version()
 
 
 class JHoveBasic(JHoveBase):
@@ -226,14 +253,12 @@ class JHoveBasic(JHoveBase):
     """
     _supported_mimetypes = {
         'image/jp2': [""],
-        'image/gif': ['1987a', '1989a'],
-        'text/html': ['HTML.4.01']
+        'image/gif': ['1987a', '1989a']
     }
 
     _jhove_modules = {
         'image/jp2': 'JPEG2000-hul',
-        'image/gif': 'GIF-hul',
-        'text/html': 'HTML-hul'
+        'image/gif': 'GIF-hul'
     }
 
     def validate(self):
@@ -244,19 +269,38 @@ class JHoveBasic(JHoveBase):
             self.fileinfo["format"]["mimetype"]]
         self.jhove_command(validator_module, self.fileinfo["filename"])
         self.check_well_formed()
-        self._check_version()
+        self.check_version()
 
-    def _check_version(self):
+
+class JHoveHTML(JHoveBase):
+    """
+    html valdiation
+    """
+    _supported_mimetypes = {
+        'text/html': ['HTML.4.01']
+    }
+
+    _jhove_modules = {
+        'text/html': 'HTML-hul'
+    }
+
+    def validate(self):
+        """
+        Check if file is valid according to JHove output.
+        """
+        self.jhove_command('HTML-hul', self.fileinfo["filename"])
+        self.check_well_formed()
+        self.check_version()
+
+    def check_version(self):
         """
         Check if fileinfo version matches JHove output.
-        :stdout: jhove xml report in a string
         """
-        if self.fileinfo["format"]["mimetype"] == 'text/plain':
-            report_version = self.report_field("format")
-        else:
-            report_version = self.report_field("version")
-            report_version = report_version.replace(" ", ".")
-
-        if report_version != self.fileinfo["format"]["version"]:
-            self.errors("ERROR: File version is '%s', expected '%s'" % (
-                report_version, self.fileinfo["format"]["version"]))
+        report_version = self.report_field("version")
+        report_version = report_version.replace(" ", ".")
+        if report_version == self.fileinfo["format"]["version"]:
+            self.messages("Version check OK HTML %s" % report_version)
+            return
+        self.errors("File version is '%s', expected '%s'" % (
+            report_version, self.fileinfo["format"]["version"]))
+        self.errors(self.shell.stdout)
