@@ -1,7 +1,8 @@
 """
 Test for ipt/validator/__init__.py. The purpose of this test is to make sure that all validators are able to be found.
 """
-from ipt.validator.jhove import JHoveBasic, JHoveTextUTF8, JHovePDF, JHoveTiff, JHoveJPEG
+from ipt.validator.jhove import JHoveBasic, JHoveTextUTF8, JHovePDF, \
+    JHoveTiff, JHoveJPEG, JHoveHTML
 from ipt.validator.dummytextvalidator import DummyTextValidator
 from ipt.validator.xmllint import Xmllint
 from ipt.validator.warctools import WarctoolsWARC, WarctoolsARC
@@ -37,7 +38,7 @@ import pytest
         ("image/jp2", "", "", JHoveBasic),
         ("image/gif", "1987a", "", JHoveBasic),
         ("image/gif", "1989a", "", JHoveBasic),
-        ("text/html", "HTML.4.01", "UTF-8", JHoveBasic),
+        ("text/html", "HTML.4.01", "UTF-8", JHoveHTML),
         ("image/png", "", "", Pngcheck),
         ("application/warc", "0.17", "", WarctoolsWARC),
         ("application/warc", "0.18", "", WarctoolsWARC),
