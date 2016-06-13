@@ -168,7 +168,7 @@ class JHovePDF(JHoveBase):
             return
         if report_version == '1.4' and \
                 fileinfo_version in [
-                        '1.4', 'PDF/A-1a', 'PDF/A-1b']:
+                        '1.4', 'A-1a', 'A-1b']:
             self.messages("Version check OK")
             return
         self.errors(

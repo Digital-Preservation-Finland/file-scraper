@@ -105,7 +105,7 @@ def test_validate_valid_only_form(validator_class, filename, mimetype, version,
         (JHoveTiff, "02_filevalidation_data/tiff/invalid.tif",
          "image/tiff", "6.0", "Not well-formed"),
         (JHovePDF, "test-sips/CSC_test004/fd2009-00002919-pdf001.pdf",
-         "application/pdf", "PDF/A-1a", ""),
+         "application/pdf", "A-1a", ""),
     ])
 def test_validate_invalid(validator_class, filename, mimetype, version,
                           stdout):
@@ -182,7 +182,7 @@ def test_pdf_profile():
         "filename": file_path,
         "format": {
             "mimetype": "application/pdf",
-            "version": "PDF/A-1a"
+            "version": "A-1a"
         }
     }
     validator = JHovePDF(fileinfo)
