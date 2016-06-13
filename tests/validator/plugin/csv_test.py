@@ -52,11 +52,11 @@ def test_validate_success_wikipedia():
         }
 
         validator = PythonCsv(fileinfo)
-        (status, messages, errors) = validator.validate()
+        validator.validate()
 
-        assert status
-        assert len(messages) == 0
-        assert len(errors) == 0
+        assert validator.is_valid, validator.messages() + validator.errors()
+        assert "CSV validation OK" in validator.messages()
+        assert validator.errors() == ""
 
     with NamedTemporaryFile(delete=False) as csv_file:
         fileinfo = {
@@ -75,11 +75,11 @@ def test_validate_success_wikipedia():
         }
 
         validator = PythonCsv(fileinfo)
-        (status, messages, errors) = validator.validate()
+        validator.validate()
 
-        assert status
-        assert len(messages) == 0
-        assert len(errors) == 0
+        assert validator.is_valid
+        assert "CSV validation OK" in validator.messages()
+        assert validator.errors() == ""
 
 
 def test_validate_failure():
@@ -101,11 +101,11 @@ def test_validate_failure():
         }
 
         validator = PythonCsv(fileinfo)
-        (status, messages, errors) = validator.validate()
+        validator.validate()
 
-        assert not status
-        assert len(messages) == 0
-        assert "CSV validation error: no header at first line" in errors
+        assert not validator.is_valid
+        assert "CSV validation OK" not in validator.messages()
+        assert "no header at first line" in validator.errors()
 
     with NamedTemporaryFile(delete=False) as csv_file:
         fileinfo = {
@@ -124,11 +124,11 @@ def test_validate_failure():
         }
 
         validator = PythonCsv(fileinfo)
-        (status, messages, errors) = validator.validate()
+        validator.validate()
 
-        assert not status
-        assert len(messages) == 0
-        assert len(errors) != 0
+        assert not validator.is_valid
+        assert len(validator.errors()) != 0
+        assert "CSV validation OK" not in validator.messages(), validator.messages() + validator.errors()
 
     with NamedTemporaryFile(delete=False) as csv_file:
         fileinfo = {
@@ -147,8 +147,8 @@ def test_validate_failure():
         }
 
         validator = PythonCsv(fileinfo)
-        (status, messages, errors) = validator.validate()
+        validator.validate()
 
-        assert not status
-        assert len(messages) == 0
-        assert len(errors) != 0
+        assert not validator.is_valid
+        assert "CSV validation OK" not in validator.messages()
+        assert len(validator.errors())

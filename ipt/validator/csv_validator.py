@@ -13,12 +13,12 @@ class PythonCsv(BaseValidator):
     """The CSV validator plugin"""
 
     _supported_mimetypes = {
-        'text/csv': ['UTF-8'],
+        'text/csv': [''],
     }
 
     def __init__(self, fileinfo):
         super(PythonCsv, self).__init__(fileinfo)
-
+        self.filename = fileinfo['filename']
         self.charset = fileinfo['addml']['charset']
         self.record_separator = fileinfo['addml']['separator']
         self.delimiter = fileinfo['addml']['delimiter']
@@ -37,22 +37,17 @@ class PythonCsv(BaseValidator):
                 reader = csv.reader(csvfile, dialect)
                 first_line = reader.next()
                 if self.header_fields and not self.header_fields == first_line:
-
-                    self.not_valid()
                     self.errors("CSV validation error: no header at "
                                 "first line")
+                    return
                 for _ in reader:
                     pass
 
         except csv.Error as exception:
-            self.not_valid()
-
             self.errors("CSV validation error on line %s: %s" %
                         (reader.line_num, exception))
-
-        return (self.is_valid(),
-                "\n".join([message for message in self.messages()]),
-                "\n".join(self.errors()))
+            return
+        self.messages("CSV validation OK")
 
 
 def dialect_factory(record_separator, delimiter):
