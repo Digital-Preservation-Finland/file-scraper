@@ -7,9 +7,6 @@ from lxml import etree
 
 from ipt.validator.basevalidator import BaseValidator
 
-DEFAULT_CATALOG = os.path.join('/usr/share/information-package-tools',
-                               'xmlobjectcatalog/catalog-local.xml')
-
 XSI = 'http://www.w3.org/2001/XMLSchema-instance'
 XS = '{http://www.w3.org/2001/XMLSchema}'
 
@@ -155,24 +152,18 @@ class Xmllint(BaseValidator):
         return []
 
     def exec_xmllint(self, huge=True, no_output=True, no_network=True,
-                     validate=False, catalog=DEFAULT_CATALOG, schema=None):
+                     validate=False, schema=None):
 
         command = ['xmllint']
         command += ['--valid'] if validate else []
         command += ['--huge'] if huge else []
         command += ['--noout'] if no_output else []
         command += ['--nonet'] if no_network else []
-        command += ['--catalogs'] if catalog else []
         command += ['--schema', schema] if schema else []
         command += [self.fileinfo["filename"]]
 
-        environment = {
-            'SGML_CATALOG_FILES': catalog
-        }
-
         proc = subprocess.Popen(
             command,
-            env=environment,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             shell=False)
