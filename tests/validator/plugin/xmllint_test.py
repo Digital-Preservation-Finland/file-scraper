@@ -12,11 +12,10 @@ import ipt.validator.xmllint
 ROOTPATH = os.path.abspath(os.path.join(
     os.path.dirname(__file__),
     '../../../'))
-SHAREPATH = os.path.join(ROOTPATH, 'include/share')
-OBJECT_CATALOGPATH = os.path.join(
-    SHAREPATH,
-    'xmlobjectcatalog/catalog-local.xml')
-SCHEMAPATH = os.path.join(SHAREPATH, 'schema/mets/mets.xsd')
+SCHEMAPATH = os.path.join(
+    ROOTPATH,
+    ('include/etc/xml/information-package-tools/kdk-mets-catalog/' +
+     'mets/mets.xsd'))
 
 
 @pytest.mark.usefixtures("monkeypatch_Popen")
