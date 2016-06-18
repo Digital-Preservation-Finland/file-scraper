@@ -127,7 +127,11 @@ class BaseValidator(object):
         if len(self._messages) == 0:
             self.validate()
 
-        return (self.is_valid, self.messages(), self.errors())
+        return {
+            'is_valid': self.is_valid,
+            'messages': self.messages(),
+            'errors': self.errors()
+        }
 
     @abc.abstractmethod
     def validate(self):

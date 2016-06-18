@@ -35,8 +35,8 @@ class UnknownFileformat(object):
 
         return {
             'is_valid': False,
-            'messages': [],
-            'errors':  [error_message]}
+            'messages': "",
+            'errors': error_message}
 
 
 def validate(fileinfo):
