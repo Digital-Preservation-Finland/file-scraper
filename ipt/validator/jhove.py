@@ -185,8 +185,6 @@ class JHovePDF(JHoveBase):
         if "A-1" in report_profile:
             self.messages("Profile check OK")
             return
-        print "report_profile", report_profile
-        print "fileinfo version", version
         self.errors(
             "File profile is '%s', expected '%s'" % (
                 report_profile, version))
