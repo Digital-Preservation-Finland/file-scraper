@@ -30,10 +30,13 @@ SCHEMAPATH = os.path.join(
         ("02_filevalidation_data/xml/valid_wellformed.xml", False),
         ("02_filevalidation_data/xml/valid_dtd.xml", False),
     ])
-def test_validation_valid(filename, schema, capsys):
+def test_validation_valid(filename, schema, monkeypatch, capsys):
     """
     test valid cases
     """
+    catalog_path = ('tests/data/test-catalog.xml')
+    monkeypatch.setenv("SGML_CATALOG_FILES", catalog_path)
+
     fileinfo = {
         "filename": os.path.join(
             testcommon.settings.TESTDATADIR, filename),

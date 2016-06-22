@@ -159,6 +159,7 @@ class Xmllint(BaseValidator):
         command += ['--huge'] if huge else []
         command += ['--noout'] if no_output else []
         command += ['--nonet'] if no_network else []
+        command += ['--catalogs']
         command += ['--schema', schema] if schema else []
         command += [self.fileinfo["filename"]]
 
