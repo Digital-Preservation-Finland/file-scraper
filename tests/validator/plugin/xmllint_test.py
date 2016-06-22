@@ -50,7 +50,7 @@ def test_validation_valid(filename, schema, capsys):
 
     validator.validate()
     print capsys.readouterr()
-    assert validator.is_valid
+    assert validator.is_valid, "validator errors: %s" % validator.errors()
     assert "Validation success" in validator.messages()
     assert validator.errors() == ""
     # xmllint is using --noout, so the METS XML should not be printed to
