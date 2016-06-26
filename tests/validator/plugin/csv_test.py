@@ -11,11 +11,10 @@ JPEG_PATH = os.path.join('tests/data/06_mets_validation/sips/',
                          'img0008-access.jpg')
 
 
-VALID_CSV = \
-    '1997,Ford,E350,"ac, abs, moon",3000.00\n'
-'1999,Chevy,"Venture ""Extended Edition""","",4900.00\n'
-'1999,Chevy,"Venture ""Extended Edition, Very Large""",,' '5000.00\n'
-'1996,Jeep,Grand Cherokee,"MUST SELL!' 'air, moon roof, loaded",4799.00\n'''
+VALID_CSV = ('''1997,Ford,E350,"ac, abs, moon",3000.00\n'''
+'''1999,Chevy,"Venture ""Extended Edition""","",4900.00\n'''
+'''1999,Chevy,"Venture ""Extended Edition, Very Large""",,5000.00\n'''
+'''1996,Jeep,Grand Cherokee,"MUST SELL!\nair, moon roof, loaded",4799.00\n''')
 
 VALID_WITH_HEADER = \
     'year,brand,model,detail,other\n' + VALID_CSV
