@@ -9,7 +9,7 @@ from ipt.validator.basevalidator import BaseValidator, Shell
 
 NAMESPACES = {'j': 'http://hul.harvard.edu/ois/xml/ns/jhove'}
 JHOVE_HOME = '/usr/share/java/jhove'
-EXTRA_JARS = os.path.join(JHOVE_HOME, '/bin/JhoveView.jar')
+EXTRA_JARS = os.path.join(JHOVE_HOME, 'bin/JhoveView.jar')
 CP = os.path.join(JHOVE_HOME, 'bin/JhoveApp.jar') + ':' + EXTRA_JARS
 
 
