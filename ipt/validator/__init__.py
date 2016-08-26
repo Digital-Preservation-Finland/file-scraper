@@ -5,6 +5,7 @@ from ipt.validator.xmllint import Xmllint
 from ipt.validator.warctools import WarctoolsWARC, WarctoolsARC
 from ipt.validator.ghost_script import GhostScript
 from ipt.validator.pngcheck import Pngcheck
+from ipt.validator.ffmpeg import FFMpeg
 
 
 class UnknownFileformat(object):

@@ -24,19 +24,19 @@ FORMATS = [
     },
     {"format_string": "h264",
      "format": {
-         "version": "4", "mimetype": "video/mpeg"
+         "version": "", "mimetype": "video/mp4"
          }
     }
 
 ]
 
 
-class FFMpeg(object):
 class FFMpeg(BaseValidator):
     """FFMpeg plugin class."""
 
     _supported_mimetypes = {
-        'video/mpeg': ['1', '2', '4']
+        'video/mpeg': ['1', '2'],
+        'video/mp4': ['']
     }
 
     def __init__(self, fileinfo):
