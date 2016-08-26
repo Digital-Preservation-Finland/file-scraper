@@ -48,7 +48,10 @@ import pytest
         ("application/x-internet-archive", "1.1", "", WarctoolsARC),
         ("text/xml", "1.0", "UTF-8", Xmllint)
     ])
-def tests_iter_validator_classes(monkeypatch, mimetype, version, charset, validator_class, capsys):
+def tests_iter_validator_classes(mimetype, version, charset, validator_class):
+    """
+    Test for validator discovery.
+    """
     fileinfo = {
         "filename": "foo",
         "format": {
@@ -60,10 +63,8 @@ def tests_iter_validator_classes(monkeypatch, mimetype, version, charset, valida
             "charset": charset,
             "separator": "foo",
             "delimiter": "foo",
-            "header_fields": "foo" 
+            "header_fields": "foo"
         }
     }
-    print validator_class, ipt.validator.iter_validator_classes(fileinfo)
-    assert isinstance(ipt.validator.iter_validator_classes(fileinfo), validator_class)
-
-  
+    assert isinstance(
+        ipt.validator.iter_validator_classes(fileinfo), validator_class)
