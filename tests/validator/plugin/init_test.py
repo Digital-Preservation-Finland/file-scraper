@@ -10,6 +10,7 @@ from ipt.validator.ghost_script import GhostScript
 from ipt.validator.pngcheck import Pngcheck
 from ipt.validator.csv_validator import PythonCsv
 from ipt.validator import UnknownFileformat, BaseValidator
+from ipt.validator.ffmpeg import FFMpeg
 
 import ipt.validator
 import pytest
@@ -22,9 +23,9 @@ import pytest
         ("application/warc", "1.0", "", WarctoolsWARC),
         ("text/csv", "", "UTF-8", PythonCsv),
         ("text/plain", "", "ISO-8859-15", DummyTextValidator),
-        ("video/mpeg", "1", "", UnknownFileformat),
-        ("video/mpeg", "2", "", UnknownFileformat),
-        ("video/mpeg", "4", "", UnknownFileformat),
+        ("video/mpeg", "1", "", FFMpeg),
+        ("video/mpeg", "2", "", FFMpeg),
+        ("video/mp4", "", "", FFMpeg),
         ("application/pdf", "1.3", "", JHovePDF),
         ("application/pdf", "1.4", "", JHovePDF),
         ("application/pdf", "1.5", "", JHovePDF),
