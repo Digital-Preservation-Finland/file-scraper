@@ -1,6 +1,7 @@
 """ This is a module that integrates ffmpeg-tool with information-package-tools
 for file validation purposes. Validation is achieved by doing a conversion.
 If conversion is succesful, file is interpred as a valid file."""
+from ipt.validator.basevalidator import BaseValidator
 from ipt.utils import run_command
 
 
@@ -31,6 +32,7 @@ FORMATS = [
 
 
 class FFMpeg(object):
+class FFMpeg(BaseValidator):
     """FFMpeg plugin class."""
 
     _supported_mimetypes = {
