@@ -29,7 +29,6 @@ def test_mark_ffmpeg_ok(mimetype, filename, version):
     validator = FFMpeg(fileinfo=fileinfo)
     validator.validate()
 
-    assert 'Error' not in validator.messages()
     assert validator.messages() != ""
     assert validator.is_valid
     assert validator.errors() == ""
@@ -56,6 +55,5 @@ def test_mark_ffmpeg_nok(mimetype, filename, version):
     validator = FFMpeg(fileinfo=fileinfo)
     validator.validate()
 
-    assert 'Error' in validator.messages()
     assert not validator.is_valid
     assert validator.errors() != ""
