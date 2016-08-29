@@ -61,7 +61,8 @@ class FFMpeg(BaseValidator):
                     self.fileinfo["format"]["version"]))
 
     def resolve_format(self, info):
-        """Resolve format name and version."""
+        """Resolve format name and version.
+        :info: a stringcontaining inforamtion about the stream."""
         line = info.split("Video: ")[1].split(' ')[0].replace(",", "")
         for format_ in FORMATS:
             if format_["format_string"] == line:
@@ -69,7 +70,9 @@ class FFMpeg(BaseValidator):
         self.errors("Unknown mimetype or version")
 
     def check_validity(self):
-        """Check file validity."""
+        """Check file validity. The validation logic is check that returncode
+        is 0 and nothing is found in stderr. FFmpeg lists faulty parts of mpeg
+        to stderr."""
         shell = Shell([
             'ffmpeg', '-v', 'error', '-i', self.fileinfo['filename'],
             '-f', 'null', '-'])
