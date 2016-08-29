@@ -4,13 +4,6 @@ If conversion is succesful, file is interpred as a valid file."""
 from ipt.validator.basevalidator import BaseValidator
 from ipt.utils import run_command
 
-
-SYSTEM_ERRORS = [
-    'Invalid argument',
-    'Missing argument for option',
-    'No such file or directory',
-    'Permission denied']
-
 FORMATS = [
     {"format_string": "mpeg1video",
      "format": {
@@ -109,15 +102,3 @@ class FFMpeg(BaseValidator):
                 exitcode = 1
                 break
         self.append_results(exitcode, stdout, stderr)
-
-    def append_results(self, exitcode, stdout, stderr):
-        """append intermediate results."""
-        self.exitcode.append(exitcode)
-        self.stdout.append(stdout)
-        self.stderr.append(stderr)
-
-    def check_system_errors(self, text):
-        """Check for system errors."""
-        for error in SYSTEM_ERRORS:
-            if error in text:
-                self.append_results(1, "", text)
