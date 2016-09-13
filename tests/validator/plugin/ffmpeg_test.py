@@ -41,20 +41,20 @@ def test_mark_ffmpeg_ok():
         filename="mpg1.mpg",
         mimetype="video/mpeg",
         version="1",
-        videomd=[{"codec": "mpeg1video"}])
+        videomd=[{"codec": "MPEG 1"}])
 
     check_ffmpeg_ok(
         filename="mpg2.mpg",
         mimetype="video/mpeg",
         version="2",
-        videomd=[{"codec": "mpeg2video"}])
+        videomd=[{"codec": "MPEG 2"}])
 
     check_ffmpeg_ok(
         filename="mp4.mp4",
         mimetype="video/mp4",
         version="",
-        videomd=[{"codec": "h264"}],
-        audiomd=[{"codec": "aac"}])
+        videomd=[{"codec": "AVC"}],
+        audiomd=[{"codec": "AAC"}])
 
 
 def check_ffmpeg_nok(filename, mimetype, version, videomd=None, audiomd=None):
@@ -90,13 +90,13 @@ def test_mark_ffmpeg_nok():
         filename="mpg1_error.mpg",
         mimetype="video/mpeg",
         version="1",
-        videomd=[{"codec": "mpeg1video"}])
+        videomd=[{"codec": "MPEG 1"}])
 
     check_ffmpeg_nok(
         filename="mpg1_error2.mpg",
         mimetype="video/mpeg",
         version="1",
-        videomd=[{"codec": "mpeg1video"}])
+        videomd=[{"codec": "MPEG 1"}])
 
     check_ffmpeg_nok(
         filename="mp4_error.mp4",
@@ -107,13 +107,13 @@ def test_mark_ffmpeg_nok():
         filename="mpg2_error.mpg",
         mimetype="video/mpeg",
         version="2",
-        videomd=[{"codec": "mpeg2video"}])
+        videomd=[{"codec": "MPEG 2"}])
 
     check_ffmpeg_nok(
         filename="mpg1.mpg",
         mimetype="video/mpeg",
         version="4",
-        videomd=[{"codec": "mpeg1video"}])
+        videomd=[{"codec": "MPEG 1"}])
 
     check_ffmpeg_nok(
         filename="unknown_mimetype.3gp",
