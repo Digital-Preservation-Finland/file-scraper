@@ -71,31 +71,40 @@ class FFMpeg(BaseValidator):
         """
         shell = Shell(
             ['ffprobe', '-show_format', '-v',
-             'debug', self.fileinfo['filename']])
+             'debug', '-print_format', 'json', self.fileinfo['filename']])
+        data = json.loads(str(shell.stdout))
+        format_data = data.get("format")
+        if format_data is None:
+            self.errors(
+                "No format data could be read. FFprobe output: %s " % shell.stdout)
+            return
         detected_format = None
-        if "raw MPEG video" in shell.stderr:
+
+        # Detect MPEG1, MPEG2 and MP3
+        if format_data.get("format_long_name") in MPEG1_STRINGS:
             detected_format = {"version": "1", "mimetype": "video/mpeg"}
 
-        if "MPEG-2 transport stream format" in shell.stderr or \
-                "MPEG-PS" in shell.stderr:
+        if format_data.get("format_long_name") in MPEG2_STRINGS:
             detected_format = {"version": "2", "mimetype": "video/mpeg"}
 
-        if "MPEG-4" in shell.stderr and \
-                "TAG:major_brand=isom" in shell.stderr:
-            detected_format = {"version": "", "mimetype": "video/mp4"}
-
-        if "MPEG audio layer 2/3" in shell.stderr and \
-                "format_name=mp3" in shell.stderr:
+        if format_data.get("format_long_name") in MP3_STRINGS and \
+                format_data.get("format_name") in MP3_STRINGS:
             detected_format = {"version": "", "mimetype": "audio/mpeg"}
 
-        if "TAG:major_brand=M4A " in shell.stderr:
-            detected_format = {"version": "", "mimetype": "audio/mp4"}
+        # Detect MPEG4
+        tags = format_data.get("tags")
+        if tags:
+            if tags.get("major_brand") in MPEG4_STRINGS:
+                detected_format = {"version": "", "mimetype": "audio/mp4"}
+            if format_data["format_long_name"] in MPEG4_STRINGS and \
+                    tags.get("major_brand") in MPEG4_STRINGS:
+                detected_format = {"version": "", "mimetype": "video/mp4"}
 
         if not detected_format:
             self.errors(
                 "No matching version information could be found,"
                 "file might not be MPEG1/2 or MP4. "
-                "FFprobe output: %s" % shell.stderr)
+                "FFprobe output: %s" % shell.stdout)
             return
 
         if detected_format != self.fileinfo["format"] and detected_format:
@@ -137,7 +146,8 @@ class FFMpeg(BaseValidator):
 
         for stream in stream_raw_data["streams"]:
             if stream["codec_type"] == stream_type:
-                streams[stream_type].append({"codec": stream["codec_name"]})
+                streams[stream_type].append(
+                    {"codec": STREAM_STRINGS["codec_name"]})
         (missing, extra) = compare_lists_of_dicts(
             self.fileinfo[stream_type], streams[stream_type])
         if missing or extra:
