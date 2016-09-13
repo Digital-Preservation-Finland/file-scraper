@@ -42,8 +42,8 @@ class FFMpeg(BaseValidator):
     def validate(self):
         """validate file."""
         self.check_container_mimetype()
-        self.check_streams("audiomd")
-        self.check_streams("videomd")
+        self.check_streams("audio")
+        self.check_streams("video")
         self.check_validity()
 
     def check_container_mimetype(self):
