@@ -142,26 +142,30 @@ class FFMpeg(BaseValidator):
         audioMD and videoMD.
         :stream_type: "audiomd" or "videomd"
         """
-        if stream_type not in self.fileinfo:
-            return
-        streams = {stream_type: []}
+
+        found_streams = {stream_type: []}
         shell = Shell(
             ['ffprobe', '-show_streams', '-show_format', '-print_format',
              'json', self.fileinfo['filename']])
 
         stream_raw_data = json.loads(shell.stdout)
 
-        for stream in stream_raw_data["streams"]:
+        for stream in stream_raw_data.get("streams", []):
             if stream["codec_type"] == stream_type:
-                streams[stream_type].append(
-                    {"codec": STREAM_STRINGS["codec_name"]})
+                if stream["codec_name"] in STREAM_STRINGS:
+                    new_stream = STREAM_STRINGS[stream["codec_name"]]
+                else:
+                    new_stream = stream["codec_name"]
+                found_streams[stream_type].append({"codec": new_stream})
         (missing, extra) = compare_lists_of_dicts(
-            self.fileinfo[stream_type], streams[stream_type])
+            self.fileinfo.get(stream_type), found_streams[stream_type])
         if missing or extra:
             self.errors("Streams in container %s are not what is "
                         "described in metadata. Found %s, expected %s" % (
                             self.fileinfo["filename"],
-                            streams[stream_type],
-                            self.fileinfo[stream_type]))
+                            found_streams[stream_type],
+                            self.fileinfo.get(stream_type)))
+        if stream_type not in self.fileinfo:
+            return
         self.messages("Streams %s are according to metadata description" %
                       self.fileinfo[stream_type])
