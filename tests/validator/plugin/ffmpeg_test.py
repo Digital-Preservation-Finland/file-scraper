@@ -127,3 +127,14 @@ def test_mark_ffmpeg_nok():
         mimetype="video/mpeg",
         version="1",
         audiomd=[{"codec": "wav"}])
+
+    check_ffmpeg_nok(
+        filename="mpg1.mpg",
+        mimetype="video/mpeg",
+        version="1",
+        videomd=[{"codec": "mpeg1video"}, {"codec": "mpeg1video"}])
+
+    check_ffmpeg_nok(
+        filename="mpg1.mpg",
+        mimetype="video/mpeg",
+        version="1")
