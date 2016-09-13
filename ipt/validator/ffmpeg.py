@@ -41,12 +41,12 @@ class FFMpeg(BaseValidator):
 
     def validate(self):
         """validate file."""
-        self.check_version()
+        self.check_container_mimetype()
         self.check_streams("audiomd")
         self.check_streams("videomd")
         self.check_validity()
 
-    def check_version(self):
+    def check_container_mimetype(self):
         """parse version from ffprobes stderr, which is in following format:
             .
             .
