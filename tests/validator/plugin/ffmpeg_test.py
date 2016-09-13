@@ -87,13 +87,13 @@ def test_mark_ffmpeg_nok():
     Test for failed validation
     """
     check_ffmpeg_nok(
-        filename="pg1_error.mpg",
+        filename="mpg1_error.mpg",
         mimetype="video/mpeg",
         version="1",
         videomd=[{"codec": "mpeg1video"}])
 
     check_ffmpeg_nok(
-        filename="pg1_error2.mpg",
+        filename="mpg1_error2.mpg",
         mimetype="video/mpeg",
         version="1",
         videomd=[{"codec": "mpeg1video"}])
