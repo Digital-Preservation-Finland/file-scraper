@@ -9,6 +9,27 @@ import json
 from ipt.validator.basevalidator import BaseValidator, Shell
 from ipt.utils import compare_lists_of_dicts
 
+MPEG1_STRINGS = ["MPEG-1 video", "raw MPEG video"]
+MPEG2_STRINGS = ["MPEG-2 transport stream format",
+                 "MPEG-PS format",
+                 "MPEG-2 PS (DVD VOB)"]
+MP3_STRINGS = ["MPEG audio layer 2/3", "mp3"]
+STREAM_STRINGS = {
+    "mpegvideo": "MPEG 1",
+    "mpeg1video": "MPEG 1",
+    "mpeg2video": "MPEG 2",
+    "h264": "AVC",
+    "libmp3lame": "MP3",
+    "libshine": "MP3",
+    "mp3": "MP3",
+    "mp3adu": "MP3",
+    "mp3adufloat": "MP3",
+    "mp3float": "MP3",
+    "mp3on4": "MP3",
+    "mp3on4float": "MP3",
+    "aac": "AAC"
+    }
+MPEG4_STRINGS = ["M4A", "QuickTime/MPEG-4/Motion JPEG 2000 format", "isom"]
 
 class FFMpeg(BaseValidator):
     """FFMpeg validator class."""
@@ -16,22 +37,6 @@ class FFMpeg(BaseValidator):
     _supported_mimetypes = {
         'video/mpeg': ['1', '2'],
         'video/mp4': ['']
-    }
-
-    stream_strings = {
-        "mpegvideo": "MPEG 1",
-        "mpeg1video": "MPEG 1",
-        "mpeg2video": "MPEG 2",
-        "h264": "AVC",
-        "libmp3lame": "MP3",
-        "libshine": "MP3",
-        "mp3": "MP3",
-        "mp3adu": "MP3",
-        "mp3adufloat": "MP3",
-        "mp3float": "MP3",
-        "mp3on4": "MP3",
-        "mp3on4float": "MP3",
-        "aac": "AAC"
     }
 
     def validate(self):
