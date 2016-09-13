@@ -9,11 +9,18 @@ import json
 from ipt.validator.basevalidator import BaseValidator, Shell
 from ipt.utils import compare_lists_of_dicts
 
+MPEG1 = {"version": "1", "mimetype": "video/mpeg"}
+MPEG2 = {"version": "2", "mimetype": "video/mpeg"}
+MP3 = {"version": "", "mimetype": "audio/mpeg"}
+AUDIOMP4 = {"version": "", "mimetype": "audio/mp4"}
+VIDEOMP4 = {"version": "", "mimetype": "video/mp4"}
+
 MPEG1_STRINGS = ["MPEG-1 video", "raw MPEG video"]
 MPEG2_STRINGS = ["MPEG-2 transport stream format",
                  "MPEG-PS format",
                  "MPEG-2 PS (DVD VOB)"]
 MP3_STRINGS = ["MPEG audio layer 2/3", "mp3"]
+
 STREAM_STRINGS = {
     "mpegvideo": "MPEG 1",
     "mpeg1video": "MPEG 1",
@@ -82,23 +89,23 @@ class FFMpeg(BaseValidator):
 
         # Detect MPEG1, MPEG2 and MP3
         if format_data.get("format_long_name") in MPEG1_STRINGS:
-            detected_format = {"version": "1", "mimetype": "video/mpeg"}
+            detected_format = MPEG1
 
         if format_data.get("format_long_name") in MPEG2_STRINGS:
-            detected_format = {"version": "2", "mimetype": "video/mpeg"}
+            detected_format = MPEG2
 
         if format_data.get("format_long_name") in MP3_STRINGS and \
                 format_data.get("format_name") in MP3_STRINGS:
-            detected_format = {"version": "", "mimetype": "audio/mpeg"}
+            detected_format = MP3
 
         # Detect MPEG4
         tags = format_data.get("tags")
         if tags:
             if tags.get("major_brand") in MPEG4_STRINGS:
-                detected_format = {"version": "", "mimetype": "audio/mp4"}
+                detected_format = AUDIOMP4
             if format_data["format_long_name"] in MPEG4_STRINGS and \
                     tags.get("major_brand") in MPEG4_STRINGS:
-                detected_format = {"version": "", "mimetype": "video/mp4"}
+                detected_format = VIDEOMP4
 
         if not detected_format:
             self.errors(
