@@ -38,6 +38,7 @@ STREAM_STRINGS = {
     }
 MPEG4_STRINGS = ["M4A", "QuickTime/MPEG-4/Motion JPEG 2000 format", "isom"]
 
+
 class FFMpeg(BaseValidator):
     """FFMpeg validator class."""
 
@@ -81,9 +82,11 @@ class FFMpeg(BaseValidator):
              'debug', '-print_format', 'json', self.fileinfo['filename']])
         data = json.loads(str(shell.stdout))
         format_data = data.get("format")
+
         if format_data is None:
             self.errors(
-                "No format data could be read. FFprobe output: %s " % shell.stdout)
+                "No format data could be read. "
+                "FFprobe output: %s " % shell.stdout)
             return
         detected_format = None
 
