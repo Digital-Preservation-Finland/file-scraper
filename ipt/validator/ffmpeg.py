@@ -148,15 +148,13 @@ class FFMpeg(BaseValidator):
             ['ffprobe', '-show_streams', '-show_format', '-print_format',
              'json', self.fileinfo['filename']])
 
-        stream_raw_data = json.loads(shell.stdout)
+        stream_data = json.loads(shell.stdout)
 
-        for stream in stream_raw_data.get("streams", []):
-            if stream["codec_type"] == stream_type:
-                if stream["codec_name"] in STREAM_STRINGS:
-                    new_stream = STREAM_STRINGS[stream["codec_name"]]
-                else:
-                    new_stream = stream["codec_name"]
-                found_streams[stream_type].append({"codec": new_stream})
+        for stream in stream_data.get("streams", []):
+            new_stream = STREAM_PARSERS[stream_type](stream, stream_type)
+            if new_stream:
+                found_streams[stream_type].append(new_stream)
+
         (missing, extra) = compare_lists_of_dicts(
             self.fileinfo.get(stream_type), found_streams[stream_type])
         if missing or extra:
@@ -165,7 +163,59 @@ class FFMpeg(BaseValidator):
                             self.fileinfo["filename"],
                             found_streams[stream_type],
                             self.fileinfo.get(stream_type)))
+
         if stream_type not in self.fileinfo:
             return
         self.messages("Streams %s are according to metadata description" %
                       self.fileinfo[stream_type])
+
+
+def parse_video_streams(stream, stream_type):
+    """
+    Parse video streams from ffprobe output.
+    :stream: raw dict of video stream data.
+    :stream_type: audio or video
+    :returns: parsed dict of video stream data.
+    """
+    if stream_type != stream.get("codec_type"):
+        return
+    new_stream = {}
+    if stream["codec_name"] in STREAM_STRINGS:
+        new_stream["codec_name"] = STREAM_STRINGS[stream["codec_name"]]
+    else:
+        new_stream["codec_name"] = stream.get("codec_name")
+    new_stream["duration"] = stream.get("duration")
+    new_stream["level"] = str(stream.get("level"))
+    new_stream["avg_frame_rate"] = stream.get("avg_frame_rate")
+    new_stream["width"] = str(stream.get("width"))
+    new_stream["height"] = str(stream.get("height"))
+    new_stream["display_aspect_ratio"] = stream.get(
+        "display_aspect_ratio")
+    new_stream["sample_aspect_ratio"] = stream.get(
+        "sample_aspect_ratio")
+    return new_stream
+
+
+def parse_audio_streams(stream, stream_type):
+    """
+    Parse audio streams from ffprobe output.
+    :stream: raw dict of audio stream data.
+    :stream_type: audio or video
+    :returns: parsed dict of audio stream data.
+    """
+    if stream_type != stream.get("codec_type"):
+        return
+    new_stream = {}
+    if stream["codec_name"] in STREAM_STRINGS:
+        new_stream["codec_name"] = STREAM_STRINGS[stream["codec_name"]]
+    else:
+        new_stream["codec_name"] = stream.get("codec_name")
+    new_stream["duration"] = stream.get("duration")
+    new_stream["sample_rate"] = str(stream.get("sample_rate"))
+    new_stream["channels"] = str(stream.get("channels"))
+    return new_stream
+
+STREAM_PARSERS = {
+    "video": parse_video_streams,
+    "audio": parse_audio_streams
+}
