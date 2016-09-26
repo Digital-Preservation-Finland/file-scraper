@@ -9,17 +9,37 @@ import json
 from ipt.validator.basevalidator import BaseValidator, Shell
 from ipt.utils import compare_lists_of_dicts
 
-MPEG1 = {"version": "1", "mimetype": "video/mpeg"}
-MPEG2 = {"version": "2", "mimetype": "video/mpeg"}
+MPEG1 = {"version": "1", "mimetype": "video/MP1S"}
+MPEG2_TS = {"version": "2", "mimetype": "video/MP2T"}
+MPEG2_PS = {"version": "2", "mimetype": "video/MP2P"}
 MP3 = {"version": "", "mimetype": "audio/mpeg"}
-AUDIOMP4 = {"version": "", "mimetype": "audio/mp4"}
-VIDEOMP4 = {"version": "", "mimetype": "video/mp4"}
+MP4 = {"version": "", "mimetype": "video/mp4"}
+RAW_AAC = {"version": "", "mimetype": "audio/mp4"}
+RAW_MPEG = {"version": "1", "mimetype": "video/mpeg"}
 
-MPEG1_STRINGS = ["MPEG-1 video", "raw MPEG video"]
-MPEG2_STRINGS = ["MPEG-2 transport stream format",
-                 "MPEG-PS format",
-                 "MPEG-2 PS (DVD VOB)"]
-MP3_STRINGS = ["MPEG audio layer 2/3", "mp3"]
+MPEG1_STRINGS = ["MPEG-1 video"]
+RAW_MPEG_STRINGS = ["raw MPEG video"]
+MPEG2_TS_STRINGS = ["MPEG-2 transport stream format"]
+MPEG2_PS_STRINGS = ["MPEG-PS format", "MPEG-2 PS (DVD VOB)"]
+MP3_STRINGS = [
+    "MPEG audio layer 2/3",
+    "MP3 (MPEG audio layer 3)",
+    "ADU (Application Data Unit) MP3 (MPEG audio layer 3)",
+    "MP3onMP4",
+    "libmp3lame MP3 (MPEG audio layer 3)",
+    "libshine MP3 (MPEG audio layer 3)"]
+MPEG4_STRINGS = ["M4A", "QuickTime/MPEG-4/Motion JPEG 2000 format"]
+RAW_AAC_STRINGS = ["raw ADTS AAC"]
+
+CONTAINER_MIMETYPES = [
+    {"data": MPEG1, "strings": MPEG1_STRINGS},
+    {"data": MPEG2_TS, "strings": MPEG2_TS_STRINGS},
+    {"data": MPEG2_PS, "strings": MPEG2_PS_STRINGS},
+    {"data": MP3, "strings": MP3_STRINGS},
+    {"data": MP4, "strings": MPEG4_STRINGS},
+    {"data": RAW_AAC, "strings": RAW_AAC_STRINGS},
+    {"data": RAW_MPEG, "strings": MPEG1_STRINGS}
+]
 
 STREAM_STRINGS = {
     "mpegvideo": "MPEG 1",
@@ -36,7 +56,6 @@ STREAM_STRINGS = {
     "mp3on4float": "MP3",
     "aac": "AAC"
     }
-MPEG4_STRINGS = ["M4A", "QuickTime/MPEG-4/Motion JPEG 2000 format", "isom"]
 
 
 class FFMpeg(BaseValidator):
@@ -88,27 +107,11 @@ class FFMpeg(BaseValidator):
                 "No format data could be read. "
                 "FFprobe output: %s " % shell.stdout)
             return
+
         detected_format = None
-
-        # Detect MPEG1, MPEG2 and MP3
-        if format_data.get("format_long_name") in MPEG1_STRINGS:
-            detected_format = MPEG1
-
-        if format_data.get("format_long_name") in MPEG2_STRINGS:
-            detected_format = MPEG2
-
-        if format_data.get("format_long_name") in MP3_STRINGS and \
-                format_data.get("format_name") in MP3_STRINGS:
-            detected_format = MP3
-
-        # Detect MPEG4
-        tags = format_data.get("tags")
-        if tags:
-            if tags.get("major_brand") in MPEG4_STRINGS:
-                detected_format = AUDIOMP4
-            if format_data["format_long_name"] in MPEG4_STRINGS and \
-                    tags.get("major_brand") in MPEG4_STRINGS:
-                detected_format = VIDEOMP4
+        for mimetype in CONTAINER_MIMETYPES:
+            if format_data.get("format_long_name") in mimetype["strings"]:
+                detected_format = mimetype["data"]
 
         if not detected_format:
             self.errors(
