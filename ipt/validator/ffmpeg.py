@@ -120,7 +120,7 @@ class FFMpeg(BaseValidator):
                 "FFprobe output: %s" % shell.stdout)
             return
 
-        if detected_format != self.fileinfo["format"] and detected_format:
+        if detected_format != self.fileinfo["format"]:
             self.errors(
                 "Wrong format version, got '%s' version '%s', "
                 "expected '%s' version '%s'." % (
