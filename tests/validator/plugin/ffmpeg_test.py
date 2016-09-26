@@ -53,7 +53,7 @@ def test_mark_ffmpeg_ok():
 
     check_ffmpeg_ok(
         filename="mpg2.mpg",
-        mimetype="video/mpeg",
+        mimetype="video/MP2P",
         version="2",
         videomd=[
             {"codec_name": "MPEG 2",

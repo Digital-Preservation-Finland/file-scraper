@@ -38,7 +38,7 @@ CONTAINER_MIMETYPES = [
     {"data": MP3, "strings": MP3_STRINGS},
     {"data": MP4, "strings": MPEG4_STRINGS},
     {"data": RAW_AAC, "strings": RAW_AAC_STRINGS},
-    {"data": RAW_MPEG, "strings": MPEG1_STRINGS}
+    {"data": RAW_MPEG, "strings": RAW_MPEG_STRINGS}
 ]
 
 STREAM_STRINGS = {
