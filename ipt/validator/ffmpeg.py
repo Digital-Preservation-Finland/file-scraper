@@ -63,7 +63,11 @@ class FFMpeg(BaseValidator):
 
     _supported_mimetypes = {
         'video/mpeg': ['1', '2'],
-        'video/mp4': ['']
+        'video/mp4': [''],
+        'audio/mpeg': ['1', '2'],
+        'audio/mp4': [''],
+        'video/MP2T': ['2'],
+        'video/MP2P': ['2']
     }
 
     def validate(self):
