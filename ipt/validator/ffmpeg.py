@@ -79,26 +79,16 @@ class FFMpeg(BaseValidator):
 
     def check_container_mimetype(self):
         """parse version from ffprobes stderr, which is in following format:
-            .
-            .
-            .
-            [FORMAT]
-            filename=example.aac
-            nb_streams=1
-            format_name=mov,mp4,m4a,3gp,3g2,mj2
-            format_long_name=QuickTime/MPEG-4/Motion JPEG 2000 format
-            start_time=0.000000
-            duration=35.526531
-            size=1304925
-            bit_rate=293847
-            TAG:major_brand=M4A
-            TAG:minor_version=0
-            TAG:compatible_brands=M4A mp42isom
-            TAG:creation_time=2014-11-20 12:31:15
-            TAG:title=forAAC
-            TAG:gapless_playback=0
-            TAG:encoder=iTunes 12.0.1.26
-            [/FORMAT]
+
+            "format": {
+                "filename": "tests/data/02_filevalidation_data/mpg/mpg1.mpg",
+                "nb_streams": 1,
+                "format_name": "mpegvideo",
+                "format_long_name": "raw MPEG video",
+                "duration": "19.025400",
+                "size": "761016",
+                "bit_rate": "320000"
+            }
         """
         shell = Shell(
             ['ffprobe', '-show_format', '-v',
@@ -149,7 +139,32 @@ class FFMpeg(BaseValidator):
 
     def check_streams(self, stream_type):
         """Check that streams inside container are what they are described in
-        audioMD and videoMD.
+        audioMD and videoMD. Ffprobe command gives a json output in the
+        following format:
+
+            "streams": [
+            {
+                "index": 0,
+                "codec_name": "mpeg1video",
+                "codec_long_name": "MPEG-1 video",
+                "codec_type": "video",
+                "codec_time_base": "1001/30000",
+                "codec_tag_string": "[0][0][0][0]",
+                "codec_tag": "0x0000",
+                "width": 320,
+                "height": 240,
+                "has_b_frames": 1,
+                "sample_aspect_ratio": "1:1",
+                "display_aspect_ratio": "4:3",
+                "pix_fmt": "yuv420p",
+                "level": -99,
+                "timecode": "00:00:00:00",
+                "r_frame_rate": "30000/1001",
+                "avg_frame_rate": "30000/1001",
+                "time_base": "1/1200000",
+                "duration": "19.025400"
+            }
+
         :stream_type: "audiomd" or "videomd"
         """
 
