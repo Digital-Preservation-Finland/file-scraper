@@ -180,10 +180,10 @@ class FFMpeg(BaseValidator):
             if new_stream:
                 found_streams[stream_type].append(new_stream)
 
-        (missing, extra) = compare_lists_of_dicts(
+        match = compare_lists_of_dicts(
             self.fileinfo.get(stream_type), found_streams[stream_type])
-        if missing or extra:
-            self.errors("Streams in container %s are not what is "
+        if match is False:
+            self.errors("Streams in %s are not what is "
                         "described in metadata. Found %s, expected %s" % (
                             self.fileinfo["filename"],
                             found_streams[stream_type],
