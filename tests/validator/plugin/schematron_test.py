@@ -38,21 +38,7 @@ class TestSchematronValidator:
         ]
     }
 
-    #
-    # "test_validate_file": [
-    #      {"casename": "Good METS document",
-    #       "filename": "CSC_test001/mets.xml",
-    #       "expect_errors" : [False, False, False] },
-    #      {"casename": "Good METS document",
-    #       "filename": "metsrights-error/mets.xml",
-    #       "expect_errors" : [False, True, False] },
-    #      {"casename" : "Kervinen",
-    #
-    #       "filename" : "fd2009-00002919-preservation/mets.xml",
-    #       "expect_errors" : [False, False, False]}
-    #
-    #  ]
-   # }
+
     def file_contains_string(self, filename, search_strings):
 
         f = open(filename)
