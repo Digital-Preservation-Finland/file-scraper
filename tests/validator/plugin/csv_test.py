@@ -6,9 +6,8 @@ from tempfile import NamedTemporaryFile
 
 from ipt.validator.csv_validator import PythonCsv
 
-JPEG_PATH = os.path.join('tests/data/06_mets_validation/sips/',
-                         'fd2009-00002919-preservation/access_img/',
-                         'img0008-access.jpg')
+JPEG_PATH = os.path.join('tests/data/test-sips/CSC_test004/'
+                         '/access_img/img0008-access.jpg')
 
 
 VALID_CSV = ('''1997,Ford,E350,"ac, abs, moon",3000.00\n'''

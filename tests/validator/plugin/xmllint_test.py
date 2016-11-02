@@ -23,8 +23,7 @@ SCHEMAPATH = os.path.join(
     ["filename", "schema"],
     [
         ("06_mets_validation/sips/CSC_test001/mets.xml", True),
-        ("06_mets_validation/sips/fd2009-00002919-preservation/mets.xml",
-         True),
+        ("test-sips/CSC_test004/mets.xml", True),
         ("02_filevalidation_data/xml/catalog_schema_valid.xml", False),
         ("02_filevalidation_data/xml/valid_xsd.xml", False),
         ("02_filevalidation_data/xml/valid_wellformed.xml", False),
