@@ -6,14 +6,14 @@ from tempfile import NamedTemporaryFile
 
 from ipt.validator.csv_validator import PythonCsv
 
-JPEG_PATH = os.path.join('tests/data/test-sips/CSC_test004/'
-                         '/access_img/img0008-access.jpg')
+PDF_PATH = os.path.join(
+    'tests/data/02_filevalidation_data/pdf_1_4/sample_1_4.pdf')
 
-
-VALID_CSV = ('''1997,Ford,E350,"ac, abs, moon",3000.00\n'''
-'''1999,Chevy,"Venture ""Extended Edition""","",4900.00\n'''
-'''1999,Chevy,"Venture ""Extended Edition, Very Large""",,5000.00\n'''
-'''1996,Jeep,Grand Cherokee,"MUST SELL!\nair, moon roof, loaded",4799.00\n''')
+VALID_CSV = (
+    '''1997,Ford,E350,"ac, abs, moon",3000.00\n'''
+    '''1999,Chevy,"Venture ""Extended Edition""","",4900.00\n'''
+    '''1999,Chevy,"Venture ""Extended Edition, Very Large""",,5000.00\n'''
+    '''1996,Jeep,Grand Cherokee,"MUST SELL!\nair, moon roof, loaded",4799.00\n''')
 
 VALID_WITH_HEADER = \
     'year,brand,model,detail,other\n' + VALID_CSV
@@ -107,7 +107,7 @@ def test_validate_failure():
 
     with NamedTemporaryFile(delete=False) as csv_file:
         fileinfo = {
-            "filename": JPEG_PATH,
+            "filename": PDF_PATH,
             "format": {
                 "mimetype": "text/csv",
                 "version": "",

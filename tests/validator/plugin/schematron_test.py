@@ -29,9 +29,6 @@ class TestSchematronValidator:
              "filename": os.path.join(SCHEMATRON_PATH, "mets_mix.sch")},
         ],
         "test_validate_file": [
-            {"casename": "Kervinen",
-             "filename": "CSC_test004/mets.xml",
-             "expect_errors": [False, False, False, False]},
             {"casename": "Seminaari",
              "filename": "CSC_test006/mets.xml",
              "expect_errors": [False, False, False, False]}

@@ -31,7 +31,7 @@ def test_validate_valid_warc(filename, version):
 
 @pytest.mark.parametrize(
     ['filename', 'version', 'error'],
-    [('warc_0_17/invalid.warc', '0.17', 'zero length field name in format'),
+    [('warc_0_17/invalid.warc', '0.17', 'incorrect newline in header'),
      ('warc_0_17/valid.warc', '666.66', 'version check error'),
      ('warc_1_0/invalid.warc.gz', '1.0', 'invalid distance code')])
 def test_validate_invalid_warc(filename, version, error):
