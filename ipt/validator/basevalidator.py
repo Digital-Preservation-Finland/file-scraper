@@ -81,12 +81,18 @@ class BaseValidator(object):
     __metaclass__ = abc.ABCMeta
     _supported_mimetypes = None
 
+    _techmd = None
+
     def __init__(self, fileinfo):
         """Setup the base validator object"""
 
         self.fileinfo = fileinfo
         self._messages = []
         self._errors = []
+        self._techmd = {
+                'filename': fileinfo['filename'],
+                'format': {}
+                }
 
     @classmethod
     def is_supported(cls, fileinfo):
@@ -130,7 +136,8 @@ class BaseValidator(object):
         return {
             'is_valid': self.is_valid,
             'messages': self.messages(),
-            'errors': self.errors()
+            'errors': self.errors(),
+            'result': self._techmd
         }
 
     @abc.abstractmethod

@@ -15,5 +15,7 @@ class DummyTextValidator(BaseValidator):
         return False
 
     def validate(self):
+        self._result['format']['mimetype'] = self.fileinfo['format']['mimetype']
+        self._result['format']['charset'] = self.fileinfo['format']['charset']
         self.messages("")
         return self.result()

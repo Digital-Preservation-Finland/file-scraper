@@ -1,5 +1,5 @@
 from ipt.validator.basevalidator import BaseValidator
-from ipt.validator.jhove import JHoveBase, JHoveBasic, JHoveTextUTF8, JHovePDF, JHoveTiff, JHoveJPEG
+from ipt.validator.jhove import JHoveBase, JHoveTextUTF8, JHovePDF, JHoveTiff, JHoveJPEG, JHoveGif
 from ipt.validator.dummytextvalidator import DummyTextValidator
 from ipt.validator.xmllint import Xmllint
 from ipt.validator.warctools import WarctoolsWARC, WarctoolsARC

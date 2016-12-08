@@ -1,6 +1,4 @@
-"""
-Module for vallidating files with JHove 1 Validator
-"""
+"""Module for validating files with Jhove validator"""
 import os
 import lxml.etree
 
@@ -14,113 +12,159 @@ CP = os.path.join(JHOVE_HOME, 'bin/JhoveApp.jar') + ':' + EXTRA_JARS
 
 
 class JHoveBase(BaseValidator):
-    """
-    Basic methods for jhove validation.
-    """
-    _supported_mimetypes = {}
+    """Base class for Jhove file format validator"""
 
-    def __init__(self, fileinfo):
-        """
-        init
-        """
+    _supported_mimetypes = ['']
 
-        super(JHoveBase, self).__init__(fileinfo)
-
-        self.filename = None
-        self.report = None
-        self.shell = None
-
-    def jhove_command(self, validator_module, filename):
-        """
-        Validate file with jhove.
-        :validator_module: Jhove validatormodule.
-        :filename: filename
-        """
-
-        self.filename = filename
+    def run_jhove(self):
+        """Run JHove command and store XML output to self.report"""
 
         exec_cmd = [
             'java', '-classpath', CP, 'Jhove', '-h', 'XML', '-m',
-            validator_module, filename]
+            self._jhove_module, self.fileinfo['filename']]
         self.shell = Shell(exec_cmd)
 
-        errors = []
-
         if self.shell.returncode != 0:
-            errors.append("JHove returned error: %s\n%s" % (
+            self.errors("JHove returned error: %s\n%s" % (
                 self.shell.returncode, self.shell.stderr))
 
         self.report = lxml.etree.fromstring(self.shell.stdout)
 
+    def validate(self):
+        """Run validation and compare technical metadata to given fileinfo"""
+
+        self.run_jhove()
+        self.check_mimetype()
+        self.check_well_formed()
+        self.check_version()
+
+        # Check validation outcome by comparing self.fileinfo and self._techmd
+        # dictionaries
+        for key in self.fileinfo['format']:
+            if self.fileinfo['format'][key] == self._techmd['format'][key]:
+                self.messages('Validation %s check OK' % key)
+            else:
+                self.errors('Metadata mismatch: found %s, expected %s' %
+                            (self._techmd['format'][key],
+                             self.fileinfo['format'][key]))
+
     def check_well_formed(self):
-        """
-        Check_well_formed.
-        """
+        """Check_well_formed."""
 
         status = self.report_field("status")
-
-        if status != 'Well-Formed and valid':
-            self.errors("File '%s' does not validate: %s" % (
-                self.filename, status))
-            self.errors("Validator returned error: %s\n%s" % (
-                self.shell.stdout, self.shell.stderr))
         self.messages(status)
 
-    def check_version(self):
-        """
-        Check if fileinfo version matches JHove output.
-        """
-        report_version = self.report_field("version")
+        if not 'Well-Formed and valid' in status:
+            self.errors("Validator returned error: %s\n%s" % (
+                self.shell.stdout, self.shell.stderr))
 
-        if report_version == self.fileinfo["format"]["version"]:
-            self.messages("Version check OK")
-            return
-        self.errors("File version is '%s', expected '%s'" % (
-            report_version, self.fileinfo["format"]["version"]))
+    def check_mimetype(self):
+        self._techmd['format']['mimetype'] = self.report_field('mimeType')
+
+    def check_version(self):
+        """Check if fileinfo version matches JHove output."""
+
+        self._techmd['format']['version'] = self.report_field("version")
 
     def report_field(self, field):
-        """
-        Return field value from JHoves XML output. This method assumes that
-        JHove's XML output handler is used: jhove -h XML. Method uses XPath
-        for querying JHoves output. This method is mainly used by validator
-        class itself. Example usage:
-
-        .. code-block:: python
-
-            get_report_field("Version", report)
-            1.2
-
-            get_report_field("Status", report)
-            "Well formed"
-
-        :field: Field name which content we are looking for. In practise
-            field is an element in XML document.
-        :stdout: jhove xml report in a string
-        :returns:
-            Concatenated string where each result is on own line. An empty
-            string is returned if there's no results.
-        """
+        """Return field value from JHoves XML output stored to self.report."""
 
         query = '//j:%s/text()' % field
         results = self.report.xpath(query, namespaces=NAMESPACES)
         return '\n'.join(results)
 
 
+class JHoveGif(JHoveBase):
+    """JHove GIF file format validator"""
+
+    _supported_mimetypes = {
+        'image/gif': ['1987a', '1989a']
+    }
+
+    _jhove_module = 'GIF-hul'
+
+
+class JHoveHTML(JHoveBase):
+    """Jhove HTML file format validator"""
+
+    _supported_mimetypes = {
+        'text/html': ['HTML.4.01']
+    }
+
+    _jhove_module = 'HTML-hul'
+
+
+class JHoveJPEG(JHoveBase):
+    """JHove validator for JPEG"""
+
+    _supported_mimetypes = {
+        'image/jpeg': [''],
+    }
+
+    _jhove_module = 'JPEG-hul'
+
+    @classmethod
+    def is_supported(self, fileinfo):
+        return fileinfo['format']['mimetype'] in self._supported_mimetypes
+
+    def check_version(self):
+        # JHove doesn't detech JPEG file version so we assume that it's correct
+        self._techmd['format']['version'] = self.fileinfo['format']['version']
+
+
+class JHoveTiff(JHoveBase):
+    """JHove validator for tiff"""
+
+    _supported_mimetypes = {
+        'image/tiff': ['6.0']
+    }
+
+    _jhove_module = 'TIFF-hul'
+
+    def check_version(self):
+        """
+        Check if version string matches JHove output.
+        :shell: shell utility tool
+        """
+
+        self._techmd['format']['version'] = self.report_field("version")
+        # There is no version tag in TIFF images.
+        # TIFF 4.0 and 5.0 is also valid TIFF 6.0.
+        if self._techmd['format']['version'] in ["4.0", "5.0", "6.0"]:
+            self._techmd['format']['version'] = self.fileinfo[
+                'format']['version']
+
+
+class JHovePDF(JHoveBase):
+    """JHove validator for PDF"""
+
+    _supported_mimetypes = {
+        'application/pdf': ['1.3', '1.4', '1.5', '1.6', 'A-1a', 'A-1b']
+    }
+
+    _jhove_module = 'PDF-hul'
+
+    def check_version(self):
+        """Check if version string matches JHove output."""
+
+        self._techmd['format']['version'] = self.report_field("version")
+
+        # PDF-A versions are subsets of 1.4 so patch 1.4 to be found PDF-A1/B
+        # if claimed
+        if self.fileinfo['format']['version'] in ['A-1a', 'A-1b']:
+            if 'A-1' in self.report_field('profile'):
+                self._techmd['format']['version'] = self.fileinfo[
+                    'format']['version']
+
+
 class JHoveTextUTF8(JHoveBase):
-    """
-    JHove validator fir text/plain UTF-8
-    """
+    """JHove validator for text/plain UTF-8."""
+
     _supported_mimetypes = {
         'text/plain': ['']
     }
 
-    def validate(self):
-        """
-        Check if file is valid according to JHove output.
-        """
-
-        self.jhove_command('UTF8-hul', self.fileinfo["filename"])
-        self.check_well_formed()
+    _jhove_module = 'UTF8-hul'
 
     @classmethod
     def is_supported_mimetype(cls, fileinfo):
@@ -133,172 +177,14 @@ class JHoveTextUTF8(JHoveBase):
                 return True
         return False
 
+    def check_mimetype(self):
+        self._techmd['format']['mimetype'] = \
+            self.report_field('mimeType').split(';')[0]
 
-class JHovePDF(JHoveBase):
-    """
-    JHove validator for PDF
-    """
-
-    _supported_mimetypes = {
-        'application/pdf': ['1.3', '1.4', '1.5', '1.6', 'A-1a', 'A-1b']
-    }
+    def check_charset(self):
+        self._techmd['format']['charset'] = self.report_field('format')
 
     def validate(self):
-        """
-        Check if file is valid according to JHove output.
-        """
-
-        self.jhove_command('PDF-hul', self.fileinfo["filename"])
-
-        self.check_well_formed()
-        self.check_version()
-        self.check_profile()
-
-    def check_version(self):
-        """ Check if version string matches JHove output.
-        """
-
-        report_version = self.report_field("version")
-        report_version = report_version.replace(" ", ".")
-        fileinfo_version = self.fileinfo["format"]["version"]
-
-        if report_version == fileinfo_version:
-            self.messages(
-                "Version check OK PDF %s" % fileinfo_version)
-            return
-        if report_version == '1.4' and \
-                fileinfo_version in [
-                        '1.4', 'A-1a', 'A-1b']:
-            self.messages("Version check OK")
-            return
-        self.errors(
-            "File version is '%s', expected '%s'" % (
-                report_version, fileinfo_version))
-
-    def check_profile(self):
-        """ Check if profile string matches JHove output.
-        """
-        if "A-1" not in self.fileinfo["format"]["version"]:
-            return
-        report_profile = self.report_field("profile")
-        version = self.fileinfo["format"]["version"]
-        if "A-1" in report_profile:
-            self.messages("Profile check OK")
-            return
-        self.errors(
-            "File profile is '%s', expected '%s'" % (
-                report_profile, version))
-
-
-class JHoveTiff(JHoveBase):
-    """
-    JHove validator for tiff
-    """
-    _supported_mimetypes = {
-        'image/tiff': ['6.0']
-    }
-
-    def validate(self):
-        """
-        Check if file is valid according to JHove output.
-        """
-        self.jhove_command('TIFF-hul', self.fileinfo["filename"])
-        self.check_well_formed()
-        self.check_version()
-
-    def check_version(self):
-        """
-        Check if version string matches JHove output.
-        :shell: shell utility tool
-        """
-
-        report_version = self.report_field("version")
-        report_version = report_version.replace(" ", ".")
-        # There is no version tag in TIFF images.
-        # TIFF 4.0 and 5.0 is also valid TIFF 6.0.
-        if self.fileinfo["format"]["mimetype"] == "image/tiff" and \
-                report_version in ["4.0", "5.0"]:
-            self.messages("Version check OK")
-            return
-        if report_version == self.fileinfo["format"]["version"]:
-            self.messages("Version check OK")
-            return
-        self.errors("File version is '%s', expected '%s'" % (
-            report_version, self.fileinfo["format"]["version"]))
-
-
-class JHoveJPEG(JHoveBase):
-    """
-    JHove validator for JPEG
-    """
-    _supported_mimetypes = {
-        'image/jpeg': [''],
-    }
-
-    def validate(self):
-        """
-        Check if file is valid according to JHove output.
-        """
-        self.jhove_command('JPEG-hul', self.fileinfo["filename"])
-        self.check_well_formed()
-        # Currently no validator seems to be able to detec version
-        # self.check_version()
-
-
-class JHoveBasic(JHoveBase):
-    """
-    JHove basic class, implement JHove validation.
-    """
-    _supported_mimetypes = {
-        'image/jp2': [""],
-        'image/gif': ['1987a', '1989a']
-    }
-
-    _jhove_modules = {
-        'image/jp2': 'JPEG2000-hul',
-        'image/gif': 'GIF-hul'
-    }
-
-    def validate(self):
-        """
-        Check if file is valid according to JHove output.
-        """
-        validator_module = self._jhove_modules[
-            self.fileinfo["format"]["mimetype"]]
-        self.jhove_command(validator_module, self.fileinfo["filename"])
-        self.check_well_formed()
-        self.check_version()
-
-
-class JHoveHTML(JHoveBase):
-    """
-    html valdiation
-    """
-    _supported_mimetypes = {
-        'text/html': ['HTML.4.01']
-    }
-
-    _jhove_modules = {
-        'text/html': 'HTML-hul'
-    }
-
-    def validate(self):
-        """
-        Check if file is valid according to JHove output.
-        """
-        self.jhove_command('HTML-hul', self.fileinfo["filename"])
-        self.check_well_formed()
-        self.check_version()
-
-    def check_version(self):
-        """
-        Check if fileinfo version matches JHove output.
-        """
-        report_version = self.report_field("version")
-        report_version = report_version.replace(" ", ".")
-        if report_version == self.fileinfo["format"]["version"]:
-            self.messages("Version check OK HTML %s" % report_version)
-            return
-        self.errors("File version is '%s', expected '%s'" % (
-            report_version, self.fileinfo["format"]["version"]))
-        self.errors(self.shell.stdout)
+        self.run_jhove()
+        self.check_charset()
+        super(self.__class__, self).validate()
