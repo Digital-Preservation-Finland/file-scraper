@@ -12,10 +12,8 @@ import ipt.validator.xmllint
 ROOTPATH = os.path.abspath(os.path.join(
     os.path.dirname(__file__),
     '../../../'))
-SCHEMAPATH = os.path.join(
-    ROOTPATH,
-    ('include/etc/xml/information-package-tools/kdk-mets-catalog/' +
-     'mets/mets.xsd'))
+SCHEMAPATH = "/etc/xml/information-package-tools/kdk-mets-catalog/" +\
+    "mets/mets.xsd"
 
 
 @pytest.mark.usefixtures("monkeypatch_Popen")
