@@ -1,7 +1,6 @@
 """Test for ipt/validator/__init__.py. The purpose of this test is to make sure
 that all validators are able to be found."""
 
-
 from ipt.validator.jhove import JHoveBasic, JHovePDF, \
     JHoveTiff, JHoveJPEG, JHoveHTML
 from ipt.validator.dummytextvalidator import DummyTextValidator
