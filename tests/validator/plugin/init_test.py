@@ -16,7 +16,6 @@ import ipt.validator
 import pytest
 
 
-@pytest.mark.usefixtures("monkeypatch_Popen")
 @pytest.mark.parametrize(
     ["mimetype", "version", "charset", "validator_class"],
     [
