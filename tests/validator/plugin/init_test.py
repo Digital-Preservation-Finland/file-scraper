@@ -1,7 +1,8 @@
-"""
-Test for ipt/validator/__init__.py. The purpose of this test is to make sure that all validators are able to be found.
-"""
-from ipt.validator.jhove import JHoveBasic, JHoveTextUTF8, JHovePDF, \
+"""Test for ipt/validator/__init__.py. The purpose of this test is to make sure
+that all validators are able to be found."""
+
+
+from ipt.validator.jhove import JHoveBasic, JHovePDF, \
     JHoveTiff, JHoveJPEG, JHoveHTML
 from ipt.validator.dummytextvalidator import DummyTextValidator
 from ipt.validator.xmllint import Xmllint
@@ -9,12 +10,11 @@ from ipt.validator.warctools import WarctoolsWARC, WarctoolsARC
 from ipt.validator.ghost_script import GhostScript
 from ipt.validator.pngcheck import Pngcheck
 from ipt.validator.csv_validator import PythonCsv
-from ipt.validator import UnknownFileformat, BaseValidator
 from ipt.validator.ffmpeg import FFMpeg
 
 import ipt.validator
 import pytest
-    
+
 
 @pytest.mark.usefixtures("monkeypatch_Popen")
 @pytest.mark.parametrize(
