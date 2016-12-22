@@ -30,11 +30,16 @@ class PythonCsv(BaseValidator):
         :returns: (statuscode, messages, errors)
         """
 
-        dialect = dialect_factory(self.record_separator, self.delimiter)
+        class _Dialect(csv.excel):
+            """Init dialect, example from Python csv.py library"""
+            strict = True
+            delimiter = self.delimiter
+            doublequote = True
+            lineterminator = self.record_separator
 
         try:
             with open(self.filename, 'rb') as csvfile:
-                reader = csv.reader(csvfile, dialect)
+                reader = csv.reader(csvfile, _Dialect)
                 first_line = reader.next()
                 if self.header_fields and not self.header_fields == first_line:
                     self.errors("CSV validation error: no header at "
@@ -48,21 +53,3 @@ class PythonCsv(BaseValidator):
                         (reader.line_num, exception))
             return
         self.messages("CSV validation OK")
-
-
-def dialect_factory(record_separator, delimiter):
-    """A factory pattern for creating dialect class.
-    :record_separator: csv line separator
-    :delimiter: a character separating different items within a record.
-    :returns: a csv Dialect class."""
-
-    class StrictDialect(csv.excel):
-        """A strict csv dialect.
-        This should work in Python 2.6 although it's only documented in 2.7"""
-        def __init__(self):
-            super(csv.excel, self).__init__()
-            self.strict = True
-            self.delimiter = delimiter
-            self.lineterminator = record_separator
-
-    return StrictDialect

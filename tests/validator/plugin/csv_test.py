@@ -29,7 +29,7 @@ DEFAULT_FORMAT = {
 DEFAULT_ADDML = {
     "charset": "UTF-8",
     "separator": "CR+LF",
-    "delimiter": ";",
+    "delimiter": ",",
     "header_fields": ""}
 
 
@@ -78,9 +78,28 @@ def test_valid_with_header():
     addml = {
         "charset": "UTF-8",
         "separator": "CR+LF",
-        "delimiter": ";",
+        "delimiter": ",",
         "header_fields": ["year", "brand", "model", "detail", "other"]
     }
+
+    validator = run_validator(VALID_WITH_HEADER, addml)
+
+    assert validator.is_valid, validator.messages() + validator.errors()
+    assert "CSV validation OK" in validator.messages()
+    assert validator.errors() == ""
+
+
+def test_single_field_csv():
+    """Test CSV which contains only single field.
+
+    Here we provide original data, but use different field separator
+
+    """
+    addml = {
+        "charset": "UTF-8",
+        "separator": "CR+LF",
+        "delimiter": ";",
+        "header_fields": ["year,brand,model,detail,other"]}
 
     validator = run_validator(VALID_WITH_HEADER, addml)
 
@@ -95,7 +114,7 @@ def test_missing_header():
     addml = {
         "charset": "UTF-8",
         "separator": "CR+LF",
-        "delimiter": ";",
+        "delimiter": ",",
         "header_fields": ["MISSING HEADER"]}
 
     validator = run_validator(VALID_WITH_HEADER, addml)
@@ -121,5 +140,22 @@ def test_missing_end_quote():
     validator = run_validator(MISSING_END_QUOTE)
 
     assert not validator.is_valid, validator.messages() + validator.errors()
+    assert "CSV validation OK" not in validator.messages()
+    assert len(validator.errors()) > 0
+
+
+def test_invalid_field_delimiter():
+    """Test different field separator than defined in addml"""
+
+    addml = {
+        "charset": "UTF-8",
+        "separator": "CR+LF",
+        "delimiter": ";",
+        "header_fields": ["year", "brand", "model", "detail", "other"]}
+
+    validator = run_validator(VALID_WITH_HEADER, addml)
+
+    assert not validator.is_valid, validator.messages() + validator.errors()
+    assert 'no header at first line' in validator.errors()
     assert "CSV validation OK" not in validator.messages()
     assert len(validator.errors()) > 0
