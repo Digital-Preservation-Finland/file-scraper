@@ -19,17 +19,22 @@ RAW_MPEG = {"version": "1", "mimetype": "video/mpeg"}
 
 MPEG1_STRINGS = ["MPEG-1 video"]
 RAW_MPEG_STRINGS = ["raw MPEG video"]
-MPEG2_TS_STRINGS = ["MPEG-2 transport stream format"]
-MPEG2_PS_STRINGS = ["MPEG-PS format", "MPEG-2 PS (DVD VOB)"]
+MPEG2_TS_STRINGS = ["MPEG-2 transport stream format",
+                    "MPEG-TS (MPEG-2 Transport Stream)"]
+MPEG2_PS_STRINGS = ["MPEG-PS format", "MPEG-2 PS (DVD VOB)",
+                    "MPEG-PS (MPEG-2 Program Stream)"]
 MP3_STRINGS = [
     "MPEG audio layer 2/3",
     "MP3 (MPEG audio layer 3)",
+    "MP2/3 (MPEG audio layer 2/3)",
     "ADU (Application Data Unit) MP3 (MPEG audio layer 3)",
     "MP3onMP4",
     "libmp3lame MP3 (MPEG audio layer 3)",
     "libshine MP3 (MPEG audio layer 3)"]
-MPEG4_STRINGS = ["M4A", "QuickTime/MPEG-4/Motion JPEG 2000 format"]
-RAW_AAC_STRINGS = ["raw ADTS AAC"]
+MPEG4_STRINGS = ["M4A", "QuickTime/MPEG-4/Motion JPEG 2000 format",
+                 "QuickTime / MOV"]
+RAW_AAC_STRINGS = ["raw ADTS AAC",
+                   "raw ADTS AAC (Advanced Audio Coding)"]
 
 CONTAINER_MIMETYPES = [
     {"data": MPEG1, "strings": MPEG1_STRINGS},
