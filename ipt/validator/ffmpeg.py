@@ -7,7 +7,7 @@ interpred as a valid file. Container type is also validated with ffprobe.
 import json
 
 from ipt.validator.basevalidator import BaseValidator, Shell
-from ipt.utils import compare_lists_of_dicts
+from ipt.utils import compare_lists_of_dicts, filter_list_of_dicts
 
 MPEG1 = {"version": "1", "mimetype": "video/MP1S"}
 MPEG2_TS = {"version": "2", "mimetype": "video/MP2T"}
@@ -184,6 +184,13 @@ class FFMpeg(BaseValidator):
             new_stream = STREAM_PARSERS[stream_type](stream, stream_type)
             if new_stream:
                 found_streams[stream_type].append(new_stream)
+
+        # Remove the duration key from both lists of dicts, because the
+        # duration varies depending on the ffmpeg version used.
+        # TODO: figure out a way to approximate if the duration is almost the
+        # same.
+        filter_list_of_dicts(self.fileinfo.get(stream_type), "duration")
+        filter_list_of_dicts(found_streams.get(stream_type), "duration")
 
         match = compare_lists_of_dicts(
             self.fileinfo.get(stream_type), found_streams[stream_type])
