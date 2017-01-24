@@ -63,7 +63,7 @@ def test_mark_ffmpeg_ok():
              "display_aspect_ratio": "4:3",
              "level": '8',
              "avg_frame_rate": "30000/1001",
-             "duration": "18.985633"}])
+             "duration": "19.019000"}])
 
     check_ffmpeg_ok(
         filename="mp4.mp4",
