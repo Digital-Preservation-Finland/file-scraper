@@ -11,27 +11,23 @@ class Office(BaseValidator):
     Office valiator
     """
     _supported_mimetypes = {\
-            'application/vnd.oasis.opendocument.text': [''],
-            'application/vnd.oasis.opendocument.spreadsheet': [''],
-            'application/vnd.oasis.opendocument.presentation': [''],
-            'application/vnd.oasis.opendocument.graphics': [''],
-            'application/vnd.oasis.opendocument.formula': [''],
-            'application/msword': [''],
-            'application/vnd.ms-excel': [''],
-            'application/vnd.ms-powerpoint': [''],
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.\
-                    document': [''],
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.\
-                    sheet': [''],
-            'application/vnd.openxmlformats-officedocument.presentationml.\
-                    presentation': [''],
-            # TODO: openxmlformats-officedocument or openxmlformatsofficedocument?
-            'application/vnd.openxmlformatsofficedocument.wordprocessingml.\
-                    document': [''],
-            'application/vnd.openxmlformatsofficedocument.spreadsheetml.\
-                    sheet': [''],
-            'application/vnd.openxmlformatsofficedocument.presentationml.\
-                    presentation': [''],\
+            'application/vnd.oasis.opendocument.text': ['1.0', '1.1', '1.2'],
+            'application/vnd.oasis.opendocument.spreadsheet':\
+                    ['1.0', '1.1', '1.2'],
+            'application/vnd.oasis.opendocument.presentation':\
+                    ['1.0', '1.1', '1.2'],
+            'application/vnd.oasis.opendocument.graphics':\
+                    ['1.0', '1.1', '1.2'],
+            'application/vnd.oasis.opendocument.formula': ['1.0', '1.1', '1.2'],
+            'application/msword': ['8.0', '8.5', '9.0', '10.0', '11.0'],
+            'application/vnd.ms-excel': ['8.0', '9.0', '10.0', '11.0'],
+            'application/vnd.ms-powerpoint': ['8.0', '9.0', '10.0', '11.0'],
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document':\
+                    ['12.0', '14.0', '15.0'],
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':\
+                    ['12.0', '14.0', '15.0'],
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation':\
+                    ['12.0', '14.0', '15.0']\
             }
 
     def validate(self):
@@ -43,6 +39,7 @@ class Office(BaseValidator):
         self.errors(shell.stderr)
         self.messages(shell.stdout)
         self._check_filetype()
+        self._check_version()
 
     def _check_filetype(self):
         """
@@ -53,3 +50,12 @@ class Office(BaseValidator):
         mimetype = shell.stdout.strip()
         if not self.fileinfo['format']['mimetype'] == mimetype:
             self.errors("MIME type does not match")
+
+
+    def _check_version(self):
+        """
+        Check that version is supported
+        """
+        if not self.is_supported(self.fileinfo):
+            self.errors("Version not supported")
+
