@@ -2,9 +2,12 @@
 This is an Office validator.
 """
 
+
 from ipt.validator.basevalidator import BaseValidator, Shell
 
+
 FILECMD_PATH = "/usr/local/file/bin/file"
+
 
 class Office(BaseValidator):
     """
@@ -22,13 +25,14 @@ class Office(BaseValidator):
             'application/msword': ['8.0', '8.5', '9.0', '10.0', '11.0'],
             'application/vnd.ms-excel': ['8.0', '9.0', '10.0', '11.0'],
             'application/vnd.ms-powerpoint': ['8.0', '9.0', '10.0', '11.0'],
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document':\
-                    ['12.0', '14.0', '15.0'],
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':\
-                    ['12.0', '14.0', '15.0'],
-            'application/vnd.openxmlformats-officedocument.presentationml.presentation':\
-                    ['12.0', '14.0', '15.0']\
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.'+\
+                    'document': ['12.0', '14.0', '15.0'],
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.'+\
+                    'sheet': ['12.0', '14.0', '15.0'],
+            'application/vnd.openxmlformats-officedocument.presentationml.'+\
+                    'presentation': ['12.0', '14.0', '15.0']\
             }
+
 
     def validate(self):
         """
@@ -40,6 +44,7 @@ class Office(BaseValidator):
         self.messages(shell.stdout)
         self._check_filetype()
         self._check_version()
+
 
     def _check_filetype(self):
         """
@@ -58,4 +63,3 @@ class Office(BaseValidator):
         """
         if not self.is_supported(self.fileinfo):
             self.errors("Version not supported")
-
