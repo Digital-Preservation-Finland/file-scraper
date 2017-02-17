@@ -8,7 +8,7 @@ import tempfile
 import shutil
 
 
-FILECMD_PATH = "/usr/local/file/bin/file"
+FILECMD_PATH = "/opt/file-5.30/bin/file"
 
 
 class Office(BaseValidator):
