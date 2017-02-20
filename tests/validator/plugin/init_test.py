@@ -1,7 +1,7 @@
 """Test for ipt/validator/__init__.py. The purpose of this test is to make sure
 that all validators are able to be found."""
 
-from ipt.validator.jhove import JHoveBasic, JHovePDF, \
+from ipt.validator.jhove import JHoveBase, JHovePDF, \
     JHoveTiff, JHoveJPEG, JHoveHTML
 from ipt.validator.dummytextvalidator import DummyTextValidator
 from ipt.validator.xmllint import Xmllint
@@ -34,9 +34,9 @@ import pytest
         ("application/pdf", "1.7", "", GhostScript),
         ("image/tiff", "6.0", "", JHoveTiff),
         ("image/jpeg", "", "", JHoveJPEG),
-        ("image/jp2", "", "", JHoveBasic),
-        ("image/gif", "1987a", "", JHoveBasic),
-        ("image/gif", "1989a", "", JHoveBasic),
+        ("image/jp2", "", "", JHoveBase),
+        ("image/gif", "1987a", "", JHoveBase),
+        ("image/gif", "1989a", "", JHoveBase),
         ("text/html", "HTML.4.01", "UTF-8", JHoveHTML),
         ("image/png", "", "", Pngcheck),
         ("application/warc", "0.17", "", WarctoolsWARC),
