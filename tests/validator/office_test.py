@@ -35,6 +35,14 @@ BASEPATH = "tests/data/02_filevalidation_data/office"
          "1.2"),
         ("ODF_Formula.odf", "application/vnd.oasis.opendocument.formula",
          "1.2"),
+        ("Office_Open_XML_Spreadsheet.xlsx", "application/vnd."
+         "openxmlformats-officedocument.spreadsheetml.sheet", "15.0"),
+        ("ODF_Text_Document.odt", "application/msword", "11.0"),
+        ("ODF_Text_Document_with_wrong_filename_extension.doc",
+         "application/msword", "11.0"),
+        ("MS_Word_97-2003.doc", "application/msword", "15.0"),
+        ("ODF_Text_Document.odt",
+         "application/vnd.oasis.opendocument.text", ""),
     ]
 )
 
@@ -57,19 +65,11 @@ def test_validate_valid_file(filename, mimetype, version):
 @pytest.mark.parametrize(
     ['filename', 'mimetype', 'version'],
     [
-        ("Office_Open_XML_Spreadsheet.xlsx", "application/vnd."
-         "openxmlformats-officedocument.spreadsheetml.sheet", "15.0"),
         ("empty_file.doc", "application/msword", "11.0"),
-        ("ODF_Text_Document.odt", "application/msword", "11.0"),
         ("ODF_Text_Document_corrupted.odt",
          "application/vnd.oasis.opendocument.text", "1.2"),
-        ("ODF_Text_Document_with_wrong_filename_extension.doc",
-         "application/msword", "11.0"),
         ("MS_Word_2007-2013_XML_zip.docx", "application/vnd.openxmlformats-"
          "officedocument.wordprocessingml.document", "15.0"),
-        ("MS_Word_97-2003.doc", "application/msword", "15.0"),
-        ("ODF_Text_Document.odt",
-         "application/vnd.oasis.opendocument.text", ""),
     ]
 )
 

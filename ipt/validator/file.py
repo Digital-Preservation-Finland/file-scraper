@@ -1,16 +1,18 @@
 """
-This is an Office validator.
+This is an File (libmagick) validator.
 """
 
 
-import tempfile
-import shutil
 from ipt.validator.basevalidator import BaseValidator, Shell
 
 
-class Office(BaseValidator):
+FILECMD_PATH = "/opt/file-5.30/bin/file"
+FILE_LIBRARY_PATH = "/opt/file-5.30/lib64"
+
+
+class File(BaseValidator):
     """
-    Office validator
+    File (libmagick) validator checks MIME-type
     """
     _supported_mimetypes = {
         'application/vnd.oasis.opendocument.text': ['1.0', '1.1', '1.2'],
@@ -34,15 +36,15 @@ class Office(BaseValidator):
 
     def validate(self):
         """
-        Validate file
+        Check MIME type determined by libmagic
         """
-        temp_dir = tempfile.mkdtemp()
-        try:
-            shell = Shell([
-                'soffice', '--convert-to', 'pdf', '--outdir', temp_dir,
-                self.fileinfo['filename']])
-        finally:
-            shutil.rmtree(temp_dir)
-
-        self.errors(shell.stderr)
+        shell = Shell([
+            FILECMD_PATH, '-b', '--mime-type', self.fileinfo['filename']],
+                      ld_library_path=FILE_LIBRARY_PATH)
         self.messages(shell.stdout)
+        self.errors(shell.stderr)
+        mimetype = shell.stdout.strip()
+        if not self.fileinfo['format']['mimetype'] == mimetype:
+            self.errors("MIME type does not match")
+        else:
+            self.messages("MIME type is correct")
