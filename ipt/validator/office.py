@@ -3,9 +3,9 @@ This is an Office validator.
 """
 
 
-from ipt.validator.basevalidator import BaseValidator, Shell
 import tempfile
 import shutil
+from ipt.validator.basevalidator import BaseValidator, Shell
 
 
 FILECMD_PATH = "/opt/file-5.30/bin/file"
@@ -58,7 +58,6 @@ class Office(BaseValidator):
         """
         Check MIME type determined by libmagic
         """
-        tempfile.mkdtemp
         shell = Shell([
             FILECMD_PATH, '-b', '--mime-type', self.fileinfo['filename']],
                       ld_library_path=FILE_LIBRARY_PATH)
