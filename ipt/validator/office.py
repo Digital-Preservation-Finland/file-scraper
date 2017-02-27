@@ -9,6 +9,7 @@ import shutil
 
 
 FILECMD_PATH = "/opt/file-5.30/bin/file"
+FILE_LIBRARY_PATH = "/opt/file-5.30/lib64"
 
 
 class Office(BaseValidator):
@@ -59,7 +60,8 @@ class Office(BaseValidator):
         """
         tempfile.mkdtemp
         shell = Shell([
-            FILECMD_PATH, '-b', '--mime-type', self.fileinfo['filename']])
+            FILECMD_PATH, '-b', '--mime-type', self.fileinfo['filename']],
+                      ld_library_path=FILE_LIBRARY_PATH)
         mimetype = shell.stdout.strip()
         if not self.fileinfo['format']['mimetype'] == mimetype:
             self.errors("MIME type does not match")
