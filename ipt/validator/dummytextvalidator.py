@@ -1,7 +1,11 @@
-from ipt.validator import BaseValidator
+"""Validator for plain text files"""
+
+from ipt.validator.basevalidator import BaseValidator
 
 
 class DummyTextValidator(BaseValidator):
+
+    """Validator for plain text files"""
 
     @classmethod
     def is_supported(cls, fileinfo):
@@ -15,7 +19,10 @@ class DummyTextValidator(BaseValidator):
         return False
 
     def validate(self):
-        self._techmd['format']['mimetype'] = self.fileinfo['format']['mimetype']
+        """Return validation results"""
+
+        self._techmd['format']['mimetype'] = \
+            self.fileinfo['format']['mimetype']
         self._techmd['format']['charset'] = self.fileinfo['format']['charset']
         self.messages("")
         return self.result()

@@ -11,7 +11,7 @@ from ipt.validator.pngcheck import Pngcheck
 from ipt.validator.csv_validator import PythonCsv
 from ipt.validator.ffmpeg import FFMpeg
 
-import ipt.validator
+from ipt.validator.utils import iter_validator_classes
 import pytest
 
 
@@ -64,4 +64,4 @@ def tests_iter_validator_classes(mimetype, version, charset, validator_class):
         }
     }
     assert isinstance(
-        ipt.validator.iter_validator_classes(fileinfo), validator_class)
+        iter_validator_classes(fileinfo), validator_class)
