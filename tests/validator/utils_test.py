@@ -10,13 +10,14 @@ from ipt.validator.ghost_script import GhostScript
 from ipt.validator.pngcheck import Pngcheck
 from ipt.validator.csv_validator import PythonCsv
 from ipt.validator.ffmpeg import FFMpeg
+from ipt.validator.utils import UnknownFileformat
 
 from ipt.validator.utils import iter_validators
 import pytest
 
 
 @pytest.mark.parametrize(
-    ["mimetype", "version", "charset", "validator_class"],
+    ["mimetype", "version", "charset", "validator_classes"],
     [
         ("application/warc", "1.0", "", [WarctoolsWARC]),
         ("text/csv", "", "UTF-8", [PythonCsv]),
@@ -43,9 +44,10 @@ import pytest
         ("application/warc", "1.0", "", [WarctoolsWARC]),
         ("application/x-internet-archive", "1.0", "", [WarctoolsARC]),
         ("application/x-internet-archive", "1.1", "", [WarctoolsARC]),
-        ("text/xml", "1.0", "UTF-8", [Xmllint])
+        ("text/xml", "1.0", "UTF-8", [Xmllint]),
+        ("text/unknown-mimetype", "1.0", "UTF-8", [UnknownFileformat])
     ])
-def tests_iter_validator_classes(mimetype, version, charset, validator_class):
+def tests_iter_validators(mimetype, version, charset, validator_classes):
     """
     Test for validator discovery.
     """
@@ -64,4 +66,4 @@ def tests_iter_validator_classes(mimetype, version, charset, validator_class):
         }
     }
     validators = iter_validators(fileinfo)
-    assert [type(x) for x in validators] == validator_class
+    assert [type(x) for x in validators] == validator_classes
