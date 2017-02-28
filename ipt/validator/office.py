@@ -41,8 +41,7 @@ class Office(BaseValidator):
             shell = Shell([
                 'soffice', '--convert-to', 'pdf', '--outdir', temp_dir,
                 self.fileinfo['filename']])
+            self.errors(shell.stderr)
+            self.messages(shell.stdout)
         finally:
             shutil.rmtree(temp_dir)
-
-        self.errors(shell.stderr)
-        self.messages(shell.stdout)
