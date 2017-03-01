@@ -14,7 +14,10 @@ BASEPATH = "tests/data/02_filevalidation_data/imagemagick"
     ['filename', 'mimetype', 'version'],
     [
         ("valid_dpx.dpx", "image/dpx", "2.0"),
-        ("valid_png.png", "image/png", "2.0"),
+        ("valid_png.png", "image/png", ""),
+        ("valid_jpeg.jpeg", "image/jpeg", "1.01"),
+        ("valid_jp2.jp2", "image/jp2", ""),
+        ("valid_tiff.tiff", "image/tiff", "6.0"),
     ]
 )
 
@@ -38,7 +41,7 @@ def test_validate_valid_file(filename, mimetype, version):
     ['filename', 'mimetype', 'version'],
     [
         ("corrupted_dpx.dpx", "image/dpx", "2.0"),
-        ("valid_png.png", "image/dpx", "2.0"),
+        ("valid_png.png", "image/dpx", ""),
         ("empty_file.dpx", "image/dpx", "2.0"),
     ]
 )
