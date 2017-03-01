@@ -10,6 +10,8 @@ from ipt.validator.ghost_script import GhostScript
 from ipt.validator.pngcheck import Pngcheck
 from ipt.validator.csv_validator import PythonCsv
 from ipt.validator.ffmpeg import FFMpeg
+from ipt.validator.office import Office
+from ipt.validator.file import File
 from ipt.validator.utils import UnknownFileformat
 
 from ipt.validator.utils import iter_validators
@@ -45,7 +47,65 @@ import pytest
         ("application/x-internet-archive", "1.0", "", [WarctoolsARC]),
         ("application/x-internet-archive", "1.1", "", [WarctoolsARC]),
         ("text/xml", "1.0", "UTF-8", [Xmllint]),
-        ("text/unknown-mimetype", "1.0", "UTF-8", [UnknownFileformat])
+        ("text/unknown-mimetype", "1.0", "UTF-8", [UnknownFileformat]),
+        ("application/vnd.oasis.opendocument.text", "1.0", "", [Office, File]),
+        ("application/vnd.oasis.opendocument.text", "1.1", "", [Office, File]),
+        ("application/vnd.oasis.opendocument.text", "1.2", "", [Office, File]),
+        ("application/vnd.oasis.opendocument.spreadsheet", "1.0", "",
+         [Office, File]),
+        ("application/vnd.oasis.opendocument.spreadsheet", "1.1", "",
+         [Office, File]),
+        ("application/vnd.oasis.opendocument.spreadsheet", "1.2", "",
+         [Office, File]),
+        ("application/vnd.oasis.opendocument.presentation", "1.0", "",
+         [Office, File]),
+        ("application/vnd.oasis.opendocument.presentation", "1.1", "",
+         [Office, File]),
+        ("application/vnd.oasis.opendocument.presentation", "1.2", "",
+         [Office, File]),
+        ("application/vnd.oasis.opendocument.graphics", "1.0", "",
+         [Office, File]),
+        ("application/vnd.oasis.opendocument.graphics", "1.1", "",
+         [Office, File]),
+        ("application/vnd.oasis.opendocument.graphics", "1.2", "",
+         [Office, File]),
+        ("application/vnd.oasis.opendocument.formula", "1.0", "",
+         [Office, File]),
+        ("application/vnd.oasis.opendocument.formula", "1.1", "",
+         [Office, File]),
+        ("application/vnd.oasis.opendocument.formula", "1.2", "",
+         [Office, File]),
+        ("application/msword", "8.0", "", [Office, File]),
+        ("application/msword", "8.5", "", [Office, File]),
+        ("application/msword", "9.0", "", [Office, File]),
+        ("application/msword", "10.0", "", [Office, File]),
+        ("application/msword", "11.0", "", [Office, File]),
+        ("application/vnd.ms-excel", "8.0", "", [Office, File]),
+        ("application/vnd.ms-excel", "9.0", "", [Office, File]),
+        ("application/vnd.ms-excel", "10.0", "", [Office, File]),
+        ("application/vnd.ms-excel", "11.0", "", [Office, File]),
+        ("application/vnd.ms-powerpoint", "8.0", "", [Office, File]),
+        ("application/vnd.ms-powerpoint", "9.0", "", [Office, File]),
+        ("application/vnd.ms-powerpoint", "10.0", "", [Office, File]),
+        ("application/vnd.ms-powerpoint", "11.0", "", [Office, File]),
+        ("application/vnd.openxmlformats-officedocument.wordprocessingml."
+         "document", "12.0", "", [Office, File]),
+        ("application/vnd.openxmlformats-officedocument.wordprocessingml."
+         "document", "14.0", "", [Office, File]),
+        ("application/vnd.openxmlformats-officedocument.wordprocessingml."
+         "document", "15.0", "", [Office, File]),
+        ("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+         "12.0", "", [Office, File]),
+        ("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+         "14.0", "", [Office, File]),
+        ("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+         "15.0", "", [Office, File]),
+        ("application/vnd.openxmlformats-officedocument.presentationml."
+         "presentation", "12.0", "", [Office, File]),
+        ("application/vnd.openxmlformats-officedocument.presentationml."
+         "presentation", "14.0", "", [Office, File]),
+        ("application/vnd.openxmlformats-officedocument.presentationml."
+         "presentation", "15.0", "", [Office, File]),
     ])
 def tests_iter_validators(mimetype, version, charset, validator_classes):
     """
@@ -66,4 +126,4 @@ def tests_iter_validators(mimetype, version, charset, validator_classes):
         }
     }
     validators = iter_validators(fileinfo)
-    assert [type(x) for x in validators] == validator_classes
+    assert set([type(x) for x in validators]) == set(validator_classes)
