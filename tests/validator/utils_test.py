@@ -12,6 +12,7 @@ from ipt.validator.csv_validator import PythonCsv
 from ipt.validator.ffmpeg import FFMpeg
 from ipt.validator.office import Office
 from ipt.validator.file import File
+from ipt.validator.imagemagick import ImageMagick
 from ipt.validator.utils import UnknownFileformat
 
 from ipt.validator.utils import iter_validators
@@ -35,12 +36,16 @@ import pytest
         ("application/pdf", "A-1a", "", [JHovePDF]),
         ("application/pdf", "A-1b", "", [JHovePDF]),
         ("application/pdf", "1.7", "", [GhostScript]),
-        ("image/tiff", "6.0", "", [JHoveTiff]),
+        ("image/tiff", "6.0", "", [JHoveTiff, File, ImageMagick]),
+        # JHoveJPEG accepts jpeg without version number
         ("image/jpeg", "", "", [JHoveJPEG]),
+        ("image/jpeg", "1.00", "", [JHoveJPEG, File, ImageMagick]),
+        ("image/jpeg", "1.01", "", [JHoveJPEG, File, ImageMagick]),
+        ("image/jpeg", "1.02", "", [JHoveJPEG, File, ImageMagick]),
         ("image/gif", "1987a", "", [JHoveGif]),
         ("image/gif", "1989a", "", [JHoveGif]),
         ("text/html", "HTML.4.01", "UTF-8", [JHoveHTML]),
-        ("image/png", "", "", [Pngcheck]),
+        ("image/png", "", "", [Pngcheck, File, ImageMagick]),
         ("application/warc", "0.17", "", [WarctoolsWARC]),
         ("application/warc", "0.18", "", [WarctoolsWARC]),
         ("application/warc", "1.0", "", [WarctoolsWARC]),
