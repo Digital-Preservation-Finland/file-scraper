@@ -8,7 +8,7 @@ from wand.image import Image
 
 
 FORMAT_STRINGS = {
-    'image/dpx': 'DPX',
+    'image/x-dpx': 'DPX',
     'image/png': 'PNG',
     'image/jpeg': 'JPEG',
     'image/jp2': 'JP2',
@@ -21,7 +21,7 @@ class ImageMagick(BaseValidator):
     ImageMagick validator
     """
     _supported_mimetypes = {
-        "image/dpx": ["2.0"],
+        "image/x-dpx": ["2.0"],
         "image/png": [""],
         "image/jpeg": ["1.00", "1.01", "1.02"],
         "image/jp2": [""],
