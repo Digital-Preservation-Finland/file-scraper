@@ -13,7 +13,7 @@ BASEPATH = "tests/data/02_filevalidation_data/imagemagick"
 @pytest.mark.parametrize(
     ['filename', 'mimetype', 'version'],
     [
-        ("valid_dpx.dpx", "image/dpx", "2.0"),
+        ("valid_dpx.dpx", "image/x-dpx", "2.0"),
         ("valid_png.png", "image/png", ""),
         ("valid_jpeg.jpeg", "image/jpeg", "1.01"),
         ("valid_jp2.jp2", "image/jp2", ""),
@@ -40,9 +40,9 @@ def test_validate_valid_file(filename, mimetype, version):
 @pytest.mark.parametrize(
     ['filename', 'mimetype', 'version'],
     [
-        ("corrupted_dpx.dpx", "image/dpx", "2.0"),
-        ("valid_png.png", "image/dpx", ""),
-        ("empty_file.dpx", "image/dpx", "2.0"),
+        ("corrupted_dpx.dpx", "image/x-dpx", "2.0"),
+        ("valid_png.png", "image/x-dpx", ""),
+        ("empty_file.dpx", "image/x-dpx", "2.0"),
     ]
 )
 
