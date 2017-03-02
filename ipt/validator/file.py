@@ -30,7 +30,12 @@ class File(BaseValidator):
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
             ['12.0', '14.0', '15.0'],
         'application/vnd.openxmlformats-officedocument.presentationml.'
-        'presentation': ['12.0', '14.0', '15.0']
+        'presentation': ['12.0', '14.0', '15.0'],
+        'image/x-dpx': ['2.0'],
+        'image/png': [''],
+        'image/jpeg': [''],
+        'image/jp2': [''],
+        'image/tiff': [''],
     }
 
 
