@@ -104,8 +104,8 @@ class JHoveJPEG(JHoveBase):
     _jhove_module = 'JPEG-hul'
 
     @classmethod
-    def is_supported(self, fileinfo):
-        return fileinfo['format']['mimetype'] in self._supported_mimetypes
+    def is_supported(cls, fileinfo):
+        return fileinfo['format']['mimetype'] in cls._supported_mimetypes
 
     def check_version(self):
         # JHove doesn't detech JPEG file version so we assume that it's correct
@@ -167,7 +167,7 @@ class JHoveTextUTF8(JHoveBase):
     _jhove_module = 'UTF8-hul'
 
     @classmethod
-    def is_supported_mimetype(cls, fileinfo):
+    def is_supported(cls, fileinfo):
         """
         Check suported mimetypes.
         :fileinfo: fileinfo

@@ -163,11 +163,11 @@ def test_utf8_supported():
         }
     }
     validator = JHoveTextUTF8(fileinfo)
-    assert validator.is_supported_mimetype(fileinfo)
+    assert validator.is_supported(fileinfo)
 
     fileinfo["format"]["charset"] = "foo"
     validator = JHoveTextUTF8(fileinfo)
-    assert not validator.is_supported_mimetype(fileinfo)
+    assert not validator.is_supported(fileinfo)
 
 
 def test_pdf_profile():

@@ -24,7 +24,8 @@ import pytest
     [
         ("application/warc", "1.0", "", [WarctoolsWARC]),
         ("text/csv", "", "UTF-8", [PythonCsv]),
-        ("text/plain", "", "ISO-8859-15", [DummyTextValidator, JHoveTextUTF8]),
+        ("text/plain", "", "ISO-8859-15", [DummyTextValidator]),
+        ("text/plain", "", "UTF-8", [JHoveTextUTF8]),
         ("video/mpeg", "1", "", [FFMpeg]),
         ("video/mpeg", "2", "", [FFMpeg]),
         ("video/mp4", "", "", [FFMpeg]),
