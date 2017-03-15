@@ -17,6 +17,7 @@ BASEPATH = "tests/data/02_filevalidation_data/pspp"
         ("empty.por", "application/x-spss-por", "", False),
         ("example.sps", "application/x-spss-por", "", False),
         ("ISSP2000_sample.sav", "application/x-spss-por", "", True),
+        ("ISSP2000_sample_corrupted.por", "application/x-spss-por", "", False),
     ]
 )
 def test_validate_valid_file(filename, mimetype, version, validity):
