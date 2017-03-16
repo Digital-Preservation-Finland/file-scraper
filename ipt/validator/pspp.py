@@ -9,11 +9,8 @@ import tempfile
 from ipt.validator.basevalidator import BaseValidator, Shell
 
 
-FORMAT_STRINGS = {
-    "application/x-spss-por": "adsf",
-}
-
 PSPP_PATH = '/opt/pspp-0.8.5/bin/pspp-convert'
+SPSS_PORTABLE_HEADER = "SPSS PORT FILE"
 
 
 class PSPP(BaseValidator):
@@ -28,7 +25,10 @@ class PSPP(BaseValidator):
         """
         Validate file
         """
+        # Check file header
+        self._check_header()
 
+        # Try to conver file with pspp-convert
         temp_dir = tempfile.mkdtemp()
         temp_file = os.path.join(temp_dir, 'converted.por')
 
@@ -46,3 +46,12 @@ class PSPP(BaseValidator):
                 self.errors('File conversion failed.')
         finally:
             shutil.rmtree(temp_dir)
+
+    def _check_header(self):
+        """
+        Check that file header contains SPSS_PORTABLE_HEADER-string
+        """
+        with open(self.fileinfo['filename']) as input_file:
+            first_line = input_file.readline()
+        if not SPSS_PORTABLE_HEADER in first_line:
+            self.errors("File is not SPSS Portable format.")

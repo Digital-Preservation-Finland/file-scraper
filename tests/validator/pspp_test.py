@@ -16,7 +16,7 @@ BASEPATH = "tests/data/02_filevalidation_data/pspp"
         ("ISSP2000_sample.por", "application/x-spss-por", "", True),
         ("empty.por", "application/x-spss-por", "", False),
         ("example.sps", "application/x-spss-por", "", False),
-        ("ISSP2000_sample.sav", "application/x-spss-por", "", True),
+        ("ISSP2000_sample.sav", "application/x-spss-por", "", False),
         ("ISSP2000_sample_corrupted.por", "application/x-spss-por", "", False),
     ]
 )
