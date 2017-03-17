@@ -28,7 +28,8 @@ class PSPP(BaseValidator):
         # Check file header
         self._check_header()
 
-        # Try to conver file with pspp-convert
+        # Try to conver file with pspp-convert. If conversion is succesful
+        # (converted.por file is produced), the original file is valid.
         temp_dir = tempfile.mkdtemp()
         temp_file = os.path.join(temp_dir, 'converted.por')
 
@@ -49,7 +50,8 @@ class PSPP(BaseValidator):
 
     def _check_header(self):
         """
-        Check that file header contains SPSS_PORTABLE_HEADER-string
+        Check that file header contains some strings characteristic to SPSS
+        Portable file.
         """
         with open(self.fileinfo['filename']) as input_file:
             first_line = input_file.readline()
