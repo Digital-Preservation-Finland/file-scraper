@@ -9,7 +9,7 @@ import tempfile
 from ipt.validator.basevalidator import BaseValidator, Shell
 
 
-PSPP_PATH = '/opt/pspp-0.8.5/bin/pspp-convert'
+PSPP_PATH = '/opt/pspp-0.10.2/bin/pspp-convert'
 SPSS_PORTABLE_HEADER = "SPSS PORT FILE"
 
 
