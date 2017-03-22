@@ -183,6 +183,10 @@ class Xmllint(BaseValidator):
                 if 'this namespace was already imported' in line:
                     continue
                 filtered_errors.append(line)
+                if 'I/O error : Attempt to load network entity' in line:
+                    filtered_errors.append(
+                        'ERROR: Schema definition propably missing'
+                        'from XML catalog')
             error = "\n".join(filtered_errors)
 
         return super(Xmllint, self).errors(error)
