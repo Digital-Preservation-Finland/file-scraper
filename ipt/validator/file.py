@@ -31,7 +31,8 @@ class File(BaseValidator):
             ['12.0', '14.0', '15.0'],
         'application/vnd.openxmlformats-officedocument.presentationml.'
         'presentation': ['12.0', '14.0', '15.0'],
-        'image/x-dpx': ['2.0'],
+        # file-5.30 does not reliably recognize all DPX files
+        # 'image/x-dpx': ['2.0'],
         'image/png': [''],
         'image/jpeg': ['1.00', '1.01', '1.02'],
         'image/jp2': [''],
