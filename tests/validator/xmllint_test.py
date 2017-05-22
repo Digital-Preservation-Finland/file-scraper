@@ -10,10 +10,8 @@ import ipt.validator.xmllint
 
 
 ROOTPATH = os.path.abspath(os.path.join(
-    os.path.dirname(__file__),
-    '../../../'))
-SCHEMAPATH = "/etc/xml/information-package-tools/kdk-mets-catalog/" +\
-    "mets/mets.xsd"
+    os.path.dirname(__file__), '../../../'))
+SCHEMAPATH = "/etc/xml/dpres-xml-schemas/xml_schemas/mets/mets.xsd"
 
 
 @pytest.mark.usefixtures("monkeypatch_Popen")
@@ -30,8 +28,8 @@ def test_validation_valid(filename, schema, monkeypatch, capsys):
     """
     test valid cases
     """
-    catalog_path = ('tests/data/test-catalog.xml')
-    monkeypatch.setenv("SGML_CATALOG_FILES", catalog_path)
+    # catalog_path = ('tests/data/test-catalog.xml')
+    # monkeypatch.setenv("SGML_CATALOG_FILES", catalog_path)
 
     fileinfo = {
         "filename": os.path.join(
