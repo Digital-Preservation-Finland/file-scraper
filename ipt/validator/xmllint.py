@@ -141,7 +141,7 @@ class Xmllint(BaseValidator):
         if xsd_exists:
             # Contstruct the schema
             fd, schema = tempfile.mkstemp(
-                prefix='information-package-tools-', suffix='.tmp')
+                prefix='dpres-ipt-', suffix='.tmp')
             et = etree.ElementTree(schema_tree)
             et.write(schema)
 
