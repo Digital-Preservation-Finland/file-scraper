@@ -14,7 +14,7 @@ from ipt.validator.office import Office
 from ipt.validator.file import File
 from ipt.validator.imagemagick import ImageMagick
 from ipt.validator.vnu import Vnu
-from ipt.validator.utils import UnknownFileformat
+from ipt.validator.validators import UnknownFileformat
 
 from ipt.validator.validators import iter_validators
 import pytest

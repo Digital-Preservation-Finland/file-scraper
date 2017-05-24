@@ -31,7 +31,7 @@ def iter_validators(fileinfo):
     found_validator = False
 
     if fileinfo.get("erroneous-mimetype", False):
-        validator = UnknownFileformat(fileinfo)
+        validator = UnknownFileFormat(fileinfo)
         yield validator
         return
 
@@ -48,5 +48,37 @@ def iter_validators(fileinfo):
             yield validator
 
     if not found_validator:
-        validator = UnknownFileformat(fileinfo)
+        validator = UnknownFileFormat(fileinfo)
         yield validator
+
+
+class UnknownFileFormat(object):
+    """
+    Validator class for unknown filetypes. This will always result as
+    invalid validation result.
+    """
+
+    def __init__(self, fileinfo):
+        """
+        Initialize object
+        """
+        self.fileinfo = fileinfo
+
+    def validate(self):
+        """
+        No implementation
+        """
+        pass
+
+    def result(self):
+        """
+        Return validation result
+        """
+        error_message = 'No validator for mimetype: %s version: %s' % (
+            self.fileinfo['format']['mimetype'],
+            self.fileinfo['format']['version'])
+
+        return {
+            'is_valid': False,
+            'messages': "",
+            'errors': error_message}
