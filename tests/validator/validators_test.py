@@ -16,7 +16,7 @@ from ipt.validator.imagemagick import ImageMagick
 from ipt.validator.vnu import Vnu
 from ipt.validator.utils import UnknownFileformat
 
-from ipt.validator.utils import iter_validators
+from ipt.validator.validators import iter_validators
 import pytest
 
 

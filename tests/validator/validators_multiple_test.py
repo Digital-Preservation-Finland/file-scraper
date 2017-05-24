@@ -5,7 +5,7 @@ File-validator.
 
 import os
 import pytest
-from ipt.validator.utils import iter_validators
+from ipt.validator.validators import iter_validators
 from ipt.validator.office import Office
 from ipt.validator.file import File
 
