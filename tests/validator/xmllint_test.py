@@ -11,7 +11,7 @@ import ipt.validator.xmllint
 
 ROOTPATH = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '../../../'))
-SCHEMAPATH = "/etc/xml/dpres-xml-schemas/xml_schemas/mets/mets.xsd"
+SCHEMAPATH = "/etc/xml/dpres-xml-schemas/schema_catalogs/schemas/mets/mets.xsd"
 
 
 @pytest.mark.usefixtures("monkeypatch_Popen")
