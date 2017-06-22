@@ -48,8 +48,7 @@ class WarctoolsWARC(BaseValidator):
         else:
             self.errors(
                 "File version check error, version %s "
-                "not found from warc: %s" % (self.fileinfo['format']['version'],
-                                             line))
+                "not found from warc file header." % (self.fileinfo['format']['version']))
 
 
 class WarctoolsARC(BaseValidator):
