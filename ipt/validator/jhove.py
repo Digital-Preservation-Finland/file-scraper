@@ -88,7 +88,8 @@ class JHoveHTML(JHoveBase):
     """Jhove HTML file format validator"""
 
     _supported_mimetypes = {
-        'text/html': ['HTML.4.01']
+        'text/html': ['HTML.4.01'],
+        'application/xhtml+xml': ['1.0','1,1']
     }
 
     _jhove_module = 'HTML-hul'
