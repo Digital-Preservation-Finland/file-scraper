@@ -1,8 +1,23 @@
 """General interface for building a file validator plugin. """
 import abc
+import subprocess
 
 from ipt.utils import run_command
-import subprocess
+
+def truncate_string(long_string, length):
+    """
+    Truncates a long string
+
+    :long_string: String to be truncated
+    :length: Length of truncated string
+    :returns: Truncated string
+    """
+    if len(long_string) > length:
+        short_string = long_string[0:length-3] + '...'
+    else:
+        short_string = long_string
+
+    return short_string
 
 
 class ValidatorError(Exception):
@@ -69,8 +84,8 @@ class Shell(object):
 
         return {
             'returncode': self._returncode,
-            'stderr': self._stderr,
-            'stdout': self._stdout
+            'stderr': truncate_string(self._stderr, 1000000),
+            'stdout': truncate_string(self._stdout, 1000000)
             }
 
 
@@ -92,10 +107,9 @@ class BaseValidator(object):
         self.fileinfo = fileinfo
         self._messages = []
         self._errors = []
-        self._techmd = {
-                'filename': fileinfo['filename'],
-                'format': {}
-                }
+        self._techmd = {'filename': fileinfo['filename'],
+                        'format': {}
+                       }
 
     @classmethod
     def is_supported(cls, fileinfo):
