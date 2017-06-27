@@ -89,7 +89,7 @@ class JHoveHTML(JHoveBase):
 
     _supported_mimetypes = {
         'text/html': ['HTML.4.01'],
-        'application/xhtml+xml': ['1.0','1,1']
+        'application/xhtml+xml': ['1.0', '1.1']
     }
 
     _jhove_module = 'HTML-hul'
