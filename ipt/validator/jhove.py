@@ -95,6 +95,17 @@ class JHoveHTML(JHoveBase):
 
     _jhove_module = 'HTML-hul'
 
+    def check_mimetype(self):
+        """JHOVE reports the XHTML MIME type as 'text/xml' but in mets.xml it's
+        marked as 'application/xhtml+xml' which is more appropriate. If we're
+        validating an XHTML file, use the MIME type from mets.xml. Otherwise
+        call the same method in our superclass."""
+        finfo_mimetype = self.fileinfo['format']['mimetype']
+        if finfo_mimetype == "application/xhtml+xml":
+            self._techmd['format']['mimetype'] = finfo_mimetype
+        else:
+            super(JHoveHTML, self).check_mimetype()
+
 
 class JHoveJPEG(JHoveBase):
     """JHove validator for JPEG"""
