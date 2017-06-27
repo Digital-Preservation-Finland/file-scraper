@@ -13,6 +13,7 @@ from ipt.validator.ffmpeg import FFMpeg
 from ipt.validator.office import Office
 from ipt.validator.file import File
 from ipt.validator.imagemagick import ImageMagick
+from ipt.validator.vnu import Vnu
 from ipt.validator.utils import UnknownFileformat
 
 from ipt.validator.utils import iter_validators
@@ -46,6 +47,7 @@ import pytest
         ("image/gif", "1987a", "", [JHoveGif]),
         ("image/gif", "1989a", "", [JHoveGif]),
         ("text/html", "HTML.4.01", "UTF-8", [JHoveHTML]),
+        ("text/html", "5.0", "UTF-8", [Vnu]),
         ("image/png", "", "", [Pngcheck, File, ImageMagick]),
         ("application/warc", "0.17", "", [WarctoolsWARC]),
         ("application/warc", "0.18", "", [WarctoolsWARC]),
