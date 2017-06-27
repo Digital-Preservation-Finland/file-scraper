@@ -30,6 +30,8 @@ TESTDATADIR_BASE = 'tests/data'
          "image/tiff", "6.0"),
         (JHoveHTML, "02_filevalidation_data/html/valid.htm",
          "text/html", "HTML 4.01"),
+        (JHoveHTML, "02_filevalidation_data/xhtml/minimal_valid_sample.xhtml",
+         "application/xhtml+xml", "1.0"),
     ])
 def test_validate_valid_form_and_version(
         validator_class, filename, mimetype, version):
