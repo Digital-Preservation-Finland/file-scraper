@@ -54,11 +54,12 @@ class JHoveBase(BaseValidator):
         status = self.report_field("status")
         self.messages(status)
 
-        if not 'Well-Formed and valid' in status:
+        if 'Well-Formed and valid' not in status:
             self.errors("Validator returned error: %s\n%s" % (
                 self.shell.stdout, self.shell.stderr))
 
     def check_mimetype(self):
+        """Save the mime type from JHOVE to our validator"""
         self._techmd['format']['mimetype'] = self.report_field('mimeType')
 
     def check_version(self):
@@ -179,10 +180,12 @@ class JHoveTextUTF8(JHoveBase):
         return False
 
     def check_mimetype(self):
+        """Save the mimetype from JHOVE to our validator"""
         self._techmd['format']['mimetype'] = \
             self.report_field('mimeType').split(';')[0]
 
     def check_charset(self):
+        """Save the charset from JHOVE to our validator"""
         self._techmd['format']['charset'] = self.report_field('format')
 
     def validate(self):
