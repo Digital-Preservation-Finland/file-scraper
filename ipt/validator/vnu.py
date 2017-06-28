@@ -5,7 +5,7 @@ A HTML5 validator module using The Nu Html Checker
 
 from ipt.validator.basevalidator import BaseValidator, Shell
 
-VNU_PATH = "/usr/share/java/vnu.jar"
+VNU_PATH = "/usr/share/java/vnu/vnu.jar"
 
 
 class Vnu(BaseValidator):
