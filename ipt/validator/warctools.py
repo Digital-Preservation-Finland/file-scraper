@@ -22,7 +22,11 @@ class WarctoolsWARC(BaseValidator):
 
         if shell.returncode != 0:
             self.errors("Validation failed: returncode %s" % shell.returncode)
-            self.errors(shell.stderr)
+            # Filter some trash printed by warcvalid.
+            filtered_errors = \
+                "\n".join([line for line in shell.stderr.split('\n') \
+                if not 'ignored line' in line])
+            self.errors(filtered_errors)
 
         self.messages(shell.stdout)
 
@@ -47,8 +51,11 @@ class WarctoolsWARC(BaseValidator):
             self.messages("OK: WARC version good")
         else:
             self.errors(
-                "File version check error, version %s "
-                "not found from warc file header." % (self.fileinfo['format']['version']))
+                "File version check error, version %s not found from header "
+                "of warc file: %s"
+                % (self.fileinfo['format']['version'],
+                   self.fileinfo['filename'])
+                )
 
 
 class WarctoolsARC(BaseValidator):
