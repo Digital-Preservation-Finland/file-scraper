@@ -56,6 +56,9 @@ import pytest
         ("application/x-internet-archive", "1.1", "", [WarctoolsARC]),
         ("text/xml", "1.0", "UTF-8", [Xmllint]),
         ("text/unknown-mimetype", "1.0", "UTF-8", [UnknownFileformat]),
+        # An erroneous mime type should return UnknownFileformat
+        ("text/unknown-mimetype, text/unknown-mimetype", "1.0", "UTF-8",
+         [UnknownFileformat]),
         ("application/vnd.oasis.opendocument.text", "1.0", "", [Office, File]),
         ("application/vnd.oasis.opendocument.text", "1.1", "", [Office, File]),
         ("application/vnd.oasis.opendocument.text", "1.2", "", [Office, File]),
