@@ -62,11 +62,12 @@ def test_validation_valid(filename, schema, monkeypatch, capsys):
         ("02_filevalidation_data/xml/catalog_schema_invalid.xml"),
         ("02_filevalidation_data/xml/invalid_xsd.xml"),
         ("02_filevalidation_data/xml/invalid_wellformed.xml"),
-        ("02_filevalidation_data/xml/invalid_dtd.xml")
+        ("02_filevalidation_data/xml/invalid_dtd.xml"),
+        ("this_file_does_not_exist")
     ])
 def test_validation_invalid(filename, capsys):
     """
-    test valid cases
+    test invalid cases
     """
     fileinfo = {
         "filename": os.path.join(

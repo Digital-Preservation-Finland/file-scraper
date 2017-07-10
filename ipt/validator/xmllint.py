@@ -69,6 +69,10 @@ class Xmllint(BaseValidator):
             self.errors("Validation failed: document is not well-formed.")
             self.errors(str(exception))
             return
+        except IOError as exception:
+            self.errors("Validation failed: missing file.")
+            self.errors(str(exception))
+            return
 
         # Try validate against DTD
         if tree.docinfo.doctype:
