@@ -14,7 +14,7 @@ from ipt.validator.office import Office
 from ipt.validator.file import File
 from ipt.validator.imagemagick import ImageMagick
 from ipt.validator.vnu import Vnu
-from ipt.validator.validators import UnknownFileformat
+from ipt.validator.validators import UnknownFileFormat
 
 from ipt.validator.validators import iter_validators
 import pytest
@@ -55,10 +55,10 @@ import pytest
         ("application/x-internet-archive", "1.0", "", [WarctoolsARC]),
         ("application/x-internet-archive", "1.1", "", [WarctoolsARC]),
         ("text/xml", "1.0", "UTF-8", [Xmllint]),
-        ("text/unknown-mimetype", "1.0", "UTF-8", [UnknownFileformat]),
+        ("text/unknown-mimetype", "1.0", "UTF-8", [UnknownFileFormat]),
         # An erroneous mime type should return UnknownFileformat
         ("text/unknown-mimetype, text/unknown-mimetype", "1.0", "UTF-8",
-         [UnknownFileformat]),
+         [UnknownFileFormat]),
         ("application/vnd.oasis.opendocument.text", "1.0", "", [Office, File]),
         ("application/vnd.oasis.opendocument.text", "1.1", "", [Office, File]),
         ("application/vnd.oasis.opendocument.text", "1.2", "", [Office, File]),
