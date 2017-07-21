@@ -41,6 +41,9 @@ class JHoveBase(BaseValidator):
         # Check validation outcome by comparing self.fileinfo and self._techmd
         # dictionaries
         for key in self.fileinfo['format']:
+            if key == 'alt-format':
+                continue
+
             if self.fileinfo['format'][key] == self._techmd['format'][key]:
                 self.messages('Validation %s check OK' % key)
             else:

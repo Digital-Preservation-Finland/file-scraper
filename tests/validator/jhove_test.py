@@ -153,6 +153,31 @@ def test_validate_version_error(validator_class, filename, mimetype, version):
     assert "ERROR: Metadata mismatch" in validator.errors()
 
 
+@pytest.mark.usefixtures("monkeypatch_Popen")
+def test_ignore_alt_format_in_mimetype():
+    """
+    Test that optional parameter 'alt-format' in format is ignored
+
+    Related to KDKPAS-1545
+    """
+    fileinfo = {
+        "filename": os.path.join(
+            TESTDATADIR_BASE, "02_filevalidation_data/html/valid.htm"),
+        "format": {
+            "mimetype": "text/html",
+            "alt-format": "text/hypothetical-text-markup-language",
+            "version": "HTML 4.01"
+        }
+    }
+    file_path = os.path.join(TESTDATADIR_BASE, fileinfo["filename"])
+
+    validator = JHoveHTML(fileinfo)
+    validator.validate()
+    print validator.errors()
+    assert validator.is_valid
+    assert validator.errors() == ""
+
+
 def test_utf8_supported():
     """
     test_utf8_supported
