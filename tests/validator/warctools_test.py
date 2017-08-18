@@ -33,7 +33,9 @@ def test_validate_valid_warc(filename, version):
     ['filename', 'version', 'error'],
     [('warc_0_17/invalid.warc', '0.17', 'incorrect newline in header'),
      ('warc_0_17/valid.warc', '666.66', 'version check error'),
-     ('warc_1_0/invalid.warc.gz', '1.0', 'invalid distance code')])
+     ('warc_1_0/invalid.warc.gz', '1.0', 'invalid distance code'),
+     ('warc_0_18/invalid_warc.0.18.warc', '0.18', 'invalid header')])
+@pytest.mark.timeout(5)
 def test_validate_invalid_warc(filename, version, error):
 
     fileinfo = {
