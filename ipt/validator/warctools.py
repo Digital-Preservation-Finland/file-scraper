@@ -1,8 +1,17 @@
 import gzip
 import tempfile
+import unicodedata
+import string
 
 from ipt.validator.basevalidator import BaseValidator, Shell
 
+
+def sanitaze_string(dirty_string):
+    """Strip non-printable control characters from unicode string"""
+    sanitazed_string = "".join(
+        char for char in dirty_string if unicodedata.category(char)[0] != "C"
+        or char in string.printable)
+    return sanitazed_string
 
 class WarctoolsWARC(BaseValidator):
 
@@ -75,6 +84,11 @@ class WarctoolsARC(BaseValidator):
             if shell.returncode != 0:
                 self.errors("Validation failed: returncode %s" %
                             shell.returncode)
-                self.errors(shell.stderr)
+                # replace non-utf8 characters
+                utf8string = shell.stderr.decode('utf8', errors='replace')
+                # remove non-printable characters
+                sanitazed_string = sanitaze_string(utf8string)
+                # encode string to utf8 before adding to errors
+                self.errors(sanitazed_string.encode('utf-8'))
 
             self.messages(shell.stdout)
