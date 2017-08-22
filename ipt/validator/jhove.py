@@ -155,7 +155,7 @@ class JHovePDF(JHoveBase):
     """JHove validator for PDF"""
 
     _supported_mimetypes = {
-        'application/pdf': ['1.3', '1.4', '1.5', '1.6', 'A-1a', 'A-1b']
+        'application/pdf': ['1.2', '1.3', '1.4', '1.5', '1.6', 'A-1a', 'A-1b']
     }
 
     _jhove_module = 'PDF-hul'
