@@ -47,8 +47,9 @@ class JHoveBase(BaseValidator):
             if self.fileinfo['format'][key] == self._techmd['format'][key]:
                 self.messages('Validation %s check OK' % key)
             else:
-                self.errors('Metadata mismatch: found %s, expected %s' %
-                            (self._techmd['format'][key],
+                self.errors('Metadata mismatch: found %s "%s", expected "%s"' %
+                            (key,
+                             self._techmd['format'][key],
                              self.fileinfo['format'][key]))
 
     def check_well_formed(self):

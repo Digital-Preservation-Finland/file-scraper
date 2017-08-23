@@ -106,6 +106,8 @@ def test_validate_valid_only_form(validator_class, filename, mimetype, version,
          "image/tiff", "6.0", "Not well-formed"),
         (JHovePDF, "test-sips/CSC_test004/fd2009-00002919-pdf001.pdf",
          "application/pdf", "A-1a", ""),
+        (JHoveTextUTF8, "02_filevalidation_data/text/iso-8859.txt",
+         "text/plain", "", "Not well-formed"),
     ])
 def test_validate_invalid(validator_class, filename, mimetype, version,
                           stdout):
@@ -150,7 +152,7 @@ def test_validate_version_error(validator_class, filename, mimetype, version):
     validator = validator_class(fileinfo)
     validator.validate()
     assert not validator.is_valid
-    assert "ERROR: Metadata mismatch" in validator.errors()
+    assert 'ERROR: Metadata mismatch: found version "' in validator.errors()
 
 
 @pytest.mark.usefixtures("monkeypatch_Popen")
