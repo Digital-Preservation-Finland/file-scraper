@@ -14,6 +14,7 @@ from ipt.validator.office import Office
 from ipt.validator.file import File
 from ipt.validator.imagemagick import ImageMagick
 from ipt.validator.vnu import Vnu
+from ipt.validator.pspp import PSPP
 from ipt.validator.validators import UnknownFileFormat
 
 from ipt.validator.validators import iter_validators
@@ -23,6 +24,7 @@ import pytest
 @pytest.mark.parametrize(
     ["mimetype", "version", "charset", "validator_classes"],
     [
+        ("application/x-spss-por", "", "", [PSPP]),
         ("application/warc", "1.0", "", [WarctoolsWARC]),
         ("text/csv", "", "UTF-8", [PythonCsv]),
         ("text/plain", "", "ISO-8859-15", [DummyTextValidator]),
