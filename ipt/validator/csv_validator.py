@@ -18,17 +18,25 @@ class PythonCsv(BaseValidator):
 
     def __init__(self, fileinfo):
         super(PythonCsv, self).__init__(fileinfo)
+
         self.filename = fileinfo['filename']
-        self.charset = fileinfo['addml']['charset']
-        self.record_separator = fileinfo['addml']['separator']
-        self.delimiter = fileinfo['addml']['delimiter']
-        self.header_fields = fileinfo['addml']['header_fields']
+
+        if "addml" in fileinfo:
+            self.charset = fileinfo['addml']['charset']
+            self.record_separator = fileinfo['addml']['separator']
+            self.delimiter = fileinfo['addml']['delimiter']
+            self.header_fields = fileinfo['addml']['header_fields']
 
     def validate(self):
         """Try to read CSV file through cvs.reader and if that can be done file
         is valid.
         :returns: (statuscode, messages, errors)
         """
+        # TODO: This issue involves all validators that use ADDML
+        # Fix this issue more generically if it becomes more widespread
+        if "addml" not in self.fileinfo:
+            self.errors("ADDML data was expected, but not found")
+            return
 
         class _Dialect(csv.excel):
             """Init dialect, example from Python csv.py library"""
