@@ -121,7 +121,7 @@ def test_missing_header():
 
     assert not validator.is_valid, validator.messages() + validator.errors()
     assert "CSV validation OK" not in validator.messages()
-    assert "no header at first line" in validator.errors()
+    assert "CSV validation error: field counts" in validator.errors()
 
 
 def test_pdf_as_csv():
@@ -156,6 +156,6 @@ def test_invalid_field_delimiter():
     validator = run_validator(VALID_WITH_HEADER, addml)
 
     assert not validator.is_valid, validator.messages() + validator.errors()
-    assert 'no header at first line' in validator.errors()
+    assert "CSV validation error: field counts" in validator.errors()
     assert "CSV validation OK" not in validator.messages()
     assert len(validator.errors()) > 0

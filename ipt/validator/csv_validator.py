@@ -41,9 +41,13 @@ class PythonCsv(BaseValidator):
             with open(self.filename, 'rb') as csvfile:
                 reader = csv.reader(csvfile, _Dialect)
                 first_line = reader.next()
-                if self.header_fields and not self.header_fields == first_line:
-                    self.errors("CSV validation error: no header at "
-                                "first line")
+
+                if len(self.header_fields) > 0 and \
+                        len(self.header_fields) != len(first_line):
+                    self.errors(
+                        "CSV validation error: field counts in the ADDML "
+                        "document and the CSV header don't match"
+                    )
                     return
                 for _ in reader:
                     pass
