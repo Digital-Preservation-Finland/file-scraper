@@ -1,12 +1,16 @@
 """Tests for PythonCsv validator"""
 
 import os
+import lxml.etree
 from tempfile import NamedTemporaryFile
 
 from ipt.validator.csv_validator import PythonCsv
+from ipt.addml.addml import to_dict
 
 PDF_PATH = os.path.join(
     'tests/data/02_filevalidation_data/pdf_1_4/sample_1_4.pdf')
+
+ADDML_PATH = os.path.join('tests', 'data', 'addml', 'addml.xml')
 
 VALID_CSV = (
     '''1997,Ford,E350,"ac, abs, moon",3000.00\n'''
@@ -62,6 +66,17 @@ def run_validator(csv_text, addml=None, file_format=None, fileinfo=None):
             os.unlink(outfile.name)
 
     return validator
+
+
+def test_valid_created_addml():
+    """Test that CSV validator can handle the ADDML given from addml.py"""
+    addml_tree = lxml.etree.parse(ADDML_PATH)
+    addml = to_dict(addml_tree)
+    validator = run_validator("name; email", addml['addml'])
+
+    assert validator.is_valid, validator.messages() + validator.errors()
+    assert "CSV validation OK" in validator.messages()
+    assert validator.errors() == ""
 
 
 def test_valid_no_header():
