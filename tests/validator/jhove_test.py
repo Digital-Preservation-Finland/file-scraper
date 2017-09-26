@@ -13,7 +13,7 @@ TESTDATADIR_BASE = 'tests/data'
     ["validator_class", "filename", "mimetype", "version", "charset"],
     [
         (JHoveHTML, "02_filevalidation_data/html/valid.htm",
-         "text/html", "HTML 4.01", "ISO-8859-1"),
+         "text/html", "HTML 4.01", "UTF-8"),
         (JHovePDF, "02_filevalidation_data/pdf_1_4/sample_1_4.pdf",
          "application/pdf", "1.4", ""),
         (JHoveGif, "02_filevalidation_data/gif_89a/valid.gif",
