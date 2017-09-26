@@ -10,31 +10,29 @@ TESTDATADIR_BASE = 'tests/data'
 
 @pytest.mark.usefixtures("monkeypatch_Popen")
 @pytest.mark.parametrize(
-    ["validator_class", "filename", "mimetype", "version"],
+    ["validator_class", "filename", "mimetype", "version", "charset"],
     [
         (JHoveHTML, "02_filevalidation_data/html/valid.htm",
-         "text/html", "HTML 4.01"),
+         "text/html", "HTML 4.01", "ISO-8859-1"),
         (JHovePDF, "02_filevalidation_data/pdf_1_4/sample_1_4.pdf",
-         "application/pdf", "1.4"),
+         "application/pdf", "1.4", ""),
         (JHoveGif, "02_filevalidation_data/gif_89a/valid.gif",
-         "image/gif", "89a"),
+         "image/gif", "89a", ""),
         (JHoveGif, "02_filevalidation_data/gif_87a/valid.gif",
-         "image/gif", "87a"),
+         "image/gif", "87a", ""),
         (JHoveTiff, "02_filevalidation_data/tiff/valid.tif",
-         "image/tiff", "6.0"),
+         "image/tiff", "6.0", ""),
         (JHovePDF, "02_filevalidation_data/pdf_1_5/sample_1_5.pdf",
-         "application/pdf", "1.5"),
+         "application/pdf", "1.5", ""),
         (JHovePDF, "02_filevalidation_data/pdf_1_6/sample_1_6.pdf",
-         "application/pdf", "1.6"),
+         "application/pdf", "1.6", ""),
         (JHoveTiff, "02_filevalidation_data/tiff/valid_version5.tif",
-         "image/tiff", "6.0"),
-        (JHoveHTML, "02_filevalidation_data/html/valid.htm",
-         "text/html", "HTML 4.01"),
+         "image/tiff", "6.0", ""),
         (JHoveHTML, "02_filevalidation_data/xhtml/minimal_valid_sample.xhtml",
-         "application/xhtml+xml", "1.0"),
+         "application/xhtml+xml", "1.0", "UTF-8"),
     ])
 def test_validate_valid_form_and_version(
-        validator_class, filename, mimetype, version):
+        validator_class, filename, mimetype, version, charset):
     """Test cases of Jhove validation"""
     file_path = os.path.join(TESTDATADIR_BASE, filename)
     fileinfo = {
@@ -44,10 +42,14 @@ def test_validate_valid_form_and_version(
             "version": version
         }
     }
+    # Add charset to test KDKPAS-1589 and TPAS-66
+    # If the charset is specified in mets.xml, it will be in fileinfo["format"]
+    if charset:
+        fileinfo["format"]["charset"] = charset
 
     validator = validator_class(fileinfo)
     validator.validate()
-    assert validator.is_valid
+    assert validator.is_valid, validator.errors()
     assert "Well-Formed and valid" in validator.messages()
     assert "Validation version check OK" in validator.messages()
     assert validator.errors() == ""
@@ -83,7 +85,7 @@ def test_validate_valid_only_form(validator_class, filename, mimetype, version,
 
     validator = validator_class(fileinfo)
     validator.validate()
-    assert validator.is_valid
+    assert validator.is_valid, validator.errors()
     assert "Well-Formed and valid" in validator.messages()
     assert "OK" in validator.messages()
     assert validator.errors() == ""
@@ -176,7 +178,7 @@ def test_ignore_alt_format_in_mimetype():
     validator = JHoveHTML(fileinfo)
     validator.validate()
     print validator.errors()
-    assert validator.is_valid
+    assert validator.is_valid, validator.errors()
     assert validator.errors() == ""
 
 
