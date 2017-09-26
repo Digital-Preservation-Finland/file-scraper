@@ -3,6 +3,7 @@ import os
 import lxml.etree
 
 from ipt.validator.basevalidator import BaseValidator, Shell
+from ipt.utils import parse_mimetype
 
 
 NAMESPACES = {'j': 'http://hul.harvard.edu/ois/xml/ns/jhove'}
@@ -15,6 +16,8 @@ class JHoveBase(BaseValidator):
     """Base class for Jhove file format validator"""
 
     _supported_mimetypes = ['']
+    _validate_methods = ["run_jhove", "check_mimetype", "check_well_formed",
+                         "check_version"]
 
     def run_jhove(self):
         """Run JHove command and store XML output to self.report"""
@@ -32,11 +35,10 @@ class JHoveBase(BaseValidator):
 
     def validate(self):
         """Run validation and compare technical metadata to given fileinfo"""
-
-        self.run_jhove()
-        self.check_mimetype()
-        self.check_well_formed()
-        self.check_version()
+        # validate() is the same for the general case and *HTML objects, except
+        # get_charset() needs to be run for *HTML.
+        for method in self._validate_methods:
+            getattr(self, method)()
 
         # Check validation outcome by comparing self.fileinfo and self._techmd
         # dictionaries
@@ -44,13 +46,19 @@ class JHoveBase(BaseValidator):
             if key == 'alt-format':
                 continue
 
-            if self.fileinfo['format'][key] == self._techmd['format'][key]:
-                self.messages('Validation %s check OK' % key)
-            else:
-                self.errors('Metadata mismatch: found %s "%s", expected "%s"' %
-                            (key,
-                             self._techmd['format'][key],
-                             self.fileinfo['format'][key]))
+            try:
+                if self.fileinfo['format'][key] == self._techmd['format'][key]:
+                    self.messages('Validation %s check OK' % key)
+                else:
+                    self.errors(
+                        'Metadata mismatch: found %s "%s", expected "%s"' %
+                        (key,
+                         self._techmd['format'][key],
+                         self.fileinfo['format'][key]))
+            except KeyError:
+                self.errors(
+                    'The %s information could not be found from the JHove '
+                    'report' % key)
 
     def check_well_formed(self):
         """Check_well_formed."""
@@ -97,6 +105,8 @@ class JHoveHTML(JHoveBase):
         'application/xhtml+xml': ['1.0', '1.1']
     }
 
+    _validate_methods = ["run_jhove", "check_mimetype", "check_well_formed",
+                         "check_version", "get_charset"]
     _jhove_module = 'HTML-hul'
 
     def check_mimetype(self):
@@ -109,6 +119,36 @@ class JHoveHTML(JHoveBase):
             self._techmd['format']['mimetype'] = finfo_mimetype
         else:
             super(JHoveHTML, self).check_mimetype()
+
+    def get_charset_html(self):
+        """Get the charset from the JHove report for HTML files and save it to
+        self._techmd"""
+        query = '//j:property[j:name="Content"]//j:value/text()'
+        results = self.report.xpath(query, namespaces=NAMESPACES)
+        try:
+            parsed = parse_mimetype(results[0])
+            self._techmd["format"]["charset"] = parsed["format"]["charset"]
+        except IndexError:
+            # This will be handled by validate()
+            pass
+
+    def get_charset_xml(self):
+        """Get the charset from the JHove report for XHTML files and save it to
+        self._techmd"""
+        query = '//j:property[j:name="Encoding"]//j:value/text()'
+        results = self.report.xpath(query, namespaces=NAMESPACES)
+        try:
+            self._techmd["format"]["charset"] = results[0]
+        except IndexError:
+            # This will be handled by validate()
+            pass
+
+    def get_charset(self):
+        """Get the charset from *HTML files"""
+        if "xml" in self.fileinfo["format"]["mimetype"]:
+            self.get_charset_xml()
+        else:
+            self.get_charset_html()
 
 
 class JHoveJPEG(JHoveBase):
