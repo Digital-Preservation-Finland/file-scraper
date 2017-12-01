@@ -15,6 +15,7 @@ from ipt.validator.office import Office
 from ipt.validator.file import File
 from ipt.validator.imagemagick import ImageMagick
 from ipt.validator.pspp import PSPP
+from ipt.validator.verapdf import VeraPDF
 
 
 def iter_validators(fileinfo):
