@@ -2,7 +2,6 @@
 This is an PDF/A validator.
 """
 
-import os
 import lxml.etree as ET
 from ipt.validator.basevalidator import BaseValidator, Shell
 

@@ -1,10 +1,9 @@
 """
-Tests for VeraPDF validator.
+Tests for VeraPDF validator for PDF/A files.
 """
 
 import os
 import pytest
-import lxml.etree as ET
 from ipt.validator.verapdf import VeraPDF
 
 
@@ -29,9 +28,12 @@ BASEPATH = "tests/data/02_filevalidation_data/"
          "SEVERE", 'A-3b'],
     ]
 )
-def test_validate_valid_file(filename, is_valid, errors, version):
+def test_validate_file(filename, is_valid, errors, version):
     """
-    Test validation of PDF/A files.
+    Test validation of PDF/A files. Asserts that valid files are
+    validated and invalid files or files with wrong versions are
+    not validated. Also asserts that files which aren't PDF files
+    are processed correctly.
     """
 
     fileinfo = {
