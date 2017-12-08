@@ -25,6 +25,8 @@ BASEPATH = "tests/data/02_filevalidation_data/"
          "not compliant with Validation Profile requirements", 'A-2b'],
         ["pdfa-3/pdfa3-fail-a.pdf", False,
          "not compliant with Validation Profile requirements", 'A-3b'],
+        ["tiff/valid.tif", False,
+         "SEVERE", 'A-3b'],
     ]
 )
 def test_validate_valid_file(filename, is_valid, errors, version):
