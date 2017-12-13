@@ -209,9 +209,8 @@ class JHovePDF(JHoveBase):
         # PDF-A versions are subsets of 1.4 so patch 1.4 to be found PDF-A1/B
         # if claimed
         if self.fileinfo['format']['version'] in ['A-1a', 'A-1b']:
-            if 'A-1' in self.report_field('profile'):
-                self._techmd['format']['version'] = self.fileinfo[
-                    'format']['version']
+            self._techmd['format']['version'] = self.fileinfo[
+                'format']['version']
 
 
 class JHoveTextUTF8(JHoveBase):
