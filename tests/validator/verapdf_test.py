@@ -19,7 +19,7 @@ BASEPATH = "tests/data/02_filevalidation_data/"
         ["pdfa-1/valid.pdf", False,
          "not compliant with Validation Profile requirements", 'A-1a'],
         ["pdfa-1/invalid.pdf", False,
-         "doesn't appear to be a valid PDF", 'A-1b'],
+         "Couldn't parse stream caused by exception", 'A-1b'],
         ["pdfa-2/pdfa2-fail-a.pdf", False,
          "not compliant with Validation Profile requirements", 'A-2b'],
         ["pdfa-3/pdfa3-fail-a.pdf", False,

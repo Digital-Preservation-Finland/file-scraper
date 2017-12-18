@@ -32,7 +32,8 @@ class VeraPDF(BaseValidator):
         cmd = [
             VERAPDF_PATH, '-f', flavour, self.fileinfo['filename']]
         shell = Shell(cmd)
-        self.errors(shell.stderr)
+        if shell.returncode != 0:
+            raise VeraPDFError(shell.stderr)
         self.messages(shell.stdout)
 
         try:
@@ -45,4 +46,11 @@ class VeraPDF(BaseValidator):
             else:
                 self.errors(shell.stdout)
         except ET.XMLSyntaxError:
-            pass
+            self.errors(shell.stderr)
+
+
+class VeraPDFError(Exception):
+    """
+    VeraPDF Error
+    """
+    pass
