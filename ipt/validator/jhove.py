@@ -24,7 +24,6 @@ class JHoveBase(BaseValidator):
 
         exec_cmd = [
 #            'java', '-classpath', CP, 'Jhove', '-h', 'XML', '-m',
-#            'java', '-jar', CP, 'Jhove', '-h', 'XML', '-m',
             'jhove', '-h', 'XML', '-m',
             self._jhove_module, self.fileinfo['filename']]
         self.shell = Shell(exec_cmd)
