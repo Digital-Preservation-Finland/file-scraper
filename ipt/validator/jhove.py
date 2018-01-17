@@ -9,7 +9,6 @@ from ipt.utils import parse_mimetype
 NAMESPACES = {'j': 'http://hul.harvard.edu/ois/xml/ns/jhove'}
 JHOVE_HOME = '/usr/share/java/jhove'
 EXTRA_JARS = os.path.join(JHOVE_HOME, 'bin/JhoveView.jar')
-#CP = os.path.join(JHOVE_HOME, 'bin/JhoveApp.jar') + ':' + EXTRA_JARS
 CP = os.path.join(JHOVE_HOME, 'bin/jhove-apps-1.18.1.jar') + ':' + EXTRA_JARS
 
 class JHoveBase(BaseValidator):
@@ -23,7 +22,6 @@ class JHoveBase(BaseValidator):
         """Run JHove command and store XML output to self.report"""
 
         exec_cmd = [
-#            'java', '-classpath', CP, 'Jhove', '-h', 'XML', '-m',
             'jhove', '-h', 'XML', '-m',
             self._jhove_module, self.fileinfo['filename']]
         self.shell = Shell(exec_cmd)
