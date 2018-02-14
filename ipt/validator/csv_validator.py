@@ -16,16 +16,16 @@ class PythonCsv(BaseValidator):
         'text/csv': [''],
     }
 
-    def __init__(self, fileinfo):
-        super(PythonCsv, self).__init__(fileinfo)
+    def __init__(self, metadata_info):
+        super(PythonCsv, self).__init__(metadata_info)
 
-        self.filename = fileinfo['filename']
+        self.filename = metadata_info['filename']
 
-        if "addml" in fileinfo:
-            self.charset = fileinfo['addml']['charset']
-            self.record_separator = fileinfo['addml']['separator']
-            self.delimiter = fileinfo['addml']['delimiter']
-            self.header_fields = fileinfo['addml']['header_fields']
+        if "addml" in metadata_info:
+            self.charset = metadata_info['addml']['charset']
+            self.record_separator = metadata_info['addml']['separator']
+            self.delimiter = metadata_info['addml']['delimiter']
+            self.header_fields = metadata_info['addml']['header_fields']
 
     def validate(self):
         """Try to read CSV file through cvs.reader and if that can be done file
@@ -34,7 +34,7 @@ class PythonCsv(BaseValidator):
         """
         # TODO: This issue involves all validators that use ADDML
         # Fix this issue more generically if it becomes more widespread
-        if "addml" not in self.fileinfo:
+        if "addml" not in self.metadata_info:
             self.errors("ADDML data was expected, but not found")
             return
 

@@ -15,18 +15,18 @@ def check_ffmpeg_ok(filename, mimetype, version, videomd=None, audiomd=None):
 
     file_path = os.path.join(TEST_DATA_PATH, filename)
 
-    fileinfo = {
+    metadata_info = {
         "filename": file_path,
         "format": {
             "version": version,
             "mimetype": mimetype}
         }
     if videomd:
-        fileinfo["video"] = videomd
+        metadata_info["video"] = videomd
     if audiomd:
-        fileinfo["audio"] = audiomd
+        metadata_info["audio"] = audiomd
 
-    validator = FFMpeg(fileinfo=fileinfo)
+    validator = FFMpeg(metadata_info=metadata_info)
     validator.validate()
 
     assert validator.messages() != ""
@@ -92,18 +92,18 @@ def check_ffmpeg_nok(filename, mimetype, version, videomd=None, audiomd=None):
 
     file_path = os.path.join(TEST_DATA_PATH, filename)
 
-    fileinfo = {
+    metadata_info = {
         "filename": file_path,
         "format": {
             "version": version,
             "mimetype": mimetype}
         }
     if videomd:
-        fileinfo["video"] = videomd
+        metadata_info["video"] = videomd
     if audiomd:
-        fileinfo["audio"] = audiomd
+        metadata_info["audio"] = audiomd
 
-    validator = FFMpeg(fileinfo=fileinfo)
+    validator = FFMpeg(metadata_info=metadata_info)
     validator.validate()
 
     assert not validator.is_valid

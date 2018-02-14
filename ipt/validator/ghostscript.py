@@ -19,7 +19,7 @@ class GhostScript(BaseValidator):
         """
 
         shell = Shell([
-            'gs', '-o', '/dev/null', '-sDEVICE=nullpage', self.fileinfo["filename"]])
+            'gs', '-o', '/dev/null', '-sDEVICE=nullpage', self.metadata_info["filename"]])
         if shell.returncode != 0:
             self.errors(shell.stderr)
         else:
@@ -30,9 +30,9 @@ class GhostScript(BaseValidator):
         """
         Check pdf version
         """
-        shell = Shell(['file', self.fileinfo["filename"]])
-        if 'PDF document, version %s' % self.fileinfo["format"]["version"] not in shell.stdout:
+        shell = Shell(['file', self.metadata_info["filename"]])
+        if 'PDF document, version %s' % self.metadata_info["format"]["version"] not in shell.stdout:
             found_version = shell.stdout.split(':')[1]
             self.errors("wrong file version. Expected PDF %s, found%s"
-                        % (self.fileinfo["format"]["version"], found_version))
+                        % (self.metadata_info["format"]["version"], found_version))
             self.messages(shell.stdout)

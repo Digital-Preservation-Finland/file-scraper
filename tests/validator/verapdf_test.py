@@ -36,7 +36,7 @@ def test_validate_file(filename, is_valid, errors, version):
     are processed correctly.
     """
 
-    fileinfo = {
+    metadata_info = {
         'filename': os.path.join(BASEPATH, filename),
         'format': {
             'mimetype': "application/pdf",
@@ -44,7 +44,7 @@ def test_validate_file(filename, is_valid, errors, version):
         }
     }
 
-    validator = VeraPDF(fileinfo)
+    validator = VeraPDF(metadata_info)
     validator.validate()
 
     # Is validity expected?

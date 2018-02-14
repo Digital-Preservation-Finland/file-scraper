@@ -22,6 +22,6 @@ class Vnu(BaseValidator):
         Validate file using vnu.jar
         """
         shell = Shell([
-            'java', '-jar', VNU_PATH, '--verbose', self.fileinfo['filename']])
+            'java', '-jar', VNU_PATH, '--verbose', self.metadata_info['filename']])
         self.errors(shell.stderr)
         self.messages(shell.stdout)

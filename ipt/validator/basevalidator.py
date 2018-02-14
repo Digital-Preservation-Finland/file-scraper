@@ -84,28 +84,28 @@ class BaseValidator(object):
     __metaclass__ = abc.ABCMeta
     _supported_mimetypes = None
 
-    _techmd = None
+    validator_info = None
 
-    def __init__(self, fileinfo):
+    def __init__(self, metadata_info):
         """Setup the base validator object"""
 
-        self.fileinfo = fileinfo
+        self.metadata_info = metadata_info
         self._messages = []
         self._errors = []
-        self._techmd = {'filename': fileinfo['filename'],
+        self.validator_info = {'filename': metadata_info['filename'],
                         'format': {}
                        }
 
     @classmethod
-    def is_supported(cls, fileinfo):
+    def is_supported(cls, metadata_info):
         """Return True if this validator class supports digital object with
-        given fileinfo record.
+        given metadata_info record.
 
         Default implementation checks the mimetype and version. Other
         implementations may override this for other selection criteria"""
 
-        mimetype = fileinfo['format']['mimetype']
-        version = fileinfo['format']['version']
+        mimetype = metadata_info['format']['mimetype']
+        version = metadata_info['format']['version']
 
         return mimetype in cls._supported_mimetypes and \
             version in cls._supported_mimetypes[mimetype]
@@ -139,7 +139,7 @@ class BaseValidator(object):
             'is_valid': self.is_valid,
             'messages': self.messages(),
             'errors': self.errors(),
-            'result': self._techmd
+            'result': self.validator_info
         }
 
     @abc.abstractmethod

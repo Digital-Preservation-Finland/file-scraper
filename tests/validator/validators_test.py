@@ -117,7 +117,7 @@ def tests_iter_validators(mimetype, version, charset, validator_classes):
     """
     Test for validator discovery.
     """
-    fileinfo = {
+    metadata_info = {
         "filename": "foo",
         "format": {
             "mimetype": mimetype,
@@ -131,6 +131,6 @@ def tests_iter_validators(mimetype, version, charset, validator_classes):
             "header_fields": "foo"
         }
     }
-    validators = iter_validators(fileinfo)
+    validators = iter_validators(metadata_info)
     assert set(
         [x.__class__.__name__ for x in validators]) == set(validator_classes)

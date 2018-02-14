@@ -45,7 +45,7 @@ def test_validate_valid_form_and_version(
         validator_class, filename, mimetype, version, charset):
     """Test cases of Jhove validation"""
     file_path = os.path.join(TESTDATADIR_BASE, filename)
-    fileinfo = {
+    metadata_info = {
         "filename": file_path,
         "format": {
             "mimetype": mimetype,
@@ -53,11 +53,11 @@ def test_validate_valid_form_and_version(
         }
     }
     # Add charset to test KDKPAS-1589 and TPAS-66
-    # If the charset is specified in mets.xml, it will be in fileinfo["format"]
+    # If the charset is specified in mets.xml, it will be in metadata_info["format"]
     if charset:
-        fileinfo["format"]["charset"] = charset
+        metadata_info["format"]["charset"] = charset
 
-    validator = validator_class(fileinfo)
+    validator = validator_class(metadata_info)
     validator.validate()
     assert validator.is_valid, validator.errors()
     assert "Well-Formed and valid" in validator.messages()
@@ -82,18 +82,18 @@ def test_validate_valid_only_form(validator_class, filename, mimetype, version,
                                   charset):
     """Test cases of Jhove validation"""
     file_path = os.path.join(TESTDATADIR_BASE, filename)
-    fileinfo = {
+    metadata_info = {
         "filename": file_path,
         "format": {
             "mimetype": mimetype,
         }
     }
     if charset:
-        fileinfo["format"]["charset"] = charset
+        metadata_info["format"]["charset"] = charset
     if version:
-        fileinfo["format"]["version"] = version
+        metadata_info["format"]["version"] = version
 
-    validator = validator_class(fileinfo)
+    validator = validator_class(metadata_info)
     validator.validate()
     assert validator.is_valid, validator.errors()
     assert "Well-Formed and valid" in validator.messages()
@@ -125,7 +125,7 @@ def test_validate_invalid(validator_class, filename, mimetype, version,
                           stdout):
     """Test cases of Jhove validation"""
     file_path = os.path.join(TESTDATADIR_BASE, filename)
-    fileinfo = {
+    metadata_info = {
         "filename": file_path,
         "format": {
             "mimetype": mimetype,
@@ -133,7 +133,7 @@ def test_validate_invalid(validator_class, filename, mimetype, version,
         }
     }
 
-    validator = validator_class(fileinfo)
+    validator = validator_class(metadata_info)
     validator.validate()
     assert not validator.is_valid, validator.messages() + validator.errors()
     assert stdout in validator.messages()
@@ -154,14 +154,14 @@ def test_validate_version_error(validator_class, filename, mimetype, version):
     test_validate_version_error
     """
     file_path = os.path.join(TESTDATADIR_BASE, filename)
-    fileinfo = {
+    metadata_info = {
         "filename": file_path,
         "format": {
             "mimetype": mimetype,
             "version": version
         }
     }
-    validator = validator_class(fileinfo)
+    validator = validator_class(metadata_info)
     validator.validate()
     assert not validator.is_valid
     assert 'ERROR: Metadata mismatch: found version "' in validator.errors()
@@ -174,7 +174,7 @@ def test_ignore_alt_format_in_mimetype():
 
     Related to KDKPAS-1545
     """
-    fileinfo = {
+    metadata_info = {
         "filename": os.path.join(
             TESTDATADIR_BASE, "02_filevalidation_data/html/valid.htm"),
         "format": {
@@ -183,9 +183,9 @@ def test_ignore_alt_format_in_mimetype():
             "version": "HTML 4.01"
         }
     }
-    file_path = os.path.join(TESTDATADIR_BASE, fileinfo["filename"])
+    file_path = os.path.join(TESTDATADIR_BASE, metadata_info["filename"])
 
-    validator = JHoveHTML(fileinfo)
+    validator = JHoveHTML(metadata_info)
     validator.validate()
     print validator.errors()
     assert validator.is_valid, validator.errors()
@@ -196,19 +196,19 @@ def test_utf8_supported():
     """
     test_utf8_supported
     """
-    fileinfo = {
+    metadata_info = {
         "filename": "foo",
         "format": {
             "mimetype": "text/plain",
             "charset": "UTF-8"
         }
     }
-    validator = JHoveTextUTF8(fileinfo)
-    assert validator.is_supported(fileinfo)
+    validator = JHoveTextUTF8(metadata_info)
+    assert validator.is_supported(metadata_info)
 
-    fileinfo["format"]["charset"] = "foo"
-    validator = JHoveTextUTF8(fileinfo)
-    assert not validator.is_supported(fileinfo)
+    metadata_info["format"]["charset"] = "foo"
+    validator = JHoveTextUTF8(metadata_info)
+    assert not validator.is_supported(metadata_info)
 
 
 def test_pdf_profile():
@@ -217,14 +217,14 @@ def test_pdf_profile():
     """
     file_path = os.path.join(
         TESTDATADIR_BASE, "02_filevalidation_data/pdfa-1/valid.pdf")
-    fileinfo = {
+    metadata_info = {
         "filename": file_path,
         "format": {
             "mimetype": "application/pdf",
             "version": "A-1a"
         }
     }
-    validator = JHovePDF(fileinfo)
+    validator = JHovePDF(metadata_info)
     validator.validate()
     assert validator.is_valid, validator.messages() + validator.errors()
     for text in ['Validation mimetype check OK', 'Validation '

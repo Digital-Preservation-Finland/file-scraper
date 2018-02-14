@@ -22,7 +22,7 @@ BASEPATH = "tests/data/02_filevalidation_data/pspp"
 )
 def test_validate_valid_file(filename, mimetype, version, validity):
 
-    fileinfo = {
+    metadata_info = {
         'filename': os.path.join(BASEPATH, filename),
         'format': {
             'mimetype': mimetype,
@@ -30,6 +30,6 @@ def test_validate_valid_file(filename, mimetype, version, validity):
         }
     }
 
-    validator = PSPP(fileinfo)
+    validator = PSPP(metadata_info)
     validator.validate()
     assert validator.is_valid == validity

@@ -31,7 +31,7 @@ def test_validation_valid(filename, schema, monkeypatch, capsys):
     # catalog_path = ('tests/data/test-catalog.xml')
     # monkeypatch.setenv("SGML_CATALOG_FILES", catalog_path)
 
-    fileinfo = {
+    metadata_info = {
         "filename": os.path.join(
             testcommon.settings.TESTDATADIR, filename),
         "format": {
@@ -41,9 +41,9 @@ def test_validation_valid(filename, schema, monkeypatch, capsys):
     }
 
     if schema is True:
-        fileinfo["schema"] = SCHEMAPATH
+        metadata_info["schema"] = SCHEMAPATH
 
-    validator = ipt.validator.xmllint.Xmllint(fileinfo)
+    validator = ipt.validator.xmllint.Xmllint(metadata_info)
 
     validator.validate()
     print capsys.readouterr()
@@ -69,7 +69,7 @@ def test_validation_invalid(filename, capsys):
     """
     test invalid cases
     """
-    fileinfo = {
+    metadata_info = {
         "filename": os.path.join(
             testcommon.settings.TESTDATADIR, filename),
         "format": {
@@ -78,7 +78,7 @@ def test_validation_invalid(filename, capsys):
         },
     }
 
-    validator = ipt.validator.xmllint.Xmllint(fileinfo)
+    validator = ipt.validator.xmllint.Xmllint(metadata_info)
 
     validator.validate()
     print capsys.readouterr()

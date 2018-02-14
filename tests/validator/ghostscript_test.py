@@ -4,7 +4,7 @@ Test for pdf 1.7 ghostscript validator.
 
 import os
 
-from ipt.validator.ghost_script import GhostScript
+from ipt.validator.ghostscript import GhostScript
 
 BASEPATH = "tests/data/02_filevalidation_data/pdf_1_7"
 

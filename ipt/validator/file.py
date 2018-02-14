@@ -45,12 +45,12 @@ class File(BaseValidator):
         Check MIME type determined by libmagic
         """
         shell = Shell([
-            FILECMD_PATH, '-b', '--mime-type', self.fileinfo['filename']],
+            FILECMD_PATH, '-b', '--mime-type', self.metadata_info['filename']],
                       ld_library_path=FILE_LIBRARY_PATH)
         self.messages(shell.stdout)
         self.errors(shell.stderr)
         mimetype = shell.stdout.strip()
-        if not self.fileinfo['format']['mimetype'] == mimetype:
+        if not self.metadata_info['format']['mimetype'] == mimetype:
             self.errors("MIME type does not match")
         else:
             self.messages("MIME type is correct")

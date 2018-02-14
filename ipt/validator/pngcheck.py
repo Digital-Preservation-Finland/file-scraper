@@ -26,7 +26,7 @@ class Pngcheck(BaseValidator):
 
         """
 
-        shell = Shell(['pngcheck', self.fileinfo["filename"]])
+        shell = Shell(['pngcheck', self.metadata_info["filename"]])
 
         if shell.returncode != 0:
             self.errors("Validation failed: returncode %s" % shell.returncode)

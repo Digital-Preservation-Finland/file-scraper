@@ -21,16 +21,16 @@ class VeraPDF(BaseValidator):
     def validate(self):
         """
         Validate file and version by passing the version from the METS
-        fileinfo data as a flavour argument to the validator which
+        metadata_info data as a flavour argument to the validator which
         selects a specific validation profile for the stated version.
         The validator returns an XML validation report to stdout. If the
         file is not valid or the version is not compliant with the
         selected validation profile the validation report is sent to
         stderr.
         """
-        flavour = self.fileinfo['format']['version'][-2:]
+        flavour = self.metadata_info['format']['version'][-2:]
         cmd = [
-            VERAPDF_PATH, '-f', flavour, self.fileinfo['filename']]
+            VERAPDF_PATH, '-f', flavour, self.metadata_info['filename']]
         shell = Shell(cmd)
         if shell.returncode != 0:
             raise VeraPDFError(shell.stderr)

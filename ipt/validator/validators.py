@@ -7,7 +7,7 @@ from ipt.validator.jhove import JHoveBase, JHovePDF, \
 from ipt.validator.dummytextvalidator import DummyTextValidator
 from ipt.validator.xmllint import Xmllint
 from ipt.validator.warctools import WarctoolsWARC, WarctoolsARC
-from ipt.validator.ghost_script import GhostScript
+from ipt.validator.ghostscript import GhostScript
 from ipt.validator.pngcheck import Pngcheck
 from ipt.validator.csv_validator import PythonCsv
 from ipt.validator.ffmpeg import FFMpeg
@@ -18,9 +18,9 @@ from ipt.validator.pspp import PSPP
 from ipt.validator.verapdf import VeraPDF
 
 
-def iter_validators(fileinfo):
+def iter_validators(metadata_info):
     """
-    Find a validator for digital object from given `fileinfo` record.
+    Find a validator for digital object from given `metadata_info` record.
     :returns: validator class
 
     Implementation of class factory pattern from
@@ -31,25 +31,25 @@ def iter_validators(fileinfo):
 
     found_validator = False
 
-    if fileinfo.get("erroneous-mimetype", False):
-        validator = UnknownFileFormat(fileinfo)
+    if metadata_info.get("erroneous-mimetype", False):
+        validator = UnknownFileFormat(metadata_info)
         yield validator
         return
 
     for cls in BaseValidator.__subclasses__():
-        if cls.is_supported(fileinfo):
+        if cls.is_supported(metadata_info):
             found_validator = True
-            validator = cls(fileinfo)
+            validator = cls(metadata_info)
             yield validator
 
     for cls in JHoveBase.__subclasses__():
-        if cls.is_supported(fileinfo):
+        if cls.is_supported(metadata_info):
             found_validator = True
-            validator = cls(fileinfo)
+            validator = cls(metadata_info)
             yield validator
 
     if not found_validator:
-        validator = UnknownFileFormat(fileinfo)
+        validator = UnknownFileFormat(metadata_info)
         yield validator
 
 
@@ -59,11 +59,11 @@ class UnknownFileFormat(object):
     invalid validation result.
     """
 
-    def __init__(self, fileinfo):
+    def __init__(self, metadata_info):
         """
         Initialize object
         """
-        self.fileinfo = fileinfo
+        self.metadata_info = metadata_info
 
     def validate(self):
         """
@@ -76,8 +76,8 @@ class UnknownFileFormat(object):
         Return validation result
         """
         error_message = 'No validator for mimetype: %s version: %s' % (
-            self.fileinfo['format']['mimetype'],
-            self.fileinfo['format']['version'])
+            self.metadata_info['format']['mimetype'],
+            self.metadata_info['format']['version'])
 
         return {
             'is_valid': False,

@@ -40,7 +40,7 @@ class Office(BaseValidator):
         try:
             shell = Shell([
                 'soffice', '--convert-to', 'pdf', '--outdir', temp_dir,
-                self.fileinfo['filename']])
+                self.metadata_info['filename']])
             self.errors(shell.stderr)
             self.messages(shell.stdout)
         finally:

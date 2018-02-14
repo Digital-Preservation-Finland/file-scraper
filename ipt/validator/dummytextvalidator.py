@@ -8,21 +8,21 @@ class DummyTextValidator(BaseValidator):
     """Validator for plain text files"""
 
     @classmethod
-    def is_supported(cls, fileinfo):
+    def is_supported(cls, metadata_info):
         """
         Check suported mimetypes.
-        :fileinfo: fileinfo
+        :metadata_info: metadata_info
         """
-        if fileinfo['format']['mimetype'] == 'text/plain':
-            if fileinfo['format']['charset'] == 'ISO-8859-15':
+        if metadata_info['format']['mimetype'] == 'text/plain':
+            if metadata_info['format']['charset'] == 'ISO-8859-15':
                 return True
         return False
 
     def validate(self):
         """Return validation results"""
 
-        self._techmd['format']['mimetype'] = \
-            self.fileinfo['format']['mimetype']
-        self._techmd['format']['charset'] = self.fileinfo['format']['charset']
+        self.validator_info['format']['mimetype'] = \
+            self.metadata_info['format']['mimetype']
+        self.validator_info['format']['charset'] = self.metadata_info['format']['charset']
         self.messages("")
         return self.result()

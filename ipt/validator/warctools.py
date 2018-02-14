@@ -27,7 +27,7 @@ class WarctoolsWARC(BaseValidator):
 
     def validate(self):
 
-        shell = Shell(['warcvalid', self.fileinfo['filename']])
+        shell = Shell(['warcvalid', self.metadata_info['filename']])
 
         if shell.returncode != 0:
             self.errors("Validation failed: returncode %s" % shell.returncode)
@@ -42,28 +42,28 @@ class WarctoolsWARC(BaseValidator):
         self._check_warc_version()
 
     def _check_warc_version(self):
-        warc_fd = gzip.open(self.fileinfo['filename'])
+        warc_fd = gzip.open(self.metadata_info['filename'])
         try:
             # First assume archive is compressed
             line = warc_fd.readline()
         except IOError:
             # Not compressed archive
             warc_fd.close()
-            with open(self.fileinfo['filename'], 'r') as warc_fd:
+            with open(self.metadata_info['filename'], 'r') as warc_fd:
                 line = warc_fd.readline()
         except Exception as exception:
             # Compressed but corrupted gzip file
             self.errors(str(exception))
             return
 
-        if "WARC/%s" % self.fileinfo['format']['version'] in line:
+        if "WARC/%s" % self.metadata_info['format']['version'] in line:
             self.messages("OK: WARC version good")
         else:
             self.errors(
                 "File version check error, version %s not found from header "
                 "of warc file: %s"
-                % (self.fileinfo['format']['version'],
-                   self.fileinfo['filename'])
+                % (self.metadata_info['format']['version'],
+                   self.metadata_info['filename'])
                 )
 
 
@@ -78,7 +78,7 @@ class WarctoolsARC(BaseValidator):
         converter."""
 
         with tempfile.NamedTemporaryFile(prefix="ipt-warctools.") as warcfile:
-            shell = Shell(command=['arc2warc', self.fileinfo['filename']],
+            shell = Shell(command=['arc2warc', self.metadata_info['filename']],
                           output_file=warcfile)
 
             if shell.returncode != 0:

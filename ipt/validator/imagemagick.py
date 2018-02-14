@@ -33,12 +33,12 @@ class ImageMagick(BaseValidator):
         Validate file
         """
         try:
-            img = Image(filename=self.fileinfo['filename'])
+            img = Image(filename=self.metadata_info['filename'])
         except:
             self.errors("Could not read image")
         else:
             format_name = img.format
-            if img.format == FORMAT_STRINGS[self.fileinfo['format']['mimetype']]:
+            if img.format == FORMAT_STRINGS[self.metadata_info['format']['mimetype']]:
                 self.messages("ImageMagick detected format: " + format_name)
             else:
                 self.errors("File format does not match with MIME type.")

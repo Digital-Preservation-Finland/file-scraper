@@ -33,10 +33,10 @@ class Xmllint(BaseValidator):
         'text/xml': ['1.0']
     }
 
-    def __init__(self, fileinfo):
-        super(Xmllint, self).__init__(fileinfo)
+    def __init__(self, metadata_info):
+        super(Xmllint, self).__init__(metadata_info)
 
-        self.schema = fileinfo.get('schema', None)
+        self.schema = metadata_info.get('schema', None)
         self.used_version = None
         self.has_constructed_schema = False
 
@@ -60,7 +60,7 @@ class Xmllint(BaseValidator):
 
         # Try to validate well-formedness by opening file in XML parser
         try:
-            fd = open(self.fileinfo["filename"])
+            fd = open(self.metadata_info["filename"])
             parser = etree.XMLParser(dtd_validation=False, no_network=True)
             tree = etree.parse(fd, parser=parser)
             self.used_version = tree.docinfo.xml_version
@@ -93,7 +93,7 @@ class Xmllint(BaseValidator):
         if exitcode == 0:
             self.messages(
                 "%s Validation success%s" % (
-                    self.fileinfo["filename"], stdout))
+                    self.metadata_info["filename"], stdout))
         else:
             self.errors(stderr)
 
@@ -134,7 +134,7 @@ class Xmllint(BaseValidator):
             xsd_exists = True
 
             # Check if XSD file is included in SIP
-            local_schema_location = os.path.dirname(self.fileinfo["filename"]) + '/' + \
+            local_schema_location = os.path.dirname(self.metadata_info["filename"]) + '/' + \
                 schema_location
             if os.path.isfile(local_schema_location):
                 schema_location = local_schema_location
@@ -165,7 +165,7 @@ class Xmllint(BaseValidator):
         command += ['--nonet'] if no_network else []
         command += ['--catalogs']
         command += ['--schema', schema] if schema else []
-        command += [self.fileinfo["filename"]]
+        command += [self.metadata_info["filename"]]
 
         proc = subprocess.Popen(
             command,

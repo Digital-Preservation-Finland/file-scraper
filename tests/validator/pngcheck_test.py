@@ -8,14 +8,14 @@ import ipt.validator.pngcheck
 def validate(filename):
     """Return validator with given filename"""
 
-    fileinfo = {
+    metadata_info = {
         "filename": os.path.join(
             'tests/data/02_filevalidation_data/png', filename),
         "format": {
             "mimetype": 'image/png',
             "version": ''}}
 
-    val = ipt.validator.pngcheck.Pngcheck(fileinfo)
+    val = ipt.validator.pngcheck.Pngcheck(metadata_info)
     val.validate()
     return val
 

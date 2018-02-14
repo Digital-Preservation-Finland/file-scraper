@@ -24,7 +24,7 @@ BASEPATH = "tests/data/02_filevalidation_data/office"
 
 def test_validate_valid_file(filename, mimetype, version):
 
-    fileinfo = {
+    metadata_info = {
         'filename': os.path.join(BASEPATH, filename),
         'format': {
             'mimetype': mimetype,
@@ -32,7 +32,7 @@ def test_validate_valid_file(filename, mimetype, version):
         }
     }
 
-    for validator in iter_validators(fileinfo):
+    for validator in iter_validators(metadata_info):
         assert validator.result()['is_valid']
 
 
@@ -52,7 +52,7 @@ def test_validate_valid_file(filename, mimetype, version):
 
 def test_validate_invalid_file(filename, mimetype, version):
 
-    fileinfo = {
+    metadata_info = {
         'filename': os.path.join(BASEPATH, filename),
         'format': {
             'mimetype': mimetype,
@@ -61,7 +61,7 @@ def test_validate_invalid_file(filename, mimetype, version):
     }
 
     validator_results = []
-    for validator in iter_validators(fileinfo):
+    for validator in iter_validators(metadata_info):
         validator_results.append(validator.result()['is_valid'])
 
     assert not all(validator_results)

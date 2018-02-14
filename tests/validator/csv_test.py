@@ -37,7 +37,7 @@ DEFAULT_ADDML = {
     "header_fields": ""}
 
 
-def run_validator(csv_text, addml=None, file_format=None, fileinfo=None):
+def run_validator(csv_text, addml=None, file_format=None, metadata_info=None):
     """Write test data and run csv validation for the file"""
 
     if addml is None:
@@ -52,15 +52,15 @@ def run_validator(csv_text, addml=None, file_format=None, fileinfo=None):
             outfile.write(csv_text)
             outfile.close()
 
-            if fileinfo is None:
-                fileinfo = {
+            if metadata_info is None:
+                metadata_info = {
                     "format": file_format,
                     "addml": addml
                 }
 
-            fileinfo["filename"] = outfile.name
+            metadata_info["filename"] = outfile.name
 
-            validator = PythonCsv(fileinfo)
+            validator = PythonCsv(metadata_info)
             validator.validate()
         finally:
             os.unlink(outfile.name)
@@ -178,8 +178,8 @@ def test_invalid_field_delimiter():
     assert len(validator.errors()) > 0
 
 
-def test_invalid_missing_addml_fileinfo():
-    """Test valid CSV without providing ADDML data in fileinfo"""
+def test_invalid_missing_addml_metadata_info():
+    """Test valid CSV without providing ADDML data in metadata_info"""
 
     addml = {
         "charset": "UTF-8",
@@ -187,11 +187,11 @@ def test_invalid_missing_addml_fileinfo():
         "delimiter": ",",
         "header_fields": ["year", "brand", "model", "detail", "other"]
     }
-    fileinfo = {
+    metadata_info = {
         "format": DEFAULT_FORMAT
     }
 
-    validator = run_validator(VALID_WITH_HEADER, addml, fileinfo=fileinfo)
+    validator = run_validator(VALID_WITH_HEADER, addml, metadata_info=metadata_info)
 
     assert not validator.is_valid, validator.messages() + validator.errors()
     assert "ADDML data was expected, but not found" in validator.errors()

@@ -34,7 +34,7 @@ def test_validate_valid_file(filename, is_valid, errors):
     Test validation of HTML5 files.
     """
 
-    fileinfo = {
+    metadata_info = {
         'filename': os.path.join(BASEPATH, filename),
         'format': {
             'mimetype': "text/html",
@@ -42,7 +42,7 @@ def test_validate_valid_file(filename, is_valid, errors):
         }
     }
 
-    validator = Vnu(fileinfo)
+    validator = Vnu(metadata_info)
     validator.validate()
 
     # Is validity expected?
@@ -55,5 +55,5 @@ def test_validate_valid_file(filename, is_valid, errors):
         assert errors in validator.errors()
 
     # Is stdout output expected?
-    assert fileinfo['filename'] + "\n" == validator.messages()
+    assert metadata_info['filename'] + "\n" == validator.messages()
 

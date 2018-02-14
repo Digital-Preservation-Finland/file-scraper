@@ -97,7 +97,7 @@ class FFMpeg(BaseValidator):
         """
         shell = Shell(
             ['ffprobe', '-show_format', '-v',
-             'debug', '-print_format', 'json', self.fileinfo['filename']])
+             'debug', '-print_format', 'json', self.metadata_info['filename']])
         data = json.loads(str(shell.stdout))
         format_data = data.get("format")
 
@@ -119,28 +119,28 @@ class FFMpeg(BaseValidator):
                 "FFprobe output: %s" % shell.stdout)
             return
 
-        if detected_format != self.fileinfo["format"]:
+        if detected_format != self.metadata_info["format"]:
             self.errors(
                 "Wrong format version, got '%s' version '%s', "
                 "expected '%s' version '%s'." % (
                     detected_format["mimetype"],
                     detected_format["version"],
-                    self.fileinfo["format"]["mimetype"],
-                    self.fileinfo["format"]["version"]))
+                    self.metadata_info["format"]["mimetype"],
+                    self.metadata_info["format"]["version"]))
 
     def check_validity(self):
         """Check file validity. The validation logic is check that ffmpeg returncode
         is 0 and nothing is found in stderr. FFmpeg lists faulty parts of mpeg
         to stderr."""
         shell = Shell([
-            'ffmpeg', '-v', 'error', '-i', self.fileinfo['filename'],
+            'ffmpeg', '-v', 'error', '-i', self.metadata_info['filename'],
             '-f', 'null', '-'])
         if shell.returncode != 0 or shell.stderr != "":
             self.errors(
                 "File %s not valid: %s" % (
-                    self.fileinfo['filename'], shell.stderr))
+                    self.metadata_info['filename'], shell.stderr))
             return
-        self.messages("%s is valid." % self.fileinfo['filename'])
+        self.messages("%s is valid." % self.metadata_info['filename'])
 
     def check_streams(self, stream_type):
         """Check that streams inside container are what they are described in
@@ -176,7 +176,7 @@ class FFMpeg(BaseValidator):
         found_streams = {stream_type: []}
         shell = Shell(
             ['ffprobe', '-show_streams', '-show_format', '-print_format',
-             'json', self.fileinfo['filename']])
+             'json', self.metadata_info['filename']])
 
         stream_data = json.loads(shell.stdout)
 
@@ -189,22 +189,22 @@ class FFMpeg(BaseValidator):
         # duration varies depending on the ffmpeg version used.
         # TODO: figure out a way to approximate if the duration is almost the
         # same.
-        filter_list_of_dicts(self.fileinfo.get(stream_type), "duration")
+        filter_list_of_dicts(self.metadata_info.get(stream_type), "duration")
         filter_list_of_dicts(found_streams.get(stream_type), "duration")
 
         match = compare_lists_of_dicts(
-            self.fileinfo.get(stream_type), found_streams[stream_type])
+            self.metadata_info.get(stream_type), found_streams[stream_type])
         if match is False:
             self.errors("Streams in %s are not what is "
                         "described in metadata. Found %s, expected %s" % (
-                            self.fileinfo["filename"],
+                            self.metadata_info["filename"],
                             found_streams[stream_type],
-                            self.fileinfo.get(stream_type)))
+                            self.metadata_info.get(stream_type)))
 
-        if stream_type not in self.fileinfo:
+        if stream_type not in self.metadata_info:
             return
         self.messages("Streams %s are according to metadata description" %
-                      self.fileinfo[stream_type])
+                      self.metadata_info[stream_type])
 
 
 def parse_video_streams(stream, stream_type):

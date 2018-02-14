@@ -36,7 +36,7 @@ class PSPP(BaseValidator):
         try:
             shell = Shell([
                 PSPP_PATH,
-                self.fileinfo['filename'],
+                self.metadata_info['filename'],
                 temp_file,
                 ])
             self.errors(shell.stderr)
@@ -53,7 +53,7 @@ class PSPP(BaseValidator):
         Check that file header contains some strings characteristic to SPSS
         Portable file.
         """
-        with open(self.fileinfo['filename']) as input_file:
+        with open(self.metadata_info['filename']) as input_file:
             first_line = input_file.readline()
         if not SPSS_PORTABLE_HEADER in first_line:
             self.errors("File is not SPSS Portable format.")

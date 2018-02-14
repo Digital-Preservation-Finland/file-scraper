@@ -15,7 +15,7 @@ from ipt.validator.warctools import WarctoolsWARC, WarctoolsARC
      ('warc_1_0/valid_no_compress.warc', '1.0')])
 def test_validate_valid_warc(filename, version):
 
-    fileinfo = {
+    metadata_info = {
         'filename': os.path.join("tests/data/02_filevalidation_data", filename),
         'format': {
             'mimetype': 'application/warc',
@@ -23,7 +23,7 @@ def test_validate_valid_warc(filename, version):
         }
     }
 
-    validator = WarctoolsWARC(fileinfo)
+    validator = WarctoolsWARC(metadata_info)
     validator.validate()
 
     assert validator.is_valid
@@ -38,7 +38,7 @@ def test_validate_valid_warc(filename, version):
 @pytest.mark.timeout(5)
 def test_validate_invalid_warc(filename, version, error):
 
-    fileinfo = {
+    metadata_info = {
         'filename': os.path.join("tests/data/02_filevalidation_data", filename),
         'format': {
             'mimetype': 'application/warc',
@@ -46,7 +46,7 @@ def test_validate_invalid_warc(filename, version, error):
         }
     }
 
-    validator = WarctoolsWARC(fileinfo)
+    validator = WarctoolsWARC(metadata_info)
     validator.validate()
 
     assert not validator.is_valid
@@ -59,7 +59,7 @@ def test_validate_invalid_warc(filename, version, error):
      ('arc/valid_arc_no_compress', '1.0')])
 def test_validate_valid_arc(filename, version):
 
-    fileinfo = {
+    metadata_info = {
         'filename': os.path.join("tests/data/02_filevalidation_data", filename),
         'format': {
             'mimetype': 'application/x-internet-archive',
@@ -67,7 +67,7 @@ def test_validate_valid_arc(filename, version):
         }
     }
 
-    validator = WarctoolsARC(fileinfo)
+    validator = WarctoolsARC(metadata_info)
     validator.validate()
 
     assert validator.is_valid
@@ -79,7 +79,7 @@ def test_validate_valid_arc(filename, version):
      ('arc/invalid_arc_crc.gz', '1.0', 'CRC check failed')])
 def test_validate_invalid_arc(filename, version, error):
 
-    fileinfo = {
+    metadata_info = {
         'filename': os.path.join("tests/data/02_filevalidation_data", filename),
         'format': {
             'mimetype': 'application/x-internet-archive',
@@ -87,7 +87,7 @@ def test_validate_invalid_arc(filename, version, error):
         }
     }
 
-    validator = WarctoolsARC(fileinfo)
+    validator = WarctoolsARC(metadata_info)
     validator.validate()
 
     assert not validator.is_valid
