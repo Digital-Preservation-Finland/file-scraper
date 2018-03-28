@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 """Test module for jhove.py"""
 import os
 import pytest
@@ -210,25 +211,3 @@ def test_utf8_supported():
     metadata_info["format"]["charset"] = "foo"
     validator = JHoveTextUTF8(metadata_info)
     assert not validator.is_supported(metadata_info)
-
-
-def test_pdf_profile():
-    """
-    test_pdf_profile
-    """
-    file_path = os.path.join(
-        TESTDATADIR_BASE, "02_filevalidation_data/pdfa-1/valid.pdf")
-    metadata_info = {
-        "filename": file_path,
-        "format": {
-            "mimetype": "application/pdf",
-            "version": "A-1a"
-        }
-    }
-    validator = JHovePDF(metadata_info)
-    validator.validate()
-    assert validator.is_valid, validator.messages() + validator.errors()
-    for text in ['Validation mimetype check OK', 'Validation '
-            'version check OK']:
-        assert text in validator.messages()
-    assert validator.errors() == ""

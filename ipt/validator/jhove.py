@@ -210,7 +210,7 @@ class JHovePDF(JHoveBase):
     """JHove validator for PDF"""
 
     _supported_mimetypes = {
-        'application/pdf': ['1.2', '1.3', '1.4', '1.5', '1.6', 'A-1a', 'A-1b']
+        'application/pdf': ['1.2', '1.3', '1.4', '1.5', '1.6']
     }
 
     _jhove_module = 'PDF-hul'
@@ -219,12 +219,6 @@ class JHovePDF(JHoveBase):
         """Check if version string matches JHove output."""
 
         self.validator_info['format']['version'] = self.report_field("version")
-
-        # PDF-A versions are subsets of 1.4 so patch 1.4 to be found PDF-A1/B
-        # if claimed
-        if self.metadata_info['format']['version'] in ['A-1a', 'A-1b']:
-            self.validator_info['format']['version'] = self.metadata_info[
-                'format']['version']
 
 
 class JHoveTextUTF8(JHoveBase):
