@@ -26,7 +26,7 @@ class DPXv(BaseValidator):
 
         try:
 
-            shell = Shell(['dpx_validator.py', self.metadata_info['filename']])
+            shell = Shell(['dpxv', self.metadata_info['filename']])
 
             self.errors(shell.stderr)
             self.messages(shell.stdout)
