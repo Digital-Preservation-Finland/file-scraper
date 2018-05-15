@@ -21,7 +21,6 @@ class ImageMagick(BaseValidator):
     ImageMagick validator
     """
     _supported_mimetypes = {
-        "image/x-dpx": ["2.0"],
         "image/png": [""],
         "image/jpeg": ["1.00", "1.01", "1.02"],
         "image/jp2": [""],

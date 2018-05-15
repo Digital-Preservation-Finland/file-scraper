@@ -16,6 +16,7 @@ from ipt.validator.file import File
 from ipt.validator.imagemagick import ImageMagick
 from ipt.validator.pspp import PSPP
 from ipt.validator.verapdf import VeraPDF
+from ipt.validator.dpxv import DPXv
 
 
 def iter_validators(metadata_info):
