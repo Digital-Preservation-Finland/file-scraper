@@ -8,7 +8,7 @@ import pytest
 from ipt.validator.dpxv import DPXv
 
 
-BASEPATH = "tests/data/02_filevalidation_data/imagemagick"
+BASEPATH = "tests/data/02_filevalidation_data/dpx"
 
 
 @pytest.mark.parametrize(
