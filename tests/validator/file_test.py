@@ -40,8 +40,6 @@ BASEPATH = "tests/data/02_filevalidation_data/"
          "application/vnd.oasis.opendocument.graphics", "1.2"),
         ("office/ODF_Formula.odf",
          "application/vnd.oasis.opendocument.formula", "1.2"),
-        ("imagemagick/valid_dpx.dpx",
-         "image/x-dpx", "2.0"),
         ("imagemagick/valid_png.png",
          "image/png", ""),
         ("imagemagick/valid_jpeg.jpeg",
