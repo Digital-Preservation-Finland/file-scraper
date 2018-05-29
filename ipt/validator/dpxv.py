@@ -24,12 +24,14 @@ class DPXv(BaseValidator):
         stderr.
         """
 
-        try:
+        shell = Shell(['dpxv', self.metadata_info['filename']])
 
-            shell = Shell(['dpxv', self.metadata_info['filename']])
+        if shell.returncode != 0:
+            raise DPXvError(shell.stderr)
 
-            self.errors(shell.stderr)
-            self.messages(shell.stdout)
+        self.errors(shell.stderr)
+        self.messages(shell.stdout)
 
-        finally:
-            pass
+class DPXvError(Exception):
+    """DPX validator error."""
+    pass
