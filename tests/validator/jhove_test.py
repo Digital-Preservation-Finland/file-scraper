@@ -13,7 +13,7 @@ TESTDATADIR_BASE = 'tests/data'
     ["validator_class", "filename", "mimetype", "version", "charset"],
     [
         (JHoveHTML, "02_filevalidation_data/html/valid.htm",
-         "text/html", "HTML 4.01", "UTF-8"),
+         "text/html", "4.01", "UTF-8"),
         (JHoveGif, "02_filevalidation_data/gif_89a/valid.gif",
          "image/gif", "89a", ""),
         (JHoveGif, "02_filevalidation_data/gif_87a/valid.gif",
@@ -180,7 +180,7 @@ def test_ignore_alt_format_in_mimetype():
         "format": {
             "mimetype": "text/html",
             "alt-format": "text/hypothetical-text-markup-language",
-            "version": "HTML 4.01"
+            "version": "4.01"
         }
     }
     file_path = os.path.join(TESTDATADIR_BASE, metadata_info["filename"])

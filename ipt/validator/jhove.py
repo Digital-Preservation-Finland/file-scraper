@@ -119,6 +119,15 @@ class JHoveHTML(JHoveBase):
         else:
             super(JHoveHTML, self).check_mimetype()
 
+    def check_version(self):
+        """Jhove returns the version as 'HTML 4.01' but in mets.xml '4.01' is
+        used. Hence we drop 'HTML ' prefix from the string returned by Jhove"""
+
+        version = self.report_field("version")
+        if len(version) > 0:
+            version = version.split()[-1]
+        self.validator_info['format']['version'] = version
+
     def get_charset_html(self):
         """Get the charset from the JHove report for HTML files and save it to
         self.validator_info"""
