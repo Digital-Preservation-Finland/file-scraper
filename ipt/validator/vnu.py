@@ -10,7 +10,7 @@ VNU_PATH = "/usr/share/java/vnu/vnu.jar"
 
 class Vnu(BaseValidator):
     """
-    Vnu validator. Supports only HTML version 5.0.
+    Vnu validator supports only HTML version 5.0.
     """
 
     _supported_mimetypes = {

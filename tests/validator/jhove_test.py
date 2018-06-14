@@ -200,6 +200,7 @@ def test_utf8_supported():
         "filename": "foo",
         "format": {
             "mimetype": "text/plain",
+            "version": "",
             "charset": "UTF-8"
         }
     }

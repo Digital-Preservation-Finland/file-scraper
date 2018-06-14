@@ -37,8 +37,8 @@ class File(BaseValidator):
         'image/jpeg': ['1.00', '1.01', '1.02'],
         'image/jp2': [''],
         'image/tiff': ['6.0'],
+        'text/plain': ['']
     }
-
 
     def validate(self):
         """
@@ -54,3 +54,53 @@ class File(BaseValidator):
             self.errors("MIME type does not match")
         else:
             self.messages("MIME type is correct")
+
+
+class FileEncoding(BaseValidator):
+    """
+    Character encoding validator for text files
+    """
+
+    _supported_mimetypes = {
+        'text/csv': [''],
+        'text/plain': [''],
+        'text/xml': ['1.0'],
+        'text/html': ['4.01', '5.0'],
+        'application/xhtml+xml': ['1.0', '1.1']
+    }
+
+    _encodings = {
+        'ISO-8859-15': ['us-ascii', 'iso-8859-1'],
+        'UTF-8': ['us-ascii', 'utf-8'],
+        'UTF-16': ['utf-16', 'utf-16be', 'utf-16le']
+    }
+
+    @classmethod
+    def is_supported(cls, metadata_info):
+        """
+        Check supported mimetypes.
+        :metadata_info: metadata_info
+        """
+        if metadata_info['format']['mimetype'] in cls._supported_mimetypes:
+            if metadata_info['format']['charset'] not in ['ISO-8859-15', 'UTF-16']:
+                return False
+        return super(FileEncoding, cls).is_supported(metadata_info)
+
+    def validate(self):
+        """
+        Check character encoding
+        """
+        shell = Shell([
+            FILECMD_PATH, '-b', '--mime-encoding',
+            self.metadata_info['filename']],
+            ld_library_path=FILE_LIBRARY_PATH)
+        self.messages(shell.stdout)
+        self.errors(shell.stderr)
+        encoding = shell.stdout.strip()
+        if encoding in _encodings[self.metadata_info['format']['charset']]:
+            self.messages("File encoding match found.")
+        else:
+            err = " ".join(
+                "File encoding mismatch:", encoding, "was found, but",
+                self.metadata_info['format']['charset'], "was expected.")
+            self.errors(err)

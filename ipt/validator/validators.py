@@ -4,19 +4,20 @@
 from ipt.validator.basevalidator import BaseValidator
 from ipt.validator.jhove import JHoveBase, JHovePDF, \
     JHoveTiff, JHoveJPEG, JHoveHTML, JHoveGif, JHoveTextUTF8
-from ipt.validator.dummytextvalidator import DummyTextValidator
 from ipt.validator.xmllint import Xmllint
+from ipt.validator.lxml_encoding import XmlEncoding
 from ipt.validator.warctools import WarctoolsWARC, WarctoolsARC
 from ipt.validator.ghostscript import GhostScript
 from ipt.validator.pngcheck import Pngcheck
 from ipt.validator.csv_validator import PythonCsv
 from ipt.validator.ffmpeg import FFMpeg
 from ipt.validator.office import Office
-from ipt.validator.file import File
+from ipt.validator.file import File, FileEncoding
 from ipt.validator.imagemagick import ImageMagick
 from ipt.validator.pspp import PSPP
 from ipt.validator.verapdf import VeraPDF
 from ipt.validator.dpxv import DPXv
+from ipt.validator.vnu import Vnu
 
 
 def iter_validators(metadata_info):

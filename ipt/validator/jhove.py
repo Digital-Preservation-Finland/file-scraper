@@ -231,7 +231,11 @@ class JHoveTextUTF8(JHoveBase):
     """JHove validator for text/plain UTF-8."""
 
     _supported_mimetypes = {
-        'text/plain': ['']
+        'text/csv': [''],
+        'text/plain': [''],
+        'text/xml': ['1.0'],
+        'text/html': ['4.01', '5.0'],
+        'application/xhtml+xml': ['1.0', '1.1']
     }
 
     _jhove_module = 'UTF8-hul'
@@ -242,10 +246,10 @@ class JHoveTextUTF8(JHoveBase):
         Check suported mimetypes.
         :metadata_info: metadata_info
         """
-        if metadata_info['format']['mimetype'] == 'text/plain':
-            if metadata_info['format']['charset'] == 'UTF-8':
-                return True
-        return False
+        if metadata_info['format']['mimetype'] in cls._supported_mimetypes:
+            if metadata_info['format']['charset'] != 'UTF-8':
+                return False
+        return super(JHoveTextUTF8, cls).is_supported(metadata_info)
 
     def check_mimetype(self):
         """Save the mimetype from JHOVE to our validator"""
