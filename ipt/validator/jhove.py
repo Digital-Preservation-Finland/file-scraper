@@ -95,6 +95,12 @@ class JHoveGif(JHoveBase):
 
     _jhove_module = 'GIF-hul'
 
+    def check_version(self):
+        """Jhove returns the version as '87a' or '89a but in mets.xml '1987a'
+        or '1989a' is used. Hence '19' is prepended to the version returned by
+        Jhove"""
+        self.validator_info['format']['version'] = '19' + self.report_field("version")
+
 
 class JHoveHTML(JHoveBase):
     """Jhove HTML file format validator"""
