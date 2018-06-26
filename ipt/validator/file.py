@@ -69,9 +69,9 @@ class FileEncoding(BaseValidator):
         'application/xhtml+xml': ['1.0', '1.1']
     }
 
+    # We use JHOVE for UTF-8 validation
     _encodings = {
         'ISO-8859-15': ['us-ascii', 'iso-8859-1'],
-        'UTF-8': ['us-ascii', 'utf-8'],
         'UTF-16': ['utf-16', 'utf-16be', 'utf-16le']
     }
 
@@ -82,7 +82,7 @@ class FileEncoding(BaseValidator):
         :metadata_info: metadata_info
         """
         if metadata_info['format']['mimetype'] in cls._supported_mimetypes:
-            if metadata_info['format']['charset'] not in ['ISO-8859-15', 'UTF-16']:
+            if metadata_info['format']['charset'] not in list(cls._encodings.keys()):
                 return False
         return super(FileEncoding, cls).is_supported(metadata_info)
 
@@ -97,10 +97,10 @@ class FileEncoding(BaseValidator):
         self.messages(shell.stdout)
         self.errors(shell.stderr)
         encoding = shell.stdout.strip()
-        if encoding in _encodings[self.metadata_info['format']['charset']]:
+        if encoding in self._encodings[self.metadata_info['format']['charset']]:
             self.messages("File encoding match found.")
         else:
             err = " ".join(
-                "File encoding mismatch:", encoding, "was found, but",
-                self.metadata_info['format']['charset'], "was expected.")
+                ["File encoding mismatch:", encoding, "was found, but",
+                 self.metadata_info['format']['charset'], "was expected."])
             self.errors(err)

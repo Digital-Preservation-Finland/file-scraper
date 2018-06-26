@@ -9,6 +9,7 @@ class XmlEncoding(BaseValidator):
     Character encoding validator for HTML5 and XML files
     """
 
+    # We use JHOVE for HTML4 and XHTML files.
     _supported_mimetypes = {
         'text/xml': ['1.0'],
         'text/html': ['5.0']
@@ -23,6 +24,6 @@ class XmlEncoding(BaseValidator):
             self.messages('Encoding metadata match found.')
         else:
             self.errors(' '.join(
-                'Encoding metadata mismatch:', tree.docinfo.encoding,
+                ['Encoding metadata mismatch:', tree.docinfo.encoding,
                 'was found, but', self.metadata_info['format']['charset'],
-                'was expected.'))
+                'was expected.']))
