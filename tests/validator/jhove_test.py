@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 """Test module for jhove.py"""
 import os
 import pytest
