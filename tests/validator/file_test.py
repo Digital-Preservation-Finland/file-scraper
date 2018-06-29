@@ -51,6 +51,10 @@ BASEPATH = "tests/data/02_filevalidation_data/"
          "image/jp2", ""),
         ("imagemagick/valid_tiff.tiff",
          "image/tiff", "6.0"),
+        ("text/iso-8859.txt",
+         "text/plain", ""),
+        ("text/utf8.txt",
+         "text/plain", "")
     ]
 )
 
