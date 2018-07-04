@@ -39,7 +39,7 @@ TESTDATADIR_BASE = 'tests/data'
         (JHoveTiff, "02_filevalidation_data/tiff/valid_version5.tif",
          "image/tiff", "6.0", ""),
         (JHoveHTML, "02_filevalidation_data/xhtml/minimal_valid_sample.xhtml",
-         "application/xhtml+xml", "1.0", "UTF-8"),
+         "application/xhtml+xml", "1.0", "UTF-8")
     ])
 def test_validate_valid_form_and_version(
         validator_class, filename, mimetype, version, charset):
@@ -77,6 +77,8 @@ def test_validate_valid_form_and_version(
          "text/plain", None, "UTF-8"),
         (JHoveTextUTF8, "02_filevalidation_data/text/utf8.csv",
          "text/plain", None, "UTF-8"),
+        (JHoveTextUTF8, "02_filevalidation_data/html/valid.htm",
+         "text/html", "4.01", "UTF-8")
     ])
 def test_validate_valid_only_form(validator_class, filename, mimetype, version,
                                   charset):

@@ -11,6 +11,7 @@ JHOVE_HOME = '/usr/share/java/jhove'
 EXTRA_JARS = os.path.join(JHOVE_HOME, 'bin/JhoveView.jar')
 CP = os.path.join(JHOVE_HOME, 'bin/jhove-apps-1.18.1.jar') + ':' + EXTRA_JARS
 
+
 class JHoveBase(BaseValidator):
     """Base class for Jhove file format validator"""
 
@@ -33,20 +34,22 @@ class JHoveBase(BaseValidator):
         self.report = lxml.etree.fromstring(self.shell.stdout)
 
     def validate(self):
-        """Run validation and compare technical metadata to given metadata_info"""
+        """Run validation and compare technical metadata to given
+           metadata_info"""
         # validate() is the same for the general case and *HTML objects, except
         # get_charset() needs to be run for *HTML.
         for method in self._validate_methods:
             getattr(self, method)()
 
-        # Check validation outcome by comparing self.metadata_info and self.validator_info
-        # dictionaries
+        # Check validation outcome by comparing self.metadata_info and
+        # self.validator_info dictionaries
         for key in self.metadata_info['format']:
             if key == 'alt-format':
                 continue
 
             try:
-                if self.metadata_info['format'][key] == self.validator_info['format'][key]:
+                if self.metadata_info['format'][key] == \
+                        self.validator_info['format'][key]:
                     self.messages('Validation %s check OK' % key)
                 else:
                     self.errors(
@@ -71,7 +74,8 @@ class JHoveBase(BaseValidator):
 
     def check_mimetype(self):
         """Save the mime type from JHOVE to our validator"""
-        self.validator_info['format']['mimetype'] = self.report_field('mimeType')
+        self.validator_info['format']['mimetype'] = \
+            self.report_field('mimeType')
 
     def check_version(self):
         """Check if metadata_info version matches JHove output."""
@@ -99,7 +103,8 @@ class JHoveGif(JHoveBase):
         """Jhove returns the version as '87a' or '89a' but in mets.xml '1987a'
         or '1989a' is used. Hence '19' is prepended to the version returned by
         Jhove"""
-        self.validator_info['format']['version'] = '19' + self.report_field("version")
+        self.validator_info['format']['version'] = \
+            '19' + self.report_field("version")
 
 
 class JHoveHTML(JHoveBase):
@@ -141,7 +146,8 @@ class JHoveHTML(JHoveBase):
         results = self.report.xpath(query, namespaces=NAMESPACES)
         try:
             parsed = parse_mimetype(results[0])
-            self.validator_info["format"]["charset"] = parsed["format"]["charset"]
+            self.validator_info["format"]["charset"] = \
+                parsed["format"]["charset"]
         except IndexError:
             # This will be handled by validate()
             pass
@@ -179,8 +185,9 @@ class JHoveJPEG(JHoveBase):
         return metadata_info['format']['mimetype'] in cls._supported_mimetypes
 
     def check_version(self):
-        # JHove doesn't detech JPEG file version so we assume that it's correct
-        self.validator_info['format']['version'] = self.metadata_info['format']['version']
+        # JHove doesn't detect JPEG file version so we assume that it's correct
+        self.validator_info['format']['version'] = \
+            self.metadata_info['format']['version']
 
 
 class JHoveTiff(JHoveBase):
@@ -233,6 +240,8 @@ class JHoveTextUTF8(JHoveBase):
     }
 
     _jhove_module = 'UTF8-hul'
+    _validate_methods = ["run_jhove", "check_mimetype", "check_well_formed",
+                         "check_version", "check_charset"]
 
     @classmethod
     def is_supported(cls, metadata_info):
@@ -246,15 +255,16 @@ class JHoveTextUTF8(JHoveBase):
         return super(JHoveTextUTF8, cls).is_supported(metadata_info)
 
     def check_mimetype(self):
-        """Save the mimetype from JHOVE to our validator"""
+        """We are only interested in charset"""
         self.validator_info['format']['mimetype'] = \
-            self.report_field('mimeType').split(';')[0]
+            self.metadata_info['format']['mimetype']
+
+    def check_version(self):
+        """We are only interested in charset"""
+        if 'version' in self.metadata_info['format']:
+            self.validator_info['format']['version'] = \
+                self.metadata_info['format']['version']
 
     def check_charset(self):
         """Save the charset from JHOVE to our validator"""
         self.validator_info['format']['charset'] = self.report_field('format')
-
-    def validate(self):
-        self.run_jhove()
-        self.check_charset()
-        super(self.__class__, self).validate()
