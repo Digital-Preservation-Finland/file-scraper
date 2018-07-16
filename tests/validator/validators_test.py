@@ -127,7 +127,9 @@ def tests_iter_validators(mimetype, version, charset, validator_classes):
     Test for validator discovery.
     """
     metadata_info = {
-        "filename": "foo",
+        # "filename" must be a path that exists, otherwise NonExistingFile
+        # -validator will be used
+        "filename": "/dev/null",
         "format": {
             "mimetype": mimetype,
             "version": version,
@@ -143,3 +145,14 @@ def tests_iter_validators(mimetype, version, charset, validator_classes):
     validators = iter_validators(metadata_info)
     assert set(
         [x.__class__.__name__ for x in validators]) == set(validator_classes)
+
+
+def test_nonexistingfile():
+    """Test that NonExistingFile validator is used if file is not found.
+    """
+
+    metadata_info = {
+        "filename": "/this/path/does/not/exist",
+    }
+    validators = iter_validators(metadata_info)
+    assert [x.__class__.__name__ for x in validators] == ["NonExistingFile"]
