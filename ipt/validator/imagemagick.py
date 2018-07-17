@@ -41,3 +41,6 @@ class ImageMagick(BaseValidator):
                 self.messages("ImageMagick detected format: " + format_name)
             else:
                 self.errors("File format does not match with MIME type.")
+            # ensure that temporary files are not left in /tmp/
+            img.__del__()
+
