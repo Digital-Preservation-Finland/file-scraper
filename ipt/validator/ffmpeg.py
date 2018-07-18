@@ -130,19 +130,6 @@ class FFMpeg(BaseValidator):
                 "FFprobe output: %s" % shell.stdout)
             return
 
-        detected_format['version'] = get_version(detected_format['mimetype'],
-                                                 format_data.get('format_name'))
-
-        if detected_format != self.metadata_info["format"]:
-            self.errors(
-                "Wrong format version, got '%s' version '%s', "
-                "expected '%s' version '%s'." % (
-                    detected_format["mimetype"],
-                    detected_format["version"],
-                    self.metadata_info["format"]["mimetype"],
-                    self.metadata_info["format"]["version"]))
-            return
-
         if 'audio_streams' in self.metadata_info or 'video_streams' in self.metadata_info:
             if self.metadata_info['format']['mimetype'] in \
                 ['audio/mpeg', 'video/mpeg', 'audio/mp4']:
@@ -282,6 +269,9 @@ def parse_video_streams(stream, stream_type):
     if "avg_frame_rate" in stream:
         new_stream["video"]["avg_frame_rate"] = \
             handle_div(stream.get("avg_frame_rate"))
+    if "display_aspect_ratio" in stream:
+        new_stream["display_aspect_ratio"] = \
+            handle_div(stream.get("display_aspect_ratio").replace(':', '/'))
     new_stream["video"]["width"] = str(stream.get("width"))
     new_stream["video"]["height"] = str(stream.get("height"))
 
@@ -304,17 +294,14 @@ def parse_audio_streams(stream, stream_type):
         new_stream["format"]["mimetype"] = stream.get("codec_name")
 
     new_stream["audio"]["bits_per_sample"] = stream.get("bits_per_sample")
-    if "data_rate" in stream:
-        new_stream["audio"]["data_rate"] = \
-            handle_div(stream.get("data_rate")+"/1000")
+    if "bit_rate" in stream:
+        new_stream["audio"]["bit_rate"] = \
+            handle_div(stream.get("bit_rate")+"/1000")
     if "sample_rate" in stream:
         new_stream["audio"]["sample_rate"] = \
             handle_div(stream.get("sample_rate")+"/1000")
-    if "display_aspect_ratio" in stream:
-        new_stream["display_aspect_ratio"] = \
-            handle_div(stream.get("display_aspect_ratio").replace(':', '/'))
-
     new_stream["audio"]["channels"] = str(stream.get("channels"))
+
     new_stream["format"]["version"] = \
         get_version(new_stream["format"]["mimetype"],
                     new_stream["audio"]["sample_rate"])

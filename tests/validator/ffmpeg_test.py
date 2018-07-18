@@ -50,6 +50,7 @@ def test_mark_ffmpeg_ok():
             'bit_rate': '0.32',
             'width': '320',
             'height': '240',
+            'display_aspect_ratio': '1.33',
             'avg_frame_rate': '29.97'})
 
     check_ffmpeg_ok(
@@ -61,6 +62,7 @@ def test_mark_ffmpeg_ok():
                         "version": "2"},
              "video": {"width": '320',
                        "height": '240',
+                       "display_aspect_ratio": '1.33',
                        "avg_frame_rate": "29.97"}}])
 
     check_ffmpeg_ok(
@@ -72,12 +74,22 @@ def test_mark_ffmpeg_ok():
                         "version": None},
              "video": {"width": '1280',
                        "height": '720',
+                       "display_aspect_ratio": "1.78",
                        "avg_frame_rate": "25"}}],
         audio_streams=[
             {"format": {"mimetype": "audio/mp4",
                         "version": None},
              "audio": {"sample_rate": "48",
+                       "bit_rate": "384.83",
                        "channels": "6"}}])
+
+    check_ffmpeg_ok(
+        filename="valid_mp3.mp3",
+        mimetype="audio/mpeg",
+        version="1",
+        audio={"sample_rate": "48",
+               "bit_rate": "64",
+               "channels": "1"})
 
 
 def check_ffmpeg_nok(filename, mimetype, version, video=None, audio=None,
@@ -120,20 +132,22 @@ def test_mark_ffmpeg_nok():
         mimetype="video/mpeg",
         version="1",
         video={
-             'bit_rate': '0.32',
-             'width': 320,
-             'height': 240,
-             'avg_frame_rate': '29.97'})
+            'bit_rate': '0.32',
+            'width': 320,
+            'height': 240,
+            'display_aspect_ratio': '1.33',
+            'avg_frame_rate': '29.97'})
 
     check_ffmpeg_nok(
         filename="mpg1_error2.mpg",
         mimetype="video/mpeg",
         version="1",
         video={
-             'bit_rate': '0.32',
-             'width': 320,
-             'height': 240,
-             'avg_frame_rate': '29.97'})
+            'bit_rate': '0.32',
+            'width': 320,
+            'height': 240,
+            'display_aspect_ratio': '1.33',
+            'avg_frame_rate': '29.97'})
 
     check_ffmpeg_nok(
         filename="mp4_error.mp4",
@@ -144,11 +158,13 @@ def test_mark_ffmpeg_nok():
                         "version": None},
              "video": {"width": '1280',
                        "height": '720',
+                       "display_aspect_ratio": "1.78",
                        "avg_frame_rate": "25"}}],
         audio_streams=[
             {"format": {"mimetype": "audio/mp4",
                         "version": None},
              "audio": {"sample_rate": "48",
+                       "bit_rate": "384.83",
                        "channels": "6"}}])
 
     check_ffmpeg_nok(
@@ -156,18 +172,20 @@ def test_mark_ffmpeg_nok():
         mimetype="video/mpeg",
         version="2",
         video={
-             "width": '320',
-             "height": '240',
-             "avg_frame_rate": "29.97"})
+            "width": '320',
+            "height": '240',
+            'display_aspect_ratio': '1.33',
+            "avg_frame_rate": "29.97"})
 
     check_ffmpeg_nok(
         filename="mpg1.mpg",
         mimetype="video/mpeg",
         version="4",
         video={
-             'width': '320',
-             'height': '240',
-             'avg_frame_rate': '29.97'})
+            'width': '320',
+            'height': '240',
+            'display_aspect_ratio': '1.33',
+            'avg_frame_rate': '29.97'})
 
     check_ffmpeg_nok(
         filename="unknown_mimetype.3gp",
@@ -201,12 +219,14 @@ def test_mark_ffmpeg_nok():
              "video": {"width": '320',
                        "height": '240',
                        "bit_rate": '0.32',
+                       'display_aspect_ratio': '1.33',
                        "avg_frame_rate": "29.97"}},
             {"format": {"mimetype": "video/mpeg",
                         "version": "1"},
              "video": {"width": '320',
                        "height": '240',
                        "bit_rate": '0.32',
+                       'display_aspect_ratio': '1.33',
                        "avg_frame_rate": "29.97"}}])
 
     check_ffmpeg_nok(
