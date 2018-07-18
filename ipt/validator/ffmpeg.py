@@ -7,15 +7,15 @@ interpred as a valid file. Container type is also validated with ffprobe.
 import json
 
 from ipt.validator.basevalidator import BaseValidator, Shell
-from ipt.utils import compare_lists_of_dicts, filter_list_of_dicts
+from ipt.utils import compare_lists_of_dicts, handle_div, find_max_complete
 
-MPEG1 = {"version": "1", "mimetype": "video/MP1S"}
-MPEG2_TS = {"version": "2", "mimetype": "video/MP2T"}
-MPEG2_PS = {"version": "2", "mimetype": "video/MP2P"}
-MP3 = {"version": "", "mimetype": "audio/mpeg"}
-MP4 = {"version": "", "mimetype": "video/mp4"}
-RAW_AAC = {"version": "", "mimetype": "audio/mp4"}
-RAW_MPEG = {"version": "1", "mimetype": "video/mpeg"}
+MPEG1 = {"version": None, "mimetype": "video/MP1S"}
+MPEG2_TS = {"version": None, "mimetype": "video/MP2T"}
+MPEG2_PS = {"version": None, "mimetype": "video/MP2P"}
+MP3 = {"version": None, "mimetype": "audio/mpeg"}
+MP4 = {"version": None, "mimetype": "video/mp4"}
+RAW_AAC = {"version": None, "mimetype": "audio/mp4"}
+RAW_MPEG = {"version": None, "mimetype": "video/mpeg"}
 
 MPEG1_STRINGS = ["MPEG-1 video"]
 RAW_MPEG_STRINGS = ["raw MPEG video"]
@@ -46,40 +46,51 @@ CONTAINER_MIMETYPES = [
     {"data": RAW_MPEG, "strings": RAW_MPEG_STRINGS}
 ]
 
-STREAM_STRINGS = {
-    "mpegvideo": "MPEG 1",
-    "mpeg1video": "MPEG 1",
-    "mpeg2video": "MPEG 2",
-    "h264": "AVC",
-    "libmp3lame": "MP3",
-    "libshine": "MP3",
-    "mp3": "MP3",
-    "mp3adu": "MP3",
-    "mp3adufloat": "MP3",
-    "mp3float": "MP3",
-    "mp3on4": "MP3",
-    "mp3on4float": "MP3",
-    "aac": "AAC"
+STREAM_MIMETYPES = {
+    "mpegvideo": "video/mpeg",
+    "mpeg1video": "video/mpeg",
+    "mpeg2video": "video/mpeg",
+    "h264": "video/mp4",
+    "libmp3lame": "audio/mpeg",
+    "libshine": "audio/mpeg",
+    "mp3": "audio/mpeg",
+    "mp3adu": "audio/mpeg",
+    "mp3adufloat": "audio/mpeg",
+    "mp3float": "audio/mpeg",
+    "mp3on4": "audio/mpeg",
+    "mp3on4float": "audio/mpeg",
+    "aac": "audio/mp4"
     }
 
 
 class FFMpeg(BaseValidator):
     """FFMpeg validator class."""
 
+    # TODO: Accepting MP4 containers may accept various other containers too
     _supported_mimetypes = {
         'video/mpeg': ['1', '2'],
-        'video/mp4': [''],
         'audio/mpeg': ['1', '2'],
+        'video/MP2T': [''],
+        'video/MP2P': [''],
         'audio/mp4': [''],
-        'video/MP2T': ['2'],
-        'video/MP2P': ['2']
+#       'video/mp4': [''],
     }
 
     def validate(self):
         """validate file."""
         self.check_container_mimetype()
-        self.check_streams("audio")
-        self.check_streams("video")
+        if not set(self.metadata_info.keys()).intersection(
+            set(['audio', 'video', 'audio_streams', 'video_streams'])):
+                self.errors('Stream metadata was not found.')
+                return
+        if 'audio' in self.metadata_info:
+            self.check_streams('audio')
+        if 'video' in self.metadata_info:
+            self.check_streams('video')
+        if 'audio_streams' in self.metadata_info:
+            self.check_streams('audio_streams')
+        if 'video_streams' in self.metadata_info:
+            self.check_streams('video_streams')
         self.check_validity()
 
     def check_container_mimetype(self):
@@ -114,10 +125,13 @@ class FFMpeg(BaseValidator):
 
         if not detected_format:
             self.errors(
-                "No matching version information could be found,"
-                "file might not be MPEG1/2 or MP4. "
+                "No matching mimetype information could be found,"
+                "this might not be MPEG file."
                 "FFprobe output: %s" % shell.stdout)
             return
+
+        detected_format['version'] = get_version(detected_format['mimetype'],
+                                                 format_data.get('format_name'))
 
         if detected_format != self.metadata_info["format"]:
             self.errors(
@@ -127,6 +141,18 @@ class FFMpeg(BaseValidator):
                     detected_format["version"],
                     self.metadata_info["format"]["mimetype"],
                     self.metadata_info["format"]["version"]))
+            return
+
+        if 'audio_streams' in self.metadata_info or 'video_streams' in self.metadata_info:
+            if self.metadata_info['format']['mimetype'] in \
+                ['audio/mpeg', 'video/mpeg', 'audio/mp4']:
+                    self.errors("Stream file format %s can not include streams,"
+                                " as decribed in metadata."% (
+                        self.metadata_info["format"]["mimetype"]))
+            elif 'audio' in self.metadata_info or 'video' in self.metadata_info:
+                self.errors("AudioMD or VideoMD metadata included for container %s."
+                            " This must be directed to the including streams." % (
+                    self.metadata_info["format"]["mimetype"]))
 
     def check_validity(self):
         """Check file validity. The validation logic is check that ffmpeg returncode
@@ -170,10 +196,22 @@ class FFMpeg(BaseValidator):
                 "duration": "19.025400"
             }
 
-        :stream_type: "audiomd" or "videomd"
+        :stream_type: "audio" or "video"
         """
 
-        found_streams = {stream_type: []}
+        if stream_type in self.metadata_info:
+            if stream_type == 'audio_streams':
+                metadata = self.metadata_info[stream_type]
+                stream_type = 'audio'
+            elif stream_type == 'video_streams':
+                metadata = self.metadata_info[stream_type]
+                stream_type = 'video'
+            else:
+                metadata = [self.metadata_info]
+        else:
+            metadata = [self.metadata_info]
+
+        found_streams = []
         shell = Shell(
             ['ffprobe', '-show_streams', '-show_format', '-print_format',
              'json', self.metadata_info['filename']])
@@ -182,29 +220,43 @@ class FFMpeg(BaseValidator):
 
         for stream in stream_data.get("streams", []):
             new_stream = STREAM_PARSERS[stream_type](stream, stream_type)
-            if new_stream:
-                found_streams[stream_type].append(new_stream)
+            if not new_stream:
+                continue
+            found_streams.append(new_stream)
 
-        # Remove the duration key from both lists of dicts, because the
-        # duration varies depending on the ffmpeg version used.
-        # TODO: figure out a way to approximate if the duration is almost the
-        # same.
-        filter_list_of_dicts(self.metadata_info.get(stream_type), "duration")
-        filter_list_of_dicts(found_streams.get(stream_type), "duration")
+        (list1, list2) = find_max_complete(
+            metadata, found_streams, ['format', 'mimetype', 'version'])
 
-        match = compare_lists_of_dicts(
-            self.metadata_info.get(stream_type), found_streams[stream_type])
+        match = compare_lists_of_dicts(list1, list2)
+
         if match is False:
             self.errors("Streams in %s are not what is "
                         "described in metadata. Found %s, expected %s" % (
                             self.metadata_info["filename"],
-                            found_streams[stream_type],
-                            self.metadata_info.get(stream_type)))
+                            found_streams,
+                            metadata))
 
-        if stream_type not in self.metadata_info:
+        if stream_type not in metadata:
             return
         self.messages("Streams %s are according to metadata description" %
-                      self.metadata_info[stream_type])
+                      metadata_list)
+
+
+def get_version(mimetype, stream_data):
+    """
+    Solve version of file format.
+    """
+    if mimetype == 'audio/mpeg':
+        if stream_data in ['32', '44.1', '48']:
+            return '1'
+        elif stream_data in ['16', '22.05', '24']:
+            return '2'
+    if mimetype == 'video/mpeg':
+        if stream_data in ['mpegvideo', 'mpeg1video']:
+            return '1'
+        elif stream_data in ['mpeg2video']:
+            return '2'
+    return None
 
 
 def parse_video_streams(stream, stream_type):
@@ -216,20 +268,23 @@ def parse_video_streams(stream, stream_type):
     """
     if stream_type != stream.get("codec_type"):
         return
-    new_stream = {}
-    if stream["codec_name"] in STREAM_STRINGS:
-        new_stream["codec_name"] = STREAM_STRINGS[stream["codec_name"]]
+    new_stream = {"format": {}, "video": {}}
+    if stream["codec_name"] in STREAM_MIMETYPES:
+        new_stream["format"]["mimetype"] = STREAM_MIMETYPES[stream["codec_name"]]
     else:
-        new_stream["codec_name"] = stream.get("codec_name")
-    new_stream["duration"] = stream.get("duration")
-    new_stream["level"] = str(stream.get("level"))
-    new_stream["avg_frame_rate"] = stream.get("avg_frame_rate")
-    new_stream["width"] = str(stream.get("width"))
-    new_stream["height"] = str(stream.get("height"))
-    new_stream["display_aspect_ratio"] = stream.get(
-        "display_aspect_ratio")
-    new_stream["sample_aspect_ratio"] = stream.get(
-        "sample_aspect_ratio")
+        new_stream["format"]["mimetype"] = stream.get("codec_name")
+    new_stream["format"]["version"] = \
+        get_version(new_stream["format"]["mimetype"], stream['codec_name'])
+
+    if "bit_rate" in stream:
+        new_stream["video"]["bit_rate"] = \
+            handle_div(stream.get("bit_rate")+"/1000000")
+    if "avg_frame_rate" in stream:
+        new_stream["video"]["avg_frame_rate"] = \
+            handle_div(stream.get("avg_frame_rate"))
+    new_stream["video"]["width"] = str(stream.get("width"))
+    new_stream["video"]["height"] = str(stream.get("height"))
+
     return new_stream
 
 
@@ -242,15 +297,30 @@ def parse_audio_streams(stream, stream_type):
     """
     if stream_type != stream.get("codec_type"):
         return
-    new_stream = {}
-    if stream["codec_name"] in STREAM_STRINGS:
-        new_stream["codec_name"] = STREAM_STRINGS[stream["codec_name"]]
+    new_stream = {"format": {}, "audio": {}}
+    if stream["codec_name"] in STREAM_MIMETYPES:
+        new_stream["format"]["mimetype"] = STREAM_MIMETYPES[stream["codec_name"]]
     else:
-        new_stream["codec_name"] = stream.get("codec_name")
-    new_stream["duration"] = stream.get("duration")
-    new_stream["sample_rate"] = str(stream.get("sample_rate"))
-    new_stream["channels"] = str(stream.get("channels"))
+        new_stream["format"]["mimetype"] = stream.get("codec_name")
+
+    new_stream["audio"]["bits_per_sample"] = stream.get("bits_per_sample")
+    if "data_rate" in stream:
+        new_stream["audio"]["data_rate"] = \
+            handle_div(stream.get("data_rate")+"/1000")
+    if "sample_rate" in stream:
+        new_stream["audio"]["sample_rate"] = \
+            handle_div(stream.get("sample_rate")+"/1000")
+    if "display_aspect_ratio" in stream:
+        new_stream["display_aspect_ratio"] = \
+            handle_div(stream.get("display_aspect_ratio").replace(':', '/'))
+
+    new_stream["audio"]["channels"] = str(stream.get("channels"))
+    new_stream["format"]["version"] = \
+        get_version(new_stream["format"]["mimetype"],
+                    new_stream["audio"]["sample_rate"])
+
     return new_stream
+
 
 STREAM_PARSERS = {
     "video": parse_video_streams,

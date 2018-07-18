@@ -17,7 +17,8 @@ import pytest
         ("text/plain", "", "UTF-8", ["File", "JHoveTextUTF8"]),
         ("video/mpeg", "1", "", ["FFMpeg"]),
         ("video/mpeg", "2", "", ["FFMpeg"]),
-        ("video/mp4", "", "", ["FFMpeg"]),
+# TODO: MP4 validation
+#       ("video/mp4", "", "", ["FFMpeg"]),
         ("application/pdf", "1.2", "", ["JHovePDF"]),
         ("application/pdf", "1.3", "", ["JHovePDF"]),
         ("application/pdf", "1.4", "", ["JHovePDF"]),
