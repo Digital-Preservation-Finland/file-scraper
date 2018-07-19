@@ -16,7 +16,8 @@ from ipt.validator.warctools import WarctoolsWARC, WarctoolsARC
 def test_validate_valid_warc(filename, version):
 
     metadata_info = {
-        'filename': os.path.join("tests/data/02_filevalidation_data", filename),
+        'filename': os.path.join("tests/data/02_filevalidation_data",
+                                 filename),
         'format': {
             'mimetype': 'application/warc',
             'version': version
@@ -39,7 +40,8 @@ def test_validate_valid_warc(filename, version):
 def test_validate_invalid_warc(filename, version, error):
 
     metadata_info = {
-        'filename': os.path.join("tests/data/02_filevalidation_data", filename),
+        'filename': os.path.join("tests/data/02_filevalidation_data",
+                                 filename),
         'format': {
             'mimetype': 'application/warc',
             'version': version
@@ -60,7 +62,8 @@ def test_validate_invalid_warc(filename, version, error):
 def test_validate_valid_arc(filename, version):
 
     metadata_info = {
-        'filename': os.path.join("tests/data/02_filevalidation_data", filename),
+        'filename': os.path.join("tests/data/02_filevalidation_data",
+                                 filename),
         'format': {
             'mimetype': 'application/x-internet-archive',
             'version': version
@@ -80,7 +83,8 @@ def test_validate_valid_arc(filename, version):
 def test_validate_invalid_arc(filename, version, error):
 
     metadata_info = {
-        'filename': os.path.join("tests/data/02_filevalidation_data", filename),
+        'filename': os.path.join("tests/data/02_filevalidation_data",
+                                 filename),
         'format': {
             'mimetype': 'application/x-internet-archive',
             'version': version

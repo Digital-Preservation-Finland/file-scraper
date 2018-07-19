@@ -48,7 +48,8 @@ def test_pdf_1_7_version_error():
     """
     test pdf 1.7 wrong version case
     """
-    FILEINFO["filename"] = os.path.join(BASEPATH, "pdf_1_7", "invalid_wrong_version.pdf")
+    FILEINFO["filename"] = os.path.join(BASEPATH, "pdf_1_7",
+                                        "invalid_wrong_version.pdf")
 
     validator = GhostScript(FILEINFO)
     validator.validate()
@@ -75,7 +76,8 @@ def test_pdfa_valid():
 
 def test_pdf_valid_pdfa_invalid():
     """Test that valid PDF (but invalid PDF/A) is valid.
-       This file is also used in veraPDF test, where it should result "invalid".
+       This file is also used in veraPDF test, where it should result
+       "invalid".
     """
     FILEINFO["filename"] = os.path.join(BASEPATH, "pdfa-3", "pdfa3-fail-a.pdf")
     FILEINFO["format"]["version"] = "A-3a"
@@ -89,12 +91,13 @@ def test_pdf_valid_pdfa_invalid():
 
 def test_pdf_invalid_pdfa_invalid():
     """Test that valid PDF (but invalid PDF/A) is valid.
-       This file is also used in veraPDF test, where it should result "invalid".
+       This file is also used in veraPDF test, where it should result
+       "invalid".
     """
     FILEINFO["filename"] = os.path.join(BASEPATH, "pdfa-1", "invalid.pdf")
     FILEINFO["format"]["version"] = "A-1b"
     validator = GhostScript(FILEINFO)
     validator.validate()
     assert not validator.is_valid
-    assert "An error occurred while reading an XREF table." in validator.errors()
-
+    assert "An error occurred while reading an XREF table." in \
+        validator.errors()

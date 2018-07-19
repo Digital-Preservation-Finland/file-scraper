@@ -13,6 +13,7 @@ def sanitaze_string(dirty_string):
         or char in string.printable)
     return sanitazed_string
 
+
 class WarctoolsWARC(BaseValidator):
 
     """Implements WARC file format validator using Internet Archives warctools
@@ -33,8 +34,8 @@ class WarctoolsWARC(BaseValidator):
             self.errors("Validation failed: returncode %s" % shell.returncode)
             # Filter some trash printed by warcvalid.
             filtered_errors = \
-                "\n".join([line for line in shell.stderr.split('\n') \
-                if not 'ignored line' in line])
+                "\n".join([line for line in shell.stderr.split('\n')
+                           if 'ignored line' not in line])
             self.errors(filtered_errors)
 
         self.messages(shell.stdout)

@@ -18,10 +18,7 @@ BASEPATH = "tests/data/02_filevalidation_data/imagemagick"
         ("valid_tiff.tiff", "image/tiff", "6.0"),
     ]
 )
-
-
 def test_validate_valid_file(filename, mimetype, version):
-
     metadata_info = {
         'filename': os.path.join(BASEPATH, filename),
         'format': {
@@ -41,10 +38,7 @@ def test_validate_valid_file(filename, mimetype, version):
         ("valid_png.png", "image/x-dpx", "")
     ]
 )
-
-
 def test_validate_invalid_file(filename, mimetype, version):
-
     metadata_info = {
         'filename': os.path.join(BASEPATH, filename),
         'format': {

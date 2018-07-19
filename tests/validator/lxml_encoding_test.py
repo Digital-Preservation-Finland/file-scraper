@@ -32,7 +32,7 @@ def test_validate_xml_encoding(mimetype, version, encoding, file_encoding):
     xml = '''<?xml version="1.0" encoding="{}" ?>
              <a>åäö</a>'''.format(enc_match[file_encoding])
     with open(tmppath, 'w') as f:
-         f.write(xml.decode('utf8').encode(file_encoding))
+        f.write(xml.decode('utf8').encode(file_encoding))
 
     metadata_info = {
         'filename': tmppath,

@@ -16,13 +16,23 @@ MP3 = {"version": None, "mimetype": "audio/mpeg"}
 MP4 = {"version": None, "mimetype": "video/mp4"}
 RAW_AAC = {"version": None, "mimetype": "audio/mp4"}
 RAW_MPEG = {"version": None, "mimetype": "video/mpeg"}
+RAW_MPEG1 = {"version": "1", "mimetype": "video/mpeg"}
+RAW_MPEG2 = {"version": "2", "mimetype": "video/mpeg"}
 
-MPEG1_STRINGS = ["MPEG-1 video"]
+MPEG1_STRINGS = ["MPEG-1 video",
+                 "MPEG-1 Systems / MPEG program stream",
+                 "MPEG-1 Systems / MPEG program stream (VCD)"]
 RAW_MPEG_STRINGS = ["raw MPEG video"]
+RAW_MPEG1_STRINGS = ["raw MPEG-1 video"]
+RAW_MPEG2_STRINGS = ["raw MPEG-2 video"]
 MPEG2_TS_STRINGS = ["MPEG-2 transport stream format",
-                    "MPEG-TS (MPEG-2 Transport Stream)"]
-MPEG2_PS_STRINGS = ["MPEG-PS format", "MPEG-2 PS (DVD VOB)",
-                    "MPEG-PS (MPEG-2 Program Stream)"]
+                    "MPEG-TS (MPEG-2 Transport Stream)",
+                    "raw MPEG-TS (MPEG-2 Transport Stream)"]
+MPEG2_PS_STRINGS = ["MPEG-PS format",
+                    "MPEG-2 PS (DVD VOB)",
+                    "MPEG-2 PS (VOB)",
+                    "MPEG-PS (MPEG-2 Program Stream)",
+                    "MPEG-2 PS (SVCD)"]
 MP3_STRINGS = [
     "MPEG audio layer 2/3",
     "MP3 (MPEG audio layer 3)",
@@ -31,8 +41,11 @@ MP3_STRINGS = [
     "MP3onMP4",
     "libmp3lame MP3 (MPEG audio layer 3)",
     "libshine MP3 (MPEG audio layer 3)"]
-MPEG4_STRINGS = ["M4A", "QuickTime/MPEG-4/Motion JPEG 2000 format",
-                 "QuickTime / MOV"]
+MPEG4_STRINGS = ["M4A",
+                 "MP4 (MPEG-4 Part 14)",
+                 "QuickTime/MPEG-4/Motion JPEG 2000 format",
+                 "QuickTime / MOV",
+                 "raw H.264 video"]
 RAW_AAC_STRINGS = ["raw ADTS AAC",
                    "raw ADTS AAC (Advanced Audio Coding)"]
 
@@ -43,8 +56,12 @@ CONTAINER_MIMETYPES = [
     {"data": MP3, "strings": MP3_STRINGS},
     {"data": MP4, "strings": MPEG4_STRINGS},
     {"data": RAW_AAC, "strings": RAW_AAC_STRINGS},
-    {"data": RAW_MPEG, "strings": RAW_MPEG_STRINGS}
+    {"data": RAW_MPEG, "strings": RAW_MPEG_STRINGS},
+    {"data": RAW_MPEG1, "strings": RAW_MPEG1_STRINGS},
+    {"data": RAW_MPEG2, "strings": RAW_MPEG2_STRINGS}
 ]
+
+NOT_CONTAINERS = ['audio/mpeg', 'video/mpeg', 'audio/mp4']
 
 STREAM_MIMETYPES = {
     "mpegvideo": "video/mpeg",
@@ -66,23 +83,24 @@ STREAM_MIMETYPES = {
 class FFMpeg(BaseValidator):
     """FFMpeg validator class."""
 
-    # TODO: Accepting MP4 containers may accept various other containers too
+    # TODO: video/mp4 accepts various other formats too, such as 3gp
     _supported_mimetypes = {
         'video/mpeg': ['1', '2'],
         'audio/mpeg': ['1', '2'],
+        'video/MP1S': [''],
         'video/MP2T': [''],
         'video/MP2P': [''],
         'audio/mp4': [''],
-#       'video/mp4': [''],
+        'video/mp4': [''],
     }
 
     def validate(self):
         """validate file."""
         self.check_container_mimetype()
         if not set(self.metadata_info.keys()).intersection(
-            set(['audio', 'video', 'audio_streams', 'video_streams'])):
-                self.errors('Stream metadata was not found.')
-                return
+                set(['audio', 'video', 'audio_streams', 'video_streams'])):
+            self.errors('Stream metadata was not found.')
+            return
         if 'audio' in self.metadata_info:
             self.check_streams('audio')
         if 'video' in self.metadata_info:
@@ -130,16 +148,18 @@ class FFMpeg(BaseValidator):
                 "FFprobe output: %s" % shell.stdout)
             return
 
-        if 'audio_streams' in self.metadata_info or 'video_streams' in self.metadata_info:
-            if self.metadata_info['format']['mimetype'] in \
-                ['audio/mpeg', 'video/mpeg', 'audio/mp4']:
-                    self.errors("Stream file format %s can not include streams,"
-                                " as decribed in metadata."% (
-                        self.metadata_info["format"]["mimetype"]))
-            elif 'audio' in self.metadata_info or 'video' in self.metadata_info:
-                self.errors("AudioMD or VideoMD metadata included for container %s."
-                            " This must be directed to the including streams." % (
-                    self.metadata_info["format"]["mimetype"]))
+        if any(stream in self.metadata_info for stream in
+               ['audio_streams', 'video_streams']):
+            if self.metadata_info['format']['mimetype'] in NOT_CONTAINERS:
+                self.errors("Stream file format %s can not include streams,"
+                            " as decribed in metadata." % (
+                                self.metadata_info["format"]["mimetype"]))
+            elif any(stream in self.metadata_info for stream in
+                     ['audio', 'video']):
+                self.errors("AudioMD or VideoMD metadata included for"
+                            " container %s. This must be directed to"
+                            " the including streams." % (
+                                self.metadata_info["format"]["mimetype"]))
 
     def check_validity(self):
         """Check file validity. The validation logic is check that ffmpeg returncode
@@ -226,7 +246,7 @@ class FFMpeg(BaseValidator):
         if stream_type not in metadata:
             return
         self.messages("Streams %s are according to metadata description" %
-                      metadata_list)
+                      metadata)
 
 
 def get_version(mimetype, stream_data):
@@ -257,7 +277,8 @@ def parse_video_streams(stream, stream_type):
         return
     new_stream = {"format": {}, "video": {}}
     if stream["codec_name"] in STREAM_MIMETYPES:
-        new_stream["format"]["mimetype"] = STREAM_MIMETYPES[stream["codec_name"]]
+        new_stream["format"]["mimetype"] = \
+            STREAM_MIMETYPES[stream["codec_name"]]
     else:
         new_stream["format"]["mimetype"] = stream.get("codec_name")
     new_stream["format"]["version"] = \
@@ -289,7 +310,8 @@ def parse_audio_streams(stream, stream_type):
         return
     new_stream = {"format": {}, "audio": {}}
     if stream["codec_name"] in STREAM_MIMETYPES:
-        new_stream["format"]["mimetype"] = STREAM_MIMETYPES[stream["codec_name"]]
+        new_stream["format"]["mimetype"] = \
+            STREAM_MIMETYPES[stream["codec_name"]]
     else:
         new_stream["format"]["mimetype"] = stream.get("codec_name")
 

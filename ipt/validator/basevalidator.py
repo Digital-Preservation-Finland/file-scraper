@@ -93,8 +93,7 @@ class BaseValidator(object):
         self._messages = []
         self._errors = []
         self.validator_info = {'filename': metadata_info['filename'],
-                        'format': {}
-                       }
+                               'format': {}}
 
     @classmethod
     def is_supported(cls, metadata_info):

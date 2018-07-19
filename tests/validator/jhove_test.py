@@ -21,11 +21,11 @@ TESTDATADIR_BASE = 'tests/data'
         (JHoveTiff, "02_filevalidation_data/tiff/valid.tif",
          "image/tiff", "6.0", ""),
         (JHovePDF, "02_filevalidation_data/pdf_1_4/sample_1_4.pdf",
-         "application/pdf", "1.4", ""), 
+         "application/pdf", "1.4", ""),
         (JHovePDF, "02_filevalidation_data/pdf_1_5/sample_1_5.pdf",
          "application/pdf", "1.5", ""),
         (JHovePDF, "02_filevalidation_data/pdf_1_6/sample_1_6.pdf",
-         "application/pdf", "1.6", ""), 
+         "application/pdf", "1.6", ""),
         (JHovePDF, "02_filevalidation_data/pdfa-2/pdfa2-pass-a.pdf",
          "application/pdf", "1.4", ""),
         (JHovePDF, "02_filevalidation_data/pdfa-3/pdfa3-pass-a.pdf",
@@ -53,7 +53,8 @@ def test_validate_valid_form_and_version(
         }
     }
     # Add charset to test KDKPAS-1589 and TPAS-66
-    # If the charset is specified in mets.xml, it will be in metadata_info["format"]
+    # If the charset is specified in mets.xml, it will be in
+    # metadata_info["format"]
     if charset:
         metadata_info["format"]["charset"] = charset
 
@@ -185,8 +186,6 @@ def test_ignore_alt_format_in_mimetype():
             "version": "4.01"
         }
     }
-    file_path = os.path.join(TESTDATADIR_BASE, metadata_info["filename"])
-
     validator = JHoveHTML(metadata_info)
     validator.validate()
     print validator.errors()

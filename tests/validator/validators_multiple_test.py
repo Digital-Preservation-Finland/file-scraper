@@ -6,8 +6,6 @@ File-validator.
 import os
 import pytest
 from ipt.validator.validators import iter_validators
-from ipt.validator.office import Office
-from ipt.validator.file import File
 
 
 BASEPATH = "tests/data/02_filevalidation_data/office"
@@ -21,9 +19,7 @@ BASEPATH = "tests/data/02_filevalidation_data/office"
          "1.2"),
     ]
 )
-
 def test_validate_valid_file(filename, mimetype, version):
-
     metadata_info = {
         'filename': os.path.join(BASEPATH, filename),
         'format': {
@@ -49,9 +45,7 @@ def test_validate_valid_file(filename, mimetype, version):
         ("MS_Word_97-2003.doc", "application/msword", "15.0"),
     ]
 )
-
 def test_validate_invalid_file(filename, mimetype, version):
-
     metadata_info = {
         'filename': os.path.join(BASEPATH, filename),
         'format': {

@@ -191,7 +191,8 @@ def test_invalid_missing_addml_metadata_info():
         "format": DEFAULT_FORMAT
     }
 
-    validator = run_validator(VALID_WITH_HEADER, addml, metadata_info=metadata_info)
+    validator = run_validator(VALID_WITH_HEADER, addml,
+                              metadata_info=metadata_info)
 
     assert not validator.is_valid, validator.messages() + validator.errors()
     assert "ADDML data was expected, but not found" in validator.errors()

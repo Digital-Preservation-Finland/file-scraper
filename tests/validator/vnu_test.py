@@ -56,4 +56,3 @@ def test_validate_valid_file(filename, is_valid, errors):
 
     # Is stdout output expected?
     assert metadata_info['filename'] + "\n" == validator.messages()
-

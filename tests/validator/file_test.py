@@ -57,10 +57,7 @@ BASEPATH = "tests/data/02_filevalidation_data/"
          "text/plain", "")
     ]
 )
-
-
 def test_validate_valid_file(filename, mimetype, version):
-
     metadata_info = {
         'filename': os.path.join(BASEPATH, filename),
         'format': {

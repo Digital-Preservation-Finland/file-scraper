@@ -55,5 +55,5 @@ class PSPP(BaseValidator):
         """
         with open(self.metadata_info['filename']) as input_file:
             first_line = input_file.readline()
-        if not SPSS_PORTABLE_HEADER in first_line:
+        if SPSS_PORTABLE_HEADER not in first_line:
             self.errors("File is not SPSS Portable format.")

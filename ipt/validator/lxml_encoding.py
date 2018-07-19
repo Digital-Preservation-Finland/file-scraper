@@ -4,6 +4,7 @@ from lxml import etree
 
 from ipt.validator.basevalidator import BaseValidator
 
+
 class XmlEncoding(BaseValidator):
     """
     Character encoding validator for HTML5 and XML files
@@ -25,5 +26,5 @@ class XmlEncoding(BaseValidator):
         else:
             self.errors(' '.join(
                 ['Encoding metadata mismatch:', tree.docinfo.encoding,
-                'was found, but', self.metadata_info['format']['charset'],
-                'was expected.']))
+                 'was found, but', self.metadata_info['format']['charset'],
+                 'was expected.']))

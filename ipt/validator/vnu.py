@@ -14,7 +14,7 @@ class Vnu(BaseValidator):
     """
 
     _supported_mimetypes = {
-        'text/html':['5.0']
+        'text/html': ['5.0']
     }
 
     def validate(self):
@@ -22,6 +22,7 @@ class Vnu(BaseValidator):
         Validate file using vnu.jar
         """
         shell = Shell([
-            'java', '-jar', VNU_PATH, '--verbose', self.metadata_info['filename']])
+            'java', '-jar', VNU_PATH, '--verbose',
+            self.metadata_info['filename']])
         self.errors(shell.stderr)
         self.messages(shell.stdout)

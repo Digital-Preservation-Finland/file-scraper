@@ -32,6 +32,7 @@ class DPXv(BaseValidator):
         self.errors(shell.stderr)
         self.messages(shell.stdout)
 
+
 class DPXvError(Exception):
     """DPX validator error."""
     pass

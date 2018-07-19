@@ -82,7 +82,8 @@ class FileEncoding(BaseValidator):
         :metadata_info: metadata_info
         """
         if metadata_info['format']['mimetype'] in cls._supported_mimetypes:
-            if metadata_info['format']['charset'] not in list(cls._encodings.keys()):
+            if metadata_info['format']['charset'] not in \
+                    list(cls._encodings.keys()):
                 return False
         return super(FileEncoding, cls).is_supported(metadata_info)
 
@@ -97,7 +98,8 @@ class FileEncoding(BaseValidator):
         self.messages(shell.stdout)
         self.errors(shell.stderr)
         encoding = shell.stdout.strip()
-        if encoding in self._encodings[self.metadata_info['format']['charset']]:
+        if encoding in self._encodings[
+                self.metadata_info['format']['charset']]:
             self.messages("File encoding match found.")
         else:
             err = " ".join(

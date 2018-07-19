@@ -17,10 +17,7 @@ BASEPATH = "tests/data/02_filevalidation_data/dpx"
         ("valid_dpx.dpx", "image/x-dpx", "2.0")
     ]
 )
-
-
 def test_validate_valid_file(filename, mimetype, version):
-
     metadata_info = {
         'filename': os.path.join(BASEPATH, filename),
         'format': {
@@ -41,10 +38,7 @@ def test_validate_valid_file(filename, mimetype, version):
         ("empty_file.dpx", "image/x-dpx", "2.0"),
     ]
 )
-
-
 def test_validate_invalid_file(filename, mimetype, version):
-
     metadata_info = {
         'filename': os.path.join(BASEPATH, filename),
         'format': {

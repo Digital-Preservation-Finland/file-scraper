@@ -31,7 +31,6 @@ class Office(BaseValidator):
         'presentation': ['12.0', '14.0', '15.0']
     }
 
-
     def validate(self):
         """
         Validate file

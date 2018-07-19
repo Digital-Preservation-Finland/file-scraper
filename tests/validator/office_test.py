@@ -45,10 +45,7 @@ BASEPATH = "tests/data/02_filevalidation_data/office"
          "application/vnd.oasis.opendocument.text", ""),
     ]
 )
-
-
 def test_validate_valid_file(filename, mimetype, version):
-
     metadata_info = {
         'filename': os.path.join(BASEPATH, filename),
         'format': {
@@ -73,10 +70,7 @@ def test_validate_valid_file(filename, mimetype, version):
          "officedocument.wordprocessingml.document", "15.0"),
     ]
 )
-
-
 def test_validate_invalid_file(filename, mimetype, version):
-
     metadata_info = {
         'filename': os.path.join(BASEPATH, filename),
         'format': {

@@ -76,7 +76,7 @@ class Xmllint(BaseValidator):
 
         # Try validate against DTD
         if tree.docinfo.doctype:
-            (exitcode, stdout, stderr) = self.exec_xmllint(validate=True)       
+            (exitcode, stdout, stderr) = self.exec_xmllint(validate=True)
 
         # Try validate againts XSD
         else:
@@ -134,8 +134,8 @@ class Xmllint(BaseValidator):
             xsd_exists = True
 
             # Check if XSD file is included in SIP
-            local_schema_location = os.path.dirname(self.metadata_info["filename"]) + '/' + \
-                schema_location
+            local_schema_location = os.path.dirname(
+                self.metadata_info["filename"]) + '/' + schema_location
             if os.path.isfile(local_schema_location):
                 schema_location = local_schema_location
 
