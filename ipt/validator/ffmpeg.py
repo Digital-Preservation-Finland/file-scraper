@@ -318,7 +318,7 @@ def parse_audio_streams(stream, stream_type):
     new_stream["audio"]["bits_per_sample"] = stream.get("bits_per_sample")
     if "bit_rate" in stream:
         new_stream["audio"]["bit_rate"] = \
-            handle_div(stream.get("bit_rate")+"/1000")
+            str(int(stream.get("bit_rate"))/1000)
     if "sample_rate" in stream:
         new_stream["audio"]["sample_rate"] = \
             handle_div(stream.get("sample_rate")+"/1000")

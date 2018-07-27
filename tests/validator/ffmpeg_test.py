@@ -80,7 +80,7 @@ def test_mark_ffmpeg_ok():
             {"format": {"mimetype": "audio/mp4",
                         "version": None},
              "audio": {"sample_rate": "48",
-                       "bit_rate": "384.83",
+                       "bit_rate": "384",
                        "channels": "6"}}])
 
     check_ffmpeg_ok(
@@ -164,7 +164,7 @@ def test_mark_ffmpeg_nok():
             {"format": {"mimetype": "audio/mp4",
                         "version": None},
              "audio": {"sample_rate": "48",
-                       "bit_rate": "384.83",
+                       "bit_rate": "384",
                        "channels": "6"}}])
 
     check_ffmpeg_nok(
