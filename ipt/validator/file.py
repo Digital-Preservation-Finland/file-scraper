@@ -54,6 +54,7 @@ class File(BaseValidator):
             self.errors("MIME type does not match")
         else:
             self.messages("MIME type is correct")
+            self.validator_info = self.metadata_info
 
 
 class FileEncoding(BaseValidator):
@@ -101,6 +102,7 @@ class FileEncoding(BaseValidator):
         if encoding in self._encodings[
                 self.metadata_info['format']['charset']]:
             self.messages("File encoding match found.")
+            self.validator_info = self.metadata_info
         else:
             err = " ".join(
                 ["File encoding mismatch:", encoding, "was found, but",
