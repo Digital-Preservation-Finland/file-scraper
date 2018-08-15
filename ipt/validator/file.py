@@ -47,12 +47,35 @@ class File(BaseValidator):
         shell = Shell([
             FILECMD_PATH, '-b', '--mime-type', self.metadata_info['filename']],
                       ld_library_path=FILE_LIBRARY_PATH)
-        self.messages(shell.stdout)
         self.errors(shell.stderr)
         mimetype = shell.stdout.strip()
         if not self.metadata_info['format']['mimetype'] == mimetype:
-            self.errors("MIME type does not match")
+
+            # Allow text/plain as mimetype in metadata_info
+            # for any text based file.
+            if self.metadata_info['format']['mimetype'] == 'text/plain':
+                shell = Shell([
+                    FILECMD_PATH, '-be', 'soft', '--mime-type',
+                    self.metadata_info['filename']],
+                              ld_library_path=FILE_LIBRARY_PATH)
+                mimetype_soft = shell.stdout.strip()
+                if not self.metadata_info['format']['mimetype'] == \
+                        mimetype_soft:
+                    self.errors("MIME type does not match")
+                else:
+                    self.messages(
+                        "Detected mimetype %s "
+                        "instead of reported mimetype %s.\n"
+                        "The digital object is a valid text file and will be "
+                        "preserved as text/plain." % (
+                            mimetype,
+                            self.metadata_info['format']['mimetype']))
+                    self.validator_info = self.metadata_info
+
+            else:
+                self.errors("MIME type does not match")
         else:
+            self.messages(shell.stdout)
             self.messages("MIME type is correct")
             self.validator_info = self.metadata_info
 
@@ -95,7 +118,7 @@ class FileEncoding(BaseValidator):
         shell = Shell([
             FILECMD_PATH, '-b', '--mime-encoding',
             self.metadata_info['filename']],
-            ld_library_path=FILE_LIBRARY_PATH)
+                      ld_library_path=FILE_LIBRARY_PATH)
         self.messages(shell.stdout)
         self.errors(shell.stderr)
         encoding = shell.stdout.strip()
