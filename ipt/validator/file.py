@@ -36,8 +36,7 @@ class File(BaseValidator):
         'image/png': [''],
         'image/jpeg': ['1.00', '1.01', '1.02'],
         'image/jp2': [''],
-        'image/tiff': ['6.0'],
-        'text/plain': ['']
+        'image/tiff': ['6.0']
     }
 
     def validate(self):
@@ -47,37 +46,77 @@ class File(BaseValidator):
         shell = Shell([
             FILECMD_PATH, '-b', '--mime-type', self.metadata_info['filename']],
                       ld_library_path=FILE_LIBRARY_PATH)
+        self.messages(shell.stdout)
         self.errors(shell.stderr)
         mimetype = shell.stdout.strip()
         if not self.metadata_info['format']['mimetype'] == mimetype:
-
-            # Allow text/plain as mimetype in metadata_info
-            # for any text based file.
-            if self.metadata_info['format']['mimetype'] == 'text/plain':
-                shell = Shell([
-                    FILECMD_PATH, '-be', 'soft', '--mime-type',
-                    self.metadata_info['filename']],
-                              ld_library_path=FILE_LIBRARY_PATH)
-                mimetype_soft = shell.stdout.strip()
-                if not self.metadata_info['format']['mimetype'] == \
-                        mimetype_soft:
-                    self.errors("MIME type does not match")
-                else:
-                    self.messages(
-                        "Detected mimetype %s "
-                        "instead of reported mimetype %s.\n"
-                        "The digital object is a valid text file and will be "
-                        "preserved as text/plain." % (
-                            mimetype,
-                            self.metadata_info['format']['mimetype']))
-                    self.validator_info = self.metadata_info
-
-            else:
-                self.errors("MIME type does not match")
+            self.errors("MIME type does not match")
         else:
-            self.messages(shell.stdout)
             self.messages("MIME type is correct")
             self.validator_info = self.metadata_info
+
+
+class FileTextPlain(BaseValidator):
+    """
+    file (libmagick) validator checks mime-type and if it is a text
+    file with the soft option that excludes libmagick.
+
+    All text files are accepted as text/plain.
+    """
+    _supported_mimetypes = {
+        'text/plain': ['']
+    }
+
+    def file_mimetype(self, soft=False):
+        """Detect mimetype using file (libmagick) or with
+        the soft option that excludes libmagick.
+
+        :soft: use file with soft option if true
+
+        :returns: file mimetype
+        """
+        if soft:
+            shell = Shell([
+                FILECMD_PATH, '-be', 'soft', '--mime-type',
+                self.metadata_info['filename']],
+                          ld_library_path=FILE_LIBRARY_PATH)
+        else:
+            shell = Shell([
+                FILECMD_PATH, '-b', '--mime-type',
+                self.metadata_info['filename']],
+                          ld_library_path=FILE_LIBRARY_PATH)
+
+        self.errors(shell.stderr)
+        mimetype = shell.stdout.strip()
+
+        return mimetype
+
+    def validate(self):
+        """
+        Check MIME type determined by libmagic
+        """
+
+        mimetype = self.file_mimetype()
+        self.messages('Detected mimetype: %s' % mimetype)
+
+        if self.metadata_info['format']['mimetype'] == mimetype:
+            self.messages("MIME type is correct")
+            self.validator_info = self.metadata_info
+            return
+
+        self.messages('METS mimetype is text/plain, trying text detection')
+
+        mimetype = self.file_mimetype(soft=True)
+
+        self.messages('Detected alternative mimetype: %s' % mimetype)
+
+        if self.metadata_info['format']['mimetype'] == mimetype:
+            self.messages("MIME type is correct. The "
+                          "digital object will be preserved as text/plain.")
+            self.validator_info = self.metadata_info
+            return
+
+        self.errors("MIME type does not match")
 
 
 class FileEncoding(BaseValidator):
