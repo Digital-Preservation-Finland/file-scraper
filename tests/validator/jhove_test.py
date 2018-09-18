@@ -238,4 +238,26 @@ def test_audiomd_metadata():
     assert validator.is_valid, validator.errors()
     assert "Well-Formed and valid" in validator.messages()
     assert "Validation version check OK" in validator.messages()
+    assert "Validation audio metadata check OK" in validator.messages()
     assert validator.errors() == ""
+
+
+def test_audiomd_metadata_fail():
+    """Test the audiomd metadata validation with invalid metadata."""
+    metadata_info = {
+        "filename": "tests/data/02_filevalidation_data/wav/wavefile.wav",
+        "format": {
+            "mimetype": "audio/x-wav",
+            "version": ""
+        },
+        "channels": "2",
+        "sample_rate": "48",
+        "bits_per_sample": "8"
+    }
+
+    validator = JHoveWAV(metadata_info)
+    validator.validate()
+    assert not validator.is_valid, validator.messages() + validator.errors()
+    assert "Metadata mismatch: found channels" in validator.errors()
+    assert "Metadata mismatch: found bits_per_sample" in validator.errors()
+    assert validator.errors() != ""

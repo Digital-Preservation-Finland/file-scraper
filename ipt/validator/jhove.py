@@ -327,19 +327,23 @@ class JHoveWAV(JHoveBase):
         """Validate the audioMD metadata."""
 
         audio_keys = ['channels', 'sample_rate', 'bits_per_sample']
+        errors = False
         for key in self.metadata_info:
             if key in audio_keys:
                 try:
-                    if self.metadata_info[key] == \
+                    if not self.metadata_info[key] == \
                             self.validator_info[key]:
-                        self.messages('Validation %s check OK' % key)
-                    else:
                         self.errors(
                             'Metadata mismatch: found %s "%s", expected "%s"' %
                             (key,
                              self.validator_info[key],
                              self.metadata_info[key]))
+                        errors = True
                 except KeyError:
                     self.errors(
                         'The %s information could not be found from the JHove '
                         'report' % key)
+                    errors = True
+
+        if not errors:
+            self.messages('Validation audio metadata check OK')
