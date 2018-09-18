@@ -291,13 +291,17 @@ class JHoveWAV(JHoveBase):
                 self.metadata_info['format']['mimetype']
 
     def check_version(self):
-        """Check if version string matches JHove output."""
+        """Set version as '2' if profile is BWF, otherwise accept user's
+        metadata as correct (any WAV is also a valid BWF).
+        For now, we don't accept RF64."""
 
-        if 'BWF' in self.report_field('profile'):
+        if 'RF64' in self.report_field('profile'):
+            self.errors('RF64 is not a supported format')
+        elif 'BWF' in self.report_field('profile'):
             self.validator_info['format']['version'] = '2'
         else:
             self.validator_info['format']['version'] = \
-                self.report_field("version")
+                self.metadata_info['format']['version']
 
     def aes_report_field(self, field):
         """ """
