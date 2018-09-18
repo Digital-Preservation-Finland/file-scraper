@@ -127,6 +127,9 @@ def test_validate_valid_only_form(validator_class, filename, mimetype, version,
          "application/pdf", "A-1a", ""),
         (JHoveTextUTF8, "02_filevalidation_data/text/iso-8859.txt",
          "text/plain", "", "Not well-formed"),
+        (JHoveWAV,
+         "02_filevalidation_data/wav/wav-invalid-last-byte-missing.wav",
+         "audio/x-wav", "", "Not well-formed"),
     ])
 def test_validate_invalid(validator_class, filename, mimetype, version,
                           stdout):
