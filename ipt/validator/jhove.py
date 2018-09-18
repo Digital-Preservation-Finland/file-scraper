@@ -294,8 +294,7 @@ class JHoveWAV(JHoveBase):
         """Check if version string matches JHove output."""
 
         if 'BWF' in self.report_field('profile'):
-            self.validator_info['format']['version'] = \
-                self.metadata_info['format']['version']
+            self.validator_info['format']['version'] = '2'
         else:
             self.validator_info['format']['version'] = \
                 self.report_field("version")
