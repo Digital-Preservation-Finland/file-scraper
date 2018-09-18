@@ -284,7 +284,7 @@ class JHoveWAV(JHoveBase):
                          "validate_audio_metadata"]
 
     def check_mimetype(self):
-        """Check if version string matches JHove output."""
+        """Check if mimetype is of a WAV type."""
 
         if self.report_field('mimeType').split(';')[0] == 'audio/vnd.wave':
             self.validator_info['format']['mimetype'] = \
@@ -304,13 +304,16 @@ class JHoveWAV(JHoveBase):
                 self.metadata_info['format']['version']
 
     def aes_report_field(self, field):
-        """ """
+        """Query elements with the aes namespace from the validator's
+        report."""
+
         query = '//aes:%s/text()' % field
         results = self.report.xpath(query, namespaces=NAMESPACES)
         return '\n'.join(results)
 
     def get_audio_data(self):
-        """Returns audio data from the report."""
+        """Returns audio data from the report and adds the elements
+        to the validator_info."""
 
         self.validator_info['channels'] = \
             self.aes_report_field("numChannels")
@@ -321,7 +324,8 @@ class JHoveWAV(JHoveBase):
             self.aes_report_field("bitDepth")
 
     def validate_audio_metadata(self):
-        """ """
+        """Validate the audioMD metadata."""
+
         audio_keys = ['channels', 'sample_rate', 'bits_per_sample']
         for key in self.metadata_info:
             if key in audio_keys:
