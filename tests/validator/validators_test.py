@@ -63,6 +63,8 @@ import pytest
         ("application/xhtml+xml", "1.1", "UTF-16",
          ["JHoveHTML", "FileEncoding"]),
         ("text/unknown-mimetype", "1.0", "UTF-8", ["UnknownFileFormat"]),
+        ("audio/x-wav", "", "", ["JHoveWAV"]),
+        ("audio/x-wav", "2", "", ["JHoveWAV"]),
         # An erroneous mime type should return UnknownFileformat
         ("text/unknown-mimetype, text/unknown-mimetype", "1.0", "UTF-8",
          ["UnknownFileFormat"]),

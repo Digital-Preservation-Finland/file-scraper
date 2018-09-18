@@ -4,7 +4,7 @@
 import os
 from ipt.validator.basevalidator import BaseValidator
 from ipt.validator.jhove import JHoveBase, JHovePDF, \
-    JHoveTiff, JHoveJPEG, JHoveHTML, JHoveGif, JHoveTextUTF8
+    JHoveTiff, JHoveJPEG, JHoveHTML, JHoveGif, JHoveTextUTF8, JHoveWAV
 from ipt.validator.xmllint import Xmllint
 from ipt.validator.lxml_encoding import XmlEncoding
 from ipt.validator.warctools import WarctoolsWARC, WarctoolsARC

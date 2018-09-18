@@ -6,7 +6,8 @@ from ipt.validator.basevalidator import BaseValidator, Shell
 from ipt.utils import parse_mimetype
 
 
-NAMESPACES = {'j': 'http://hul.harvard.edu/ois/xml/ns/jhove'}
+NAMESPACES = {'j': 'http://hul.harvard.edu/ois/xml/ns/jhove',
+              'aes': 'http://www.aes.org/audioObject'}
 JHOVE_HOME = '/usr/share/java/jhove'
 EXTRA_JARS = os.path.join(JHOVE_HOME, 'bin/JhoveView.jar')
 CP = os.path.join(JHOVE_HOME, 'bin/jhove-apps-1.18.1.jar') + ':' + EXTRA_JARS
@@ -268,3 +269,70 @@ class JHoveTextUTF8(JHoveBase):
     def check_charset(self):
         """Save the charset from JHOVE to our validator"""
         self.validator_info['format']['charset'] = self.report_field('format')
+
+
+class JHoveWAV(JHoveBase):
+    """JHove validator for WAV and BWF audio data."""
+
+    _supported_mimetypes = {
+        'audio/x-wav': ['', '2']
+    }
+
+    _jhove_module = 'WAVE-hul'
+    _validate_methods = ["run_jhove", "check_mimetype", "check_well_formed",
+                         "check_version", "get_audio_data",
+                         "validate_audio_metadata"]
+
+    def check_mimetype(self):
+        """Check if version string matches JHove output."""
+
+        if self.report_field('mimeType').split(';')[0] == 'audio/vnd.wave':
+            self.validator_info['format']['mimetype'] = \
+                self.metadata_info['format']['mimetype']
+
+    def check_version(self):
+        """Check if version string matches JHove output."""
+
+        if 'BWF' in self.report_field('profile'):
+            self.validator_info['format']['version'] = \
+                self.metadata_info['format']['version']
+        else:
+            self.validator_info['format']['version'] = \
+                self.report_field("version")
+
+    def aes_report_field(self, field):
+        """ """
+        query = '//aes:%s/text()' % field
+        results = self.report.xpath(query, namespaces=NAMESPACES)
+        return '\n'.join(results)
+
+    def get_audio_data(self):
+        """Returns audio data from the report."""
+
+        self.validator_info['channels'] = \
+            self.aes_report_field("numChannels")
+        self.validator_info['sample_rate'] = \
+            str('{0:g}'.format(float(self.aes_report_field("sampleRate")) /
+                               1000))
+        self.validator_info['bits_per_sample'] = \
+            self.aes_report_field("bitDepth")
+
+    def validate_audio_metadata(self):
+        """ """
+        audio_keys = ['channels', 'sample_rate', 'bits_per_sample']
+        for key in self.metadata_info:
+            if key in audio_keys:
+                try:
+                    if self.metadata_info[key] == \
+                            self.validator_info[key]:
+                        self.messages('Validation %s check OK' % key)
+                    else:
+                        self.errors(
+                            'Metadata mismatch: found %s "%s", expected "%s"' %
+                            (key,
+                             self.validator_info[key],
+                             self.metadata_info[key]))
+                except KeyError:
+                    self.errors(
+                        'The %s information could not be found from the JHove '
+                        'report' % key)

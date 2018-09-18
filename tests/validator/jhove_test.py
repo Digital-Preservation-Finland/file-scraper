@@ -3,7 +3,7 @@ import os
 import pytest
 
 from ipt.validator.jhove import JHoveGif, JHoveTiff, JHovePDF, \
-    JHoveTextUTF8, JHoveJPEG, JHoveHTML
+    JHoveTextUTF8, JHoveJPEG, JHoveHTML, JHoveWAV
 
 TESTDATADIR_BASE = 'tests/data'
 
@@ -39,7 +39,11 @@ TESTDATADIR_BASE = 'tests/data'
         (JHoveTiff, "02_filevalidation_data/tiff/valid_version5.tif",
          "image/tiff", "6.0", ""),
         (JHoveHTML, "02_filevalidation_data/xhtml/minimal_valid_sample.xhtml",
-         "application/xhtml+xml", "1.0", "UTF-8")
+         "application/xhtml+xml", "1.0", "UTF-8"),
+        (JHoveWAV, "02_filevalidation_data/wav/wavefile.wav",
+         "audio/x-wav", "", ""),
+        (JHoveWAV, "02_filevalidation_data/wav/bwf.wav",
+         "audio/x-wav", "2", "")
     ])
 def test_validate_valid_form_and_version(
         validator_class, filename, mimetype, version, charset):
@@ -211,3 +215,24 @@ def test_utf8_supported():
     metadata_info["format"]["charset"] = "foo"
     validator = JHoveTextUTF8(metadata_info)
     assert not validator.is_supported(metadata_info)
+
+
+def test_audiomd_metadata():
+    """Test the audiomd metadata validation"""
+    metadata_info = {
+        "filename": "tests/data/02_filevalidation_data/wav/wavefile.wav",
+        "format": {
+            "mimetype": "audio/x-wav",
+            "version": ""
+        },
+        "channels": "1",
+        "sample_rate": "48",
+        "bits_per_sample": "16"
+    }
+
+    validator = JHoveWAV(metadata_info)
+    validator.validate()
+    assert validator.is_valid, validator.errors()
+    assert "Well-Formed and valid" in validator.messages()
+    assert "Validation version check OK" in validator.messages()
+    assert validator.errors() == ""
