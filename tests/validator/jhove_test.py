@@ -228,9 +228,11 @@ def test_audiomd_metadata():
             "mimetype": "audio/x-wav",
             "version": ""
         },
-        "channels": "1",
-        "sample_rate": "48",
-        "bits_per_sample": "16"
+        "audio": {
+            "channels": "1",
+            "sample_rate": "48",
+            "bits_per_sample": "16"
+        }
     }
 
     validator = JHoveWAV(metadata_info)
@@ -250,14 +252,15 @@ def test_audiomd_metadata_fail():
             "mimetype": "audio/x-wav",
             "version": ""
         },
-        "channels": "2",
-        "sample_rate": "48",
-        "bits_per_sample": "8"
+        "audio": {
+            "channels": "2",
+            "sample_rate": "48",
+            "bits_per_sample": "8"
+        }
     }
 
     validator = JHoveWAV(metadata_info)
     validator.validate()
     assert not validator.is_valid, validator.messages() + validator.errors()
-    assert "Metadata mismatch: found channels" in validator.errors()
-    assert "Metadata mismatch: found bits_per_sample" in validator.errors()
+    assert "ERROR: Audio metadata" in validator.errors()
     assert validator.errors() != ""

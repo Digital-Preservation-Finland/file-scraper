@@ -3,7 +3,8 @@ import os
 import lxml.etree
 
 from ipt.validator.basevalidator import BaseValidator, Shell
-from ipt.utils import parse_mimetype
+from ipt.utils import parse_mimetype, handle_div, find_max_complete, \
+    compare_lists_of_dicts
 
 
 NAMESPACES = {'j': 'http://hul.harvard.edu/ois/xml/ns/jhove',
@@ -280,8 +281,7 @@ class JHoveWAV(JHoveBase):
 
     _jhove_module = 'WAVE-hul'
     _validate_methods = ["run_jhove", "check_mimetype", "check_well_formed",
-                         "check_version", "get_audio_data",
-                         "validate_audio_metadata"]
+                         "check_version", "validate_audio_metadata"]
 
     def check_mimetype(self):
         """Check if mimetype is of a WAV type, otherwise call the same
@@ -314,42 +314,31 @@ class JHoveWAV(JHoveBase):
         results = self.report.xpath(query, namespaces=NAMESPACES)
         return '\n'.join(results)
 
-    def get_audio_data(self):
-        """Returns audio data from the report and adds the elements
-        to the validator_info."""
-
-        self.validator_info['channels'] = \
-            self.aes_report_field("numChannels")
-        try:
-            self.validator_info['sample_rate'] = \
-                str('{0:g}'.format(float(self.aes_report_field("sampleRate")) /
-                                   1000))
-        except ValueError:
-            self.aes_report_field("sampleRate")
-        self.validator_info['bits_per_sample'] = \
-            self.aes_report_field("bitDepth")
-
     def validate_audio_metadata(self):
-        """Validate the audioMD metadata."""
+        """Returns audio data from the report and adds the elements
+        to the validator_info dict. Then removes keys from dicts
+        missing in either dict before comparing the dicts
+        If the dicts match the metadata is valid."""
 
-        audio_keys = ['channels', 'sample_rate', 'bits_per_sample']
-        errors = False
-        for key in self.metadata_info:
-            if key in audio_keys:
-                try:
-                    if not self.metadata_info[key] == \
-                            self.validator_info[key]:
-                        self.errors(
-                            'Metadata mismatch: found %s "%s", expected "%s"' %
-                            (key,
-                             self.validator_info[key],
-                             self.metadata_info[key]))
-                        errors = True
-                except KeyError:
-                    self.errors(
-                        'The %s information could not be found from the JHove '
-                        'report' % key)
-                    errors = True
+        audio_data = {"audio": {}}
+        audio_data["audio"]["channels"] = \
+            self.aes_report_field("numChannels")
+        audio_data["audio"]["bits_per_sample"] = \
+            self.aes_report_field("bitDepth")
+        audio_data["audio"]["sample_rate"] = \
+            handle_div(self.aes_report_field("sampleRate")+"/1000")
+        self.validator_info.update(audio_data)
 
-        if not errors:
+        (metadata, validator) = find_max_complete(
+            [self.metadata_info], [self.validator_info], ['format', 'mimetype',
+                                                          'version'])
+
+        match = compare_lists_of_dicts(metadata, validator)
+
+        if match is False:
+            self.errors("Audio metadata in %s are not what is "
+                        "described in metadata. Found %s, expected %s" % (
+                            self.metadata_info["filename"],
+                            self.validator_info, self.metadata_info))
+        if match is True:
             self.messages('Validation audio metadata check OK')
