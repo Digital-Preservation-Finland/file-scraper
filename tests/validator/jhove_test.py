@@ -40,9 +40,9 @@ TESTDATADIR_BASE = 'tests/data'
          "image/tiff", "6.0", ""),
         (JHoveHTML, "02_filevalidation_data/xhtml/minimal_valid_sample.xhtml",
          "application/xhtml+xml", "1.0", "UTF-8"),
-        (JHoveWAV, "02_filevalidation_data/wav/wavefile.wav",
+        (JHoveWAV, "02_filevalidation_data/wav/valid-wav.wav",
          "audio/x-wav", "", ""),
-        (JHoveWAV, "02_filevalidation_data/wav/bwf.wav",
+        (JHoveWAV, "02_filevalidation_data/wav/valid-bwf.wav",
          "audio/x-wav", "2", "")
     ])
 def test_validate_valid_form_and_version(
@@ -128,7 +128,7 @@ def test_validate_valid_only_form(validator_class, filename, mimetype, version,
         (JHoveTextUTF8, "02_filevalidation_data/text/iso-8859.txt",
          "text/plain", "", "Not well-formed"),
         (JHoveWAV,
-         "02_filevalidation_data/wav/wav-invalid-last-byte-missing.wav",
+         "02_filevalidation_data/wav/invalid-wav-last-byte-missing.wav",
          "audio/x-wav", "", "Not well-formed"),
     ])
 def test_validate_invalid(validator_class, filename, mimetype, version,
@@ -223,7 +223,7 @@ def test_utf8_supported():
 def test_audiomd_metadata():
     """Test the audiomd metadata validation"""
     metadata_info = {
-        "filename": "tests/data/02_filevalidation_data/wav/wavefile.wav",
+        "filename": "tests/data/02_filevalidation_data/wav/valid-wav.wav",
         "format": {
             "mimetype": "audio/x-wav",
             "version": ""
@@ -245,7 +245,7 @@ def test_audiomd_metadata():
 def test_audiomd_metadata_fail():
     """Test the audiomd metadata validation with invalid metadata."""
     metadata_info = {
-        "filename": "tests/data/02_filevalidation_data/wav/wavefile.wav",
+        "filename": "tests/data/02_filevalidation_data/wav/valid-wav.wav",
         "format": {
             "mimetype": "audio/x-wav",
             "version": ""
