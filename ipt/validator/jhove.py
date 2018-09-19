@@ -284,11 +284,14 @@ class JHoveWAV(JHoveBase):
                          "validate_audio_metadata"]
 
     def check_mimetype(self):
-        """Check if mimetype is of a WAV type."""
+        """Check if mimetype is of a WAV type, otherwise call the same
+        method from the superclass."""
 
         if self.report_field('mimeType').split(';')[0] == 'audio/vnd.wave':
             self.validator_info['format']['mimetype'] = \
                 self.metadata_info['format']['mimetype']
+        else:
+            super(JHoveHTML, self).check_mimetype()
 
     def check_version(self):
         """Set version as '2' if profile is BWF, otherwise accept user's
@@ -317,9 +320,12 @@ class JHoveWAV(JHoveBase):
 
         self.validator_info['channels'] = \
             self.aes_report_field("numChannels")
-        self.validator_info['sample_rate'] = \
-            str('{0:g}'.format(float(self.aes_report_field("sampleRate")) /
-                               1000))
+        try:
+            self.validator_info['sample_rate'] = \
+                str('{0:g}'.format(float(self.aes_report_field("sampleRate")) /
+                                   1000))
+        except ValueError:
+            self.aes_report_field("sampleRate")
         self.validator_info['bits_per_sample'] = \
             self.aes_report_field("bitDepth")
 
