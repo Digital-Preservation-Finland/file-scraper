@@ -291,7 +291,7 @@ class JHoveWAV(JHoveBase):
             self.validator_info['format']['mimetype'] = \
                 self.metadata_info['format']['mimetype']
         else:
-            super(JHoveHTML, self).check_mimetype()
+            super(JHoveWAV, self).check_mimetype()
 
     def check_version(self):
         """Set version as '2' if profile is BWF, otherwise accept user's
