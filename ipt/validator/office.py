@@ -37,9 +37,10 @@ class Office(BaseValidator):
         """
         temp_dir = tempfile.mkdtemp()
         try:
+            env = {'HOME': temp_dir}
             shell = Shell([
                 'soffice', '--convert-to', 'pdf', '--outdir', temp_dir,
-                self.metadata_info['filename']])
+                self.metadata_info['filename']], env=env)
             self.errors(shell.stderr)
             self.messages(shell.stdout)
         finally:

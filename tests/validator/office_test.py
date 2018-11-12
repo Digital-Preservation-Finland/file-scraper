@@ -4,11 +4,19 @@ Tests for Office validator.
 
 import os
 import pytest
+from multiprocessing import Pool
 from ipt.validator.office import Office
 
 
-BASEPATH = "tests/data/02_filevalidation_data/office"
-
+def _metadata_info(filename, mimetype, version):
+    basepath = "tests/data/02_filevalidation_data/office"
+    return {
+        'filename': os.path.join(basepath, filename),
+        'format': {
+            'mimetype': mimetype,
+            'version': version
+        }
+    }
 
 @pytest.mark.parametrize(
     ['filename', 'mimetype', 'version'],
@@ -46,14 +54,7 @@ BASEPATH = "tests/data/02_filevalidation_data/office"
     ]
 )
 def test_validate_valid_file(filename, mimetype, version):
-    metadata_info = {
-        'filename': os.path.join(BASEPATH, filename),
-        'format': {
-            'mimetype': mimetype,
-            'version': version
-        }
-    }
-
+    metadata_info = _metadata_info(filename, mimetype, version)
     validator = Office(metadata_info)
     validator.validate()
     assert validator.is_valid
@@ -71,14 +72,36 @@ def test_validate_valid_file(filename, mimetype, version):
     ]
 )
 def test_validate_invalid_file(filename, mimetype, version):
-    metadata_info = {
-        'filename': os.path.join(BASEPATH, filename),
-        'format': {
-            'mimetype': mimetype,
-            'version': version
-        }
-    }
-
+    metadata_info = _metadata_info(filename, mimetype, version)
     validator = Office(metadata_info)
     validator.validate()
     assert not validator.is_valid
+
+
+def _validate(metadata_info):
+    print "validator instance:", metadata_info
+    validator = Office(metadata_info)
+    validator.validate()
+    return validator.is_valid
+
+
+@pytest.mark.parametrize(
+    ['filename', 'mimetype', 'version'],
+    [
+        ("ODF_Text_Document.odt", "application/vnd.oasis.opendocument.text",
+         "1.2"),
+    ]
+)
+def test_parallel_validation(filename, mimetype, version):
+    """Test validation in parallel. Libreoffice convert command is prone for
+    freezing which would cause TimeOutError here.
+    """
+
+    metadata_info = _metadata_info(filename, mimetype, version)
+
+    n = 3
+    pool = Pool(n)
+    results = [pool.apply_async(_validate, (metadata_info,)) for i in range(n)]
+
+    for result in results:
+        assert result.get(timeout=3)
