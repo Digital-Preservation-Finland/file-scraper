@@ -7,7 +7,7 @@ from ipt.validator.basevalidator import BaseValidator, Shell
 
 
 FILECMD_PATH = "/opt/file-5.30/bin/file"
-FILE_LIBRARY_PATH = "/opt/file-5.30/lib64"
+ENV = {'LD_LIBRARY_PATH': "/opt/file-5.30/lib64"}
 
 
 class File(BaseValidator):
@@ -45,7 +45,7 @@ class File(BaseValidator):
         """
         shell = Shell([
             FILECMD_PATH, '-b', '--mime-type', self.metadata_info['filename']],
-                      ld_library_path=FILE_LIBRARY_PATH)
+            env=ENV)
         self.messages(shell.stdout)
         self.errors(shell.stderr)
         mimetype = shell.stdout.strip()
@@ -78,13 +78,11 @@ class FileTextPlain(BaseValidator):
         if soft:
             shell = Shell([
                 FILECMD_PATH, '-be', 'soft', '--mime-type',
-                self.metadata_info['filename']],
-                          ld_library_path=FILE_LIBRARY_PATH)
+                self.metadata_info['filename']], env=ENV)
         else:
             shell = Shell([
                 FILECMD_PATH, '-b', '--mime-type',
-                self.metadata_info['filename']],
-                          ld_library_path=FILE_LIBRARY_PATH)
+                self.metadata_info['filename']], env=ENV)
 
         self.errors(shell.stderr)
         mimetype = shell.stdout.strip()
@@ -156,8 +154,7 @@ class FileEncoding(BaseValidator):
         """
         shell = Shell([
             FILECMD_PATH, '-b', '--mime-encoding',
-            self.metadata_info['filename']],
-                      ld_library_path=FILE_LIBRARY_PATH)
+            self.metadata_info['filename']], env=ENV)
         self.messages(shell.stdout)
         self.errors(shell.stderr)
         encoding = shell.stdout.strip()

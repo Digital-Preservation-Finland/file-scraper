@@ -14,8 +14,7 @@ class Shell(object):
 
     """Docstring for ShellTarget. """
 
-    def __init__(self, command, output_file=subprocess.PIPE,
-                 ld_library_path=None):
+    def __init__(self, command, output_file=subprocess.PIPE, env=None):
         """Initialize instance.
 
         :command: Command to execute as list
@@ -25,8 +24,8 @@ class Shell(object):
         self._stdout = None
         self._stderr = None
         self._returncode = None
-        self.ld_library_path = ld_library_path
         self.output_file = output_file
+        self.env = env
 
     @property
     def returncode(self):
@@ -65,7 +64,7 @@ class Shell(object):
             (self._returncode, self._stdout,
              self._stderr) = run_command(
                  cmd=self.command, stdout=self.output_file,
-                 ld_library_path=self.ld_library_path)
+                 env=self.env)
 
         return {
             'returncode': self._returncode,
