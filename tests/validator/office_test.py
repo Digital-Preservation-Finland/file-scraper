@@ -79,7 +79,6 @@ def test_validate_invalid_file(filename, mimetype, version):
 
 
 def _validate(metadata_info):
-    print "validator instance:", metadata_info
     validator = Office(metadata_info)
     validator.validate()
     return validator.is_valid
