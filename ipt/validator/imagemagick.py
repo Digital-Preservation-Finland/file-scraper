@@ -11,8 +11,8 @@ except ImportError:
 else:
     WAND_IMPORT = True
 
+
 FORMAT_STRINGS = {
-    'image/x-dpx': 'DPX',
     'image/png': 'PNG',
     'image/jpeg': 'JPEG',
     'image/jp2': 'JP2',
@@ -36,8 +36,7 @@ class ImageMagick(BaseValidator):
         Validate file
         """
         if not WAND_IMPORT:
-            self.messages("File format was not detected.")
-            self.errors("Unable to load Wand library for Python."
+            self.errors("Unable to load Wand library for Python. "
                         "The ImageMagicK library might be missing.")
             return
 
