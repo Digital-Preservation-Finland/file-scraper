@@ -4,8 +4,12 @@ This is an ImageMagick validator.
 
 
 from ipt.validator.basevalidator import BaseValidator
-from wand.image import Image
-
+try:
+    from wand.image import Image
+except ImportError:
+    WAND_IMPORT = False
+else:
+    WAND_IMPORT = True
 
 FORMAT_STRINGS = {
     'image/x-dpx': 'DPX',
@@ -31,6 +35,12 @@ class ImageMagick(BaseValidator):
         """
         Validate file
         """
+        if not WAND_IMPORT:
+            self.messages("File format was not detected.")
+            self.errors("Unable to load Wand library for Python."
+                        "The ImageMagicK library might be missing.")
+            return
+
         try:
             img = Image(filename=self.metadata_info['filename'])
         except:
@@ -44,4 +54,3 @@ class ImageMagick(BaseValidator):
                 self.errors("File format does not match with MIME type.")
             # ensure that temporary files are not left in /tmp/
             img.__del__()
-
