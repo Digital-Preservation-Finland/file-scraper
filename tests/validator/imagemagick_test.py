@@ -35,7 +35,7 @@ def test_validate_valid_file(filename, mimetype, version):
 @pytest.mark.parametrize(
     ['filename', 'mimetype', 'version'],
     [
-        ("valid_png.png", "image/x-dpx", "")
+        ("valid_png.png", "image/tiff", "6.0")
     ]
 )
 def test_validate_invalid_file(filename, mimetype, version):
