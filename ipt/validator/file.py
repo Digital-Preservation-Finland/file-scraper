@@ -33,7 +33,7 @@ class File(BaseValidator):
         'presentation': ['12.0', '14.0', '15.0'],
         # file-5.30 does not reliably recognize all DPX files
         # 'image/x-dpx': ['2.0'],
-        'image/png': [''],
+        'image/png': ['1.2'],
         'image/jpeg': ['1.00', '1.01', '1.02'],
         'image/jp2': [''],
         'image/tiff': ['6.0']

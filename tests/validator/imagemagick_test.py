@@ -16,6 +16,7 @@ BASEPATH = "tests/data/02_filevalidation_data/imagemagick"
         ("valid_jpeg.jpeg", "image/jpeg", "1.01"),
         ("valid_jp2.jp2", "image/jp2", ""),
         ("valid_tiff.tiff", "image/tiff", "6.0"),
+        ("valid_png.png", "image/png", "1.2"),
     ]
 )
 def test_validate_valid_file(filename, mimetype, version):

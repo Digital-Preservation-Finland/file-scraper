@@ -44,7 +44,7 @@ import pytest
         ("text/html", "4.01", "UTF-16", ["JHoveHTML", "FileEncoding"]),
         ("text/html", "5.0", "UTF-8", ["Vnu", "XmlEncoding", "JHoveTextUTF8"]),
         ("text/html", "5.0", "UTF-16", ["Vnu", "XmlEncoding", "FileEncoding"]),
-        ("image/png", "", "", ["Pngcheck", "File", "ImageMagick"]),
+        ("image/png", "1.2", "", ["Pngcheck", "File", "ImageMagick"]),
         ("application/warc", "0.17", "", ["WarctoolsWARC"]),
         ("application/warc", "0.18", "", ["WarctoolsWARC"]),
         ("application/warc", "1.0", "", ["WarctoolsWARC"]),
