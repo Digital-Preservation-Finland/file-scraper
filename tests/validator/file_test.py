@@ -44,7 +44,7 @@ BASEPATH = "tests/data/02_filevalidation_data/"
         ("office/ODF_Formula.odf",
          "application/vnd.oasis.opendocument.formula", "1.2"),
         ("imagemagick/valid_png.png",
-         "image/png", ""),
+         "image/png", "1.2"),
         ("imagemagick/valid_jpeg.jpeg",
          "image/jpeg", "1.01"),
         ("imagemagick/valid_jp2.jp2",
@@ -126,6 +126,7 @@ def test_validate_encoding(mimetype, version, encoding, file_encoding):
                  'ascii': 'ISO-8859-15',
                  'utf_8': 'UTF-8',
                  'utf_16': 'UTF-16'}
+
     (tmphandle, tmppath) = tempfile.mkstemp()
     with open(tmppath, 'w') as f:
         if file_encoding == 'ascii':
@@ -146,4 +147,47 @@ def test_validate_encoding(mimetype, version, encoding, file_encoding):
     validator.validate()
     f.close()
     os.remove(tmppath)
-    assert validator.is_valid == bool(encoding == enc_match[file_encoding])
+    assert validator.is_valid 
+
+
+@pytest.mark.parametrize(
+    ['mimetype', 'version', 'encoding', 'file_encoding'],
+    [
+        ('text/plain', '', '', 'latin_1'),
+        ('text/plain', '', 'UTF-17', 'latin_1'),
+        ('text/plain', '', 'ISO-8859-16', 'utf_16'),
+    ]
+)
+
+def test_invalid_encoding(mimetype, version, encoding, file_encoding):
+
+    enc_match = {'latin_1': 'ISO-8859-15',
+                 'ascii': 'ISO-8859-15',
+                 'utf_8': 'UTF-8',
+                 'utf_16': 'UTF-16'}
+
+    (tmphandle, tmppath) = tempfile.mkstemp()
+    with open(tmppath, 'w') as f:
+        if file_encoding == 'ascii':
+            f.write('abc'.decode('utf8').encode('ascii'))
+        else:
+            f.write('åäö'.decode('utf8').encode(file_encoding))
+
+
+    metadata_info = {
+        'filename': tmppath,
+        'format': {
+            'mimetype': mimetype,
+            'version': version,
+            'charset': encoding
+        }
+    }
+
+    validator = FileEncoding(metadata_info)
+    validator.validate()
+    f.close()
+    os.remove(tmppath)
+
+    assert not validator.is_valid #== bool(encoding == enc_match[file_encoding])
+
+    print(validator)

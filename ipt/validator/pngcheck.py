@@ -14,7 +14,7 @@ class Pngcheck(BaseValidator):
     """
 
     _supported_mimetypes = {
-        'image/png': ["1.2"]
+        'image/png': ['1.2']
     }
 
     def validate(self):

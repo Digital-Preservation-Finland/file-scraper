@@ -13,7 +13,7 @@ def validate(filename):
             'tests/data/02_filevalidation_data/png', filename),
         "format": {
             "mimetype": 'image/png',
-            "version": '1.2'}}
+            "version": '1.21.21.2'}}
 
     val = ipt.validator.pngcheck.Pngcheck(metadata_info)
     val.validate()
