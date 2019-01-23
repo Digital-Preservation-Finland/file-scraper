@@ -121,6 +121,9 @@ def test_validate_invalid_file(filename, mimetype, version):
         ('text/xml', '1.0', 'ISO-8859-15', 'ascii')
     ]
 )
+
+
+
 def test_validate_encoding(mimetype, version, encoding, file_encoding):
     enc_match = {'latin_1': 'ISO-8859-15',
                  'ascii': 'ISO-8859-15',
@@ -147,8 +150,11 @@ def test_validate_encoding(mimetype, version, encoding, file_encoding):
     validator.validate()
     f.close()
     os.remove(tmppath)
-    assert validator.is_valid 
 
+    supportor = FileEncoding(metadata_info)
+    assert supportor.is_supported(metadata_info)
+
+    assert validator.is_valid 
 
 @pytest.mark.parametrize(
     ['mimetype', 'version', 'encoding', 'file_encoding'],
@@ -156,10 +162,12 @@ def test_validate_encoding(mimetype, version, encoding, file_encoding):
         ('text/plain', '', '', 'latin_1'),
         ('text/plain', '', 'UTF-17', 'latin_1'),
         ('text/plain', '', 'ISO-8859-16', 'utf_16'),
+        ('text/plain', '', 'UTF-8', 'utf_8')
     ]
 )
 
 def test_invalid_encoding(mimetype, version, encoding, file_encoding):
+
 
     enc_match = {'latin_1': 'ISO-8859-15',
                  'ascii': 'ISO-8859-15',
@@ -183,11 +191,15 @@ def test_invalid_encoding(mimetype, version, encoding, file_encoding):
         }
     }
 
+    supporter = FileEncoding(metadata_info)
+    if encoding == 'UTF-8':
+        assert not supporter.is_supported(metadata_info)
+    else:
+        assert supporter.is_supported(metadata_info)
+
     validator = FileEncoding(metadata_info)
     validator.validate()
     f.close()
     os.remove(tmppath)
+    assert not validator.is_valid
 
-    assert not validator.is_valid #== bool(encoding == enc_match[file_encoding])
-
-    print(validator)

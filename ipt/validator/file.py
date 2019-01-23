@@ -144,11 +144,9 @@ class FileEncoding(BaseValidator):
         """
         if metadata_info['format']['mimetype'] in cls._supported_mimetypes:
 
-            if not metadata_info['format']['charset']:
+            if metadata_info['format']['charset'] == 'UTF-8':
                 return False
-            elif metadata_info['format']['charset'] not in \
-                    list(cls._encodings.keys()):
-                return False
+
         return super(FileEncoding, cls).is_supported(metadata_info)
 
     def validate(self):
@@ -172,4 +170,5 @@ class FileEncoding(BaseValidator):
             err = " ".join(
                 ["File encoding mismatch:", encoding, "was found, but",
                  self.metadata_info['format']['charset'], "was expected."])
+
             self.errors(err)
