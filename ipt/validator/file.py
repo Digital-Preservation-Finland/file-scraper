@@ -166,8 +166,7 @@ class FileEncoding(BaseValidator):
                 self.messages("File encoding match found.")
                 self.validator_info = self.metadata_info
 
-            elif encoding not in self._encodings[
-                    self.metadata_info['format']['charset']]:
+            else:
                 err = " ".join(
                     ["File encoding mismatch:", encoding, "was found, but",
                      self.metadata_info['format']['charset'], "was expected."])
