@@ -116,21 +116,18 @@ def test_validate_invalid_file(filename, mimetype, version):
         ('text/xml', '1.0', 'ISO-8859-15', 'ascii')
     ]
 )
-
-
-
 def test_validate_encoding(mimetype, version, encoding, file_encoding):
     """
     Test that a valid encoding is validated. Tests functions is_supported and
     validate in FileEncoding class.
     """
 
-    (tmphandle, tmppath) = tempfile.mkstemp()
-    with open(tmppath, 'w') as f:
+    (_, tmppath) = tempfile.mkstemp()
+    with open(tmppath, 'w') as outfile:
         if file_encoding == 'ascii':
-            f.write('abc'.decode('utf8').encode('ascii'))
+            outfile.write('abc'.decode('utf8').encode('ascii'))
         else:
-            f.write('åäö'.decode('utf8').encode(file_encoding))
+            outfile.write('åäö'.decode('utf8').encode(file_encoding))
 
     metadata_info = {
         'filename': tmppath,
@@ -143,12 +140,13 @@ def test_validate_encoding(mimetype, version, encoding, file_encoding):
 
     validator = FileEncoding(metadata_info)
     validator.validate()
-    f.close()
+    outfile.close()
     os.remove(tmppath)
 
     assert validator.is_supported(metadata_info)
 
     assert validator.is_valid
+
 
 @pytest.mark.parametrize(
     ['mimetype', 'version', 'encoding', 'file_encoding'],
@@ -159,20 +157,18 @@ def test_validate_encoding(mimetype, version, encoding, file_encoding):
         ('text/plain', '', '', 'utf_8')
     ]
 )
-
 def test_invalid_encoding(mimetype, version, encoding, file_encoding):
     """
     Tests is_supported method with different kind of errorneous encoding info,
     such as missing charset, or unknown encoding.
     """
 
-    (tmphandle, tmppath) = tempfile.mkstemp()
-    with open(tmppath, 'w') as f:
+    (_, tmppath) = tempfile.mkstemp()
+    with open(tmppath, 'w') as outfile:
         if file_encoding == 'ascii':
-            f.write('abc'.decode('utf8').encode('ascii'))
+            outfile.write('abc'.decode('utf8').encode('ascii'))
         else:
-            f.write('åäö'.decode('utf8').encode(file_encoding))
-
+            outfile.write('åäö'.decode('utf8').encode(file_encoding))
 
     metadata_info = {
         'filename': tmppath,
@@ -182,7 +178,6 @@ def test_invalid_encoding(mimetype, version, encoding, file_encoding):
             'charset': encoding
         }
     }
-
 
     validator = FileEncoding(metadata_info)
 
@@ -194,7 +189,6 @@ def test_invalid_encoding(mimetype, version, encoding, file_encoding):
         assert validator.is_supported(metadata_info)
 
     validator.validate()
-    f.close()
+    outfile.close()
     os.remove(tmppath)
     assert not validator.is_valid
-
