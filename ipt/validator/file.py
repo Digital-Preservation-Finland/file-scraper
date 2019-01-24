@@ -175,7 +175,6 @@ class FileEncoding(BaseValidator):
         except KeyError:
             err = " ".join(
                 ["File encoding missing from metadata, it is mandatory for text files. Found:",
-                 encoding, "was found, but", self.metadata_info['format']['charset'],
-                 "was expected."])
+                 encoding])
 
             self.errors(err)
