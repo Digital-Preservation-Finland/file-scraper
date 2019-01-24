@@ -109,14 +109,9 @@ def test_validate_invalid_file(filename, mimetype, version):
     ['mimetype', 'version', 'encoding', 'file_encoding'],
     [
         ('text/plain', '', 'ISO-8859-15', 'latin_1'),
-        ('text/plain', '', 'UTF-16', 'latin_1'),
-        ('text/plain', '', 'ISO-8859-15', 'utf_16'),
         ('text/plain', '', 'UTF-16', 'utf_16'),
-        ('text/plain', '', 'ISO-8859-15', 'utf_8'),
         ('text/plain', '', 'ISO-8859-15', 'ascii'),
         ('text/xml', '1.0', 'ISO-8859-15', 'latin_1'),
-        ('text/xml', '1.0', 'UTF-16', 'latin_1'),
-        ('text/xml', '1.0', 'ISO-8859-15', 'utf_16'),
         ('text/xml', '1.0', 'UTF-16', 'utf_16'),
         ('text/xml', '1.0', 'ISO-8859-15', 'ascii')
     ]
@@ -125,10 +120,10 @@ def test_validate_invalid_file(filename, mimetype, version):
 
 
 def test_validate_encoding(mimetype, version, encoding, file_encoding):
-    enc_match = {'latin_1': 'ISO-8859-15',
-                 'ascii': 'ISO-8859-15',
-                 'utf_8': 'UTF-8',
-                 'utf_16': 'UTF-16'}
+    """
+    Test that a valid encoding is validated. Tests functions is_supported and
+    validate in FileEncoding class.
+    """
 
     (tmphandle, tmppath) = tempfile.mkstemp()
     with open(tmppath, 'w') as f:
@@ -151,28 +146,25 @@ def test_validate_encoding(mimetype, version, encoding, file_encoding):
     f.close()
     os.remove(tmppath)
 
-    supportor = FileEncoding(metadata_info)
-    assert supportor.is_supported(metadata_info)
+    assert validator.is_supported(metadata_info)
 
-    assert validator.is_valid 
+    assert validator.is_valid
 
 @pytest.mark.parametrize(
     ['mimetype', 'version', 'encoding', 'file_encoding'],
     [
-        ('text/plain', '', '', 'latin_1'),
         ('text/plain', '', 'UTF-17', 'latin_1'),
         ('text/plain', '', 'ISO-8859-16', 'utf_16'),
-        ('text/plain', '', 'UTF-8', 'utf_8')
+        ('text/plain', '', 'UTF-8', 'utf_8'),
+        ('text/plain', '', '', 'utf_8')
     ]
 )
 
 def test_invalid_encoding(mimetype, version, encoding, file_encoding):
-
-
-    enc_match = {'latin_1': 'ISO-8859-15',
-                 'ascii': 'ISO-8859-15',
-                 'utf_8': 'UTF-8',
-                 'utf_16': 'UTF-16'}
+    """
+    Tests is_supported method with different kind of errorneous encoding info,
+    such as missing charset, or unknown encoding.
+    """
 
     (tmphandle, tmppath) = tempfile.mkstemp()
     with open(tmppath, 'w') as f:
@@ -191,13 +183,16 @@ def test_invalid_encoding(mimetype, version, encoding, file_encoding):
         }
     }
 
-    supporter = FileEncoding(metadata_info)
-    if encoding == 'UTF-8':
-        assert not supporter.is_supported(metadata_info)
-    else:
-        assert supporter.is_supported(metadata_info)
 
     validator = FileEncoding(metadata_info)
+
+    if encoding == 'UTF-8':
+        assert not validator.is_supported(metadata_info)
+    elif not encoding:
+        assert validator.is_supported(metadata_info)
+    else:
+        assert validator.is_supported(metadata_info)
+
     validator.validate()
     f.close()
     os.remove(tmppath)
