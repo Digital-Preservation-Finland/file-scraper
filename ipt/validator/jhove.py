@@ -253,7 +253,7 @@ class JHoveTextUTF8(JHoveBase):
         """
         if metadata_info['format']['mimetype'] in cls._supported_mimetypes:
 
-            if not metadata_info['format']['charset']:
+            if 'charset' not in metadata_info['format']:
                 return False
             elif metadata_info['format']['charset'] != 'UTF-8':
                 return False
