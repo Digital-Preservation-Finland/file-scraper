@@ -50,6 +50,7 @@ class Shell(object):
         """Command standard error output.
 
         :returns: Stderr as string
+
         """
         return self.run()["stdout"]
 

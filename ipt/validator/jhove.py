@@ -252,8 +252,7 @@ class JHoveTextUTF8(JHoveBase):
         :metadata_info: metadata_info
         """
         if metadata_info['format']['mimetype'] in cls._supported_mimetypes:
-            """if not metadata_info['format']['charset']:
-                return False"""
+
             if not metadata_info['format']['charset']:
                 return False
             elif metadata_info['format']['charset'] != 'UTF-8':

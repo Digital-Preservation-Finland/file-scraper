@@ -17,9 +17,9 @@ class File(BaseValidator):
     _supported_mimetypes = {
         'application/vnd.oasis.opendocument.text': ['1.0', '1.1', '1.2'],
         'application/vnd.oasis.opendocument.spreadsheet':
-            ['1.0', '1.1', '1.2'],
+        ['1.0', '1.1', '1.2'],
         'application/vnd.oasis.opendocument.presentation':
-            ['1.0', '1.1', '1.2'],
+        ['1.0', '1.1', '1.2'],
         'application/vnd.oasis.opendocument.graphics': ['1.0', '1.1', '1.2'],
         'application/vnd.oasis.opendocument.formula': ['1.0', '1.1', '1.2'],
         'application/msword': ['8.0', '8.5', '9.0', '10.0', '11.0'],
@@ -28,7 +28,7 @@ class File(BaseValidator):
         'application/vnd.openxmlformats-officedocument.wordprocessingml.'
         'document': ['12.0', '14.0', '15.0'],
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
-            ['12.0', '14.0', '15.0'],
+        ['12.0', '14.0', '15.0'],
         'application/vnd.openxmlformats-officedocument.presentationml.'
         'presentation': ['12.0', '14.0', '15.0'],
         # file-5.30 does not reliably recognize all DPX files
@@ -44,8 +44,8 @@ class File(BaseValidator):
         Check MIME type determined by libmagic
         """
         shell = Shell([
-            FILECMD_PATH, '-b', '--mime-type', self.metadata_info['filename']],
-            env=ENV)
+            FILECMD_PATH, '-b', '--mime-type',
+            self.metadata_info['filename']], env=ENV)
         self.messages(shell.stdout)
         self.errors(shell.stderr)
         mimetype = shell.stdout.strip()
@@ -144,7 +144,8 @@ class FileEncoding(BaseValidator):
         """
         if metadata_info['format']['mimetype'] in cls._supported_mimetypes:
 
-            if metadata_info['format']['charset'] and metadata_info['format']['charset'] == 'UTF-8':
+            if 'charset' in metadata_info['format'] and \
+                    metadata_info['format']['charset'] == 'UTF-8':
                 return False
 
         return super(FileEncoding, cls).is_supported(metadata_info)
@@ -174,7 +175,7 @@ class FileEncoding(BaseValidator):
 
         except KeyError:
             err = " ".join(
-                ["File encoding missing from metadata, it is mandatory for text files. Found:",
-                 encoding])
+                ["File encoding missing from metadata, it is mandatory for"
+                 "text files."])
 
             self.errors(err)

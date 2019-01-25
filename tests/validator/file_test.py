@@ -128,7 +128,8 @@ def test_validate_invalid_file(filename, mimetype, version):
 def test_validate_encoding(mimetype, version, encoding, file_encoding):
     """
     Tests validation of a valid/invalid encoding using is_supported
-    and validate functions in the FileEncodig class.
+    and validate functions in the FileEncodig class. Tests also if
+    a charset is totally missing.
     """
     enc_match = {'latin_1': 'ISO-8859-15',
                  'ascii': 'ISO-8859-15',
@@ -151,8 +152,18 @@ def test_validate_encoding(mimetype, version, encoding, file_encoding):
         }
     }
 
+    metadata_info_2 = {
+        'filename': tmppath,
+        'format': {
+            'mimetype': mimetype,
+            'version': version,
+        }
+    }
+
     validator = FileEncoding(metadata_info)
+    validator_2 = FileEncoding(metadata_info_2)
     validator.validate()
+    validator_2.validate()
     outfile.close()
     os.remove(tmppath)
 
@@ -165,3 +176,6 @@ def test_validate_encoding(mimetype, version, encoding, file_encoding):
 
     if encoding != 'UTF-8':
         assert validator.is_valid == bool(encoding == enc_match[file_encoding])
+
+    assert validator_2.is_supported(metadata_info_2)
+    assert not validator_2.is_valid
