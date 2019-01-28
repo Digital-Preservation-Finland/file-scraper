@@ -223,6 +223,17 @@ def test_utf8_supported():
     validator = JHoveTextUTF8(metadata_info)
     assert not validator.is_supported(metadata_info)
 
+    metadata_info2 = {
+        "filename": "foo",
+        "format": {
+            "mimetype": "text/plain",
+            "version": ""
+        }
+    }
+
+    validator = JHoveTextUTF8(metadata_info2)
+    assert not validator.is_supported(metadata_info2)
+
 
 def test_audiomd_metadata():
     """Test the audiomd metadata validation"""
