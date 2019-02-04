@@ -1,0 +1,30 @@
+PREFIX=/usr
+ROOT=
+PYROOT=${ROOT}/
+
+all: info
+
+info:
+		@echo
+		@echo "PAS contract database"
+		@echo
+		@echo "Usage:"
+		@echo "  make clean             - Clean some temporary file"
+		@echo "  make test              - Run all unit tests"
+		@echo "  make install           - Install dpres-scraper"
+		@echo
+
+clean:
+		rm -f INSTALLED_FILES
+		rm -f INSTALLED_FILES.in
+
+install: clean
+		python setup.py build ; python ./setup.py install -O1 --prefix="${PREFIX}" --root="${PYROOT}" --record=INSTALLED_FILES.in
+		cat INSTALLED_FILES.in | sed 's/^/\//g' >> INSTALLED_FILES
+		echo "-- INSTALLED_FILES"
+		cat INSTALLED_FILES
+		echo "--"
+
+test:
+		py.test -svvv --maxfail=9999 --junitprefix=dpres-scraper --junitxml=junit.xml tests
+
