@@ -1,36 +1,35 @@
 """
-This is an PDF/A validator.
+This is an PDF/A scraper.
 """
+try:
+    import lxml.etree as ET
+except ImportError:
+    pass
 
-import lxml.etree as ET
-from ipt.validator.basevalidator import BaseValidator, Shell
+from dpres_scraper.base import BaseScraper, Shell
 
 
 VERAPDF_PATH = '/usr/share/java/verapdf/verapdf'
 
 
-class VeraPDF(BaseValidator):
+class VeraPdf(BaseScraper):
     """
-    PDF/A validator
+    PDF/A scraper
     """
-    _supported_mimetypes = {
+    _supported = {
         "application/pdf": ['A-1a', 'A-1b', 'A-2a', 'A-2b', 'A-2u', 'A-3a',
-                            'A-3b', 'A-3u']
-    }
+                            'A-3b', 'A-3u']}
+    _only_wellformed = True
 
-    def validate(self):
+    def scrape_file(self):
+        """Scrape file
         """
-        Validate file and version by passing the version from the METS
-        metadata_info data as a flavour argument to the validator which
-        selects a specific validation profile for the stated version.
-        The validator returns an XML validation report to stdout. If the
-        file is not valid or the version is not compliant with the
-        selected validation profile the validation report is sent to
-        stderr.
-        """
-        flavour = self.metadata_info['format']['version'][-2:]
-        cmd = [
-            VERAPDF_PATH, '-f', flavour, self.metadata_info['filename']]
+        if self.version is not None:
+            flavour = self.version[-2:]
+            cmd = [VERAPDF_PATH, '-f', flavour, self.filename]
+        else:
+            cmd = [VERAPDF_PATH, self.filename]
+
         shell = Shell(cmd)
         if shell.returncode != 0:
             raise VeraPDFError(shell.stderr)
@@ -47,6 +46,14 @@ class VeraPDF(BaseValidator):
                 self.errors(shell.stdout)
         except ET.XMLSyntaxError:
             self.errors(shell.stderr)
+        finally:
+            self._collect_elements()
+
+    # pylint: disable=no-self-use
+    def _s_stream_type(self):
+        """Return file type
+        """
+        return 'binary'
 
 
 class VeraPDFError(Exception):
