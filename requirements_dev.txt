@@ -1,1 +1,11 @@
 pytest
+coverage
+pytest-cov
+python-mimeparse
+opf-fido
+file-magic
+pymediainfo
+ffmpeg-python
+Pillow
+wand
+lxml

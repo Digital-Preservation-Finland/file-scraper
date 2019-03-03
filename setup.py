@@ -9,7 +9,7 @@ setup(
     packages=find_packages(exclude=['tests', 'tests.*']),
     version=get_version(),
     entry_points={'console_scripts': [
-        'contractdb =dpres_scraper.cmdline:main']},
+        'scraper=dpres_scraper.cmdline:main']},
     zip_safe=False,
     tests_require=['pytest'],
     test_suite='tests')
