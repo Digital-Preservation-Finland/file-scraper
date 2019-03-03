@@ -3,9 +3,12 @@
 import os
 import subprocess
 import tempfile
-from lxml import etree
+try:
+    from lxml import etree
+except ImportError:
+    pass
 
-from ipt.validator.basevalidator import BaseValidator
+from dpres_scraper.base import BaseScraper
 
 XSI = 'http://www.w3.org/2001/XMLSchema-instance'
 XS = '{http://www.w3.org/2001/XMLSchema}'
@@ -21,26 +24,24 @@ SCHEMA_TEMPLATE = """<?xml version = "1.0" encoding = "UTF-8"?>
     </xs:schema>"""
 
 
-class Xmllint(BaseValidator):
+class Xmllint(BaseScraper):
 
-    """This class implements a plugin interface for validator module and
+    """This class implements a plugin interface for scraper module and
     validates XML files using Xmllint tool.
 
     .. seealso:: http://xmlsoft.org/xmllint.html
     """
 
-    _supported_mimetypes = {
-        'text/xml': ['1.0']
-    }
+    _supported = {'text/xml': []}
+    _only_wellformed = True
 
-    def __init__(self, metadata_info):
-        super(Xmllint, self).__init__(metadata_info)
+    def __init__(self, mimetype, filename, validation):
+        self._schema = None
+        self._used_version = None
+        self._has_constructed_schema = False
+        super(Xmllint, self).__init__(mimetype, filename, validation)
 
-        self.schema = metadata_info.get('schema', None)
-        self.used_version = None
-        self.has_constructed_schema = False
-
-    def validate(self):
+    def scrape_file(self):
         """Validate XML file with Xmllint and return a tuple of results.
         Strategy for XML file validation is
             1) Try validate well-formedness by opening file.
@@ -60,18 +61,20 @@ class Xmllint(BaseValidator):
 
         # Try to validate well-formedness by opening file in XML parser
         try:
-            fd = open(self.metadata_info["filename"])
+            fd = open(self.filename)
             parser = etree.XMLParser(dtd_validation=False, no_network=True)
             tree = etree.parse(fd, parser=parser)
-            self.used_version = tree.docinfo.xml_version
+            self._used_version = tree.docinfo.xml_version
             fd.close()
         except etree.XMLSyntaxError as exception:
             self.errors("Validation failed: document is not well-formed.")
             self.errors(str(exception))
+            self._collect_elements()
             return
         except IOError as exception:
             self.errors("Validation failed: missing file.")
             self.errors(str(exception))
+            self._collect_elements()
             return
 
         # Try validate against DTD
@@ -80,26 +83,28 @@ class Xmllint(BaseValidator):
 
         # Try validate againts XSD
         else:
-            if not self.schema:
-                self.schema = self.construct_xsd(tree)
-                if not self.schema:
+            if not self._schema:
+                self._schema = self.construct_xsd(tree)
+                if not self._schema:
                     # No given schema and didn't find included schemas but XML
                     # was well formed.
                     self.messages("Validation success: Document is "
                                   "well-formed but does not contain schema.")
+                    self._collect_elements()
                     return
 
-            (exitcode, stdout, stderr) = self.exec_xmllint(schema=self.schema)
+            (exitcode, stdout, stderr) = self.exec_xmllint(schema=self._schema)
         if exitcode == 0:
             self.messages(
-                "%s Validation success%s" % (
-                    self.metadata_info["filename"], stdout))
+                "%s Validation success%s" % (self.filename, stdout))
         else:
             self.errors(stderr)
 
         # Clean up constructed schemas
-        if self.has_constructed_schema:
-            os.remove(self.schema)
+        if self._has_constructed_schema:
+            os.remove(self._schema)
+
+        self._collect_elements()
 
     def construct_xsd(self, document_tree):
         """This method constructs one schema file which collects all used
@@ -135,7 +140,7 @@ class Xmllint(BaseValidator):
 
             # Check if XSD file is included in SIP
             local_schema_location = os.path.dirname(
-                self.metadata_info["filename"]) + '/' + schema_location
+                self.filename) + '/' + schema_location
             if os.path.isfile(local_schema_location):
                 schema_location = local_schema_location
 
@@ -144,12 +149,12 @@ class Xmllint(BaseValidator):
             schema_tree.append(xs_import)
         if xsd_exists:
             # Contstruct the schema
-            fd, schema = tempfile.mkstemp(
-                prefix='dpres-ipt-', suffix='.tmp')
+            _, schema = tempfile.mkstemp(
+                prefix='dpres-scraper-', suffix='.tmp')
             et = etree.ElementTree(schema_tree)
             et.write(schema)
 
-            self.has_constructed_schema = True
+            self._has_constructed_schema = True
 
             return schema
 
@@ -157,7 +162,8 @@ class Xmllint(BaseValidator):
 
     def exec_xmllint(self, huge=True, no_output=True, no_network=True,
                      validate=False, schema=None):
-
+        """Execute xmllint
+        """
         command = ['xmllint']
         command += ['--valid'] if validate else []
         command += ['--huge'] if huge else []
@@ -165,7 +171,7 @@ class Xmllint(BaseValidator):
         command += ['--nonet'] if no_network else []
         command += ['--catalogs']
         command += ['--schema', schema] if schema else []
-        command += [self.metadata_info["filename"]]
+        command += [self.filename]
 
         proc = subprocess.Popen(
             command,
@@ -194,3 +200,9 @@ class Xmllint(BaseValidator):
             error = "\n".join(filtered_errors)
 
         return super(Xmllint, self).errors(error)
+
+    # pylint: disable=no-self-use
+    def _s_stream_type(self):
+        """Return file type
+        """
+        return 'char'
