@@ -1,32 +1,32 @@
 """
-This is an PSPP validator.
+This is an PSPP scraper.
 """
-
 
 import os
 import shutil
 import tempfile
-from ipt.validator.basevalidator import BaseValidator, Shell
+from dpres_scraper.base import BaseScraper, Shell
 
 
 PSPP_PATH = '/usr/bin/pspp-convert'
 SPSS_PORTABLE_HEADER = "SPSS PORT FILE"
 
 
-class PSPP(BaseValidator):
+class Pspp(BaseScraper):
     """
-    PSPP validator
+    PSPP scraper
     """
-    _supported_mimetypes = {
-        "application/x-spss-por": [""],
-    }
+    _supported = {'application/x-spss-por': []}
+    _only_wellformed = True
 
-    def validate(self):
-        """
-        Validate file
+    def scrape_file(self):
+        """Scrape file
         """
         # Check file header
-        self._check_header()
+        with open(self.filename) as input_file:
+            first_line = input_file.readline()
+        if SPSS_PORTABLE_HEADER not in first_line:
+            self.errors("File is not SPSS Portable format.")
 
         # Try to conver file with pspp-convert. If conversion is succesful
         # (converted.por file is produced), the original file is valid.
@@ -36,7 +36,7 @@ class PSPP(BaseValidator):
         try:
             shell = Shell([
                 PSPP_PATH,
-                self.metadata_info['filename'],
+                self.filename,
                 temp_file,
                 ])
             self.errors(shell.stderr)
@@ -47,13 +47,10 @@ class PSPP(BaseValidator):
                 self.errors('File conversion failed.')
         finally:
             shutil.rmtree(temp_dir)
+            self._collect_elements()
 
-    def _check_header(self):
+    # pylint: disable=no-self-use
+    def _s_stream_type(self):
+        """Return file type
         """
-        Check that file header contains some strings characteristic to SPSS
-        Portable file.
-        """
-        with open(self.metadata_info['filename']) as input_file:
-            first_line = input_file.readline()
-        if SPSS_PORTABLE_HEADER not in first_line:
-            self.errors("File is not SPSS Portable format.")
+        return 'binary'
