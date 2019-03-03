@@ -1,9 +1,12 @@
+"""Warc file scraper
+"""
+
 import gzip
 import tempfile
 import unicodedata
 import string
 
-from ipt.validator.basevalidator import BaseValidator, Shell
+from dpres_scraper.base import BaseScraper, Shell
 
 
 def sanitaze_string(dirty_string):
@@ -14,21 +17,26 @@ def sanitaze_string(dirty_string):
     return sanitazed_string
 
 
-class WarctoolsWARC(BaseValidator):
+class WarcWarctools(BaseScraper):
 
-    """Implements WARC file format validator using Internet Archives warctools
-    validator.
+    """Implements WARC file format scraper using Internet Archives warctools
+    scraper.
 
     .. seealso:: https://github.com/internetarchive/warctools
     """
 
-    _supported_mimetypes = {
-        'application/warc': ['0.17', '0.18', '1.0']
-    }
+    _supported = {'application/warc': []}
+    _only_wellformed = True
 
-    def validate(self):
+    def __init__(self, mimetype, filename, validation):
+        """
+        """
+        self._version = None
+        super(WarcWarctools, self).__init__(mimetype, filename, validation)
 
-        shell = Shell(['warcvalid', self.metadata_info['filename']])
+    def scrape_file(self):
+
+        shell = Shell(['warcvalid', self.filename])
 
         if shell.returncode != 0:
             self.errors("Validation failed: returncode %s" % shell.returncode)
@@ -40,46 +48,50 @@ class WarctoolsWARC(BaseValidator):
 
         self.messages(shell.stdout)
 
-        self._check_warc_version()
-
-    def _check_warc_version(self):
-        warc_fd = gzip.open(self.metadata_info['filename'])
+        warc_fd = gzip.open(self.filename)
         try:
             # First assume archive is compressed
             line = warc_fd.readline()
         except IOError:
             # Not compressed archive
             warc_fd.close()
-            with open(self.metadata_info['filename'], 'r') as warc_fd:
+            with open(self.filename, 'r') as warc_fd:
                 line = warc_fd.readline()
         except Exception as exception:
             # Compressed but corrupted gzip file
             self.errors(str(exception))
+            self._collect_elements()
             return
 
-        if "WARC/%s" % self.metadata_info['format']['version'] in line:
-            self.messages("OK: WARC version good")
-        else:
-            self.errors(
-                "File version check error, version %s not found from header "
-                "of warc file: %s"
-                % (self.metadata_info['format']['version'],
-                   self.metadata_info['filename'])
-                )
+        self._version = line.split("WARC/", 1)[1].split(" ")[0]
+        self._collect_elements()
+
+    def _s_version(self):
+        """Return version
+        """
+        return self._version
+
+    # pylint: disable=no-self-use
+    def _s_stream_type(self):
+        """Return file type
+        """
+        return 'binary'
 
 
-class WarctoolsARC(BaseValidator):
+class ArcWarctools(BaseScraper):
+    """Scraper for older arc files
+    """
 
-    _supported_mimetypes = {
-        'application/x-internet-archive': ['1.0', '1.1']
-    }
+    _supported = {'application/x-internet-archive': []}
+    _only_wellformed = True
 
-    def validate(self):
-        """Validate ARC file by converting to WARC using Warctools' arc2warc
+    def scrape_file(self):
+        """Scrape ARC file by converting to WARC using Warctools' arc2warc
         converter."""
 
-        with tempfile.NamedTemporaryFile(prefix="ipt-warctools.") as warcfile:
-            shell = Shell(command=['arc2warc', self.metadata_info['filename']],
+        with tempfile.NamedTemporaryFile(prefix="scraper-warctools.") \
+                as warcfile:
+            shell = Shell(command=['arc2warc', self.filename],
                           output_file=warcfile)
 
             if shell.returncode != 0:
@@ -93,3 +105,11 @@ class WarctoolsARC(BaseValidator):
                 self.errors(sanitazed_string.encode('utf-8'))
 
             self.messages(shell.stdout)
+
+        self._collect_elements()
+
+    # pylint: disable=no-self-use
+    def _s_stream_type(self):
+        """Return file type
+        """
+        return 'binary'
