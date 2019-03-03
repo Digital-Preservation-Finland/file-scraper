@@ -1,30 +1,38 @@
-"""validator iterator for digital object validation"""
+"""Scraper iterator"""
 
-# pylint: disable=unused-import
-import os
-from ipt.validator.basevalidator import BaseValidator
-from ipt.validator.jhove import JHoveBase, JHovePDF, \
-    JHoveTiff, JHoveJPEG, JHoveHTML, JHoveGif, JHoveTextUTF8, JHoveWAV
-from ipt.validator.xmllint import Xmllint
-from ipt.validator.lxml_encoding import XmlEncoding
-from ipt.validator.warctools import WarctoolsWARC, WarctoolsARC
-from ipt.validator.ghostscript import GhostScript
-from ipt.validator.pngcheck import Pngcheck
-from ipt.validator.csv_validator import PythonCsv
-from ipt.validator.ffmpeg import FFMpeg
-from ipt.validator.office import Office
-from ipt.validator.file import File, FileEncoding
-from ipt.validator.imagemagick import ImageMagick
-from ipt.validator.pspp import PSPP
-from ipt.validator.verapdf import VeraPDF
-from ipt.validator.dpxv import DPXv
-from ipt.validator.vnu import Vnu
+from dpres_scraper.base import BaseScraper
+from dpres_scraper.jhove_base import JHove
+from dpres_scraper.magic_base import BinaryMagic, TextMagic
+from dpres_scraper.mediainfo_base import Mediainfo
+from dpres_scraper.pil_base import Pil
+from dpres_scraper.wand_base import Wand
+from dpres_scraper.scrapers.jhove import GifJHove, HtmlJHove, JpegJHove, \
+    PdfJHove, TiffJHove, Utf8JHove, WavJHove
+from dpres_scraper.scrapers.xmllint import Xmllint
+from dpres_scraper.scrapers.lxml_encoding import XmlEncoding
+from dpres_scraper.scrapers.warctools import WarcWarctools, ArcWarctools
+from dpres_scraper.scrapers.ghostscript import GhostScript
+from dpres_scraper.scrapers.pngcheck import Pngcheck
+from dpres_scraper.scrapers.csv_scraper import Csv
+from dpres_scraper.scrapers.mediainfo import MpegMediainfo, DataMediainfo, \
+    VideoMediainfo
+from dpres_scraper.scrapers.office import Office
+from dpres_scraper.scrapers.file import TextPlainFile
+from dpres_scraper.scrapers.magic import TextFileMagic, XmlFileMagic, \
+    HtmlFileMagic, BinaryFileMagic, ImageFileMagic
+from dpres_scraper.scrapers.wand import TiffWand, ImageWand
+from dpres_scraper.scrapers.pil import ImagePil, JpegPil, TiffPil
+from dpres_scraper.scrapers.pspp import Pspp
+from dpres_scraper.scrapers.verapdf import VeraPdf
+from dpres_scraper.scrapers.dpx import Dpx
+from dpres_scraper.scrapers.vnu import Vnu
+from dpres_scraper.scrapers.dummy import Dummy
 
 
-def iter_validators(metadata_info):
+def iter_scrapers(filename, mimetype, version, validate=True):
     """
-    Find a validator for digital object from given `metadata_info` record.
-    :returns: validator class
+    Iterate scrapers
+    :returns: scraper class
 
     Implementation of class factory pattern from
     http://stackoverflow.com/questions/456672/class-factory-in-python
@@ -32,84 +40,39 @@ def iter_validators(metadata_info):
 
     # pylint: disable=no-member
 
-    found_validator = False
+    for cls in BaseScraper.__subclasses__():
+        if cls not in [TextPlainFile, Dummy, JHove, BinaryMagic, TextMagic,
+                       Mediainfo, Pil, Wand]:
+            obj = cls(mimetype, filename, validate)
+            if obj.is_supported(version):
+                yield obj
 
-    if metadata_info.get("erroneous-mimetype", False):
-        yield UnknownFileFormat(metadata_info)
-        return
+    for cls in JHove.__subclasses__():
+        obj = cls(mimetype, filename, validate)
+        if obj.is_supported(version):
+            yield obj
 
-    if not os.path.exists(metadata_info['filename']):
-        yield NonExistingFile(metadata_info)
-        return
+    for cls in BinaryMagic.__subclasses__():
+        obj = cls(mimetype, filename, validate)
+        if obj.is_supported(version):
+            yield obj
 
-    for cls in BaseValidator.__subclasses__():
-        if cls.is_supported(metadata_info):
-            found_validator = True
-            yield cls(metadata_info)
+    for cls in TextMagic.__subclasses__():
+        obj = cls(mimetype, filename, validate)
+        if obj.is_supported(version):
+            yield obj
 
-    for cls in JHoveBase.__subclasses__():
-        if cls.is_supported(metadata_info):
-            found_validator = True
-            yield cls(metadata_info)
+    for cls in Mediainfo.__subclasses__():
+        obj = cls(mimetype, filename, validate)
+        if obj.is_supported(version):
+            yield obj
 
-    if not found_validator:
-        yield UnknownFileFormat(metadata_info)
+    for cls in Pil.__subclasses__():
+        obj = cls(mimetype, filename, validate)
+        if obj.is_supported(version):
+            yield obj
 
-
-class UnknownFileFormat(object):
-    """
-    Validator class for unknown filetypes. This will always result as
-    invalid validation result.
-    """
-
-    def __init__(self, metadata_info):
-        """
-        Initialize object
-        """
-        self.metadata_info = metadata_info
-
-    def validate(self):
-        """
-        No implementation
-        """
-        pass
-
-    def result(self):
-        """
-        Return validation result
-        """
-        error_message = 'No validator for mimetype: %s version: %s' % (
-            self.metadata_info['format']['mimetype'],
-            self.metadata_info['format']['version'])
-
-        return {
-            'is_valid': False,
-            'messages': "",
-            'errors': error_message}
-
-
-class NonExistingFile(object):
-    """Validator class for files that do not exist. This will always result as
-    invalid validation result.
-    """
-
-    def __init__(self, metadata_info):
-        """Initialize object
-        """
-        self.metadata_info = metadata_info
-
-    def validate(self):
-        """No implementation
-        """
-        pass
-
-    def result(self):
-        """Return validation result
-        """
-        error_message = 'File %s does not exist' \
-            % self.metadata_info['filename']
-
-        return {
-            'is_valid': False,
-            'messages': "",
-            'errors': error_message}
+    for cls in Wand.__subclasses__():
+        obj = cls(mimetype, filename, validate)
+        if obj.is_supported(version):
+            yield obj
