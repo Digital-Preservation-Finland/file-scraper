@@ -1,47 +1,49 @@
 """
-This is an Office validator.
+This is an Office scraper.
 """
-
-
 import tempfile
 import shutil
-from ipt.validator.basevalidator import BaseValidator, Shell
+from dpres_scraper.base import BaseScraper, Shell
 
 
-class Office(BaseValidator):
+class Office(BaseScraper):
     """
-    Office validator
+    Office scraper
     """
-    _supported_mimetypes = {
-        'application/vnd.oasis.opendocument.text': ['1.0', '1.1', '1.2'],
-        'application/vnd.oasis.opendocument.spreadsheet':
-            ['1.0', '1.1', '1.2'],
-        'application/vnd.oasis.opendocument.presentation':
-            ['1.0', '1.1', '1.2'],
-        'application/vnd.oasis.opendocument.graphics': ['1.0', '1.1', '1.2'],
-        'application/vnd.oasis.opendocument.formula': ['1.0', '1.1', '1.2'],
-        'application/msword': ['8.0', '8.5', '9.0', '10.0', '11.0'],
-        'application/vnd.ms-excel': ['8.0', '9.0', '10.0', '11.0'],
-        'application/vnd.ms-powerpoint': ['8.0', '9.0', '10.0', '11.0'],
+    _supported = {
+        'application/vnd.oasis.opendocument.text': [],
+        'application/vnd.oasis.opendocument.spreadsheet': [],
+        'application/vnd.oasis.opendocument.presentation': [],
+        'application/vnd.oasis.opendocument.graphics': [],
+        'application/vnd.oasis.opendocument.formula': [],
+        'application/msword': [],
+        'application/vnd.ms-excel': [],
+        'application/vnd.ms-powerpoint': [],
         'application/vnd.openxmlformats-officedocument.wordprocessingml.'
-        'document': ['12.0', '14.0', '15.0'],
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
-            ['12.0', '14.0', '15.0'],
+        'document': [],
+        'application/vnd.openxmlformats-officedocument.'
+        'spreadsheetml.sheet': [],
         'application/vnd.openxmlformats-officedocument.presentationml.'
-        'presentation': ['12.0', '14.0', '15.0']
-    }
+        'presentation': []}
+    _only_wellformed = True
 
-    def validate(self):
-        """
-        Validate file
+    def scrape_file(self):
+        """Scrape file
         """
         temp_dir = tempfile.mkdtemp()
         try:
             env = {'HOME': temp_dir}
             shell = Shell([
                 'soffice', '--convert-to', 'pdf', '--outdir', temp_dir,
-                self.metadata_info['filename']], env=env)
+                self.filename], env=env)
             self.errors(shell.stderr)
             self.messages(shell.stdout)
         finally:
             shutil.rmtree(temp_dir)
+            self._collect_elements()
+
+    # pylint: disable=no-self-use
+    def _s_stream_type(self):
+        """Return file type
+        """
+        return 'binary'
