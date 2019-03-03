@@ -1,181 +1,135 @@
+"""Scraper for various binary and text file formats
 """
-This is an File (libmagick) validator.
-"""
+import ctypes
+
+try:
+    ctypes.cdll.LoadLibrary('/opt/file-5.30/lib64/libmagic.so.1')
+except OSError:
+    print('/opt/file-5.30/lib64/libmagic.so.1 not found, MS Office detection '
+          'may not work properly if file command library is older than 5.30.')
+try:
+    import magic
+except ImportError:
+    pass
+
+from dpres_scraper.base import BaseScraper
 
 
-from ipt.validator.basevalidator import BaseValidator, Shell
-
-
-FILECMD_PATH = "/opt/file-5.30/bin/file"
-ENV = {'LD_LIBRARY_PATH': "/opt/file-5.30/lib64"}
-
-
-class File(BaseValidator):
-    """
-    File (libmagick) validator checks MIME-type
-    """
-    _supported_mimetypes = {
-        'application/vnd.oasis.opendocument.text': ['1.0', '1.1', '1.2'],
-        'application/vnd.oasis.opendocument.spreadsheet':
-        ['1.0', '1.1', '1.2'],
-        'application/vnd.oasis.opendocument.presentation':
-        ['1.0', '1.1', '1.2'],
-        'application/vnd.oasis.opendocument.graphics': ['1.0', '1.1', '1.2'],
-        'application/vnd.oasis.opendocument.formula': ['1.0', '1.1', '1.2'],
-        'application/msword': ['8.0', '8.5', '9.0', '10.0', '11.0'],
-        'application/vnd.ms-excel': ['8.0', '9.0', '10.0', '11.0'],
-        'application/vnd.ms-powerpoint': ['8.0', '9.0', '10.0', '11.0'],
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.'
-        'document': ['12.0', '14.0', '15.0'],
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
-        ['12.0', '14.0', '15.0'],
-        'application/vnd.openxmlformats-officedocument.presentationml.'
-        'presentation': ['12.0', '14.0', '15.0'],
-        # file-5.30 does not reliably recognize all DPX files
-        # 'image/x-dpx': ['2.0'],
-        'image/png': ['1.2'],
-        'image/jpeg': ['1.00', '1.01', '1.02'],
-        'image/jp2': [''],
-        'image/tiff': ['6.0']
-    }
-
-    def validate(self):
-        """
-        Check MIME type determined by libmagic
-        """
-        shell = Shell([
-            FILECMD_PATH, '-b', '--mime-type',
-            self.metadata_info['filename']], env=ENV)
-        self.messages(shell.stdout)
-        self.errors(shell.stderr)
-        mimetype = shell.stdout.strip()
-        if not self.metadata_info['format']['mimetype'] == mimetype:
-            self.errors("MIME type does not match")
-        else:
-            self.messages("MIME type is correct")
-            self.validator_info = self.metadata_info
-
-
-class FileTextPlain(BaseValidator):
-    """
-    file (libmagick) validator checks mime-type and if it is a text
-    file with the soft option that excludes libmagick.
-
-    All text files are accepted as text/plain.
-    """
-    _supported_mimetypes = {
-        'text/plain': ['']
-    }
-
-    def file_mimetype(self, soft=False):
-        """Detect mimetype using file (libmagick) or with
-        the soft option that excludes libmagick.
-
-        :soft: use file with soft option if true
-
-        :returns: file mimetype
-        """
-        if soft:
-            shell = Shell([
-                FILECMD_PATH, '-be', 'soft', '--mime-type',
-                self.metadata_info['filename']], env=ENV)
-        else:
-            shell = Shell([
-                FILECMD_PATH, '-b', '--mime-type',
-                self.metadata_info['filename']], env=ENV)
-
-        self.errors(shell.stderr)
-        mimetype = shell.stdout.strip()
-
-        return mimetype
-
-    def validate(self):
-        """
-        Check MIME type determined by libmagic
-        """
-
-        mimetype = self.file_mimetype()
-        self.messages('Detected mimetype: %s' % mimetype)
-
-        if self.metadata_info['format']['mimetype'] == mimetype:
-            self.messages("MIME type is correct")
-            self.validator_info = self.metadata_info
-            return
-
-        self.messages('METS mimetype is text/plain, trying text detection')
-
-        mimetype = self.file_mimetype(soft=True)
-
-        self.messages('Detected alternative mimetype: %s' % mimetype)
-
-        if self.metadata_info['format']['mimetype'] == mimetype:
-            self.messages("MIME type is correct. The "
-                          "digital object will be preserved as text/plain.")
-            self.validator_info = self.metadata_info
-            return
-
-        self.errors("MIME type does not match")
-
-
-class FileEncoding(BaseValidator):
-    """
-    Character encoding validator for text files
+class BinaryMagic(BaseScraper):
+    """Scraper for text files
     """
 
-    _supported_mimetypes = {
-        'text/csv': [''],
-        'text/plain': [''],
-        'text/xml': ['1.0'],
-        'text/html': ['4.01', '5.0'],
-        'application/xhtml+xml': ['1.0', '1.1']
-    }
-
-    # We use JHOVE for UTF-8 validation
-    _encodings = {
-        'ISO-8859-15': ['us-ascii', 'iso-8859-1'],
-        'UTF-16': ['utf-16', 'utf-16be', 'utf-16le']
-    }
-
-    @classmethod
-    def is_supported(cls, metadata_info):
+    def __init__(self, mimetype, filename, validation):
         """
-        Check supported mimetypes.
-        :metadata_info: metadata_info
         """
-        if metadata_info['format']['mimetype'] in cls._supported_mimetypes:
+        self._magic_mimetype = None
+        super(BinaryMagic, self).__init__(mimetype, filename, validation)
 
-            if 'charset' in metadata_info['format'] and \
-                    metadata_info['format']['charset'] == 'UTF-8':
-                return False
-
-        return super(FileEncoding, cls).is_supported(metadata_info)
-
-    def validate(self):
+    def scrape_file(self):
+        """Scrape text file
         """
-        Check character encoding
-        """
-        shell = Shell([
-            FILECMD_PATH, '-b', '--mime-encoding',
-            self.metadata_info['filename']], env=ENV)
-        self.messages(shell.stdout)
-        self.errors(shell.stderr)
-        encoding = shell.stdout.strip()
-
         try:
-            if encoding in self._encodings[
-                    self.metadata_info['format']['charset']]:
-                self.messages("File encoding match found.")
-                self.validator_info = self.metadata_info
+            magic_ = magic.open(magic.MAGIC_MIME_TYPE)
+            magic_.load()
+            self._magic_mimetype = magic_.file(self.filename)
+            magic_.close()
+            self.messages('The file was scraped.')
+        except:
+            self.errors('Error in scraping file.')
+        finally:
+            self._collect_elements()
 
-            else:
-                err = " ".join(
-                    ["File encoding mismatch:", encoding, "was found, but",
-                     self.metadata_info['format']['charset'], "was expected."])
-                self.errors(err)
+    @property
+    def well_formed(self):
+        """Return well formed info
+        """
+        if not self._validate:
+            return None
+        if self._magic_mimetype == self.mimetype:
+            return super(BinaryMagic, self).well_formed
+        return False
 
-        except KeyError:
-            err = " ".join(
-                ["File encoding missing from metadata, it is mandatory for"
-                 "text files."])
+    def _s_mimetype(self):
+        """Return mimetype
+        """
+        return self._magic_mimetype
 
-            self.errors(err)
+    # pylint: disable=no-self-use
+    def _s_stream_type(self):
+        """Return file type
+        """
+        return 'binary'
+
+
+class TextMagic(BaseScraper):
+    """Scraper for text files
+    """
+
+    _version_tag = "version "
+
+    def __init__(self, mimetype, filename, validation):
+        """
+        """
+        self._magic_mimetype = None
+        self._magic_version = None
+        self._magic_charset = None
+        super(TextMagic, self).__init__(mimetype, filename, validation)
+
+    def scrape_file(self):
+        """Scrape text file
+        """
+        try:
+            magic_ = magic.open(magic.MAGIC_MIME_TYPE)
+            magic_.load()
+            self._magic_mimetype = magic_.file(self.filename)
+            magic_.close()
+
+            magic_ = magic.open(magic.MAGIC_NONE)
+            magic_.load()
+            self._magic_version = magic_.file(
+                self.filename).split(self._version_tag)[-1].split(" ")[0]
+            magic_.close()
+
+            magic_ = magic.open(magic.MAGIC_MIME_ENCODING)
+            magic_.load()
+            self._magic_charset = magic_.file(self.filename)
+            magic_.close()
+            self.messages('The file was scraped.')
+        except:
+            self.errors('Error in scraping file.')
+        finally:
+            self._collect_elements()
+
+    @property
+    def well_formed(self):
+        """Return well formed info
+        """
+        if not self._validate:
+            return None
+        if self._magic_mimetype == self.mimetype:
+            return super(TextMagic, self).well_formed
+        return False
+
+    def _s_mimetype(self):
+        """Return charset
+        """
+        return self._magic_mimetype
+
+    def _s_charset(self):
+        """Return charset
+        """
+        if self._magic_charset.upper() == 'US-ASCII':
+            return 'UTF-8'
+        elif self._magic_charset.upper() == 'ISO-8859-1':
+            return 'ISO-8859-15'
+        elif self._magic_charset.upper() == 'UTF-16LE' \
+                or self._magic_charset.upper() == 'UTF-16BE':
+            return 'UTF-16'
+        else:
+            return self._magic_charset.upper()
+
+    # pylint: disable=no-self-use
+    def _s_stream_type(self):
+        """Return file type
+        """
+        return 'char'
