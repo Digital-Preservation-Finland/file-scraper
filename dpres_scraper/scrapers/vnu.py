@@ -1,28 +1,34 @@
 """
-A HTML5 validator module using The Nu Html Checker
-(https://validator.github.io/validator/)
+A HTML5 scraper module using The Nu Html Checker
+(https://scraper.github.io/scraper/)
 """
 
-from ipt.validator.basevalidator import BaseValidator, Shell
+from dpres_scraper.base import BaseScraper, Shell
 
 VNU_PATH = "/usr/share/java/vnu/vnu.jar"
 
 
-class Vnu(BaseValidator):
+class Vnu(BaseScraper):
     """
-    Vnu validator supports only HTML version 5.0.
+    Vnu scraper supports only HTML version 5.0.
     """
 
-    _supported_mimetypes = {
-        'text/html': ['5.0']
-    }
+    _supported = {'text/html': ['5.0']}
+    _only_wellformed = True
 
-    def validate(self):
+    def scrape_file(self):
         """
-        Validate file using vnu.jar
+        Scrape file using vnu.jar
         """
         shell = Shell([
             'java', '-jar', VNU_PATH, '--verbose',
-            self.metadata_info['filename']])
+            self.filename])
         self.errors(shell.stderr)
         self.messages(shell.stdout)
+        self._collect_elements()
+
+    # pylint: disable=no-self-use
+    def _s_stream_type(self):
+        """Return file type
+        """
+        return 'char'
