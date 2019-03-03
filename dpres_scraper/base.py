@@ -1,13 +1,9 @@
-"""General interface for building a file validator plugin. """
+"""Base module for scrapers
+"""
 import abc
 import subprocess
-
-from ipt.utils import run_command
-
-
-class ValidatorError(Exception):
-    """Unrecoverable error in validator"""
-    pass
+from dpres_scraper.utils import run_command
+from dpres_scraper.utils import combine_metadata
 
 
 class Shell(object):
@@ -63,8 +59,8 @@ class Shell(object):
         if self._returncode is None:
             (self._returncode, self._stdout,
              self._stderr) = run_command(
-                 cmd=self.command, stdout=self.output_file,
-                 env=self.env)
+                cmd=self.command, stdout=self.output_file,
+                env=self.env)
 
         return {
             'returncode': self._returncode,
@@ -73,40 +69,44 @@ class Shell(object):
             }
 
 
-class BaseValidator(object):
-
-    """This class introduces general interface for file validor plugin which
-    every validator has to satisfy. This class is meant to be inherited and to
-    use this class at least exec_cmd and filename variables has to be set.
+class BaseScraper(object):
+    """Base class for scrapers
     """
 
     __metaclass__ = abc.ABCMeta
-    _supported_mimetypes = None
 
-    validator_info = None
+    _supported = {}
+    _only_wellformed = False
 
-    def __init__(self, metadata_info):
-        """Setup the base validator object"""
-
-        self.metadata_info = metadata_info
+    def __init__(self, mimetype, filename, validate=True):
+        """
+        """
+        self.filename = filename
+        self.mimetype = mimetype
+        self.version = None
+        self.streams = {}
+        self.info = None
         self._messages = []
         self._errors = []
-        self.validator_info = {'filename': metadata_info['filename'],
-                               'format': {}}
+        self._validate = validate
 
-    @classmethod
-    def is_supported(cls, metadata_info):
-        """Return True if this validator class supports digital object with
-        given metadata_info record.
+    def is_supported(self, version):
+        """Return true if mimetype is supported, if version matches
+        (if needed), and if validation is needed in scrapers which just
+        validate.
+        """
+        if self.mimetype in self._supported and \
+                (not self._supported[self.mimetype] or \
+                 version in self._supported[self.mimetype]) and \
+                (self._validate or not self._only_wellformed):
+            return True
+        return False
 
-        Default implementation checks the mimetype and version. Other
-        implementations may override this for other selection criteria"""
-
-        mimetype = metadata_info['format']['mimetype']
-        version = metadata_info['format']['version']
-
-        return mimetype in cls._supported_mimetypes and \
-            version in cls._supported_mimetypes[mimetype]
+    @abc.abstractmethod
+    def scrape_file(self):
+        """Scrapers must implement scraping
+        """
+        pass
 
     def messages(self, message=None):
         """Return validation diagnostic messages"""
@@ -121,28 +121,87 @@ class BaseValidator(object):
         return concat(self._errors, 'ERROR: ')
 
     @property
-    def is_valid(self):
-        """Validation result is valid when there are more than one messages and
-        no error messages.
+    def well_formed(self):
+        """Check if file is well-formed.
         """
+        if not self._validate:
+            return None
         return len(self._messages) > 0 and len(self._errors) == 0
 
-    def result(self):
-        """Return the validation result"""
+    def _collect_elements(self):
+        """Collect elements metadata
+        """
+        for _ in self.iter_tool_streams(None):
+            metadata = {}
+            for method in dir(self):
+                if callable(getattr(self, method)) \
+                        and method.startswith('_s_'):
+                    item = getattr(self, method)()
+                    if item is not None:
+                        metadata[method[3:]] = item
+            dict_meta = {metadata['index']: metadata}
+            self.streams = combine_metadata(self.streams, dict_meta)
+        if 'mimetype' in self.streams[0]:
+            self.mimetype = self.streams[0]['mimetype']
+        if 'version' in self.streams[0]:
+            self.version = self.streams[0]['version']
 
-        if len(self._messages) == 0:
-            self.validate()
+        self.info = {'class': self.__class__.__name__,
+                     'messages': self.messages(),
+                     'errors': self.errors()}
 
-        return {
-            'is_valid': self.is_valid,
-            'messages': self.messages(),
-            'errors': self.errors(),
-            'result': self.validator_info
-        }
+    # pylint: disable=no-self-use,unused-argument
+    def iter_tool_streams(self, stream_type):
+        """Iterate streams with given stream type
+        """
+        yield {}
+
+    def set_tool_stream(self, index):
+        """Set stream. Implement in scraper, if needed.
+        Otherwise allow call but do nothing.
+        """
+        pass
+
+    def _s_mimetype(self):
+        """Return mimetype
+        """
+        return self.mimetype
+
+    def _s_version(self):
+        """Return version
+        """
+        return self.version
+
+    def _s_index(self):
+        """Return stream index
+        """
+        return 0
 
     @abc.abstractmethod
-    def validate(self):
-        """All validator classes must implement the validate() method"""
+    def _s_stream_type(self):
+        """Return stream type
+        """
+        pass
+
+
+class BaseDetector(object):
+    """Class to identify file format
+    """
+
+    __metaclass__ = abc.ABCMeta
+
+    def __init__(self, filename):
+        """Initialize detector
+        """
+        self.filename = filename
+        self.mimetype = None
+        self.version = None
+        self.info = None
+
+    @abc.abstractmethod
+    def detect(self):
+        """Detect file
+        """
         pass
 
 
