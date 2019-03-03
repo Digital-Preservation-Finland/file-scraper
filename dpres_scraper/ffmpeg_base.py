@@ -1,337 +1,297 @@
-""" This is a module that integrates ffmpeg and ffprobe tools with
-information-package-tools for file validation purposes. Validation is
-achieved by doing a conversion. If conversion is succesful, file is
-interpred as a valid file. Container type is also validated with ffprobe.
-"""
+"""Metadata scraper for video file formats and streams"""
+import re
+from fractions import Fraction
 
-import json
+try:
+    import ffmpeg
+except ImportError:
+    pass
 
-from ipt.validator.basevalidator import BaseValidator, Shell
-from ipt.utils import compare_lists_of_dicts, handle_div, find_max_complete
-
-MPEG1 = {"version": None, "mimetype": "video/MP1S"}
-MPEG2_TS = {"version": None, "mimetype": "video/MP2T"}
-MPEG2_PS = {"version": None, "mimetype": "video/MP2P"}
-MP3 = {"version": None, "mimetype": "audio/mpeg"}
-MP4 = {"version": None, "mimetype": "video/mp4"}
-RAW_AAC = {"version": None, "mimetype": "audio/mp4"}
-RAW_MPEG = {"version": None, "mimetype": "video/mpeg"}
-RAW_MPEG1 = {"version": "1", "mimetype": "video/mpeg"}
-RAW_MPEG2 = {"version": "2", "mimetype": "video/mpeg"}
-
-MPEG1_STRINGS = ["MPEG-1 video",
-                 "MPEG-1 Systems / MPEG program stream",
-                 "MPEG-1 Systems / MPEG program stream (VCD)"]
-RAW_MPEG_STRINGS = ["raw MPEG video"]
-RAW_MPEG1_STRINGS = ["raw MPEG-1 video"]
-RAW_MPEG2_STRINGS = ["raw MPEG-2 video"]
-MPEG2_TS_STRINGS = ["MPEG-2 transport stream format",
-                    "MPEG-TS (MPEG-2 Transport Stream)",
-                    "raw MPEG-TS (MPEG-2 Transport Stream)"]
-MPEG2_PS_STRINGS = ["MPEG-PS format",
-                    "MPEG-2 PS (DVD VOB)",
-                    "MPEG-2 PS (VOB)",
-                    "MPEG-PS (MPEG-2 Program Stream)",
-                    "MPEG-2 PS (SVCD)"]
-MP3_STRINGS = [
-    "MPEG audio layer 2/3",
-    "MP3 (MPEG audio layer 3)",
-    "MP2/3 (MPEG audio layer 2/3)",
-    "ADU (Application Data Unit) MP3 (MPEG audio layer 3)",
-    "MP3onMP4",
-    "libmp3lame MP3 (MPEG audio layer 3)",
-    "libshine MP3 (MPEG audio layer 3)"]
-MPEG4_STRINGS = ["M4A",
-                 "MP4 (MPEG-4 Part 14)",
-                 "QuickTime/MPEG-4/Motion JPEG 2000 format",
-                 "QuickTime / MOV",
-                 "raw H.264 video"]
-RAW_AAC_STRINGS = ["raw ADTS AAC",
-                   "raw ADTS AAC (Advanced Audio Coding)"]
-
-CONTAINER_MIMETYPES = [
-    {"data": MPEG1, "strings": MPEG1_STRINGS},
-    {"data": MPEG2_TS, "strings": MPEG2_TS_STRINGS},
-    {"data": MPEG2_PS, "strings": MPEG2_PS_STRINGS},
-    {"data": MP3, "strings": MP3_STRINGS},
-    {"data": MP4, "strings": MPEG4_STRINGS},
-    {"data": RAW_AAC, "strings": RAW_AAC_STRINGS},
-    {"data": RAW_MPEG, "strings": RAW_MPEG_STRINGS},
-    {"data": RAW_MPEG1, "strings": RAW_MPEG1_STRINGS},
-    {"data": RAW_MPEG2, "strings": RAW_MPEG2_STRINGS}
-]
-
-NOT_CONTAINERS = ['audio/mpeg', 'video/mpeg', 'audio/mp4']
-
-STREAM_MIMETYPES = {
-    "mpegvideo": "video/mpeg",
-    "mpeg1video": "video/mpeg",
-    "mpeg2video": "video/mpeg",
-    "h264": "video/mp4",
-    "libmp3lame": "audio/mpeg",
-    "libshine": "audio/mpeg",
-    "mp3": "audio/mpeg",
-    "mp3adu": "audio/mpeg",
-    "mp3adufloat": "audio/mpeg",
-    "mp3float": "audio/mpeg",
-    "mp3on4": "audio/mpeg",
-    "mp3on4float": "audio/mpeg",
-    "aac": "audio/mp4"
-    }
+from dpres_scraper.base import BaseScraper
+from dpres_scraper.utils import iso8601_duration, strip_zeros
 
 
-class FFMpeg(BaseValidator):
-    """FFMpeg validator class."""
+class FFMpeg(BaseScraper):
+    """Scraper class for collecting video metadata
+    """
 
-    # TODO: video/mp4 accepts various other formats too, such as 3gp
-    _supported_mimetypes = {
-        'video/mpeg': ['1', '2'],
-        'audio/mpeg': ['1', '2'],
-        'video/MP1S': [''],
-        'video/MP2T': [''],
-        'video/MP2P': [''],
-        'audio/mp4': [''],
-        'video/mp4': [''],
-    }
+    _only_wellformed = True
 
-    def validate(self):
-        """validate file."""
-        self.check_container_mimetype()
-        if not set(self.metadata_info.keys()).intersection(
-                set(['audio', 'video', 'audio_streams', 'video_streams'])):
-            self.errors('Stream metadata was not found.')
-            return
-        if 'audio' in self.metadata_info:
-            self.check_streams('audio')
-        if 'video' in self.metadata_info:
-            self.check_streams('video')
-        if 'audio_streams' in self.metadata_info:
-            self.check_streams('audio_streams')
-        if 'video_streams' in self.metadata_info:
-            self.check_streams('video_streams')
-        self.check_validity()
-
-    def check_container_mimetype(self):
-        """parse version from ffprobes stderr, which is in following format:
-
-            "format": {
-                "filename": "tests/data/02_filevalidation_data/mpg/mpg1.mpg",
-                "nb_streams": 1,
-                "format_name": "mpegvideo",
-                "format_long_name": "raw MPEG video",
-                "duration": "19.025400",
-                "size": "761016",
-                "bit_rate": "320000"
-            }
+    def __init__(self, mimetype, filename, validation):
+        """Initialize scraper
         """
-        shell = Shell(
-            ['ffprobe', '-show_format', '-v',
-             'debug', '-print_format', 'json', self.metadata_info['filename']])
-        data = json.loads(str(shell.stdout))
-        format_data = data.get("format")
+        self._ffmpeg_stream = None
+        self._ffmpeg = None
+        super(FFMpeg, self).__init__(mimetype, filename, validation)
 
-        if format_data is None:
-            self.errors(
-                "No format data could be read. "
-                "FFprobe output: %s " % shell.stdout)
-            return
-
-        detected_format = None
-        for mimetype in CONTAINER_MIMETYPES:
-            if format_data.get("format_long_name") in mimetype["strings"]:
-                detected_format = mimetype["data"]
-
-        if not detected_format:
-            self.errors(
-                "No matching mimetype information could be found,"
-                "this might not be MPEG file."
-                "FFprobe output: %s" % shell.stdout)
-            return
-
-        if any(stream in self.metadata_info for stream in
-               ['audio_streams', 'video_streams']):
-            if self.metadata_info['format']['mimetype'] in NOT_CONTAINERS:
-                self.errors("Stream file format %s can not include streams,"
-                            " as decribed in metadata." % (
-                                self.metadata_info["format"]["mimetype"]))
-            elif any(stream in self.metadata_info for stream in
-                     ['audio', 'video']):
-                self.errors("AudioMD or VideoMD metadata included for"
-                            " container %s. This must be directed to"
-                            " the including streams." % (
-                                self.metadata_info["format"]["mimetype"]))
-
-    def check_validity(self):
-        """Check file validity. The validation logic is check that ffmpeg returncode
-        is 0 and nothing is found in stderr. FFmpeg lists faulty parts of mpeg
-        to stderr."""
-        shell = Shell([
-            'ffmpeg', '-v', 'error', '-i', self.metadata_info['filename'],
-            '-f', 'null', '-'])
-        if shell.returncode != 0 or shell.stderr != "":
-            self.errors(
-                "File %s not valid: %s" % (
-                    self.metadata_info['filename'], shell.stderr))
-            return
-        self.messages("%s is valid." % self.metadata_info['filename'])
-
-    def check_streams(self, stream_type):
-        """Check that streams inside container are what they are described in
-        audioMD and videoMD. Ffprobe command gives a json output in the
-        following format:
-
-            "streams": [
-            {
-                "index": 0,
-                "codec_name": "mpeg1video",
-                "codec_long_name": "MPEG-1 video",
-                "codec_type": "video",
-                "codec_time_base": "1001/30000",
-                "codec_tag_string": "[0][0][0][0]",
-                "codec_tag": "0x0000",
-                "width": 320,
-                "height": 240,
-                "has_b_frames": 1,
-                "sample_aspect_ratio": "1:1",
-                "display_aspect_ratio": "4:3",
-                "pix_fmt": "yuv420p",
-                "level": -99,
-                "timecode": "00:00:00:00",
-                "r_frame_rate": "30000/1001",
-                "avg_frame_rate": "30000/1001",
-                "time_base": "1/1200000",
-                "duration": "19.025400"
-            }
-
-        :stream_type: "audio" or "video"
+    def scrape_file(self):
+        """Scrape data from file
         """
-
-        if stream_type in self.metadata_info:
-            if stream_type == 'audio_streams':
-                metadata = self.metadata_info[stream_type]
-                stream_type = 'audio'
-            elif stream_type == 'video_streams':
-                metadata = self.metadata_info[stream_type]
-                stream_type = 'video'
+        try:
+            self._ffmpeg = ffmpeg.probe(self.filename)
+            for stream in [self._ffmpeg['format']] + self._ffmpeg['streams']:
+                if not 'index' in stream:
+                    stream['index'] = 0
+                else:
+                    stream['index'] = stream['index'] + 1
+            self.set_tool_stream(0)
+        except self._ffmpeg.Error as err:
+            if self.mimetype == 'application/octet-stream':
+                self.messages('Was not an audio/video file, '
+                              'skipping scraper...')
             else:
-                metadata = [self.metadata_info]
+                self.errors('Error in scraping file.')
+                self.errors(err.stderr)
         else:
-            metadata = [self.metadata_info]
+            self.messages('The file was scraped.')
+        finally:
+            self._collect_elements()
 
-        found_streams = []
-        shell = Shell(
-            ['ffprobe', '-show_streams', '-show_format', '-print_format',
-             'json', self.metadata_info['filename']])
+    def iter_tool_streams(self, stream_type):
+        """Iterate streams
+        """
+        if stream_type == 'container':
+            self.set_tool_stream(0)
+            yield self._ffmpeg['format']
+        for stream in [self._ffmpeg['format']] + self._ffmpeg['streams']:
+            if stream_type is None:
+                self.set_tool_stream(stream['index'])
+                yield stream
+            else:
+                if 'codec_type' in stream and \
+                        stream['codec_type'] == stream_type:
+                    self.set_tool_stream(stream['index'])
+                    yield stream
 
-        stream_data = json.loads(shell.stdout)
-
-        for stream in stream_data.get("streams", []):
-            new_stream = STREAM_PARSERS[stream_type](stream, stream_type)
-            if not new_stream:
-                continue
-            found_streams.append(new_stream)
-
-        (list1, list2) = find_max_complete(
-            metadata, found_streams, ['format', 'mimetype', 'version'])
-
-        match = compare_lists_of_dicts(list1, list2)
-
-        if match is False:
-            self.errors("Streams in %s are not what is "
-                        "described in metadata. Found %s, expected %s" % (
-                            self.metadata_info["filename"],
-                            found_streams,
-                            metadata))
-
-        if stream_type not in metadata:
+    def set_tool_stream(self, index):
+        """Set stream with given index
+        """
+        if index == 0:
+            self._ffmpeg_stream = self._ffmpeg['format']
             return
-        self.messages("Streams %s are according to metadata description" %
-                      metadata)
+        for stream in self._ffmpeg['streams']:
+            if stream['index'] == index:
+                self._ffmpeg_stream = stream
+                return
 
+    # pylint: disable=no-self-use
+    def _s_version(self):
+        """Returns version of stream
+        """
+        return None
 
-def get_version(mimetype, stream_data):
-    """
-    Solve version of file format.
-    """
-    if mimetype == 'audio/mpeg':
-        if stream_data in ['32', '44.1', '48']:
-            return '1'
-        elif stream_data in ['16', '22.05', '24']:
-            return '2'
-    if mimetype == 'video/mpeg':
-        if stream_data in ['mpegvideo', 'mpeg1video']:
-            return '1'
-        elif stream_data in ['mpeg2video']:
-            return '2'
-    return None
+    # pylint: disable=no-self-use
+    def _s_codec_quality(self):
+        """Returns codec quality. Must be resolved, if returns None.
+        Only values 'lossy' or 'lossless' are allowed.
+        """
+        return None
 
+    # pylint: disable=no-self-use
+    def _s_data_rate_mode(self):
+        """Returns data rate mode. Must be resolved if returns None.
+        Only values 'Fixed' or 'Variable' are allowed.
+        """
+        return None
 
-def parse_video_streams(stream, stream_type):
-    """
-    Parse video streams from ffprobe output.
-    :stream: raw dict of video stream data.
-    :stream_type: audio or video
-    :returns: parsed dict of video stream data.
-    """
-    if stream_type != stream.get("codec_type"):
-        return
-    new_stream = {"format": {}, "video": {}}
-    if stream["codec_name"] in STREAM_MIMETYPES:
-        new_stream["format"]["mimetype"] = \
-            STREAM_MIMETYPES[stream["codec_name"]]
-    else:
-        new_stream["format"]["mimetype"] = stream.get("codec_name")
-    new_stream["format"]["version"] = \
-        get_version(new_stream["format"]["mimetype"], stream['codec_name'])
+    # pylint: disable=no-self-use
+    def _s_signal_format(self):
+        """Returns signal format
+        """
+        if self._s_stream_type() not in [None, 'video']:
+            return None
+        return '(:unav)'
 
-    if "bit_rate" in stream:
-        new_stream["video"]["bit_rate"] = \
-            handle_div(stream.get("bit_rate")+"/1000000")
-    if "avg_frame_rate" in stream:
-        new_stream["video"]["avg_frame_rate"] = \
-            handle_div(stream.get("avg_frame_rate"))
-    if "display_aspect_ratio" in stream:
-        new_stream["display_aspect_ratio"] = \
-            handle_div(stream.get("display_aspect_ratio").replace(':', '/'))
-    new_stream["video"]["width"] = str(stream.get("width"))
-    new_stream["video"]["height"] = str(stream.get("height"))
+    def _s_stream_type(self):
+        """Return stream type
+        """
+        if not 'codec_type' in self._ffmpeg_stream:
+            if self._s_index() == 0:
+                return 'container'
+            else:
+                return 'other'
+        return self._ffmpeg_stream['codec_type']
 
-    return new_stream
+    def _s_index(self):
+        """Return stream index
+        """
+        if not 'index' in self._ffmpeg_stream:
+            return 0
+        return self._ffmpeg_stream['index']
 
+    def _s_color(self):
+        """Returns color information. Only values from fixed list are
+        allowed. Must be resolved, if returns None.
+        """
+        if self._s_stream_type() not in [None, 'video']:
+            return None
+        if 'pix_fmt' in self._ffmpeg_stream:
+            if self._ffmpeg_stream["pix_fmt"] in ["gray"]:
+                return "Grayscale"
+            elif self._ffmpeg_stream["pix_fmt"] in ["monob", "monow"]:
+                return "B&W"
+            else:
+                return 'Color'
+        return None
 
-def parse_audio_streams(stream, stream_type):
-    """
-    Parse audio streams from ffprobe output.
-    :stream: raw dict of audio stream data.
-    :stream_type: audio or video
-    :returns: parsed dict of audio stream data.
-    """
-    if stream_type != stream.get("codec_type"):
-        return
-    new_stream = {"format": {}, "audio": {}}
-    if stream["codec_name"] in STREAM_MIMETYPES:
-        new_stream["format"]["mimetype"] = \
-            STREAM_MIMETYPES[stream["codec_name"]]
-    else:
-        new_stream["format"]["mimetype"] = stream.get("codec_name")
+    def _s_width(self):
+        """Returns frame width
+        """
+        if self._s_stream_type() not in [None, 'video']:
+            return None
+        if 'width' in self._ffmpeg_stream:
+            return str(self._ffmpeg_stream['width'])
+        return '0'
 
-    new_stream["audio"]["bits_per_sample"] = stream.get("bits_per_sample")
-    if "bit_rate" in stream:
-        new_stream["audio"]["bit_rate"] = \
-            str(int(stream.get("bit_rate"))/1000)
-    if "sample_rate" in stream:
-        new_stream["audio"]["sample_rate"] = \
-            handle_div(stream.get("sample_rate")+"/1000")
-    new_stream["audio"]["channels"] = str(stream.get("channels"))
+    def _s_height(self):
+        """Returns frame height
+        """
+        if self._s_stream_type() not in [None, 'video']:
+            return None
+        if 'height' in self._ffmpeg_stream:
+            return str(self._ffmpeg_stream['height'])
+        return '0'
 
-    new_stream["format"]["version"] = \
-        get_version(new_stream["format"]["mimetype"],
-                    new_stream["audio"]["sample_rate"])
+    def _s_par(self):
+        """Returns pixel aspect ratio
+        """
+        if self._s_stream_type() not in [None, 'video']:
+            return None
+        if 'sample_aspect_ratio' in self._ffmpeg_stream:
+            return strip_zeros("%.2f" % float(Fraction(
+                self._ffmpeg_stream['sample_aspect_ratio'].replace(':', '/'))))
 
-    return new_stream
+        return '0'
 
+    def _s_dar(self):
+        """Returns display aspect ratio
+        """
+        if self._s_stream_type() not in [None, 'video']:
+            return None
+        if 'display_aspect_ratio' in self._ffmpeg_stream:
+            return strip_zeros("%.2f" % float(Fraction(
+                self._ffmpeg_stream['display_aspect_ratio'].replace(
+                    ':', '/'))))
+        return '(:unav)'
 
-STREAM_PARSERS = {
-    "video": parse_video_streams,
-    "audio": parse_audio_streams
-}
+    def _s_data_rate(self):
+        """Returns data rate (bit rate)
+        """
+        if self._s_stream_type() not in [None, 'video', 'audio']:
+            return None
+        if 'bit_rate' in self._ffmpeg_stream:
+            if self._ffmpeg_stream['codec_type'] == 'video':
+                return strip_zeros(str(float(
+                    self._ffmpeg_stream['bit_rate'])/1000000))
+            else:
+                return strip_zeros(str(float(
+                    self._ffmpeg_stream['bit_rate'])/1000))
+        return '0'
+
+    def _s_frame_rate(self):
+        """Returns frame rate
+        """
+        if self._s_stream_type() not in [None, 'video']:
+            return None
+        if 'r_frame_rate' in self._ffmpeg_stream:
+            return self._ffmpeg_stream['r_frame_rate'].split('/')[0]
+        return '0'
+
+    def _s_sampling(self):
+        """Returns chroma subsampling method
+        """
+        if self._s_stream_type() not in [None, 'video']:
+            return None
+        sampling = "(:unav)"
+        if 'pix_fmt' in self._ffmpeg_stream:
+            for sampling_code in ["444", "422", "420", "440", "411", "410"]:
+                if sampling_code in self._ffmpeg_stream["pix_fmt"]:
+                    sampling = ":".join(sampling_code)
+                    break
+        return sampling
+
+    def _s_sound(self):
+        """Returns 'Yes' if sound channels are present, otherwise 'No'
+        """
+        if self._s_stream_type() not in [None, 'video']:
+            return None
+        for stream in self._ffmpeg["streams"]:
+            if stream['codec_type'] == 'audio':
+                return 'Yes'
+        return 'No'
+
+    def _s_audio_data_encoding(self):
+        """Returns audio data encoding
+        """
+        if self._s_stream_type() not in [None, 'audio']:
+            return None
+        if 'codec_long_name' in self._ffmpeg_stream:
+            return self._ffmpeg_stream['codec_long_name'].split(' ')[0]
+        return '(:unav)'
+
+    def _s_sampling_frequency(self):
+        """Returns sampling frequency
+        """
+        if self._s_stream_type() not in [None, 'audio']:
+            return None
+        if 'sample_rate' in self._ffmpeg_stream:
+            return strip_zeros(str(float(
+                self._ffmpeg_stream['sample_rate'])/1000))
+        return '0'
+
+    def _s_num_channels(self):
+        """Returns number of channels
+        """
+        if self._s_stream_type() not in [None, 'audio']:
+            return None
+        if 'channels' in self._ffmpeg_stream:
+            return str(self._ffmpeg_stream['channels'])
+        return '(:unav)'
+
+    def _s_codec_creator_app(self):
+        """Returns creator application
+        """
+        if self._s_stream_type() not in [None, 'audio', 'video', 'container']:
+            return None
+        if 'encoder' in self._ffmpeg['format']:
+            return self._ffmpeg['format']['encoder']
+        return '(:unav)'
+
+    def _s_codec_creator_app_version(self):
+        """Returns creator application version
+        """
+        if self._s_stream_type() not in [None, 'audio', 'video', 'container']:
+            return None
+        if 'encoder' in self._ffmpeg['format']:
+            reg = re.search(r'([\d.]+)$',
+                            self._ffmpeg['format']['encoder'])
+            if reg is not None:
+                return reg.group(1)
+        return '(:unav)'
+
+    def _s_codec_name(self):
+        """Returns codec name
+        """
+        if self._s_stream_type() not in [None, 'audio', 'video', 'container']:
+            return None
+        if 'codec_long_name' in self._ffmpeg_stream:
+            return self._ffmpeg_stream['codec_long_name']
+        return '(:unav)'
+
+    def _s_duration(self):
+        """Returns duration
+        """
+        if self._s_stream_type() not in [None, 'audio', 'video']:
+            return None
+        if 'duration' in self._ffmpeg_stream:
+            return iso8601_duration(float(self._ffmpeg_stream['duration']))
+        return '(:unav)'
+
+    def _s_bits_per_sample(self):
+        """Returns bits per sample
+        """
+        if self._s_stream_type() not in [None, 'audio', 'video']:
+            return None
+        if 'bits_per_raw_sample' in self._ffmpeg_stream is not None:
+            return str(self._ffmpeg_stream['bits_per_raw_sample'])
+        return '0'
