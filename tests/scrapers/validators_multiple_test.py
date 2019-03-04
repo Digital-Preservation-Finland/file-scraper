@@ -1,62 +1,47 @@
 """
-Tests office-file validation with combination of Office-validator and
-File-validator.
+Tests office-file scraping with combination of Office-scraper and
+File-scraper.
 """
 
 import os
 import pytest
-from ipt.validator.validators import iter_validators
+from dpres_scraper.iterator import iter_scrapers
 
 
-BASEPATH = "tests/data/02_filevalidation_data/office"
+BASEPATH = "tests/data/documents"
 
 
 # Test valid file
 @pytest.mark.parametrize(
-    ['filename', 'mimetype', 'version'],
+    ['filename', 'mimetype'],
     [
-        ("ODF_Text_Document.odt", "application/vnd.oasis.opendocument.text",
-         "1.2"),
+        ("ODF_Text_Document.odt", "application/vnd.oasis.opendocument.text"),
     ]
 )
-def test_validate_valid_file(filename, mimetype, version):
-    metadata_info = {
-        'filename': os.path.join(BASEPATH, filename),
-        'format': {
-            'mimetype': mimetype,
-            'version': version
-        }
-    }
-
-    for validator in iter_validators(metadata_info):
-        assert validator.result()['is_valid']
+def test_scrape_valid_file(filename, mimetype):
+    for scraper in iter_scrapers(
+            os.path.join(BASEPATH, filename), mimetype, None):
+        assert scraper.well_formed
 
 
 # Test invalid files
 @pytest.mark.parametrize(
-    ['filename', 'mimetype', 'version'],
+    ['filename', 'mimetype'],
     [
-        # Corrupted file - caught by Office validator
+        # Corrupted file - caught by Office scraper
         ("ODF_Text_Document_corrupted.odt",
-         "application/vnd.oasis.opendocument.text", "1.2"),
-        # Wrong MIME - caught by File validator
-        ("ODF_Text_Document.odt", "application/msword", "11.0"),
-        # Unsupported version number - validator not found
-        ("MS_Word_97-2003.doc", "application/msword", "15.0"),
+         "application/vnd.oasis.opendocument.text"),
+        # Wrong MIME - caught by File scraper
+        ("ODF_Text_Document.odt", "application/msword"),
+        # Unsupported version number - scraper not found
+        ("MS_Word_97-2003.doc", "application/msword"),
     ]
 )
-def test_validate_invalid_file(filename, mimetype, version):
-    metadata_info = {
-        'filename': os.path.join(BASEPATH, filename),
-        'format': {
-            'mimetype': mimetype,
-            'version': version
-        }
-    }
+def test_scrape_invalid_file(filename, mimetype):
+    scraper_results = []
+    for scraper in iter_scrapers(
+             os.path.join(BASEPATH, filename), mimetype, None):
+        scraper_results.append(scraper.well_formed)
 
-    validator_results = []
-    for validator in iter_validators(metadata_info):
-        validator_results.append(validator.result()['is_valid'])
-
-    assert not all(validator_results)
-    assert len(validator_results) > 0
+    assert not all(scraper_results)
+    assert len(scraper_results) > 0

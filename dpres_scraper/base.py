@@ -78,7 +78,7 @@ class BaseScraper(object):
     _supported = {}
     _only_wellformed = False
 
-    def __init__(self, mimetype, filename, validate=True):
+    def __init__(self, filename, mimetype, validation=True):
         """
         """
         self.filename = filename
@@ -88,17 +88,18 @@ class BaseScraper(object):
         self.info = None
         self._messages = []
         self._errors = []
-        self._validate = validate
+        self._validation = validation
 
-    def is_supported(self, version):
+    def is_supported(self, version=None):
         """Return true if mimetype is supported, if version matches
         (if needed), and if validation is needed in scrapers which just
-        validate.
+        validation.
         """
         if self.mimetype in self._supported and \
                 (not self._supported[self.mimetype] or \
+                 version is None or \
                  version in self._supported[self.mimetype]) and \
-                (self._validate or not self._only_wellformed):
+                (self._validation or not self._only_wellformed):
             return True
         return False
 
@@ -124,7 +125,7 @@ class BaseScraper(object):
     def well_formed(self):
         """Check if file is well-formed.
         """
-        if not self._validate:
+        if not self._validation:
             return None
         return len(self._messages) > 0 and len(self._errors) == 0
 

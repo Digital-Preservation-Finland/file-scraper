@@ -1,58 +1,38 @@
 """
-Tests for Vnu validator.
+Tests for Vnu scraper.
 """
 
 import os
 import pytest
-from ipt.validator.vnu import Vnu
+from dpres_scraper.scrapers.vnu import Vnu
 
 
-BASEPATH = "tests/data/02_filevalidation_data/html/"
+BASEPATH = "tests/data/text"
 
 
 @pytest.mark.parametrize(
-    [
-        'filename',
-        'is_valid',
-        'errors'
+    ['filename', 'well_formed', 'errors'
     ],
-    [
-        [
-            "valid_html5.html",
-            True,
-            ""
-        ],
-        [
-            "invalid_html5_wrong_encoding.html",
-            False,
-            "Internal encoding declaration"
-        ],
+    [["valid_html5.html", True, ""],
+     ["invalid_html5_wrong_encoding.html", False,
+      "Internal encoding declaration"]
     ]
 )
-def test_validate_valid_file(filename, is_valid, errors):
+def test_scrape_valid_file(filename, well_formed, errors):
     """
-    Test validation of HTML5 files.
+    Test scraping of HTML5 files.
     """
-
-    metadata_info = {
-        'filename': os.path.join(BASEPATH, filename),
-        'format': {
-            'mimetype': "text/html",
-            'version': "5.0"
-        }
-    }
-
-    validator = Vnu(metadata_info)
-    validator.validate()
+    scraper = Vnu(os.path.join(BASEPATH, filename), 'text/html')
+    scraper.scrape_file()
 
     # Is validity expected?
-    assert validator.is_valid is is_valid
+    assert scraper.well_formed is well_formed
 
     # Is stderr output expected?
     if errors == "":
-        assert validator.errors() == ""
+        assert scraper.errors() == ""
     else:
-        assert errors in validator.errors()
+        assert errors in scraper.errors()
 
     # Is stdout output expected?
-    assert metadata_info['filename'] + "\n" == validator.messages()
+    assert scraper.filename + "\n" == scraper.messages()

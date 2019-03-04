@@ -82,7 +82,7 @@ class HtmlJHove(JHove):
 class JpegJHove(JHove):
     """JHove scraper for JPEG"""
 
-    _supporteds = {'image/jpeg': []}
+    _supported = {'image/jpeg': []}
     _only_wellformed = True
     _jhove_module = 'JPEG-hul'
 
@@ -136,10 +136,12 @@ class PdfJHove(JHove):
 
 
 class Utf8JHove(JHove):
-    """JHove scraper for text UTF-8."""
+    """JHove scraper for text UTF-8.
+    We don't want to run this for all files,
+    but just for UTF-8 text files separately.
+    """
 
-    _supported = {'text/csv': [], 'text/plain': [], 'text/xml': [],
-                  'text/html': [], 'application/xhtml+xml': []}
+    _supported = {}
     _only_wellformed = True
     _jhove_module = 'UTF8-hul'
 
@@ -210,8 +212,11 @@ class WavJHove(JHove):
     def _s_sampling_frequency(self):
         """Returns audio data from the report
         """
-        return strip_zeros(str(float(
-            self.aes_report_field('sampleRate'))/1000))
+        try:
+            return strip_zeros(str(float(
+                self.aes_report_field('sampleRate'))/1000))
+        except ValueError:
+            return None
 
     # pylint: disable=no-self-use
     def _s_stream_type(self):

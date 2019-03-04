@@ -29,7 +29,7 @@ from dpres_scraper.scrapers.vnu import Vnu
 from dpres_scraper.scrapers.dummy import Dummy
 
 
-def iter_scrapers(filename, mimetype, version, validate=True):
+def iter_scrapers(filename, mimetype, version, validation=True):
     """
     Iterate scrapers
     :returns: scraper class
@@ -41,38 +41,37 @@ def iter_scrapers(filename, mimetype, version, validate=True):
     # pylint: disable=no-member
 
     for cls in BaseScraper.__subclasses__():
-        if cls not in [TextPlainFile, Dummy, JHove, BinaryMagic, TextMagic,
-                       Mediainfo, Pil, Wand]:
-            obj = cls(mimetype, filename, validate)
+        if cls not in [TextPlainFile, Dummy]:
+            obj = cls(filename, mimetype, validation)
             if obj.is_supported(version):
                 yield obj
 
-    for cls in JHove.__subclasses__():
-        obj = cls(mimetype, filename, validate)
-        if obj.is_supported(version):
-            yield obj
-
     for cls in BinaryMagic.__subclasses__():
-        obj = cls(mimetype, filename, validate)
+        obj = cls(filename, mimetype, validation)
         if obj.is_supported(version):
             yield obj
 
     for cls in TextMagic.__subclasses__():
-        obj = cls(mimetype, filename, validate)
+        obj = cls(filename, mimetype, validation)
+        if obj.is_supported(version):
+            yield obj
+
+    for cls in JHove.__subclasses__():
+        obj = cls(filename, mimetype, validation)
         if obj.is_supported(version):
             yield obj
 
     for cls in Mediainfo.__subclasses__():
-        obj = cls(mimetype, filename, validate)
+        obj = cls(filename, mimetype, validation)
         if obj.is_supported(version):
             yield obj
 
     for cls in Pil.__subclasses__():
-        obj = cls(mimetype, filename, validate)
+        obj = cls(filename, mimetype, validation)
         if obj.is_supported(version):
             yield obj
 
     for cls in Wand.__subclasses__():
-        obj = cls(mimetype, filename, validate)
+        obj = cls(filename, mimetype, validation)
         if obj.is_supported(version):
             yield obj

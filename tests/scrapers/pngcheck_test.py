@@ -1,40 +1,26 @@
-"""Test the ipt.validator.pngcheck module"""
+"""Test the dpres_scraper.scrapers.pngcheck module"""
 
 import os
-
-import ipt.validator.pngcheck
-
-
-def validate(filename):
-    """Return validator with given filename"""
-
-    metadata_info = {
-        "filename": os.path.join(
-            'tests/data/02_filevalidation_data/png', filename),
-        "format": {
-            "mimetype": 'image/png',
-            "version": '1.2'}}
-
-    val = ipt.validator.pngcheck.Pngcheck(metadata_info)
-    val.validate()
-    return val
+import dpres_scraper.scrapers.pngcheck
 
 
 def test_pngcheck_valid():
-    """Test valid PNG file"""
+    """Test scraperid PNG file"""
 
-    val = validate('valid.png')
-
-    assert val.is_valid
-    assert 'OK' in val.messages()
-    assert val.errors() == ""
+    filepath = 'tests/data/images/scraperid.png'
+    scraper = dpres_scraper.scrapers.pngcheck.Pngcheck(filepath, 'image/png')
+    scraper.scrape_file()
+    assert scraper.well_formed
+    assert 'OK' in scraper.messages()
+    assert scraper.errors() == ""
 
 
 def test_pngcheck_invalid():
     """Test corrupted PNG file"""
 
-    val = validate('invalid.png')
-
-    assert not val.is_valid
-    assert 'OK' not in val.messages()
-    assert 'ERROR' in val.errors()
+    filepath = 'tests/data/images/inscraperid.png'
+    scraper = dpres_scraper.scrapers.pngcheck.Pngcheck(filepath, 'image/png')
+    scraper.scrape_file()
+    assert not scraper.well_formed
+    assert 'OK' not in scraper.messages()
+    assert 'ERROR' in scraper.errors()

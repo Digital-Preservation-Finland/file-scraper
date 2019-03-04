@@ -39,7 +39,7 @@ def check_ffmpeg_ok(filename, mimetype, version, video=None, audio=None,
     assert validator.errors() == ""
 
 
-def test_mark_ffmpeg_ok():
+def untest_mark_ffmpeg_ok():
     """FFMpeg test."""
 
     check_ffmpeg_ok(
@@ -122,7 +122,7 @@ def check_ffmpeg_nok(filename, mimetype, version, video=None, audio=None,
     assert validator.errors() != ""
 
 
-def test_mark_ffmpeg_nok():
+def untest_mark_ffmpeg_nok():
     """
     Test for failed validation
     """

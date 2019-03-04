@@ -7,24 +7,24 @@ Tests for XML encoding validator.
 import os
 import tempfile
 import pytest
-from ipt.validator.lxml_encoding import XmlEncoding
+from dpres_scraper.scrapers.lxml_encoding import XmlEncoding
 
 
 @pytest.mark.parametrize(
-    ['mimetype', 'version', 'encoding', 'file_encoding'],
+    ['encoding', 'file_encoding'],
     [
-        ('text/xml', '1.0', 'ISO-8859-15', 'latin_1'),
-        ('text/xml', '1.0', 'UTF-8', 'latin_1'),
-        ('text/xml', '1.0', 'UTF-16', 'latin_1'),
-        ('text/xml', '1.0', 'ISO-8859-15', 'utf_8'),
-        ('text/xml', '1.0', 'UTF-8', 'utf_8'),
-        ('text/xml', '1.0', 'UTF-16', 'utf_8'),
-        ('text/xml', '1.0', 'ISO-8859-15', 'utf_16'),
-        ('text/xml', '1.0', 'UTF-8', 'utf_16'),
-        ('text/xml', '1.0', 'UTF-16', 'utf_16'),
+        ('ISO-8859-15', 'latin_1'),
+        ('UTF-8', 'latin_1'),
+        ('UTF-16', 'latin_1'),
+        ('ISO-8859-15', 'utf_8'),
+        ('UTF-8', 'utf_8'),
+        ('UTF-16', 'utf_8'),
+        ('ISO-8859-15', 'utf_16'),
+        ('UTF-8', 'utf_16'),
+        ('UTF-16', 'utf_16'),
     ]
 )
-def test_validate_xml_encoding(mimetype, version, encoding, file_encoding):
+def test_xml_encoding(encoding, file_encoding):
     enc_match = {'latin_1': 'ISO-8859-15',
                  'utf_8': 'UTF-8',
                  'utf_16': 'UTF-16'}
@@ -34,17 +34,9 @@ def test_validate_xml_encoding(mimetype, version, encoding, file_encoding):
     with open(tmppath, 'w') as f:
         f.write(xml.decode('utf8').encode(file_encoding))
 
-    metadata_info = {
-        'filename': tmppath,
-        'format': {
-            'mimetype': mimetype,
-            'version': version,
-            'charset': encoding
-        }
-    }
-
-    validator = XmlEncoding(metadata_info)
-    validator.validate()
+    scraper = XmlEncoding(tmppath, 'text/xml')
+    scraper.scrape_file()
     f.close()
     os.remove(tmppath)
-    assert validator.is_valid == bool(encoding == enc_match[file_encoding])
+    assert scraper.well_formed == bool(encoding == enc_match[file_encoding])
+    assert scraper.streams['charset'] == enc_match[file_encoding]

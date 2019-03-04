@@ -24,4 +24,4 @@ class ImageWand(Wand):
     """
 
     _supported = {'image/png': [], 'image/jpeg': [], 'image/jp2': [],
-                  'image/x-dpx': []}
+                  'image/gif': [], 'image/x-dpx': []}

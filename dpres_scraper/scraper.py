@@ -4,6 +4,7 @@ from dpres_scraper.utils import combine_metadata, combine_element
 from dpres_scraper.detectors import FidoDetector, MagicDetector
 
 from dpres_scraper.iterator import iter_scrapers
+from dpres_scraper.scrapers.jhove import Utf8JHove
 from dpres_scraper.scrapers.file import TextPlainFile
 from dpres_scraper.scrapers.dummy import Dummy
 
@@ -40,6 +41,17 @@ class Scraper(object):
                 self.mimetype = detector_tool.mimetype
                 self.version = detector_tool.version
 
+    def _scrape_file(self, scraper):
+        """Scrape file and collect metadata.
+        """
+        scraper.scrape_file()
+        self.streams = combine_metadata(
+            self.streams, scraper.streams, LOOSE)
+        self.info[len(self.info)] = scraper.info
+        if scraper.well_formed is not None:
+            if self.well_formed in [None, True]:
+                self.well_formed = scraper.well_formed
+
     def scrape(self, validation=True):
         """Scrape file metadata
         """
@@ -47,21 +59,19 @@ class Scraper(object):
             self.info = {}
         for scraper in iter_scrapers(
                 filename=self.filename, mimetype=self.mimetype,
-                version=self.version, validate=validation):
-            scraper.scrape_file()
-            self.streams = combine_metadata(
-                 self.streams, scraper.streams, LOOSE)
-            self.info[len(self.info)] = scraper.info
-            if self.well_formed in [None, True]:
-                 self.well_formed = scraper.well_formed
+                version=self.version, validation=validation):
+            self._scrape_file(scraper)
 
         if not self.streams:
             scraper = Dummy(self.mimetype, self.filename)
-            scraper.scrape_file()
-            self.streams = combine_metadata(
-                self.streams, scraper.streams)
-            self.info[len(self.info)] = scraper.info
+            self._scrape_file(scraper)
 
+        if 'charset' in self.streams[0] and \
+                self.streams[0]['charset'] == 'UTF-8':
+            scraper = Utf8JHove(self.filename, self.mimetype)
+            self._scrape_file(scraper)
+
+        # TODO: Try to get rid of this
         if not 'mimetype' in self.streams[0]:
             self.streams[0]['mimetype'] = self.mimetype
         else:

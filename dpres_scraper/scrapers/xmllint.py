@@ -35,11 +35,11 @@ class Xmllint(BaseScraper):
     _supported = {'text/xml': []}
     _only_wellformed = True
 
-    def __init__(self, mimetype, filename, validation):
+    def __init__(self, filename, mimetype, validation=True):
         self._schema = None
         self._used_version = None
         self._has_constructed_schema = False
-        super(Xmllint, self).__init__(mimetype, filename, validation)
+        super(Xmllint, self).__init__(filename, mimetype, validation)
 
     def scrape_file(self):
         """Validate XML file with Xmllint and return a tuple of results.

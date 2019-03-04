@@ -1,33 +1,32 @@
-"""Test the ipt.validator.warctools module"""
+"""Test the dpres_scraper.scrapers.warctools module"""
 import os
 
 import pytest
 
 # Module to test
-from ipt.validator.warctools import WarctoolsWARC, WarctoolsARC
+from dpres_scraper.scrapers.warctools import WarcWarctools, ArcWarctools
 
 
 @pytest.mark.parametrize(
-    ['filename', 'version'],
-    [('warc_0_18/warc.0.18.warc', '0.18'),
-     ('warc_0_17/valid.warc', '0.17'),
-     ('warc_1_0/valid.warc.gz', '1.0'),
-     ('warc_1_0/valid_no_compress.warc', '1.0')])
-def test_validate_valid_warc(filename, version):
+    ['filename'],
+    [('warc_0_18/warc.0.18.warc'),
+     ('warc_0_17/valid.warc'),
+     ('warc_1_0/valid.warc.gz'),
+     ('warc_1_0/valid_no_compress.warc')])
+def test_scrape_valid_warc(filename):
 
     metadata_info = {
-        'filename': os.path.join("tests/data/02_filevalidation_data",
+        'filename': os.path.join("tests/data/02_filescraping_data",
                                  filename),
         'format': {
             'mimetype': 'application/warc',
             'version': version
         }
     }
-
-    validator = WarctoolsWARC(metadata_info)
-    validator.validate()
-
-    assert validator.is_valid
+    filepath = os.path.join("tests/data/binary", filename)
+    scraper = WarcWarctools(filepath, 'application/warc')
+    scraper.scrape_file()
+    assert scraper.well_formed
 
 
 @pytest.mark.parametrize(
@@ -37,62 +36,46 @@ def test_validate_valid_warc(filename, version):
      ('warc_1_0/invalid.warc.gz', '1.0', 'invalid distance code'),
      ('warc_0_18/invalid_warc.0.18.warc', '0.18', 'invalid header')])
 @pytest.mark.timeout(5)
-def test_validate_invalid_warc(filename, version, error):
+def test_scrape_invalid_warc(filename, version, error):
 
     metadata_info = {
-        'filename': os.path.join("tests/data/02_filevalidation_data",
+        'filename': os.path.join("tests/data/02_filescraping_data",
                                  filename),
         'format': {
             'mimetype': 'application/warc',
             'version': version
         }
     }
+    filepath = os.path.join("tests/data/binary", filename)
+    scraper = WarcWarctools(filepath, 'application/warc')
+    scraper.scrape_file()
 
-    validator = WarctoolsWARC(metadata_info)
-    validator.validate()
-
-    assert not validator.is_valid
-    assert error in validator.errors()
+    assert not scraper.well_formed
+    assert error in scraper.errors()
 
 
 @pytest.mark.parametrize(
-    ['filename', 'version'],
-    [('arc/valid_arc.gz', '1.0'),
-     ('arc/valid_arc_no_compress', '1.0')])
-def test_validate_valid_arc(filename, version):
+    ['filename'],
+    [('arc/valid_arc.gz'),
+     ('arc/valid_arc_no_compress')])
+def test_scrape_valid_arc(filename):
 
-    metadata_info = {
-        'filename': os.path.join("tests/data/02_filevalidation_data",
-                                 filename),
-        'format': {
-            'mimetype': 'application/x-internet-archive',
-            'version': version
-        }
-    }
+    filepath = os.path.join("tests/data/binary", filename)
+    scraper = ArcWarctools(filepath, 'application/x-internet-archive')
+    scraper.scrape_file()
 
-    validator = WarctoolsARC(metadata_info)
-    validator.validate()
-
-    assert validator.is_valid
+    assert scraper.well_formed
 
 
 @pytest.mark.parametrize(
     ['filename', 'version', 'error'],
     [('arc/invalid_arc.gz', '1.0', 'Not a gzipped file'),
      ('arc/invalid_arc_crc.gz', '1.0', 'CRC check failed')])
-def test_validate_invalid_arc(filename, version, error):
+def test_scrape_invalid_arc(filename, version, error):
 
-    metadata_info = {
-        'filename': os.path.join("tests/data/02_filevalidation_data",
-                                 filename),
-        'format': {
-            'mimetype': 'application/x-internet-archive',
-            'version': version
-        }
-    }
+    filepath = os.path.join("tests/data/binary", filename)
+    scraper = WarctoolsARC(filepath, 'application/x-internet-archive')
+    scraper.scrape_file()
 
-    validator = WarctoolsARC(metadata_info)
-    validator.validate()
-
-    assert not validator.is_valid
-    assert error in validator.errors()
+    assert not scraper.well_formed
+    assert error in scraper.errors()

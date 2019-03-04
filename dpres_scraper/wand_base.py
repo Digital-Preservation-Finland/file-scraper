@@ -11,13 +11,13 @@ class Wand(BaseScraper):
     """Scraper class for collecting image metadata
     """
 
-    def __init__(self, mimetype, filename, validation):
+    def __init__(self, filename, mimetype, validation=True):
         """Initialize scraper
         """
         self._wand_index = None
         self._wand_stream = None
         self._wand = None
-        super(Wand, self).__init__(mimetype, filename, validation)
+        super(Wand, self).__init__(filename, mimetype, validation)
 
     def scrape_file(self):
         """Scrape data from file

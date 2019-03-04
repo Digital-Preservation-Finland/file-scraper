@@ -16,11 +16,11 @@ class XmlEncoding(BaseScraper):
     _supported = {'text/xml': [], 'text/html': ['5.0']}
     _only_wellformed = True
 
-    def __init__(self, mimetype, filename, validation):
+    def __init__(self, filename, mimetype, validation=True):
         """
         """
         self._charset = None
-        super(XmlEncoding, self).__init__(mimetype, filename, validation)
+        super(XmlEncoding, self).__init__(filename, mimetype, validation)
 
     def scrape_file(self):
         """Scrape file
@@ -30,7 +30,7 @@ class XmlEncoding(BaseScraper):
         fd = open(self.filename)
         tree = etree.parse(fd, parser)
         self._charset = tree.docinfo.encoding
-        self.messages('Encoding metadata match found.')
+        self.messages('Encoding metadata found.')
         self._collect_elements()
 
     def _s_charset(self):

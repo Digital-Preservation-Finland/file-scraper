@@ -19,11 +19,11 @@ class BinaryMagic(BaseScraper):
     """Scraper for text files
     """
 
-    def __init__(self, mimetype, filename, validation):
+    def __init__(self, filename, mimetype, validation=True):
         """
         """
         self._magic_mimetype = None
-        super(BinaryMagic, self).__init__(mimetype, filename, validation)
+        super(BinaryMagic, self).__init__(filename, mimetype, validation)
 
     def scrape_file(self):
         """Scrape text file
@@ -43,7 +43,7 @@ class BinaryMagic(BaseScraper):
     def well_formed(self):
         """Return well formed info
         """
-        if not self._validate:
+        if not self._validation:
             return None
         if self._magic_mimetype == self.mimetype:
             return super(BinaryMagic, self).well_formed
@@ -67,13 +67,13 @@ class TextMagic(BaseScraper):
 
     _version_tag = "version "
 
-    def __init__(self, mimetype, filename, validation):
+    def __init__(self, filename, mimetype, validation=True):
         """
         """
         self._magic_mimetype = None
         self._magic_version = None
         self._magic_charset = None
-        super(TextMagic, self).__init__(mimetype, filename, validation)
+        super(TextMagic, self).__init__(filename, mimetype, validation)
 
     def scrape_file(self):
         """Scrape text file
@@ -104,7 +104,7 @@ class TextMagic(BaseScraper):
     def well_formed(self):
         """Return well formed info
         """
-        if not self._validate:
+        if not self._validation:
             return None
         if self._magic_mimetype == self.mimetype:
             return super(TextMagic, self).well_formed

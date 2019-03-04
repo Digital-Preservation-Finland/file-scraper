@@ -1,35 +1,27 @@
 """
-Tests for PSPP validator.
+Tests for PSPP scraper.
 """
 
 import os
 import pytest
-from ipt.validator.pspp import PSPP
+from dpres_scraper.scrapers.pspp import Pspp
 
 
-BASEPATH = "tests/data/02_filevalidation_data/pspp"
+BASEPATH = "tests/data/binary"
 
 
 @pytest.mark.parametrize(
-    ['filename', 'mimetype', 'version', 'validity'],
+    ['filename', 'mimetype', 'validity'],
     [
-        ("ISSP2000_sample.por", "application/x-spss-por", "", True),
-        ("empty.por", "application/x-spss-por", "", False),
-        ("example.sps", "application/x-spss-por", "", False),
-        ("ISSP2000_sample.sav", "application/x-spss-por", "", False),
-        ("ISSP2000_sample_corrupted.por", "application/x-spss-por", "", False),
+        ("ISSP2000_sample.por", "application/x-spss-por", True),
+        ("empty.por", "application/x-spss-por", False),
+        ("example.sps", "application/x-spss-por", False),
+        ("ISSP2000_sample.sav", "application/x-spss-por", False),
+        ("ISSP2000_sample_corrupted.por", "application/x-spss-por", False)
     ]
 )
-def test_validate_valid_file(filename, mimetype, version, validity):
+def test_scrape_valid_file(filename, mimetype, validity):
 
-    metadata_info = {
-        'filename': os.path.join(BASEPATH, filename),
-        'format': {
-            'mimetype': mimetype,
-            'version': version
-        }
-    }
-
-    validator = PSPP(metadata_info)
-    validator.validate()
-    assert validator.is_valid == validity
+    scraper = Pspp(os.path.join(BASEPATH, filename), mimetype)
+    scraper.scrape_file()
+    assert scraper.well_formed == validity

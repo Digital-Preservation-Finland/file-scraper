@@ -28,11 +28,11 @@ class WarcWarctools(BaseScraper):
     _supported = {'application/warc': []}
     _only_wellformed = True
 
-    def __init__(self, mimetype, filename, validation):
+    def __init__(self, filename, mimetype, validation=True):
         """
         """
         self._version = None
-        super(WarcWarctools, self).__init__(mimetype, filename, validation)
+        super(WarcWarctools, self).__init__(filename, mimetype, validation)
 
     def scrape_file(self):
 

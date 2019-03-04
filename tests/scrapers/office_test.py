@@ -1,106 +1,87 @@
 """
-Tests for Office validator.
+Tests for Office scraper.
 """
 
 import os
 import pytest
 from multiprocessing import Pool
-from ipt.validator.office import Office
+from dpres_scraper.scrapers.office import Office
 
-
-def _metadata_info(filename, mimetype, version):
-    basepath = "tests/data/02_filevalidation_data/office"
-    return {
-        'filename': os.path.join(basepath, filename),
-        'format': {
-            'mimetype': mimetype,
-            'version': version
-        }
-    }
+BASEPATH = "tests/data/documents"
 
 @pytest.mark.parametrize(
-    ['filename', 'mimetype', 'version'],
+    ['filename', 'mimetype'],
     [
-        ("ODF_Text_Document.odt", "application/vnd.oasis.opendocument.text",
-         "1.1"),
-        ("ODF_Text_Document.odt", "application/vnd.oasis.opendocument.text",
-         "1.2"),
-        ("MS_Word_97-2003.doc", "application/msword", "11.0"),
+        ("ODF_Text_Document.odt", "application/vnd.oasis.opendocument.text"),
+        ("ODF_Text_Document.odt", "application/vnd.oasis.opendocument.text"),
+        ("MS_Word_97-2003.doc", "application/msword"),
         ("Office_Open_XML_Text.docx", "application/vnd.openxmlformats-"
-         "officedocument.wordprocessingml.document", "15.0"),
+         "officedocument.wordprocessingml.document"),
         ("ODF_Presentation.odp",
-         "application/vnd.oasis.opendocument.presentation", "1.2"),
-        ("MS_PowerPoint_97-2003.ppt", "application/vnd.ms-powerpoint", "11.0"),
+         "application/vnd.oasis.opendocument.presentation"),
+        ("MS_PowerPoint_97-2003.ppt", "application/vnd.ms-powerpoint"),
         ("Office_Open_XML_Presentation.pptx", "application/vnd.openxml"
-         "formats-officedocument.presentationml.presentation", "15.0"),
+         "formats-officedocument.presentationml.presentation"),
         ("ODF_Spreadsheet.ods",
-         "application/vnd.oasis.opendocument.spreadsheet", "1.2"),
-        ("MS_Excel_97-2003.xls", "application/vnd.ms-excel", "11.0"),
+         "application/vnd.oasis.opendocument.spreadsheet"),
+        ("MS_Excel_97-2003.xls", "application/vnd.ms-excel"),
         ("Excel_Online_Spreadsheet.xlsx",
-         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-         "15.0"),
-        ("ODF_Drawing.odg", "application/vnd.oasis.opendocument.graphics",
-         "1.2"),
-        ("ODF_Formula.odf", "application/vnd.oasis.opendocument.formula",
-         "1.2"),
+         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
+        ("ODF_Drawing.odg", "application/vnd.oasis.opendocument.graphics"),
+        ("ODF_Formula.odf", "application/vnd.oasis.opendocument.formula"),
         ("Office_Open_XML_Spreadsheet.xlsx", "application/vnd."
-         "openxmlformats-officedocument.spreadsheetml.sheet", "15.0"),
-        ("ODF_Text_Document.odt", "application/msword", "11.0"),
+         "openxmlformats-officedocument.spreadsheetml.sheet"),
+        ("ODF_Text_Document.odt", "application/msword"),
         ("ODF_Text_Document_with_wrong_filename_extension.doc",
-         "application/msword", "11.0"),
-        ("MS_Word_97-2003.doc", "application/msword", "15.0"),
+         "application/msword"),
+        ("MS_Word_97-2003.doc", "application/msword"),
         ("ODF_Text_Document.odt",
-         "application/vnd.oasis.opendocument.text", ""),
+         "application/vnd.oasis.opendocument.text"),
     ]
 )
-def test_validate_valid_file(filename, mimetype, version):
-    metadata_info = _metadata_info(filename, mimetype, version)
-    validator = Office(metadata_info)
-    validator.validate()
-    assert validator.is_valid
+def test_scrape_valid_file(filename, mimetype):
+    scraper = Office(os.path.join(BASEPATH, filename), mimetype)
+    scraper.scrape_file()
+    assert scraper.well_formed
 
 
 @pytest.mark.parametrize(
-    ['filename', 'mimetype', 'version'],
+    ['filename', 'mimetype'],
     [
         # Corrupted file
         ("ODF_Text_Document_corrupted.odt",
-         "application/vnd.oasis.opendocument.text", "1.2"),
+         "application/vnd.oasis.opendocument.text"),
         # .zip renamed to .docx
         ("MS_Word_2007-2013_XML_zip.docx", "application/vnd.openxmlformats-"
-         "officedocument.wordprocessingml.document", "15.0"),
+         "officedocument.wordprocessingml.document"),
     ]
 )
-def test_validate_invalid_file(filename, mimetype, version):
-    metadata_info = _metadata_info(filename, mimetype, version)
-    validator = Office(metadata_info)
-    validator.validate()
-    assert not validator.is_valid
+def test_scrape_invalid_file(filename, mimetype):
+    scraper = Office(os.path.join(BASEPATH, filename), mimetype)
+    scraper.scrape_file()
+    assert not scraper.well_formed
 
 
-def _validate(metadata_info):
-    validator = Office(metadata_info)
-    validator.validate()
-    return validator.is_valid
+def _scrape(filename, mimetype):
+    scraper = Office(os.path.join(BASEPATH, filename), mimetype)
+    scraper.scrape_file()
+    return scraper.well_formed
 
 
 @pytest.mark.parametrize(
-    ['filename', 'mimetype', 'version'],
+    ['filename', 'mimetype'],
     [
-        ("ODF_Text_Document.odt", "application/vnd.oasis.opendocument.text",
-         "1.2"),
+        ("ODF_Text_Document.odt", "application/vnd.oasis.opendocument.text"),
     ]
 )
-def test_parallel_validation(filename, mimetype, version):
+def test_parallel_validation(filename, mimetype):
     """Test validation in parallel. Libreoffice convert command is prone for
     freezing which would cause TimeOutError here.
     """
 
-    metadata_info = _metadata_info(filename, mimetype, version)
-
     n = 3
     pool = Pool(n)
-    results = [pool.apply_async(_validate, (metadata_info,)) for i in range(n)]
+    results = [pool.apply_async(_scrape, (filename, mimetype)) for i in range(n)]
 
     for result in results:
         assert result.get(timeout=3)

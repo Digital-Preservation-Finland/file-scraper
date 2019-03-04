@@ -21,12 +21,12 @@ class JHove(BaseScraper):
     __metaclass__ = abc.ABCMeta
     _jhove_module = None
 
-    def __init__(self, mimetype, filename, validation):
+    def __init__(self, filename, mimetype, validation=True):
         """
         """
         self._report = None
         self._shell = None
-        super(JHove, self).__init__(mimetype, filename, validation)
+        super(JHove, self).__init__(filename, mimetype, validation)
 
     def scrape_file(self):
         """Run JHove command and store XML output to self.report"""
