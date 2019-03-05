@@ -11,20 +11,12 @@ from dpres_scraper.scrapers.lxml_encoding import XmlEncoding
 
 
 @pytest.mark.parametrize(
-    ['encoding', 'file_encoding'],
+    'file_encoding',
     [
-        ('ISO-8859-15', 'latin_1'),
-        ('UTF-8', 'latin_1'),
-        ('UTF-16', 'latin_1'),
-        ('ISO-8859-15', 'utf_8'),
-        ('UTF-8', 'utf_8'),
-        ('UTF-16', 'utf_8'),
-        ('ISO-8859-15', 'utf_16'),
-        ('UTF-8', 'utf_16'),
-        ('UTF-16', 'utf_16'),
+        'latin_1', 'utf_8', 'utf_16'
     ]
 )
-def test_xml_encoding(encoding, file_encoding):
+def test_xml_encoding(file_encoding):
     enc_match = {'latin_1': 'ISO-8859-15',
                  'utf_8': 'UTF-8',
                  'utf_16': 'UTF-16'}
@@ -38,5 +30,5 @@ def test_xml_encoding(encoding, file_encoding):
     scraper.scrape_file()
     f.close()
     os.remove(tmppath)
-    assert scraper.well_formed == bool(encoding == enc_match[file_encoding])
-    assert scraper.streams['charset'] == enc_match[file_encoding]
+    assert scraper.streams[0]['charset'] == enc_match[file_encoding]
+    assert scraper.well_formed == True

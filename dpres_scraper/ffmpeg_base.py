@@ -7,7 +7,7 @@ try:
 except ImportError:
     pass
 
-from dpres_scraper.base import BaseScraper
+from dpres_scraper.base import BaseScraper, SkipElement
 from dpres_scraper.utils import iso8601_duration, strip_zeros
 
 
@@ -50,7 +50,7 @@ class FFMpeg(BaseScraper):
     def iter_tool_streams(self, stream_type):
         """Iterate streams
         """
-        if stream_type == 'container':
+        if stream_type == 'videocontainer':
             self.set_tool_stream(0)
             yield self._ffmpeg['format']
         for stream in [self._ffmpeg['format']] + self._ffmpeg['streams']:
@@ -85,13 +85,17 @@ class FFMpeg(BaseScraper):
         """Returns codec quality. Must be resolved, if returns None.
         Only values 'lossy' or 'lossless' are allowed.
         """
+        if self._s_stream_type() not in ['video', 'audio']:
+            return SkipElement
         return None
 
     # pylint: disable=no-self-use
     def _s_data_rate_mode(self):
-        """Returns data rate mode. Must be resolved if returns None.
+        """Returns data rate mode. Must be resolved, if returns None.
         Only values 'Fixed' or 'Variable' are allowed.
         """
+        if self._s_stream_type() not in ['video', 'audio']:
+            return SkipElement
         return None
 
     # pylint: disable=no-self-use
@@ -99,7 +103,7 @@ class FFMpeg(BaseScraper):
         """Returns signal format
         """
         if self._s_stream_type() not in [None, 'video']:
-            return None
+            return SkipElement
         return '(:unav)'
 
     def _s_stream_type(self):
@@ -107,7 +111,7 @@ class FFMpeg(BaseScraper):
         """
         if not 'codec_type' in self._ffmpeg_stream:
             if self._s_index() == 0:
-                return 'container'
+                return 'videocontainer'
             else:
                 return 'other'
         return self._ffmpeg_stream['codec_type']
@@ -124,7 +128,7 @@ class FFMpeg(BaseScraper):
         allowed. Must be resolved, if returns None.
         """
         if self._s_stream_type() not in [None, 'video']:
-            return None
+            return SkipElement
         if 'pix_fmt' in self._ffmpeg_stream:
             if self._ffmpeg_stream["pix_fmt"] in ["gray"]:
                 return "Grayscale"
@@ -138,7 +142,7 @@ class FFMpeg(BaseScraper):
         """Returns frame width
         """
         if self._s_stream_type() not in [None, 'video']:
-            return None
+            return SkipElement
         if 'width' in self._ffmpeg_stream:
             return str(self._ffmpeg_stream['width'])
         return '0'
@@ -147,7 +151,7 @@ class FFMpeg(BaseScraper):
         """Returns frame height
         """
         if self._s_stream_type() not in [None, 'video']:
-            return None
+            return SkipElement
         if 'height' in self._ffmpeg_stream:
             return str(self._ffmpeg_stream['height'])
         return '0'
@@ -156,7 +160,7 @@ class FFMpeg(BaseScraper):
         """Returns pixel aspect ratio
         """
         if self._s_stream_type() not in [None, 'video']:
-            return None
+            return SkipElement
         if 'sample_aspect_ratio' in self._ffmpeg_stream:
             return strip_zeros("%.2f" % float(Fraction(
                 self._ffmpeg_stream['sample_aspect_ratio'].replace(':', '/'))))
@@ -167,7 +171,7 @@ class FFMpeg(BaseScraper):
         """Returns display aspect ratio
         """
         if self._s_stream_type() not in [None, 'video']:
-            return None
+            return SkipElement
         if 'display_aspect_ratio' in self._ffmpeg_stream:
             return strip_zeros("%.2f" % float(Fraction(
                 self._ffmpeg_stream['display_aspect_ratio'].replace(
@@ -178,7 +182,7 @@ class FFMpeg(BaseScraper):
         """Returns data rate (bit rate)
         """
         if self._s_stream_type() not in [None, 'video', 'audio']:
-            return None
+            return SkipElement
         if 'bit_rate' in self._ffmpeg_stream:
             if self._ffmpeg_stream['codec_type'] == 'video':
                 return strip_zeros(str(float(
@@ -192,7 +196,7 @@ class FFMpeg(BaseScraper):
         """Returns frame rate
         """
         if self._s_stream_type() not in [None, 'video']:
-            return None
+            return SkipElement
         if 'r_frame_rate' in self._ffmpeg_stream:
             return self._ffmpeg_stream['r_frame_rate'].split('/')[0]
         return '0'
@@ -201,7 +205,7 @@ class FFMpeg(BaseScraper):
         """Returns chroma subsampling method
         """
         if self._s_stream_type() not in [None, 'video']:
-            return None
+            return SkipElement
         sampling = "(:unav)"
         if 'pix_fmt' in self._ffmpeg_stream:
             for sampling_code in ["444", "422", "420", "440", "411", "410"]:
@@ -214,7 +218,7 @@ class FFMpeg(BaseScraper):
         """Returns 'Yes' if sound channels are present, otherwise 'No'
         """
         if self._s_stream_type() not in [None, 'video']:
-            return None
+            return SkipElement
         for stream in self._ffmpeg["streams"]:
             if stream['codec_type'] == 'audio':
                 return 'Yes'
@@ -224,7 +228,7 @@ class FFMpeg(BaseScraper):
         """Returns audio data encoding
         """
         if self._s_stream_type() not in [None, 'audio']:
-            return None
+            return SkipElement
         if 'codec_long_name' in self._ffmpeg_stream:
             return self._ffmpeg_stream['codec_long_name'].split(' ')[0]
         return '(:unav)'
@@ -233,7 +237,7 @@ class FFMpeg(BaseScraper):
         """Returns sampling frequency
         """
         if self._s_stream_type() not in [None, 'audio']:
-            return None
+            return SkipElement
         if 'sample_rate' in self._ffmpeg_stream:
             return strip_zeros(str(float(
                 self._ffmpeg_stream['sample_rate'])/1000))
@@ -243,7 +247,7 @@ class FFMpeg(BaseScraper):
         """Returns number of channels
         """
         if self._s_stream_type() not in [None, 'audio']:
-            return None
+            return SkipElement
         if 'channels' in self._ffmpeg_stream:
             return str(self._ffmpeg_stream['channels'])
         return '(:unav)'
@@ -251,8 +255,9 @@ class FFMpeg(BaseScraper):
     def _s_codec_creator_app(self):
         """Returns creator application
         """
-        if self._s_stream_type() not in [None, 'audio', 'video', 'container']:
-            return None
+        if self._s_stream_type() not in [
+                None, 'audio', 'video', 'videocontainer']:
+            return SkipElement
         if 'encoder' in self._ffmpeg['format']:
             return self._ffmpeg['format']['encoder']
         return '(:unav)'
@@ -260,8 +265,9 @@ class FFMpeg(BaseScraper):
     def _s_codec_creator_app_version(self):
         """Returns creator application version
         """
-        if self._s_stream_type() not in [None, 'audio', 'video', 'container']:
-            return None
+        if self._s_stream_type() not in [
+                None, 'audio', 'video', 'videocontainer']:
+            return SkipElement
         if 'encoder' in self._ffmpeg['format']:
             reg = re.search(r'([\d.]+)$',
                             self._ffmpeg['format']['encoder'])
@@ -272,8 +278,9 @@ class FFMpeg(BaseScraper):
     def _s_codec_name(self):
         """Returns codec name
         """
-        if self._s_stream_type() not in [None, 'audio', 'video', 'container']:
-            return None
+        if self._s_stream_type() not in [
+                None, 'audio', 'video', 'videocontainer']:
+            return SkipElement
         if 'codec_long_name' in self._ffmpeg_stream:
             return self._ffmpeg_stream['codec_long_name']
         return '(:unav)'
@@ -282,7 +289,7 @@ class FFMpeg(BaseScraper):
         """Returns duration
         """
         if self._s_stream_type() not in [None, 'audio', 'video']:
-            return None
+            return SkipElement
         if 'duration' in self._ffmpeg_stream:
             return iso8601_duration(float(self._ffmpeg_stream['duration']))
         return '(:unav)'
@@ -291,7 +298,7 @@ class FFMpeg(BaseScraper):
         """Returns bits per sample
         """
         if self._s_stream_type() not in [None, 'audio', 'video']:
-            return None
+            return SkipElement
         if 'bits_per_raw_sample' in self._ffmpeg_stream is not None:
             return str(self._ffmpeg_stream['bits_per_raw_sample'])
         return '0'

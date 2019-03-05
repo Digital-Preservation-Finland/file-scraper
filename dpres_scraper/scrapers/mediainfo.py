@@ -1,5 +1,6 @@
 """Metadata scraper for AV files"""
 from dpres_scraper.mediainfo_base import Mediainfo
+from dpres_scraper.base import SkipElement
 
 
 class VideoMediainfo(Mediainfo):
@@ -59,14 +60,14 @@ class MpegMediainfo(Mediainfo):
         """Returns signal format
         """
         if self._s_stream_type() not in [None, 'video']:
-            return None
+            return SkipElement
         return '(:unap)'
 
     def _s_codec_quality(self):
         """Returns codec quality
         """
         if self._s_stream_type() not in [None, 'video', 'audio']:
-            return None
+            return SkipElement
         if self._mediainfo_stream.compression_mode is not None:
             return self._mediainfo_stream.compression_mode.lower()
         return 'lossy'
@@ -75,7 +76,7 @@ class MpegMediainfo(Mediainfo):
         """Returns data rate mode. Must be resolved
         """
         if self._s_stream_type() not in ['video', 'audio']:
-            return None
+            return SkipElement
         if self._mediainfo_stream.bit_rate_mode == 'CBR':
             return 'Fixed'
         return 'Variable'

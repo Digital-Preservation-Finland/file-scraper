@@ -8,21 +8,13 @@ from dpres_scraper.scrapers.warctools import WarcWarctools, ArcWarctools
 
 
 @pytest.mark.parametrize(
-    ['filename'],
-    [('warc_0_18/warc.0.18.warc'),
-     ('warc_0_17/valid.warc'),
-     ('warc_1_0/valid.warc.gz'),
-     ('warc_1_0/valid_no_compress.warc')])
+    'filename',
+    ['warc_0_18/warc.0.18.warc',
+     'warc_0_17/valid.warc',
+     'warc_1_0/valid.warc.gz',
+     'warc_1_0/valid_no_compress.warc'])
 def test_scrape_valid_warc(filename):
 
-    metadata_info = {
-        'filename': os.path.join("tests/data/02_filescraping_data",
-                                 filename),
-        'format': {
-            'mimetype': 'application/warc',
-            'version': version
-        }
-    }
     filepath = os.path.join("tests/data/binary", filename)
     scraper = WarcWarctools(filepath, 'application/warc')
     scraper.scrape_file()
@@ -38,14 +30,6 @@ def test_scrape_valid_warc(filename):
 @pytest.mark.timeout(5)
 def test_scrape_invalid_warc(filename, version, error):
 
-    metadata_info = {
-        'filename': os.path.join("tests/data/02_filescraping_data",
-                                 filename),
-        'format': {
-            'mimetype': 'application/warc',
-            'version': version
-        }
-    }
     filepath = os.path.join("tests/data/binary", filename)
     scraper = WarcWarctools(filepath, 'application/warc')
     scraper.scrape_file()
@@ -55,9 +39,9 @@ def test_scrape_invalid_warc(filename, version, error):
 
 
 @pytest.mark.parametrize(
-    ['filename'],
-    [('arc/valid_arc.gz'),
-     ('arc/valid_arc_no_compress')])
+    'filename',
+    ['arc/valid_arc.gz',
+     'arc/valid_arc_no_compress'])
 def test_scrape_valid_arc(filename):
 
     filepath = os.path.join("tests/data/binary", filename)
@@ -74,7 +58,7 @@ def test_scrape_valid_arc(filename):
 def test_scrape_invalid_arc(filename, version, error):
 
     filepath = os.path.join("tests/data/binary", filename)
-    scraper = WarctoolsARC(filepath, 'application/x-internet-archive')
+    scraper = ArcWarctools(filepath, 'application/x-internet-archive')
     scraper.scrape_file()
 
     assert not scraper.well_formed

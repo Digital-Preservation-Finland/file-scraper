@@ -19,7 +19,8 @@ from dpres_scraper.scrapers.mediainfo import MpegMediainfo, DataMediainfo, \
 from dpres_scraper.scrapers.office import Office
 from dpres_scraper.scrapers.file import TextPlainFile
 from dpres_scraper.scrapers.magic import TextFileMagic, XmlFileMagic, \
-    HtmlFileMagic, BinaryFileMagic, ImageFileMagic
+    HtmlFileMagic, PdfFileMagic, OfficeFileMagic, PngFileMagic, \
+    JpegFileMagic, Jp2FileMagic, TiffFileMagic
 from dpres_scraper.scrapers.wand import TiffWand, ImageWand
 from dpres_scraper.scrapers.pil import ImagePil, JpegPil, TiffPil
 from dpres_scraper.scrapers.pspp import Pspp
@@ -40,38 +41,50 @@ def iter_scrapers(filename, mimetype, version, validation=True):
 
     # pylint: disable=no-member
 
+    found_validator = False
+
     for cls in BaseScraper.__subclasses__():
-        if cls not in [TextPlainFile, Dummy]:
-            obj = cls(filename, mimetype, validation)
-            if obj.is_supported(version):
-                yield obj
+        obj = cls(filename, mimetype, validation)
+        if obj.is_supported(version):
+            found_validator = True
+            yield obj
 
     for cls in BinaryMagic.__subclasses__():
         obj = cls(filename, mimetype, validation)
         if obj.is_supported(version):
+            found_validator = True
             yield obj
 
     for cls in TextMagic.__subclasses__():
         obj = cls(filename, mimetype, validation)
         if obj.is_supported(version):
+            found_validator = True
             yield obj
 
     for cls in JHove.__subclasses__():
         obj = cls(filename, mimetype, validation)
         if obj.is_supported(version):
+            found_validator = True
             yield obj
 
     for cls in Mediainfo.__subclasses__():
         obj = cls(filename, mimetype, validation)
         if obj.is_supported(version):
+            found_validator = True
             yield obj
 
     for cls in Pil.__subclasses__():
         obj = cls(filename, mimetype, validation)
         if obj.is_supported(version):
+            found_validator = True
             yield obj
 
     for cls in Wand.__subclasses__():
         obj = cls(filename, mimetype, validation)
         if obj.is_supported(version):
+            found_validator = True
             yield obj
+
+    if not found_validator:
+        obj = Dummy(filename, mimetype, validation)
+        yield obj

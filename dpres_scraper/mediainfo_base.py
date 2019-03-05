@@ -6,7 +6,7 @@ try:
 except ImportError:
     pass
 
-from dpres_scraper.base import BaseScraper
+from dpres_scraper.base import BaseScraper, SkipElement
 from dpres_scraper.utils import iso8601_duration, strip_zeros
 
 
@@ -81,7 +81,7 @@ class Mediainfo(BaseScraper):
         """
         if self._mediainfo_stream.track_type == 'General':
             if self._iscontainer:
-                return 'container'
+                return 'videocontainer'
             else:
                 return None
         return self._mediainfo_stream.track_type.lower()
@@ -101,7 +101,7 @@ class Mediainfo(BaseScraper):
         allowed. Must be resolved, if returns None.
         """
         if self._s_stream_type() not in ['video']:
-            return None
+            return SkipElement
         if self._mediainfo_stream.color_space is not None:
             if self._mediainfo_stream.color_space in ['RGB', 'YUV']:
                 return 'Color'
@@ -114,7 +114,7 @@ class Mediainfo(BaseScraper):
         """Returns signal format
         """
         if self._s_stream_type() not in ['video']:
-            return None
+            return SkipElement
         if self._mediainfo_stream.standard is not None:
             return self._mediainfo_stream.standard
         return '(:unav)'
@@ -123,7 +123,7 @@ class Mediainfo(BaseScraper):
         """Returns frame width
         """
         if self._s_stream_type() not in ['video']:
-            return None
+            return SkipElement
         if self._mediainfo_stream.width is not None:
             return str(self._mediainfo_stream.width)
         return '0'
@@ -132,7 +132,7 @@ class Mediainfo(BaseScraper):
         """Returns frame height
         """
         if self._s_stream_type() not in ['video']:
-            return None
+            return SkipElement
         if self._mediainfo_stream.height is not None:
             return str(self._mediainfo_stream.height)
         return '0'
@@ -141,7 +141,7 @@ class Mediainfo(BaseScraper):
         """Returns pixel aspect ratio
         """
         if self._s_stream_type() not in ['video']:
-            return None
+            return SkipElement
         if self._mediainfo_stream.pixel_aspect_ratio is not None:
             return strip_zeros(str(self._mediainfo_stream.pixel_aspect_ratio))
         return '0'
@@ -150,7 +150,7 @@ class Mediainfo(BaseScraper):
         """Returns display aspect ratio
         """
         if self._s_stream_type() not in ['video']:
-            return None
+            return SkipElement
         if self._mediainfo_stream.display_aspect_ratio is not None:
             return strip_zeros(str(
                 self._mediainfo_stream.display_aspect_ratio))
@@ -160,7 +160,7 @@ class Mediainfo(BaseScraper):
         """Returns data rate (bit rate)
         """
         if self._s_stream_type() not in ['video', 'audio']:
-            return None
+            return SkipElement
         if self._mediainfo_stream.bit_rate is not None:
             if self._mediainfo_stream.track_type == 'Video':
                 return strip_zeros(str(float(
@@ -174,7 +174,7 @@ class Mediainfo(BaseScraper):
         """Returns frame rate
         """
         if self._s_stream_type() not in ['video']:
-            return None
+            return SkipElement
         if self._mediainfo_stream.frame_rate is not None:
             return strip_zeros(str(self._mediainfo_stream.frame_rate))
         return '0'
@@ -183,7 +183,7 @@ class Mediainfo(BaseScraper):
         """Returns chroma subsampling method
         """
         if self._s_stream_type() not in ['video']:
-            return None
+            return SkipElement
         if self._mediainfo_stream.chroma_subsampling is not None:
             return self._mediainfo_stream.chroma_subsampling
         return '(:unav)'
@@ -192,7 +192,7 @@ class Mediainfo(BaseScraper):
         """Returns 'Yes' if sound channels are present, otherwise 'No'
         """
         if self._s_stream_type() not in ['video']:
-            return None
+            return SkipElement
         if self._mediainfo.tracks[0].count_of_audio_streams is not None \
                 and self._mediainfo.tracks[0].count_of_audio_streams > 0:
             return 'Yes'
@@ -203,7 +203,7 @@ class Mediainfo(BaseScraper):
         Only values 'lossy' or 'lossless' are allowed.
         """
         if self._s_stream_type() not in ['video', 'audio']:
-            return None
+            return SkipElement
         if self._mediainfo_stream.compression_mode is not None:
             return self._mediainfo_stream.compression_mode.lower()
         return None
@@ -213,7 +213,7 @@ class Mediainfo(BaseScraper):
         The allowed values are 'Fixed' and 'Variable'.
         """
         if self._s_stream_type() not in ['video', 'audio']:
-            return None
+            return SkipElement
         if self._mediainfo_stream.bit_rate_mode == 'CBR':
             return 'Fixed'
         if self._mediainfo_stream.bit_rate_mode is not None:
@@ -224,7 +224,7 @@ class Mediainfo(BaseScraper):
         """Returns audio data encoding
         """
         if self._s_stream_type() not in ['audio']:
-            return None
+            return SkipElement
         if self._mediainfo_stream.format is not None:
             return str(self._mediainfo_stream.format)
         return '(:unav)'
@@ -233,7 +233,7 @@ class Mediainfo(BaseScraper):
         """Returns sampling frequency
         """
         if self._s_stream_type() not in ['audio']:
-            return None
+            return SkipElement
         if self._mediainfo_stream.sampling_rate is not None:
             return strip_zeros(str(float(
                 self._mediainfo_stream.sampling_rate)/1000))
@@ -243,7 +243,7 @@ class Mediainfo(BaseScraper):
         """Returns number of channels
         """
         if self._s_stream_type() not in ['audio']:
-            return None
+            return SkipElement
         if self._mediainfo_stream.channel_s is not None:
             return str(self._mediainfo_stream.channel_s)
         return '(:unav)'
@@ -251,8 +251,8 @@ class Mediainfo(BaseScraper):
     def _s_codec_creator_app(self):
         """Returns creator application
         """
-        if self._s_stream_type() not in [None, 'video', 'audio', 'container']:
-            return None
+        if self._s_stream_type() not in [None, 'video', 'audio', 'videocontainer']:
+            return SkipElement
         if self._mediainfo.tracks[0].writing_application is not None:
             return self._mediainfo.tracks[0].writing_application
         return '(:unav)'
@@ -260,8 +260,8 @@ class Mediainfo(BaseScraper):
     def _s_codec_creator_app_version(self):
         """Returns creator application version
         """
-        if self._s_stream_type() not in [None, 'video', 'audio', 'container']:
-            return None
+        if self._s_stream_type() not in [None, 'video', 'audio', 'videocontainer']:
+            return SkipElement
         if self._mediainfo.tracks[0].writing_application is not None:
             reg = re.search(r'([\d.]+)$',
                             self._mediainfo.tracks[0].writing_application)
@@ -272,8 +272,8 @@ class Mediainfo(BaseScraper):
     def _s_codec_name(self):
         """Returns codec name
         """
-        if self._s_stream_type() not in [None, 'video', 'audio', 'container']:
-            return None
+        if self._s_stream_type() not in [None, 'video', 'audio', 'videocontainer']:
+            return SkipElement
         if self._mediainfo_stream.format is not None:
             return self._mediainfo_stream.format
         return '(:unav)'
@@ -282,7 +282,7 @@ class Mediainfo(BaseScraper):
         """Returns duration
         """
         if self._s_stream_type() not in ['video', 'audio']:
-            return None
+            return SkipElement
         if self._mediainfo_stream.duration is not None:
             return iso8601_duration(float(
                 self._mediainfo_stream.duration)/1000)
@@ -292,7 +292,7 @@ class Mediainfo(BaseScraper):
         """Returns bits per sample
         """
         if self._s_stream_type() not in ['video', 'audio']:
-            return None
+            return SkipElement
         if self._mediainfo_stream.bit_depth is not None:
             return str(self._mediainfo_stream.bit_depth)
         return '0'

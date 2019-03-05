@@ -19,10 +19,14 @@ class BinaryMagic(BaseScraper):
     """Scraper for text files
     """
 
+    _starttag = "version "
+    _endtag = None
+
     def __init__(self, filename, mimetype, validation=True):
         """
         """
         self._magic_mimetype = None
+        self._magic_version = None
         super(BinaryMagic, self).__init__(filename, mimetype, validation)
 
     def scrape_file(self):
@@ -33,6 +37,16 @@ class BinaryMagic(BaseScraper):
             magic_.load()
             self._magic_mimetype = magic_.file(self.filename)
             magic_.close()
+
+            magic_ = magic.open(magic.MAGIC_NONE)
+            magic_.load()
+            self._magic_version = magic_.file(
+                self.filename).split(self._starttag)[-1]
+            magic_.close()
+            if self._endtag:
+                self._magic_version = self._magic_version.split(
+                    self._endtag)[0]
+
             self.messages('The file was scraped.')
         except:
             self.errors('Error in scraping file.')
@@ -65,7 +79,8 @@ class TextMagic(BaseScraper):
     """Scraper for text files
     """
 
-    _version_tag = "version "
+    _starttag = "version "
+    _endtag = None
 
     def __init__(self, filename, mimetype, validation=True):
         """
@@ -87,8 +102,11 @@ class TextMagic(BaseScraper):
             magic_ = magic.open(magic.MAGIC_NONE)
             magic_.load()
             self._magic_version = magic_.file(
-                self.filename).split(self._version_tag)[-1].split(" ")[0]
+                self.filename).split(self._starttag)[-1]
             magic_.close()
+            if self._endtag:
+                self._magic_version = self._magic_version.split(
+                    self._endtag)[0]
 
             magic_ = magic.open(magic.MAGIC_MIME_ENCODING)
             magic_.load()

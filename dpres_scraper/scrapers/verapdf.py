@@ -24,11 +24,7 @@ class VeraPdf(BaseScraper):
     def scrape_file(self):
         """Scrape file
         """
-        if self.version is not None:
-            flavour = self.version[-2:]
-            cmd = [VERAPDF_PATH, '-f', flavour, self.filename]
-        else:
-            cmd = [VERAPDF_PATH, self.filename]
+        cmd = [VERAPDF_PATH, self.filename]
 
         shell = Shell(cmd)
         if shell.returncode != 0:
@@ -42,6 +38,9 @@ class VeraPdf(BaseScraper):
                     '//validationReport')[0].get('isCompliant')
                 if valid == 'false':
                     self.errors(shell.stdout)
+                profile = report.xpath('//validationReport')[0].get('profileName')
+                self.version = 'A' + profile.split("PDF/A")[1].split(
+                    " validation profile")[0].lower()
             else:
                 self.errors(shell.stdout)
         except ET.XMLSyntaxError:

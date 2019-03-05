@@ -12,12 +12,12 @@ BASEPATH = "tests/data/video/"
 
 
 @pytest.mark.parametrize(
-    ['filename'],
+    'filename',
     [
-        ("valid_dpx.dpx", "image/x-dpx")
+        "valid_dpx.dpx", "image/x-dpx"
     ]
 )
-def test_scrape_valid_file(filename, mimetype):
+def test_scrape_valid_file(filename):
 
     scraper = Dpx(filename, 'image/x-dpx')
     scraper.scrape_file()
@@ -25,9 +25,9 @@ def test_scrape_valid_file(filename, mimetype):
 
 
 @pytest.mark.parametrize(
-    ['filename'],
+    'filename',
     [
-        ("corrupted_dpx.dpx"), ("empty_file.dpx"),
+        "corrupted_dpx.dpx", "empty_file.dpx",
     ]
 )
 def test_scrape_invalid_file(filename):

@@ -6,13 +6,11 @@ from dpres_scraper.detectors import FidoDetector, MagicDetector
 from dpres_scraper.iterator import iter_scrapers
 from dpres_scraper.scrapers.jhove import Utf8JHove
 from dpres_scraper.scrapers.file import TextPlainFile
-from dpres_scraper.scrapers.dummy import Dummy
 
 # Keep this in priority order
 DETECTORS = [FidoDetector, MagicDetector]
 
-LOOSE = [None, 'application/zip', 'application/octet-stream',
-         'text/xml', '0', '(:unav)', '(:unap)']
+LOOSE = [None, '0', '(:unav)', '(:unap)']
 
 
 class Scraper(object):
@@ -29,7 +27,7 @@ class Scraper(object):
         self.well_formed = None
         self.info = None
 
-    def identify(self):
+    def _identify(self):
         """Identify file format and version
         """
         self.info = {}
@@ -55,33 +53,22 @@ class Scraper(object):
     def scrape(self, validation=True):
         """Scrape file metadata
         """
-        if self.info is None:
-            self.info = {}
+        self.streams = None
+        self.info = {}
+        self.well_formed = None
+        self._identify()
         for scraper in iter_scrapers(
                 filename=self.filename, mimetype=self.mimetype,
                 version=self.version, validation=validation):
             self._scrape_file(scraper)
 
-        if not self.streams:
-            scraper = Dummy(self.mimetype, self.filename)
-            self._scrape_file(scraper)
-
         if 'charset' in self.streams[0] and \
-                self.streams[0]['charset'] == 'UTF-8':
-            scraper = Utf8JHove(self.filename, self.mimetype)
-            self._scrape_file(scraper)
+            self.streams[0]['charset'] == 'UTF-8':
+                scraper = Utf8JHove(self.filename, self.mimetype)
+                self._scrape_file(scraper)
 
-        # TODO: Try to get rid of this
-        if not 'mimetype' in self.streams[0]:
-            self.streams[0]['mimetype'] = self.mimetype
-        else:
-            self.mimetype = combine_element(
-                self.mimetype, self.streams[0]['mimetype'], LOOSE)
-        if not 'version' in self.streams[0]:
-            self.streams[0]['version'] = self.version
-        else:
-            self.version = combine_element(
-                self.version, self.streams[0]['version'], LOOSE)
+        self.mimetype = self.streams[0]['mimetype']
+        self.version = self.streams[0]['version']
 
     def is_textfile(self):
         """Find out if file is a text file.

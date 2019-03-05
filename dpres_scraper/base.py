@@ -138,15 +138,12 @@ class BaseScraper(object):
                 if callable(getattr(self, method)) \
                         and method.startswith('_s_'):
                     item = getattr(self, method)()
-                    if item is not None:
+                    if item != SkipElement:
                         metadata[method[3:]] = item
             dict_meta = {metadata['index']: metadata}
             self.streams = combine_metadata(self.streams, dict_meta)
-        if 'mimetype' in self.streams[0]:
-            self.mimetype = self.streams[0]['mimetype']
-        if 'version' in self.streams[0]:
-            self.version = self.streams[0]['version']
-
+        self.mimetype = self.streams[0]['mimetype']
+        self.version = self.streams[0]['version']
         self.info = {'class': self.__class__.__name__,
                      'messages': self.messages(),
                      'errors': self.errors()}
@@ -183,6 +180,14 @@ class BaseScraper(object):
         """Return stream type
         """
         pass
+
+
+class SkipElement:
+    """Class used as a value to tell the iterator to skip the element.
+    We are not able to use None or '' since those are reserved for
+    other purposes already
+    """
+    pass
 
 
 class BaseDetector(object):

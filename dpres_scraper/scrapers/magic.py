@@ -21,7 +21,8 @@ class XmlFileMagic(TextMagic):
     """
 
     _supported = {'text/xml': []}
-    _version_tag = 'XML '
+    _starttag = 'XML '
+    _endtag = ' '
 
     def _s_version(self):
         """Return version
@@ -37,8 +38,20 @@ class HtmlFileMagic(TextMagic):
                   'application/xhtml+xml': []}
 
 
-class BinaryFileMagic(BinaryMagic):
-    """Scraper for binary files
+class PdfFileMagic(BinaryMagic):
+    """Scraper for PDF files
+    """
+
+    _supported = {'application/pdf': []}
+
+    def _s_version(self):
+        """Return version
+        """
+        return self._magic_version
+
+
+class OfficeFileMagic(BinaryMagic):
+    """Scraper for office files
     """
 
     _supported = {
@@ -59,13 +72,72 @@ class BinaryFileMagic(BinaryMagic):
     _only_wellformed = True
 
 
-class ImageFileMagic(BinaryMagic):
-    """Scraper for image files
+class PngFileMagic(BinaryMagic):
+    """Scraper for PNG files
     """
 
-    _supported = {
-        'image/png': [], 'image/jpeg': [], 'image/jp2': [], 'image/tiff': []}
-    _only_wellformed = True
+    _supported = {'image/png': []}
+
+    def _s_version(self):
+        """Return version
+        """
+        return '1.2'
+
+    # pylint: disable=no-self-use
+    def _s_stream_type(self):
+        """Return stream type
+        """
+        return 'image'
+
+
+class JpegFileMagic(BinaryMagic):
+    """Scraper for JPEG files
+    """
+
+    _supported = {'image/jpeg': []}
+    _starttag = 'standard '
+    _endtag = ','
+
+    def _s_version(self):
+        """Return version
+        """
+        return self._magic_version
+
+    # pylint: disable=no-self-use
+    def _s_stream_type(self):
+        """Return stream type
+        """
+        return 'image'
+
+
+class Jp2FileMagic(BinaryMagic):
+    """Scraper for JP2 files
+    """
+
+    _supported = {'image/jp2': []}
+
+    def _s_version(self):
+        """Return version
+        """
+        return ''
+
+    # pylint: disable=no-self-use
+    def _s_stream_type(self):
+        """Return stream type
+        """
+        return 'image'
+
+
+class TiffFileMagic(BinaryMagic):
+    """Scraper for TIFF files
+    """
+
+    _supported = {'image/tiff': []}
+
+    def _s_version(self):
+        """Return version
+        """
+        return '6.0'
 
     # pylint: disable=no-self-use
     def _s_stream_type(self):
