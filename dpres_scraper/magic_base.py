@@ -68,6 +68,11 @@ class BinaryMagic(BaseScraper):
         """
         return self._magic_mimetype
 
+    def _s_version(self):
+        """Return version
+        """
+        return self._magic_version
+
     # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return file type
@@ -132,6 +137,11 @@ class TextMagic(BaseScraper):
         """Return charset
         """
         return self._magic_mimetype
+
+    def _s_version(self):
+        """Return version
+        """
+        return self._magic_version
 
     def _s_charset(self):
         """Return charset

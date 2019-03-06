@@ -6,6 +6,7 @@ from dpres_scraper.detectors import FidoDetector, MagicDetector
 from dpres_scraper.iterator import iter_scrapers
 from dpres_scraper.scrapers.jhove import Utf8JHove
 from dpres_scraper.scrapers.file import TextPlainFile
+from dpres_scraper.scrapers.dummy import FileExists
 
 # Keep this in priority order
 DETECTORS = [FidoDetector, MagicDetector]
@@ -56,6 +57,13 @@ class Scraper(object):
         self.streams = None
         self.info = {}
         self.well_formed = None
+
+        file_exists = FileExists(self.filename, None)
+        self._scrape_file(file_exists)
+
+        if not file_exists.well_formed:
+            return
+
         self._identify()
         for scraper in iter_scrapers(
                 filename=self.filename, mimetype=self.mimetype,

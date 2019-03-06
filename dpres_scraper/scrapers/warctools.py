@@ -28,12 +28,6 @@ class WarcWarctools(BaseScraper):
     _supported = {'application/warc': []}
     _only_wellformed = True
 
-    def __init__(self, filename, mimetype, validation=True):
-        """
-        """
-        self._version = None
-        super(WarcWarctools, self).__init__(filename, mimetype, validation)
-
     def scrape_file(self):
 
         shell = Shell(['warcvalid', self.filename])
@@ -63,13 +57,8 @@ class WarcWarctools(BaseScraper):
             self._collect_elements()
             return
 
-        self._version = line.split("WARC/", 1)[1].split(" ")[0]
+        self.version = line.split("WARC/", 1)[1].split(" ")[0]
         self._collect_elements()
-
-    def _s_version(self):
-        """Return version
-        """
-        return self._version
 
     # pylint: disable=no-self-use
     def _s_stream_type(self):

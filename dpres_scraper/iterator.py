@@ -27,7 +27,7 @@ from dpres_scraper.scrapers.pspp import Pspp
 from dpres_scraper.scrapers.verapdf import VeraPdf
 from dpres_scraper.scrapers.dpx import Dpx
 from dpres_scraper.scrapers.vnu import Vnu
-from dpres_scraper.scrapers.dummy import Dummy
+from dpres_scraper.scrapers.dummy import ScraperNotFound
 
 
 def iter_scrapers(filename, mimetype, version, validation=True):
@@ -86,5 +86,5 @@ def iter_scrapers(filename, mimetype, version, validation=True):
             yield obj
 
     if not found_validator:
-        obj = Dummy(filename, mimetype, validation)
+        obj = ScraperNotFound(filename, mimetype, validation)
         yield obj

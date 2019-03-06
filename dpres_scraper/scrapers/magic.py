@@ -24,11 +24,6 @@ class XmlFileMagic(TextMagic):
     _starttag = 'XML '
     _endtag = ' '
 
-    def _s_version(self):
-        """Return version
-        """
-        return self._magic_version
-
 
 class HtmlFileMagic(TextMagic):
     """Scraper for (x)html files
@@ -37,17 +32,17 @@ class HtmlFileMagic(TextMagic):
     _supported = {'text/html': [],
                   'application/xhtml+xml': []}
 
+    def _s_version(self):
+        """Return version
+        """
+        return None
+
 
 class PdfFileMagic(BinaryMagic):
     """Scraper for PDF files
     """
 
     _supported = {'application/pdf': []}
-
-    def _s_version(self):
-        """Return version
-        """
-        return self._magic_version
 
 
 class OfficeFileMagic(BinaryMagic):
@@ -97,11 +92,6 @@ class JpegFileMagic(BinaryMagic):
     _supported = {'image/jpeg': []}
     _starttag = 'standard '
     _endtag = ','
-
-    def _s_version(self):
-        """Return version
-        """
-        return self._magic_version
 
     # pylint: disable=no-self-use
     def _s_stream_type(self):

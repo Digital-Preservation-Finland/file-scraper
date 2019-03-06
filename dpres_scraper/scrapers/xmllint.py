@@ -37,7 +37,6 @@ class Xmllint(BaseScraper):
 
     def __init__(self, filename, mimetype, validation=True):
         self._schema = None
-        self._used_version = None
         self._has_constructed_schema = False
         super(Xmllint, self).__init__(filename, mimetype, validation)
 
@@ -64,7 +63,7 @@ class Xmllint(BaseScraper):
             fd = open(self.filename)
             parser = etree.XMLParser(dtd_validation=False, no_network=True)
             tree = etree.parse(fd, parser=parser)
-            self._used_version = tree.docinfo.xml_version
+            self.version = tree.docinfo.xml_version
             fd.close()
         except etree.XMLSyntaxError as exception:
             self.errors("Validation failed: document is not well-formed.")
