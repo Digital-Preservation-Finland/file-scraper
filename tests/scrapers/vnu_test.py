@@ -13,8 +13,8 @@ BASEPATH = "tests/data/text"
 @pytest.mark.parametrize(
     ['filename', 'well_formed', 'errors'
     ],
-    [["valid_html5.html", True, ""],
-     ["invalid_html5_wrong_encoding.html", False,
+    [["valid_5.0.html", True, ""],
+     ["invalid_5.0_wrong_encoding.html", False,
       "Internal encoding declaration"]
     ]
 )

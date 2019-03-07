@@ -8,19 +8,19 @@ import pytest
 import dpres_scraper.scrapers.xmllint
 
 
-ROOTPATH = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), '../../../'))
+ROOTPATH = 'tests/data/text'
 SCHEMAPATH = "/etc/xml/dpres-xml-schemas/schema_catalogs/schemas/mets/mets.xsd"
 
 
 @pytest.mark.parametrize(
     ["filename", "schema"],
     [
-        ("mets/mets.xml", True),
-        ("data/text/catalog_schema_valid.xml", False),
-        ("data/text/valid_xsd.xml", False),
-        ("data/text/valid_wellformed.xml", False),
-        ("data/text/valid_dtd.xml", False),
+        ("valid_1.0.xml", True),
+        # ("valid_1.0_mets.xml", True),
+        # ("valid_1.0_catalog_schema.xml", False),
+        # ("valid_1.0_xsd.xml", False),
+        # ("valid_1.0_wellformed.xml", False),
+        # ("valid_1.0_dtd.xml", False),
     ])
 def test_scraping_valid(filename, schema, monkeypatch, capsys):
     """
@@ -28,7 +28,7 @@ def test_scraping_valid(filename, schema, monkeypatch, capsys):
     """
     # catalog_path = ('tests/data/test-catalog.xml')
     # monkeypatch.setenv("SGML_CATALOG_FILES", catalog_path)
-    filepath = os.path.join('tests/data', filename)
+    filepath = os.path.join(ROOTPATH, filename)
     scraper = dpres_scraper.scrapers.xmllint.Xmllint(filepath, 'text/xml')
 
     scraper.scrape_file()
@@ -44,17 +44,13 @@ def test_scraping_valid(filename, schema, monkeypatch, capsys):
 @pytest.mark.parametrize(
     "filename",
     [
-        ("data/text/catalog_schema_invalid.xml"),
-        ("data/text/invalid_xsd.xml"),
-        ("data/text/invalid_wellformed.xml"),
-        ("data/text/invalid_dtd.xml"),
-        ("this_file_does_not_exist")
+        ("invalid_1.0_catalog_schema.xml"),
+        ("invalid_1.0_xsd.xml"),
+        ("invalid_1.0_wellformed.xml"),
+        ("invalid_1.0_dtd.xml"),
     ])
 def test_scraping_invalid(filename, capsys):
-    """
-    test invalid cases
-    """
-    filepath = os.path.join('tests/data', filename)
+    filepath = os.path.join(ROOTPATH, filename)
     scraper = dpres_scraper.scrapers.xmllint.Xmllint(filepath, 'text/xml')
 
     scraper.scrape_file()

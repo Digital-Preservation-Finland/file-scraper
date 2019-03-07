@@ -7,16 +7,16 @@ import pytest
 from dpres_scraper.scrapers.pspp import Pspp
 
 
-BASEPATH = "tests/data/binary"
+BASEPATH = "tests/data/spss"
 
 
 @pytest.mark.parametrize(
     ['filename', 'mimetype', 'validity'],
     [
-        ("ISSP2000_sample.por", "application/x-spss-por", True),
+        ("valid.por", "application/x-spss-por", True),
         ("empty.por", "application/x-spss-por", False),
         ("example.sps", "application/x-spss-por", False),
-        ("ISSP2000_sample.sav", "application/x-spss-por", False),
+        ("invalid_wrong_spss_format.sav", "application/x-spss-por", False),
         ("ISSP2000_sample_corrupted.por", "application/x-spss-por", False)
     ]
 )

@@ -51,6 +51,8 @@ class HtmlJHove(JHove):
             result_mimetype = mimeparse.parse_mime_type(results[0])
         except mimeparse.MimeTypeParseException:
             return None
+        except IndexError:
+            return None
         else:
             params = result_mimetype[2]
             return params.get('charset')
@@ -63,7 +65,7 @@ class HtmlJHove(JHove):
             return results[0]
         except IndexError:
             # This will be handled by scrape_file()
-            pass
+            return None
 
     def _s_charset(self):
         """Get the charset from HTML/XML files"""

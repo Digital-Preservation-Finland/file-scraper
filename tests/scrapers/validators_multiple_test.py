@@ -6,6 +6,7 @@ File-scraper.
 import os
 import pytest
 from dpres_scraper.iterator import iter_scrapers
+from pprint import pprint
 
 
 BASEPATH = "tests/data/documents"
@@ -15,14 +16,14 @@ BASEPATH = "tests/data/documents"
 @pytest.mark.parametrize(
     ['filename', 'mimetype'],
     [
-        ("ODF_Text_Document.odt", "application/vnd.oasis.opendocument.text"),
+        ("valid_1.1.odt", "application/vnd.oasis.opendocument.text"),
     ]
 )
 def test_scrape_valid_file(filename, mimetype):
     for scraper in iter_scrapers(
             os.path.join(BASEPATH, filename), mimetype, None):
+        scraper.scrape_file()
         assert scraper.well_formed
-
 
 # Test invalid files
 @pytest.mark.parametrize(
@@ -32,9 +33,7 @@ def test_scrape_valid_file(filename, mimetype):
         ("ODF_Text_Document_corrupted.odt",
          "application/vnd.oasis.opendocument.text"),
         # Wrong MIME - caught by File scraper
-        ("ODF_Text_Document.odt", "application/msword"),
-        # Unsupported version number - scraper not found
-        ("MS_Word_97-2003.doc", "application/msword"),
+        ("valid_1.1.odt", "application/msword"),
     ]
 )
 def test_scrape_invalid_file(filename, mimetype):

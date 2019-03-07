@@ -11,22 +11,21 @@ BASEPATH = "tests/data/documents"
 
 
 @pytest.mark.parametrize(
-    ['filename', 'well_formed', 'errors', 'version'],
+    ['filename', 'well_formed', 'errors'],
     [
-        ["pdfa1-valid.pdf", True, "", 'A-1b'],
-        ["pdfa2-valid-a.pdf", True, "", 'A-2b'],
-        ["pdfa3-valid-a.pdf", True, "", 'A-3b'],
-        ["pdfa1-invalid.pdf", False,
-         "Couldn't parse stream caused by exception", 'A-1b'],
-        ["pdfa2-fail-a.pdf", False,
-         "not compliant with Validation Profile requirements", 'A-2b'],
-        ["pdfa3-fail-a.pdf", False,
-         "not compliant with Validation Profile requirements", 'A-3b'],
-        ["../images/valid.tif", False,
-         "SEVERE", 'A-3b'],
+        ("valid_A-1b.pdf", True, ""),
+        ("valid_A-2b.pdf", True, ""),
+        ("valid_A-3b.pdf", True, ""),
+        ("invalid_A-1b_corrupted.pdf", False,
+         "Couldn't parse stream caused by exception"),
+        ("invalid_A-2b.pdf", False,
+         "not compliant with Validation Profile requirements"),
+        ("invalid_A-3b.pdf", False,
+         "not compliant with Validation Profile requirements"),
+        ("../images/valid_6.0.tif", False, "SEVERE"),
     ]
 )
-def test_scrape_file(filename, well_formed, errors, version):
+def test_scrape_file(filename, well_formed, errors):
     """
     Test scraping of PDF/A files. Asserts that valid files are
     valid and invalid files or files with wrong versions are

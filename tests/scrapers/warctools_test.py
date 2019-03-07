@@ -9,28 +9,27 @@ from dpres_scraper.scrapers.warctools import WarcWarctools, ArcWarctools
 
 @pytest.mark.parametrize(
     'filename',
-    ['warc_0_18/warc.0.18.warc',
-     'warc_0_17/valid.warc',
-     'warc_1_0/valid.warc.gz',
-     'warc_1_0/valid_no_compress.warc'])
+    ['valid_0.18.warc',
+     'valid_0.17.warc',
+     'valid_1.0.warc.gz',
+     'valid_1.0.warc'])
 def test_scrape_valid_warc(filename):
 
-    filepath = os.path.join("tests/data/binary", filename)
+    filepath = os.path.join("tests/data/warc", filename)
     scraper = WarcWarctools(filepath, 'application/warc')
     scraper.scrape_file()
     assert scraper.well_formed
 
 
 @pytest.mark.parametrize(
-    ['filename', 'version', 'error'],
-    [('warc_0_17/invalid.warc', '0.17', 'incorrect newline in header'),
-     ('warc_0_17/valid.warc', '666.66', 'version check error'),
-     ('warc_1_0/invalid.warc.gz', '1.0', 'invalid distance code'),
-     ('warc_0_18/invalid_warc.0.18.warc', '0.18', 'invalid header')])
+    ['filename', 'error'],
+    [('invalid_0.17_incorrect newline_in header.warc', 'incorrect newline in header'),
+     ('invalid_1.0_distance_code_error.warc.gz', 'invalid distance code'),
+     ('invalid_0.18_header_error.warc', 'invalid header')])
 @pytest.mark.timeout(5)
-def test_scrape_invalid_warc(filename, version, error):
+def test_scrape_invalid_warc(filename, error):
 
-    filepath = os.path.join("tests/data/binary", filename)
+    filepath = os.path.join("tests/data/warc", filename)
     scraper = WarcWarctools(filepath, 'application/warc')
     scraper.scrape_file()
 
@@ -40,11 +39,11 @@ def test_scrape_invalid_warc(filename, version, error):
 
 @pytest.mark.parametrize(
     'filename',
-    ['arc/valid_arc.gz',
-     'arc/valid_arc_no_compress'])
+    ['valid_1.0.arc.gz',
+     'valid_1.0.arc'])
 def test_scrape_valid_arc(filename):
 
-    filepath = os.path.join("tests/data/binary", filename)
+    filepath = os.path.join("tests/data/warc", filename)
     scraper = ArcWarctools(filepath, 'application/x-internet-archive')
     scraper.scrape_file()
 
@@ -52,12 +51,12 @@ def test_scrape_valid_arc(filename):
 
 
 @pytest.mark.parametrize(
-    ['filename', 'version', 'error'],
-    [('arc/invalid_arc.gz', '1.0', 'Not a gzipped file'),
-     ('arc/invalid_arc_crc.gz', '1.0', 'CRC check failed')])
-def test_scrape_invalid_arc(filename, version, error):
+    ['filename', 'error'],
+    [('invalid_1.0_no_gzip.gz', 'Not a gzipped file'),
+     ('invalid_1.0_crc_error.gz', 'CRC check failed')])
+def test_scrape_invalid_arc(filename, error):
 
-    filepath = os.path.join("tests/data/binary", filename)
+    filepath = os.path.join("tests/data/warc", filename)
     scraper = ArcWarctools(filepath, 'application/x-internet-archive')
     scraper.scrape_file()
 

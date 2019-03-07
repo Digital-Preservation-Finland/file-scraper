@@ -12,7 +12,7 @@ def test_pdf_1_7_ok():
     """
     test pdf 1.7 ok case
     """
-    filename = os.path.join(BASEPATH, "valid_1_7.pdf")
+    filename = os.path.join(BASEPATH, "valid_1.7.pdf")
     scraper = GhostScript(filename, 'application/pdf')
     scraper.scrape_file()
     assert 'Error' not in scraper.messages()
@@ -22,10 +22,9 @@ def test_pdf_1_7_ok():
 
 
 def test_pdf_1_7_validity_error():
+    """Test pdf 1.7 invalid case
     """
-    test pdf 1.7 invalid case
-    """
-    filename = os.path.join(BASEPATH, "invalid_1_7.pdf")
+    filename = os.path.join(BASEPATH, "invalid_1.7_corrupted.pdf")
     scraper = GhostScript(filename, 'application/pdf')
     scraper.scrape_file()
 
@@ -34,26 +33,11 @@ def test_pdf_1_7_validity_error():
     assert not scraper.well_formed
 
 
-def test_pdf_1_7_version_error():
-    """
-    test pdf 1.7 wrong version case
-    """
-    filename = os.path.join(BASEPATH, "invalid_wrong_version.pdf")
-
-    scraper = GhostScript(filename, 'application/pdf')
-    scraper.scrape_file()
-
-    assert 'ERROR: wrong file version. Expected PDF 1.7,' \
-        ' found PDF document, version 1.3' in scraper.errors()
-    assert 'PDF document, version 1.3' in scraper.messages()
-    assert not scraper.well_formed
-
-
 def test_pdfa_valid():
     """Test that valid PDF/A is valid
        This file is also used in veraPDF test, where it should result "valid".
     """
-    filename = os.path.join(BASEPATH, "pdfa1-valid.pdf")
+    filename = os.path.join(BASEPATH, "valid_A-1b.pdf")
     scraper = GhostScript(filename, 'application/pdf')
     scraper.scrape_file()
     assert 'Error' not in scraper.messages()
@@ -67,7 +51,7 @@ def test_pdf_valid_pdfa_invalid():
        This file is also used in veraPDF test, where it should result
        "invalid".
     """
-    filename = os.path.join(BASEPATH, "pdfa3-fail-a.pdf")
+    filename = os.path.join(BASEPATH, "invalid_A-1b_valid_as_plain_pdf.pdf")
     scraper = GhostScript(filename, 'application/pdf')
     scraper.scrape_file()
     assert 'Error' not in scraper.messages()
@@ -81,7 +65,7 @@ def test_pdf_invalid_pdfa_invalid():
        This file is also used in veraPDF test, where it should result
        "invalid".
     """
-    filename = os.path.join(BASEPATH, "pdfa1-invalid.pdf")
+    filename = os.path.join(BASEPATH, "invalid_A-1b_xref_error.pdf")
     scraper = GhostScript(filename, 'application/pdf')
     scraper.scrape_file()
     assert not scraper.well_formed

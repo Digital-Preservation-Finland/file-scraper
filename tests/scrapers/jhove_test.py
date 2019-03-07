@@ -11,22 +11,19 @@ TESTDATADIR_BASE = 'tests/data'
 @pytest.mark.parametrize(
     ["scraper_class", "filename", "mimetype"],
     [
-        (HtmlJHove, "text/valid_4.html", "text/html"),
-        (GifJHove, "images/valid_89a.gif", "image/gif"),
-        (GifJHove, "images/valid_87a.gif", "image/gif"),
-        (TiffJHove, "images/valid.tif", "image/tiff"),
-        (PdfJHove, "documentss/valid_1_4.pdf", "application/pdf"),
-        (PdfJHove, "documents/valid_1_5.pdf", "application/pdf"),
-        (PdfJHove, "documents/valid_1_6.pdf", "application/pdf"),
-        (PdfJHove, "documents/pdfa2-valid-a.pdf", "application/pdf"),
-        (PdfJHove, "documents/pdfa3-valid-a.pdf", "application/pdf"),
-        (PdfJHove, "documents/pdfa1-valid.pdf", "application/pdf"),
-        (PdfJHove, "documents/pdfa2-fail-a.pdf", "application/pdf"),
-        (PdfJHove, "documents/pdfa3-fail-a.pdf", "application/pdf"),
-        (TiffJHove, "images/valid_5.tif", "image/tiff"),
-        (HtmlJHove, "text/valid.xhtml", "application/xhtml+xml"),
-        (WavJHove, "audio/valid-wav.wav", "audio/x-wav"),
-        (WavJHove, "audio/valid-bwf.wav", "audio/x-wav")
+        (HtmlJHove, "text/valid_4.01.html", "text/html"),
+        (GifJHove, "images/valid_1989a.gif", "image/gif"),
+        (GifJHove, "images/valid_1987a.gif", "image/gif"),
+        (TiffJHove, "images/valid_6.0.tif", "image/tiff"),
+        (PdfJHove, "documents/valid_1.4.pdf", "application/pdf"),
+        (PdfJHove, "documents/valid_1.5.pdf", "application/pdf"),
+        (PdfJHove, "documents/valid_1.6.pdf", "application/pdf"),
+        (PdfJHove, "documents/valid_A-2b.pdf", "application/pdf"),
+        (PdfJHove, "documents/valid_A-3b.pdf", "application/pdf"),
+        (PdfJHove, "documents/valid_A-1b.pdf", "application/pdf"),
+        (HtmlJHove, "text/valid_1.0.xhtml", "application/xhtml+xml"),
+        (WavJHove, "audio/valid_wav.wav", "audio/x-wav"),
+        (WavJHove, "audio/valid_2_bwf.wav", "audio/x-wav")
     ])
 def test_scrape_valid_form_and_version(
         scraper_class, filename, mimetype):
@@ -42,10 +39,8 @@ def test_scrape_valid_form_and_version(
 @pytest.mark.parametrize(
     ["scraper_class", "filename", "mimetype"],
     [
-        (JpegJHove, "images/valid.jpg", "image/jpeg"),
-        (Utf8JHove, "text/utf8.txt", "text/plain"),
-        (Utf8JHove, "text/utf8.csv", "text/plain"),
-        (Utf8JHove, "html/valid_4.html", "text/html")
+        (JpegJHove, "images/valid_1.01.jpg", "image/jpeg"),
+        (Utf8JHove, "text/valid_utf8.txt", "text/plain"),
     ])
 def test_scrape_valid_only_form(scraper_class, filename, mimetype):
     """Test cases of Jhove scraping"""
@@ -54,7 +49,6 @@ def test_scrape_valid_only_form(scraper_class, filename, mimetype):
     scraper.scrape_file()
     assert scraper.well_formed, scraper.errors()
     assert "Well-Formed and valid" in scraper.messages()
-    assert "OK" in scraper.messages()
     assert scraper.errors() == ""
 
 
@@ -63,18 +57,18 @@ def test_scrape_valid_only_form(scraper_class, filename, mimetype):
     [
         (HtmlJHove, "text/invalid_4.htm",
          "text/html", "Well-Formed, but not valid"),
-        (GifJHove, "invalid.gif",
+        (GifJHove, "invalid_1987a.gif",
          "image/gif", "Not well-formed"),
-        (GifJHove, "images/invalid_89a.gif",
+        (GifJHove, "images/invalid_1989a.gif",
          "image/gif", "Not well-formed"),
         (PdfJHove, "documents/pdfa1-fail.pdf",
          "application/pdf", "Not well-formed"),
-        (TiffJHove, "images/invalid.tif",
+        (TiffJHove, "images/invalid_6.0.tif",
          "image/tiff", "Not well-formed"),
-        (Utf8JHove, "text/iso-8859.txt",
+        (Utf8JHove, "text/iso8859.txt",
          "text/plain", "Not well-formed"),
         (WavJHove,
-         "audio/invalid-wav-last-byte-missing.wav",
+         "audio/invalid_wav_last_byte_missing.wav",
          "audio/x-wav", "Not well-formed"),
     ])
 def test_scrape_invalid(scraper_class, filename, mimetype, stdout):
