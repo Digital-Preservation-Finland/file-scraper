@@ -59,9 +59,9 @@ class _FidoReader(Fido):
         for (item, _) in matches:
             if self.mimetype is None:
                 self.puid = self.get_puid(item)
-                mime = f.find('mime')
+                mime = item.find('mime')
                 self.mimetype = mime.text if mime is not None else None
-                version = f.find('version')
+                version = item.find('version')
                 self.version = version.text if version is not None else None
 
 

@@ -13,7 +13,6 @@ BASEPATH = "tests/data/documents"
     ['filename', 'mimetype'],
     [
         ("ODF_Text_Document.odt", "application/vnd.oasis.opendocument.text"),
-        ("ODF_Text_Document.odt", "application/vnd.oasis.opendocument.text"),
         ("MS_Word_97-2003.doc", "application/msword"),
         ("Office_Open_XML_Text.docx", "application/vnd.openxmlformats-"
          "officedocument.wordprocessingml.document"),
@@ -25,18 +24,13 @@ BASEPATH = "tests/data/documents"
         ("ODF_Spreadsheet.ods",
          "application/vnd.oasis.opendocument.spreadsheet"),
         ("MS_Excel_97-2003.xls", "application/vnd.ms-excel"),
-        ("Excel_Online_Spreadsheet.xlsx",
-         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
-        ("ODF_Drawing.odg", "application/vnd.oasis.opendocument.graphics"),
-        ("ODF_Formula.odf", "application/vnd.oasis.opendocument.formula"),
         ("Office_Open_XML_Spreadsheet.xlsx", "application/vnd."
          "openxmlformats-officedocument.spreadsheetml.sheet"),
+        ("ODF_Drawing.odg", "application/vnd.oasis.opendocument.graphics"),
+        ("ODF_Formula.odf", "application/vnd.oasis.opendocument.formula"),
         ("ODF_Text_Document.odt", "application/msword"),
         ("ODF_Text_Document_with_wrong_filename_extension.doc",
          "application/msword"),
-        ("MS_Word_97-2003.doc", "application/msword"),
-        ("ODF_Text_Document.odt",
-         "application/vnd.oasis.opendocument.text"),
     ]
 )
 def test_scrape_valid_file(filename, mimetype):
