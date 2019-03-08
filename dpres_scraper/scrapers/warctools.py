@@ -17,6 +17,43 @@ def sanitaze_string(dirty_string):
     return sanitazed_string
 
 
+class GzipWarctools(BaseScraper):
+
+    _supported = {'application/gzip': []}
+    _only_wellformed = True
+
+    def __init__(self, filename, mimetype, validation):
+        """
+        """
+        self._well_formed = None
+        super(GzipWarctools, self).__init__(filename, mimetype, validation)
+
+    def scrape_file(self):
+        """Scrape file
+        """
+        for class_ in [WarcWarctools, ArcWarctools]:
+            scraper = class_(self.filename, None)
+            scraper.scrape_file()
+            if scraper.well_formed:
+                self.mimetype = scraper.mimetype
+                self.version = scraper.version
+                self.streams = scrapers.streams
+                self.info = scraper.info
+                self._well_formed = scraper.well_formed
+                return
+
+    def well_formed(self):
+        """Return well_formed
+        """
+        return self._well_formed
+
+    # pylint: disable=no-self-use
+    def _s_stream_type(self):
+        """Return file type
+        """
+        return 'binary'
+
+
 class WarcWarctools(BaseScraper):
 
     """Implements WARC file format scraper using Internet Archives warctools
@@ -57,6 +94,7 @@ class WarcWarctools(BaseScraper):
             self._collect_elements()
             return
 
+        self.mimetype = 'application/warc'
         self.version = line.split("WARC/", 1)[1].split(" ")[0]
         self._collect_elements()
 
@@ -95,6 +133,7 @@ class ArcWarctools(BaseScraper):
 
             self.messages(shell.stdout)
 
+        self.mimetype = 'application/x-internet-archive'
         self._collect_elements()
 
     # pylint: disable=no-self-use

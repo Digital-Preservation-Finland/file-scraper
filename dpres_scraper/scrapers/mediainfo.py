@@ -31,23 +31,6 @@ class VideoMediainfo(Mediainfo):
             return self.mimetype
 
 
-class DataMediainfo(Mediainfo):
-    """Find out, if unknown format is audio/video.
-    """
-    _supported = {'application/octet-stream': []}
-
-    def _s_mimetype(self):
-        """Return mimetype
-        """
-        mime_dict = {'DV': 'video/dv',
-                     'PCM': 'audio/x-wav',
-                     'QuickTime': 'video/quicktime'}
-        if self._s_codec_name() in mime_dict:
-            return mime_dict[self._s_codec_name()]
-        else:
-            return self.mimetype
-
-
 class MpegMediainfo(Mediainfo):
     """Scraper class for collecting MPEG video metadata
     """

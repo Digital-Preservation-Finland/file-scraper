@@ -1,22 +1,20 @@
 """File metadata scraper
 """
 from dpres_scraper.utils import combine_metadata, combine_element
-from dpres_scraper.detectors import FidoDetector, MagicDetector
 
-from dpres_scraper.iterator import iter_scrapers
+from dpres_scraper.iterator import iter_scrapers, iter_detectors
 from dpres_scraper.scrapers.jhove import Utf8JHove
 from dpres_scraper.scrapers.file import TextPlainFile
 from dpres_scraper.scrapers.dummy import FileExists
 
-# Keep this in priority order
-DETECTORS = [FidoDetector, MagicDetector]
-
-LOOSE = [None, '0', '(:unav)', '(:unap)']
+LOSE = [None, '0', '(:unav)', '(:unap)']
 
 
 class Scraper(object):
     """File indentifier and scraper
     """
+
+# pylint: disable=no-member
 
     def __init__(self, filename):
         """Initialize scraper
@@ -32,20 +30,28 @@ class Scraper(object):
         """Identify file format and version
         """
         self.info = {}
-        for tool in DETECTORS:
-            detector_tool = tool(self.filename)
-            detector_tool.detect()
-            self.info[len(self.info)] = detector_tool.info
-            if self.mimetype in LOOSE:
-                self.mimetype = detector_tool.mimetype
-                self.version = detector_tool.version
+        for tool in iter_detectors(self.filename):
+            tool.detect()
+            self.info[len(self.info)] = tool.info
+            important = tool.is_important()
+            if self.mimetype in LOSE:
+                self.mimetype = tool.mimetype
+                self.version = tool.version
+            if 'mimetype' in important and \
+                    important['mimetype'] is not None:
+                self.mimetype = important['mimetype']
+            if 'version' in important and \
+                    important['version'] is not None:
+                self.mimetype = important['version'][self.mimetype]
 
     def _scrape_file(self, scraper):
         """Scrape file and collect metadata.
         """
         scraper.scrape_file()
         self.streams = combine_metadata(
-            self.streams, scraper.streams, LOOSE)
+            stream=self.streams, metadata=scraper.streams,
+            well_formed=scraper.well_formed, lose=LOSE,
+            important=scraper.is_important())
         self.info[len(self.info)] = scraper.info
         if scraper.well_formed is not None:
             if self.well_formed in [None, True]:
@@ -61,7 +67,7 @@ class Scraper(object):
         file_exists = FileExists(self.filename, None)
         self._scrape_file(file_exists)
 
-        if not file_exists.well_formed:
+        if file_exists.well_formed not in [None, True]:
             return
 
         self._identify()
@@ -71,9 +77,9 @@ class Scraper(object):
             self._scrape_file(scraper)
 
         if 'charset' in self.streams[0] and \
-            self.streams[0]['charset'] == 'UTF-8':
-                scraper = Utf8JHove(self.filename, self.mimetype)
-                self._scrape_file(scraper)
+                self.streams[0]['charset'] == 'UTF-8':
+            scraper = Utf8JHove(self.filename, self.mimetype)
+            self._scrape_file(scraper)
 
         self.mimetype = self.streams[0]['mimetype']
         self.version = self.streams[0]['version']
@@ -81,6 +87,6 @@ class Scraper(object):
     def is_textfile(self):
         """Find out if file is a text file.
         """
-        scraper = TextPlainFile(self.mimetype, self.filename, True)
+        scraper = TextPlainFile(self.filename, self.mimetype)
         scraper.scrape_file()
         return scraper.well_formed

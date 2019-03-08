@@ -96,8 +96,8 @@ class BaseScraper(object):
         validation.
         """
         if self.mimetype in self._supported and \
-                (not self._supported[self.mimetype] or \
-                 version is None or \
+                (not self._supported[self.mimetype] or
+                 version is None or
                  version in self._supported[self.mimetype]) and \
                 (self._validation or not self._only_wellformed):
             return True
@@ -159,6 +159,11 @@ class BaseScraper(object):
         Otherwise allow call but do nothing.
         """
         pass
+
+    def is_important(self):
+        """Explain which values are more important
+        """
+        return {}
 
     def _s_mimetype(self):
         """Return mimetype

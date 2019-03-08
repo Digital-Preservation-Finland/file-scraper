@@ -38,7 +38,8 @@ class VeraPdf(BaseScraper):
                     '//validationReport')[0].get('isCompliant')
                 if valid == 'false':
                     self.errors(shell.stdout)
-                profile = report.xpath('//validationReport')[0].get('profileName')
+                profile = \
+                    report.xpath('//validationReport')[0].get('profileName')
                 self.version = 'A' + profile.split("PDF/A")[1].split(
                     " validation profile")[0].lower()
             else:
@@ -47,6 +48,13 @@ class VeraPdf(BaseScraper):
             self.errors(shell.stderr)
         finally:
             self._collect_elements()
+
+    def is_important(self):
+        """Choose which values are more important
+        """
+        important = {}
+        important['version'] = self.version
+        return important
 
     # pylint: disable=no-self-use
     def _s_stream_type(self):

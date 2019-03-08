@@ -12,7 +12,7 @@ import magic
 from fido.fido import Fido, defaults
 from fido.pronomutils import get_local_pronom_versions
 from dpres_scraper.base import BaseDetector
-from dpres_scraper.dicts import PRONOM_DICT
+from dpres_scraper.dicts import PRONOM_DICT, MIMETYPE_DICT, VERSION_DICT
 
 
 class _FidoReader(Fido):
@@ -63,6 +63,12 @@ class _FidoReader(Fido):
                 self.mimetype = mime.text if mime is not None else None
                 version = item.find('version')
                 self.version = version.text if version is not None else None
+                if self.mimetype in MIMETYPE_DICT:
+                    self.mimetype = MIMETYPE_DICT[self.mimetype]
+                if self.mimetype in VERSION_DICT:
+                    if self.version in VERSION_DICT[self.mimetype]:
+                        self.version = \
+                            VERSION_DICT[self.mimetype][self.version]
 
 
 class FidoDetector(BaseDetector):
@@ -80,6 +86,15 @@ class FidoDetector(BaseDetector):
                      'messages': '',
                      'errors': ''}
 
+    def is_important(self):
+        """Choose which values are more important
+        """
+        important = {}
+        if self.mimetype != 'text/html':
+            important['mimetype'] = self.mimetype
+        return important
+
+
 class MagicDetector(BaseDetector):
     """File magic detector
     """
@@ -87,15 +102,22 @@ class MagicDetector(BaseDetector):
     def detect(self):
         """Detect mimetype
         """
-        _convert = {'application/xml': 'text/xml'}
         magic_ = magic.open(magic.MAGIC_MIME_TYPE)
         magic_.load()
         mimetype = magic_.file(self.filename)
         magic_.close()
-        if mimetype in _convert:
-            self.mimetype = _convert[mimetype]
+        if mimetype in MIMETYPE_DICT:
+            self.mimetype = MIMETYPE_DICT[mimetype]
         else:
             self.mimetype = mimetype
         self.info = {'class': self.__class__.__name__,
                      'messages': '',
                      'errors': ''}
+
+    def is_important(self):
+        """Choose which values are more important
+        """
+        important = {}
+        if self.mimetype == 'application/x-internet-archive':
+            important['mimetype'] = self.mimetype
+        return important

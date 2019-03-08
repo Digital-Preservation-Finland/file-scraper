@@ -40,6 +40,12 @@ class FileExists(BaseScraper):
             self.errors('File %s does not exist.' % self.filename)
         self._collect_elements()
 
+    @property
+    def well_formed(self):
+        """Let us give the actual decision to the real scrapers.
+        """
+        return None
+
     def _s_stream_type(self):
         """We don't know the stream type
         """

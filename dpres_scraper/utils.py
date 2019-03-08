@@ -41,7 +41,8 @@ def strip_zeros(float_str):
     return float_str
 
 
-def combine_metadata(stream, metadata, lose=[]):
+def combine_metadata(stream, metadata, well_formed=None, lose=[], 
+                     important={}):
     """Merge metadata dict to stream metadata dict
     """
     if not metadata:
@@ -62,6 +63,9 @@ def combine_metadata(stream, metadata, lose=[]):
                 if key in newitem and newitem[key] is not None:
                     if founditem[key] in lose:
                         founditem[key] = newitem[key]
+                    elif well_formed and key in important and \
+                            important[key] not in lose:
+                        founditem[key] = important[key]
                     elif newitem[key] not in [founditem[key]] + lose:
                         raise ValueError(
                             "Conflict with exsisting value '%s' and new "

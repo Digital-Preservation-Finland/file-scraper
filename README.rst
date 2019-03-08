@@ -41,8 +41,7 @@ Use the scraper in the following way::
 
     from dpres_scraper.scraper import Scraper
     scraper = Scraper(filename)
-    scraper.identify()
-    scraper.scrape(validate=True/False)
+    scraper.scrape(validation=True/False)
 
 The ``validate`` option is True by default and does full validation for the file. To collect metadata without validation, this option must be ``False``.
 
@@ -52,12 +51,30 @@ As a result the collected metadata and results are in the following instance var
     * File format: ``scraper.mimetype``
     * Format version: ``scraper.version``
     * Metadata of the streams: ``scraper.streams``
-    * Class name, messages and errors: ``scraper.info``
+    * Detector and scraper class names, messages and errors: ``scraper.info``
     * Result of the validation: ``scraper.well_formed``
 
-Additionally, the following returns a boolean value True, if the file is a text file and False otherwise::
+The following is also possible:
 
+    * Use particular scraper::
+        from dpres_scraper.scraper.scrapers import <scraper class>
+        scraper = <scraper class>(filename, <mimetype>)
+        scraper.scrape_file()
+    * XML validation against given schema file, without any other validation::
+        from dpres_scraper.scraper.scrapers import Xmllint
+        scraper = Xmllint(filename, 'text/xml', schema=<my schema>)
+        scraper.scrape_file()
+    * XML validation against given schematron file, without any other validation::
+        from dpres_scraper.scraper.scrapers import Xmllint
+        scraper = Schematron(filename, 'text/xml', schematron=<my schema>)
+        scraper.scrape_file()
+
+Additionally, the following returns a boolean value True, if the file is a text file, and False otherwise::
+
+    from dpres_scraper.scraper import Scraper
+    scraper = Scraper(filename)
     scraper.is_textfile()
+
 
 Copyright
 ---------

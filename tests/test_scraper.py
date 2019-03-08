@@ -52,7 +52,7 @@ AUDIO = {'audio_data_encoding': 'AAC',
 def test_scraper_mp4():
     """Test mpeg-4 container with video and audio
     """
-    scraper = Scraper('./tests/data/video/valid_h264_aac.mp4')
+    scraper = Scraper('./tests/data/video_mp4/valid_h264_aac.mp4')
     scraper.scrape()
     assert cmp(AUDIO, scraper.streams[2]) == 0
     assert cmp(VIDEO, scraper.streams[1]) == 0
@@ -64,7 +64,7 @@ def test_scraper_mp4():
 def test_scraper_mpg():
     """Test mpeg-1 video
     """
-    scraper = Scraper('./tests/data/video/valid_1.m1v')
+    scraper = Scraper('./tests/data/video_mpeg/valid_1.m1v')
     scraper.scrape()
     assert scraper.streams is not None
     assert scraper.mimetype == 'video/mpeg'
@@ -74,7 +74,7 @@ def test_scraper_mpg():
 def test_scraper_tiff():
     """Test tiff image
     """
-    scraper = Scraper('./tests/data/images/valid_6.0.tif')
+    scraper = Scraper('./tests/data/image_tiff/valid_6.0.tif')
     scraper.scrape()
     assert scraper.streams is not None
     assert scraper.mimetype == 'image/tiff'
@@ -84,7 +84,7 @@ def test_scraper_tiff():
 def test_scraper_txt():
     """Test text file
     """
-    scraper = Scraper('./tests/data/text/valid.txt')
+    scraper = Scraper('./tests/data/text_plain/valid.txt')
     scraper.scrape()
     assert scraper.mimetype == 'text/plain'
     assert scraper.version == ''
@@ -94,7 +94,7 @@ def test_scraper_txt():
 def test_scraper_xml():
     """Test xml file
     """
-    scraper = Scraper('./tests/data/text/valid_1.0.xml')
+    scraper = Scraper('./tests/data/text_xml/valid_1.0.xml')
     scraper.scrape()
     assert scraper.mimetype == 'text/xml'
     assert scraper.version == '1.0'
