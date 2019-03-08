@@ -7,7 +7,7 @@ import pytest
 from dpres_scraper.scrapers.wand import TiffWand, ImageWand
 
 
-BASEPATH = "tests/data/images"
+BASEPATH = "tests/data"
 
 
 @pytest.mark.parametrize(
@@ -21,7 +21,8 @@ BASEPATH = "tests/data/images"
 )
 def test_scrape_valid_file(filename, mimetype, class_):
 
-    scraper = class_(os.path.join(BASEPATH, filename), mimetype)
+    scraper = class_(os.path.join(BASEPATH, mimetype.replace('/', '_'),
+                                  filename), mimetype)
     scraper.scrape_file()
     assert scraper.well_formed
 
@@ -34,6 +35,7 @@ def test_scrape_valid_file(filename, mimetype, class_):
 )
 def test_scrape_invalid_file(filename, mimetype):
 
-    scraper = ImageWand(os.path.join(BASEPATH, filename), mimetype)
+    scraper = ImageWand(os.path.join(BASEPATH, mimetype.replace('/', '_'),
+                                     filename), mimetype)
     scraper.scrape_file()
     assert not scraper.well_formed

@@ -7,7 +7,7 @@ import pytest
 from dpres_scraper.scrapers.verapdf import VeraPdf
 
 
-BASEPATH = "tests/data/documents"
+BASEPATH = "tests/data/application_pdf"
 
 
 @pytest.mark.parametrize(
@@ -22,7 +22,7 @@ BASEPATH = "tests/data/documents"
          "not compliant with Validation Profile requirements"),
         ("invalid_A-3b.pdf", False,
          "not compliant with Validation Profile requirements"),
-        ("../images/valid_6.0.tif", False, "SEVERE"),
+        ("../image_tiff/valid_6.0.tif", False, "SEVERE"),
     ]
 )
 def test_scrape_file(filename, well_formed, errors):

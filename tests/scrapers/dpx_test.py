@@ -8,7 +8,7 @@ import pytest
 from dpres_scraper.scrapers.dpx import Dpx
 
 
-BASEPATH = "tests/data/images/"
+BASEPATH = "tests/data/image_x-dpx/"
 
 
 @pytest.mark.parametrize(
@@ -32,6 +32,6 @@ def test_scrape_valid_file(filename):
 )
 def test_scrape_invalid_file(filename):
 
-    scraper = Dpx(filename, 'image/x-dpx')
+    scraper = Dpx(os.path.join(BASEPATH, filename), 'image/x-dpx')
     scraper.scrape_file()
     assert not scraper.well_formed

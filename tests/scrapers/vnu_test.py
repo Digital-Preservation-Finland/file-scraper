@@ -7,7 +7,7 @@ import pytest
 from dpres_scraper.scrapers.vnu import Vnu
 
 
-BASEPATH = "tests/data/text"
+BASEPATH = "tests/data/text_html"
 
 
 @pytest.mark.parametrize(

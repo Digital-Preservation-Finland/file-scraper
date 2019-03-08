@@ -7,7 +7,7 @@ import dpres_scraper.scrapers.pngcheck
 def test_pngcheck_valid():
     """Test valid PNG file"""
 
-    filepath = 'tests/data/images/valid_1.2.png'
+    filepath = 'tests/data/image_png/valid_1.2.png'
     scraper = dpres_scraper.scrapers.pngcheck.Pngcheck(filepath, 'image/png')
     scraper.scrape_file()
     assert scraper.well_formed
@@ -18,7 +18,7 @@ def test_pngcheck_valid():
 def test_pngcheck_invalid():
     """Test corrupted PNG file"""
 
-    filepath = 'tests/data/images/invalid_1.2.png'
+    filepath = 'tests/data/image_png/invalid_1.2.png'
     scraper = dpres_scraper.scrapers.pngcheck.Pngcheck(filepath, 'image/png')
     scraper.scrape_file()
     assert not scraper.well_formed

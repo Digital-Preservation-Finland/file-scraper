@@ -7,7 +7,7 @@ import pytest
 from multiprocessing import Pool
 from dpres_scraper.scrapers.office import Office
 
-BASEPATH = "tests/data/documents"
+BASEPATH = "tests/data"
 
 
 @pytest.mark.parametrize(
@@ -32,7 +32,7 @@ BASEPATH = "tests/data/documents"
     ]
 )
 def test_scrape_valid_file(filename, mimetype):
-    return _scrape(filename, mimetype)
+    assert _scrape(filename, mimetype)
 
 @pytest.mark.parametrize(
     ['filename', 'mimetype'],
@@ -50,7 +50,8 @@ def test_scrape_invalid_file(filename, mimetype):
 
 
 def _scrape(filename, mimetype):
-    scraper = Office(os.path.join(BASEPATH, filename), mimetype)
+    scraper = Office(os.path.join(BASEPATH, mimetype.replace('/', '_'),
+                                  filename), mimetype)
     scraper.scrape_file()
     return scraper.well_formed
 

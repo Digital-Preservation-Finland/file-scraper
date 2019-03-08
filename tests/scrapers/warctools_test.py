@@ -15,7 +15,7 @@ from dpres_scraper.scrapers.warctools import WarcWarctools, ArcWarctools
      'valid_1.0.warc'])
 def test_scrape_valid_warc(filename):
 
-    filepath = os.path.join("tests/data/warc", filename)
+    filepath = os.path.join("tests/data/application_warc", filename)
     scraper = WarcWarctools(filepath, 'application/warc')
     scraper.scrape_file()
     assert scraper.well_formed
@@ -29,7 +29,7 @@ def test_scrape_valid_warc(filename):
 @pytest.mark.timeout(5)
 def test_scrape_invalid_warc(filename, error):
 
-    filepath = os.path.join("tests/data/warc", filename)
+    filepath = os.path.join("tests/data/application_warc", filename)
     scraper = WarcWarctools(filepath, 'application/warc')
     scraper.scrape_file()
 
@@ -43,7 +43,8 @@ def test_scrape_invalid_warc(filename, error):
      'valid_1.0.arc'])
 def test_scrape_valid_arc(filename):
 
-    filepath = os.path.join("tests/data/warc", filename)
+    filepath = os.path.join("tests/data/application_x-internet-archive",
+                            filename)
     scraper = ArcWarctools(filepath, 'application/x-internet-archive')
     scraper.scrape_file()
 
@@ -56,7 +57,8 @@ def test_scrape_valid_arc(filename):
      ('invalid_1.0_crc_error.gz', 'CRC check failed')])
 def test_scrape_invalid_arc(filename, error):
 
-    filepath = os.path.join("tests/data/warc", filename)
+    filepath = os.path.join("tests/data/application_x-internet-archive",
+                            filename)
     scraper = ArcWarctools(filepath, 'application/x-internet-archive')
     scraper.scrape_file()
 

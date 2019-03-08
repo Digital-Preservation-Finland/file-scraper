@@ -7,7 +7,7 @@ import pytest
 from dpres_scraper.scrapers.pspp import Pspp
 
 
-BASEPATH = "tests/data/spss"
+BASEPATH = "tests/data/application_x-spss-por"
 
 
 @pytest.mark.parametrize(

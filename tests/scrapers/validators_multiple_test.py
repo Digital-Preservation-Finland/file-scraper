@@ -9,7 +9,7 @@ from dpres_scraper.iterator import iter_scrapers
 from pprint import pprint
 
 
-BASEPATH = "tests/data/documents"
+BASEPATH = "tests/data"
 
 
 # Test valid file
@@ -21,7 +21,8 @@ BASEPATH = "tests/data/documents"
 )
 def test_scrape_valid_file(filename, mimetype):
     for scraper in iter_scrapers(
-            os.path.join(BASEPATH, filename), mimetype, None):
+            os.path.join(BASEPATH, mimetype.replace('/', '_'), filename),
+            mimetype, None):
         scraper.scrape_file()
         assert scraper.well_formed
 
@@ -38,8 +39,10 @@ def test_scrape_valid_file(filename, mimetype):
 )
 def test_scrape_invalid_file(filename, mimetype):
     scraper_results = []
-    for scraper in iter_scrapers(
-             os.path.join(BASEPATH, filename), mimetype, None):
+    for scraper in iter_scrapers(os.path.join(BASEPATH,
+                                              mimetype.replace('/', '_'),
+                                              filename),
+                                 mimetype, None):
         scraper_results.append(scraper.well_formed)
 
     assert not all(scraper_results)

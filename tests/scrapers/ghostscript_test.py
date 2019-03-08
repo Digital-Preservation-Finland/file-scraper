@@ -6,7 +6,7 @@ import os
 
 from dpres_scraper.scrapers.ghostscript import GhostScript
 
-BASEPATH = "tests/data/documents"
+BASEPATH = "tests/data/application_pdf/"
 
 def test_pdf_1_7_ok():
     """

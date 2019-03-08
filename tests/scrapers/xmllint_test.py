@@ -8,7 +8,7 @@ import pytest
 import dpres_scraper.scrapers.xmllint
 
 
-ROOTPATH = 'tests/data/text'
+ROOTPATH = 'tests/data/text_xml'
 SCHEMAPATH = "/etc/xml/dpres-xml-schemas/schema_catalogs/schemas/mets/mets.xsd"
 
 
