@@ -13,8 +13,8 @@ class Vnu(BaseScraper):
     Vnu scraper supports only HTML version 5.0.
     """
 
-    _supported = {'text/html': ['5.0']}
-    _only_wellformed = True
+    _supported = {'text/html': ['5.0']}  # Supported mimetypes
+    _only_wellformed = True              # Only well-formed check
 
     def scrape_file(self):
         """

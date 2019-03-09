@@ -25,17 +25,22 @@ SCHEMA_TEMPLATE = """<?xml version = "1.0" encoding = "UTF-8"?>
 
 
 class Xmllint(BaseScraper):
-
     """This class implements a plugin interface for scraper module and
     validates XML files using Xmllint tool.
-
     .. seealso:: http://xmlsoft.org/xmllint.html
     """
 
-    _supported = {'text/xml': []}
-    _only_wellformed = True
+    _supported = {'text/xml': []}  # Supported mimetype
+    _only_wellformed = True        # Only well-formed check
 
-    def __init__(self, filename, mimetype, validation=True, params={}):
+    def __init__(self, filename, mimetype, validation=True, params=None):
+        """Initialize scraper.
+        :filename: File path
+        :mimetype: Predicted mimetype of the file
+        :validation: True for the full validation, False for just
+                     identification and metadata scraping
+        :params: Extra parameters needed for the scraper
+        """
         self._schema = params.get('schema')
         self._has_constructed_schema = False
         self._catalogs = params.get('catalogs', True)
@@ -43,12 +48,22 @@ class Xmllint(BaseScraper):
         super(Xmllint, self).__init__(filename, mimetype, validation, params)
 
     @classmethod
-    def is_supported(cls, mimetype, version=None, validation=True, params={}):
+    def is_supported(cls, mimetype, version=None,
+                     validation=True, params=None):
         """This is not a Schematron validator
+        :mimetype: Identified mimetype
+        :version: Identified version (if needed)
+        :validation: True for the full validation, False for just
+                     identification and metadata scraping
+        :params: Extra parameters needed for the scraper
+        :returns: True if scraper is supported
         """
+        if params is None:
+            params = {}
         if 'schematron' in params:
             return False
-        return super(Xmllint, cls).is_supported(mimetype, version, validation, params)
+        return super(Xmllint, cls).is_supported(mimetype, version,
+                                                validation, params)
 
     def scrape_file(self):
         """Validate XML file with Xmllint and return a tuple of results.
@@ -76,19 +91,19 @@ class Xmllint(BaseScraper):
             self.version = tree.docinfo.xml_version
             fd.close()
         except etree.XMLSyntaxError as exception:
-            self.errors("Validation failed: document is not well-formed.")
+            self.errors("Scraping failed: document is not well-formed.")
             self.errors(str(exception))
             self._collect_elements()
             return
         except IOError as exception:
-            self.errors("Validation failed: missing file.")
+            self.errors("Scraping failed: missing file.")
             self.errors(str(exception))
             self._collect_elements()
             return
 
         # Try validate against DTD
         if tree.docinfo.doctype:
-            (exitcode, stdout, stderr) = self.exec_xmllint(validate=True)
+            (exitcode, stdout, stderr) = self.exec_xmllint(dtd_validate=True)
 
         # Try validate againts XSD
         else:
@@ -97,7 +112,7 @@ class Xmllint(BaseScraper):
                 if not self._schema:
                     # No given schema and didn't find included schemas but XML
                     # was well formed.
-                    self.messages("Validation success: Document is "
+                    self.messages("Scraping success: Document is "
                                   "well-formed but does not contain schema.")
                     self._collect_elements()
                     return
@@ -105,7 +120,7 @@ class Xmllint(BaseScraper):
             (exitcode, stdout, stderr) = self.exec_xmllint(schema=self._schema)
         if exitcode == 0:
             self.messages(
-                "%s Validation success%s" % (self.filename, stdout))
+                "%s Scraping success%s" % (self.filename, stdout))
         else:
             self.errors(stderr)
 
@@ -118,9 +133,7 @@ class Xmllint(BaseScraper):
     def construct_xsd(self, document_tree):
         """This method constructs one schema file which collects all used
         schemas from given document tree and imports all of them in one file.
-
-
-        :tree: XML tree (lxml.etree) where XSD is constructed
+        :idocument_tree: XML tree (lxml.etree) where XSD is constructed
         :returns: Path to the constructed XSD schema
         """
 
@@ -169,11 +182,14 @@ class Xmllint(BaseScraper):
 
         return []
 
-    def exec_xmllint(self, validate=False, schema=None):
-        """Execute xmllint
+    def exec_xmllint(self, dtd_validate=False, schema=None):
+        """Execute xmllint.
+        :dtd_validate: True, if validation against DTD, false otherwise
+        :schema: Schema file
+        :returns: tuple including: returncode, stdout, strderr
         """
         command = ['xmllint']
-        command += ['--valid'] if validate else []
+        command += ['--valid'] if dtd_validate else []
         command += ['--huge']
         command += ['--noout']
         command += ['--nonet'] if self._no_network else []
@@ -194,7 +210,10 @@ class Xmllint(BaseScraper):
 
     def errors(self, error=None):
         """Remove the warning which we do not need to see from self.stderr.
-        See KDKPAS-1190."""
+        See KDKPAS-1190.
+        :error: Error messages
+        :returns: Filtered error messages
+        """
         if error:
             filtered_errors = []
             for line in error.splitlines():

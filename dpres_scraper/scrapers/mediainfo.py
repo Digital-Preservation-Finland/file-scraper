@@ -4,9 +4,9 @@ from dpres_scraper.base import SkipElement
 
 
 class VideoMediainfo(Mediainfo):
-    """Scraper for various video formats
+    """Scraper for various video and audio formats
     """
-
+    # Supported mimetypes
     _supported = {'video/quicktime': [], 'video/x-ms-asf': [],
                   'video/avi': []}
 
@@ -32,9 +32,9 @@ class VideoMediainfo(Mediainfo):
 
 
 class MpegMediainfo(Mediainfo):
-    """Scraper class for collecting MPEG video metadata
+    """Scraper for MPEG video and audio
     """
-
+    # Supported mimetypes
     _supported = {'video/mpeg': [], 'video/mp4': [],
                   'audio/mpeg': [], 'audio/mp4': []}
 

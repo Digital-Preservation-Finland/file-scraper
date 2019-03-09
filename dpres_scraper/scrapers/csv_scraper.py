@@ -6,21 +6,28 @@ from dpres_scraper.base import BaseScraper
 
 
 class Csv(BaseScraper):
-    """Scraper for CSV files
+    """Scraper for CSV files.
     """
 
-    _supported = {'text/csv': []}
+    _supported = {'text/csv': []}  # Supported mimetype
 
-    def __init__(self, filename, mimetype, validation=True, params={}):
-        """Initialize for delimiter and separator info
+    def __init__(self, filename, mimetype, validation=True, params=None):
+        """Initialize for delimiter and separator info.
+        :filename: File path
+        :mimetype: Predicted mimetype of the file
+        :validation: True for the full validation, False for just
+                     identification and metadata scraping
+        :params: Extra parameters: delimiter and separator
         """
+        if params is None:
+            params = {}
         self._csv_delimiter = params.get('delimiter', None)
         self._csv_separator = params.get('separator', None)
         self._csv_first_line = None
         super(Csv, self).__init__(filename, mimetype, validation, params)
 
     def scrape_file(self):
-        """Scrape CSV file
+        """Scrape CSV file.
         """
         try:
             with open(self.filename, 'rb') as csvfile:
@@ -47,7 +54,6 @@ class Csv(BaseScraper):
             self.messages("CSV file was scraped successfully.")
         finally:
             self._collect_elements()
-
 
     def _s_delimiter(self):
         """Return delimiter

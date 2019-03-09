@@ -1,5 +1,5 @@
 """
-This is an Office scraper.
+This is an Office file scraper.
 """
 import tempfile
 import shutil
@@ -8,8 +8,9 @@ from dpres_scraper.base import BaseScraper, Shell
 
 class Office(BaseScraper):
     """
-    Office scraper
+    Office file format scraper
     """
+    # Supported mimetypes
     _supported = {
         'application/vnd.oasis.opendocument.text': [],
         'application/vnd.oasis.opendocument.spreadsheet': [],
@@ -25,7 +26,7 @@ class Office(BaseScraper):
         'spreadsheetml.sheet': [],
         'application/vnd.openxmlformats-officedocument.presentationml.'
         'presentation': []}
-    _only_wellformed = True
+    _only_wellformed = True  # Only well-formed check
 
     def scrape_file(self):
         """Scrape file

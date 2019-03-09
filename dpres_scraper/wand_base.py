@@ -8,31 +8,38 @@ from dpres_scraper.base import BaseScraper
 
 
 class Wand(BaseScraper):
-    """Scraper class for collecting image metadata
+    """Scraper class for collecting image metadata.
     """
 
-    def __init__(self, filename, mimetype, validation=True, params={}):
+    def __init__(self, filename, mimetype, validation=True, params=None):
         """Initialize scraper
+        :filename: File path
+        :mimetype: Predicted mimetype of the file
+        :validation: True for the full validation, False for just
+                     identification and metadata scraping
+        :params: Extra parameters needed for the scraper
         """
-        self._wand_index = None
-        self._wand_stream = None
-        self._wand = None
+        self._wand_index = None   # Current wand stream index
+        self._wand_stream = None  # Current wand stream
+        self._wand = None         # Resulted wand streams
         super(Wand, self).__init__(filename, mimetype, validation, params)
 
     def scrape_file(self):
-        """Scrape data from file
+        """Scrape data from file.
         """
         try:
             self._wand = wand.image.Image(filename=self.filename)
-        except:
+        except Exception as e:
             self.errors('Error in scraping file.')
+            self.errors(str(e))
         else:
-            self.messages('The file was scraped.')
+            self.messages('The file was scraped successfully.')
         finally:
             self._collect_elements()
 
     def iter_tool_streams(self, stream_type):
         """Iterate image streams
+        :stream_type: Only image streams can be iterated.
         """
         if stream_type in [None, 'image']:
             for index, stream in enumerate(self._wand.sequence):
@@ -41,14 +48,15 @@ class Wand(BaseScraper):
                 yield stream
 
     def set_tool_stream(self, index):
-        """Set image stream
+        """Set image stream with given index.
+        :index: Stream index
         """
         self._wand_index = index
         self._wand_stream = self._wand.sequence[index]
 
     # pylint: disable=no-self-use
     def _s_version(self):
-        """Return version of file
+        """Return version of file format
         """
         return None
 

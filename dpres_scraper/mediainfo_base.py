@@ -11,28 +11,35 @@ from dpres_scraper.utils import iso8601_duration, strip_zeros
 
 
 class Mediainfo(BaseScraper):
-    """Scraper class for collecting video metadata
+    """Scraper class for collecting video and audio metadata.
     """
 
-    def __init__(self, filename, mimetype, validation=True, params={}):
-        """Initialize scraper
+    def __init__(self, filename, mimetype, validation=True, params=None):
+        """Initialize scraper.
+        :filename: File path
+        :mimetype: Predicted mimetype of the file
+        :validation: True for the full validation, False for just
+                     identification and metadata scraping
+        :params: Extra parameters needed for the scraper
         """
-        self._mediainfo_stream = None
-        self._mediainfo = None
-        self._iscontainer = None
-        super(Mediainfo, self).__init__(filename, mimetype, validation, params)
+        self._mediainfo_stream = None  # Current mediainfo stream
+        self._mediainfo = None         # All mediainfo streams
+        self._iscontainer = None       # True, if container is current stream
+        super(Mediainfo, self).__init__(filename, mimetype, validation,
+                                        params)
 
     def scrape_file(self):
-        """Scrape data from file
+        """Scrape the file.
         """
         try:
             self._mediainfo = MediaInfo.parse(self.filename)
-        except:
+        except Exception as e:
             if self.mimetype == 'application/octet-stream':
                 self.messages('Was not an audio/video file, '
                               'skipping scraper...')
             else:
                 self.errors('Error in scraping file.')
+                self.errors(str(e))
         else:
             self._iscontainer = False
             for track in self._mediainfo.tracks:
@@ -44,12 +51,13 @@ class Mediainfo(BaseScraper):
                     self._mediainfo.tracks.insert(
                         0, self._mediainfo.tracks.pop(index))
                     break
-            self.messages('The file was scraped.')
+            self.messages('The file was scraped successfully.')
         finally:
             self._collect_elements()
 
     def iter_tool_streams(self, stream_type):
-        """Iterate streams
+        """Iterate streams of given stream type
+        :stream_type: Stream type, e.g. 'audio', 'video', 'videocontainer'
         """
         for stream in self._mediainfo.tracks:
             if stream.track_type.lower() == stream_type or stream_type is None:
@@ -57,7 +65,8 @@ class Mediainfo(BaseScraper):
                 yield stream
 
     def set_tool_stream(self, index):
-        """Set stream
+        """Set stream with given index
+        :index: Index of the stream
         """
         found = False
         for stream in self._mediainfo.tracks:
@@ -251,7 +260,8 @@ class Mediainfo(BaseScraper):
     def _s_codec_creator_app(self):
         """Returns creator application
         """
-        if self._s_stream_type() not in [None, 'video', 'audio', 'videocontainer']:
+        if self._s_stream_type() not in [
+                None, 'video', 'audio', 'videocontainer']:
             return SkipElement
         if self._mediainfo.tracks[0].writing_application is not None:
             return self._mediainfo.tracks[0].writing_application
@@ -260,7 +270,8 @@ class Mediainfo(BaseScraper):
     def _s_codec_creator_app_version(self):
         """Returns creator application version
         """
-        if self._s_stream_type() not in [None, 'video', 'audio', 'videocontainer']:
+        if self._s_stream_type() not in [
+                None, 'video', 'audio', 'videocontainer']:
             return SkipElement
         if self._mediainfo.tracks[0].writing_application is not None:
             reg = re.search(r'([\d.]+)$',
@@ -272,7 +283,8 @@ class Mediainfo(BaseScraper):
     def _s_codec_name(self):
         """Returns codec name
         """
-        if self._s_stream_type() not in [None, 'video', 'audio', 'videocontainer']:
+        if self._s_stream_type() not in [
+                None, 'video', 'audio', 'videocontainer']:
             return SkipElement
         if self._mediainfo_stream.format is not None:
             return self._mediainfo_stream.format

@@ -16,21 +16,26 @@ CP = os.path.join(JHOVE_HOME, 'bin/jhove-apps-1.18.1.jar') + ':' + EXTRA_JARS
 
 
 class JHove(BaseScraper):
-    """Base class for Jhove file format validator"""
+    """Base class for Jhove file format scraper"""
 
     __metaclass__ = abc.ABCMeta
-    _jhove_module = None
+    _jhove_module = None         # JHove module
 
-    def __init__(self, filename, mimetype, validation=True, params={}):
+    def __init__(self, filename, mimetype, validation=True, params=None):
+        """Initialize JHove base scarper.
+        :filename: File path
+        :mimetype: Predicted mimetype of the file
+        :validation: True for the full validation, False for just
+                     identification and metadata scraping
+        :params: Extra parameters needed for the scraper
         """
-        """
-        self._report = None
-        self._shell = None
+        self._report = None  # JHove report
+        self._shell = None   # Shell object
         super(JHove, self).__init__(filename, mimetype, validation, params)
 
     def scrape_file(self):
-        """Run JHove command and store XML output to self.report"""
-
+        """Run JHove command and store XML output to self.report
+        """
         exec_cmd = ['jhove', '-h', 'XML', '-m',
                     self._jhove_module, self.filename]
         self._shell = Shell(exec_cmd)
@@ -57,10 +62,11 @@ class JHove(BaseScraper):
         """
         return self.report_field("version")
 
+    @abc.abstractmethod
     def _s_stream_type(self):
-        """Return stream type
+        """Implement in the file format specific classes
         """
-        return None
+        pass
 
     def report_field(self, field):
         """Return field value from JHoves XML output stored to self.report."""

@@ -9,8 +9,8 @@ class Pngcheck(BaseScraper):
     .. seealso:: http://www.libpng.org/pub/png/apps/pngcheck.html
     """
 
-    _supported = {'image/png': []}
-    _only_wellformed = True
+    _supported = {'image/png': []}  # Supported mimetype
+    _only_wellformed = True         # Only well-formed check
 
     def scrape_file(self):
         """Scrape file

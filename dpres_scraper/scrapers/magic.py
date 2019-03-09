@@ -6,7 +6,7 @@ from dpres_scraper.magic_base import TextMagic, BinaryMagic
 class TextFileMagic(TextMagic):
     """Scraper for text files
     """
-
+    # Supported mimetypes
     _supported = {'text/plain': [], 'text/csv': []}
 
     # pylint: disable=no-self-use
@@ -20,23 +20,33 @@ class XmlFileMagic(TextMagic):
     """Scraper for xml files
     """
 
-    _supported = {'text/xml': []}
-    _starttag = 'XML '
-    _endtag = ' '
+    _supported = {'text/xml': []}  # Supported mimetypes
+    _starttag = 'XML '             # Text before version in magic output
+    _endtag = ' '                  # Text after version in magic output
 
     @classmethod
-    def is_supported(cls, mimetype, version=None, validation=True, params={}):
-        """This is not a Schematron validator
+    def is_supported(cls, mimetype, version=None,
+                     validation=True, params=None):
+        """This is not a Schematron validator, skip this in such case.
+        :mimetype: Identified mimetype
+        :version: Identified version (if needed)
+        :validation: True for the full validation, False for just
+                     identification and metadata scraping
+        :params: Extra parameters needed for the scraper
+        :returns: True if scraper is supported
         """
+        if params is None:
+            params = {}
         if 'schematron' in params:
             return False
-        return super(XmlFileMagic, cls).is_supported(mimetype, version, validation, params)
+        return super(XmlFileMagic, cls).is_supported(mimetype, version,
+                                                     validation, params)
 
 
 class HtmlFileMagic(TextMagic):
     """Scraper for (x)html files
     """
-
+    # Supported mimetypes
     _supported = {'text/html': [],
                   'application/xhtml+xml': []}
 
@@ -49,14 +59,14 @@ class HtmlFileMagic(TextMagic):
 class PdfFileMagic(BinaryMagic):
     """Scraper for PDF files
     """
-
+    # Supported mimetype
     _supported = {'application/pdf': []}
 
 
 class OfficeFileMagic(BinaryMagic):
     """Scraper for office files
     """
-
+    # Supported mimetype
     _supported = {
         'application/vnd.oasis.opendocument.text': [],
         'application/vnd.oasis.opendocument.spreadsheet': [],
@@ -72,14 +82,12 @@ class OfficeFileMagic(BinaryMagic):
         'spreadsheetml.sheet': [],
         'application/vnd.openxmlformats-officedocument.presentationml.'
         'presentation': []}
-    _only_wellformed = True
 
 
 class PngFileMagic(BinaryMagic):
     """Scraper for PNG files
     """
-
-    _supported = {'image/png': []}
+    _supported = {'image/png': []}  # Supported mimetypes
 
     def _s_version(self):
         """Return version
@@ -97,9 +105,9 @@ class JpegFileMagic(BinaryMagic):
     """Scraper for JPEG files
     """
 
-    _supported = {'image/jpeg': []}
-    _starttag = 'standard '
-    _endtag = ','
+    _supported = {'image/jpeg': []}  # Supported mimetype
+    _starttag = 'standard '          # Text before version in magic output
+    _endtag = ','                    # Text after version in magic output
 
     # pylint: disable=no-self-use
     def _s_stream_type(self):
@@ -112,7 +120,7 @@ class Jp2FileMagic(BinaryMagic):
     """Scraper for JP2 files
     """
 
-    _supported = {'image/jp2': []}
+    _supported = {'image/jp2': []}  # Supported mimetype
 
     def _s_version(self):
         """Return version
@@ -130,7 +138,7 @@ class TiffFileMagic(BinaryMagic):
     """Scraper for TIFF files
     """
 
-    _supported = {'image/tiff': []}
+    _supported = {'image/tiff': []}  # Supported mimetype
 
     def _s_version(self):
         """Return version

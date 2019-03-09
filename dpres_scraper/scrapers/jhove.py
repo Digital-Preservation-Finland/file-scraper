@@ -11,9 +11,9 @@ NAMESPACES = {'j': 'http://hul.harvard.edu/ois/xml/ns/jhove',
 class GifJHove(JHove):
     """JHove GIF file format scraper"""
 
-    _supported = {'image/gif': []} 
-    _only_wellformed = True
-    _jhove_module = 'GIF-hul'
+    _supported = {'image/gif': []}  # Supported mimetype
+    _only_wellformed = True         # Only well-formed check
+    _jhove_module = 'GIF-hul'       # JHove module
 
     def _s_version(self):
         """Jhove returns the version as '87a' or '89a' but '1987a'
@@ -31,9 +31,10 @@ class GifJHove(JHove):
 class HtmlJHove(JHove):
     """Jhove HTML file format scraper"""
 
+    # Supported mimetypes and versions
     _supported = {'text/html': ['4.01'], 'application/xhtml+xml': []}
-    _only_wellformed = True
-    _jhove_module = 'HTML-hul'
+    _only_wellformed = True     # Only well-formed check
+    _jhove_module = 'HTML-hul'  # JHove module
 
     def _s_version(self):
         """Jhove returns the version as 'HTML 4.01' but in '4.01' is
@@ -84,9 +85,9 @@ class HtmlJHove(JHove):
 class JpegJHove(JHove):
     """JHove scraper for JPEG"""
 
-    _supported = {'image/jpeg': []}
-    _only_wellformed = True
-    _jhove_module = 'JPEG-hul'
+    _supported = {'image/jpeg': []}  # Supported mimetype
+    _only_wellformed = True          # Only well-formed check
+    _jhove_module = 'JPEG-hul'       # JHove module
 
     def _s_version(self):
         """Return version
@@ -103,9 +104,9 @@ class JpegJHove(JHove):
 class TiffJHove(JHove):
     """JHove scraper for TIFF"""
 
-    _supported = {'image/tiff': []}
-    _only_wellformed = True
-    _jhove_module = 'TIFF-hul'
+    _supported = {'image/tiff': []}  # Supported mimetype
+    _only_wellformed = True          # Only well-formed check
+    _jhove_module = 'TIFF-hul'       # JHove module
 
     def _s_version(self):
         """Return version
@@ -121,10 +122,10 @@ class TiffJHove(JHove):
 
 class PdfJHove(JHove):
     """JHove scraper for PDF"""
-
+    # Supported mimetypes and versions
     _supported = {'application/pdf': ['1.2', '1.3', '1.4', '1.5', '1.6']}
-    _only_wellformed = True
-    _jhove_module = 'PDF-hul'
+    _only_wellformed = True    # Only well-formed check
+    _jhove_module = 'PDF-hul'  # JHove module
 
     def _s_version(self):
         """Return version"""
@@ -138,14 +139,15 @@ class PdfJHove(JHove):
 
 
 class Utf8JHove(JHove):
-    """JHove scraper for text UTF-8.
-    We don't want to run this for all files,
-    but just for UTF-8 text files separately.
+    """JHove scraper for UTF-8 text.
+    We don't want to run this for all files, but just for UTF-8 text files
+    separately. This must be run after actual scraping, since we have to know
+    the charset of the file.
     """
 
-    _supported = {}
-    _only_wellformed = True
-    _jhove_module = 'UTF8-hul'
+    _supported = {}             # We will not run at normal stage
+    _only_wellformed = True     # Only well-formed check
+    _jhove_module = 'UTF8-hul'  # JHove module
 
     def _s_mimetype(self):
         """We are only iterested in charset"""
@@ -169,9 +171,9 @@ class Utf8JHove(JHove):
 class WavJHove(JHove):
     """JHove scraper for WAV and BWF audio data."""
 
-    _supported = {'audio/x-wav': []}
-    _only_wellformed = True
-    _jhove_module = 'WAVE-hul'
+    _supported = {'audio/x-wav': []}  # Supported mimetype
+    _only_wellformed = True           # Only well-formed check
+    _jhove_module = 'WAVE-hul'        # Jhove module
 
     def _s_mimetype(self):
         """Check if mimetype is of a WAV type, otherwise call the same

@@ -1,13 +1,13 @@
 """File metadata scraper
 """
-from dpres_scraper.utils import combine_metadata, combine_element
+from dpres_scraper.utils import combine_metadata
 
 from dpres_scraper.iterator import iter_scrapers, iter_detectors
 from dpres_scraper.scrapers.jhove import Utf8JHove
 from dpres_scraper.scrapers.file import TextPlainFile
 from dpres_scraper.scrapers.dummy import FileExists
 
-LOSE = [None, '(:unav)', '(:unap)']
+LOSE = [None, '0', '(:unav)', '(:unap)']
 
 
 class Scraper(object):
@@ -18,6 +18,8 @@ class Scraper(object):
 
     def __init__(self, filename, **kwargs):
         """Initialize scraper
+        :filename: File path
+        :kwargs: Extra arguments for certain scrapers
         """
         self.filename = filename
         self.mimetype = None
@@ -28,7 +30,7 @@ class Scraper(object):
         self._params = kwargs
 
     def _identify(self):
-        """Identify file format and version
+        """Identify file format and version.
         """
         self.info = {}
         for detector in iter_detectors():
@@ -47,12 +49,14 @@ class Scraper(object):
                 self.mimetype = important['version'][self.mimetype]
 
     def _scrape_file(self, scraper):
-        """Scrape file and collect metadata.
+        """Scrape with a given scraper.
+        :scraper: Scraper instance
         """
         scraper.scrape_file()
+        well_formed = scraper.well_formed
         self.streams = combine_metadata(
             stream=self.streams, metadata=scraper.streams,
-            well_formed=scraper.well_formed, lose=LOSE,
+            well_formed=well_formed, lose=LOSE,
             important=scraper.is_important())
         self.info[len(self.info)] = scraper.info
         if scraper.well_formed is not None:
@@ -60,7 +64,8 @@ class Scraper(object):
                 self.well_formed = scraper.well_formed
 
     def scrape(self, validation=True):
-        """Scrape file metadata
+        """Scrape file and collect metadata.
+        :validation: True, full scraping; False, skip well-formed check.
         """
         self.streams = None
         self.info = {}
@@ -90,6 +95,7 @@ class Scraper(object):
 
     def is_textfile(self):
         """Find out if file is a text file.
+        :returns: True, if file is a text file, false otherwise
         """
         scraper = TextPlainFile(self.filename, self.mimetype)
         scraper.scrape_file()

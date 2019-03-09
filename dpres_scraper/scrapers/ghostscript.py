@@ -7,11 +7,12 @@ from dpres_scraper.base import BaseScraper, Shell
 
 class GhostScript(BaseScraper):
     """
-    Ghostscript pdf scraper
+    Ghostscript pdf scraper.
     """
+    # Supported mimetype and versions
     _supported = {'application/pdf': ['1.7', 'A-1a', 'A-1b', 'A-2a', 'A-2b',
                                       'A-2u', 'A-3a', 'A-3b', 'A-3u']}
-    _only_wellformed = True
+    _only_wellformed = True   # Only well-formed check
 
     def scrape_file(self):
         """

@@ -1,5 +1,6 @@
 """Scraper for various binary and text file formats
 """
+import os
 import ctypes
 
 try:
@@ -16,23 +17,28 @@ from dpres_scraper.base import BaseScraper
 
 
 class BinaryMagic(BaseScraper):
-    """Scraper for text files
-    """
+    """Scraper for binary files"""
 
-    _starttag = "version "
-    _endtag = None
+    _starttag = "version "  # Text before file format version in magic result.
+    _endtag = None          # Text after file format version in magic result.
 
-    def __init__(self, filename, mimetype, validation=True, params={}):
+    def __init__(self, filename, mimetype, validation=True, params=None):
+        """Initialize scraper.
+        :filename: File path
+        :mimetype: Predicted mimetype of the file
+        :validation: True for the full validation, False for just
+                     identification and metadata scraping
+        :params: Extra parameters needed for the scraper
         """
-        """
-        self._magic_mimetype = None
-        self._magic_version = None
-        super(BinaryMagic, self).__init__(filename, mimetype, validation, params)
+        self._magic_mimetype = None  # Mimetype from magic
+        self._magic_version = None   # Version from magic
+        super(BinaryMagic, self).__init__(filename, mimetype,
+                                          validation, params)
 
     def scrape_file(self):
-        """Scrape text file
+        """Scrape binary file
         """
-        try:
+        if os.access(self.filename, os.R_OK):
             magic_ = magic.open(magic.MAGIC_MIME_TYPE)
             magic_.load()
             self._magic_mimetype = magic_.file(self.filename)
@@ -47,11 +53,11 @@ class BinaryMagic(BaseScraper):
                 self._magic_version = self._magic_version.split(
                     self._endtag)[0]
 
-            self.messages('The file was scraped.')
-        except:
-            self.errors('Error in scraping file.')
-        finally:
-            self._collect_elements()
+            self.messages('The file was scraped successfully.')
+        else:
+            self.errors('File not found.')
+
+        self._collect_elements()
 
     @property
     def well_formed(self):
@@ -84,21 +90,26 @@ class TextMagic(BaseScraper):
     """Scraper for text files
     """
 
-    _starttag = "version "
-    _endtag = None
+    _starttag = "version "  # Text before file format version in magic result.
+    _endtag = None          # Text after file format version in magic result.
 
-    def __init__(self, filename, mimetype, validation=True, params={}):
+    def __init__(self, filename, mimetype, validation=True, params=None):
+        """Initialize text magic scraper
+        :filename: File path
+        :mimetype: Predicted mimetype of the file
+        :validation: True for the full validation, False for just
+                     identification and metadata scraping
+        :params: Extra parameters needed for the scraper
         """
-        """
-        self._magic_mimetype = None
-        self._magic_version = None
-        self._magic_charset = None
+        self._magic_mimetype = None  # Mimetype from magic
+        self._magic_version = None   # Version from magic
+        self._magic_charset = None   # Charset from magic
         super(TextMagic, self).__init__(filename, mimetype, validation, params)
 
     def scrape_file(self):
         """Scrape text file
         """
-        try:
+        if os.access(self.filename, os.R_OK):
             magic_ = magic.open(magic.MAGIC_MIME_TYPE)
             magic_.load()
             self._magic_mimetype = magic_.file(self.filename)
@@ -117,11 +128,11 @@ class TextMagic(BaseScraper):
             magic_.load()
             self._magic_charset = magic_.file(self.filename)
             magic_.close()
-            self.messages('The file was scraped.')
-        except:
+            self.messages('The file was scraped successfully.')
+        else:
             self.errors('Error in scraping file.')
-        finally:
-            self._collect_elements()
+
+        self._collect_elements()
 
     @property
     def well_formed(self):

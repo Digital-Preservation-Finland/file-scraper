@@ -3,33 +3,31 @@
 
 import gzip
 import tempfile
-import unicodedata
-import string
-
+from dpres_scraper.utils import sanitize_string
 from dpres_scraper.base import BaseScraper, Shell
 
 
-def sanitaze_string(dirty_string):
-    """Strip non-printable control characters from unicode string"""
-    sanitazed_string = "".join(
-        char for char in dirty_string if unicodedata.category(char)[0] != "C"
-        or char in string.printable)
-    return sanitazed_string
-
-
 class GzipWarctools(BaseScraper):
+    """ Scraper for compressed Warcs and Arcs.
+    """
 
-    _supported = {'application/gzip': []}
-    _only_wellformed = True
+    _supported = {'application/gzip': []}  # Supported mimetype
+    _only_wellformed = True                # Only well-formed check
 
-    def __init__(self, filename, mimetype, validation):
+    def __init__(self, filename, mimetype, validation=True, params=None):
+        """Initialize scraper.
+        :filename: File path
+        :mimetype: Predicted mimetype of the file
+        :validation: True for the full validation, False for just
+                     identification and metadata scraping
+        :params: Extra parameters needed for the scraper
         """
-        """
-        self._well_formed = None
-        super(GzipWarctools, self).__init__(filename, mimetype, validation, params)
+        self._well_formed = None  # Store another scrapers result
+        super(GzipWarctools, self).__init__(filename, mimetype,
+                                            validation, params)
 
     def scrape_file(self):
-        """Scrape file
+        """Scrape file. If Warc fails, try Arc.
         """
         for class_ in [WarcWarctools, ArcWarctools]:
             scraper = class_(self.filename, None)
@@ -55,15 +53,13 @@ class GzipWarctools(BaseScraper):
 
 
 class WarcWarctools(BaseScraper):
-
     """Implements WARC file format scraper using Internet Archives warctools
     scraper.
-
     .. seealso:: https://github.com/internetarchive/warctools
     """
 
-    _supported = {'application/warc': []}
-    _only_wellformed = True
+    _supported = {'application/warc': []}  # Supported mimetype
+    _only_wellformed = True                # Only well-formed check
 
     def scrape_file(self):
 
@@ -108,9 +104,9 @@ class WarcWarctools(BaseScraper):
 class ArcWarctools(BaseScraper):
     """Scraper for older arc files
     """
-
+    # Supported mimetype
     _supported = {'application/x-internet-archive': []}
-    _only_wellformed = True
+    _only_wellformed = True  # Only well-formed check
 
     def scrape_file(self):
         """Scrape ARC file by converting to WARC using Warctools' arc2warc
@@ -127,9 +123,9 @@ class ArcWarctools(BaseScraper):
                 # replace non-utf8 characters
                 utf8string = shell.stderr.decode('utf8', errors='replace')
                 # remove non-printable characters
-                sanitazed_string = sanitaze_string(utf8string)
+                sanitized_string = sanitize_string(utf8string)
                 # encode string to utf8 before adding to errors
-                self.errors(sanitazed_string.encode('utf-8'))
+                self.errors(sanitized_string.encode('utf-8'))
 
             self.messages(shell.stdout)
 

@@ -5,7 +5,7 @@ from dpres_scraper.base import BaseScraper
 
 
 class ScraperNotFound(BaseScraper):
-    """Scraper result for the case where scraper was not found.
+    """Scraper for the case where scraper was not found.
     """
 
     def scrape_file(self):
@@ -28,7 +28,7 @@ class ScraperNotFound(BaseScraper):
 
 
 class FileExists(BaseScraper):
-    """Scraper result for the case where file was not found.
+    """Scraper for the case where file was not found.
     """
 
     def scrape_file(self):
@@ -42,7 +42,7 @@ class FileExists(BaseScraper):
 
     @property
     def well_formed(self):
-        """Let us give the actual decision to the real scrapers.
+        """Let's give the actual decision to the real scrapers.
         """
         return None
 

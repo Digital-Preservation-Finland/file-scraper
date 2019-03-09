@@ -8,11 +8,11 @@ class Dpx(BaseScraper):
     """DPX scraper
     """
 
-    _supported = {'image/x-dpx': []}
-    _only_wellformed = True
+    _supported = {'image/x-dpx': []}  # Supported mimetype
+    _only_wellformed = True           # Only well-formed check
 
     def scrape_file(self):
-        """Scrape DPX
+        """Scrape DPX.
         """
         shell = Shell(['dpxv', self.filename])
 

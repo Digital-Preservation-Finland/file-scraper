@@ -12,20 +12,25 @@ from dpres_scraper.utils import iso8601_duration, strip_zeros
 
 
 class FFMpeg(BaseScraper):
-    """Scraper class for collecting video metadata
+    """Scraper class for collecting video and audio metadata
     """
 
     _only_wellformed = True
 
-    def __init__(self, filename, mimetype, validation=True, params={}):
-        """Initialize scraper
+    def __init__(self, filename, mimetype, validation=True, params=None):
+        """Initialize scraper.
+        :filename: File path
+        :mimetype: Predicted mimetype of the file
+        :validation: True for the full validation, False for just
+                     identification and metadata scraping
+        :params: Extra parameters needed for the scraper
         """
-        self._ffmpeg_stream = None
-        self._ffmpeg = None
+        self._ffmpeg_stream = None  # Current ffprobe stream
+        self._ffmpeg = None         # All ffprobe streams
         super(FFMpeg, self).__init__(filename, mimetype, validation, params)
 
     def scrape_file(self):
-        """Scrape data from file
+        """Scrape data from file.
         """
         try:
             self._ffmpeg = ffmpeg.probe(self.filename)
@@ -43,12 +48,13 @@ class FFMpeg(BaseScraper):
                 self.errors('Error in scraping file.')
                 self.errors(err.stderr)
         else:
-            self.messages('The file was scraped.')
+            self.messages('The file was scraped successfully.')
         finally:
             self._collect_elements()
 
     def iter_tool_streams(self, stream_type):
-        """Iterate streams
+        """Iterate streams of give stream type.
+        :stream_type: Stream type, e.g. 'audio', 'video', 'videocontainer'
         """
         if stream_type == 'videocontainer':
             self.set_tool_stream(0)
@@ -64,7 +70,8 @@ class FFMpeg(BaseScraper):
                     yield stream
 
     def set_tool_stream(self, index):
-        """Set stream with given index
+        """Set stream of given index.
+        :index: Stream index
         """
         if index == 0:
             self._ffmpeg_stream = self._ffmpeg['format']
@@ -76,14 +83,14 @@ class FFMpeg(BaseScraper):
 
     # pylint: disable=no-self-use
     def _s_version(self):
-        """Returns version of stream
+        """Returns version of stream.
         """
         return None
 
     # pylint: disable=no-self-use
     def _s_codec_quality(self):
         """Returns codec quality. Must be resolved, if returns None.
-        Only values 'lossy' or 'lossless' are allowed.
+        Only values 'lossy' and 'lossless' are allowed.
         """
         if self._s_stream_type() not in ['video', 'audio']:
             return SkipElement
@@ -107,7 +114,7 @@ class FFMpeg(BaseScraper):
         return '(:unav)'
 
     def _s_stream_type(self):
-        """Return stream type
+        """Returns stream type
         """
         if not 'codec_type' in self._ffmpeg_stream:
             if self._s_index() == 0:
@@ -117,7 +124,7 @@ class FFMpeg(BaseScraper):
         return self._ffmpeg_stream['codec_type']
 
     def _s_index(self):
-        """Return stream index
+        """Returns stream index
         """
         if not 'index' in self._ffmpeg_stream:
             return 0

@@ -6,31 +6,48 @@ except ImportError:
 
 from dpres_scraper.base import BaseScraper
 
+
 class XmlEncoding(BaseScraper):
     """
-    Character encoding validator for HTML5 and XML files
+    Scrape character encoding from XML/HTML header.
     """
 
     # We use JHOVE for HTML4 and XHTML files.
     _supported = {'text/xml': [], 'text/html': ['5.0']}
-    _only_wellformed = True
+    _only_wellformed = True  # Only well-formed check
 
-    def __init__(self, filename, mimetype, validation=True, params={}):
-        """
+    def __init__(self, filename, mimetype, validation=True, params=None):
+        """Initialize scraper.
+        :filename: File path
+        :mimetype: Predicted mimetype of the file
+        :validation: True for the full validation, False for just
+                     identification and metadata scraping
+        :params: Extra parameters: delimiter and separator
         """
         self._charset = None
-        super(XmlEncoding, self).__init__(filename, mimetype, validation, params)
+        super(XmlEncoding, self).__init__(filename, mimetype,
+                                          validation, params)
 
     @classmethod
-    def is_supported(cls, mimetype, version=None, validation=True, params={}):
-        """This is not a Schematron scraper
+    def is_supported(cls, mimetype, version=None,
+                     validation=True, params=None):
+        """This is not a Schematron scraper, we skip this in such case.
+        :mimetype: Identified mimetype
+        :version: Identified version (if needed)
+        :validation: True for the full validation, False for just
+                     identification and metadata scraping
+        :params: Extra parameters needed for the scraper
+        :returns: True if scraper is supported
         """
+        if params is None:
+            params = {}
         if 'schematron' in params:
             return False
-        return super(XmlEncoding, cls).is_supported(mimetype, version, validation, params)
+        return super(XmlEncoding, cls).is_supported(mimetype, version,
+                                                    validation, params)
 
     def scrape_file(self):
-        """Scrape file
+        """Scrape file.
         """
         parser = etree.XMLParser(dtd_validation=False, no_network=True,
                                  recover=True)

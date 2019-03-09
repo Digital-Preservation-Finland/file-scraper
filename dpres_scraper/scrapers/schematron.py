@@ -1,45 +1,65 @@
 """
 This is a Schematron scraper.
 """
+import os
+import shutil
+import tempfile
+import lxml.etree as etree
+from dpres_scraper.utils import hexdigest
 from dpres_scraper.base import BaseScraper, Shell
 
 
 class Schematron(BaseScraper):
     """Schematron scraper
     """
-    _supported = {'text/xml': []}
+    _supported = {'text/xml': []}  # Supported mimetypes
 
-    def __init__(self, filename, mimetype, validation=True, params={}):
+    def __init__(self, filename, mimetype, validation=True, params=None):
         """Initialize instance.
+        :filename: File path
+        :mimetype: Predicted mimetype of the file
+        :validation: True for the full validation, False for just
+                     identification and metadata scraping
+        :params: Extra parameters needed for the scraper
         """
         self._verbose = False
         self._cache = True
-        self._cachepath = os.path.expanduser('~/.dpres-scraper/schematron-cache')
-        self._schematron_dirname = '/usr/share/dpres-xml-schemas/schematron/schematron_xslt1'
+        self._cachepath = os.path.expanduser(
+            '~/.dpres-scraper/schematron-cache')
+        self._schematron_dirname = \
+            '/usr/share/dpres-xml-schemas/schematron/schematron_xslt1'
         self._returncode = None
-        self._schematron_file = arguments.get('schematron', None)
-        super(Schematron, self).__init(filename, mimetype, validation, params)
+        self._schematron_file = params.get('schematron', None)
+        super(Schematron, self).__init__(filename, mimetype,
+                                         validation, params)
 
     @classmethod
     def is_supported(cls, mimetype, version,
-                     validation=True, params={}):
+                     validation=True, params=None):
         """We use this scraper only with a schematron file
+        :mimetype: Identified mimetype
+        :version: Identified version (if needed)
+        :validation: True for the full validation, False for just
+                     identification and metadata scraping
+        :params: Extra parameters needed for the scraper
+        :returns: True if scraper is supported
         """
-        if not 'schematron' in params:
+        if params is None:
+            params = {}
+        if 'schematron' not in params:
             return False
         super(Schematron, cls).is_supported(mimetype, version,
                                             validation, params)
 
     @property
     def well_formed(self):
-        """Check if document resulted errors
+        """Check if document resulted errors.
         """
         if self.messages.find('<svrl:failed-assert ') < 0 \
                 and self._returncode == 0:
             return True
         else:
             return super(Schematron, self).well_formed()
-
 
     def scrape_file(self):
         """Do the Schematron validation.
@@ -62,13 +82,11 @@ class Schematron(BaseScraper):
         else:
             self.messages = shell.stdout
 
-
     # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return file type
         """
         return 'char'
-
 
     def _filter_duplicate_elements(self, result):
         """Filter duplicate elements from the result
@@ -101,7 +119,7 @@ class Schematron(BaseScraper):
         :inputfile: Input document filename
         :outputfile: Filename of the resulted document, stdout if None
         :outputfilter: Use outputfilter parameter with value only_messages
-        :validation: True - the actual validation / False - compilation step
+        :return: Shell instance
         """
         cmd = ['xsltproc']
         if outputfile:
@@ -119,7 +137,8 @@ class Schematron(BaseScraper):
 
     def _compile_schematron(self, schematron_file):
         """Compile a schematron file
-        :schematron_file: Schematron file
+        :schematron_file: Schematron file name
+        :returns: XSLT file name
         """
         xslt_filename = self._generate_xslt_filename(schematron_file)
         tempdir = tempfile.mkdtemp()
@@ -160,10 +179,9 @@ class Schematron(BaseScraper):
         return xslt_filename
 
     def _generate_xslt_filename(self, schematron_schema):
-        """ Example filename:
-
-            /var/cache/schematron-validation/<schema.sch>.<sha digest>.xslt
-
+        """Generate XSLT filename from schematron file
+        :schematron_schema: Schematron file name
+        :returns: XSLT filename
         """
         try:
             os.makedirs(self._cachepath)
@@ -171,8 +189,7 @@ class Schematron(BaseScraper):
             if not os.path.isdir(self._cachepath):
                 raise
 
-        checksum = ipt.fileutils.checksum.BigFile('sha1')
-        schema_digest = checksum.hexdigest(schematron_schema)
+        schema_digest = hexdigest(schematron_schema)
         schema_basename = os.path.basename(schematron_schema)
 
         return os.path.join(self._cachepath, '%s.%s.validator.xsl' % (

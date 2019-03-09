@@ -1,4 +1,4 @@
-"""Format detectors
+"""File format detectors.
 """
 import ctypes
 
@@ -25,11 +25,12 @@ class _FidoReader(Fido):
     def __init__(self, filename):
         """Fido is done with old-style python and does not inherit object,
         so super() is not available.
+        :filename: File path
         """
-        self.filename = filename
-        self.puid = None
-        self.mimetype = None
-        self.version = None
+        self.filename = filename  # File path
+        self.puid = None          # Identified pronom code
+        self.mimetype = None      # Identified mime type
+        self.version = None       # Identified file format version
         Fido.__init__(self, quiet=True)
 
     def identify(self):
@@ -49,6 +50,10 @@ class _FidoReader(Fido):
     def print_matches(self, fullname, matches, delta_t, matchtype=''):
         """Use this method in FIDO to get puid, mimetype and version
         instead of printing them to stdout
+        :fullname: File path
+        :matches: Matches tuples in Fido
+        :delta_t: Not needed here, but originates from Fido
+        :matchtype: Not needed here, but originates from Fido
         """
         for (item, _) in matches:
             self.puid = self.get_puid(item)
@@ -72,11 +77,11 @@ class _FidoReader(Fido):
 
 
 class FidoDetector(BaseDetector):
-    """Fido detector
+    """Fido detector.
     """
 
     def detect(self):
-        """Detect file format
+        """Detect file format and version.
         """
         fido = _FidoReader(self.filename)
         fido.identify()
@@ -87,7 +92,8 @@ class FidoDetector(BaseDetector):
                      'errors': ''}
 
     def is_important(self):
-        """Choose which values are more important
+        """Important mime types.
+        :returns: Mime type
         """
         important = {}
         if self.mimetype != 'text/html':
@@ -96,11 +102,11 @@ class FidoDetector(BaseDetector):
 
 
 class MagicDetector(BaseDetector):
-    """File magic detector
+    """File magic detector.
     """
 
     def detect(self):
-        """Detect mimetype
+        """Detect mimetype.
         """
         magic_ = magic.open(magic.MAGIC_MIME_TYPE)
         magic_.load()
@@ -115,7 +121,8 @@ class MagicDetector(BaseDetector):
                      'errors': ''}
 
     def is_important(self):
-        """Choose which values are more important
+        """Important mime types.
+        :returns: Mime type
         """
         important = {}
         if self.mimetype == 'application/x-internet-archive':

@@ -1,6 +1,6 @@
 """Scraper iterator"""
-from dpres_scraper.detectors import FidoDetector, MagicDetector
 from dpres_scraper.base import BaseScraper, BaseDetector
+from dpres_scraper.detectors import FidoDetector, MagicDetector
 from dpres_scraper.jhove_base import JHove
 from dpres_scraper.magic_base import BinaryMagic, TextMagic
 from dpres_scraper.mediainfo_base import Mediainfo
@@ -31,24 +31,30 @@ from dpres_scraper.scrapers.dummy import ScraperNotFound
 
 
 def iter_detectors():
-    """
-    Iterate detectors
+    """Iterate detectors.
+    :returns: detector class
+
+    Implementation of class factory pattern from
+    http://stackoverflow.com/questions/456672/class-factory-in-python
     """
     for cls in BaseDetector.__subclasses__():
         yield cls
 
 
-def iter_scrapers(mimetype, version, validation=True, params={}):
+def iter_scrapers(mimetype, version, validation=True, params=None):
     """
     Iterate scrapers
+    :mimetype: Identified mimetype of the file
+    :version: Identified file format version
+    :validation: True for the full validation, False for just
+                identification and metadata scraping
+    :params: Extra parameters needed for the scraper
     :returns: scraper class
-
-    Implementation of class factory pattern from
-    http://stackoverflow.com/questions/456672/class-factory-in-python
     """
 
     # pylint: disable=no-member
-
+    if params is None:
+        params = {}
     found_validator = False
 
     for cls in BaseScraper.__subclasses__():

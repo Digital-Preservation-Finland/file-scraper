@@ -16,10 +16,11 @@ class VeraPdf(BaseScraper):
     """
     PDF/A scraper
     """
+    # Supported mimetypes and versions
     _supported = {
         "application/pdf": ['A-1a', 'A-1b', 'A-2a', 'A-2b', 'A-2u', 'A-3a',
                             'A-3b', 'A-3u']}
-    _only_wellformed = True
+    _only_wellformed = True  # Only well-formed check
 
     def scrape_file(self):
         """Scrape file
@@ -57,8 +58,10 @@ class VeraPdf(BaseScraper):
         return None
 
     def is_important(self):
-        """Choose which values are more important
+        """Return important values
         """
+        if not self.well_formed:
+            return {}
         important = {}
         important['version'] = self.version
         return important

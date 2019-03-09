@@ -16,8 +16,8 @@ class Pspp(BaseScraper):
     """
     PSPP scraper
     """
-    _supported = {'application/x-spss-por': []}
-    _only_wellformed = True
+    _supported = {'application/x-spss-por': []}  # Supported mimetype
+    _only_wellformed = True                      # Only well-formed check
 
     def scrape_file(self):
         """Scrape file
