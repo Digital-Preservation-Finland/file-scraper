@@ -5,7 +5,6 @@ import subprocess
 from dpres_scraper.utils import run_command
 from dpres_scraper.utils import combine_metadata
 
-
 class Shell(object):
 
     """Docstring for ShellTarget. """
@@ -78,8 +77,8 @@ class BaseScraper(object):
     _supported = {}
     _only_wellformed = False
 
-    def __init__(self, filename, mimetype, validation=True):
-        """
+    def __init__(self, filename, mimetype, validation=True, params={}):
+        """Initialize scraper
         """
         self.filename = filename
         self.mimetype = mimetype
@@ -89,17 +88,20 @@ class BaseScraper(object):
         self._messages = []
         self._errors = []
         self._validation = validation
+        self._params = params
 
-    def is_supported(self, version=None):
+    @classmethod
+    def is_supported(cls, mimetype, version=None,
+                     validation=True, params={}):
         """Return true if mimetype is supported, if version matches
         (if needed), and if validation is needed in scrapers which just
         validation.
         """
-        if self.mimetype in self._supported and \
-                (not self._supported[self.mimetype] or
+        if mimetype in cls._supported and \
+                (not cls._supported[mimetype] or
                  version is None or
-                 version in self._supported[self.mimetype]) and \
-                (self._validation or not self._only_wellformed):
+                 version in cls._supported[mimetype]) and \
+                (validation or not cls._only_wellformed):
             return True
         return False
 

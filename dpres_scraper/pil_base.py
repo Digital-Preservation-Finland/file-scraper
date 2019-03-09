@@ -16,12 +16,12 @@ class Pil(BaseScraper):
     """Scraper class for collecting image metadata
     """
 
-    def __init__(self, filename, mimetype, validation=True):
+    def __init__(self, filename, mimetype, validation=True, params={}):
         """Initialize scraper
         """
         self._pil = None
         self._pil_index = None
-        super(Pil, self).__init__(filename, mimetype, validation)
+        super(Pil, self).__init__(filename, mimetype, validation, params)
 
     def scrape_file(self):
         """Scrape data from file

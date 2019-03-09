@@ -9,7 +9,7 @@ class Schematron(BaseScraper):
     """
     _supported = {'text/xml': []}
 
-    def __init__(self, filename, mimetype, validation=True, arguments=None):
+    def __init__(self, filename, mimetype, validation=True, params={}):
         """Initialize instance.
         """
         self._verbose = False
@@ -18,7 +18,17 @@ class Schematron(BaseScraper):
         self._schematron_dirname = '/usr/share/dpres-xml-schemas/schematron/schematron_xslt1'
         self._returncode = None
         self._schematron_file = arguments.get('schematron', None)
-        super(Schematron, self).__init(filename, mimetype, validation, arguments)
+        super(Schematron, self).__init(filename, mimetype, validation, params)
+
+    @classmethod
+    def is_supported(cls, mimetype, version,
+                     validation=True, params={}):
+        """We use this scraper only with a schematron file
+        """
+        if not 'schematron' in params:
+            return False
+        super(Schematron, cls).is_supported(mimetype, version,
+                                            validation, params)
 
     @property
     def well_formed(self):

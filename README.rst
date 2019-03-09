@@ -54,25 +54,25 @@ As a result the collected metadata and results are in the following instance var
     * Detector and scraper class names, messages and errors: ``scraper.info``
     * Result of the validation: ``scraper.well_formed``
 
-The following is also possible:
+The following arguments for Scraper class are also possible:
 
-    * Use particular scraper::
-        from dpres_scraper.scraper.scrapers import <scraper class>
-        scraper = <scraper class>(filename, <mimetype>)
-        scraper.scrape_file()
-    * XML validation against given schema file, without any other validation::
-        from dpres_scraper.scraper.scrapers import Xmllint
-        scraper = Xmllint(filename, 'text/xml', schema=<my schema>)
-        scraper.scrape_file()
-    * XML validation against given schematron file, without any other validation::
-        from dpres_scraper.scraper.scrapers import Xmllint
-        scraper = Schematron(filename, 'text/xml', schematron=<my schema>)
-        scraper.scrape_file()
+    * For CSV validation:
+
+        * Delimiter between elements: ``delimiter=<element delimiter>``
+        * Record separator (line terminator): ``separator=<record separator>``
+        * NOTE: If parameters are not given, the scraper tries to find out the values from the CSV, but may give false results.
+
+    * For XML validation:
+
+        * Schema: ``schema=<schema file>``
+        * Use local schema catalogs: ``catalogs=True/False`` (True by default)
+        * Disallow network use: ``no_network=True/False`` (True by default)
+        * Schematron file: ``schematron=<schematron file>`` (None by default)
+        * NOTE: If schema is not given, the scraper tries to find out the schema from the XML file.
+        * NOTE: If schematron file is given, only Schematron scraping is executed, and other arguments don't apply.
 
 Additionally, the following returns a boolean value True, if the file is a text file, and False otherwise::
 
-    from dpres_scraper.scraper import Scraper
-    scraper = Scraper(filename)
     scraper.is_textfile()
 
 

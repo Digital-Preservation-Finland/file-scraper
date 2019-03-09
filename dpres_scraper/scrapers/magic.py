@@ -24,6 +24,14 @@ class XmlFileMagic(TextMagic):
     _starttag = 'XML '
     _endtag = ' '
 
+    @classmethod
+    def is_supported(cls, mimetype, version=None, validation=True, params={}):
+        """This is not a Schematron validator
+        """
+        if 'schematron' in params:
+            return False
+        return super(XmlFileMagic, cls).is_supported(mimetype, version, validation, params)
+
 
 class HtmlFileMagic(TextMagic):
     """Scraper for (x)html files

@@ -7,7 +7,7 @@ from dpres_scraper.scrapers.jhove import Utf8JHove
 from dpres_scraper.scrapers.file import TextPlainFile
 from dpres_scraper.scrapers.dummy import FileExists
 
-LOSE = [None, '0', '(:unav)', '(:unap)']
+LOSE = [None, '(:unav)', '(:unap)']
 
 
 class Scraper(object):
@@ -16,7 +16,7 @@ class Scraper(object):
 
 # pylint: disable=no-member
 
-    def __init__(self, filename):
+    def __init__(self, filename, **kwargs):
         """Initialize scraper
         """
         self.filename = filename
@@ -25,12 +25,14 @@ class Scraper(object):
         self.streams = None
         self.well_formed = None
         self.info = None
+        self._params = kwargs
 
     def _identify(self):
         """Identify file format and version
         """
         self.info = {}
-        for tool in iter_detectors(self.filename):
+        for detector in iter_detectors():
+            tool = detector(self.filename)
             tool.detect()
             self.info[len(self.info)] = tool.info
             important = tool.is_important()
@@ -71,9 +73,11 @@ class Scraper(object):
             return
 
         self._identify()
-        for scraper in iter_scrapers(
-                filename=self.filename, mimetype=self.mimetype,
-                version=self.version, validation=validation):
+        for scraper_class in iter_scrapers(
+                mimetype=self.mimetype, version=self.version,
+                validation=validation, params=self._params):
+            scraper = scraper_class(self.filename, self.mimetype,
+                                    validation, self._params)
             self._scrape_file(scraper)
 
         if 'charset' in self.streams[0] and \

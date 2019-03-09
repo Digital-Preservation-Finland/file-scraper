@@ -25,9 +25,9 @@ BASEPATH = "tests/data"
         ("valid_1.1.ods",
          "application/vnd.oasis.opendocument.spreadsheet"),
         ("valid_11.0.xls", "application/vnd.ms-excel"),
-        ("Office_Open_XML_Spreadsheet.xlsx", "application/vnd."
+        ("valid_15.0.xlsx", "application/vnd."
          "openxmlformats-officedocument.spreadsheetml.sheet"),
-        ("valid_1.1", "application/vnd.oasis.opendocument.graphics"),
+        ("valid_1.1.odg", "application/vnd.oasis.opendocument.graphics"),
         ("valid_1.0.odf", "application/vnd.oasis.opendocument.formula"),
     ]
 )

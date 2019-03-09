@@ -14,13 +14,13 @@ class Mediainfo(BaseScraper):
     """Scraper class for collecting video metadata
     """
 
-    def __init__(self, filename, mimetype, validation=True):
+    def __init__(self, filename, mimetype, validation=True, params={}):
         """Initialize scraper
         """
         self._mediainfo_stream = None
         self._mediainfo = None
         self._iscontainer = None
-        super(Mediainfo, self).__init__(filename, mimetype, validation)
+        super(Mediainfo, self).__init__(filename, mimetype, validation, params)
 
     def scrape_file(self):
         """Scrape data from file

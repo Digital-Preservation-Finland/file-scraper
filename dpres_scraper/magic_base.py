@@ -22,12 +22,12 @@ class BinaryMagic(BaseScraper):
     _starttag = "version "
     _endtag = None
 
-    def __init__(self, filename, mimetype, validation=True):
+    def __init__(self, filename, mimetype, validation=True, params={}):
         """
         """
         self._magic_mimetype = None
         self._magic_version = None
-        super(BinaryMagic, self).__init__(filename, mimetype, validation)
+        super(BinaryMagic, self).__init__(filename, mimetype, validation, params)
 
     def scrape_file(self):
         """Scrape text file
@@ -87,13 +87,13 @@ class TextMagic(BaseScraper):
     _starttag = "version "
     _endtag = None
 
-    def __init__(self, filename, mimetype, validation=True):
+    def __init__(self, filename, mimetype, validation=True, params={}):
         """
         """
         self._magic_mimetype = None
         self._magic_version = None
         self._magic_charset = None
-        super(TextMagic, self).__init__(filename, mimetype, validation)
+        super(TextMagic, self).__init__(filename, mimetype, validation, params)
 
     def scrape_file(self):
         """Scrape text file

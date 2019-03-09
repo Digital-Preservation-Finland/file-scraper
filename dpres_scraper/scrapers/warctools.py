@@ -26,7 +26,7 @@ class GzipWarctools(BaseScraper):
         """
         """
         self._well_formed = None
-        super(GzipWarctools, self).__init__(filename, mimetype, validation)
+        super(GzipWarctools, self).__init__(filename, mimetype, validation, params)
 
     def scrape_file(self):
         """Scrape file

@@ -6,7 +6,6 @@ except ImportError:
 
 from dpres_scraper.base import BaseScraper
 
-
 class XmlEncoding(BaseScraper):
     """
     Character encoding validator for HTML5 and XML files
@@ -16,11 +15,19 @@ class XmlEncoding(BaseScraper):
     _supported = {'text/xml': [], 'text/html': ['5.0']}
     _only_wellformed = True
 
-    def __init__(self, filename, mimetype, validation=True):
+    def __init__(self, filename, mimetype, validation=True, params={}):
         """
         """
         self._charset = None
-        super(XmlEncoding, self).__init__(filename, mimetype, validation)
+        super(XmlEncoding, self).__init__(filename, mimetype, validation, params)
+
+    @classmethod
+    def is_supported(cls, mimetype, version=None, validation=True, params={}):
+        """This is not a Schematron scraper
+        """
+        if 'schematron' in params:
+            return False
+        return super(XmlEncoding, cls).is_supported(mimetype, version, validation, params)
 
     def scrape_file(self):
         """Scrape file

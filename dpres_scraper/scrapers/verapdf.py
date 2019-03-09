@@ -49,6 +49,13 @@ class VeraPdf(BaseScraper):
         finally:
             self._collect_elements()
 
+    def _s_version(self):
+        """We let other scrapers decide version, if not well-formed.
+        """
+        if self.well_formed:
+            return self.version
+        return None
+
     def is_important(self):
         """Choose which values are more important
         """

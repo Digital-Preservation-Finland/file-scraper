@@ -63,6 +63,6 @@ def tests_iter_scrapers(mimetype, version, scraper_classes):
     """
     Test for scraper discovery.
     """
-    scrapers = iter_scrapers("/dev/null", mimetype, version)
+    scrapers = iter_scrapers(mimetype, version)
     assert set(
-        [x.__class__.__name__ for x in scrapers]) == set(scraper_classes)
+        [x.__name__ for x in scrapers]) == set(scraper_classes)

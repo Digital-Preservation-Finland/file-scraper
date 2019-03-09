@@ -35,10 +35,20 @@ class Xmllint(BaseScraper):
     _supported = {'text/xml': []}
     _only_wellformed = True
 
-    def __init__(self, filename, mimetype, validation=True):
-        self._schema = None
+    def __init__(self, filename, mimetype, validation=True, params={}):
+        self._schema = params.get('schema')
         self._has_constructed_schema = False
-        super(Xmllint, self).__init__(filename, mimetype, validation)
+        self._catalogs = params.get('catalogs', True)
+        self._no_network = params.get('no_network', True)
+        super(Xmllint, self).__init__(filename, mimetype, validation, params)
+
+    @classmethod
+    def is_supported(cls, mimetype, version=None, validation=True, params={}):
+        """This is not a Schematron validator
+        """
+        if 'schematron' in params:
+            return False
+        return super(Xmllint, cls).is_supported(mimetype, version, validation, params)
 
     def scrape_file(self):
         """Validate XML file with Xmllint and return a tuple of results.
@@ -159,16 +169,15 @@ class Xmllint(BaseScraper):
 
         return []
 
-    def exec_xmllint(self, huge=True, no_output=True, no_network=True,
-                     validate=False, schema=None):
+    def exec_xmllint(self, validate=False, schema=None):
         """Execute xmllint
         """
         command = ['xmllint']
         command += ['--valid'] if validate else []
-        command += ['--huge'] if huge else []
-        command += ['--noout'] if no_output else []
-        command += ['--nonet'] if no_network else []
-        command += ['--catalogs']
+        command += ['--huge']
+        command += ['--noout']
+        command += ['--nonet'] if self._no_network else []
+        command += ['--catalogs'] if self._catalogs else []
         command += ['--schema', schema] if schema else []
         command += [self.filename]
 

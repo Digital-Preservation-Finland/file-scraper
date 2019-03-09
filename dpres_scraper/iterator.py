@@ -30,15 +30,15 @@ from dpres_scraper.scrapers.vnu import Vnu
 from dpres_scraper.scrapers.dummy import ScraperNotFound
 
 
-def iter_detectors(filename):
+def iter_detectors():
     """
     Iterate detectors
     """
     for cls in BaseDetector.__subclasses__():
-        yield cls(filename)
+        yield cls
 
 
-def iter_scrapers(filename, mimetype, version, validation=True):
+def iter_scrapers(mimetype, version, validation=True, params={}):
     """
     Iterate scrapers
     :returns: scraper class
@@ -52,47 +52,39 @@ def iter_scrapers(filename, mimetype, version, validation=True):
     found_validator = False
 
     for cls in BaseScraper.__subclasses__():
-        obj = cls(filename, mimetype, validation)
-        if obj.is_supported(version):
+        if cls.is_supported(mimetype, version, validation, params):
             found_validator = True
-            yield obj
+            yield cls
 
     for cls in BinaryMagic.__subclasses__():
-        obj = cls(filename, mimetype, validation)
-        if obj.is_supported(version):
+        if cls.is_supported(mimetype, version, validation, params):
             found_validator = True
-            yield obj
+            yield cls
 
     for cls in TextMagic.__subclasses__():
-        obj = cls(filename, mimetype, validation)
-        if obj.is_supported(version):
+        if cls.is_supported(mimetype, version, validation, params):
             found_validator = True
-            yield obj
+            yield cls
 
     for cls in JHove.__subclasses__():
-        obj = cls(filename, mimetype, validation)
-        if obj.is_supported(version):
+        if cls.is_supported(mimetype, version, validation, params):
             found_validator = True
-            yield obj
+            yield cls
 
     for cls in Mediainfo.__subclasses__():
-        obj = cls(filename, mimetype, validation)
-        if obj.is_supported(version):
+        if cls.is_supported(mimetype, version, validation, params):
             found_validator = True
-            yield obj
+            yield cls
 
     for cls in Pil.__subclasses__():
-        obj = cls(filename, mimetype, validation)
-        if obj.is_supported(version):
+        if cls.is_supported(mimetype, version, validation, params):
             found_validator = True
-            yield obj
+            yield cls
 
     for cls in Wand.__subclasses__():
-        obj = cls(filename, mimetype, validation)
-        if obj.is_supported(version):
+        if cls.is_supported(mimetype, version, validation, params):
             found_validator = True
-            yield obj
+            yield cls
 
     if not found_validator:
-        obj = ScraperNotFound(filename, mimetype, validation)
-        yield obj
+        yield ScraperNotFound

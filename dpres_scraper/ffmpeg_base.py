@@ -17,12 +17,12 @@ class FFMpeg(BaseScraper):
 
     _only_wellformed = True
 
-    def __init__(self, filename, mimetype, validation=True):
+    def __init__(self, filename, mimetype, validation=True, params={}):
         """Initialize scraper
         """
         self._ffmpeg_stream = None
         self._ffmpeg = None
-        super(FFMpeg, self).__init__(filename, mimetype, validation)
+        super(FFMpeg, self).__init__(filename, mimetype, validation, params)
 
     def scrape_file(self):
         """Scrape data from file
