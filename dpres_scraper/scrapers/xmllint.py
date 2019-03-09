@@ -41,6 +41,8 @@ class Xmllint(BaseScraper):
                      identification and metadata scraping
         :params: Extra parameters needed for the scraper
         """
+        if params is None:
+            params = {}
         self._schema = params.get('schema')
         self._has_constructed_schema = False
         self._catalogs = params.get('catalogs', True)

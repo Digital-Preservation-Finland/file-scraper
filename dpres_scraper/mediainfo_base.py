@@ -22,6 +22,7 @@ class Mediainfo(BaseScraper):
                      identification and metadata scraping
         :params: Extra parameters needed for the scraper
         """
+        self._mediainfo_index = None   # Current mediainfo stream index
         self._mediainfo_stream = None  # Current mediainfo stream
         self._mediainfo = None         # All mediainfo streams
         self._iscontainer = None       # True, if container is current stream
@@ -40,42 +41,47 @@ class Mediainfo(BaseScraper):
             else:
                 self.errors('Error in scraping file.')
                 self.errors(str(e))
-        else:
-            self._iscontainer = False
-            for track in self._mediainfo.tracks:
-                if track.track_id is not None:
-                    self._iscontainer = True
-                    break
-            for index, track in enumerate(self._mediainfo.tracks):
-                if track.track_type == 'General':
+                self._collect_elements()
+                return
+
+        self._iscontainer = False
+        for track in self._mediainfo.tracks:
+            if track.track_id is not None:
+                self._iscontainer = True
+                break
+        for index, track in enumerate(self._mediainfo.tracks):
+            if track.track_type == 'General':
+                self._mediainfo.tracks.insert(
+                    0, self._mediainfo.tracks.pop(index))
+                break
+        for streamnr in range(1, len(self._mediainfo.tracks)):
+            for index, track in enumerate(self._mediainfo.tracks[1:]):
+                if track.streamorder and int(track.streamorder) == streamnr - 1:
                     self._mediainfo.tracks.insert(
-                        0, self._mediainfo.tracks.pop(index))
-                    break
-            self.messages('The file was scraped successfully.')
-        finally:
-            self._collect_elements()
+                        streamnr, self._mediainfo.tracks.pop(index + 1))
+        
+        self.messages('The file was scraped successfully.')
+        self._collect_elements()
 
     def iter_tool_streams(self, stream_type):
         """Iterate streams of given stream type
         :stream_type: Stream type, e.g. 'audio', 'video', 'videocontainer'
         """
+        index = 0
         for stream in self._mediainfo.tracks:
             if stream.track_type.lower() == stream_type or stream_type is None:
                 self._mediainfo_stream = stream
+                self._mediainfo_index = index
                 yield stream
+            index = index + 1
 
     def set_tool_stream(self, index):
         """Set stream with given index
         :index: Index of the stream
         """
         found = False
-        for stream in self._mediainfo.tracks:
-            if stream.streamorder == str(index):
-                self._mediainfo_stream = stream
-                found = True
-                break
-        if not found:
-            self._mediainfo_stream = self._mediainfo.tracks[0]
+        self._mediainfo_stream = self._mediainfo.tracks[index]
+        self._mediainfo_index = index
 
     def _s_version(self):
         """Return version of stream.
@@ -98,12 +104,7 @@ class Mediainfo(BaseScraper):
     def _s_index(self):
         """Return stream index
         """
-        if self._mediainfo_stream.streamorder is not None:
-            return int(self._mediainfo_stream.streamorder) + 1
-        elif self._mediainfo_stream.track_type == 'General':
-            return 0
-        else:
-            return 'muxed-' + str(self._mediainfo_stream.track_id)
+        return self._mediainfo_index
 
     def _s_color(self):
         """Returns color information. Only values from fixed list are

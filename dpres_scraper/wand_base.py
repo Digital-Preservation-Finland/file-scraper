@@ -51,8 +51,8 @@ class Wand(BaseScraper):
         """Set image stream with given index.
         :index: Stream index
         """
-        self._wand_index = index
         self._wand_stream = self._wand.sequence[index]
+        self._wand_index = index
 
     # pylint: disable=no-self-use
     def _s_version(self):

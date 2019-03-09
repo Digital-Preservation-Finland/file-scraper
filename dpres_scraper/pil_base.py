@@ -58,8 +58,8 @@ class Pil(BaseScraper):
         """Set image stream with given index
         :index: stream index
         """
-        self._pil_index = index
         self._pil.seek(index)
+        self._pil_index = index
 
     # pylint: disable=no-self-use
     def _s_version(self):
