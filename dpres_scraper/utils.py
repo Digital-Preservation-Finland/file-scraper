@@ -7,11 +7,18 @@ import string
 import hashlib
 
 
-def hexdigest(filename):
+def hexdigest(filename, extra_hash=None):
+    """Calculte hash of given file.
+    :filename: File path
+    :extra_hash: Hash to be appended in calculation
+    :returns: Calculated hash
+    """
     checksum = hashlib.new('sha1')
     with open(filename, 'rb') as input_file:
         for chunk in iter(lambda: input_file.read(1024 * 1024), b''):
             checksum.update(chunk)
+        if extra_hash:
+            checksum.update(extra_hash)
     return checksum.hexdigest()
 
 

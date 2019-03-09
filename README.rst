@@ -34,8 +34,8 @@ Additionally, the following software is required for complete validation. The bo
 
 See also: https://github.com/Digital-Preservation-Finland/dpx-validator
 
-Usage
------
+Developer Usage
+---------------
 
 Use the scraper in the following way::
 
@@ -60,16 +60,15 @@ The following arguments for Scraper class are also possible:
 
         * Delimiter between elements: ``delimiter=<element delimiter>``
         * Record separator (line terminator): ``separator=<record separator>``
-        * NOTE: If parameters are not given, the scraper tries to find out the values from the CSV, but may give false results.
+        * NOTE: If these arguments are not given, the scraper tries to find out the values from the CSV, but may give false results.
 
     * For XML validation:
 
-        * Schema: ``schema=<schema file>``
+        * Schema: ``schema=<schema file>`` - If not given, the scraper tries to find out the schema from the XML file.
         * Use local schema catalogs: ``catalogs=True/False`` (True by default)
         * Disallow network use: ``no_network=True/False`` (True by default)
-        * Schematron file: ``schematron=<schematron file>`` (None by default)
-        * NOTE: If schema is not given, the scraper tries to find out the schema from the XML file.
-        * NOTE: If schematron file is given, only Schematron scraping is executed, and other arguments don't apply.
+        * Schematron file: ``schematron=<schematron file>`` - None by default. If is given, only Schematron scraping is executed, and other arguments don't apply.
+        * Hash of related abtract Schematron files: ``schematron_extra_hash=<hash>`` - None by default, applies only if argument ``schematron`` is given. The compiled XSLT files created from Schematron are cached, but if there exist abstract Schematron patterns in separate files, the hash of those files must be calculated and given to make sure that the cache is updated properly.
 
 Additionally, the following returns a boolean value True, if the file is a text file, and False otherwise::
 

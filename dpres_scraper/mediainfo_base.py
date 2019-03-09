@@ -56,10 +56,11 @@ class Mediainfo(BaseScraper):
                 break
         for streamnr in range(1, len(self._mediainfo.tracks)):
             for index, track in enumerate(self._mediainfo.tracks[1:]):
-                if track.streamorder and int(track.streamorder) == streamnr - 1:
+                if track.streamorder and \
+                        int(track.streamorder) == streamnr - 1:
                     self._mediainfo.tracks.insert(
                         streamnr, self._mediainfo.tracks.pop(index + 1))
-        
+
         self.messages('The file was scraped successfully.')
         self._collect_elements()
 

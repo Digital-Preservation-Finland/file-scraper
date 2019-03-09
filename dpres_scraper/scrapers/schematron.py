@@ -30,11 +30,12 @@ class Schematron(BaseScraper):
             '/usr/share/dpres-xml-schemas/schematron/schematron_xslt1'
         self._returncode = None
         self._schematron_file = params.get('schematron', None)
+        self._extra_hash = params.get('schematron_extra_hash', None)
         super(Schematron, self).__init__(filename, mimetype,
                                          validation, params)
 
     @classmethod
-    def is_supported(cls, mimetype, version,
+    def is_supported(cls, mimetype, version=None,
                      validation=True, params=None):
         """We use this scraper only with a schematron file
         :mimetype: Identified mimetype
@@ -189,7 +190,7 @@ class Schematron(BaseScraper):
             if not os.path.isdir(self._cachepath):
                 raise
 
-        schema_digest = hexdigest(schematron_schema)
+        schema_digest = hexdigest(schematron_schema, self._extra_hash)
         schema_basename = os.path.basename(schematron_schema)
 
         return os.path.join(self._cachepath, '%s.%s.validator.xsl' % (
