@@ -1,6 +1,6 @@
 """Scraper for various binary and text file formats
 """
-import os
+import os.path
 import ctypes
 
 try:
@@ -38,7 +38,11 @@ class BinaryMagic(BaseScraper):
     def scrape_file(self):
         """Scrape binary file
         """
-        if os.access(self.filename, os.R_OK):
+        if not os.path.exists(self.filename):
+            self.errors('File not found.')
+            self._collect_elements()
+            return
+        try:
             magic_ = magic.open(magic.MAGIC_MIME_TYPE)
             magic_.load()
             self._magic_mimetype = magic_.file(self.filename)
@@ -54,10 +58,11 @@ class BinaryMagic(BaseScraper):
                     self._endtag)[0]
 
             self.messages('The file was scraped successfully.')
-        else:
-            self.errors('File not found.')
-
-        self._collect_elements()
+        except Exception as e:
+            self.errors('Error in scraping file.')
+            self.errors(str(e))
+        finally:
+            self._collect_elements()
 
     @property
     def well_formed(self):
@@ -109,7 +114,11 @@ class TextMagic(BaseScraper):
     def scrape_file(self):
         """Scrape text file
         """
-        if os.access(self.filename, os.R_OK):
+        if not os.path.exists(self.filename):
+            self.errors('File not found.')
+            self._collect_elements()
+            return
+        try:
             magic_ = magic.open(magic.MAGIC_MIME_TYPE)
             magic_.load()
             self._magic_mimetype = magic_.file(self.filename)
@@ -129,10 +138,11 @@ class TextMagic(BaseScraper):
             self._magic_charset = magic_.file(self.filename)
             magic_.close()
             self.messages('The file was scraped successfully.')
-        else:
+        except Exception as e:
             self.errors('Error in scraping file.')
-
-        self._collect_elements()
+            self.errors(str(e))
+        finally:
+            self._collect_elements()
 
     @property
     def well_formed(self):

@@ -53,11 +53,9 @@ class Scraper(object):
         :scraper: Scraper instance
         """
         scraper.scrape_file()
-        well_formed = scraper.well_formed
         self.streams = combine_metadata(
             stream=self.streams, metadata=scraper.streams,
-            well_formed=well_formed, lose=LOSE,
-            important=scraper.is_important())
+            lose=LOSE, important=scraper.is_important())
         self.info[len(self.info)] = scraper.info
         if scraper.well_formed is not None:
             if self.well_formed in [None, True]:

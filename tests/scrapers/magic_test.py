@@ -18,46 +18,47 @@ BASEPATH = "tests/data"
 @pytest.mark.parametrize(
     ['filename', 'mimetype', 'class_'],
     [
-        ("documents/valid_1.1odt.odt",
+        ("valid_1.1.odt",
          "application/vnd.oasis.opendocument.text", OfficeFileMagic),
-        ("documents/valid_11.0.doc",
+        ("valid_11.0.doc",
          "application/msword", OfficeFileMagic),
-        ("documents/valid_15.0.docx",
+        ("valid_15.0.docx",
          "application/vnd.openxmlformats-"
          "officedocument.wordprocessingml.document", OfficeFileMagic),
-        ("documents/valid_1.1.odp",
+        ("valid_1.1.odp",
          "application/vnd.oasis.opendocument.presentation", OfficeFileMagic),
-        ("documents/valid_11.0.ppt",
+        ("valid_11.0.ppt",
          "application/vnd.ms-powerpoint", OfficeFileMagic),
-        ("documents/valid_15.0.pptx",
+        ("valid_15.0.pptx",
          "application/vnd.openxml"
          "formats-officedocument.presentationml.presentation",
          OfficeFileMagic),
-        ("documents/valid_1.1.ods",
+        ("valid_1.1.ods",
          "application/vnd.oasis.opendocument.spreadsheet", OfficeFileMagic),
-        ("documents/valid_11.0.xls",
+        ("valid_11.0.xls",
          "application/vnd.ms-excel", OfficeFileMagic),
-        ("documents/valid_15.0.xlsx",
+        ("valid_15.0.xlsx",
          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
          OfficeFileMagic),
-        ("documents/valid_1.1.odg",
+        ("valid_1.1.odg",
          "application/vnd.oasis.opendocument.graphics", OfficeFileMagic),
-        ("documents/valid_1.0.odf",
+        ("valid_1.0.odf",
          "application/vnd.oasis.opendocument.formula", OfficeFileMagic),
-        ("images/valid_1.2.png", "image/png", PngFileMagic),
-        ("images/valid_1.01.jpeg", "image/jpeg", JpegFileMagic),
-        ("images/valid.jp2", "image/jp2", Jp2FileMagic),
-        ("images/valid_6.0.tiff", "image/tiff", TiffFileMagic),
-        ("text/valid_iso8859.txt", "tet/plain", TextFileMagic),
-        ("text/valid_utf8.txt", "text/plain", TextFileMagic),
-        ("text/valid_1.0.xml", "text/xml", XmlFileMagic),
-        ("text/valid_1.0.xhtml", "applivation/xhtml+xml", HtmlFileMagic),
-        ("text/valid_4.01.html", "text/html", HtmlFileMagic),
-        ("text/valid_5.0.html", "text/html", HtmlFileMagic)
+        ("valid_1.2.png", "image/png", PngFileMagic),
+        ("valid_1.01.jpg", "image/jpeg", JpegFileMagic),
+        ("valid.jp2", "image/jp2", Jp2FileMagic),
+        ("valid_6.0.tif", "image/tiff", TiffFileMagic),
+        ("valid_iso8859.txt", "text/plain", TextFileMagic),
+        ("valid_utf8.txt", "text/plain", TextFileMagic),
+        ("valid_1.0.xml", "text/xml", XmlFileMagic),
+        ("valid_1.0.xhtml", "application/xhtml+xml", HtmlFileMagic),
+        ("valid_4.01.html", "text/html", HtmlFileMagic),
+        ("valid_5.0.html", "text/html", HtmlFileMagic)
     ])
 def test_scrape_valid(filename, mimetype, class_):
     scraper = class_(
-        os.path.join(BASEPATH, filename), mimetype)
+        os.path.join(BASEPATH, mimetype.replace("/", "_"), filename),
+                     mimetype)
     scraper.scrape_file()
     assert scraper.well_formed
 
