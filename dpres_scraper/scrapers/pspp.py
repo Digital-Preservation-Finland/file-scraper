@@ -16,8 +16,9 @@ class Pspp(BaseScraper):
     """
     PSPP scraper
     """
-    _supported = {'application/x-spss-por': []}  # Supported mimetype
-    _only_wellformed = True                      # Only well-formed check
+    _supported = {'application/x-spss-por': ['']}  # Supported mimetype
+    _only_wellformed = True                        # Only well-formed check
+    _allow_versions = True                         # Allow any version
 
     def scrape_file(self):
         """Scrape file
@@ -47,6 +48,7 @@ class Pspp(BaseScraper):
                 self.errors('File conversion failed.')
         finally:
             shutil.rmtree(temp_dir)
+            self._check_supported()
             self._collect_elements()
 
     # pylint: disable=no-self-use

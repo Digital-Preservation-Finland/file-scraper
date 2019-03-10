@@ -9,7 +9,8 @@ class Csv(BaseScraper):
     """Scraper for CSV files.
     """
 
-    _supported = {'text/csv': []}  # Supported mimetype
+    _supported = {'text/csv': ['']}  # Supported mimetype
+    _allow_versions = True           # Allow any version 
 
     def __init__(self, filename, mimetype, validation=True, params=None):
         """Initialize for delimiter and separator info.
@@ -53,7 +54,13 @@ class Csv(BaseScraper):
         else:
             self.messages("CSV file was scraped successfully.")
         finally:
+            self._check_supported()
             self._collect_elements()
+
+    def _s_version(self):
+        """Return version
+        """
+        return ''
 
     def _s_delimiter(self):
         """Return delimiter

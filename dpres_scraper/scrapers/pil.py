@@ -6,7 +6,8 @@ class TiffPil(Pil):
     """Collect TIFF image metadata
     """
 
-    _supported = {'image/tiff': []}  # Supported mimetype
+    _supported = {'image/tiff': ['6.0']}  # Supported mimetype
+    _allow_versions = True                # Allow any version
 
     def _s_colorspace(self):
         """We will get colorspace from another scraper
@@ -26,7 +27,10 @@ class ImagePil(Pil):
     """Collect image image metadata
     """
     # Supported mimetypes
-    _supported = {'image/png': [], 'image/jp2': [], 'image/gif': []}
+    _supported = {'image/png': ['1.2'],
+                  'image/jp2': [''],
+                  'image/gif': ['1987a', '1989a']}
+    _allow_versions = True  # Allow any version
 
     def _s_colorspace(self):
         """We will get colorspace from another scraper
@@ -38,7 +42,9 @@ class JpegPil(Pil):
     """Collect JPEG image metadata
     """
 
-    _supported = {'image/jpeg': []}  # Supported mimetypes
+    _supported = {'image/jpeg': ['1.00', '1.01', '1.02', '2.0', '2.1',
+                                 '2.2', '2.2.1']}  # Supported mimetypes
+    _allow_versions = True  # Allow any version
 
     def _s_colorspace(self):
         """We will get colorspace from another scraper

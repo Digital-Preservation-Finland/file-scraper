@@ -30,8 +30,8 @@ class Xmllint(BaseScraper):
     .. seealso:: http://xmlsoft.org/xmllint.html
     """
 
-    _supported = {'text/xml': []}  # Supported mimetype
-    _only_wellformed = True        # Only well-formed check
+    _supported = {'text/xml': ['1.0']}  # Supported mimetype
+    _only_wellformed = True             # Only well-formed check
 
     def __init__(self, filename, mimetype, validation=True, params=None):
         """Initialize scraper.
@@ -130,6 +130,7 @@ class Xmllint(BaseScraper):
         if self._has_constructed_schema:
             os.remove(self._schema)
 
+        self._check_supported()
         self._collect_elements()
 
     def construct_xsd(self, document_tree):

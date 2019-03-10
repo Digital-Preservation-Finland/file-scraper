@@ -9,7 +9,7 @@ import tempfile
 import pytest
 from dpres_scraper.scrapers.magic import OfficeFileMagic, TextFileMagic, \
     XmlFileMagic, HtmlFileMagic, PngFileMagic, JpegFileMagic, TiffFileMagic, \
-    Jp2FileMagic
+    Jp2FileMagic, XhtmlFileMagic
 
 
 BASEPATH = "tests/data"
@@ -51,7 +51,7 @@ BASEPATH = "tests/data"
         ("valid_iso8859.txt", "text/plain", TextFileMagic),
         ("valid_utf8.txt", "text/plain", TextFileMagic),
         ("valid_1.0.xml", "text/xml", XmlFileMagic),
-        ("valid_1.0.xhtml", "application/xhtml+xml", HtmlFileMagic),
+        ("valid_1.0.xhtml", "application/xhtml+xml", XhtmlFileMagic),
         ("valid_4.01.html", "text/html", HtmlFileMagic),
         ("valid_5.0.html", "text/html", HtmlFileMagic)
     ])

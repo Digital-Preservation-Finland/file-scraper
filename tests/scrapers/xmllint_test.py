@@ -34,7 +34,7 @@ def test_scraping_valid(filename, schema, monkeypatch, capsys):
     scraper.scrape_file()
     print capsys.readouterr()
     assert scraper.well_formed, "scraper errors: %s" % scraper.errors()
-    assert "Validation success" in scraper.messages()
+    assert "Scraping success" in scraper.messages()
     assert scraper.errors() == ""
     # xmllint is using --noout, so the METS XML should not be printed to
     # stdout (KDKPAS-1190)

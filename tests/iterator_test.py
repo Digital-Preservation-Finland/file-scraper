@@ -37,7 +37,7 @@ import pytest
         ("application/warc", None, ["WarcWarctools"]),
         ("application/x-internet-archive", None, ["ArcWarctools"]),
         ("text/xml", None, ["Xmllint", "XmlEncoding", "XmlFileMagic"]),
-        ("application/xhtml+xml", None, ["HtmlJHove", "HtmlFileMagic"]),
+        ("application/xhtml+xml", None, ["HtmlJHove", "XhtmlFileMagic"]),
         ("audio/x-wav", None, ["WavJHove"]),
         ("application/vnd.oasis.opendocument.text", None,
          ["Office", "OfficeFileMagic"]),

@@ -18,7 +18,7 @@ def test_scrape_valid_warc(filename):
     filepath = os.path.join("tests/data/application_warc", filename)
     scraper = WarcWarctools(filepath, 'application/warc')
     scraper.scrape_file()
-    assert scraper.well_formed
+    assert scraper.well_formed, scraper.errors()
 
 
 @pytest.mark.parametrize(

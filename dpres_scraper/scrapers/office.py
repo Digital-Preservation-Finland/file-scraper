@@ -10,22 +10,25 @@ class Office(BaseScraper):
     """
     Office file format scraper
     """
-    # Supported mimetypes
+    # Supported mimetypes and versions
     _supported = {
-        'application/vnd.oasis.opendocument.text': [],
-        'application/vnd.oasis.opendocument.spreadsheet': [],
-        'application/vnd.oasis.opendocument.presentation': [],
-        'application/vnd.oasis.opendocument.graphics': [],
-        'application/vnd.oasis.opendocument.formula': [],
-        'application/msword': [],
-        'application/vnd.ms-excel': [],
-        'application/vnd.ms-powerpoint': [],
+        'application/vnd.oasis.opendocument.text': ['1.0', '1.1', '1.2'],
+        'application/vnd.oasis.opendocument.spreadsheet': [
+            '1.0', '1.1', '1.2'],
+        'application/vnd.oasis.opendocument.presentation': [
+            '1.0', '1.1', '1.2'],
+        'application/vnd.oasis.opendocument.graphics': ['1.0', '1.1', '1.2'],
+        'application/vnd.oasis.opendocument.formula': ['1.0', '1.2'],
+        'application/msword': ['8.0', '8.5', '9.0', '10.0', '11.0'],
+        'application/vnd.ms-excel': ['8.0', '9.0', '10.0', '11.0'],
+        'application/vnd.ms-powerpoint': ['8.0', '9.0', '10.0', '11.0'],
         'application/vnd.openxmlformats-officedocument.wordprocessingml.'
-        'document': [],
+        'document': ['12.0', '14.0', '15.0'],
         'application/vnd.openxmlformats-officedocument.'
-        'spreadsheetml.sheet': [],
+        'spreadsheetml.sheet': ['12.0', '14.0', '15.0'],
         'application/vnd.openxmlformats-officedocument.presentationml.'
-        'presentation': []}
+        'presentation': ['12.0', '14.0', '15.0']}
+    _allow_versions = True  # Allow any version
     _only_wellformed = True  # Only well-formed check
 
     def scrape_file(self):
@@ -41,6 +44,7 @@ class Office(BaseScraper):
             self.messages(shell.stdout)
         finally:
             shutil.rmtree(temp_dir)
+            self._check_supported()
             self._collect_elements()
 
     # pylint: disable=no-self-use

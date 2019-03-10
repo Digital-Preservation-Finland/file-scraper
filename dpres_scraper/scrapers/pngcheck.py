@@ -9,8 +9,9 @@ class Pngcheck(BaseScraper):
     .. seealso:: http://www.libpng.org/pub/png/apps/pngcheck.html
     """
 
-    _supported = {'image/png': []}  # Supported mimetype
-    _only_wellformed = True         # Only well-formed check
+    _supported = {'image/png': ['1.2']}  # Supported mimetype
+    _only_wellformed = True              # Only well-formed check
+    _allow_versions = True               # Allow any version
 
     def scrape_file(self):
         """Scrape file
@@ -23,6 +24,7 @@ class Pngcheck(BaseScraper):
             self.errors(shell.stderr)
 
         self.messages(shell.stdout)
+        self._check_supported()
         self._collect_elements()
 
     # pylint: disable=no-self-use

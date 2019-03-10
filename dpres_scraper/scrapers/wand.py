@@ -6,7 +6,8 @@ class TiffWand(Wand):
     """Collect TIFF image metadata
     """
 
-    _supported = {'image/tiff': []}  # Supported mimetype
+    _supported = {'image/tiff': ['6.0']}  # Supported mimetype
+    _allow_versions = True                 # Allow any version
 
     def _s_byte_order(self):
         """Returns byte order
@@ -23,5 +24,10 @@ class ImageWand(Wand):
     """Collect image metadata
     """
     # Supported mimetypes
-    _supported = {'image/png': [], 'image/jpeg': [], 'image/jp2': [],
-                  'image/gif': [], 'image/x-dpx': []}
+    _supported = {'image/png': ['1.2'],
+                  'image/jpeg': ['1.00', '1.01', '1.02', '2.0', '2.1',
+                                 '2.2', '2.2.1'],
+                  'image/jp2': [''],
+                  'image/gif': ['1987a', '1989a'],
+                  'image/x-dpx': ['2.0']}
+    _allow_versions = True  # Allow any version

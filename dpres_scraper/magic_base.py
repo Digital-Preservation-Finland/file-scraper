@@ -62,6 +62,7 @@ class BinaryMagic(BaseScraper):
             self.errors('Error in scraping file.')
             self.errors(str(e))
         finally:
+            self._check_supported()
             self._collect_elements()
 
     @property
@@ -142,6 +143,7 @@ class TextMagic(BaseScraper):
             self.errors('Error in scraping file.')
             self.errors(str(e))
         finally:
+            # self._check_supported()
             self._collect_elements()
 
     @property
@@ -150,7 +152,7 @@ class TextMagic(BaseScraper):
         """
         if not self._validation:
             return None
-        if self._magic_mimetype == self.mimetype:
+        if self._s_mimetype() == self.mimetype:
             return super(TextMagic, self).well_formed
         return False
 

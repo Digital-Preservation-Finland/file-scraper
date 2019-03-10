@@ -13,7 +13,7 @@ class XmlEncoding(BaseScraper):
     """
 
     # We use JHOVE for HTML4 and XHTML files.
-    _supported = {'text/xml': [], 'text/html': ['5.0']}
+    _supported = {'text/xml': ['1.0'], 'text/html': ['5.0']}
     _only_wellformed = True  # Only well-formed check
 
     def __init__(self, filename, mimetype, validation=True, params=None):
@@ -55,6 +55,7 @@ class XmlEncoding(BaseScraper):
         tree = etree.parse(fd, parser)
         self._charset = tree.docinfo.encoding
         self.messages('Encoding metadata found.')
+        self._check_supported()
         self._collect_elements()
 
     def _s_charset(self):

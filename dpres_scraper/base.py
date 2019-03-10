@@ -68,6 +68,7 @@ class BaseScraper(object):
     __metaclass__ = abc.ABCMeta
 
     _supported = {}           # Dictionary of supported mimetypes and versions
+    _allow_versions = False   # Do not allow other detected versions
     _only_wellformed = False  # True if the scraper does just well-formed
                               # check, False otherwise
 
@@ -107,9 +108,9 @@ class BaseScraper(object):
         if params is None:
             params = {}
         if mimetype in cls._supported and \
-                (not cls._supported[mimetype] or
-                 version is None or
-                 version in cls._supported[mimetype]) and \
+                (version is None or
+                 version in cls._supported[mimetype] or
+                 cls._allow_versions) and \
                 (validation or not cls._only_wellformed):
             return True
         return False
@@ -117,7 +118,8 @@ class BaseScraper(object):
     @abc.abstractmethod
     def scrape_file(self):
         """Must implement the actual scraping in the scrapers.
-        _collect_elements() must be called in the end.
+        self._check_supported() is recommended after scraping.
+        self._collect_elements() must be called in the end.
         """
         pass
 
@@ -164,6 +166,15 @@ class BaseScraper(object):
         self.info = {'class': self.__class__.__name__,
                      'messages': self.messages(),
                      'errors': self.errors()}
+
+    def _check_supported(self):
+        """Check that resulted mimetype and possible version are supported.
+        """
+        if self._s_mimetype() and self._s_mimetype() not in self._supported:
+            self.errors("Mimetype %s is not supported." % self._s_mimetype())
+        elif self._s_version() and self._s_version() not in \
+                self._supported[self._s_mimetype()]:
+            self.errors("Version %s is not supported." % self._s_version())
 
     # pylint: disable=no-self-use,unused-argument
     def iter_tool_streams(self, stream_type):

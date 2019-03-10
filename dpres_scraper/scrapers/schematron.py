@@ -12,7 +12,7 @@ from dpres_scraper.base import BaseScraper, Shell
 class Schematron(BaseScraper):
     """Schematron scraper
     """
-    _supported = {'text/xml': []}  # Supported mimetypes
+    _supported = {'text/xml': ['1.0']}  # Supported mimetypes
 
     def __init__(self, filename, mimetype, validation=True, params=None):
         """Initialize instance.
@@ -82,6 +82,8 @@ class Schematron(BaseScraper):
             self.messages = self._filter_duplicate_elements(shell.stdout)
         else:
             self.messages = shell.stdout
+        self._check_supported()
+        self._collect_elements()
 
     # pylint: disable=no-self-use
     def _s_stream_type(self):

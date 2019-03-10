@@ -13,6 +13,7 @@ class GzipWarctools(BaseScraper):
 
     _supported = {'application/gzip': []}  # Supported mimetype
     _only_wellformed = True                # Only well-formed check
+    _allow_versions = True                 # Allow any version
 
     def __init__(self, filename, mimetype, validation=True, params=None):
         """Initialize scraper.
@@ -58,8 +59,10 @@ class WarcWarctools(BaseScraper):
     .. seealso:: https://github.com/internetarchive/warctools
     """
 
-    _supported = {'application/warc': []}  # Supported mimetype
+    # Supported mimetype and versions
+    _supported = {'application/warc': ['0.17', '0.18', '1.0']}
     _only_wellformed = True                # Only well-formed check
+    _allow_versions = True                 # Allow any version
 
     def scrape_file(self):
 
@@ -91,7 +94,8 @@ class WarcWarctools(BaseScraper):
             return
 
         self.mimetype = 'application/warc'
-        self.version = line.split("WARC/", 1)[1].split(" ")[0]
+        self.version = line.split("WARC/", 1)[1].split(" ")[0].strip()
+        self._check_supported()
         self._collect_elements()
 
     # pylint: disable=no-self-use
@@ -104,9 +108,10 @@ class WarcWarctools(BaseScraper):
 class ArcWarctools(BaseScraper):
     """Scraper for older arc files
     """
-    # Supported mimetype
-    _supported = {'application/x-internet-archive': []}
+    # Supported mimetype and varsions
+    _supported = {'application/x-internet-archive': ['1.0', '1.1']}
     _only_wellformed = True  # Only well-formed check
+    _allow_versions = True   # Allow any version
 
     def scrape_file(self):
         """Scrape ARC file by converting to WARC using Warctools' arc2warc
@@ -130,6 +135,7 @@ class ArcWarctools(BaseScraper):
             self.messages(shell.stdout)
 
         self.mimetype = 'application/x-internet-archive'
+        self._check_supported()
         self._collect_elements()
 
     # pylint: disable=no-self-use

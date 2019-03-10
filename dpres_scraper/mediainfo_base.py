@@ -46,7 +46,7 @@ class Mediainfo(BaseScraper):
 
         self._iscontainer = False
         for track in self._mediainfo.tracks:
-            if track.track_id is not None:
+            if track.track_id is None:
                 self._iscontainer = True
                 break
         for index, track in enumerate(self._mediainfo.tracks):
@@ -61,7 +61,9 @@ class Mediainfo(BaseScraper):
                     self._mediainfo.tracks.insert(
                         streamnr, self._mediainfo.tracks.pop(index + 1))
 
+        self.set_tool_stream(0)
         self.messages('The file was scraped successfully.')
+        self._check_supported()
         self._collect_elements()
 
     def iter_tool_streams(self, stream_type):

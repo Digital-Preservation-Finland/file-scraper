@@ -7,8 +7,9 @@ class VideoMediainfo(Mediainfo):
     """Scraper for various video and audio formats
     """
     # Supported mimetypes
-    _supported = {'video/quicktime': [], 'video/x-ms-asf': [],
-                  'video/avi': []}
+    _supported = {'video/quicktime': [''], 'video/x-ms-asf': [''],
+                  'video/avi': ['']}
+    _allow_versions = True  # Allow any version
 
     def _s_mimetype(self):
         """Return mimetype
@@ -35,8 +36,9 @@ class MpegMediainfo(Mediainfo):
     """Scraper for MPEG video and audio
     """
     # Supported mimetypes
-    _supported = {'video/mpeg': [], 'video/mp4': [],
-                  'audio/mpeg': [], 'audio/mp4': []}
+    _supported = {'video/mpeg': ['1', '2'], 'video/mp4': [''],
+                  'audio/mpeg': ['1', '2'], 'audio/mp4': ['']}
+    _allow_versions = True  # Allow any version
 
     # pylint: disable=no-self-use
     def _s_signal_format(self):

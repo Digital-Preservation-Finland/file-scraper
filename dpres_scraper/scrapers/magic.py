@@ -7,7 +7,8 @@ class TextFileMagic(TextMagic):
     """Scraper for text files
     """
     # Supported mimetypes
-    _supported = {'text/plain': [], 'text/csv': []}
+    _supported = {'text/plain': [''], 'text/csv': ['']}
+    _allow_versions = True  # Allow any version
 
     # pylint: disable=no-self-use
     def _s_version(self):
@@ -20,9 +21,10 @@ class XmlFileMagic(TextMagic):
     """Scraper for xml files
     """
 
-    _supported = {'text/xml': []}  # Supported mimetypes
+    _supported = {'text/xml': ['1.0']}  # Supported mimetypes
     _starttag = 'XML '             # Text before version in magic output
     _endtag = ' '                  # Text after version in magic output
+    _allow_versions = True         # Allow any version
 
     @classmethod
     def is_supported(cls, mimetype, version=None,
@@ -43,12 +45,30 @@ class XmlFileMagic(TextMagic):
                                                      validation, params)
 
 
+class XhtmlFileMagic(TextMagic):
+    """Scraper for (x)html files
+    """
+    # Supported mimetypes
+    _supported = {'application/xhtml+xml': ['1.0', '1.1']}
+    _starttag = 'XML '      # Text before version in magic output
+    _endtag = ' '           # Text after version in magic output
+    _allow_versions = True  # Allow any version
+
+    def _s_mimetype(self):
+        """Modify result
+        """
+        mime = super(XhtmlFileMagic, self)._s_mimetype()
+        if mime == 'text/xml':
+            return 'application/xhtml+xml'
+        return mime
+
+
 class HtmlFileMagic(TextMagic):
     """Scraper for (x)html files
     """
     # Supported mimetypes
-    _supported = {'text/html': [],
-                  'application/xhtml+xml': []}
+    _supported = {'text/html': ['4.01', '5.0']}
+    _allow_versions = True  # Allow any version
 
     def _s_version(self):
         """Return version
@@ -60,34 +80,46 @@ class PdfFileMagic(BinaryMagic):
     """Scraper for PDF files
     """
     # Supported mimetype
-    _supported = {'application/pdf': []}
+    _supported = {'application/pdf': ['1.2', '1.3', '1.4', '1.5', '1.6',
+                                      '1.7', 'A-1a', 'A-1b', 'A-2a', 'A-2b',
+                                      'A-2u', 'A-3a', 'A-3b', 'A-3u']}
+    _allow_versions = True  # Allow any version
 
 
 class OfficeFileMagic(BinaryMagic):
     """Scraper for office files
     """
-    # Supported mimetype
+    # Supported mimetypes and versions
     _supported = {
-        'application/vnd.oasis.opendocument.text': [],
-        'application/vnd.oasis.opendocument.spreadsheet': [],
-        'application/vnd.oasis.opendocument.presentation': [],
-        'application/vnd.oasis.opendocument.graphics': [],
-        'application/vnd.oasis.opendocument.formula': [],
-        'application/msword': [],
-        'application/vnd.ms-excel': [],
-        'application/vnd.ms-powerpoint': [],
+        'application/vnd.oasis.opendocument.text': ['1.0', '1.1', '1.2'],
+        'application/vnd.oasis.opendocument.spreadsheet': [
+            '1.0', '1.1', '1.2'],
+        'application/vnd.oasis.opendocument.presentation': [
+            '1.0', '1.1', '1.2'],
+        'application/vnd.oasis.opendocument.graphics': ['1.0', '1.1', '1.2'],
+        'application/vnd.oasis.opendocument.formula': ['1.0', '1.2'],
+        'application/msword': ['8.0', '8.5', '9.0', '10.0', '11.0'],
+        'application/vnd.ms-excel': ['8.0', '9.0', '10.0', '11.0'],
+        'application/vnd.ms-powerpoint': ['8.0', '9.0', '10.0', '11.0'],
         'application/vnd.openxmlformats-officedocument.wordprocessingml.'
-        'document': [],
+        'document': ['12.0', '14.0', '15.0'],
         'application/vnd.openxmlformats-officedocument.'
-        'spreadsheetml.sheet': [],
+        'spreadsheetml.sheet': ['12.0', '14.0', '15.0'],
         'application/vnd.openxmlformats-officedocument.presentationml.'
-        'presentation': []}
+        'presentation': ['12.0', '14.0', '15.0']}
+    _allow_versions = True  # Allow any version
+
+    def _s_version(self):
+        """Return version
+        """
+        return None
 
 
 class PngFileMagic(BinaryMagic):
     """Scraper for PNG files
     """
-    _supported = {'image/png': []}  # Supported mimetypes
+    _supported = {'image/png': ['1.2']}  # Supported mimetype
+    _allow_versions = True  # Allow any version
 
     def _s_version(self):
         """Return version
@@ -105,9 +137,11 @@ class JpegFileMagic(BinaryMagic):
     """Scraper for JPEG files
     """
 
-    _supported = {'image/jpeg': []}  # Supported mimetype
+    _supported = {'image/jpeg': ['1.00', '1.01', '1.02', '2.0', '2.1',
+                                 '2.2', '2.2.1']}  # Supported mimetype
     _starttag = 'standard '          # Text before version in magic output
     _endtag = ','                    # Text after version in magic output
+    _allow_versions = True  # Allow any version
 
     # pylint: disable=no-self-use
     def _s_stream_type(self):
@@ -120,7 +154,8 @@ class Jp2FileMagic(BinaryMagic):
     """Scraper for JP2 files
     """
 
-    _supported = {'image/jp2': []}  # Supported mimetype
+    _supported = {'image/jp2': ['']}  # Supported mimetype
+    _allow_versions = True  # Allow any version
 
     def _s_version(self):
         """Return version
@@ -138,7 +173,8 @@ class TiffFileMagic(BinaryMagic):
     """Scraper for TIFF files
     """
 
-    _supported = {'image/tiff': []}  # Supported mimetype
+    _supported = {'image/tiff': ['6.0']}  # Supported mimetype
+    _allow_versions = True  # Allow any version
 
     def _s_version(self):
         """Return version

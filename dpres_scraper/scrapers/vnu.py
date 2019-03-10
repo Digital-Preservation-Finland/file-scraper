@@ -25,6 +25,7 @@ class Vnu(BaseScraper):
             self.filename])
         self.errors(shell.stderr)
         self.messages(shell.stdout)
+        self._check_supported()
         self._collect_elements()
 
     # pylint: disable=no-self-use

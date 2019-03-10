@@ -8,8 +8,8 @@ class Dpx(BaseScraper):
     """DPX scraper
     """
 
-    _supported = {'image/x-dpx': []}  # Supported mimetype
-    _only_wellformed = True           # Only well-formed check
+    _supported = {'image/x-dpx': ['2.0']}  # Supported mimetype and version
+    _only_wellformed = True                # Only well-formed check
 
     def scrape_file(self):
         """Scrape DPX.
@@ -21,7 +21,14 @@ class Dpx(BaseScraper):
 
         self.errors(shell.stderr)
         self.messages(shell.stdout)
+        self._check_supported()
         self._collect_elements()
+
+    # pylint: disable=no-self-use
+    def _s_version(sef):
+        """Return version
+        """
+        return '2.0'
 
     # pylint: disable=no-self-use
     def _s_stream_type(self):

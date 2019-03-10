@@ -35,6 +35,7 @@ class Wand(BaseScraper):
         else:
             self.messages('The file was scraped successfully.')
         finally:
+            self._check_supported()
             self._collect_elements()
 
     def iter_tool_streams(self, stream_type):

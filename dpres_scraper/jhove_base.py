@@ -50,6 +50,7 @@ class JHove(BaseScraper):
         if 'Well-Formed and valid' not in status:
             self.errors("Validator returned error: %s\n%s" % (
                 self._shell.stdout, self._shell.stderr))
+        self._check_supported()
         self._collect_elements()
 
     def _s_mimetype(self):

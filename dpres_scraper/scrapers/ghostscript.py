@@ -32,6 +32,7 @@ class GhostScript(BaseScraper):
             self.errors("Ghostscript returned return code: %s"
                         % shell.returncode)
         self.messages(shell.stdout.decode('iso-8859-1').encode('utf8'))
+        self._check_supported()
         self._collect_elements()
 
     # pylint: disable=no-self-use

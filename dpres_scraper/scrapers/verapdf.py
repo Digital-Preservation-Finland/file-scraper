@@ -48,6 +48,7 @@ class VeraPdf(BaseScraper):
         except ET.XMLSyntaxError:
             self.errors(shell.stderr)
         finally:
+            self._check_supported()
             self._collect_elements()
 
     def _s_version(self):
