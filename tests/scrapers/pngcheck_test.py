@@ -1,26 +1,48 @@
 """Test the dpres_scraper.scrapers.pngcheck module"""
+import pytest
+from tests.scrapers.common import parse_results
+from dpres_scraper.scrapers.pngcheck import Pngcheck
 
-import os
-import dpres_scraper.scrapers.pngcheck
+
+SUPPORT_MIME = 'image/png'
 
 
-def test_pngcheck_valid():
-    """Test valid PNG file"""
-
-    filepath = 'tests/data/image_png/valid_1.2.png'
-    scraper = dpres_scraper.scrapers.pngcheck.Pngcheck(filepath, 'image/png')
+@pytest.mark.parametrize(
+    ['filename', 'result_dict', 'validation'],
+    [
+        ('valid_1.2.png', {
+            'purpose': 'Test valid file.',
+            'stdout_part': 'OK',
+            'stderr_part': ''}, True),
+        ('invalid_1.2.png', {
+            'purpose': 'Test corrupted file.',
+            'stdout_part': '',
+            'stderr_part': 'ERROR'}, True)
+    ]
+)
+def test_scraper(filename, result_dict, validation):
+    """Test scraper"""
+    correct = parse_results(filename, SUPPORT_MIME,
+                            result_dict, validation)
+    scraper = Pngcheck(correct.filename, correct.mimetype,
+                       validation, correct.params)
     scraper.scrape_file()
-    assert scraper.well_formed
-    assert 'OK' in scraper.messages()
-    assert scraper.errors() == ""
+    correct.streams[0]['version'] = None
 
+    assert scraper.mimetype == correct.mimetype
+    assert scraper.version == None
+    assert scraper.streams == correct.streams
+    assert scraper.info['class'] == 'Pngcheck'
+    assert correct.stdout_part in scraper.messages()
+    assert correct.stderr_part in scraper.errors()
+    assert scraper.well_formed == correct.well_formed
 
-def test_pngcheck_invalid():
-    """Test corrupted PNG file"""
-
-    filepath = 'tests/data/image_png/invalid_1.2.png'
-    scraper = dpres_scraper.scrapers.pngcheck.Pngcheck(filepath, 'image/png')
-    scraper.scrape_file()
-    assert not scraper.well_formed
-    assert 'OK' not in scraper.messages()
-    assert 'ERROR' in scraper.errors()
+def test_is_supported():
+    """Test is_Supported method"""
+    mime = SUPPORT_MIME
+    ver = '1.2'
+    assert Pngcheck.is_supported(mime, ver, True)
+    assert Pngcheck.is_supported(mime, None, True)
+    assert not Pngcheck.is_supported(mime, ver, False)
+    assert Pngcheck.is_supported(mime, 'foo', True)
+    assert not Pngcheck.is_supported('foo', ver, True)

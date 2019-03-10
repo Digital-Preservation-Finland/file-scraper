@@ -90,7 +90,7 @@ class HtmlJHove(JHove):
     def _s_stream_type(self):
         """Return file type
         """
-        return 'char'
+        return 'text'
 
 
 class JpegJHove(JHove):
@@ -181,7 +181,7 @@ class Utf8JHove(JHove):
     def _s_stream_type(self):
         """Return file type
         """
-        return 'char'
+        return 'text'
 
 
 class WavJHove(JHove):

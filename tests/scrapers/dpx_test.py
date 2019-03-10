@@ -26,7 +26,7 @@ SUPPORT_MIME = 'image/x-dpx'
             'stderr_part': ''}, False)
     ]
 )
-def test_scrape_files(filename, result_dict, validation):
+def test_scraper(filename, result_dict, validation):
     """Test scraper"""
     correct = parse_results(filename, SUPPORT_MIME,
                             result_dict, validation)

@@ -81,4 +81,4 @@ class Csv(BaseScraper):
     def _s_stream_type(self):
         """Return file type
         """
-        return 'char'
+        return 'text'

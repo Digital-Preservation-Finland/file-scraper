@@ -1,46 +1,56 @@
 """
 Tests for VeraPDF scraper for PDF/A files.
 """
-
-import os
 import pytest
+from tests.scrapers.common import parse_results
 from dpres_scraper.scrapers.verapdf import VeraPdf
 
 
-BASEPATH = "tests/data/application_pdf"
+SUPPORT_MIME = 'application/pdf'
 
 
 @pytest.mark.parametrize(
-    ['filename', 'well_formed', 'errors'],
+    ['filename', 'result_dict', 'validation'],
     [
-        ("valid_A-1b.pdf", True, ""),
-        ("valid_A-2b.pdf", True, ""),
-        ("valid_A-3b.pdf", True, ""),
-        ("invalid_A-1b_corrupted.pdf", False,
-         "Couldn't parse stream caused by exception"),
-        ("invalid_A-2b.pdf", False,
-         "not compliant with Validation Profile requirements"),
-        ("invalid_A-3b.pdf", False,
-         "not compliant with Validation Profile requirements"),
-        ("../image_tiff/valid_6.0.tif", False, "SEVERE"),
+        ('valid_A-1a.pdf', {
+            'purpose': 'Test valid file.',
+            'stdout_part': 'PDF file is compliant with Validation Profile '
+                           'requirements.',
+            'stderr_part': ''}, True),
+        ('valid_A-2b.pdf', {
+            'purpose': 'Test valid file.',
+            'stdout_part': 'PDF file is compliant with Validation Profile '
+                           'requirements.',
+            'stderr_part': ''}, True),
+        ('valid_A-3b.pdf', {
+            'purpose': 'Test valid file.',
+            'stdout_part': 'PDF file is compliant with Validation Profile '
+                           'requirements.',
+            'stderr_part': ''}, True),
     ]
 )
-def test_scrape_file(filename, well_formed, errors):
-    """
-    Test scraping of PDF/A files. Asserts that valid files are
-    valid and invalid files or files with wrong versions are
-    not valid. Also asserts that files which aren't PDF files
-    are processed correctly.
-    """
-
-    scraper = VeraPdf(os.path.join(BASEPATH, filename), 'application/pdf')
+def test_scraper(filename, result_dict, validation):
+    """Test scraper"""
+    correct = parse_results(filename, SUPPORT_MIME,
+                            result_dict, validation)
+    scraper = VeraPdf(correct.filename, correct.mimetype,
+                      validation, correct.params)
     scraper.scrape_file()
 
-    # Is validity expected?
-    assert scraper.well_formed == well_formed
+    assert scraper.mimetype == correct.mimetype
+    assert scraper.version == correct.version
+    assert scraper.streams == correct.streams
+    assert scraper.info['class'] == 'VeraPdf'
+    assert correct.stdout_part in scraper.messages()
+    assert correct.stderr_part in scraper.errors()
+    assert scraper.well_formed == correct.well_formed
 
-    # Is stderr output expected?
-    if errors == "":
-        assert scraper.errors() == ""
-    else:
-        assert errors in scraper.errors()
+def test_is_supported():
+    """Test is_Supported method"""
+    mime = SUPPORT_MIME
+    ver = 'A-1b'
+    assert VeraPdf.is_supported(mime, ver, True)
+    assert VeraPdf.is_supported(mime, None, True)
+    assert not VeraPdf.is_supported(mime, ver, False)
+    assert not VeraPdf.is_supported(mime, 'foo', True)
+    assert not VeraPdf.is_supported('foo', ver, True)

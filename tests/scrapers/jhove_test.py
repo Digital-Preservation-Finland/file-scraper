@@ -20,7 +20,7 @@ TESTDATADIR_BASE = 'tests/data'
         (PdfJHove, "application_pdf/valid_1.6.pdf", "application/pdf"),
         (PdfJHove, "application_pdf/valid_A-2b.pdf", "application/pdf"),
         (PdfJHove, "application_pdf/valid_A-3b.pdf", "application/pdf"),
-        (PdfJHove, "application_pdf/valid_A-1b.pdf", "application/pdf"),
+        (PdfJHove, "application_pdf/valid_A-1a.pdf", "application/pdf"),
         (HtmlJHove, "application_xhtml+xml/valid_1.0.xhtml",
             "application/xhtml+xml"),
         (WavJHove, "audio_x-wav/valid_wav.wav", "audio/x-wav"),

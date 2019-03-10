@@ -30,7 +30,10 @@ def parse_results(filename, mimetype, results, validation):
     path = os.path.join('tests/data', mimetype.replace("/", "_"))
     words = filename.rsplit(".", 1)[0].split("_", 2)
     well_formed = words[0]
-    version = words[1]
+    if len(words) > 1:
+        version = words[1]
+    else:
+        version = ''
     testfile = os.path.join(path, filename)
 
     correct = Correct()

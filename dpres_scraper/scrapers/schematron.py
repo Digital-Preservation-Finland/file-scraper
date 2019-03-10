@@ -89,7 +89,7 @@ class Schematron(BaseScraper):
     def _s_stream_type(self):
         """Return file type
         """
-        return 'char'
+        return 'text'
 
     def _filter_duplicate_elements(self, result):
         """Filter duplicate elements from the result

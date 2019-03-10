@@ -1,38 +1,45 @@
 """
 Tests for Vnu scraper.
 """
-
-import os
 import pytest
 from dpres_scraper.scrapers.vnu import Vnu
+from tests.scrapers.common import parse_results
 
 
-BASEPATH = "tests/data/text_html"
+SUPPORT_MIME = 'text/html'
 
 
 @pytest.mark.parametrize(
-    ['filename', 'well_formed', 'errors'
-    ],
-    [["valid_5.0.html", True, ""],
-     ["invalid_5.0_wrong_encoding.html", False,
-      "Internal encoding declaration"]
+    ['filename', 'result_dict', 'validation'],
+    [
+        ('valid_5.0.html', {
+            'purpose': 'Test valid file.',
+            'stdout_part': 'valid_5.0.html',
+            'stderr_part': ''}, True),
     ]
 )
-def test_scrape_valid_file(filename, well_formed, errors):
-    """
-    Test scraping of HTML5 files.
-    """
-    scraper = Vnu(os.path.join(BASEPATH, filename), 'text/html')
+def test_scraper(filename, result_dict, validation):
+    """Test scraper"""
+    correct = parse_results(filename, SUPPORT_MIME,
+                            result_dict, validation)
+    scraper = Vnu(correct.filename, correct.mimetype,
+                  validation, correct.params)
     scraper.scrape_file()
 
-    # Is validity expected?
-    assert scraper.well_formed is well_formed
+    assert scraper.mimetype == correct.mimetype
+    assert scraper.version == correct.version
+    assert scraper.streams == correct.streams
+    assert scraper.info['class'] == 'Vnu'
+    assert correct.stdout_part in scraper.messages()
+    assert correct.stderr_part in scraper.errors()
+    assert scraper.well_formed == correct.well_formed
 
-    # Is stderr output expected?
-    if errors == "":
-        assert scraper.errors() == ""
-    else:
-        assert errors in scraper.errors()
-
-    # Is stdout output expected?
-    assert scraper.filename + "\n" == scraper.messages()
+def test_is_supported():
+    """Test is_Supported method"""
+    mime = SUPPORT_MIME
+    ver = '5.0'
+    assert Vnu.is_supported(mime, ver, True)
+    assert Vnu.is_supported(mime, None, True)
+    assert not Vnu.is_supported(mime, ver, False)
+    assert not Vnu.is_supported(mime, 'foo', True)
+    assert not Vnu.is_supported('foo', ver, True)

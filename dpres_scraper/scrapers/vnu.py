@@ -29,7 +29,13 @@ class Vnu(BaseScraper):
         self._collect_elements()
 
     # pylint: disable=no-self-use
+    def _s_version(self):
+        """Return version
+        """
+        return '5.0'
+
+    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return file type
         """
-        return 'char'
+        return 'text'

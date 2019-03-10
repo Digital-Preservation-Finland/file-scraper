@@ -16,31 +16,17 @@ SUPPORT_MIME = 'application/pdf'
             'purpose': 'Test valid file.',
             'stdout_part': '',
             'stderr_part': ''}, True),
-        ('invalid_1.7_corrupted.pdf', {
-            'purpose': 'Test corrupted file.',
-            'stdout_part': 'Error: /undefined in obj',
-            'stderr_part': 'Unrecoverable error, exit code 1'}, True),
         ('valid_A-2b.pdf', {
             'purpose': 'Test valid PDF/A file.',
             'stdout_part': '',
             'stderr_part': ''}, True),
-        ('invalid_A-2b_valid_as_plain_pdf.pdf', {
-            'purpose': 'Test invalid A-1b but valid as plain PDF',
-            'inverse': True,
-            'stdout_part': 'Error: /undefined in obj',
-            'stderr_part': 'Truncated file'}, True),
-        ('invalid_A-2b_xref_error.pdf', {
-            'purpose': 'Test invalid as PDF and PDF/A.',
-            'stdout_part': '',
-            'stderr_part': 'An error occurred while reading an XREF table.'},
-         True),
         ('valid_1.7.pdf', {
             'purpose': 'Test valid file.',
             'stdout_part': '',
             'stderr_part': ''}, False)
     ]
 )
-def test_scrape_files(filename, result_dict, validation):
+def test_scraper(filename, result_dict, validation):
     """Test scraper"""
     correct = parse_results(filename, SUPPORT_MIME,
                             result_dict, validation)
