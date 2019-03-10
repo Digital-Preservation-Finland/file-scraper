@@ -43,14 +43,19 @@ def parse_results(filename, mimetype, results, validation):
     if 'streams' in results:
         correct.streams = results['streams']
     else:
+        stream_type = mimetype.split('/')[0]
+        if stream_type == 'application':
+            stream_type = 'binary'
         correct.streams = {0: {
             'mimetype': mimetype,
             'version': version,
             'index': 0,
-            'stream_type': mimetype.split('/')[0]
+            'stream_type': stream_type
         }}   
     if validation:
         correct.well_formed = well_dict[well_formed]
+    if 'inverse' in results and correct.well_formed is not None:
+        correct.well_formed = not correct.well_formed
     if 'params' in results:
         correct.params = results['params']
     return correct

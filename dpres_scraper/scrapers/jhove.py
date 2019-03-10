@@ -138,7 +138,8 @@ class TiffJHove(JHove):
 class PdfJHove(JHove):
     """JHove scraper for PDF"""
     # Supported mimetypes and versions
-    _supported = {'application/pdf': ['1.2', '1.3', '1.4', '1.5', '1.6']}
+    _supported = {'application/pdf': ['1.2', '1.3', '1.4', '1.5', '1.6',
+                                      'A-1a', 'A-1b']}
     _only_wellformed = True    # Only well-formed check
     _jhove_module = 'PDF-hul'  # JHove module
 
