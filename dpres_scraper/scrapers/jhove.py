@@ -198,7 +198,7 @@ class WavJHove(JHove):
         if self.report_field('mimeType').split(';')[0] == 'audio/vnd.wave':
             return 'audio/x-wav'
         else:
-            super(WavJHove, self)._s_mimetype()
+            return super(WavJHove, self)._s_mimetype()
 
     def _s_version(self):
         """Set version as '2' if profile is BWF, otherwise we don't know.
