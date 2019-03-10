@@ -17,47 +17,40 @@ class Correct(object):
         self.params = {}
 
 
-def iter_results(supported, results, validation):
-    """Iterate results from filepath and given results.
-    :supported: Suported mimetypes as list
-    :results: Preferred results: purpose, part of stdout, part of stderr,
+def parse_results(filename, mimetype, results, validation):
+    """Parse results from filepath and given results.
+    :filename: File name
+    :mimetype: Mimetype
+    :results: Results: purpose, part of stdout, part of stderr,
               streams if not default, params if not empty
     :validation: True, if validation, otherwise False
     :returns: Correct instance
     """
     well_dict = {'valid': True, 'invalid': False}
+    path = os.path.join('tests/data', mimetype.replace("/", "_"))
+    words = filename.rsplit(".", 1)[0].split("_", 2)
+    well_formed = words[0]
+    version = words[1]
+    testfile = os.path.join(path, filename)
 
-    for mimetype in supported:
-        path = os.path.join('tests/data', mimetype.replace("/", "_"))
-        filelist = os.listdir(path)
-        for filename in os.listdir(path):
-            if filename not in results:
-                continue
-            result = results[filename]
-            words = filename.rsplit(".", 1)[0].split("_", 2)
-            well_formed = words[0]
-            version = words[1]
-            testfile = os.path.join(path, filename)
-
-            correct = Correct()
-            correct.filename = testfile
-            correct.purpose = result['purpose']
-            correct.mimetype = mimetype
-            correct.version = version
-            correct.stdout_part = result['stdout_part']
-            correct.stderr_part = result['stderr_part']
-            if 'streams' in result:
-                correct.streams = result['streams']
-            else:
-                correct.streams = {0: {
-                    'mimetype': mimetype,
-                    'version': version,
-                    'index': 0,
-                    'stream_type': mimetype.split('/')[0]
-                }}   
-            if validation:
-                correct.well_formed = well_dict[well_formed]
-            if 'params' in result:
-                correct.params = result['params']
-
-            yield correct
+    correct = Correct()
+    correct.filename = testfile
+    correct.purpose = results['purpose']
+    correct.mimetype = mimetype
+    correct.version = version
+    correct.stdout_part = results['stdout_part']
+    correct.stderr_part = results['stderr_part']
+    if 'streams' in results:
+        correct.streams = results['streams']
+    else:
+        correct.streams = {0: {
+            'mimetype': mimetype,
+            'version': version,
+            'index': 0,
+            'stream_type': mimetype.split('/')[0]
+        }}   
+    if validation:
+        correct.well_formed = well_dict[well_formed]
+    if 'params' in results:
+        correct.params = results['params']
+    return correct
