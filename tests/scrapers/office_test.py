@@ -46,7 +46,7 @@ def test_scrape_valid_file(filename, mimetype):
     ]
 )
 def test_scrape_invalid_file(filename, mimetype):
-    return _scrape(filename, mimetype)
+    assert not _scrape(filename, mimetype)
 
 
 def _scrape(filename, mimetype):
