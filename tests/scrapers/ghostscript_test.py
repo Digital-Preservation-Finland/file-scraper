@@ -10,28 +10,24 @@ SUPPORT_MIME = 'application/pdf'
 
 
 @pytest.mark.parametrize(
-    ['filename', 'result_dict', 'validation'],
+    ['filename', 'result_dict'],
     [
         ('valid_1.7.pdf', {
             'purpose': 'Test valid file.',
             'stdout_part': '',
-            'stderr_part': ''}, True),
+            'stderr_part': ''}),
         ('valid_A-2b.pdf', {
             'purpose': 'Test valid PDF/A file.',
             'stdout_part': '',
-            'stderr_part': ''}, True),
-        ('valid_1.7.pdf', {
-            'purpose': 'Test valid file.',
-            'stdout_part': '',
-            'stderr_part': ''}, False)
+            'stderr_part': ''})
     ]
 )
-def test_scraper(filename, result_dict, validation):
+def test_scraper(filename, result_dict):
     """Test scraper"""
     correct = parse_results(filename, SUPPORT_MIME,
-                            result_dict, validation)
+                            result_dict, True)
     scraper = GhostScript(correct.filename, correct.mimetype,
-                          validation, correct.params)
+                          True, correct.params)
     scraper.scrape_file()
     correct.streams[0]['version'] = None  # Scraper does not know version
 

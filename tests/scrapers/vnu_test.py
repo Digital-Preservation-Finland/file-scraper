@@ -10,20 +10,20 @@ SUPPORT_MIME = 'text/html'
 
 
 @pytest.mark.parametrize(
-    ['filename', 'result_dict', 'validation'],
+    ['filename', 'result_dict'],
     [
         ('valid_5.0.html', {
             'purpose': 'Test valid file.',
             'stdout_part': 'valid_5.0.html',
-            'stderr_part': ''}, True),
+            'stderr_part': ''})
     ]
 )
-def test_scraper(filename, result_dict, validation):
+def test_scraper(filename, result_dict):
     """Test scraper"""
     correct = parse_results(filename, SUPPORT_MIME,
-                            result_dict, validation)
+                            result_dict, True)
     scraper = Vnu(correct.filename, correct.mimetype,
-                  validation, correct.params)
+                  True, correct.params)
     scraper.scrape_file()
 
     assert scraper.mimetype == correct.mimetype
