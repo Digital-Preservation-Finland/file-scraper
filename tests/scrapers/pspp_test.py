@@ -6,7 +6,7 @@ from tests.scrapers.common import parse_results
 from dpres_scraper.scrapers.pspp import Pspp
 
 
-SUPPORT_MIME = 'application/x-spss-por'
+MIMETYPE = 'application/x-spss-por'
 
 
 @pytest.mark.parametrize(
@@ -24,7 +24,7 @@ SUPPORT_MIME = 'application/x-spss-por'
 )
 def test_scraper(filename, result_dict):
     """Test scraper"""
-    correct = parse_results(filename, SUPPORT_MIME,
+    correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
     scraper = Pspp(correct.filename, correct.mimetype,
                    True, correct.params)
@@ -40,7 +40,7 @@ def test_scraper(filename, result_dict):
 
 def test_is_supported():
     """Test is_Supported method"""
-    mime = SUPPORT_MIME
+    mime = MIMETYPE
     ver = ''
     assert Pspp.is_supported(mime, ver, True)
     assert Pspp.is_supported(mime, None, True)

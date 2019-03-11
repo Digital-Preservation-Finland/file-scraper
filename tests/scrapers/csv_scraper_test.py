@@ -1,15 +1,17 @@
 """Tests for Csv scraper"""
 
 import os
+import pytest
 import lxml.etree
 from tempfile import NamedTemporaryFile
 
 from dpres_scraper.scrapers.csv_scraper import Csv
+from tests.scrapers.common import parse_results
+
+MIMETYPE = 'text/csv'
 
 PDF_PATH = os.path.join(
     'tests/data/application_pdf/valid_1.4.pdf')
-
-ADDML_PATH = os.path.join('tests', 'data', 'addml', 'addml.xml')
 
 VALID_CSV = (
     '''1997,Ford,E350,"ac, abs, moon",3000.00\n'''
@@ -18,102 +20,147 @@ VALID_CSV = (
     '''1996,Jeep,Grand Cherokee,"MUST SELL!\n'''
     '''air, moon roof, loaded",4799.00\n''')
 
-VALID_WITH_HEADER = \
-    'year,brand,model,detail,other\n' + VALID_CSV
+HEADER = 'year,brand,model,detail,other\n'
+
+VALID_WITH_HEADER = HEADER + VALID_CSV
 
 MISSING_END_QUOTE = VALID_CSV + \
     '1999,Chevy,"Venture ""Extended Edition"","",4900.00\n'
 
-
-def run_scraper(csv_text, mimetype='text/csv'):
+@pytest.mark.parametrize(
+    ['csv_text', 'result_dict', 'prefix', 'header'],
+    [
+        (VALID_CSV, {
+            'purpose': 'Test valid file.',
+            'stdout_part': 'successfully',
+            'stderr_part': '',
+            'streams': {0: {'stream_type': 'text',
+                            'index': 0,
+                            'mimetype': MIMETYPE,
+                            'version': '',
+                            'delimiter': ',',
+                            'separator': '\n',
+                            'first_line': ['1997', 'Ford', 'E350', 'ac, abs, moon',
+                                          '3000.00']}}}, 'valid__', None),
+        (VALID_WITH_HEADER, {
+            'purpose': 'Test valid file with header.',
+            'stdout_part': 'successfully',
+            'stderr_part': '',
+            'streams': {0: {'stream_type': 'text',
+                            'index': 0,
+                            'mimetype': MIMETYPE,
+                            'version': '',
+                            'delimiter': ',',
+                            'separator': '\n',
+                            'first_line': ['year', 'brand', 'model', 'detail', 'other']
+                           }}}, 'valid__', ['year', 'brand', 'model', 'detail', 'other']),
+        (MISSING_END_QUOTE, {
+            'purpose': 'Test missing end quote',
+            'stdout_part': '',
+            'stderr_part': 'unexpected end of data',
+            'streams': {0: {'stream_type': 'text',
+                            'index': 0,
+                            'mimetype': MIMETYPE,
+                            'version': '',
+                            'delimiter': ',',
+                            'separator': '\n',
+                            'first_line': ['1997', 'Ford', 'E350', 'ac, abs, moon',
+                                          '3000.00']}}}, 'invalid__', None),
+        (HEADER, {
+            'purpose': 'Test single field',
+            'stdout_part': 'successfully',
+            'stderr_part': '',
+            'streams': {0: {'stream_type': 'text',
+                            'index': 0,
+                            'mimetype': MIMETYPE,
+                            'version': '',
+                            'delimiter': ';',
+                            'separator': '\n',
+                            'first_line': ['year,brand,model,detail,other']
+                           }}}, 'valid__', ['year,brand,model,detail,other']),
+        (VALID_WITH_HEADER, {
+            'purpose': 'Invalid delimiter',
+            'stdout_part': '',
+            'stderr_part': 'CSV validation error: field counts',
+            'streams': {0: {'stream_type': 'text',
+                            'index': 0,
+                            'mimetype': MIMETYPE,
+                            'version': '',
+                            'delimiter': ';',
+                            'separator': '\n',
+                            'first_line': ['year,brand,model,detail,other']
+                           }}}, 'invalid__',
+            ['year', 'brand', 'model', 'detail', 'other'])
+    ]
+)
+def test_scraper(csv_text, result_dict, prefix, header):
     """Write test data and run csv scraping for the file"""
 
-    with NamedTemporaryFile(delete=False) as outfile:
+    with NamedTemporaryFile(delete=False, prefix=prefix) as outfile:
 
         try:
             outfile.write(csv_text)
             outfile.close()
 
-            scraper = Csv(outfile.name, mimetype)
+            words = outfile.name.rsplit("/", 1)
+            correct = parse_results(words[1], '', result_dict,
+                                    True, basepath=words[0])
+            correct.mimetype = MIMETYPE
+            correct.streams[0]['mimetype'] = MIMETYPE
+            scraper = Csv(
+                correct.filename, correct.mimetype, True, params={
+                    'separator': correct.streams[0]['separator'],
+                    'delimiter': correct.streams[0]['delimiter'],
+                    'fields': header})
             scraper.scrape_file()
         finally:
             os.unlink(outfile.name)
 
-    return scraper
+    assert scraper.mimetype == correct.mimetype
+    assert scraper.version == correct.version
+    assert scraper.streams == correct.streams
+    assert scraper.info['class'] == 'Csv'
+    assert correct.stdout_part in scraper.messages()
+    assert correct.stderr_part in scraper.errors()
+    assert scraper.well_formed == correct.well_formed
 
-
-def test_valid_no_header():
-    """Test the scraper with valid data from Wikipedia's CSV article"""
-
-    scraper = run_scraper(VALID_CSV)
-
-    assert scraper.well_formed, scraper.messages() + scraper.errors()
-    assert "successfully" in scraper.messages()
-    assert scraper.errors() == ""
-
-
-def test_valid_with_header():
-    """Test valid CSV with headers"""
-
-    scraper = run_scraper(VALID_WITH_HEADER)
-
-    assert scraper.well_formed, scraper.messages() + scraper.errors()
-    assert "successfully" in scraper.messages()
-    assert scraper.errors() == ""
-
-"""
-def test_single_field_csv():
-    Test CSV which contains only single field.
-
-    Here we provide original data, but use different field separator
-
-    
-    addml = {
-        "charset": "UTF-8",
-        "separator": "CR+LF",
-        "delimiter": ";",
-        "header_fields": ["year,brand,model,detail,other"]}
-
-    scraper = run_scraper(VALID_WITH_HEADER, addml)
-
-    assert scraper.well_formed, scraper.messages() + scraper.errors()
-    assert "successfully" in scraper.messages()
-    assert scraper.errors() == ""
-"""
 
 def test_pdf_as_csv():
     """Test CSV scraper with PDF files"""
 
-    scraper = run_scraper(open(PDF_PATH).read())
+    scraper = Csv(PDF_PATH, MIMETYPE)
+    scraper.scrape_file()
 
     assert not scraper.well_formed, scraper.messages() + scraper.errors()
     assert "successfully" not in scraper.messages()
     assert len(scraper.errors()) > 0
 
 
-def test_missing_end_quote():
-    """Test missing end quote"""
+def test_no_parameters():
+    """Test scraper without separate parameters"""
+    with NamedTemporaryFile(delete=False) as outfile:
 
-    scraper = run_scraper(MISSING_END_QUOTE)
+        try:
+            outfile.write(VALID_CSV)
+            outfile.close()
 
-    assert not scraper.well_formed, scraper.messages() + scraper.errors()
-    assert "successfully" not in scraper.messages()
-    assert len(scraper.errors()) > 0
+            scraper = Csv(outfile.name, MIMETYPE)
+            scraper.scrape_file()
+        finally:
+            os.unlink(outfile.name)
 
-"""
-def test_invalid_field_delimiter():
-    Test different field separator than defined in addml
+    assert scraper.mimetype == MIMETYPE
+    assert scraper.version == ''
+    assert 'successfully' in scraper.messages()
+    assert scraper.well_formed == True
 
-    addml = {
-        "charset": "UTF-8",
-        "separator": "CR+LF",
-        "delimiter": ";",
-        "header_fields": ["year", "brand", "model", "detail", "other"]}
 
-    scraper = run_scraper(VALID_WITH_HEADER, addml)
-
-    assert not scraper.well_formed, scraper.messages() + scraper.errors()
-    assert "CSV scraping error: field counts" in scraper.errors()
-    assert "successfully" not in scraper.messages()
-    assert len(scraper.errors()) > 0
-"""
+def test_is_supported():
+    """Test is_supported method"""
+    mime = MIMETYPE
+    ver = ''
+    assert Csv.is_supported(mime, ver, True)
+    assert Csv.is_supported(mime, None, True)
+    assert Csv.is_supported(mime, ver, False)
+    assert Csv.is_supported(mime, 'foo', True)
+    assert not Csv.is_supported('foo', ver, True)

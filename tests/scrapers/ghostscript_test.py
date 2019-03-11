@@ -6,7 +6,7 @@ from tests.scrapers.common import parse_results
 from dpres_scraper.scrapers.ghostscript import GhostScript
 
 
-SUPPORT_MIME = 'application/pdf'
+MIMETYPE = 'application/pdf'
 
 
 @pytest.mark.parametrize(
@@ -24,7 +24,7 @@ SUPPORT_MIME = 'application/pdf'
 )
 def test_scraper(filename, result_dict):
     """Test scraper"""
-    correct = parse_results(filename, SUPPORT_MIME,
+    correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
     scraper = GhostScript(correct.filename, correct.mimetype,
                           True, correct.params)
@@ -44,7 +44,7 @@ def test_scraper(filename, result_dict):
 
 def test_is_supported():
     """Test is_Supported method"""
-    mime = SUPPORT_MIME
+    mime = MIMETYPE
     ver = '1.7'
     assert GhostScript.is_supported(mime, ver, True)
     assert GhostScript.is_supported(mime, None, True)

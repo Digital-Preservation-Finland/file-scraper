@@ -24,15 +24,19 @@ class Csv(BaseScraper):
             params = {}
         self._csv_delimiter = params.get('delimiter', None)
         self._csv_separator = params.get('separator', None)
+        self._csv_fields = params.get('fields', [])
         self._csv_first_line = None
         super(Csv, self).__init__(filename, mimetype, validation, params)
 
     def scrape_file(self):
         """Scrape CSV file.
         """
+        if self._csv_fields is None:
+            self._csv_fields = []
         try:
             with open(self.filename, 'rb') as csvfile:
-
+                reader = csv.reader(csvfile)
+                csvfile.seek(0)
                 dialect = csv.Sniffer().sniff(csvfile.read(1024))
                 if not self._csv_delimiter:
                     self._csv_delimiter = dialect.delimiter
@@ -40,11 +44,22 @@ class Csv(BaseScraper):
                     self._csv_separator = dialect.lineterminator
                 csv.register_dialect('new_dialect',
                                      delimiter=self._csv_delimiter,
-                                     lineterminator=self._csv_separator)
+                                     lineterminator=self._csv_separator,
+                                     strict=True,
+                                     doublequote=True)
 
                 csvfile.seek(0)
                 reader = csv.reader(csvfile, dialect='new_dialect')
                 self._csv_first_line = reader.next()
+
+                if len(self._csv_fields) > 0 and \
+                        len(self._csv_fields) != len(self._csv_first_line):
+                    self.errors(
+                        "CSV validation error: field counts in the given "
+                        "header parameter and the CSV header don't match."
+                    )
+                    return
+
                 for _ in reader:
                     pass
 

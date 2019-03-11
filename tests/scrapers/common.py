@@ -17,17 +17,19 @@ class Correct(object):
         self.params = {}
 
 
-def parse_results(filename, mimetype, results, validation):
+def parse_results(filename, mimetype, results, validation,
+                  basepath='tests/data'):
     """Parse results from filepath and given results.
     :filename: File name
     :mimetype: Mimetype
     :results: Results: purpose, part of stdout, part of stderr,
               streams if not default, params if not empty
     :validation: True, if validation, otherwise False
+    :basepath: Base path
     :returns: Correct instance
     """
     well_dict = {'valid': True, 'invalid': False}
-    path = os.path.join('tests/data', mimetype.replace("/", "_"))
+    path = os.path.join(basepath, mimetype.replace("/", "_"))
     words = filename.rsplit(".", 1)[0].split("_", 2)
     well_formed = words[0]
     if len(words) > 1:

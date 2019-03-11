@@ -4,7 +4,7 @@ from tests.scrapers.common import parse_results
 from dpres_scraper.scrapers.pngcheck import Pngcheck
 
 
-SUPPORT_MIME = 'image/png'
+MIMETYPE = 'image/png'
 
 
 @pytest.mark.parametrize(
@@ -22,7 +22,7 @@ SUPPORT_MIME = 'image/png'
 )
 def test_scraper(filename, result_dict):
     """Test scraper"""
-    correct = parse_results(filename, SUPPORT_MIME,
+    correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
     scraper = Pngcheck(correct.filename, correct.mimetype,
                        True, correct.params)
@@ -39,7 +39,7 @@ def test_scraper(filename, result_dict):
 
 def test_is_supported():
     """Test is_Supported method"""
-    mime = SUPPORT_MIME
+    mime = MIMETYPE
     ver = '1.2'
     assert Pngcheck.is_supported(mime, ver, True)
     assert Pngcheck.is_supported(mime, None, True)
