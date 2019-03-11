@@ -7,7 +7,7 @@ from tempfile import NamedTemporaryFile
 from dpres_scraper.scrapers.csv_scraper import Csv
 
 PDF_PATH = os.path.join(
-    'tests/data/02_filescraping_data/pdf_1_4/sample_1_4.pdf')
+    'tests/data/application_pdf/valid_1.4.pdf')
 
 ADDML_PATH = os.path.join('tests', 'data', 'addml', 'addml.xml')
 
