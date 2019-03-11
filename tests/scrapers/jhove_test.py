@@ -66,7 +66,7 @@ def test_scrape_valid_only_form(scraper_class, filename, mimetype):
          "application/pdf", "Not well-formed"),
         (TiffJHove, "image_tiff/invalid_6.0.tif",
          "image/tiff", "Not well-formed"),
-        (Utf8JHove, "text_plain/iso8859.txt",
+        (Utf8JHove, "text_plain/valid_iso8859.txt",
          "text/plain", "Not well-formed"),
         (WavJHove,
          "audio_x-wav/invalid_wav_last_byte_missing.wav",
