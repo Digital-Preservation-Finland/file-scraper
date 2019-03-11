@@ -10,24 +10,24 @@ SUPPORT_MIME = 'application/x-spss-por'
 
 
 @pytest.mark.parametrize(
-    ['filename', 'result_dict', 'validation'],
+    ['filename', 'result_dict'],
     [
         ('valid.por', {
             'purpose': 'Test valid file.',
             'stdout_part': 'File conversion was succesful.',
-            'stderr_part': ''}, True),
+            'stderr_part': ''}),
         ('invalid__wrong_spss_format.sav', {
             'purpose': 'Test wrong format.',
             'stdout_part': '',
-            'stderr_part': 'File is not SPSS Portable format.'}, True)
+            'stderr_part': 'File is not SPSS Portable format.'})
     ]
 )
-def test_scraper(filename, result_dict, validation):
+def test_scraper(filename, result_dict):
     """Test scraper"""
     correct = parse_results(filename, SUPPORT_MIME,
-                            result_dict, validation)
+                            result_dict, True)
     scraper = Pspp(correct.filename, correct.mimetype,
-                   validation, correct.params)
+                   True, correct.params)
     scraper.scrape_file()
 
     assert scraper.mimetype == correct.mimetype

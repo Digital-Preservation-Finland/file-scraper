@@ -10,28 +10,24 @@ SUPPORT_MIME = 'image/x-dpx'
 
 
 @pytest.mark.parametrize(
-    ['filename', 'result_dict', 'validation'],
+    ['filename', 'result_dict'],
     [
         ('valid_2.0.dpx', {
             'purpose': 'Test valid file.',
             'stdout_part': 'is valid',
-            'stderr_part': ''}, True),
+            'stderr_part': ''}),
         ('invalid_2.0_empty_file.dpx', {
             'purpose': 'Test empty file.',
             'stdout_part': '',
-            'stderr_part': 'Truncated file'}, True),
-        ('valid_2.0.dpx', {
-            'purpose': 'Test valid file.',
-            'stdout_part': 'is valid',
-            'stderr_part': ''}, False)
+            'stderr_part': 'Truncated file'})
     ]
 )
-def test_scraper(filename, result_dict, validation):
+def test_scraper(filename, result_dict):
     """Test scraper"""
     correct = parse_results(filename, SUPPORT_MIME,
-                            result_dict, validation)
+                            result_dict, True)
     scraper = Dpx(correct.filename, correct.mimetype,
-                  validation, correct.params)
+                  True, correct.params)
     scraper.scrape_file()
 
     assert scraper.mimetype == correct.mimetype

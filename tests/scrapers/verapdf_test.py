@@ -10,31 +10,31 @@ SUPPORT_MIME = 'application/pdf'
 
 
 @pytest.mark.parametrize(
-    ['filename', 'result_dict', 'validation'],
+    ['filename', 'result_dict'],
     [
         ('valid_A-1a.pdf', {
             'purpose': 'Test valid file.',
             'stdout_part': 'PDF file is compliant with Validation Profile '
                            'requirements.',
-            'stderr_part': ''}, True),
+            'stderr_part': ''}),
         ('valid_A-2b.pdf', {
             'purpose': 'Test valid file.',
             'stdout_part': 'PDF file is compliant with Validation Profile '
                            'requirements.',
-            'stderr_part': ''}, True),
+            'stderr_part': ''}),
         ('valid_A-3b.pdf', {
             'purpose': 'Test valid file.',
             'stdout_part': 'PDF file is compliant with Validation Profile '
                            'requirements.',
-            'stderr_part': ''}, True),
+            'stderr_part': ''}),
     ]
 )
-def test_scraper(filename, result_dict, validation):
+def test_scraper(filename, result_dict):
     """Test scraper"""
     correct = parse_results(filename, SUPPORT_MIME,
-                            result_dict, validation)
+                            result_dict, True)
     scraper = VeraPdf(correct.filename, correct.mimetype,
-                      validation, correct.params)
+                      True, correct.params)
     scraper.scrape_file()
 
     assert scraper.mimetype == correct.mimetype
