@@ -42,7 +42,7 @@ def test_scrape_invalid_file(filename, mimetype):
     scraper_results = []
     for class_ in iter_scrapers(mimetype, None):
         scraper = class_(
-            os.path.join(BASEPATH, mimetype.replace('/', '_'), filename),
+            os.path.join(BASEPATH, "application_vnd.oasis.opendocument.text", filename),
             mimetype)
         scraper_results.append(scraper.well_formed)
 
