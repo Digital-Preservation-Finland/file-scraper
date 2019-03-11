@@ -12,7 +12,8 @@ import magic
 from fido.fido import Fido, defaults
 from fido.pronomutils import get_local_pronom_versions
 from dpres_scraper.base import BaseDetector
-from dpres_scraper.dicts import PRONOM_DICT, MIMETYPE_DICT, VERSION_DICT
+from dpres_scraper.dicts import PRONOM_DICT, MIMETYPE_DICT, VERSION_DICT, \
+    PRIORITY_PRONOM
 
 
 class _FidoReader(Fido):
@@ -62,18 +63,31 @@ class _FidoReader(Fido):
                 return
 
         for (item, _) in matches:
+            self.puid = self.get_puid(item)
+            if self.puid in PRIORITY_PRONOM:
+                self._find_mime(item)
+                return
+
+        for (item, _) in matches:
             if self.mimetype is None:
                 self.puid = self.get_puid(item)
-                mime = item.find('mime')
-                self.mimetype = mime.text if mime is not None else None
-                version = item.find('version')
-                self.version = version.text if version is not None else None
-                if self.mimetype in MIMETYPE_DICT:
-                    self.mimetype = MIMETYPE_DICT[self.mimetype]
-                if self.mimetype in VERSION_DICT:
-                    if self.version in VERSION_DICT[self.mimetype]:
-                        self.version = \
-                            VERSION_DICT[self.mimetype][self.version]
+                self._find_mime(item)
+
+
+    def _find_mime(self, item):
+        """Find mimetype and version in Fido
+        :item: Fido result
+        """
+        mime = item.find('mime')
+        self.mimetype = mime.text if mime is not None else None
+        version = item.find('version')
+        self.version = version.text if version is not None else None
+        if self.mimetype in MIMETYPE_DICT:
+            self.mimetype = MIMETYPE_DICT[self.mimetype]
+        if self.mimetype in VERSION_DICT:
+            if self.version in VERSION_DICT[self.mimetype]:
+                self.version = \
+                    VERSION_DICT[self.mimetype][self.version]
 
 
 class FidoDetector(BaseDetector):

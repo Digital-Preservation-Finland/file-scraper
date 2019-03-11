@@ -44,6 +44,8 @@ class FileExists(BaseScraper):
     def well_formed(self):
         """Let's give the actual decision to the real scrapers.
         """
+        if len(self.errors()) > 0:
+            return False
         return None
 
     def _s_stream_type(self):
