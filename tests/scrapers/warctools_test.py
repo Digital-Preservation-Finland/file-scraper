@@ -10,21 +10,29 @@ from tests.scrapers.common import parse_results
     ['filename', 'result_dict'],
     [
         ('valid_1.0_.warc.gz', {
-            'purpose': 'Test valid file.',
-            'stdout_part': '',
+            'purpose': 'Test valid warc file.',
+            'stdout_part': 'successfully',
             'stderr_part': ''}),
-        ('invalid_1.0_distance_code_error.warc.gz', {
-            'purpose': 'Test distance code error.',
+        ('valid_1.0_.arc.gz', {
+            'purpose': 'Test valid arc file.',
+            'stdout_part': 'successfully',
+            'stderr_part': ''}),
+        ('invalid__empty.warc.gz', {
+            'purpose': 'Test empty warc file.',
             'stdout_part': '',
-            'stderr_part': 'invalid distance code'}),
-        ('invalid_1.0_no_gzip.gz', {
-            'purpose': 'Test no gzip.',
+            'stderr_part': 'Empty file.'}),
+        ('invalid__missing_data.warc.gz', {
+            'purpose': 'Test invalid warc gzip.',
             'stdout_part': '',
-            'stderr_part': 'Not a gzipped file'}),
-        ('invalid_1.0_crc_error.gz', {
-            'purpose': 'Test CRC failure.',
+            'stderr_part': 'unpack requires a string argument of length 4'}),
+        ('invalid__missing_data.arc.gz', {
+            'purpose': 'Test invalid arc gzip.',
             'stdout_part': '',
-            'stderr_part': 'CRC check failed'}),
+            'stderr_part': 'unpack requires a string argument of length 4'}),
+        ('invalid__empty.arc.gz', {
+            'purpose': 'Test empty arc file.',
+            'stdout_part': '',
+            'stderr_part': 'Empty file.'})
     ]
 )
 def test_gzip_scraper(filename, result_dict):
@@ -41,6 +49,15 @@ def test_gzip_scraper(filename, result_dict):
                   True, correct.params)
     scraper.scrape_file()
 
+    if correct.version == '' or correct.mimetype == \
+            'application/x-internet-archive':
+        correct.version = None
+        correct.streams[0]['version'] = None
+    if not correct.well_formed and correct.version is None:
+        correct.mimetype = 'application/gzip'
+        correct.streams[0]['mimetype'] = 'application/gzip'
+        classname = 'GzipWarctools'
+
     assert scraper.mimetype == correct.mimetype
     assert scraper.version == correct.version
     assert scraper.streams == correct.streams
@@ -55,32 +72,40 @@ def test_gzip_scraper(filename, result_dict):
     [
         ('valid_0.17.warc', {
             'purpose': 'Test valid file.',
-            'stdout_part': '',
+            'stdout_part': 'successfully',
             'stderr_part': ''}),
         ('valid_0.18.warc', {
             'purpose': 'Test valid file.',
-            'stdout_part': '',
+            'stdout_part': 'successfully',
             'stderr_part': ''}),
         ('valid_1.0.warc', {
             'purpose': 'Test valid file.',
-            'stdout_part': '',
+            'stdout_part': 'successfully',
             'stderr_part': ''}),
         ('valid_1.0_.warc.gz', {
             'purpose': 'Test valid file.',
-            'stdout_part': '',
+            'stdout_part': 'successfully',
             'stderr_part': ''}),
-        ('invalid_0.17_incorrect newline_in header.warc', {
-            'purpose': 'Test incorrect newline.',
+        ('invalid_0.17_too_short_content_length.warc', {
+            'purpose': 'Test short content length.',
             'stdout_part': '',
-            'stderr_part': 'incorrect newline in header'}),
-        ('invalid_1.0_distance_code_error.warc.gz', {
-            'purpose': 'Test distance code error.',
+            'stderr_part': 'warc errors at'}),
+        ('invalid__missing_data.warc.gz', {
+            'purpose': 'Test missing data.',
             'stdout_part': '',
-            'stderr_part': 'invalid distance code'}),
-        ('invalid_0.18_header_error.warc', {
-            'purpose': 'Test header error.',
+            'stderr_part': 'unpack requires a string argument of length 4'}),
+        ('invalid_0.18_too_short_content_length.warc', {
+            'purpose': 'Test short content length.',
             'stdout_part': '',
-            'stderr_part': 'invalid header'})
+            'stderr_part': 'warc errors at'}),
+        ('invalid__empty.warc', {
+            'purpose': 'Test empty warc file.',
+            'stdout_part': '',
+            'stderr_part': 'Empty file.'}),
+        ('invalid__empty.warc.gz', {
+            'purpose': 'Test empty gz file.',
+            'stdout_part': '',
+            'stderr_part': 'Empty file.'})
     ]
 )
 def test_warc_scraper(filename, result_dict):
@@ -90,6 +115,10 @@ def test_warc_scraper(filename, result_dict):
     scraper = WarcWarctools(correct.filename, correct.mimetype,
                   True, correct.params)
     scraper.scrape_file()
+    if correct.version == '':
+        correct.version = None
+    if correct.streams[0]['version'] == '':
+        correct.streams[0]['version'] = None
 
     assert scraper.mimetype == correct.mimetype
     assert scraper.version == correct.version
@@ -105,8 +134,28 @@ def test_warc_scraper(filename, result_dict):
     [
         ('valid_1.0.arc', {
             'purpose': 'Test valid file.',
+            'stdout_part': 'successfully',
+            'stderr_part': ''}),
+        ('valid_1.0_.arc.gz', {
+            'purpose': 'Test valid file.',
+            'stdout_part': 'successfully',
+            'stderr_part': ''}),
+        ('invalid__empty.arc', {
+            'purpose': 'Test empty arc file.',
             'stdout_part': '',
-            'stderr_part': ''})
+            'stderr_part': 'Empty file.'}),
+        ('invalid__empty.arc.gz', {
+            'purpose': 'Test empty gz file.',
+            'stdout_part': '',
+            'stderr_part': 'Empty file.'}),
+        ('invalid_1.0_missing_field.arc', {
+            'purpose': 'Test missing header',
+            'stdout_part': '',
+            'stderr_part': 'Exception: missing headers'}),
+        ('invalid__missing_data.arc.gz', {
+            'purpose': 'Test missing data.',
+            'stdout_part': '',
+            'stderr_part': 'unpack requires a string argument of length 4'})
     ]
 )
 def test_arc_scraper(filename, result_dict):

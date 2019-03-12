@@ -1,6 +1,6 @@
 """Warc file scraper
 """
-
+import os.path
 import gzip
 import tempfile
 from dpres_scraper.utils import sanitize_string
@@ -21,14 +21,20 @@ class GzipWarctools(BaseScraper):
         for class_ in [WarcWarctools, ArcWarctools]:
             scraper = class_(self.filename, None)
             scraper.scrape_file()
-            if scraper.well_formed:
+            if scraper.well_formed or scraper.version is not None:
                 self.mimetype = scraper.mimetype
-                self.version = scraper.version
-                self.streams = scraper.streams
-                self.info = scraper.info
-                self.messages(scraper.messages())
-                self.errors(scraper.errors())
-                return
+            self.version = scraper.version
+            self.streams = scraper.streams
+            self.streams[0]['mimetype'] = self.mimetype
+            self.info = scraper.info
+            if not scraper.well_formed and scraper.version is None:
+                self.info['class'] = self.__class__.__name__
+            messages = scraper.messages()
+            errors = scraper.errors()
+            if scraper.well_formed:
+                break
+        self.messages(messages)
+        self.errors(errors)
 
     # pylint: disable=no-self-use
     def _s_stream_type(self):
@@ -49,7 +55,11 @@ class WarcWarctools(BaseScraper):
     _allow_versions = True                 # Allow any version
 
     def scrape_file(self):
-
+        """Scrape WARC file.
+        """
+        size = os.path.getsize(self.filename)
+        if size == 0:
+            self.errors('Empty file.')
         shell = Shell(['warcvalid', self.filename])
 
         if shell.returncode != 0:
@@ -74,11 +84,15 @@ class WarcWarctools(BaseScraper):
         except Exception as exception:
             # Compressed but corrupted gzip file
             self.errors(str(exception))
+            self._check_supported()
             self._collect_elements()
             return
 
         self.mimetype = 'application/warc'
-        self.version = line.split("WARC/", 1)[1].split(" ")[0].strip()
+        if len(line.split("WARC/", 1)) > 1:
+            self.version = line.split("WARC/", 1)[1].split(" ")[0].strip()
+        if size > 0:
+            self.messages('File was scraped successfully.')
         self._check_supported()
         self._collect_elements()
 
@@ -100,7 +114,9 @@ class ArcWarctools(BaseScraper):
     def scrape_file(self):
         """Scrape ARC file by converting to WARC using Warctools' arc2warc
         converter."""
-
+        size = os.path.getsize(self.filename)
+        if size == 0:
+            self.errors('Empty file.')
         with tempfile.NamedTemporaryFile(prefix="scraper-warctools.") \
                 as warcfile:
             shell = Shell(command=['arc2warc', self.filename],
@@ -115,7 +131,8 @@ class ArcWarctools(BaseScraper):
                 sanitized_string = sanitize_string(utf8string)
                 # encode string to utf8 before adding to errors
                 self.errors(sanitized_string.encode('utf-8'))
-
+            elif size > 0:
+                self.messages('File was scraped successfully.')
             self.messages(shell.stdout)
 
         self.mimetype = 'application/x-internet-archive'
