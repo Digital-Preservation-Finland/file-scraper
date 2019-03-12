@@ -35,7 +35,7 @@ import pytest
         ("text/html", "5.0", ["Vnu", "XmlEncoding", "HtmlFileMagic"]),
         ("image/png", None, ["Pngcheck", "PngFileMagic", "ImagePil", "ImageWand"]),
         ("application/warc", None, ["WarcWarctools"]),
-        ("application/x-internet-archive", None, ["ArcWarctools"]),
+        ("application/x-internet-archive", None, ["ArcFileMagic", "ArcWarctools"]),
         ("text/xml", None, ["Xmllint", "XmlEncoding", "XmlFileMagic"]),
         ("application/xhtml+xml", None, ["HtmlJHove", "XhtmlFileMagic"]),
         ("audio/x-wav", None, ["WavJHove"]),

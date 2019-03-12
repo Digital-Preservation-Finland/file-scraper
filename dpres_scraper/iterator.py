@@ -20,7 +20,8 @@ from dpres_scraper.scrapers.office import Office
 from dpres_scraper.scrapers.file import TextPlainFile
 from dpres_scraper.scrapers.magic import TextFileMagic, XmlFileMagic, \
     HtmlFileMagic, PdfFileMagic, OfficeFileMagic, PngFileMagic, \
-    JpegFileMagic, Jp2FileMagic, TiffFileMagic, XhtmlFileMagic
+    JpegFileMagic, Jp2FileMagic, TiffFileMagic, XhtmlFileMagic, \
+    ArcFileMagic
 from dpres_scraper.scrapers.wand import TiffWand, ImageWand
 from dpres_scraper.scrapers.pil import ImagePil, JpegPil, TiffPil
 from dpres_scraper.scrapers.pspp import Pspp

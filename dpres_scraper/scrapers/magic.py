@@ -115,6 +115,28 @@ class OfficeFileMagic(BinaryMagic):
         return None
 
 
+class ArcFileMagic(BinaryMagic):
+    """Scraper for Arc files
+    """
+    # Supported mimetype
+    _supported = {'application/x-internet-archive': ['1.0', '1.1']}
+    _allow_versions = True  # Allow any version
+
+    def _s_mimetype(self):
+        """Return mimetype
+        """
+        if self._magic_mimetype == 'application/x-ia-arc':
+            return 'application/x-internet-archive'
+        return self._magic_mimetype
+
+    def _s_version(self):
+        """Return version
+        """
+        if self._magic_version == '1':
+            return '1.0'
+        return self._magic_version
+
+
 class PngFileMagic(BinaryMagic):
     """Scraper for PNG files
     """

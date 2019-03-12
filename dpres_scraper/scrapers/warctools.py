@@ -15,18 +15,6 @@ class GzipWarctools(BaseScraper):
     _only_wellformed = True                # Only well-formed check
     _allow_versions = True                 # Allow any version
 
-    def __init__(self, filename, mimetype, validation=True, params=None):
-        """Initialize scraper.
-        :filename: File path
-        :mimetype: Predicted mimetype of the file
-        :validation: True for the full validation, False for just
-                     identification and metadata scraping
-        :params: Extra parameters needed for the scraper
-        """
-        self._well_formed = None  # Store another scrapers result
-        super(GzipWarctools, self).__init__(filename, mimetype,
-                                            validation, params)
-
     def scrape_file(self):
         """Scrape file. If Warc fails, try Arc.
         """
@@ -36,15 +24,11 @@ class GzipWarctools(BaseScraper):
             if scraper.well_formed:
                 self.mimetype = scraper.mimetype
                 self.version = scraper.version
-                self.streams = scrapers.streams
+                self.streams = scraper.streams
                 self.info = scraper.info
-                self._well_formed = scraper.well_formed
+                self.messages(scraper.messages())
+                self.errors(scraper.errors())
                 return
-
-    def well_formed(self):
-        """Return well_formed
-        """
-        return self._well_formed
 
     # pylint: disable=no-self-use
     def _s_stream_type(self):
