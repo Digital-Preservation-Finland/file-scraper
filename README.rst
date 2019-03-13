@@ -60,7 +60,8 @@ The following arguments for Scraper class are also possible:
 
         * Delimiter between elements: ``delimiter=<element delimiter>``
         * Record separator (line terminator): ``separator=<record separator>``
-        * NOTE: If these arguments are not given, the scraper tries to find out the values from the CSV, but may give false results.
+        * Header field names as list of strings: ``fields=[<field1>, <field2>, ...]``
+        * NOTE: If these arguments are not given, the scraper tries to find out the delimiter and separator from the CSV, but may give false results.
 
     * For XML validation:
 

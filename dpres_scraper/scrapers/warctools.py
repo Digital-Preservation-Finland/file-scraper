@@ -6,7 +6,6 @@ import tempfile
 from dpres_scraper.utils import sanitize_string
 from dpres_scraper.base import BaseScraper, Shell
 
-
 class GzipWarctools(BaseScraper):
     """ Scraper for compressed Warcs and Arcs.
     """
@@ -18,6 +17,8 @@ class GzipWarctools(BaseScraper):
     def scrape_file(self):
         """Scrape file. If Warc fails, try Arc.
         """
+        messages = None
+        errors = None
         for class_ in [WarcWarctools, ArcWarctools]:
             scraper = class_(self.filename, None)
             scraper.scrape_file()
@@ -29,8 +30,14 @@ class GzipWarctools(BaseScraper):
             self.info = scraper.info
             if not scraper.well_formed and scraper.version is None:
                 self.info['class'] = self.__class__.__name__
-            messages = scraper.messages()
-            errors = scraper.errors()
+            if messages is not None and not scraper.well_formed:
+                messages = messages + scraper.messages()
+            else:
+                messages = scraper.messages()
+            if errors is not None and not scraper.well_formed:
+                errors = errors + scraper.errors()
+            else:
+                errors = scraper.errors()
             if scraper.well_formed:
                 break
         self.messages(messages)

@@ -42,7 +42,10 @@ class Wand(BaseScraper):
         """Iterate image streams
         :stream_type: Only image streams can be iterated.
         """
-        if stream_type in [None, 'image']:
+        if self._wand is None:
+            self.streams = {0: {'index': 0}}
+            yield self.streams
+        elif stream_type in [None, 'image']:
             for index, stream in enumerate(self._wand.sequence):
                 self._wand_stream = stream
                 self._wand_index = index
@@ -70,33 +73,39 @@ class Wand(BaseScraper):
     def _s_index(self):
         """Return stream index
         """
+        if self._wand_index is None:
+            return 0
         return self._wand_index
 
     def _s_colorspace(self):
         """Returns colorspace
         """
-        if self._wand_stream.colorspace is not None:
+        if self._wand_stream is not None and \
+                self._wand_stream.colorspace is not None:
             return self._wand_stream.colorspace
         return None
 
     def _s_width(self):
         """Returns image width
         """
-        if self._wand_stream.width is not None:
+        if self._wand_stream is not None and \
+                self._wand_stream.width is not None:
             return str(self._wand_stream.width)
         return None
 
     def _s_height(self):
         """Returns image height
         """
-        if self._wand_stream.height is not None:
+        if self._wand_stream is not None and \
+                self._wand_stream.height is not None:
             return str(self._wand_stream.height)
         return None
 
     def _s_bps_value(self):
         """Returns bits per sample
         """
-        if self._wand_stream.depth is not None:
+        if self._wand_stream is not None and \
+                self._wand_stream.depth is not None:
             return str(self._wand_stream.depth)
         return None
 
@@ -109,7 +118,8 @@ class Wand(BaseScraper):
     def _s_compression(self):
         """Returns compression scheme
         """
-        if self._wand.compression is not None:
+        if self._wand is not None and \
+                self._wand.compression is not None:
             return self._wand.compression
         return None
 
