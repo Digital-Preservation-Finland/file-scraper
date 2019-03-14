@@ -8,7 +8,6 @@ from dpres_scraper.scrapers.dpx import Dpx
 
 MIMETYPE = 'image/x-dpx'
 
-
 @pytest.mark.parametrize(
     ['filename', 'result_dict'],
     [
@@ -19,7 +18,19 @@ MIMETYPE = 'image/x-dpx'
         ('invalid_2.0_empty_file.dpx', {
             'purpose': 'Test empty file.',
             'stdout_part': '',
-            'stderr_part': 'Truncated file'})
+            'stderr_part': 'Truncated file'}),
+        ('invalid_2.0_file_size_error.dpx', {
+            'purpose': 'Test file size error.',
+            'stdout_part': '',
+            'stderr_part': 'differs from filesystem size'}),
+        ('invalid_2.0_missing_data.dpx', {
+            'purpose': 'Test missing data.',
+            'stdout_part': '',
+            'stderr_part': 'differs from filesystem size'}),
+        ('invalid_2.0_wrong_endian.dpx', {
+            'purpose': 'Test wrong endian.',
+            'stdout_part': '',
+            'stderr_part': 'is more than file size'}),
     ]
 )
 def test_scraper(filename, result_dict):
