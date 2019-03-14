@@ -21,7 +21,9 @@ class GifJHove(JHove):
         """Jhove returns the version as '87a' or '89a' but '1987a'
         or '1989a' is used. Hence '19' is prepended to the version returned by
         Jhove"""
-        return '19' + self.report_field("version")
+        if self.report_field("version"):
+            return '19' + self.report_field("version")
+        return None
 
     # pylint: disable=no-self-use
     def _s_stream_type(self):
@@ -43,7 +45,7 @@ class HtmlJHove(JHove):
         """Jhove returns the version as 'HTML 4.01' but in '4.01' is
         used. Hence we drop 'HTML ' prefix from the string returned by Jhove"""
         version = self.report_field("version")
-        if len(version) > 0:
+        if version is not None and len(version) > 0:
             version = version.split()[-1]
         return version
 
@@ -82,9 +84,9 @@ class HtmlJHove(JHove):
     def _s_charset(self):
         """Get the charset from HTML/XML files"""
         if "xml" in self.mimetype:
-            self._get_charset_xml()
+            return self._get_charset_xml()
         else:
-            self._get_charset_html()
+            return self._get_charset_html()
 
     # pylint: disable=no-self-use
     def _s_stream_type(self):
@@ -175,6 +177,8 @@ class Utf8JHove(JHove):
 
     def _s_charset(self):
         """Return charset from JHOVE"""
+        if self.well_formed:
+            return 'UTF-8'
         return self.report_field('format')
 
     # pylint: disable=no-self-use
@@ -195,8 +199,8 @@ class WavJHove(JHove):
     def _s_mimetype(self):
         """Check if mimetype is of a WAV type, otherwise call the same
         method from the superclass."""
-
-        if self.report_field('mimeType').split(';')[0] == 'audio/vnd.wave':
+        if self.report_field('mimeType') is not None and \
+                self.report_field('mimeType').split(';')[0] == 'audio/vnd.wave':
             return 'audio/x-wav'
         else:
             return super(WavJHove, self)._s_mimetype()
@@ -204,7 +208,8 @@ class WavJHove(JHove):
     def _s_version(self):
         """Set version as '2' if profile is BWF, otherwise we don't know.
         For now, we don't accept RF64."""
-
+        if self.report_field('profile') is None:
+            return None
         if 'RF64' in self.report_field('profile'):
             self.errors('RF64 is not a supported format')
         elif 'BWF' in self.report_field('profile'):
@@ -218,6 +223,8 @@ class WavJHove(JHove):
 
         query = '//aes:%s/text()' % field
         results = self._report.xpath(query, namespaces=NAMESPACES)
+        if results == []:
+            return None
         return '\n'.join(results)
 
     def _s_num_channels(self):
@@ -233,6 +240,8 @@ class WavJHove(JHove):
     def _s_sampling_frequency(self):
         """Returns audio data from the report
         """
+        if self.aes_report_field('sampleRate') is None:
+            return None
         try:
             return strip_zeros(str(float(
                 self.aes_report_field('sampleRate'))/1000))
