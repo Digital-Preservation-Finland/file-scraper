@@ -19,7 +19,7 @@ URL:            http://www.csc.fi
 Source0:        %{file_prefix}-v%{file_version}%{?file_release_tag}-%{file_build_number}-g%{file_commit_ref}.%{file_ext}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
-Requires:       python pymediainfo python-pillow python-magic python-wand python-opf-fido python-six python2-olefile
+Requires:       python python2-pymediainfo python-pillow python-magic python-wand python-opf-fido
 Requires:       ffmpeg-python ghostscript jhove python-lxml veraPDF dpx-validator warc-tools >= 4.8.3
 Requires:	ffmpeg pngcheck python-wand libreoffice pspp file-5.30 xhtml1-dtds vnu
 BuildRequires:  python-setuptools
