@@ -14,6 +14,7 @@ except ImportError:
     pass
 
 from dpres_scraper.base import BaseScraper
+from dpres_scraper.dicts import MIMETYPE_DICT
 
 
 class BinaryMagic(BaseScraper):
@@ -56,8 +57,13 @@ class BinaryMagic(BaseScraper):
             if self._endtag:
                 self._magic_version = self._magic_version.split(
                     self._endtag)[0]
-
-            self.messages('The file was scraped successfully.')
+            if self._s_mimetype() == self.mimetype or \
+                    (self._s_mimetype() in MIMETYPE_DICT and \
+                     MIMETYPE_DICT[self._s_mimetype()] == self.mimetype):
+                self.messages('The file was scraped successfully.')
+            else:
+                self.errors('Given mimetype %s and detected mimetype %s do '
+                            'not match.' % (self.mimetype, self._s_mimetype()))
         except Exception as e:
             self.errors('Error in scraping file.')
             self.errors(str(e))
@@ -71,7 +77,7 @@ class BinaryMagic(BaseScraper):
         """
         if not self._validation:
             return None
-        if self._magic_mimetype == self.mimetype:
+        if self._s_mimetype() == self.mimetype:
             return super(BinaryMagic, self).well_formed
         return False
 
@@ -83,6 +89,8 @@ class BinaryMagic(BaseScraper):
     def _s_version(self):
         """Return version
         """
+        if self._magic_version == 'data':
+            return None
         return self._magic_version
 
     # pylint: disable=no-self-use
@@ -138,7 +146,13 @@ class TextMagic(BaseScraper):
             magic_.load()
             self._magic_charset = magic_.file(self.filename)
             magic_.close()
-            self.messages('The file was scraped successfully.')
+            if self._s_mimetype() == self.mimetype or \
+                    (self._s_mimetype() in MIMETYPE_DICT and \
+                     MIMETYPE_DICT[self._s_mimetype()] == self.mimetype):
+                self.messages('The file was scraped successfully.')
+            else:
+                self.errors('Given mimetype %s and detected mimetype %s do '
+                            'not match.' % (self.mimetype, self._s_mimetype()))
         except Exception as e:
             self.errors('Error in scraping file.')
             self.errors(str(e))
@@ -164,11 +178,15 @@ class TextMagic(BaseScraper):
     def _s_version(self):
         """Return version
         """
+        if self._magic_version == 'data':
+            return None
         return self._magic_version
 
     def _s_charset(self):
         """Return charset
         """
+        if self._magic_charset.upper() == 'BINARY':
+            return None
         if self._magic_charset.upper() == 'US-ASCII':
             return 'UTF-8'
         elif self._magic_charset.upper() == 'ISO-8859-1':
