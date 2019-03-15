@@ -42,6 +42,8 @@ class Office(BaseScraper):
                 self.filename], env=env)
             self.errors(shell.stderr)
             self.messages(shell.stdout)
+        except Exception as e:
+            self.errors('Error reading file.')
         finally:
             shutil.rmtree(temp_dir)
             self._check_supported()
