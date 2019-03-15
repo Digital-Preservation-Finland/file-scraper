@@ -32,7 +32,8 @@ class _FidoReader(Fido):
         self.puid = None          # Identified pronom code
         self.mimetype = None      # Identified mime type
         self.version = None       # Identified file format version
-        Fido.__init__(self, quiet=True)
+        Fido.__init__(self, quiet=True, format_files=[
+            'formats-v94.xml', 'format_extensions.xml'])
 
     def identify(self):
         """Identify file format with using pronom registry
