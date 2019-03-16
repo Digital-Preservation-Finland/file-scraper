@@ -1,6 +1,6 @@
 """These are initial tests, and will be changed later
 """
-from dpres_scraper.scraper import Scraper
+from file_scraper.scraper import Scraper
 
 CONTAINER = {'codec_creator_app': 'Lavf56.40.101',
              'codec_creator_app_version': '56.40.101',

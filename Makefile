@@ -11,7 +11,7 @@ info:
 		@echo "Usage:"
 		@echo "  make clean             - Clean some temporary file"
 		@echo "  make test              - Run all unit tests"
-		@echo "  make install           - Install dpres-scraper"
+		@echo "  make install           - Install file-scraper"
 		@echo
 
 clean:
@@ -26,5 +26,5 @@ install: clean
 		echo "--"
 
 test:
-		py.test -svvv --maxfail=9999 --junitprefix=dpres-scraper --junitxml=junit.xml tests
+		py.test -svvv --maxfail=9999 --junitprefix=file-scraper --junitxml=junit.xml tests
 

@@ -39,7 +39,7 @@ Developer Usage
 
 Use the scraper in the following way::
 
-    from dpres_scraper.scraper import Scraper
+    from file_scraper.scraper import Scraper
     scraper = Scraper(filename)
     scraper.scrape(validation=True/False)
 

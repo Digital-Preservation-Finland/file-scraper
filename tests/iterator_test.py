@@ -1,7 +1,7 @@
-"""Test for dpres_scraper.scrapers. The purpose of this test is to make sure
+"""Test for file_scraper.scrapers. The purpose of this test is to make sure
 that all scrapers are able to be found."""
 
-from dpres_scraper.iterator import iter_scrapers
+from file_scraper.iterator import iter_scrapers
 import pytest
 
 
