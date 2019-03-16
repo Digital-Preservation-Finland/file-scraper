@@ -19,7 +19,15 @@ MIMETYPE = 'application/x-spss-por'
         ('invalid__wrong_spss_format.sav', {
             'purpose': 'Test wrong format.',
             'stdout_part': '',
-            'stderr_part': 'File is not SPSS Portable format.'})
+            'stderr_part': 'File is not SPSS Portable format.'}),
+        ('invalid__header_corrupted.por', {
+            'purpose': 'Test corrupted header.',
+            'stdout_part': '',
+            'stderr_part': 'Bad date string length'}),
+        ('invalid__truncated.por', {
+            'purpose': 'Test truncated file.',
+            'stdout_part': '',
+            'stderr_part': 'unexpected end of file'})
     ]
 )
 def test_scraper(filename, result_dict):
