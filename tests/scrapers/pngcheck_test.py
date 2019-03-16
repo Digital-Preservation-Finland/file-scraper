@@ -11,13 +11,17 @@ MIMETYPE = 'image/png'
     ['filename', 'result_dict'],
     [
         ('valid_1.2.png', {
-            'purpose': 'Test valid file.',
-            'stdout_part': 'OK',
-            'stderr_part': ''}),
-        ('invalid_1.2.png', {
-            'purpose': 'Test corrupted file.',
-            'stdout_part': '',
-            'stderr_part': 'ERROR'})
+            'purpose': 'Test valid file.'}),
+        ('invalid_1.2_no_IEND.png', {
+            'purpose': 'Test without IEND.'}),
+        ('invalid_1.2_no_IHDR.png', {
+            'purpose': 'Test without IHDR.'}),
+        ('invalid_1.2_wrong_CRC.png', {
+            'purpose': 'Test wrong CRC.'}),
+        ('invalid_1.2_wrong_header.png', {
+            'purpose': 'Test invalid header.'}),
+        ('invalid__empty.png', {
+            'purpose': 'Test empty file.'})
     ]
 )
 def test_scraper(filename, result_dict):
@@ -33,8 +37,10 @@ def test_scraper(filename, result_dict):
     assert scraper.version == None
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'Pngcheck'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
+    if correct.well_formed:
+        assert 'OK' in scraper.messages()
+    else:
+        assert 'ERROR' in scraper.errors()
     assert scraper.well_formed == correct.well_formed
 
 def test_is_supported():
