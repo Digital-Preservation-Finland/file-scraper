@@ -52,7 +52,7 @@ AUDIO = {'audio_data_encoding': 'AAC',
 def test_scraper_mp4():
     """Test mpeg-4 container with video and audio
     """
-    scraper = Scraper('./tests/data/video_mp4/valid_h264_aac.mp4')
+    scraper = Scraper('./tests/data/video_mp4/valid__h264_aac.mp4')
     scraper.scrape()
     assert cmp(AUDIO, scraper.streams[2]) == 0
     assert cmp(VIDEO, scraper.streams[1]) == 0
@@ -84,7 +84,7 @@ def test_scraper_tiff():
 def test_scraper_txt():
     """Test text file
     """
-    scraper = Scraper('./tests/data/text_plain/valid.txt')
+    scraper = Scraper('./tests/data/text_plain/valid__ascii.txt')
     scraper.scrape()
     assert scraper.mimetype == 'text/plain'
     assert scraper.version == ''

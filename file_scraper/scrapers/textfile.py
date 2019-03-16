@@ -7,7 +7,7 @@ FILECMD_PATH = "/opt/file-5.30/bin/file"
 ENV = {'LD_LIBRARY_PATH': "/opt/file-5.30/lib64"}
 
 
-class TextPlainFile(BaseScraper):
+class CheckTextFile(BaseScraper):
     """
     file (libmagick) checks mime-type and that if it is a text
     file with the soft option that excludes libmagick.

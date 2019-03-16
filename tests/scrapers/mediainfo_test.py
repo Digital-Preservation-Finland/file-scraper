@@ -59,7 +59,7 @@ TESTDATADIR_BASE = 'tests/data'
                             'stream_type': 'video', 'width': '320',
                             'codec_creator_app': '(:unav)'}}},
          "video/mpeg", MpegMediainfo),
-        ("valid_h264_aac.mp4", {
+        ("valid__h264_aac.mp4", {
             "purpose": "Test valid mp4.",
             "stdout_part": "file was scraped successfully",
             "stderr_part": "",

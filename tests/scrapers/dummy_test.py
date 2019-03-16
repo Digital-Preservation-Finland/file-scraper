@@ -55,7 +55,7 @@ def test_nonexistent_files(filepath, mimetype):
     ["filepath", "mimetype"],
     [
         ("tests/data/image_gif/valid_1987a.gif", "image/gif"),
-        ("tests/data/video_x-matroska/valid_ffv1.mkv", "video/x-matroska")
+        ("tests/data/video_x-matroska/valid__ffv1.mkv", "video/x-matroska")
     ]
 )
 def test_scraper_not_found(filepath, mimetype):

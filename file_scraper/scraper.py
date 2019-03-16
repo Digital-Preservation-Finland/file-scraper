@@ -4,7 +4,7 @@ from file_scraper.utils import combine_metadata
 
 from file_scraper.iterator import iter_scrapers, iter_detectors
 from file_scraper.scrapers.jhove import Utf8JHove
-from file_scraper.scrapers.file import TextPlainFile
+from file_scraper.scrapers.textfile import CheckTextFile
 from file_scraper.scrapers.dummy import FileExists
 
 LOSE = [None, '0', '(:unav)', '(:unap)']
@@ -95,6 +95,6 @@ class Scraper(object):
         """Find out if file is a text file.
         :returns: True, if file is a text file, false otherwise
         """
-        scraper = TextPlainFile(self.filename, self.mimetype)
+        scraper = CheckTextFile(self.filename, self.mimetype)
         scraper.scrape_file()
         return scraper.well_formed

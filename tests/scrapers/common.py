@@ -40,7 +40,8 @@ def parse_results(filename, mimetype, results, validation,
 
     correct = Correct()
     correct.filename = testfile
-    correct.purpose = results['purpose']
+    if 'purpose' in results:
+        correct.purpose = results['purpose']
     correct.mimetype = mimetype
     correct.version = version
     if 'stdout_part' in results:
