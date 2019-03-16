@@ -1,5 +1,5 @@
 """Metadata scraper for image file formats"""
-from dpres_scraper.wand_base import Wand
+from file_scraper.wand_base import Wand
 
 
 class TiffWand(Wand):

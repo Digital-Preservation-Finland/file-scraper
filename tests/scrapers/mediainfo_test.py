@@ -1,7 +1,7 @@
 """Test module for mediainfo.py"""
 import os
 import pytest
-from dpres_scraper.scrapers.mediainfo import VideoMediainfo, MpegMediainfo
+from file_scraper.scrapers.mediainfo import VideoMediainfo, MpegMediainfo
 from tests.scrapers.common import parse_results
 
 TESTDATADIR_BASE = 'tests/data'

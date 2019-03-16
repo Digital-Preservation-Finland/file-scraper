@@ -1,6 +1,6 @@
 """Module for pngcheck scraper"""
 
-from dpres_scraper.base import BaseScraper, Shell
+from file_scraper.base import BaseScraper, Shell
 
 
 class Pngcheck(BaseScraper):

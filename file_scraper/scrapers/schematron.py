@@ -5,8 +5,8 @@ import os
 import shutil
 import tempfile
 import lxml.etree as etree
-from dpres_scraper.utils import hexdigest
-from dpres_scraper.base import BaseScraper, Shell
+from file_scraper.utils import hexdigest
+from file_scraper.base import BaseScraper, Shell
 
 
 class Schematron(BaseScraper):
@@ -25,7 +25,7 @@ class Schematron(BaseScraper):
         self._verbose = False
         self._cache = True
         self._cachepath = os.path.expanduser(
-            '~/.dpres-scraper/schematron-cache')
+            '~/.file-scraper/schematron-cache')
         self._schematron_dirname = \
             '/usr/share/dpres-xml-schemas/schematron/schematron_xslt1'
         self._returncode = None

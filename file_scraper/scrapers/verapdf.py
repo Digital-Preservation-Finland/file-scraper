@@ -6,7 +6,7 @@ try:
 except ImportError:
     pass
 
-from dpres_scraper.base import BaseScraper, Shell
+from file_scraper.base import BaseScraper, Shell
 
 
 VERAPDF_PATH = '/usr/share/java/verapdf/verapdf'

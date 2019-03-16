@@ -7,7 +7,7 @@ Tests for XML encoding validator.
 import os
 import tempfile
 import pytest
-from dpres_scraper.scrapers.lxml_encoding import XmlEncoding
+from file_scraper.scrapers.lxml_encoding import XmlEncoding
 
 
 @pytest.mark.parametrize(

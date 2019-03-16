@@ -2,7 +2,7 @@
 This is a PDF scraper implemented with ghostscript.
 """
 
-from dpres_scraper.base import BaseScraper, Shell
+from file_scraper.base import BaseScraper, Shell
 
 
 class GhostScript(BaseScraper):

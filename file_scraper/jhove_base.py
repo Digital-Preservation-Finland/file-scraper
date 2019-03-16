@@ -6,7 +6,7 @@ try:
 except ImportError:
     pass
 
-from dpres_scraper.base import BaseScraper, Shell
+from file_scraper.base import BaseScraper, Shell
 
 NAMESPACES = {'j': 'http://hul.harvard.edu/ois/xml/ns/jhove',
               'aes': 'http://www.aes.org/audioObject'}

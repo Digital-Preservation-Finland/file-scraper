@@ -3,7 +3,7 @@ This is an Office file scraper.
 """
 import tempfile
 import shutil
-from dpres_scraper.base import BaseScraper, Shell
+from file_scraper.base import BaseScraper, Shell
 
 
 class Office(BaseScraper):

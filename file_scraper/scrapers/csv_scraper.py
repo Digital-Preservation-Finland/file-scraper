@@ -2,7 +2,7 @@
 """
 import csv
 
-from dpres_scraper.base import BaseScraper
+from file_scraper.base import BaseScraper
 
 
 class Csv(BaseScraper):

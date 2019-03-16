@@ -3,8 +3,8 @@
 import os.path
 import gzip
 import tempfile
-from dpres_scraper.utils import sanitize_string
-from dpres_scraper.base import BaseScraper, Shell
+from file_scraper.utils import sanitize_string
+from file_scraper.base import BaseScraper, Shell
 
 class GzipWarctools(BaseScraper):
     """ Scraper for compressed Warcs and Arcs.

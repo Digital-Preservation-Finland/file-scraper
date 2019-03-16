@@ -1,7 +1,7 @@
 """There is a need for a separate softer check, if the file is suitable as
 text file or not.
 """
-from dpres_scraper.base import BaseScraper, Shell
+from file_scraper.base import BaseScraper, Shell
 
 FILECMD_PATH = "/opt/file-5.30/bin/file"
 ENV = {'LD_LIBRARY_PATH': "/opt/file-5.30/lib64"}

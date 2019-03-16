@@ -5,7 +5,7 @@ Tests for File (libmagick) scraper.
 """
 import os
 import pytest
-from dpres_scraper.scrapers.magic import OfficeFileMagic, TextFileMagic, \
+from file_scraper.scrapers.magic import OfficeFileMagic, TextFileMagic, \
     XmlFileMagic, HtmlFileMagic, PngFileMagic, JpegFileMagic, TiffFileMagic, \
     Jp2FileMagic, XhtmlFileMagic, PdfFileMagic, ArcFileMagic
 from tests.scrapers.common import parse_results

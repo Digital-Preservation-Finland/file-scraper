@@ -1,7 +1,7 @@
 """Dummy scrapers
 """
 import os.path
-from dpres_scraper.base import BaseScraper
+from file_scraper.base import BaseScraper
 
 
 class ScraperNotFound(BaseScraper):

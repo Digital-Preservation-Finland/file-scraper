@@ -1,8 +1,8 @@
-"""Test the dpres_scraper.scrapers.pil module"""
+"""Test the file_scraper.scrapers.pil module"""
 import os
 import pytest
 from tests.scrapers.common import parse_results
-from dpres_scraper.scrapers.pil import TiffPil, ImagePil, JpegPil
+from file_scraper.scrapers.pil import TiffPil, ImagePil, JpegPil
 
 BASEPATH = "tests/data"
 DEFAULTSTREAMS = {0: {'byte_order': None, 'bps_unit': 'integer',

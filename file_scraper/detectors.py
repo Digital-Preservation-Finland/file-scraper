@@ -11,8 +11,8 @@ except OSError:
 import magic
 from fido.fido import Fido, defaults
 from fido.pronomutils import get_local_pronom_versions
-from dpres_scraper.base import BaseDetector
-from dpres_scraper.dicts import PRONOM_DICT, MIMETYPE_DICT, VERSION_DICT, \
+from file_scraper.base import BaseDetector
+from file_scraper.dicts import PRONOM_DICT, MIMETYPE_DICT, VERSION_DICT, \
     PRIORITY_PRONOM
 
 

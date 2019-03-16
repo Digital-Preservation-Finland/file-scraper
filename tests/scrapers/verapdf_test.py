@@ -3,7 +3,7 @@ Tests for VeraPDF scraper for PDF/A files.
 """
 import pytest
 from tests.scrapers.common import parse_results
-from dpres_scraper.scrapers.verapdf import VeraPdf
+from file_scraper.scrapers.verapdf import VeraPdf
 
 
 MIMETYPE = 'application/pdf'

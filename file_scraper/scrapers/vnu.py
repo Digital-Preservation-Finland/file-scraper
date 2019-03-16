@@ -3,7 +3,7 @@ A HTML5 scraper module using The Nu Html Checker
 (https://scraper.github.io/scraper/)
 """
 
-from dpres_scraper.base import BaseScraper, Shell
+from file_scraper.base import BaseScraper, Shell
 
 VNU_PATH = "/usr/share/java/vnu/vnu.jar"
 

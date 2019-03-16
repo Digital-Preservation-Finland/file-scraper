@@ -4,14 +4,14 @@ Tests for ImageMagick scraper.
 
 import os
 import pytest
-from dpres_scraper.scrapers.wand import TiffWand, ImageWand
+from file_scraper.scrapers.wand import TiffWand, ImageWand
 
 """
 Tests for DPX scraper.
 """
 import pytest
 from tests.scrapers.common import parse_results
-from dpres_scraper.scrapers.dpx import Dpx
+from file_scraper.scrapers.dpx import Dpx
 
 
 STREAM_VALID = {

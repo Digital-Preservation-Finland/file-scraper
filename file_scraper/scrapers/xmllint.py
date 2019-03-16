@@ -8,7 +8,7 @@ try:
 except ImportError:
     pass
 
-from dpres_scraper.base import BaseScraper
+from file_scraper.base import BaseScraper
 
 XSI = 'http://www.w3.org/2001/XMLSchema-instance'
 XS = '{http://www.w3.org/2001/XMLSchema}'
@@ -175,7 +175,7 @@ class Xmllint(BaseScraper):
         if xsd_exists:
             # Contstruct the schema
             _, schema = tempfile.mkstemp(
-                prefix='dpres-scraper-', suffix='.tmp')
+                prefix='file-scraper-', suffix='.tmp')
             et = etree.ElementTree(schema_tree)
             et.write(schema)
 

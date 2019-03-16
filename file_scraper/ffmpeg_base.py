@@ -7,8 +7,8 @@ try:
 except ImportError:
     pass
 
-from dpres_scraper.base import BaseScraper, SkipElement
-from dpres_scraper.utils import iso8601_duration, strip_zeros
+from file_scraper.base import BaseScraper, SkipElement
+from file_scraper.utils import iso8601_duration, strip_zeros
 
 
 class FFMpeg(BaseScraper):

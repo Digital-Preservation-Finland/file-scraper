@@ -1,6 +1,6 @@
 """Metadata scraper for AV files"""
-from dpres_scraper.mediainfo_base import Mediainfo
-from dpres_scraper.base import SkipElement
+from file_scraper.mediainfo_base import Mediainfo
+from file_scraper.base import SkipElement
 
 
 class VideoMediainfo(Mediainfo):

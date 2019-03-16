@@ -1,7 +1,7 @@
 """
 This is an DPX V2.0 scraper
 """
-from dpres_scraper.base import BaseScraper, Shell
+from file_scraper.base import BaseScraper, Shell
 
 
 class Dpx(BaseScraper):

@@ -1,7 +1,7 @@
-"""Test the dpres_scraper.scrapers.pngcheck module"""
+"""Test the file_scraper.scrapers.pngcheck module"""
 import pytest
 from tests.scrapers.common import parse_results
-from dpres_scraper.scrapers.pngcheck import Pngcheck
+from file_scraper.scrapers.pngcheck import Pngcheck
 
 
 MIMETYPE = 'image/png'

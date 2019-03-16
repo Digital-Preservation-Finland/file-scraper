@@ -1,5 +1,5 @@
 """Metadata scraper for image file formats"""
-from dpres_scraper.pil_base import Pil
+from file_scraper.pil_base import Pil
 
 
 class TiffPil(Pil):

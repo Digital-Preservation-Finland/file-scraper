@@ -5,7 +5,7 @@ This is an PSPP scraper.
 import os
 import shutil
 import tempfile
-from dpres_scraper.base import BaseScraper, Shell
+from file_scraper.base import BaseScraper, Shell
 
 
 PSPP_PATH = '/usr/bin/pspp-convert'

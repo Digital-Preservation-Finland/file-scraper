@@ -2,8 +2,8 @@
 """
 import abc
 import subprocess
-from dpres_scraper.utils import run_command
-from dpres_scraper.utils import combine_metadata
+from file_scraper.utils import run_command
+from file_scraper.utils import combine_metadata
 
 
 class Shell(object):

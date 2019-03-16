@@ -2,7 +2,7 @@
 Tests for Vnu scraper.
 """
 import pytest
-from dpres_scraper.scrapers.vnu import Vnu
+from file_scraper.scrapers.vnu import Vnu
 from tests.scrapers.common import parse_results
 
 

@@ -4,7 +4,7 @@ try:
 except ImportError:
     pass
 
-from dpres_scraper.base import BaseScraper
+from file_scraper.base import BaseScraper
 
 
 SAMPLES_PER_PIXEL = {'1': '1', 'L': '1', 'P': '1', 'RGB': '3', 'YCbCr': '3',

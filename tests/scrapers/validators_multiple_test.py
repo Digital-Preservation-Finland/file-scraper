@@ -5,7 +5,7 @@ File-scraper.
 
 import os
 import pytest
-from dpres_scraper.iterator import iter_scrapers
+from file_scraper.iterator import iter_scrapers
 from pprint import pprint
 
 

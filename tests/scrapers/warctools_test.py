@@ -1,7 +1,7 @@
-"""Test the dpres_scraper.scrapers.warctools module"""
+"""Test the file_scraper.scrapers.warctools module"""
 import os
 import pytest
-from dpres_scraper.scrapers.warctools import GzipWarctools, WarcWarctools, \
+from file_scraper.scrapers.warctools import GzipWarctools, WarcWarctools, \
     ArcWarctools
 from tests.scrapers.common import parse_results
 

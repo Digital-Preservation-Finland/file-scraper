@@ -3,7 +3,7 @@ Tests for DPX scraper.
 """
 import pytest
 from tests.scrapers.common import parse_results
-from dpres_scraper.scrapers.dpx import Dpx
+from file_scraper.scrapers.dpx import Dpx
 
 
 MIMETYPE = 'image/x-dpx'

@@ -1,7 +1,7 @@
 """Module for scraping files with Jhove scraper"""
 import mimeparse
-from dpres_scraper.jhove_base import JHove
-from dpres_scraper.utils import strip_zeros
+from file_scraper.jhove_base import JHove
+from file_scraper.utils import strip_zeros
 
 
 NAMESPACES = {'j': 'http://hul.harvard.edu/ois/xml/ns/jhove',

@@ -1,11 +1,11 @@
 """File metadata scraper
 """
-from dpres_scraper.utils import combine_metadata
+from file_scraper.utils import combine_metadata
 
-from dpres_scraper.iterator import iter_scrapers, iter_detectors
-from dpres_scraper.scrapers.jhove import Utf8JHove
-from dpres_scraper.scrapers.file import TextPlainFile
-from dpres_scraper.scrapers.dummy import FileExists
+from file_scraper.iterator import iter_scrapers, iter_detectors
+from file_scraper.scrapers.jhove import Utf8JHove
+from file_scraper.scrapers.file import TextPlainFile
+from file_scraper.scrapers.dummy import FileExists
 
 LOSE = [None, '0', '(:unav)', '(:unap)']
 

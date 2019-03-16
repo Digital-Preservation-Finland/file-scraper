@@ -1,6 +1,6 @@
 """Scraper for various binary and text file formats
 """
-from dpres_scraper.magic_base import TextMagic, BinaryMagic
+from file_scraper.magic_base import TextMagic, BinaryMagic
 
 
 class TextFileMagic(TextMagic):

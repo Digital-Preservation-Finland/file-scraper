@@ -13,8 +13,8 @@ try:
 except ImportError:
     pass
 
-from dpres_scraper.base import BaseScraper
-from dpres_scraper.dicts import MIMETYPE_DICT
+from file_scraper.base import BaseScraper
+from file_scraper.dicts import MIMETYPE_DICT
 
 
 class BinaryMagic(BaseScraper):

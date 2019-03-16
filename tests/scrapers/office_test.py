@@ -5,7 +5,7 @@ Tests for Office scraper.
 import os
 import pytest
 from multiprocessing import Pool
-from dpres_scraper.scrapers.office import Office
+from file_scraper.scrapers.office import Office
 from tests.scrapers.common import parse_results
 
 

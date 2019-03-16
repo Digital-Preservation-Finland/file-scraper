@@ -2,7 +2,7 @@
 import os
 import pytest
 
-from dpres_scraper.scrapers.jhove import GifJHove, TiffJHove, PdfJHove, \
+from file_scraper.scrapers.jhove import GifJHove, TiffJHove, PdfJHove, \
     Utf8JHove, JpegJHove, HtmlJHove, WavJHove
 from tests.scrapers.common import parse_results
 
