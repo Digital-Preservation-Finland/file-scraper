@@ -43,14 +43,22 @@ def parse_results(filename, mimetype, results, validation,
     correct.purpose = results['purpose']
     correct.mimetype = mimetype
     correct.version = version
-    correct.stdout_part = results['stdout_part']
-    correct.stderr_part = results['stderr_part']
+    if 'stdout_part' in results:
+        correct.stdout_part = results['stdout_part']
+    if 'stderr_part' in results:
+        correct.stderr_part = results['stderr_part']
+    stream_type = mimetype.split('/')[0]
+    if stream_type == 'application':
+        stream_type = 'binary'
     if 'streams' in results:
         correct.streams = results['streams']
+        correct.streams[0]['mimetype'] = mimetype
+        correct.streams[0]['version'] = version
+        for index, stream in enumerate(correct.streams):
+            correct.streams[index]['index'] = index
+        if not 'stream_type' in correct.streams[0]:
+            correct.streams[0]['stream_type'] = stream_type
     else:
-        stream_type = mimetype.split('/')[0]
-        if stream_type == 'application':
-            stream_type = 'binary'
         correct.streams = {0: {
             'mimetype': mimetype,
             'version': version,

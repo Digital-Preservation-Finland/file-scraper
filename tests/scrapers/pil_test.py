@@ -1,80 +1,275 @@
-"""Test the file_scraper.scrapers.pil module"""
+"""
+Tests for PIL scraper.
+"""
 import os
 import pytest
+from file_scraper.scrapers.pil import TiffPil, JpegPil, ImagePil
 from tests.scrapers.common import parse_results
-from file_scraper.scrapers.pil import TiffPil, ImagePil, JpegPil
 
-BASEPATH = "tests/data"
-DEFAULTSTREAMS = {0: {'byte_order': None, 'bps_unit': 'integer',
-                      'bps_value': None, 'index': 0, 'colorspace': None,
-                      'stream_type': 'image', 'height': '6',
-                      'width': '10', 'version': None,
-                      'samples_per_pixel': '3',
-                      'compression': None}}
+
+VALID_MSG = 'successfully'
+INVALID_MSG = 'Error in scraping file.'
+
+STREAM_VALID = {
+    'bps_unit': 'integer',
+    'bps_value': None,
+    'byte_order': None,
+    'colorspace': None,
+    'height': '6',
+    'width': '10',
+    'samples_per_pixel': '3',
+    'compression': None}
+
+GIF_APPEND = {
+    'bps_unit': 'integer',
+    'bps_value': None,
+    'byte_order': None,
+    'colorspace': None,
+    'compression': None,
+    'height': '6',
+    'mimetype': 'image/gif',
+    'samples_per_pixel': '1',
+    'stream_type': 'image',
+    'version': None,
+    'width': '10'}
+
+STREAM_INVALID = {
+    'bps_unit': None,
+    'bps_value': None,
+    'byte_order': None,
+    'colorspace': None,
+    'compression': None,
+    'height': None,
+    'samples_per_pixel': None,
+    'width': None}
+
 
 @pytest.mark.parametrize(
-    ['filename', 'result_dict', 'mimetype', "scraper_class"],
+    ['filename', 'result_dict'],
     [
-        ('valid_1.2.png', {
-            'purpose': 'Test valid png.',
-            'stdout_part': 'file was scraped successfully',
-            'stderr_part': '',
-            'streams': DEFAULTSTREAMS.copy()},
-         'image/png',
-         ImagePil),
         ('valid_6.0.tif', {
-            'purpose': 'Test valid tiff.',
-            'stdout_part': 'file was scraped successfully',
-            'stderr_part': '',
-            'streams': DEFAULTSTREAMS.copy()},
-         'image/tiff',
-         TiffPil),
-        ('valid_1.01.jpg', {
-            'purpose': 'Test valid jpeg.',
-            'stdout_part': 'file was scraped successfully',
-            'stderr_part': '',
-            'streams': DEFAULTSTREAMS.copy()},
-         'image/jpeg',
-         JpegPil)
+            'purpose': 'Test valid file.',
+            'streams': {0: STREAM_VALID.copy()}}),
+        ('invalid_6.0_payload_altered.tif', {
+            'purpose': 'Test payload altered in file.',
+            'streams': {0: STREAM_INVALID.copy()}}),
+        ('invalid_6.0_wrong_byte_order.tif', {
+            'purpose': 'Test wrong byte order in file.',
+            'streams': {0: STREAM_INVALID.copy()}}),
+        ('invalid__empty.tif', {
+            'purpose': 'Test empty file.',
+            'streams': {0: STREAM_INVALID.copy()}}),
     ]
 )
-def test_scraper(filename, result_dict, mimetype, scraper_class):
+def test_scraper_tif(filename, result_dict):
     """Test scraper"""
-    correct = parse_results(filename,
-                            mimetype, result_dict, True)
-    correct.streams[0]['mimetype'] = correct.mimetype
-
-    scraper = scraper_class(correct.filename, correct.mimetype,
-                            True, correct.params)
+    correct = parse_results(filename, 'image/tiff',
+                            result_dict, True)
+    correct.version = None
+    correct.streams[0]['version'] = None
+    scraper = TiffPil(correct.filename, correct.mimetype,
+                      True, correct.params)
     scraper.scrape_file()
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper.version is None
+    assert scraper.version == correct.version
     assert scraper.streams == correct.streams
-    assert scraper.info['class'] == scraper_class.__name__
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
+    assert scraper.info['class'] == 'TiffPil'
+    if correct.well_formed:
+        assert VALID_MSG in scraper.messages()
+    else:
+        assert INVALID_MSG in scraper.errors()
     assert scraper.well_formed == correct.well_formed
 
+
 @pytest.mark.parametrize(
-    ['scraper_class', 'mimetype', 'supported'],
+    ['filename', 'result_dict'],
     [
-        (TiffPil, "image/tiff", True),
-        (TiffPil, "image/png", False),
-        (ImagePil, "image/png", True),
-        (ImagePil, "image/jp2", True),
-        (ImagePil, "image/gif", True),
-        (ImagePil, "image/tiff", False),
-        (JpegPil, "image/jpeg", True),
-        (JpegPil, "image/gif", False)
+        ('valid_1.01.jpg', {
+            'purpose': 'Test valid file.',
+            'streams': {0: STREAM_VALID.copy()}}),
+        ('invalid_1.01_data_changed.jpg', {
+            'purpose': 'Test image data change in file.',
+            'inverse': True,
+            'streams': {0: STREAM_VALID.copy()}}),
+        ('invalid_1.01_no_start_marker.jpg', {
+            'purpose': 'Test start marker change in file.',
+            'inverse': True,
+            'streams': {0: STREAM_VALID.copy()}}),
+        ('invalid__empty.jpg', {
+            'purpose': 'Test empty file.',
+            'streams': {0: STREAM_INVALID.copy()}}),
     ]
 )
-def test_is_supported(scraper_class, mimetype, supported):
-    """Test is_Supported method"""
+def test_scraper_jpg(filename, result_dict):
+    """Test scraper"""
+    correct = parse_results(filename, 'image/jpeg',
+                            result_dict, True)
+    correct.streams[0]['version'] = None
+    correct.version = None
+    scraper = JpegPil(correct.filename, correct.mimetype,
+                      True, correct.params)
+    scraper.scrape_file()
 
-    if supported:
-        error_msg = scraper_class.__name__ + " should support " + mimetype
+    assert scraper.mimetype == correct.mimetype
+    assert scraper.version == correct.version
+    assert scraper.streams == correct.streams
+    assert scraper.info['class'] == 'JpegPil'
+    if correct.well_formed:
+        assert VALID_MSG in scraper.messages()
     else:
-        error_msg = scraper_class.__name__ + " should not support " + mimetype
+        assert INVALID_MSG in scraper.errors()
+    assert scraper.well_formed == correct.well_formed
 
-    assert scraper_class.is_supported(mimetype, None) == supported, error_msg
+
+@pytest.mark.parametrize(
+    ['filename', 'result_dict'],
+    [
+        ('valid.jp2', {
+            'purpose': 'Test valid file.',
+            'streams': {0: STREAM_VALID.copy()}}),
+        ('invalid__data_missing.jp2', {
+            'purpose': 'Test data missing file.',
+            'streams': {0: STREAM_INVALID.copy()}}),
+        ('invalid__empty.jp2', {
+            'purpose': 'Test empty file.',
+            'streams': {0: STREAM_INVALID.copy()}}),
+    ]
+)
+def test_scraper_jp2(filename, result_dict):
+    """Test scraper"""
+    correct = parse_results(filename, 'image/jp2',
+                            result_dict, True)
+    correct.streams[0]['version'] = None
+    correct.version = None
+    scraper = ImagePil(correct.filename, correct.mimetype,
+                       True, correct.params)
+    scraper.scrape_file()
+
+    assert scraper.mimetype == correct.mimetype
+    assert scraper.version == correct.version
+    assert scraper.streams == correct.streams
+    assert scraper.info['class'] == 'ImagePil'
+    if correct.well_formed:
+        assert VALID_MSG in scraper.messages()
+    else:
+        assert INVALID_MSG in scraper.errors()
+    assert scraper.well_formed == correct.well_formed
+
+
+@pytest.mark.parametrize(
+    ['filename', 'result_dict'],
+    [
+        ('valid_1.2.png', {
+            'purpose': 'Test valid file.',
+            'streams': {0: STREAM_VALID.copy()}}),
+        ('invalid_1.2_no_IEND.png', {
+            'purpose': 'Test without IEND.',
+            'inverse': True,
+            'streams': {0: STREAM_VALID.copy()}}),
+        ('invalid_1.2_no_IHDR.png', {
+            'purpose': 'Test without IHDR.',
+            'streams': {0: STREAM_INVALID.copy()}}),
+        ('invalid_1.2_wrong_CRC.png', {
+            'purpose': 'Test wrong CRC.',
+            'streams': {0: STREAM_INVALID.copy()}}),
+        ('invalid_1.2_wrong_header.png', {
+            'purpose': 'Test invalid header.',
+            'streams': {0: STREAM_INVALID.copy()}}),
+        ('invalid__empty.png', {
+            'purpose': 'Test empty file.',
+            'streams': {0: STREAM_INVALID.copy()}}),
+    ]
+)
+def test_scraper_png(filename, result_dict):
+    """Test scraper"""
+    correct = parse_results(filename, 'image/png',
+                            result_dict, True)
+    correct.streams[0]['version'] = None
+    correct.version = None
+    scraper = ImagePil(correct.filename, correct.mimetype,
+                       True, correct.params)
+    scraper.scrape_file()
+
+    assert scraper.mimetype == correct.mimetype
+    assert scraper.version == correct.version
+    assert scraper.streams == correct.streams
+    assert scraper.info['class'] == 'ImagePil'
+    if correct.well_formed:
+        assert VALID_MSG in scraper.messages()
+    else:
+        assert INVALID_MSG in scraper.errors()
+    assert scraper.well_formed == correct.well_formed
+
+
+@pytest.mark.parametrize(
+    ['filename', 'result_dict'],
+    [
+        ('valid_1987a.gif', {
+            'purpose': 'Test valid file.',
+            'streams': {0: STREAM_VALID.copy()}}),
+        ('valid_1989a.gif', {
+            'purpose': 'Test valid file.',
+            'streams': {0: STREAM_VALID.copy(),
+                        1: GIF_APPEND.copy(),
+                        2: GIF_APPEND.copy()}}),
+        ('invalid_1987a_broken_header.gif', {
+            'purpose': 'Test invalid header.',
+            'streams': {0: STREAM_INVALID.copy()}}),
+        ('invalid_1987a_truncated.gif', {
+            'purpose': 'Test truncated file.',
+            'inverse': True,
+            'streams': {0: STREAM_VALID.copy()}}),
+        ('invalid_1989a_broken_header.gif', {
+            'purpose': 'Test invalid header.',
+            'streams': {0: STREAM_INVALID.copy()}}),
+        ('invalid_1989a_truncated.gif', {
+            'purpose': 'Test truncated file.',
+            'streams': {0: STREAM_INVALID.copy()}}),
+        ('invalid__empty.gif', {
+            'purpose': 'Test empty file.',
+            'streams': {0: STREAM_INVALID.copy()}})
+    ]
+)
+def test_scraper_gif(filename, result_dict):
+    """Test scraper"""
+    correct = parse_results(filename, 'image/gif',
+                            result_dict, True)
+    # GIF is an index image
+    if correct.well_formed:
+        correct.streams[0]['samples_per_pixel'] = '1'
+    correct.streams[0]['version'] = None
+    correct.version = None
+
+    scraper = ImagePil(correct.filename, correct.mimetype,
+                       True, correct.params)
+    scraper.scrape_file()
+
+    assert scraper.mimetype == correct.mimetype
+    assert scraper.version == correct.version
+    assert scraper.streams == correct.streams
+    assert scraper.info['class'] == 'ImagePil'
+    if correct.well_formed:
+        assert VALID_MSG in scraper.messages()
+    else:
+        assert INVALID_MSG in scraper.errors()
+    assert scraper.well_formed == correct.well_formed
+
+
+@pytest.mark.parametrize(
+    ['mime', 'ver', 'class_'],
+    [
+        ('image/tiff', '6.0', TiffPil),
+        ('image/jpeg', '1.01', JpegPil),
+        ('image/jp2', '', ImagePil),
+        ('image/png', '1.2', ImagePil),
+        ('image/gif', '1987a', ImagePil),
+    ]
+)
+def test_is_supported(mime, ver, class_):
+    """Test is_Supported method"""
+    assert class_.is_supported(mime, ver, True)
+    assert class_.is_supported(mime, None, True)
+    assert class_.is_supported(mime, ver, False)
+    assert class_.is_supported(mime, 'foo', True)
+    assert not class_.is_supported('foo', ver, True)

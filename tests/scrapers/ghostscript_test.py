@@ -6,45 +6,50 @@ from tests.scrapers.common import parse_results
 from file_scraper.scrapers.ghostscript import GhostScript
 
 
-MIMETYPE = 'application/pdf'
-
-
 @pytest.mark.parametrize(
     ['filename', 'result_dict'],
     [
-        ('valid_1.7.pdf', {
+        ('valid_X.pdf', {
             'purpose': 'Test valid file.',
-            'stdout_part': '',
+            'stdout_part': 'Well-Formed and valid',
             'stderr_part': ''}),
-        ('valid_A-2b.pdf', {
-            'purpose': 'Test valid PDF/A file.',
+        ('invalid_X_payload_altered.pdf', {
+            'purpose': 'Test payload altered file.',
             'stdout_part': '',
-            'stderr_part': ''})
+            'stderr_part': 'An error occurred while reading an XREF table.'}),
+        ('invalid_X_removed_xref.pdf', {
+            'purpose': 'Test xref change.',
+            'stdout_part': '',
+            'stderr_part': 'An error occurred while reading an XREF table.'}),
     ]
 )
-def test_scraper(filename, result_dict):
+def test_scraper_pdf(filename, result_dict):
     """Test scraper"""
-    correct = parse_results(filename, MIMETYPE,
-                            result_dict, True)
-    scraper = GhostScript(correct.filename, correct.mimetype,
-                          True, correct.params)
-    scraper.scrape_file()
-    correct.streams[0]['version'] = None  # Scraper does not know version
+    for ver in ['1.7', 'A-1a', 'A-2b', 'A-3b']:
+        filename = filename.replace('X', ver)
+        correct = parse_results(filename, 'application/pdf',
+                                result_dict, True)
+        scraper = GhostScript(correct.filename, correct.mimetype,
+                           True, correct.params)
+        scraper.scrape_file()
+        # Ghostscript cannot handle version
+        correct.version = None
+        correct.streams[0]['version'] = None
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == None  # The scraper does not know version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'GhostScript'
-    if scraper.well_formed:
-        assert 'Error' not in scraper.messages()
-    else:
-        assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+        assert scraper.mimetype == correct.mimetype
+        assert scraper.version == correct.version
+        assert scraper.streams == correct.streams
+        assert scraper.info['class'] == 'GhostScript'
+        if scraper.well_formed:
+            assert 'Error' not in scraper.messages()
+        else:
+            assert correct.stdout_part in scraper.messages()
+        assert correct.stderr_part in scraper.errors()
+        assert scraper.well_formed == correct.well_formed
 
 def test_is_supported():
     """Test is_Supported method"""
-    mime = MIMETYPE
+    mime = 'application/pdf'
     ver = '1.7'
     assert GhostScript.is_supported(mime, ver, True)
     assert GhostScript.is_supported(mime, None, True)

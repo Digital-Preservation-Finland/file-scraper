@@ -33,8 +33,9 @@ class Pil(BaseScraper):
         """
         try:
             self._pil = PIL.Image.open(self.filename)
-        except:
+        except Exception as e:
             self.errors('Error in scraping file.')
+            self.errors(str(e))
         else:
             self.messages('The file was scraped successfully.')
         finally:
@@ -45,6 +46,8 @@ class Pil(BaseScraper):
         """Iterate image streams
         :stream_type: Only image streams are allowed.
         """
+        if self._pil is None:
+            yield {}
         if stream_type in [None, 'image']:
             if not hasattr(self._pil, 'n_frames'):
                 self._pil_index = 0
@@ -59,8 +62,9 @@ class Pil(BaseScraper):
         """Set image stream with given index
         :index: stream index
         """
-        self._pil.seek(index)
-        self._pil_index = index
+        if self._pil is not None:
+            self._pil.seek(index)
+            self._pil_index = index
 
     # pylint: disable=no-self-use
     def _s_version(self):
@@ -77,6 +81,8 @@ class Pil(BaseScraper):
     def _s_index(self):
         """Return stream index
         """
+        if self._pil_index is None:
+            return 0
         return self._pil_index
 
     def _s_colorspace(self):
@@ -87,14 +93,16 @@ class Pil(BaseScraper):
     def _s_width(self):
         """Returns image width
         """
-        if self._pil.width is not None:
+        if self._pil is not None and \
+                self._pil.width is not None:
             return str(self._pil.width)
         return None
 
     def _s_height(self):
         """Returns image height
         """
-        if self._pil.height is not None:
+        if self._pil is not None and \
+                self._pil.height is not None:
             return str(self._pil.height)
         return None
 
@@ -106,6 +114,8 @@ class Pil(BaseScraper):
     def _s_bps_unit(self):
         """Returns sample unit
         """
+        if self._pil is None:
+            return None
         if self._pil.mode == 'F':
             return 'floating point'
         else:
@@ -125,4 +135,6 @@ class Pil(BaseScraper):
     def _s_samples_per_pixel(self):
         """Returns samples per pixel
         """
+        if self._pil is None:
+            return None
         return SAMPLES_PER_PIXEL[self._pil.mode]

@@ -17,6 +17,8 @@ class TiffPil(Pil):
     def _s_samples_per_pixel(self):
         """Returns samples per pixel
         """
+        if self._pil is None:
+            return None
         tag_info = self._pil.tag_v2
         if tag_info and 277 in tag_info.keys():
             return str(tag_info[277])
@@ -54,6 +56,8 @@ class JpegPil(Pil):
     def _s_samples_per_pixel(self):
         """Returns samples per pixel
         """
+        if self._pil is None:
+            return None
         exif_info = self._pil._getexif()
         if exif_info and 277 in exif_info.keys():
             return str(exif_info[277])
