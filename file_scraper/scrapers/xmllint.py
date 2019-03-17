@@ -43,7 +43,7 @@ class Xmllint(BaseScraper):
         """
         if params is None:
             params = {}
-        self._schema = params.get('schema')
+        self._schema = params.get('schema', None)
         self._has_constructed_schema = False
         self._catalogs = params.get('catalogs', True)
         self._no_network = params.get('no_network', True)
@@ -93,12 +93,12 @@ class Xmllint(BaseScraper):
             self.version = tree.docinfo.xml_version
             fd.close()
         except etree.XMLSyntaxError as exception:
-            self.errors("Scraping failed: document is not well-formed.")
+            self.errors("Failed: document is not well-formed.")
             self.errors(str(exception))
             self._collect_elements()
             return
         except IOError as exception:
-            self.errors("Scraping failed: missing file.")
+            self.errors("Failed: missing file.")
             self.errors(str(exception))
             self._collect_elements()
             return
@@ -110,11 +110,11 @@ class Xmllint(BaseScraper):
         # Try validate againts XSD
         else:
             if not self._schema:
-                self._schema = self.construct_xsd(tree)
+                # self._schema = self.construct_xsd(tree)
                 if not self._schema:
                     # No given schema and didn't find included schemas but XML
                     # was well formed.
-                    self.messages("Scraping success: Document is "
+                    self.messages("Success: Document is "
                                   "well-formed but does not contain schema.")
                     self._collect_elements()
                     return
@@ -122,7 +122,7 @@ class Xmllint(BaseScraper):
             (exitcode, stdout, stderr) = self.exec_xmllint(schema=self._schema)
         if exitcode == 0:
             self.messages(
-                "%s Scraping success%s" % (self.filename, stdout))
+                "%s Success\n%s" % (self.filename, stdout))
         else:
             self.errors(stderr)
 
@@ -178,7 +178,6 @@ class Xmllint(BaseScraper):
                 prefix='file-scraper-', suffix='.tmp')
             et = etree.ElementTree(schema_tree)
             et.write(schema)
-
             self._has_constructed_schema = True
 
             return schema

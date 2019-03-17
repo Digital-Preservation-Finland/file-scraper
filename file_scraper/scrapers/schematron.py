@@ -13,6 +13,7 @@ class Schematron(BaseScraper):
     """Schematron scraper
     """
     _supported = {'text/xml': ['1.0']}  # Supported mimetypes
+    _only_wellformed = True
 
     def __init__(self, filename, mimetype, validation=True, params=None):
         """Initialize instance.
@@ -22,15 +23,14 @@ class Schematron(BaseScraper):
                      identification and metadata scraping
         :params: Extra parameters needed for the scraper
         """
-        self._verbose = False
-        self._cache = True
+        self._verbose = params.get('verbose', False)
+        self._cache = params.get('cache', True)
         self._cachepath = os.path.expanduser(
             '~/.file-scraper/schematron-cache')
-        self._schematron_dirname = \
-            '/usr/share/dpres-xml-schemas/schematron/schematron_xslt1'
+        self._schematron_dirname = params.get('compile_path', None)
         self._returncode = None
         self._schematron_file = params.get('schematron', None)
-        self._extra_hash = params.get('schematron_extra_hash', None)
+        self._extra_hash = params.get('extra_hash', None)
         super(Schematron, self).__init__(filename, mimetype,
                                          validation, params)
 
@@ -49,18 +49,18 @@ class Schematron(BaseScraper):
             params = {}
         if 'schematron' not in params:
             return False
-        super(Schematron, cls).is_supported(mimetype, version,
-                                            validation, params)
+        return super(Schematron, cls).is_supported(
+            mimetype, version, validation, params)
 
     @property
     def well_formed(self):
         """Check if document resulted errors.
         """
-        if self.messages.find('<svrl:failed-assert ') < 0 \
-                and self._returncode == 0:
-            return True
-        else:
-            return super(Schematron, self).well_formed()
+        if len(self.errors()) == 0 and len(self.messages()) > 0:
+            if self.messages().find('<svrl:failed-assert ') < 0 \
+                    and self._returncode == 0:
+                return True
+        return False
 
     def scrape_file(self):
         """Do the Schematron validation.
@@ -76,12 +76,12 @@ class Schematron(BaseScraper):
             inputfile=self.filename, valid_codes=[0, 6])
 
         self._returncode = shell.returncode
-        self.errors = shell.stderr
+        self.errors(shell.stderr)
 
         if not self._verbose and shell.returncode == 0:
-            self.messages = self._filter_duplicate_elements(shell.stdout)
+            self.messages(self._filter_duplicate_elements(shell.stdout))
         else:
-            self.messages = shell.stdout
+            self.messages(shell.stdout)
         self._check_supported()
         self._collect_elements()
 

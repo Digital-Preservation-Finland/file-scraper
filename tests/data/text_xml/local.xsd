@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://localhost/" xmlns="http://localhost/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+    <xsd:element name="note" type="noteType"/>
+
+    <xsd:complexType name="noteType">
+        <xsd:sequence>
+            <xsd:element name="name" type="xsd:string"/>
+            <xsd:element name="date" type="xsd:string"/>
+            <xsd:element name="heading" type="xsd:string"/>
+            <xsd:element name="body" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+</xsd:schema>

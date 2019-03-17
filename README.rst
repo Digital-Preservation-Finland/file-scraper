@@ -68,8 +68,15 @@ The following arguments for Scraper class are also possible:
         * Schema: ``schema=<schema file>`` - If not given, the scraper tries to find out the schema from the XML file.
         * Use local schema catalogs: ``catalogs=True/False`` (True by default)
         * Disallow network use: ``no_network=True/False`` (True by default)
-        * Schematron file: ``schematron=<schematron file>`` - None by default. If is given, only Schematron scraping is executed, and other arguments don't apply.
-        * Hash of related abtract Schematron files: ``schematron_extra_hash=<hash>`` - None by default, applies only if argument ``schematron`` is given. The compiled XSLT files created from Schematron are cached, but if there exist abstract Schematron patterns in separate files, the hash of those files must be calculated and given to make sure that the cache is updated properly.
+
+    * For XML Schematron validation:
+
+        * Schematron path: ``schematron=<schematron file>`` - If is given, only Schematron scraping is executed.
+        * Verbose: ``verbose=True/False`` - False by default. If false, the recurring elements are suppressed.
+        * Cache: ``cache=True/False`` - True by default. The compiled files are taken from cache, if ``<schematron file>`` is not changed.
+        * Hash of related abstract Schematron files: ``extra_hash=<hash>`` - ``None`` by default. The compiled XSLT files created from Schematron are cached,
+          but if there exist abstract Schematron patterns in separate files, the hash of those files must be calculated and given
+          to make sure that the cache is updated properly. If ``None`` then it is assumed that abstract patterns are up to date.
 
 Additionally, the following returns a boolean value True, if the file is a text file, and False otherwise::
 

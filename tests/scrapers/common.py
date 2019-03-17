@@ -18,14 +18,15 @@ class Correct(object):
 
 
 def parse_results(filename, mimetype, results, validation,
-                  basepath='tests/data'):
+                  params=None, basepath='tests/data'):
     """Parse results from filepath and given results.
     :filename: File name
     :mimetype: Mimetype
     :results: Results: purpose, part of stdout, part of stderr,
-              streams if not default, params if not empty
+              streams if not default
     :validation: True, if validation, otherwise False
     :basepath: Base path
+    :params: Parameters for the scraper
     :returns: Correct instance
     """
     well_dict = {'valid': True, 'invalid': False}
@@ -70,6 +71,6 @@ def parse_results(filename, mimetype, results, validation,
         correct.well_formed = well_dict[well_formed]
     if 'inverse' in results and correct.well_formed is not None:
         correct.well_formed = not correct.well_formed
-    if 'params' in results:
-        correct.params = results['params']
+    if params is not None:
+        correct.params = params
     return correct
