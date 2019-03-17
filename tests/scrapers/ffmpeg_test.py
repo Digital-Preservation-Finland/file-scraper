@@ -1,11 +1,11 @@
-"""Test module for mediainfo.py"""
+"""Test module for ffmpeg.py"""
 import os
 import pytest
-from file_scraper.scrapers.mediainfo import MpegMediainfo
+from file_scraper.scrapers.ffmpeg import FFMpeg
 from tests.scrapers.common import parse_results
-from tests.scrapers.stream_dicts import MPEG1_VIDEO, MPEG2_VIDEO, \
-    MPEG4_CONTAINER, MPEG4_VIDEO, MPEG4_AUDIO, MPEG1_AUDIO, MPEGTS_CONTAINER, \
-    MPEGTS_VIDEO, MPEGTS_AUDIO, MPEGTS_OTHER
+from tests.stream_dicts import MPEG1_VIDEO, MPEG2_VIDEO, MPEG4_CONTAINER, \
+    MPEG4_VIDEO, MPEG4_AUDIO, MPEG1_AUDIO, MPEGTS_CONTAINER, MPEGTS_VIDEO, \
+    MPEGTS_AUDIO, MPEGTS_OTHER
 
 
 @pytest.mark.parametrize(
@@ -14,37 +14,42 @@ from tests.scrapers.stream_dicts import MPEG1_VIDEO, MPEG2_VIDEO, \
         ("valid_1.m1v", {
             "purpose": "Test valid MPEG-1.",
             "stdout_part": "file was scraped successfully",
-            "stderr_part": "",
-            "streams": {0: MPEG1_VIDEO.copy()}}),
+            "stderr_part": ""}),
         ("valid_2.m2v", {
             "purpose": "Test valid MPEG-2.",
             "stdout_part": "file was scraped successfully",
-            "stderr_part": "",
-            "streams": {0: MPEG2_VIDEO.copy()}}),
+            "stderr_part": ""}),
+        ("invalid_1_missing_data.m1v", {
+            "purpose": "Test invalid MPEG-1.",
+            "stdout_part": "",
+            "stderr_part": "end mismatch"}),
         ("invalid_1_empty.m1v", {
             "purpose": "Test empty MPEG-1.",
             "stdout_part": "",
-            "stderr_part": "No audio or video tracks found"}),
+            "stderr_part": "Invalid data found when processing input"}),
+        ("invalid_2_missing_data.m2v", {
+            "purpose": "Test invalid MPEG-2.",
+            "stdout_part": "",
+            "stderr_part": "end mismatch"}),
         ("invalid_2_empty.m2v", {
             "purpose": "Test empty MPEG-2.",
             "stdout_part": "",
-            "stderr_part": "No audio or video tracks found"})
+            "stderr_part": "Invalid data found when processing input"})
     ])
-def test_mediainfo_scraper_mpeg(filename, result_dict):
-    """Test cases for MpegMediainfo"""
+def test_ffmpeg_scraper_mpeg(filename, result_dict):
+    """Test cases for FFMpeg"""
     mimetype = 'video/mpeg'
     correct = parse_results(filename, mimetype, result_dict, True)
-    scraper = MpegMediainfo(correct.filename, mimetype, True)
+    scraper = FFMpeg(correct.filename, mimetype, True)
     scraper.scrape_file()
-    if 'empty' in filename:
-        correct.version = None
-        correct.streams[0]['version'] = None
-        correct.streams[0]['stream_type'] = None
+    correct.version = None
+    correct.streams[0]['version'] = None
+    correct.streams[0]['stream_type'] = None
 
     assert scraper.mimetype == correct.mimetype
     assert scraper.version == correct.version
     assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'MpegMediainfo'
+    assert scraper.info['class'] == 'FFMpeg'
     assert correct.stdout_part in scraper.messages()
     assert correct.stderr_part in scraper.errors()
     assert scraper.well_formed == correct.well_formed
@@ -56,30 +61,30 @@ def test_mediainfo_scraper_mpeg(filename, result_dict):
         ("valid__h264_aac.mp4", {
             "purpose": "Test valid mp4.",
             "stdout_part": "file was scraped successfully",
-            "stderr_part": "",
-            "streams": {0: MPEG4_CONTAINER.copy(),
-                        1: MPEG4_VIDEO.copy(),
-                        2: MPEG4_AUDIO.copy()}}),
+            "stderr_part": ""}),
+        ("invalid__h264_aac_missing_data.mp4", {
+            "purpose": "Test invalid MPEG-4.",
+            "stdout_part": "",
+            "stderr_part": "moov atom not found"}),
         ("invalid__empty.mp4", {
             "purpose": "Test invalid MPEG-4.",
             "stdout_part": "",
-            "stderr_part": "No audio or video tracks found"})
+            "stderr_part": "Invalid data found when processing input"})
     ])
-def test_mediainfo_scraper_mp4(filename, result_dict):
-    """Test cases for MpegMediainfo"""
+def test_ffmpeg_scraper_mp4(filename, result_dict):
+    """Test cases for FFMpeg"""
     mimetype = 'video/mp4'
     correct = parse_results(filename, mimetype, result_dict, True)
-    scraper = MpegMediainfo(correct.filename, mimetype, True)
+    scraper = FFMpeg(correct.filename, mimetype, True)
     scraper.scrape_file()
-    if 'empty' in filename:
-        correct.version = None
-        correct.streams[0]['version'] = None
-        correct.streams[0]['stream_type'] = None
+    correct.version = None
+    correct.streams[0]['version'] = None
+    correct.streams[0]['stream_type'] = None
 
     assert scraper.mimetype == correct.mimetype
     assert scraper.version == correct.version
     assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'MpegMediainfo'
+    assert scraper.info['class'] == 'FFMpeg'
     assert correct.stdout_part in scraper.messages()
     assert correct.stderr_part in scraper.errors()
     assert scraper.well_formed == correct.well_formed
@@ -91,28 +96,34 @@ def test_mediainfo_scraper_mp4(filename, result_dict):
         ("valid_1.mp3", {
             "purpose": "Test valid mp3.",
             "stdout_part": "file was scraped successfully",
-            "stderr_part": "",
-            "streams": {0: MPEG1_AUDIO.copy()}}),
+            "stderr_part": ""}),
+        ("invalid_1_missing_data.mp3", {
+            "purpose": "Test invalid mp3.",
+            "stdout_part": "",
+            "stderr_part": "Header missing"}),
+        ("invalid_1_wrong_version.mp3", {
+            "purpose": "Test invalid mp3.",
+            "stdout_part": "",
+            "stderr_part": "Error while decoding stream"}),
         ("invalid__empty.mp3", {
             "purpose": "Test empty mp3",
             "stdout_part": "",
-            "stderr_part": "No audio or video tracks found"})
+            "stderr_part": "could not find codec parameters"})
     ])
-def test_mediainfo_scraper_mp3(filename, result_dict):
-    """Test cases for MpegMediainfo"""
+def test_ffmpeg_scraper_mp3(filename, result_dict):
+    """Test cases for FFMpeg"""
     mimetype = 'audio/mpeg'
     correct = parse_results(filename, mimetype, result_dict, True)
-    scraper = MpegMediainfo(correct.filename, mimetype, True)
+    scraper = FFMpeg(correct.filename, mimetype, True)
     scraper.scrape_file()
-    if 'empty' in filename:
-        correct.version = None
-        correct.streams[0]['version'] = None
-        correct.streams[0]['stream_type'] = None
+    correct.version = None
+    correct.streams[0]['version'] = None
+    correct.streams[0]['stream_type'] = None
 
     assert scraper.mimetype == correct.mimetype
     assert scraper.version == correct.version
     assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'MpegMediainfo'
+    assert scraper.info['class'] == 'FFMpeg'
     assert correct.stdout_part in scraper.messages()
     assert correct.stderr_part in scraper.errors()
     assert scraper.well_formed == correct.well_formed
@@ -124,31 +135,30 @@ def test_mediainfo_scraper_mp3(filename, result_dict):
         ("valid_.ts", {
             "purpose": "Test valid MPEG-TS.",
             "stdout_part": "file was scraped successfully",
-            "stderr_part": "",
-            "streams": {0: MPEGTS_CONTAINER.copy(),
-                        1: MPEGTS_VIDEO.copy(),
-                        2: MPEGTS_AUDIO.copy(),
-                        3: MPEGTS_OTHER.copy()}}),
+            "stderr_part": ""}),
+        ("invalid__missing_data.ts", {
+            "purpose": "Test invalid MPEG-TS.",
+            "stdout_part": "",
+            "stderr_part": "invalid new backstep"}),
         ("invalid__empty.ts", {
             "purpose": "Test empty MPEG-TS.",
             "stdout_part": "",
-            "stderr_part": "No audio or video tracks found"})
+            "stderr_part": "Invalid data found when processing input"})
     ])
-def test_mediainfo_scraper_mpegts(filename, result_dict):
-    """Test cases for MpegMediainfo"""
+def test_ffmpeg_scraper_mpegts(filename, result_dict):
+    """Test cases for FFMpeg"""
     mimetype = 'video/MP2T'
     correct = parse_results(filename, mimetype, result_dict, True)
-    scraper = MpegMediainfo(correct.filename, mimetype, True)
+    scraper = FFMpeg(correct.filename, mimetype, True)
     scraper.scrape_file()
-    if 'empty' in filename:
-        correct.version = None
-        correct.streams[0]['version'] = None
-        correct.streams[0]['stream_type'] = None
+    correct.version = None
+    correct.streams[0]['version'] = None
+    correct.streams[0]['stream_type'] = None
 
     assert scraper.mimetype == correct.mimetype
     assert scraper.version == correct.version
     assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'MpegMediainfo'
+    assert scraper.info['class'] == 'FFMpeg'
     assert correct.stdout_part in scraper.messages()
     assert correct.stderr_part in scraper.errors()
     assert scraper.well_formed == correct.well_formed
@@ -166,8 +176,8 @@ def test_mediainfo_scraper_mpegts(filename, result_dict):
 )
 def test_is_supportedi_mpeg(mime, ver):
     """Test is_supported method"""
-    assert MpegMediainfo.is_supported(mime, ver, True)
-    assert MpegMediainfo.is_supported(mime, None, True)
-    assert MpegMediainfo.is_supported(mime, ver, False)
-    assert MpegMediainfo.is_supported(mime, 'foo', True)
-    assert not MpegMediainfo.is_supported('foo', ver, True)
+    assert FFMpeg.is_supported(mime, ver, True)
+    assert FFMpeg.is_supported(mime, None, True)
+    assert not FFMpeg.is_supported(mime, ver, False)
+    assert not FFMpeg.is_supported(mime, 'foo', True)
+    assert not FFMpeg.is_supported('foo', ver, True)
