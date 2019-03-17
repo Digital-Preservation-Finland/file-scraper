@@ -3,9 +3,6 @@ import os
 import pytest
 from file_scraper.scrapers.ffmpeg import FFMpeg
 from tests.scrapers.common import parse_results
-from tests.stream_dicts import MPEG1_VIDEO, MPEG2_VIDEO, MPEG4_CONTAINER, \
-    MPEG4_VIDEO, MPEG4_AUDIO, MPEG1_AUDIO, MPEGTS_CONTAINER, MPEGTS_VIDEO, \
-    MPEGTS_AUDIO, MPEGTS_OTHER
 
 
 @pytest.mark.parametrize(

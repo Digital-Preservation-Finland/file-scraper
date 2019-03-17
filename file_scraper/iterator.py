@@ -18,7 +18,6 @@ from file_scraper.scrapers.csv_scraper import Csv
 from file_scraper.scrapers.mediainfo import MpegMediainfo
 from file_scraper.scrapers.ffmpeg import FFMpeg
 from file_scraper.scrapers.office import Office
-from file_scraper.scrapers.file import TextPlainFile
 from file_scraper.scrapers.magic import TextFileMagic, XmlFileMagic, \
     HtmlFileMagic, PdfFileMagic, OfficeFileMagic, PngFileMagic, \
     JpegFileMagic, Jp2FileMagic, TiffFileMagic, XhtmlFileMagic, \
