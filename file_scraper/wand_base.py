@@ -124,12 +124,6 @@ class Wand(BaseScraper):
         return None
 
     # pylint: disable=no-self-use
-    def _s_byte_order(self):
-        """Returns byte order
-        """
-        return None
-
-    # pylint: disable=no-self-use
     def _s_samples_per_pixel(self):
         """Returns samples per pixel
         """

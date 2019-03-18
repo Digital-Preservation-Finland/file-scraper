@@ -111,7 +111,9 @@ class FidoDetector(BaseDetector):
         :returns: Mime type
         """
         important = {}
-        if self.mimetype != 'text/html':
+        if self.mimetype not in [
+                'text/html',
+                'application/zip']:
             important['mimetype'] = self.mimetype
         return important
 
@@ -140,6 +142,8 @@ class MagicDetector(BaseDetector):
         :returns: Mime type
         """
         important = {}
-        if self.mimetype == 'application/x-internet-archive':
+        if self.mimetype in [
+                'application/x-internet-archive',
+                'application/vnd.oasis.opendocument.formula']:
             important['mimetype'] = self.mimetype
         return important

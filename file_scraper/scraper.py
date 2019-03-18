@@ -27,6 +27,7 @@ class Scraper(object):
         self.streams = None
         self.well_formed = None
         self.info = None
+        self._important = {}
         self._params = kwargs
 
     def _identify(self):
@@ -40,6 +41,8 @@ class Scraper(object):
             important = tool.is_important()
             if self.mimetype in LOSE:
                 self.mimetype = tool.mimetype
+            if self.mimetype == tool.mimetype and \
+                    self.version in LOSE:
                 self.version = tool.version
             if 'mimetype' in important and \
                     important['mimetype'] is not None:
@@ -53,9 +56,10 @@ class Scraper(object):
         :scraper: Scraper instance
         """
         scraper.scrape_file()
+        self._important.update(scraper.is_important())
         self.streams = combine_metadata(
             stream=self.streams, metadata=scraper.streams,
-            lose=LOSE, important=scraper.is_important())
+            lose=LOSE, important=self._important)
         self.info[len(self.info)] = scraper.info
         if scraper.well_formed is not None:
             if self.well_formed in [None, True]:
@@ -88,8 +92,16 @@ class Scraper(object):
             scraper = Utf8JHove(self.filename, self.mimetype)
             self._scrape_file(scraper)
 
-        self.mimetype = self.streams[0]['mimetype']
-        self.version = self.streams[0]['version']
+        # We wan to use scraper's mimetype and version, but
+        # if not detected, let's use detectors' values
+        if self.streams[0]['mimetype'] is not None:
+            self.mimetype = self.streams[0]['mimetype']
+        else:
+            self.streams[0]['mimetype'] = self.mimetype
+        if self.streams[0]['version'] is not None:
+            self.version = self.streams[0]['version']
+        else:
+            self.streams[0]['version'] = self.version
 
     def is_textfile(self):
         """Find out if file is a text file.

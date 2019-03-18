@@ -76,7 +76,7 @@ def strip_zeros(float_str):
 
 def combine_metadata(stream, metadata, lose=[], important=None):
     """Merge metadata dict to stream metadata dict. Will raise
-    ValueError if two equal and different values collide.
+    ValueError if two different values collide.
     :stream: Metadata dict where the new metadata is merged.
     :metadata: New metadata dict to be merged.
     :lose: These are generic values that are allowed to be lost

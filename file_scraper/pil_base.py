@@ -93,17 +93,11 @@ class Pil(BaseScraper):
     def _s_width(self):
         """Returns image width
         """
-        if self._pil is not None and \
-                self._pil.width is not None:
-            return str(self._pil.width)
         return None
 
     def _s_height(self):
         """Returns image height
         """
-        if self._pil is not None and \
-                self._pil.height is not None:
-            return str(self._pil.height)
         return None
 
     def _s_bps_value(self):
@@ -123,12 +117,6 @@ class Pil(BaseScraper):
 
     def _s_compression(self):
         """Returns compression scheme
-        """
-        return None
-
-    # pylint: disable=no-self-use
-    def _s_byte_order(self):
-        """Returns byte order
         """
         return None
 

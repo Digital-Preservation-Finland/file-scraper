@@ -29,11 +29,20 @@ MIMETYPE_DICT = {
 
 # Dict between detectors' results and known file format versions.
 VERSION_DICT = {
-    'text/xml': {'5': '5.0'},
+    'text/html': {'5': '5.0'},
     'application/pdf': {'1a': 'A-1a', '1b': 'A-1b',
                         '2a': 'A-2a', '2b': 'A-2b', '2u': 'A-2u',
                         '3a': 'A-3a', '3b': 'A-3b', '3u': 'A-3u'},
-    'audio/x-wav': {'2 Generic': '2'}
+    'audio/x-wav': {'2 Generic': '2'},
+    'application/msword': {'97-2003': None},
+    'application/vnd.openxmlformats-officedocument'
+    '.wordprocessingml.document': {'2007 onwards': None},
+    'application/vnd.ms-powerpoint' : {'97-2003': None},
+    'application/vnd.openxmlformats-officedocument'
+    '.presentationml.presentation': {'2007 onwards', None},
+    'application/vnd.ms-excel': {'8': None, '8X': None},
+    'application/vnd.openxmlformats-officedocument'
+    '.spreadsheetml.sheet': {'2007 onwards': None}
 }
 
 # Dict between detectors' pronom results and known mimetypes and versions.
