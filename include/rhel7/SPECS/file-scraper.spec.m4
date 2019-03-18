@@ -23,7 +23,7 @@ Requires:       python python2-pymediainfo python-pillow python-magic python-opf
 Requires:       python-wand >= 0.5.1
 Requires:       ffmpeg-python ffmpeg ghostscript jhove python-lxml veraPDF dpx-validator
 Requires:       warc-tools >= 4.8.3
-Requires:	pngcheck libreoffice pspp file-5.30 xhtml1-dtds vnu
+Requires:	pngcheck libreoffice pspp file-5.30 xhtml1-dtds vnu iso-schematron-xslt1
 BuildRequires:  python-setuptools
 
 %description

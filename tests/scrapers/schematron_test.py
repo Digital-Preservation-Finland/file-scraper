@@ -18,20 +18,20 @@ ROOTPATH = os.path.abspath(os.path.join(
             'stdout_part': '<svrl:schematron-output',
             'stderr_part': ''},
          {'schematron': os.path.join(ROOTPATH, 'tests/data/text_xml/local.sch'),
-          'compile_path': '/usr/share/dpres-xml-schemas/schematron/schematron_xslt1'}),
+          'compile_path': '/usr/share/iso_schematron_xslt1'}),
         ('invalid_1.0_local_xsd.xml', {
             'purpose': 'Test invalid file',
             'stdout_part': '<svrl:schematron-output',
             'stderr_part': ''},
          {'schematron': 'tests/data/text_xml/local.sch',
-          'compile_path': '/usr/share/dpres-xml-schemas/schematron/schematron_xslt1',
+          'compile_path': '/usr/share/iso_schematron_xslt1',
           'verbose': True, 'cache': False}),
         ('invalid__empty.xml', {
             'purpose': 'Test invalid xml with given schema.',
             'stdout_part': '',
             'stderr_part': 'Document is empty'},
          {'schematron': 'tests/data/text_xml/local.sch',
-          'compile_path': '/usr/share/dpres-xml-schemas/schematron/schematron_xslt1'}),
+          'compile_path': '/usr/share/iso_schematron_xslt1'}),
     ]
 )
 def test_scraper_invalid(filename, result_dict, params):
