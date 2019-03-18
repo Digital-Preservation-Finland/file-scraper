@@ -46,7 +46,7 @@ from tests.scrapers.common import parse_results
         ("valid_6.0.tif", "image/tiff", TiffFileMagic),
         ("valid__iso8859.txt", "text/plain", TextFileMagic),
         ("valid__utf8.txt", "text/plain", TextFileMagic),
-        ("valid_1.0.xml", "text/xml", XmlFileMagic),
+        ("valid_1.0_well_formed.xml", "text/xml", XmlFileMagic),
         ("valid_1.0.xhtml", "application/xhtml+xml", XhtmlFileMagic),
         ("valid_4.01.html", "text/html", HtmlFileMagic),
         ("valid_5.0.html", "text/html", HtmlFileMagic),

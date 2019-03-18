@@ -13,30 +13,27 @@ INVALID_MSG = 'Error in scraping file.'
 STREAM_VALID = {
     'bps_unit': 'integer',
     'bps_value': None,
-    'byte_order': None,
     'colorspace': None,
-    'height': '6',
-    'width': '10',
+    'height': None,
+    'width': None,
     'samples_per_pixel': '3',
     'compression': None}
 
 GIF_APPEND = {
     'bps_unit': 'integer',
     'bps_value': None,
-    'byte_order': None,
     'colorspace': None,
     'compression': None,
-    'height': '6',
+    'height': None,
     'mimetype': 'image/gif',
     'samples_per_pixel': '1',
     'stream_type': 'image',
     'version': None,
-    'width': '10'}
+    'width': None}
 
 STREAM_INVALID = {
     'bps_unit': None,
     'bps_value': None,
-    'byte_order': None,
     'colorspace': None,
     'compression': None,
     'height': None,

@@ -185,6 +185,8 @@ class TextMagic(BaseScraper):
     def _s_charset(self):
         """Return charset
         """
+        if self._magic_charset is None:
+            return None
         if self._magic_charset.upper() == 'BINARY':
             return None
         if self._magic_charset.upper() == 'US-ASCII':

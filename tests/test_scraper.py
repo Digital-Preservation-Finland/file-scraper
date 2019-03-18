@@ -94,7 +94,7 @@ def test_scraper_txt():
 def test_scraper_xml():
     """Test xml file
     """
-    scraper = Scraper('./tests/data/text_xml/valid_1.0.xml')
+    scraper = Scraper('./tests/data/text_xml/valid_1.0_well_formed.xml')
     scraper.scrape()
     assert scraper.mimetype == 'text/xml'
     assert scraper.version == '1.0'

@@ -11,7 +11,7 @@ INVALID_MSG = 'is not a text file'
     [
         ("valid__utf8.txt", "text/plain", True),
         ("valid__iso8859.txt", "text/plain", True),
-        ("valid_1.0.xml", "text/xml", True),
+        ("valid_1.0_well_formed.xml", "text/xml", True),
         ("valid_4.01.html", "text/html", True),
         ("invalid_4.01_illegal_tags.html", "text/html", True),
         ("valid_1.4.pdf", "application/pdf", False),

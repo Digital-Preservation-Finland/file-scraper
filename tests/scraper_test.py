@@ -24,6 +24,7 @@ def test_valid_combined():
     ver = {}
     none = {}
     errors = {}
+    well = {}
     for root, directory, filenames in os.walk('tests/data'):
         for fname in filenames:
             if fname.startswith('valid_'):
@@ -42,6 +43,8 @@ def test_valid_combined():
                         else:
                             errors[fullname] = info['errors']
                 print "%s %s %s" % (fname, scraper.mimetype, scraper.version)
+                if scraper.well_formed != True:
+                    well[fullname] = scraper.well_formed
                 if scraper.mimetype != mimetype:
                     mime[fullname] = scraper.mimetype
                 if scraper.mimetype != mimetype:
@@ -57,7 +60,9 @@ def test_valid_combined():
     pprint(ver)
     pprint(none)
     pprint(errors)
+    pprint(well)
     assert mime == {}
     assert ver == {}
     assert none == NONE_ELEMENTS
     assert errors == {}
+    assert well == {'tests/data/video_x-matroska/valid__ffv1.mkv': None}

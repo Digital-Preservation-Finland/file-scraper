@@ -10,7 +10,6 @@ from tests.scrapers.common import parse_results
 STREAM_VALID = {
     'bps_unit': None,
     'bps_value': '8',
-    'byte_order': None,
     'colorspace': 'srgb',
     'height': '6',
     'samples_per_pixel': None,
@@ -19,7 +18,6 @@ STREAM_VALID = {
 GIF_APPEND = {
     'bps_unit': None,
     'bps_value': '8',
-    'byte_order': None,
     'colorspace': 'srgb',
     'compression': 'lzw',
     'height': '1',
@@ -32,7 +30,6 @@ GIF_APPEND = {
 STREAM_INVALID = {
     'bps_unit': None,
     'bps_value': None,
-    'byte_order': None,
     'colorspace': None,
     'compression': None,
     'height': None,
@@ -72,6 +69,9 @@ def test_scraper_tif(filename, result_dict):
     if correct.well_formed:
         correct.streams[0]['compression'] = 'zip'
         correct.streams[0]['byte_order'] = 'little endian'
+    else:
+        correct.streams[0]['byte_order'] = None
+
     correct.version = None
     correct.streams[0]['version'] = None
     scraper = TiffWand(correct.filename, correct.mimetype,

@@ -9,6 +9,16 @@ class TiffPil(Pil):
     _supported = {'image/tiff': ['6.0']}  # Supported mimetype
     _allow_versions = True                # Allow any version
 
+    def _s_width(self):
+        """We will get width from another scraper
+        """
+        return None
+
+    def _s_height(self):
+        """We will get height from another scraper
+        """
+        return None
+
     def _s_colorspace(self):
         """We will get colorspace from another scraper
         """
@@ -34,6 +44,16 @@ class ImagePil(Pil):
                   'image/gif': ['1987a', '1989a']}
     _allow_versions = True  # Allow any version
 
+    def _s_width(self):
+        """We will get width from another scraper
+        """
+        return None
+
+    def _s_height(self):
+        """We will get height from another scraper
+        """
+        return None
+
     def _s_colorspace(self):
         """We will get colorspace from another scraper
         """
@@ -47,6 +67,16 @@ class JpegPil(Pil):
     _supported = {'image/jpeg': ['1.00', '1.01', '1.02', '2.0', '2.1',
                                  '2.2', '2.2.1']}  # Supported mimetypes
     _allow_versions = True  # Allow any version
+
+    def _s_width(self):
+        """We will get width from another scraper
+        """
+        return None
+
+    def _s_height(self):
+        """We will get height from another scraper
+        """
+        return None
 
     def _s_colorspace(self):
         """We will get colorspace from another scraper
