@@ -2,6 +2,7 @@
 import os.path
 import gzip
 import tempfile
+from io import open
 from file_scraper.utils import sanitize_string
 from file_scraper.base import BaseScraper, Shell
 
@@ -10,8 +11,8 @@ class GzipWarctools(BaseScraper):
     """Scraper for compressed Warcs and Arcs."""
 
     _supported = {'application/gzip': []}  # Supported mimetype
-    _only_wellformed = True                # Only well-formed check
-    _allow_versions = True                 # Allow any version
+    _only_wellformed = True  # Only well-formed check
+    _allow_versions = True  # Allow any version
 
     def scrape_file(self):
         """Scrape file. If Warc fails, try Arc."""
@@ -61,8 +62,8 @@ class WarcWarctools(BaseScraper):
 
     # Supported mimetype and versions
     _supported = {'application/warc': ['0.17', '0.18', '1.0']}
-    _only_wellformed = True                # Only well-formed check
-    _allow_versions = True                 # Allow any version
+    _only_wellformed = True  # Only well-formed check
+    _allow_versions = True  # Allow any version
 
     def scrape_file(self):
         """Scrape WARC file."""
@@ -79,8 +80,8 @@ class WarcWarctools(BaseScraper):
             self.errors("Failed: returncode %s" % shell.returncode)
             # Filter some trash printed by warcvalid.
             filtered_errors = \
-                "\n".join([line for line in shell.stderr.split('\n')
-                           if 'ignored line' not in line])
+                b"\n".join([line for line in shell.stderr.split(b'\n')
+                            if b'ignored line' not in line])
             self.errors(filtered_errors)
 
         self.messages(shell.stdout)
@@ -92,7 +93,7 @@ class WarcWarctools(BaseScraper):
         except IOError:
             # Not compressed archive
             warc_fd.close()
-            with open(self.filename, 'r') as warc_fd:
+            with open(self.filename, 'rb') as warc_fd:
                 line = warc_fd.readline()
         except Exception as exception:  # pylint: disable=broad-except
             # Compressed but corrupted gzip file
@@ -102,8 +103,8 @@ class WarcWarctools(BaseScraper):
             return
 
         self.mimetype = 'application/warc'
-        if len(line.split("WARC/", 1)) > 1:
-            self.version = line.split("WARC/", 1)[1].split(" ")[0].strip()
+        if len(line.split(b"WARC/", 1)) > 1:
+            self.version = line.split(b"WARC/", 1)[1].split(b" ")[0].strip()
         if size > 0:
             self.messages('File was analyzed successfully.')
         self._check_supported()
@@ -120,7 +121,7 @@ class ArcWarctools(BaseScraper):
     # Supported mimetype and varsions
     _supported = {'application/x-internet-archive': ['1.0', '1.1']}
     _only_wellformed = True  # Only well-formed check
-    _allow_versions = True   # Allow any version
+    _allow_versions = True  # Allow any version
 
     def scrape_file(self):
         """

@@ -237,7 +237,7 @@ class Mediainfo(BaseScraper):
         if self._mediainfo_stream.bit_rate is not None:
             if self._mediainfo_stream.track_type == 'Video':
                 return strip_zeros(str(float(
-                    self._mediainfo_stream.bit_rate)/1000000))
+                    self._mediainfo_stream.bit_rate) / 1000000))
             else:
                 return strip_zeros(str(float(
                     self._mediainfo_stream.bit_rate)/1000))
@@ -343,7 +343,7 @@ class Mediainfo(BaseScraper):
     def _s_codec_creator_app(self):
         """Return creator application."""
         if self._s_stream_type() not in [
-                'video', 'audio', 'videocontainer']:
+            'video', 'audio', 'videocontainer']:
             return SkipElement
         if self._mediainfo is None:
             return None
@@ -354,7 +354,7 @@ class Mediainfo(BaseScraper):
     def _s_codec_creator_app_version(self):
         """Return creator application version."""
         if self._s_stream_type() not in [
-                'video', 'audio', 'videocontainer']:
+            'video', 'audio', 'videocontainer']:
             return SkipElement
         if self._mediainfo is None:
             return None
@@ -368,7 +368,7 @@ class Mediainfo(BaseScraper):
     def _s_codec_name(self):
         """Return codec name."""
         if self._s_stream_type() not in [
-                'video', 'audio', 'videocontainer']:
+            'video', 'audio', 'videocontainer']:
             return SkipElement
         if self._mediainfo is None:
             return None
@@ -384,7 +384,7 @@ class Mediainfo(BaseScraper):
             return None
         if self._mediainfo_stream.duration is not None:
             return iso8601_duration(float(
-                self._mediainfo_stream.duration)/1000)
+                self._mediainfo_stream.duration) / 1000)
         return '(:unav)'
 
     def _s_bits_per_sample(self):

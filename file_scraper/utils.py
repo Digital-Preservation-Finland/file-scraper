@@ -5,19 +5,16 @@ import subprocess
 import unicodedata
 import string
 import hashlib
+from six import iteritems, ensure_str
 
 
 def encode(filename):
     """Encode Unicode filenames."""
-    if isinstance(filename, unicode):
-        filename = filename.encode(sys.getfilesystemencoding())
-    return filename
+    return ensure_str(filename, encoding=sys.getfilesystemencoding())
 
 
 def hexdigest(filename, algorithm='sha1', extra_hash=None):
-    """
-    Calculte hash of given file.
-
+    """Calculte hash of given file.
     :filename: File path
     :algorithm: Hash algorithm. MD5 or SHA variant.
     :extra_hash: Hash to be appended in calculation
@@ -29,14 +26,14 @@ def hexdigest(filename, algorithm='sha1', extra_hash=None):
         for chunk in iter(lambda: input_file.read(1024 * 1024), b''):
             checksum.update(chunk)
         if extra_hash:
+            if isinstance(extra_hash, str):
+                extra_hash = extra_hash.encode('utf-8')
             checksum.update(extra_hash)
     return checksum.hexdigest()
 
 
 def sanitize_string(dirty_string):
-    """
-    Strip non-printable control characters from unicode string.
-
+    """Strip non-printable control characters from unicode string
     :dirty_string: String to sanitize
     :returns: Sanitized string
     """
@@ -47,8 +44,7 @@ def sanitize_string(dirty_string):
 
 
 def iso8601_duration(time):
-    """
-    Convert seconds into ISO 8601 duration.
+    """Convert seconds into ISO 8601 duration.
 
     PT[hours]H[minutes]M[seconds]S format is used with maximum of two decimal
     places used with the seconds. If there are no hours, minutes or seconds,
@@ -69,7 +65,7 @@ def iso8601_duration(time):
     :time: Time in seconds
     :returns: ISO 8601 representation of time
     """
-    hours = time // (60*60)
+    hours = time // (60 * 60)
     minutes = time // 60 % 60
     seconds = round(time % 60, 2)
 
@@ -96,8 +92,7 @@ def iso8601_duration(time):
 
 
 def strip_zeros(float_str):
-    """
-    Recursively strip trailing zeros from a float.
+    """Recursively strip trailing zeros from a float.
 
     Zeros in integer part are not affected. If no decimal part is left, the
     decimal separator is also stripped. Underscores as described in PEP 515
@@ -124,8 +119,7 @@ def strip_zeros(float_str):
 
 
 def combine_metadata(stream, metadata, lose=None, important=None):
-    """
-    Merge metadata dict to stream metadata dict.
+    """Merge metadata dict to stream metadata dict.
 
     Will raise ValueError if two different values collide.
 
@@ -143,7 +137,7 @@ def combine_metadata(stream, metadata, lose=None, important=None):
     important = {} if important is None else important
     lose = [] if lose is None else lose
 
-    for stream_index, metadata_dict in metadata.iteritems():
+    for stream_index, metadata_dict in iteritems(metadata):
 
         if stream_index not in stream.keys():
             stream[stream_index] = metadata_dict
@@ -165,7 +159,7 @@ def combine_metadata(stream, metadata, lose=None, important=None):
                     "value '%s'." % (incomplete_stream[key],
                                      metadata_dict[key]))
 
-        for key, value in metadata_dict.iteritems():
+        for key, value in iteritems(metadata_dict):
             if key not in incomplete_stream:
                 incomplete_stream[key] = value
 
@@ -173,8 +167,7 @@ def combine_metadata(stream, metadata, lose=None, important=None):
 
 
 def run_command(cmd, stdout=subprocess.PIPE, env=None):
-    """
-    Execute command.
+    """Execute command.
 
     Scraper specific error handling is supported by forwarding exceptions.
 
@@ -186,7 +179,7 @@ def run_command(cmd, stdout=subprocess.PIPE, env=None):
     _env = os.environ.copy()
 
     if env:
-        for key, value in env.iteritems():
+        for key, value in iteritems(env):
             _env[key] = value
 
     proc = subprocess.Popen(cmd,

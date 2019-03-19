@@ -3,11 +3,12 @@
 import os
 import shutil
 import tempfile
+from io import open
 from file_scraper.base import BaseScraper, Shell
 
 
 PSPP_PATH = '/usr/bin/pspp-convert'
-SPSS_PORTABLE_HEADER = "SPSS PORT FILE"
+SPSS_PORTABLE_HEADER = b"SPSS PORT FILE"
 
 
 class Pspp(BaseScraper):
@@ -25,7 +26,7 @@ class Pspp(BaseScraper):
             return
 
         # Check file header
-        with open(self.filename) as input_file:
+        with open(self.filename, 'rb') as input_file:
             first_line = input_file.readline()
         if SPSS_PORTABLE_HEADER not in first_line:
             self.errors("File is not SPSS Portable format.")
@@ -39,8 +40,8 @@ class Pspp(BaseScraper):
             shell = Shell([
                 PSPP_PATH,
                 self.filename,
-                temp_file,
-                ])
+                temp_file
+            ])
             self.errors(shell.stderr)
             self.messages(shell.stdout)
             if os.path.isfile(temp_file):

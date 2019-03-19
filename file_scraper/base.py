@@ -1,8 +1,8 @@
 """Base module for scrapers."""
 import abc
 import subprocess
-from file_scraper.utils import run_command
-from file_scraper.utils import combine_metadata
+from six import ensure_str
+from file_scraper.utils import (run_command, combine_metadata)
 
 
 class Shell(object):
@@ -66,7 +66,7 @@ class Shell(object):
             'returncode': self._returncode,
             'stderr': self._stderr,
             'stdout': self._stdout
-            }
+        }
 
 
 class BaseScraper(object):
@@ -94,7 +94,7 @@ class BaseScraper(object):
             params = {}
         self.filename = filename       # File name
         self.mimetype = mimetype       # Resulted mime type
-        self.version = None            # Resulted file format version
+        self._version = None           # Resulted file format version
         self.streams = {}              # Resulted streams
         self.info = None               # Class name, messages, errors
         self._messages = []            # Diagnostic messages in scraping
@@ -240,6 +240,14 @@ class BaseScraper(object):
         """Return stream type. Must be implemented in the scrapers."""
         pass
 
+    @property
+    def version(self):
+        return self._version
+
+    @version.setter
+    def version(self, value):
+        self._version = ensure_str(value) if value is not None else None
+
 
 class SkipElement(object):
     """
@@ -263,9 +271,9 @@ class BaseDetector(object):
     def __init__(self, filename):
         """Initialize detector."""
         self.filename = filename  # File path
-        self.mimetype = None      # Identified mimetype
-        self.version = None       # Identified file version
-        self.info = None          # Class name, messages, errors
+        self.mimetype = None  # Identified mimetype
+        self.version = None  # Identified file version
+        self.info = None  # Class name, messages, errors
 
     @abc.abstractmethod
     def detect(self):

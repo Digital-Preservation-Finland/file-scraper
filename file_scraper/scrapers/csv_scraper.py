@@ -38,7 +38,7 @@ class Csv(BaseScraper):
         if self._csv_fields is None:
             self._csv_fields = []
         try:
-            with open(self.filename, 'rb') as csvfile:
+            with open(self.filename, 'r') as csvfile:
                 reader = csv.reader(csvfile)
                 csvfile.seek(0)
                 dialect = csv.Sniffer().sniff(csvfile.read(1024))
@@ -54,7 +54,7 @@ class Csv(BaseScraper):
 
                 csvfile.seek(0)
                 reader = csv.reader(csvfile, dialect='new_dialect')
-                self._csv_first_line = reader.next()
+                self._csv_first_line = next(reader)
 
                 if self._csv_fields and \
                         len(self._csv_fields) != len(self._csv_first_line):
@@ -70,6 +70,8 @@ class Csv(BaseScraper):
         except csv.Error as exception:
             self.errors("CSV error on line %s: %s" %
                         (reader.line_num, exception))
+        except UnicodeDecodeError:
+            self.errors("Error reading file as CSV")
         else:
             self.messages("CSV file was checked successfully.")
         finally:

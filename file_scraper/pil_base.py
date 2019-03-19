@@ -6,7 +6,6 @@ except ImportError:
 
 from file_scraper.base import BaseScraper
 
-
 SAMPLES_PER_PIXEL = {'1': '1', 'L': '1', 'P': '1', 'RGB': '3', 'YCbCr': '3',
                      'LAB': '3', 'HSV': '3', 'RGBA': '4', 'CMYK': '4',
                      'I': '1', 'F': '1'}
@@ -25,7 +24,7 @@ class Pil(BaseScraper):
                            detection and metadata scraping
         :params: Extra parameters needed for the scraper
         """
-        self._pil = None        # Pil result
+        self._pil = None  # Pil result
         self._pil_index = None  # Current index in Pil result
         super(Pil, self).__init__(filename, mimetype, check_wellformed, params)
 
@@ -55,7 +54,13 @@ class Pil(BaseScraper):
         if self._pil is None:
             yield {}
         if stream_type in [None, 'image']:
-            if not hasattr(self._pil, 'n_frames'):
+            try:
+                _n_frames = self._pil.n_frames
+            except (AttributeError, ValueError):
+                # ValueError happens when n_frame property exists, but
+                # the tile tries to extend outside of image.
+                _n_frames = None
+            if not _n_frames:
                 self._pil_index = 0
                 yield self._pil
             else:

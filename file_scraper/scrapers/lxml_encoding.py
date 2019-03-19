@@ -4,6 +4,7 @@ try:
 except ImportError:
     pass
 
+from io import open
 from file_scraper.base import BaseScraper
 
 
@@ -58,7 +59,7 @@ class XmlEncoding(BaseScraper):
             return
         parser = etree.XMLParser(dtd_validation=False, no_network=True,
                                  recover=True)
-        file_ = open(self.filename)
+        file_ = open(self.filename, 'rb')
         tree = etree.parse(file_, parser)
         self._charset = tree.docinfo.encoding
         self.messages('Encoding metadata found.')

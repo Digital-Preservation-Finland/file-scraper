@@ -1,11 +1,11 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Integration test for scrapers."""
 import os
 import shutil
+from six import iteritems
+
 from file_scraper.scraper import Scraper
 from tests.common import get_files
-
 
 # These files will result none for some elements
 # For GIFs and TIFFs with 3 images inside, the version is missing from the
@@ -80,16 +80,16 @@ def test_valid_combined():
     - Ignore few files because of required parameter or missing scraper.
     """
     file_dict = get_files(well_formed=True)
-    for fullname, value in file_dict.iteritems():
+    for fullname, value in iteritems(file_dict):
         if fullname in IGNORE_VALID:
             continue
         mimetype = value[0]
-        print fullname
+        version = value[1]
 
         scraper = Scraper(fullname)
         scraper.scrape()
 
-        for _, info in scraper.info.iteritems():
+        for _, info in iteritems(scraper.info):
             assert not info['errors']
 
         assert scraper.well_formed
@@ -97,8 +97,8 @@ def test_valid_combined():
         assert scraper.streams not in [None, {}]
 
         none = []
-        for _, stream in scraper.streams.iteritems():
-            for key, stream_value in stream.iteritems():
+        for _, stream in iteritems(scraper.streams):
+            for key, stream_value in iteritems(stream):
                 if stream_value is None:
                     none.append(key)
         if fullname in NONE_ELEMENTS:
@@ -120,19 +120,18 @@ def test_invalid_combined():
       and scraper is not found.
     """
     file_dict = get_files(well_formed=False)
-    for fullname, _ in file_dict.iteritems():
+    for fullname, _ in iteritems(file_dict):
         if 'empty' in fullname:
             continue
         if fullname in IGNORE_INVALID:
             continue
-        print fullname
 
         mimetype = fullname.split("/")[-2].replace("_", "/")
         scraper = Scraper(fullname)
         scraper.scrape()
 
         skip = False
-        for _, info in scraper.info.iteritems():
+        for _, info in iteritems(scraper.info):
             if scraper.mimetype != mimetype and \
                     info['class'] == 'ScraperNotFound':
                 skip = True
@@ -154,10 +153,9 @@ def test_without_wellformed():
     - Test a random element existence for image, video, audio and text.
     """
     file_dict = get_files(well_formed=True)
-    for fullname, _ in file_dict.iteritems():
+    for fullname, _ in iteritems(file_dict):
         if fullname in IGNORE_FOR_METADATA:
             continue
-        print fullname
 
         mimetype = fullname.split("/")[-2].replace("_", "/")
         scraper = Scraper(fullname)
@@ -170,8 +168,8 @@ def test_without_wellformed():
         assert scraper.streams[0]['stream_type'] is not None
 
         none = []
-        for _, stream in scraper.streams.iteritems():
-            for key, stream_value in stream.iteritems():
+        for _, stream in iteritems(scraper.streams):
+            for key, stream_value in iteritems(stream):
                 if stream_value is None:
                     none.append(key)
         if fullname in NONE_ELEMENTS:
@@ -186,7 +184,7 @@ def test_without_wellformed():
         elem_dict = {'image': 'colorspace', 'video': 'color',
                      'videocontainer': 'codec_name',
                      'text': 'charset', 'audio': 'num_channels'}
-        for _, stream in scraper.streams.iteritems():
+        for _, stream in iteritems(scraper.streams):
             assert 'stream_type' in stream
             if stream['stream_type'] in elem_dict:
                 assert elem_dict[stream['stream_type']] in stream
@@ -206,7 +204,7 @@ def test_unicode_filename(testpath):
     - Ignore few files because of required parameter or missing scraper.
     """
     file_dict = get_files(well_formed=True)
-    for fullname, value in file_dict.iteritems():
+    for fullname, value in iteritems(file_dict):
         if fullname in IGNORE_VALID + [
                 'tests/data/text_xml/valid_1.0_dtd.xml',
                 'tests/data/application_xhtml+xml//valid_1.0.xhtml']:
@@ -216,9 +214,6 @@ def test_unicode_filename(testpath):
             continue
         ext = fullname.rsplit(".", 1)[-1]
         unicode_name = os.path.join(testpath, u'äöå.%s' % ext)
-        assert isinstance(unicode_name, unicode)
-
-        print "Rename to unicode and scrape: %s" % fullname
         shutil.copy(fullname, unicode_name)
         scraper = Scraper(unicode_name)
         scraper.scrape()

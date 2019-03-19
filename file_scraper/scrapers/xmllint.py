@@ -2,25 +2,29 @@
 
 import os
 import tempfile
+
 try:
     from lxml import etree
 except ImportError:
     pass
+
+from io import open
+from six import ensure_str
 
 from file_scraper.base import BaseScraper, Shell
 
 XSI = 'http://www.w3.org/2001/XMLSchema-instance'
 XS = '{http://www.w3.org/2001/XMLSchema}'
 
-SCHEMA_TEMPLATE = """<?xml version = "1.0" encoding = "UTF-8"?>
-    <xs:schema xmlns="http://dummy"
-    targetNamespace="http://dummy"
-    xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    version="1.0"
-    elementFormDefault="qualified"
-    attributeFormDefault="unqualified">
-    </xs:schema>"""
+SCHEMA_TEMPLATE = b"""<?xml version = "1.0" encoding = "UTF-8"?>
+<xs:schema xmlns="http://dummy"
+targetNamespace="http://dummy"
+xmlns:xs="http://www.w3.org/2001/XMLSchema"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+version="1.0"
+elementFormDefault="qualified"
+attributeFormDefault="unqualified">
+</xs:schema>"""
 
 
 class Xmllint(BaseScraper):
@@ -103,7 +107,7 @@ class Xmllint(BaseScraper):
             return
         # Try to check syntax by opening file in XML parser
         try:
-            file_ = open(self.filename)
+            file_ = open(self.filename, 'rb')
             parser = etree.XMLParser(dtd_validation=False, no_network=True)
             tree = etree.parse(file_, parser=parser)
             self.version = tree.docinfo.xml_version
@@ -240,6 +244,7 @@ class Xmllint(BaseScraper):
         if error:
             filtered_errors = []
             for line in error.splitlines():
+                line = ensure_str(line)
                 if 'this namespace was already imported' in line:
                     continue
                 filtered_errors.append(line)

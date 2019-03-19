@@ -1,11 +1,13 @@
 """File metadata scraper."""
-from file_scraper.utils import combine_metadata
 
+from six import ensure_str
+from file_scraper.utils import combine_metadata
 from file_scraper.iterator import iter_scrapers, iter_detectors
 from file_scraper.scrapers.jhove import Utf8JHove
 from file_scraper.scrapers.textfile import CheckTextFile
 from file_scraper.scrapers.dummy import FileExists
 from file_scraper.utils import hexdigest
+
 
 LOSE = [None, '(:unav)', '(:unap)']
 
@@ -16,15 +18,13 @@ class Scraper(object):
     # pylint: disable=no-member, too-many-instance-attributes
 
     def __init__(self, filename, **kwargs):
-        """
-        Initialize scraper.
-
+        """Initialize scraper.
         :filename: File path
         :kwargs: Extra arguments for certain scrapers
         """
         self.filename = filename
         self.mimetype = None
-        self.version = None
+        self._version = None
         self.streams = None
         self.well_formed = None
         self.info = None
@@ -52,9 +52,7 @@ class Scraper(object):
                 self.mimetype = important['version'][self.mimetype]
 
     def _scrape_file(self, scraper):
-        """
-        Scrape with the given scraper.
-
+        """Scrape with the given scraper.
         :scraper: Scraper instance
         """
         scraper.scrape_file()
@@ -71,7 +69,7 @@ class Scraper(object):
         """
         UTF-8 check only for UTF-8.
 
-        We know the charset after actual scraping
+        We know the charset after actual scraping.
         """
         if 'charset' in self.streams[0] and \
                 self.streams[0]['charset'] == 'UTF-8':
@@ -95,9 +93,7 @@ class Scraper(object):
             self.streams[0]['version'] = self.version
 
     def scrape(self, check_wellformed=True):
-        """
-        Scrape file and collect metadata.
-
+        """Scrape file and collect metadata.
         :check_wellformed: True, full scraping; False, skip well-formed check.
         """
         self.streams = None
@@ -122,9 +118,7 @@ class Scraper(object):
         self._check_mimetype_version()
 
     def is_textfile(self):
-        """
-        Find out if file is a text file.
-
+        """Find out if file is a text file.
         :returns: True, if file is a text file, false otherwise
         """
         scraper = CheckTextFile(self.filename, self.mimetype)
@@ -132,10 +126,16 @@ class Scraper(object):
         return scraper.well_formed
 
     def checksum(self, algorithm='MD5'):
-        """
-        Return the checksum of the file with given algorithm.
-
+        """Return the checksum of the file with given algorithm.
         :algorithm: MD5 or SHA variant
         :returns: Calculated checksum
         """
         return hexdigest(self.filename, algorithm)
+
+    @property
+    def version(self):
+        return self._version
+
+    @version.setter
+    def version(self, value):
+        self._version = ensure_str(value) if value is not None else None

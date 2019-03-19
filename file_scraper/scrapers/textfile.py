@@ -32,7 +32,7 @@ class CheckTextFile(BaseScraper):
         """Check MIME type determined by libmagic."""
         self.messages('Trying text detection...')
         mimetype = self._file_mimetype()
-        if mimetype == 'text/plain':
+        if mimetype == b'text/plain':
             self.messages('File is a text file.')
         else:
             self.errors("File is not a text file")

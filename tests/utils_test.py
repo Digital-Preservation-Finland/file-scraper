@@ -90,7 +90,7 @@ from file_scraper.utils import hexdigest, sanitize_string,\
          "a0d01fcbff5d86327d542687dcfd8b299d054147"),
         ("tests/data/image_png/valid_1.2.png", None, 'SHA-1',
          "a7947ca260c313a4e7ece2312fd25db6cbcb9283"),
-        ("tests/data/text_plain/valid__utf8.txt", "abc123", None,
+        ("tests/data/text_plain/valid__utf8.txt", b"abc123", None,
          "c7a2bcf3dc77cdae5b59dc9afbc7c4f1cc375b0f"),
         ("tests/data/image_png/valid_1.2.png", None, 'MD5',
          "ce778faab1d293275a471df03faecdcd")
@@ -149,8 +149,7 @@ def test_sanitize_string(original_string, sanitized_string):
     ]
 )
 def test_iso8601_duration(seconds, expected_output):
-    """
-    Test that duration in seconds is converted to "PT[hh]H[mm]M[ss.ss]S".
+    """Test that duration in seconds is converted to "PT[hh]H[mm]M[ss.ss]S".
 
     If some parts are not present, e.g. there are no full hours or decimal
     parts in seconds, it is checked that those parts are not present in the
@@ -280,10 +279,10 @@ def test_combine_metadata_conflict():
 @pytest.mark.parametrize(
     ["command", "expected_statuscode", "expected_stdout", "expected_stderr"],
     [
-        (["echo", "testing"], 0, "testing\n", ""),
-        (["seq", "5"], 0, "1\n2\n3\n4\n5\n", ""),
-        (["cd", "nonexistentdir"], 1, [""],
-         "/usr/bin/cd: line 2: cd: nonexistentdir: No such file or directory\n"
+        (["echo", "testing"], 0, b"testing\n", ""),
+        (["seq", "5"], 0, b"1\n2\n3\n4\n5\n", ""),
+        (["cd", "nonexistentdir"], 1, "",
+         b"/usr/bin/cd: line 2: cd: nonexistentdir: No such file or directory\n"
         )
     ]
 )
@@ -299,8 +298,8 @@ def test_run_command(command, expected_statuscode, expected_stdout,
 
 
 def test_run_command_to_file():
-    """Test having output of a shell command directed to a file."""
-    with TemporaryFile() as outfile:
+    """Test having output of a shell command directed to a file"""
+    with TemporaryFile('w+') as outfile:
         (statuscode, stdout, stderr) = run_command(
             ["seq", "5"], stdout=outfile)
 
@@ -322,6 +321,6 @@ def test_run_command_with_env():
     (statuscode, stdout, stderr) = run_command(["printenv", "TEST_VARIABLE"],
                                                env=custom_env)
 
-    assert stdout == "testing\n"
+    assert stdout == b"testing\n"
     assert statuscode == 0
     assert not stderr

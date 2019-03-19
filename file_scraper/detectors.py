@@ -36,9 +36,9 @@ class _FidoReader(Fido):
         :filename: File path
         """
         self.filename = filename  # File path
-        self.puid = None          # Identified pronom code
-        self.mimetype = None      # Identified mime type
-        self.version = None       # Identified file format version
+        self.puid = None  # Identified pronom code
+        self.mimetype = None  # Identified mime type
+        self.version = None  # Identified file format version
         Fido.__init__(self, quiet=True, format_files=[
             'formats-v94.xml', 'format_extensions.xml'])
 
@@ -121,9 +121,9 @@ class FidoDetector(BaseDetector):
         """
         important = {}
         if self.mimetype not in [
-                None,
-                'text/html',
-                'application/zip']:
+            None,
+            'text/html',
+            'application/zip']:
             important['mimetype'] = self.mimetype
         return important
 
@@ -153,7 +153,7 @@ class MagicDetector(BaseDetector):
         """
         important = {}
         if self.mimetype in [
-                'application/x-internet-archive',
-                'application/vnd.oasis.opendocument.formula']:
+            'application/x-internet-archive',
+            'application/vnd.oasis.opendocument.formula']:
             important['mimetype'] = self.mimetype
         return important

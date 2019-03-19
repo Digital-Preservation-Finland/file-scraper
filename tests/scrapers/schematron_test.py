@@ -149,7 +149,7 @@ def test_filter_duplicate_elements():
     """Test duplicate element filtering."""
     # pylint: disable=protected-access
     schtest = \
-        """<svrl:schematron-output
+        b"""<svrl:schematron-output
             xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
                <svrl:active-pattern id="id"/>
                <svrl:active-pattern id="id"/>
@@ -166,6 +166,6 @@ def test_filter_duplicate_elements():
            </svrl:schematron-output>"""
     scraper = Schematron('filename', 'text/xml')
     result = scraper._filter_duplicate_elements(schtest)
-    assert result.count('<svrl:active-pattern') == 1
-    assert result.count('<svrl:fired-rule') == 1
-    assert result.count('<svrl:failed-assert') == 2
+    assert result.count(b'<svrl:active-pattern') == 1
+    assert result.count(b'<svrl:fired-rule') == 1
+    assert result.count(b'<svrl:failed-assert') == 2
