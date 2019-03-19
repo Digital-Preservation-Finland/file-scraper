@@ -68,7 +68,7 @@ class BaseScraper(object):
     __metaclass__ = abc.ABCMeta
 
     _supported = {}           # Dictionary of supported mimetypes and versions
-    _allow_versions = False   # Do not allow other detected versions
+    _allow_versions = False   # True: Allow other detected versions
     _only_wellformed = False  # True if the scraper does just well-formed
                               # check, False otherwise
 
@@ -102,11 +102,9 @@ class BaseScraper(object):
         :validation: True for the full validation, False for just
                      identification and metadata scraping
         :params: Extra parameters needed for the scraper.
-                 Used in some scrapers.
+                 Used in some scrapers which override this method.
         :returns: True if scraper is supported
         """
-        if params is None:
-            params = {}
         if mimetype in cls._supported and \
                 (version is None or
                  version in cls._supported[mimetype] or
@@ -170,7 +168,9 @@ class BaseScraper(object):
     def _check_supported(self):
         """Check that resulted mimetype and possible version are supported.
         """
-        if self._s_mimetype() and self._s_mimetype() not in self._supported:
+        if self._s_mimetype() is None:
+            self.errors("None is not supported mimetype.")
+        elif self._s_mimetype() and self._s_mimetype() not in self._supported:
             self.errors("Mimetype %s is not supported." % self._s_mimetype())
         elif self._s_version() and self._s_version() not in \
                 self._supported[self._s_mimetype()]:
