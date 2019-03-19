@@ -21,7 +21,13 @@ ROOTPATH = os.path.abspath(os.path.join(
             'purpose': 'Test valid xml with given schema.',
             'stdout_part': 'Success',
             'stderr_part': ''},
-         {'catalogs': False, 'schema': os.path.join(ROOTPATH, 'tests/data/text_xml/local.xsd')}),
+         {'catalogs': False,
+          'schema': os.path.join(ROOTPATH, 'tests/data/text_xml/local.xsd')}),
+        ('valid_1.0_catalog.xml', {
+            'purpose': 'Test valid file with local catalog.',
+            'stdout_part': 'Success',
+            'stderr_part': ''},
+         {'catalog_path': 'tests/data/text_xml/test-catalog.xml', 'catalogs': True}),
         ('valid_1.0_dtd.xml', {
             'purpose': 'Test valid xml with dtd.',
             'stdout_part': 'Success',
@@ -31,7 +37,6 @@ ROOTPATH = os.path.abspath(os.path.join(
 )
 def test_scraper_valid(filename, result_dict, params):
     """Test scraper"""
-
     correct = parse_results(filename, 'text/xml',
                             result_dict, True, params)
     scraper = Xmllint(correct.filename, correct.mimetype,
@@ -67,20 +72,24 @@ def test_scraper_valid(filename, result_dict, params):
             'stdout_part': '',
             'stderr_part': 'parser error'},
          {'catalogs': False, 'schema': os.path.join(ROOTPATH, 'tests/data/text_xml/invalid_local.xsd')}),
+        ('invalid_1.0_catalog.xml', {
+            'purpose': 'Test invalid file with local catalog.',
+            'stdout_part': '',
+            'stderr_part': 'Missing child element(s)'},
+         {'environment': None}),
         ('invalid_1.0_dtd.xml', {
             'purpose': 'Test invalid xml with dtd.',
             'stdout_part': '',
             'stderr_part': 'does not follow the DTD'},
-         {'catalogs': False}),
+         {'catalog_path': 'tests/data/text_xml/test-catalog.xml', 'catalogs': True}),
         ('invalid__empty.xml', {
             'purpose': 'Test empty xml.',
             'stdout_part': '',
-            'stderr_part': 'Document is empty'}, None)
+            'stderr_part': 'Document is empty'}, {})
     ]
 )
 def test_scraper_invalid(filename, result_dict, params):
     """Test scraper"""
-
     correct = parse_results(filename, 'text/xml',
                             result_dict, True, params)
     scraper = Xmllint(correct.filename, correct.mimetype,

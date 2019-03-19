@@ -66,13 +66,14 @@ The following arguments for Scraper class are also possible:
     * For XML validation:
 
         * Schema: ``schema=<schema file>`` - If not given, the scraper tries to find out the schema from the XML file.
-        * Use local schema catalogs: ``catalogs=True/False`` (True by default)
-        * Disallow network use: ``no_network=True/False`` (True by default)
+        * Use local schema catalogs: ``catalogs=True/False`` - True by default.
+        * Environment for catalogs: ``catalog_path=<catalog path>``  - None by default. If None, then catalog is expected in /etc/xml/catalog
+        * Disallow network use: ``no_network=True/False`` - True by default.
 
     * For XML Schematron validation:
 
         * Schematron path: ``schematron=<schematron file>`` - If is given, only Schematron scraping is executed.
-        * Verbose: ``verbose=True/False`` - False by default. If false, the recurring elements are suppressed.
+        * Verbose: ``verbose=True/False`` - False by default. If False, the e.g. recurring elements are suppressed.
         * Cache: ``cache=True/False`` - True by default. The compiled files are taken from cache, if ``<schematron file>`` is not changed.
         * Hash of related abstract Schematron files: ``extra_hash=<hash>`` - ``None`` by default. The compiled XSLT files created from Schematron are cached,
           but if there exist abstract Schematron patterns in separate files, the hash of those files must be calculated and given

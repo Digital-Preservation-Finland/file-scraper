@@ -8,7 +8,7 @@ try:
 except ImportError:
     pass
 
-from file_scraper.base import BaseScraper
+from file_scraper.base import BaseScraper, Shell
 
 XSI = 'http://www.w3.org/2001/XMLSchema-instance'
 XS = '{http://www.w3.org/2001/XMLSchema}'
@@ -47,6 +47,7 @@ class Xmllint(BaseScraper):
         self._has_constructed_schema = False
         self._catalogs = params.get('catalogs', True)
         self._no_network = params.get('no_network', True)
+        self._catalog_path = params.get('catalog_path', None)
         super(Xmllint, self).__init__(filename, mimetype, validation, params)
 
     @classmethod
@@ -110,7 +111,7 @@ class Xmllint(BaseScraper):
         # Try validate againts XSD
         else:
             if not self._schema:
-                # self._schema = self.construct_xsd(tree)
+                self._schema = self.construct_xsd(tree)
                 if not self._schema:
                     # No given schema and didn't find included schemas but XML
                     # was well formed.
@@ -199,16 +200,16 @@ class Xmllint(BaseScraper):
         command += ['--schema', schema] if schema else []
         command += [self.filename]
 
-        proc = subprocess.Popen(
-            command,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            shell=False)
+        if self._catalog_path is not None:
+            environment = {
+                'SGML_CATALOG_FILES': self._catalog_path
+            }
+        else:
+            environment = None
 
-        (stdout, stderr) = proc.communicate()
-        returncode = proc.returncode
+        shell = Shell(command, env=environment)
 
-        return (returncode, stdout, stderr)
+        return (shell.returncode, shell.stdout, shell.stderr)
 
     def errors(self, error=None):
         """Remove the warning which we do not need to see from self.stderr.
