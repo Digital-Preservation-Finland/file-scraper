@@ -1,7 +1,7 @@
 """Test for file_scraper.scrapers. The purpose of this test is to make sure
 that all scrapers are able to be found."""
 
-from file_scraper.iterator import iter_scrapers
+from file_scraper.iterator import iter_scrapers, iter_detectors
 import pytest
 
 
@@ -60,10 +60,19 @@ import pytest
         ("application/vnd.openxmlformats-officedocument.presentationml."
          "presentation", None, ["Office", "OfficeFileMagic"]),
     ])
-def tests_iter_scrapers(mimetype, version, scraper_classes):
+def test_iter_scrapers(mimetype, version, scraper_classes):
     """
     Test for scraper discovery.
     """
     scrapers = iter_scrapers(mimetype, version)
     assert set(
         [x.__name__ for x in scrapers]) == set(scraper_classes)
+
+
+def test_iter_detectors():
+    """Test for detector discovery.
+    """
+    detectors = iter_detectors()
+    assert set(
+        [x.__name__ for x in detectors]) == set(
+            ["FidoDetector", "MagicDetector"])
