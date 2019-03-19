@@ -187,6 +187,11 @@ class Utf8JHove(JHove):
         """
         return 'text'
 
+    def _check_supported(self):
+        """We dont care about the mimetype or version
+        """
+        pass
+
 
 class WavJHove(JHove):
     """JHove scraper for WAV and BWF audio data."""
