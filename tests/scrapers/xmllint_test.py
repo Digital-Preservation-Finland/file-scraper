@@ -14,7 +14,8 @@ ROOTPATH = os.path.abspath(os.path.join(
     [
         ('valid_1.0_well_formed.xml', {
             'purpose': 'Test valid file without schema.',
-            'stdout_part': 'Document is well-formed but does not contain schema.',
+            'stdout_part': 'Document is well-formed but does not contain '
+                           'schema.',
             'stderr_part': ''},
          {'catalogs': False}),
         ('valid_1.0_local_xsd.xml', {
@@ -27,7 +28,8 @@ ROOTPATH = os.path.abspath(os.path.join(
             'purpose': 'Test valid file with local catalog.',
             'stdout_part': 'Success',
             'stderr_part': ''},
-         {'catalog_path': 'tests/data/text_xml/test-catalog.xml', 'catalogs': True}),
+         {'catalog_path': 'tests/data/text_xml/test-catalog.xml',
+          'catalogs': True}),
         ('valid_1.0_dtd.xml', {
             'purpose': 'Test valid xml with dtd.',
             'stdout_part': 'Success',
@@ -65,23 +67,26 @@ def test_scraper_valid(filename, result_dict, params):
             'purpose': 'Test invalid xml with given schema.',
             'stdout_part': '',
             'stderr_part': 'Schemas validity error'},
-         {'catalogs': False, 'schema': os.path.join(ROOTPATH, 'tests/data/text_xml/local.xsd')}),
+         {'catalogs': False, 'schema': os.path.join(
+            ROOTPATH, 'tests/data/text_xml/local.xsd')}),
         ('valid_1.0_local_xsd.xml', {
             'purpose': 'Test valid xml with given invalid schema.',
             'inverse': True,
             'stdout_part': '',
             'stderr_part': 'parser error'},
-         {'catalogs': False, 'schema': os.path.join(ROOTPATH, 'tests/data/text_xml/invalid_local.xsd')}),
+         {'catalogs': False, 'schema': os.path.join(
+            ROOTPATH, 'tests/data/text_xml/invalid_local.xsd')}),
         ('invalid_1.0_catalog.xml', {
             'purpose': 'Test invalid file with local catalog.',
             'stdout_part': '',
             'stderr_part': 'Missing child element(s)'},
-         {'environment': None}),
+         {'catalog_path': 'tests/data/text_xml/test-catalog.xml',
+          'catalogs': True}),
         ('invalid_1.0_dtd.xml', {
             'purpose': 'Test invalid xml with dtd.',
             'stdout_part': '',
             'stderr_part': 'does not follow the DTD'},
-         {'catalog_path': 'tests/data/text_xml/test-catalog.xml', 'catalogs': True}),
+         {'catalogs': False}),
         ('invalid__empty.xml', {
             'purpose': 'Test empty xml.',
             'stdout_part': '',

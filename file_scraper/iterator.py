@@ -33,12 +33,10 @@ from file_scraper.scrapers.dummy import ScraperNotFound
 
 def iter_detectors():
     """Iterate detectors.
+    We want to keep the detectors in ordered list.
     :returns: detector class
-
-    Implementation of class factory pattern from
-    http://stackoverflow.com/questions/456672/class-factory-in-python
     """
-    for cls in BaseDetector.__subclasses__():
+    for cls in [FidoDetector, MagicDetector]:
         yield cls
 
 

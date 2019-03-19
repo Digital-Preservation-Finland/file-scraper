@@ -14,6 +14,7 @@ class FFMpeg(BaseScraper):
                   'video/MP1S': [''], 'video/MP2P': [''],
                   'video/MP2T': ['']}
     _only_wellformed = True  # Only well-formed check
+    _allow_versions = True   # Allow any version
 
     def scrape_file(self):
         """Scrape DPX.

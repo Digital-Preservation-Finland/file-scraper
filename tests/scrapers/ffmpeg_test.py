@@ -176,5 +176,5 @@ def test_is_supportedi_mpeg(mime, ver):
     assert FFMpeg.is_supported(mime, ver, True)
     assert FFMpeg.is_supported(mime, None, True)
     assert not FFMpeg.is_supported(mime, ver, False)
-    assert not FFMpeg.is_supported(mime, 'foo', True)
+    assert FFMpeg.is_supported(mime, 'foo', True)
     assert not FFMpeg.is_supported('foo', ver, True)

@@ -112,6 +112,7 @@ class FidoDetector(BaseDetector):
         """
         important = {}
         if self.mimetype not in [
+                None,
                 'text/html',
                 'application/zip']:
             important['mimetype'] = self.mimetype
