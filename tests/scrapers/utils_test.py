@@ -53,6 +53,7 @@ def test_sanitize_string(original_string, sanitized_string):
         (3600, "PT1H"),
         (3600.001, "PT1H"),
         (3601, "PT1H1S"),
+        (7199.999, "PT2H"),
         (7245.5, "PT2H45.5S"),
         (1234567.89, "PT342H56M7.89S")
     ]
