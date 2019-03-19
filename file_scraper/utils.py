@@ -42,7 +42,14 @@ def iso8601_duration(time):
     """
     hours = time // (60*60)
     minutes = time // 60 % 60
-    seconds = time % 60
+    seconds = round(time % 60, 2)
+
+    if seconds == 60:
+        seconds = 0
+        minutes += 1
+    if minutes == 60:
+        minutes = 0
+        hours += 1
 
     duration = "PT"
 
@@ -50,7 +57,7 @@ def iso8601_duration(time):
         duration += "%dH" % hours
     if minutes:
         duration += "%dM" % minutes
-    if seconds:
+    if seconds > 0:
         seconds = strip_zeros("%.2f" % seconds)
         duration += "%sS" % seconds
     if duration == 'PT':
@@ -115,7 +122,7 @@ def combine_metadata(stream, metadata, lose=[], important=None):
                     founditem[key] = important[key]
                 elif newitem[key] not in [founditem[key]] + lose:
                     raise ValueError(
-                        "Conflict with exsisting value '%s' and new "
+                        "Conflict with existing value '%s' and new "
                         "value '%s'." % (founditem[key], newitem[key]))
         for key, value in newitem.iteritems():
             if key not in founditem:
