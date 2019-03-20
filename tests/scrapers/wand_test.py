@@ -45,6 +45,13 @@ STREAM_INVALID = {
             'streams': {0: STREAM_VALID.copy()},
             'stdout_part': 'successfully',
             'stderr_part': ''}),
+        ('valid_6.0_multiple_tiffs.tif', {
+            'purpose': 'Test valid multiple tiff file.',
+            'streams': {0: STREAM_VALID.copy(),
+                        1: STREAM_VALID.copy(),
+                        2: STREAM_VALID.copy()},
+            'stdout_part': 'successfully',
+            'stderr_part': ''}),
         ('invalid_6.0_payload_altered.tif', {
             'purpose': 'Test payload altered in file.',
             'streams': {0: STREAM_INVALID.copy()},
@@ -67,8 +74,14 @@ def test_scraper_tif(filename, result_dict):
     correct = parse_results(filename, 'image/tiff',
                             result_dict, True)
     if correct.well_formed:
-        correct.streams[0]['compression'] = 'zip'
-        correct.streams[0]['byte_order'] = 'little endian'
+        for index in range(0, len(correct.streams)):
+            correct.streams[index]['compression'] = 'zip'
+            correct.streams[index]['byte_order'] = 'little endian'
+            correct.streams[index]['mimetype'] = \
+                correct.streams[0]['mimetype']
+            correct.streams[index]['stream_type'] = \
+                correct.streams[0]['stream_type']
+            correct.streams[index]['version'] = None
     else:
         correct.streams[0]['byte_order'] = None
 

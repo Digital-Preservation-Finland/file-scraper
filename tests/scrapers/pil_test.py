@@ -47,6 +47,11 @@ STREAM_INVALID = {
         ('valid_6.0.tif', {
             'purpose': 'Test valid file.',
             'streams': {0: STREAM_VALID.copy()}}),
+        ('valid_6.0_multiple_tiffs.tif', {
+            'purpose': 'Test valid multiple tiff file.',
+            'streams': {0: STREAM_VALID.copy(),
+                        1: STREAM_VALID.copy(),
+                        2: STREAM_VALID.copy()}}),
         ('invalid_6.0_payload_altered.tif', {
             'purpose': 'Test payload altered in file.',
             'streams': {0: STREAM_INVALID.copy()}}),
@@ -67,6 +72,14 @@ def test_scraper_tif(filename, result_dict):
     scraper = TiffPil(correct.filename, correct.mimetype,
                       True, correct.params)
     scraper.scrape_file()
+
+    if correct.well_formed:
+        for index in range(0, len(correct.streams)):
+            correct.streams[index]['mimetype'] = \
+                correct.streams[0]['mimetype']
+            correct.streams[index]['stream_type'] = \
+                correct.streams[0]['stream_type']
+            correct.streams[index]['version'] = None
 
     assert scraper.mimetype == correct.mimetype
     assert scraper.version == correct.version
