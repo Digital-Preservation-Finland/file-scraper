@@ -3,6 +3,9 @@
 import os.path
 import ctypes
 
+from file_scraper.base import BaseScraper
+from file_scraper.dicts import MIMETYPE_DICT
+
 try:
     ctypes.cdll.LoadLibrary('/opt/file-5.30/lib64/libmagic.so.1')
 except OSError:
@@ -13,8 +16,6 @@ try:
 except ImportError:
     pass
 
-from file_scraper.base import BaseScraper
-from file_scraper.dicts import MIMETYPE_DICT
 
 
 class BinaryMagic(BaseScraper):
@@ -64,7 +65,7 @@ class BinaryMagic(BaseScraper):
             else:
                 self.errors('Given mimetype %s and detected mimetype %s do '
                             'not match.' % (self.mimetype, self._s_mimetype()))
-        except Exception as e:
+        except Exception as e: # pylint: disable=broad-except
             self.errors('Error in scraping file.')
             self.errors(str(e))
         finally:

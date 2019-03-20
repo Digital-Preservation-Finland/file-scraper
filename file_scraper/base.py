@@ -65,6 +65,8 @@ class BaseScraper(object):
     """Base class for scrapers.
     """
 
+    # pylint: disable=too-many-instance-attributes
+
     __metaclass__ = abc.ABCMeta
 
     _supported = {}           # Dictionary of supported mimetypes and versions
@@ -105,9 +107,11 @@ class BaseScraper(object):
                  Used in some scrapers which override this method.
         :returns: True if scraper is supported
         """
+
+        # pylint: disable=unused-argument
+
         if mimetype in cls._supported and \
-                (version is None or
-                 version in cls._supported[mimetype] or
+                (version in cls._supported[mimetype] + [None] or
                  cls._allow_versions) and \
                 (validation or not cls._only_wellformed):
             return True
@@ -226,6 +230,9 @@ class SkipElement(object):
     We are not able to use None or '' since those are reserved for
     other purposes already.
     """
+
+    # pylint: disable=no-method-argument,too-few-public-methods
+
     def __init__():
         pass
 
@@ -233,6 +240,8 @@ class SkipElement(object):
 class BaseDetector(object):
     """Class to identify file format.
     """
+
+    # pylint: disable=too-few-public-methods
 
     __metaclass__ = abc.ABCMeta
 
