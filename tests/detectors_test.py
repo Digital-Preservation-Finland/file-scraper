@@ -1,8 +1,8 @@
-"""
+"""Tests for Fido and Magic detectors
 """
 import pytest
 from file_scraper.detectors import FidoDetector, MagicDetector
-from  tests.common import get_valid_files
+from  tests.common import get_files
 
 CHANGE_FIDO = {
     'tests/data/text_plain/valid__ascii.txt': None,
@@ -38,9 +38,9 @@ CHANGE_MAGIC = {
     ]
 )
 def test_detectors(detector_class, change_dict):
-    """Test Fido detector
+    """Test Fido and Magic detectors
     """
-    file_dict = get_valid_files()
+    file_dict = get_files(well_formed=True)
     for filename, value in file_dict.iteritems():
         mimetype = value[0]
         version = value[1]

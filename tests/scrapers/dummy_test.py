@@ -51,6 +51,15 @@ def test_nonexistent_files(filepath, mimetype):
     assert "does not exist" in scraper.errors()
 
 
+def test_none_filename():
+    """Test that None filename results error"""
+    scraper = FileExists(None, None)
+    scraper.scrape_file()
+
+    assert not scraper.well_formed
+    assert "No filename given." in scraper.errors()
+
+
 @pytest.mark.parametrize(
     ["filepath", "mimetype"],
     [

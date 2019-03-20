@@ -34,7 +34,9 @@ class FileExists(BaseScraper):
     def scrape_file(self):
         """Check if file exists
         """
-        if os.path.isfile(self.filename):
+        if not self.filename:
+            self.errors('No filename given.')
+        elif os.path.isfile(self.filename):
             self.messages('File %s was found.' % self.filename)
         else:
             self.errors('File %s does not exist.' % self.filename)

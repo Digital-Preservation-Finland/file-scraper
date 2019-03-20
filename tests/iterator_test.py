@@ -59,6 +59,7 @@ import pytest
          None, ["Office", "OfficeFileMagic"]),
         ("application/vnd.openxmlformats-officedocument.presentationml."
          "presentation", None, ["Office", "OfficeFileMagic"]),
+        ("test/unknown", None, ["ScraperNotFound"])
     ])
 def test_iter_scrapers(mimetype, version, scraper_classes):
     """
