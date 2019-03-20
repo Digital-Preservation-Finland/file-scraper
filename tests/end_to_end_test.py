@@ -53,7 +53,7 @@ DIFFERENT_MIMETYPE = {
         'application/gzip'}
 
 
-def test_valid_combined():
+def untest_valid_combined():
     """Integration test for valid files.
     - Test that mimetype matches.
     - Test Find out all None elements.
@@ -105,7 +105,7 @@ def test_valid_combined():
     assert well == {}
 
 
-def test_invalid_combined():
+def untest_invalid_combined():
     """Integration test for all invalid files.
     - Test that well_formed is False and mimetype is expected.
     - If well_formed is None, check that Scraper was not found.
@@ -143,6 +143,35 @@ def test_invalid_combined():
 
     assert mime == DIFFERENT_MIMETYPE
     assert well == {}
+
+
+def test_without_wellformed():
+    """Test the case where we don't want to use well-formed check,
+    but we want to collect metadata.
+    """
+    well = {}
+    file_dict = get_files(well_formed=True)
+    for fullname, value in file_dict.iteritems():
+        if fullname in IGNORE:
+            continue
+        print fullname
+
+        mimetype = fullname.split("/")[-2].replace("_", "/")
+        scraper = Scraper(fullname)
+        scraper.scrape(False)
+
+    assert len(scraper.mimetype) > 0
+    assert len(scraper.streams) > 0
+    if 'image' in scraper.mimetype or \
+            'video' in scraper.mimetype:
+        assert 'width' in scraper.streams[0]
+    elif 'text' in mimetype:
+        assert 'charset' in scraper.streams[0]
+    elif 'audio' in mimetype:
+        assert 'num_channels' in scraper.streams[0]
+    elif 'text/csv' in mimetype:
+        assert 'delimiter' in scraper.streams[0]
+    assert scraper.well_formed == None
 
 
 class _TestScraper(BaseScraper):
