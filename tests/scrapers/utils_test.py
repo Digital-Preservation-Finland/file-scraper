@@ -1,5 +1,7 @@
 """Tests for utils.py"""
 
+import os
+from tempfile import TemporaryFile
 import pytest
 
 from file_scraper.utils import hexdigest, sanitize_string,\
@@ -182,6 +184,53 @@ def test_combine_metadata_conflict():
     assert "Conflict with existing value" in str(error.value)
 
 
-def test_run_command():
-    """-""" #TODO add tests and docstring
-    pass
+@pytest.mark.parametrize(
+    ["command", "expected_statuscode", "expected_stdout", "expected_stderr"],
+    [
+        (["echo", "testing"], 0, "testing\n", ""),
+        (["seq", "5"], 0, "1\n2\n3\n4\n5\n", ""),
+        (["cd", "nonexistentdir"], 1, [""],
+         "/usr/bin/cd: line 2: cd: nonexistentdir: No such file or directory\n"
+        )
+    ]
+)
+def test_run_command(command, expected_statuscode, expected_stdout,
+                     expected_stderr):
+    """
+    Test running commands normally: without directing stdout to a file or using
+    custom environment
+    """
+    (statuscode, stdout, stderr) = run_command(command)
+    assert statuscode == expected_statuscode
+    assert stderr == expected_stderr
+
+    for line_number, line in enumerate(stdout):
+        assert line == expected_stdout[line_number]
+
+
+def test_run_command_to_file():
+    """Test having output of a shell command directed to a file"""
+    with TemporaryFile() as outfile:
+        (statuscode, stdout, stderr) = run_command(["seq", "5"], stdout=outfile)
+
+        assert statuscode == 0
+        assert not stdout
+        assert not stderr
+
+        outfile.seek(0)
+        expected_number = 1
+        for line in outfile:
+            assert line == str(expected_number) + '\n'
+            expected_number += 1
+
+
+def test_run_command_with_env():
+    """Test using custom environment variables"""
+    custom_env = os.environ.copy()
+    custom_env["TEST_VARIABLE"] = "testing"
+    (statuscode, stdout, stderr) = run_command(["printenv", "TEST_VARIABLE"],
+                                               env=custom_env)
+
+    assert stdout == "testing\n"
+    assert statuscode == 0
+    assert not stderr
