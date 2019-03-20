@@ -68,14 +68,14 @@ def test_scraper_valid(filename, result_dict, params):
             'stdout_part': '',
             'stderr_part': 'Schemas validity error'},
          {'catalogs': False, 'schema': os.path.join(
-            ROOTPATH, 'tests/data/text_xml/local.xsd')}),
+             ROOTPATH, 'tests/data/text_xml/local.xsd')}),
         ('valid_1.0_local_xsd.xml', {
             'purpose': 'Test valid xml with given invalid schema.',
             'inverse': True,
             'stdout_part': '',
             'stderr_part': 'parser error'},
          {'catalogs': False, 'schema': os.path.join(
-            ROOTPATH, 'tests/data/text_xml/invalid_local.xsd')}),
+             ROOTPATH, 'tests/data/text_xml/invalid_local.xsd')}),
         ('invalid_1.0_catalog.xml', {
             'purpose': 'Test invalid file with local catalog.',
             'stdout_part': '',

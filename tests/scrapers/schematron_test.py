@@ -40,7 +40,7 @@ def test_scraper_invalid(filename, result_dict, params):
     correct = parse_results(filename, 'text/xml',
                             result_dict, True, params)
     scraper = Schematron(correct.filename, correct.mimetype,
-                      True, correct.params)
+                         True, correct.params)
     scraper.scrape_file()
     correct.version = None
     correct.streams[0]['version'] = None
