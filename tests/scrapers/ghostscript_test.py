@@ -2,7 +2,7 @@
 Test for pdf 1.7 ghostscript scraper.
 """
 import pytest
-from tests.scrapers.common import parse_results
+from tests.common import parse_results
 from file_scraper.scrapers.ghostscript import GhostScript
 
 

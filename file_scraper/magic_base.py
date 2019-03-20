@@ -4,17 +4,19 @@ import os.path
 import ctypes
 
 try:
-    ctypes.cdll.LoadLibrary('/opt/file-5.30/lib64/libmagic.so.1')
+    from file_scraper.defaults import MAGIC_LIBRARY
+    ctypes.cdll.LoadLibrary(MAGIC_LIBRARY)
 except OSError:
-    print('/opt/file-5.30/lib64/libmagic.so.1 not found, MS Office detection '
-          'may not work properly if file command library is older than 5.30.')
+    print('%s not found, MS Office detection may not work properly if '
+          'file command library is older.' % MAGIC_LIBRARY)
+
 try:
     import magic
 except ImportError:
     pass
 
 from file_scraper.base import BaseScraper
-from file_scraper.dicts import MIMETYPE_DICT
+from file_scraper.defaults import MIMETYPE_DICT
 
 
 class BinaryMagic(BaseScraper):

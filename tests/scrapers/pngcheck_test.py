@@ -1,6 +1,6 @@
 """Test the file_scraper.scrapers.pngcheck module"""
 import pytest
-from tests.scrapers.common import parse_results
+from tests.common import parse_results
 from file_scraper.scrapers.pngcheck import Pngcheck
 
 

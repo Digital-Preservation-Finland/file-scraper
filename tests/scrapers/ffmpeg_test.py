@@ -2,7 +2,7 @@
 import os
 import pytest
 from file_scraper.scrapers.ffmpeg import FFMpeg
-from tests.scrapers.common import parse_results
+from tests.common import parse_results
 
 
 @pytest.mark.parametrize(

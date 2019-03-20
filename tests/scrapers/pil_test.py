@@ -4,7 +4,7 @@ Tests for PIL scraper.
 import os
 import pytest
 from file_scraper.scrapers.pil import TiffPil, JpegPil, ImagePil
-from tests.scrapers.common import parse_results
+from tests.common import parse_results
 
 
 VALID_MSG = 'successfully'

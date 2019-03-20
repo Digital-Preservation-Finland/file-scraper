@@ -6,7 +6,7 @@ import lxml.etree
 from tempfile import NamedTemporaryFile
 
 from file_scraper.scrapers.csv_scraper import Csv
-from tests.scrapers.common import parse_results
+from tests.common import parse_results
 
 MIMETYPE = 'text/csv'
 

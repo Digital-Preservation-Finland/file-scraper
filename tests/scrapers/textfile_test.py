@@ -1,7 +1,7 @@
 import pytest
 
 from file_scraper.scrapers.textfile import CheckTextFile
-from tests.scrapers.common import parse_results
+from tests.common import parse_results
 
 VALID_MSG = 'is a text file'
 INVALID_MSG = 'is not a text file'

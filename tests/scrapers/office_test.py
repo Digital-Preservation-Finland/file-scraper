@@ -6,7 +6,7 @@ import os
 import pytest
 from multiprocessing import Pool
 from file_scraper.scrapers.office import Office
-from tests.scrapers.common import parse_results
+from tests.common import parse_results
 
 
 BASEPATH = 'tests/data'

@@ -3,7 +3,7 @@
 import os
 import pytest
 from file_scraper.scrapers.schematron import Schematron
-from tests.scrapers.common import parse_results
+from tests.common import parse_results
 
 ROOTPATH = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '../../'))

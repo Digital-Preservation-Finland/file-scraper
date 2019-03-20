@@ -3,7 +3,7 @@ Tests for Vnu scraper.
 """
 import pytest
 from file_scraper.scrapers.vnu import Vnu
-from tests.scrapers.common import parse_results
+from tests.common import parse_results
 
 
 MIMETYPE = 'text/html'

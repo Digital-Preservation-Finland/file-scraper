@@ -2,7 +2,7 @@
 Tests for PSPP scraper.
 """
 import pytest
-from tests.scrapers.common import parse_results
+from tests.common import parse_results
 from file_scraper.scrapers.pspp import Pspp
 
 

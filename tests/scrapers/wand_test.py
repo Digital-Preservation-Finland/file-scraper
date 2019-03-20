@@ -4,7 +4,7 @@ Tests for ImageMagick scraper.
 import os
 import pytest
 from file_scraper.scrapers.wand import TiffWand, ImageWand
-from tests.scrapers.common import parse_results
+from tests.common import parse_results
 
 
 STREAM_VALID = {

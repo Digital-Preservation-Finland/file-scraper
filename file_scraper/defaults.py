@@ -1,5 +1,7 @@
-"""Common dictionaries
+"""Common constants and dictionaries
 """
+
+MAGIC_LIBRARY = '/opt/file-5.30/lib64/libmagic.so.1'
 
 # Prioritize these pronom codes in identification
 PRIORITY_PRONOM = [

@@ -2,7 +2,7 @@
 Tests for DPX scraper.
 """
 import pytest
-from tests.scrapers.common import parse_results
+from tests.common import parse_results
 from file_scraper.scrapers.dpx import Dpx
 
 

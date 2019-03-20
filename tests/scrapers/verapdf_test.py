@@ -2,7 +2,7 @@
 Tests for VeraPDF scraper for PDF/A files.
 """
 import pytest
-from tests.scrapers.common import parse_results
+from tests.common import parse_results
 from file_scraper.scrapers.verapdf import VeraPdf
 
 
