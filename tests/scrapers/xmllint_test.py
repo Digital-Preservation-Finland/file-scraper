@@ -123,3 +123,26 @@ def test_is_supported():
     assert not Xmllint.is_supported(mime, ver, False)
     assert not Xmllint.is_supported(mime, 'foo', True)
     assert not Xmllint.is_supported('foo', ver, True)
+
+
+def test_parameters():
+    """Test that parameters and default values work properly.
+    """
+    scraper = Xmllint('testsfile', 'test/mimetype')
+    assert scraper._schema is None
+    assert scraper._catalogs
+    assert scraper._no_network
+    assert scraper._catalog_path is None
+
+    scraper = Xmllint('testsfile', 'test/mimetype',
+                      params={'schema': 'schemafile',
+                              'catalogs': False,
+                              'no_network': False})
+    assert scraper._schema == 'schemafile'
+    assert not scraper._catalogs
+    assert not scraper._no_network
+
+    scraper = Xmllint('testsfile', 'test/mimetype',
+                      params={'catalog_path': 'catpath'})
+    assert scraper._catalogs
+    assert scraper._catalog_path == 'catpath'

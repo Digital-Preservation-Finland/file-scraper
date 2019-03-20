@@ -23,6 +23,8 @@ class Schematron(BaseScraper):
                      identification and metadata scraping
         :params: Extra parameters needed for the scraper
         """
+        if params is None:
+            params = {}
         self._verbose = params.get('verbose', False)
         self._cache = params.get('cache', True)
         self._cachepath = os.path.expanduser(
@@ -68,7 +70,7 @@ class Schematron(BaseScraper):
         if self._schematron_file is None:
             return
 
-        xslt_filename = self._compile_schematron(self._schematron_file)
+        xslt_filename = self._compile_schematron()
 
         # The actual validation
         shell = self._compile_phase(
@@ -138,12 +140,11 @@ class Schematron(BaseScraper):
                     shell.returncode, shell.stdout, shell.stderr))
         return shell
 
-    def _compile_schematron(self, schematron_file):
+    def _compile_schematron(self):
         """Compile a schematron file
-        :schematron_file: Schematron file name
         :returns: XSLT file name
         """
-        xslt_filename = self._generate_xslt_filename(schematron_file)
+        xslt_filename = self._generate_xslt_filename()
         tempdir = tempfile.mkdtemp()
 
         if self._cache:
@@ -153,7 +154,7 @@ class Schematron(BaseScraper):
         try:
             self._compile_phase(
                 stylesheet='iso_dsdl_include.xsl',
-                inputfile=schematron_file,
+                inputfile=self._schematron_file,
                 outputfile=os.path.join(tempdir, 'step1.xsl'),
                 valid_codes=[0])
             self._compile_phase(
@@ -181,9 +182,8 @@ class Schematron(BaseScraper):
 
         return xslt_filename
 
-    def _generate_xslt_filename(self, schematron_schema):
+    def _generate_xslt_filename(self):
         """Generate XSLT filename from schematron file
-        :schematron_schema: Schematron file name
         :returns: XSLT filename
         """
         try:
@@ -191,9 +191,13 @@ class Schematron(BaseScraper):
         except OSError:
             if not os.path.isdir(self._cachepath):
                 raise
-
-        schema_digest = hexdigest(schematron_schema, self._extra_hash)
-        schema_basename = os.path.basename(schematron_schema)
+        extra = ''
+        if self._verbose:
+            extra = 'verbose'
+        if self._extra_hash is not None:
+            extra = "%s%s" % (extra, self._extra_hash)
+        schema_digest = hexdigest(self._schematron_file, extra)
+        schema_basename = os.path.basename(self._schematron_file)
 
         return os.path.join(self._cachepath, '%s.%s.validator.xsl' % (
             schema_basename, schema_digest))
