@@ -1,18 +1,20 @@
 """File format detectors.
 """
 import ctypes
-import magic
 
-from fido.fido import Fido, defaults
-from fido.pronomutils import get_local_pronom_versions
-from file_scraper.base import BaseDetector
-from file_scraper.dicts import PRONOM_DICT, MIMETYPE_DICT, VERSION_DICT, \
-    PRIORITY_PRONOM
 try:
     ctypes.cdll.LoadLibrary('/opt/file-5.30/lib64/libmagic.so.1')
 except OSError:
     print('/opt/file-5.30/lib64/libmagic.so.1 not found, MS Office detection '
           'may not work properly if file command library is older than 5.30.')
+
+import magic
+from fido.fido import Fido, defaults
+from fido.pronomutils import get_local_pronom_versions
+from file_scraper.base import BaseDetector
+from file_scraper.dicts import PRONOM_DICT, MIMETYPE_DICT, VERSION_DICT, \
+    PRIORITY_PRONOM
+
 
 class _FidoReader(Fido):
     """Fido wrapper to get pronom code, mimetype and version
