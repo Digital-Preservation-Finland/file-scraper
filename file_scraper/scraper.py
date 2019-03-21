@@ -71,7 +71,8 @@ class Scraper(object):
         after actual scraping
         """
         if 'charset' in self.streams[0] and \
-                self.streams[0]['charset'] == 'UTF-8':
+                self.streams[0]['charset'] == 'UTF-8' and \
+                validation:
             scraper = Utf8JHove(self.filename, self.mimetype, validation)
             self._scrape_file(scraper)
 

@@ -1,5 +1,8 @@
 """Module for scraping files with Jhove scraper"""
-import mimeparse
+try:
+    import mimeparse
+except:
+    pass
 from file_scraper.jhove_base import JHove
 from file_scraper.utils import strip_zeros
 
@@ -55,13 +58,12 @@ class HtmlJHove(JHove):
         results = self._report.xpath(query, namespaces=NAMESPACES)
         try:
             result_mimetype = mimeparse.parse_mime_type(results[0])
+            params = result_mimetype[2]
+            return params.get('charset')
         except mimeparse.MimeTypeParseException:
             return None
         except IndexError:
             return None
-        else:
-            params = result_mimetype[2]
-            return params.get('charset')
 
     def _get_charset_xml(self):
         """Get the charset from the JHove report for XHTML files"""
@@ -70,7 +72,6 @@ class HtmlJHove(JHove):
         try:
             return results[0]
         except IndexError:
-            # This will be handled by scrape_file()
             return None
 
     def _s_mimetype(self):
