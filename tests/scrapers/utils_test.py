@@ -110,19 +110,6 @@ def test_strip_zeros(float_str, expected_output):
          {0: {"key1-1": "value1-1", "key1-2": "value1-2",
               "key2-1": "value2-1", "key2-2": "value2-2", "index": 0}}),
 
-        # Index in the inner metadata dict does not match stream key
-        ({0: {"key1": "value1", "index": 0}},
-         {1: {"key2": "value2", "index": 0}},
-         [], None,
-         {0: {"key1": "value1", "index": 0},
-          1: {"key2": "value2", "index": 0}}),
-
-        # Index in the inner metadata dict matches stream key
-        ({1: {"key1": "value1", "index": 0}},
-         {0: {"key2": "value2", "index": 0}},
-         [], None,
-         {1: {"key1": "value1", "key2": "value2", "index": 0}}),
-
         # no conflict but an important key
         ({0: {"key1": "value1", "importantkey": "dullvalue", "index": 0}},
          {0: {"key2": "value2", "index": 0}},
