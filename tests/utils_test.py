@@ -9,20 +9,26 @@ from file_scraper.utils import hexdigest, sanitize_string,\
 
 
 @pytest.mark.parametrize(
-    ["filepath", "extra_hash", "expected_hash"],
+    ["filepath", "extra_hash", "algorithm", "expected_hash"],
     [
-        ("tests/data/text_plain/valid__utf8.txt", None,
+        ("tests/data/text_plain/valid__utf8.txt", None, None,
          "a0d01fcbff5d86327d542687dcfd8b299d054147"),
-        ("tests/data/image_png/valid_1.2.png", None,
+        ("tests/data/image_png/valid_1.2.png", None, 'SHA-1',
          "a7947ca260c313a4e7ece2312fd25db6cbcb9283"),
-        ("tests/data/text_plain/valid__utf8.txt", "abc123",
-         "c7a2bcf3dc77cdae5b59dc9afbc7c4f1cc375b0f")
+        ("tests/data/text_plain/valid__utf8.txt", "abc123", None,
+         "c7a2bcf3dc77cdae5b59dc9afbc7c4f1cc375b0f"),
+        ("tests/data/image_png/valid_1.2.png", None, 'MD5',
+         "ce778faab1d293275a471df03faecdcd")
     ]
 )
-def test_hexdigest(filepath, extra_hash, expected_hash):
+def test_hexdigest(filepath, extra_hash, algorithm, expected_hash):
     """Test that hexdigest returns correct sha1 hashes"""
+    if algorithm is None:
+        assert hexdigest(filepath, extra_hash=extra_hash) == expected_hash
+    else:
+        assert hexdigest(filepath, algorithm=algorithm,
+                         extra_hash=extra_hash) == expected_hash
 
-    assert hexdigest(filepath, extra_hash=extra_hash) == expected_hash
 
 @pytest.mark.parametrize(
     ["original_string", "sanitized_string"],

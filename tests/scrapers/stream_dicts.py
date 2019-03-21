@@ -4,7 +4,7 @@ WAV_AUDIO = {
     'audio_data_encoding': 'PCM', 'bits_per_sample': '8',
     'codec_creator_app': 'Lavf56.40.101',
     'codec_creator_app_version': '56.40.101',
-    'codec_name': 'PCM', 'codec_quality': None,
+    'codec_name': 'PCM', 'codec_quality': 'lossless',
     'data_rate': '705.6', 'data_rate_mode': 'Fixed', 'duration': 'PT0.86S',
     'index': 0, 'mimetype': 'audio/x-wav', 'num_channels': '2',
     'sampling_frequency': '44.1', 'stream_type': 'audio', 'version': ''}

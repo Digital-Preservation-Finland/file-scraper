@@ -196,7 +196,7 @@ class Schematron(BaseScraper):
             extra = 'verbose'
         if self._extra_hash is not None:
             extra = "%s%s" % (extra, self._extra_hash)
-        schema_digest = hexdigest(self._schematron_file, extra)
+        schema_digest = hexdigest(self._schematron_file, extra_hash=extra)
         schema_basename = os.path.basename(self._schematron_file)
 
         return os.path.join(self._cachepath, '%s.%s.validator.xsl' % (

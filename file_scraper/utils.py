@@ -7,7 +7,7 @@ import string
 import hashlib
 
 
-def hexdigest(filename, algorithm='MD5', extra_hash=None):
+def hexdigest(filename, algorithm='sha1', extra_hash=None):
     """Calculte hash of given file.
     :filename: File path
     :algorithm: Hash algorithm. MD5 or SHA variant.

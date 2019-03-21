@@ -340,14 +340,6 @@ def test_scraper_wav(filename, result_dict, version, others):
     scraper = WavJHove(correct.filename, correct.mimetype,
                        True, correct.params)
     scraper.scrape_file()
-    if others:
-        correct.streams[0]['bits_per_sample'] = '8'
-        correct.streams[0]['sampling_frequency'] = '44.1'
-        correct.streams[0]['num_channels'] = '2'
-    else:
-        correct.streams[0]['bits_per_sample'] = None
-        correct.streams[0]['sampling_frequency'] = None
-        correct.streams[0]['num_channels'] = None
     if 'empty' in filename:
         correct.mimetype = None
         correct.streams[0]['mimetype'] = None

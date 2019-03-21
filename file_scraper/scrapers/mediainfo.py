@@ -26,7 +26,7 @@ class WavMediainfo(Mediainfo):
         """
         if self._s_stream_type() == 'audio':
             return 'lossless'
-        return None
+        return SkipElement
 
 
 class MpegMediainfo(Mediainfo):
