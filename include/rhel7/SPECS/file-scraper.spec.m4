@@ -36,11 +36,14 @@ Requires:       ffmpeg-python ffmpeg ghostscript jhove python-lxml veraPDF dpx-v
 Requires:       warc-tools >= 4.8.3
 Requires:       pngcheck libreoffice pspp file-5.30 xhtml1-dtds vnu iso-schematron-xslt1
 
+%description
+File scraper analysis tool - light and full versions
+
 %description light
-File detector and metadata collector
+File scraper light: File detector and metadata collector
 
 %description full
-File detector, metadata collector and well-formed checker tool
+File scraper full: File detector, metadata collector and well-formed checker tool
 
 %prep
 %setup -n %{file_prefix}-v%{file_version}%{?file_release_tag}-%{file_build_number}-g%{file_commit_ref}
