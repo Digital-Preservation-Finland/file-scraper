@@ -1,14 +1,12 @@
 """Integration test for scrapers
 """
-import os
-
-import file_scraper.scraper
 from file_scraper.scraper import Scraper
-from file_scraper.base import BaseScraper
 from tests.common import get_files
 
 
 # These files will result none for some elements
+# For GIFs and TIFFs with 3 images inside, the version is missing from the
+# second and third streams, but exists in the first one.
 NONE_ELEMENTS = {
     'tests/data/application_msword/valid_11.0.doc': 'version',
     'tests/data/application_vnd.ms-excel/valid_11.0.xls': 'version',
@@ -22,7 +20,6 @@ NONE_ELEMENTS = {
     'tests/data/application_vnd.openxmlformats-officedocument.word'
     'processingml.document/valid_15.0.docx': 'version',
     'tests/data/application_x-internet-archive/valid_1.0_.arc.gz': 'version',
-    'tests/data/audio_x-wav/valid__wav.wav': 'version',
     'tests/data/image_gif/valid_1989a.gif': 'version, version',
     'tests/data/image_tiff/valid_6.0_multiple_tiffs.tif': 'version, version'}
 
@@ -40,20 +37,33 @@ VALID_MARKED_AS_INVALID = [
 
 
 # These must be ignored due to special parameters or missing scraper
-IGNORE = ['tests/data/text_xml/valid_1.0_xsd.xml',
-          'tests/data/text_xml/valid_1.0_local_xsd.xml',
-          'tests/data/text_xml/valid_1.0_catalog.xml',
-          'tests/data/video_x-matroska/valid__ffv1.mkv']
+IGNORE_VALID = ['tests/data/text_xml/valid_1.0_xsd.xml',
+                'tests/data/text_xml/valid_1.0_local_xsd.xml',
+                'tests/data/text_xml/valid_1.0_catalog.xml',
+                'tests/data/video_x-matroska/valid__ffv1.mkv']
+
+# Ignore these we know that warc and dpx files are not currently supported
+# for full metadata scraping
+IGNORE_FOR_METADATA = IGNORE_VALID + [
+    'tests/data/application_warc/valid_0.17.warc',
+    'tests/data/application_warc/valid_0.18.warc',
+    'tests/data/application_warc/valid_1.0.warc',
+    'tests/data/image_x-dpx/valid_2.0.dpx']
+
 
 # These invalid files are recognized as application/gzip
-DIFFERENT_MIMETYPE = {
+DIFFERENT_MIMETYPE_INVALID = {
     'tests/data/application_warc/invalid__missing_data.warc.gz': \
         'application/gzip',
     'tests/data/application_x-internet-archive/invalid__missing_data.arc.gz': \
         'application/gzip'}
+DIFFERENT_MIMETYPE_VALID = {
+    'tests/data/application_warc/valid_1.0_.warc.gz': 'application/gzip',
+    'tests/data/application_x-internet-archive/valid_1.0_.arc.gz': \
+        'application/gzip'}
 
 
-def untest_valid_combined():
+def test_valid_combined():
     """Integration test for valid files.
     - Test that mimetype matches.
     - Test Find out all None elements.
@@ -68,7 +78,7 @@ def untest_valid_combined():
     well = {}
     file_dict = get_files(well_formed=True)
     for fullname, value in file_dict.iteritems():
-        if fullname in IGNORE:
+        if fullname in IGNORE_VALID:
             continue
         mimetype = value[0]
         version = value[1]
@@ -105,7 +115,7 @@ def untest_valid_combined():
     assert well == {}
 
 
-def untest_invalid_combined():
+def test_invalid_combined():
     """Integration test for all invalid files.
     - Test that well_formed is False and mimetype is expected.
     - If well_formed is None, check that Scraper was not found.
@@ -141,18 +151,25 @@ def untest_invalid_combined():
             if scraper.mimetype != mimetype:
                 mime[fullname] = scraper.mimetype 
 
-    assert mime == DIFFERENT_MIMETYPE
+    assert mime == DIFFERENT_MIMETYPE_INVALID
     assert well == {}
 
 
 def test_without_wellformed():
     """Test the case where we don't want to use well-formed check,
     but we want to collect metadata.
+    - Test that well-formed is always None.
+    - Test that mimetype matches.
+    - Test that there exists correct stream type for image, video, audio
+      and text.
+    - Test a random element existence for image, video, audio and text.
     """
     well = {}
+    mime = {}
+    stream_dict = {}
     file_dict = get_files(well_formed=True)
     for fullname, value in file_dict.iteritems():
-        if fullname in IGNORE:
+        if fullname in IGNORE_FOR_METADATA:
             continue
         print fullname
 
@@ -160,62 +177,41 @@ def test_without_wellformed():
         scraper = Scraper(fullname)
         scraper.scrape(False)
 
-    assert len(scraper.mimetype) > 0
-    assert len(scraper.streams) > 0
-    if 'image' in scraper.mimetype or \
-            'video' in scraper.mimetype:
-        assert 'width' in scraper.streams[0]
-    elif 'text' in mimetype:
-        assert 'charset' in scraper.streams[0]
-    elif 'audio' in mimetype:
-        assert 'num_channels' in scraper.streams[0]
-    elif 'text/csv' in mimetype:
-        assert 'delimiter' in scraper.streams[0]
-    assert scraper.well_formed == None
+        if scraper.well_formed is not None:
+            well[fullname] = scraper.well_formed
 
+        if scraper.mimetype != mimetype:
+            mime[fullname] = scraper.mimetype
+            continue
 
-class _TestScraper(BaseScraper):
-    """Monkey patch for CheckTextFile class
-    """
-    def scrape_file(self):
-        pass
+        if scraper.streams is None:
+            stream_dict[fullname] = None
+            continue
 
-    def _s_stream_type(self):
-        return None
+        mimepart = mimetype.split("/")[0]
+        if 'stream_type' not in scraper.streams[0] or \
+                scraper.streams[0]['stream_type'] is None:
+            stream_dict[fullname] = None
 
-    @property
-    def well_formed(self):
-        if self.filename == 'textfile':
-            return True
-        else:
-            return False
+        if mimepart in ['image', 'video', 'text', 'audio'] and \
+                mimepart not in scraper.streams[0]['stream_type']:
+            stream_dict[fullname] = scraper.streams[0]
+                    
+        for _, stream in scraper.streams.iteritems():
+            if 'stream_type' not in stream:
+                stream_dict[fullname] = stream
+                continue
+            elem_dict = {'image': 'colorspace', 'video': 'color',
+                         'videocontainer': 'codec_name',
+                         'text': 'charset', 'audio': 'num_channels'}
+            if stream['stream_type'] in elem_dict and \
+                    elem_dict[stream['stream_type']] not in stream:
+                stream_dict[fullname] = stream
 
+        if 'text/csv' in mimetype:
+            if 'delimiter' not in scraper.streams[0]:
+                stream_dict[fullname] = stream
 
-def test_is_textfile(monkeypatch):
-    """Test that CheckTextFile well-formed value is returned.
-    """
-    monkeypatch.setattr(file_scraper.scraper, 'CheckTextFile', _TestScraper)
-    scraper = Scraper('textfile')
-    assert scraper.is_textfile()
-    scraper = Scraper('binaryfile')
-    assert not scraper.is_textfile()
-
-
-def test_empty_file():
-    """Test empty file.
-    """
-    scraper = Scraper('test/data/text_plain/invalid__empty.txt')
-    scraper.scrape()
-    assert not scraper.well_formed
-
-
-def test_missing_file():
-    """Test missing file.
-    """
-    scraper = Scraper('missing_file')
-    scraper.scrape()
-    assert not scraper.well_formed
-
-    scraper = Scraper(None)
-    scraper.scrape()
-    assert not scraper.well_formed
+    assert mime == DIFFERENT_MIMETYPE_VALID
+    assert stream_dict == {}
+    assert well == {}

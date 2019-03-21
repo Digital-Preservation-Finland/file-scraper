@@ -6,6 +6,7 @@ from file_scraper.iterator import iter_scrapers, iter_detectors
 from file_scraper.scrapers.jhove import Utf8JHove
 from file_scraper.scrapers.textfile import CheckTextFile
 from file_scraper.scrapers.dummy import FileExists
+from file_scraper.utils import hexdigest
 
 LOSE = [None, '0', '(:unav)', '(:unap)']
 
@@ -65,6 +66,28 @@ class Scraper(object):
             if self.well_formed in [None, True]:
                 self.well_formed = scraper.well_formed
 
+    def _check_utf8(self, validation):
+        """UTF-8 check only for UTF-8, we know the charset
+        after actual scraping
+        """
+        if 'charset' in self.streams[0] and \
+                self.streams[0]['charset'] == 'UTF-8':
+            scraper = Utf8JHove(self.filename, self.mimetype, validation)
+            self._scrape_file(scraper)
+
+    def _check_mimetype_version(self):
+        """We wan to use scraper's mimetype and version, but
+        if not detected, let's use detectors' values
+        """
+        if self.streams[0]['mimetype'] is not None:
+            self.mimetype = self.streams[0]['mimetype']
+        else:
+            self.streams[0]['mimetype'] = self.mimetype
+        if self.streams[0]['version'] is not None:
+            self.version = self.streams[0]['version']
+        else:
+            self.streams[0]['version'] = self.version
+
     def scrape(self, validation=True):
         """Scrape file and collect metadata.
         :validation: True, full scraping; False, skip well-formed check.
@@ -87,21 +110,8 @@ class Scraper(object):
                                     validation, self._params)
             self._scrape_file(scraper)
 
-        if 'charset' in self.streams[0] and \
-                self.streams[0]['charset'] == 'UTF-8':
-            scraper = Utf8JHove(self.filename, self.mimetype)
-            self._scrape_file(scraper)
-
-        # We wan to use scraper's mimetype and version, but
-        # if not detected, let's use detectors' values
-        if self.streams[0]['mimetype'] is not None:
-            self.mimetype = self.streams[0]['mimetype']
-        else:
-            self.streams[0]['mimetype'] = self.mimetype
-        if self.streams[0]['version'] is not None:
-            self.version = self.streams[0]['version']
-        else:
-            self.streams[0]['version'] = self.version
+        self._check_utf8(validation)
+        self._check_mimetype_version()
 
     def is_textfile(self):
         """Find out if file is a text file.
@@ -110,3 +120,10 @@ class Scraper(object):
         scraper = CheckTextFile(self.filename, self.mimetype)
         scraper.scrape_file()
         return scraper.well_formed
+
+    def checksum(self, algorithm='MD5'):
+        """Return the checksum of the file with given algorithm.
+        :algorithm: MD5 or SHA variant
+        :returns: Calculated checksum
+        """
+        return hexdigest(self.filename, algorithm)

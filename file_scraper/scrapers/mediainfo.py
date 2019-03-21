@@ -10,7 +10,7 @@ class WavMediainfo(Mediainfo):
     _allow_versions = True  # Allow any version
 
     def _s_version(self):
-        """Return version
+        """Returns version
         """
         if self._mediainfo is None:
             return None
@@ -20,6 +20,13 @@ class WavMediainfo(Mediainfo):
                 and self._mediainfo.tracks[0].bext_present == 'Yes':
             return '2'
         return ''
+
+    def _s_codec_quality(self):
+        """Returns codec quality
+        """
+        if self._s_stream_type() == 'audio':
+            return 'lossless'
+        return None
 
 
 class MpegMediainfo(Mediainfo):

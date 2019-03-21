@@ -11,7 +11,7 @@ import pytest
         ("application/x-spss-por", None, ["Pspp"]),
         ("application/warc", None, ["WarcWarctools"]),
         ("text/csv", None, ["Csv", "TextFileMagic"]),
-        ("text/plain", None, ["TextFileMagic", "TextFileMagic"]),
+        ("text/plain", None, ["TextFileMagic"]),
         ("video/mpeg", None, ["MpegMediainfo", "FFMpeg"]),
         ("video/mp4", None, ["MpegMediainfo", "FFMpeg"]),
         ("video/MP2T", None, ["MpegMediainfo", "FFMpeg"]),

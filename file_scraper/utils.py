@@ -7,13 +7,15 @@ import string
 import hashlib
 
 
-def hexdigest(filename, extra_hash=None):
+def hexdigest(filename, algorithm='MD5', extra_hash=None):
     """Calculte hash of given file.
     :filename: File path
+    :algorithm: Hash algorithm. MD5 or SHA variant.
     :extra_hash: Hash to be appended in calculation
     :returns: Calculated hash
     """
-    checksum = hashlib.new('sha1')
+    algorithm = algorithm.replace("-", "").lower().strip()
+    checksum = hashlib.new(algorithm)
     with open(filename, 'rb') as input_file:
         for chunk in iter(lambda: input_file.read(1024 * 1024), b''):
             checksum.update(chunk)
