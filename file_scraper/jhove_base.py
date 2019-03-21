@@ -73,7 +73,7 @@ class JHove(BaseScraper):
         """Return field value from JHoves XML output stored to self.report."""
         query = '//j:%s/text()' % field
         results = self._report.xpath(query, namespaces=NAMESPACES)
-        if results:
+        if results:  # pylint: disable=no-else-return
             return '\n'.join(results)
         else:
             return None

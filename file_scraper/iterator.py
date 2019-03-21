@@ -1,5 +1,7 @@
 """Scraper iterator"""
-from file_scraper.base import BaseScraper, BaseDetector
+# flake8: noqa
+# pylint:disable=unused-import
+from file_scraper.base import BaseScraper  # , BaseDetector
 from file_scraper.detectors import FidoDetector, MagicDetector
 from file_scraper.jhove_base import JHove
 from file_scraper.magic_base import BinaryMagic, TextMagic
@@ -56,40 +58,13 @@ def iter_scrapers(mimetype, version, validation=True, params=None):
         params = {}
     found_validator = False
 
-    for cls in BaseScraper.__subclasses__():
-        if cls.is_supported(mimetype, version, validation, params):
-            found_validator = True
-            yield cls
-
-    for cls in BinaryMagic.__subclasses__():
-        if cls.is_supported(mimetype, version, validation, params):
-            found_validator = True
-            yield cls
-
-    for cls in TextMagic.__subclasses__():
-        if cls.is_supported(mimetype, version, validation, params):
-            found_validator = True
-            yield cls
-
-    for cls in JHove.__subclasses__():
-        if cls.is_supported(mimetype, version, validation, params):
-            found_validator = True
-            yield cls
-
-    for cls in Mediainfo.__subclasses__():
-        if cls.is_supported(mimetype, version, validation, params):
-            found_validator = True
-            yield cls
-
-    for cls in Pil.__subclasses__():
-        if cls.is_supported(mimetype, version, validation, params):
-            found_validator = True
-            yield cls
-
-    for cls in Wand.__subclasses__():
-        if cls.is_supported(mimetype, version, validation, params):
-            found_validator = True
-            yield cls
+    scraper_superclasses = [BaseScraper, BinaryMagic, TextMagic, JHove,
+                            Mediainfo, Pil, Wand]
+    for superclass in scraper_superclasses:
+        for cls in superclass.__subclasses__():
+            if cls.is_supported(mimetype, version, validation, params):
+                found_validator = True
+                yield cls
 
     if not found_validator:
         yield ScraperNotFound

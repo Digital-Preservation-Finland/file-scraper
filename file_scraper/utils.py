@@ -91,6 +91,8 @@ def combine_metadata(stream, metadata, lose=[], important=None):
                 in conflict situation, if given.
     :returns: Merged metadta
     """
+    # pylint: disable=dangerous-default-value
+
     if not metadata:
         return stream
     if stream is None:
@@ -98,36 +100,31 @@ def combine_metadata(stream, metadata, lose=[], important=None):
     if important is None:
         important = {}
 
-    for index, newitem in metadata.iteritems():
+    for stream_index, metadata_dict in metadata.iteritems():
 
-        foundkey = None
-        founditem = None
-        item = None
-        for itemkey, item in stream.iteritems():
-            if item['index'] == index:
-                foundkey = itemkey
-                founditem = item
-                break
-
-        if founditem is None:
-            stream[index] = newitem
+        if stream_index not in stream.keys():
+            stream[stream_index] = metadata_dict
             continue
 
-        for key, value in founditem.iteritems():
-            if key in newitem and newitem[key] is not None:
-                if founditem[key] in lose:
-                    founditem[key] = newitem[key]
-                elif key in important and \
-                        important[key] not in lose:
-                    founditem[key] = important[key]
-                elif newitem[key] not in [founditem[key]] + lose:
-                    raise ValueError(
-                        "Conflict with existing value '%s' and new "
-                        "value '%s'." % (founditem[key], newitem[key]))
-        for key, value in newitem.iteritems():
-            if key not in founditem:
-                founditem[key] = value
-        stream[foundkey] = item
+        incomplete_stream = stream[stream_index]
+
+        for key in incomplete_stream.keys():
+            if key not in metadata_dict or metadata_dict[key] is None:
+                continue
+
+            if incomplete_stream[key] in lose:
+                incomplete_stream[key] = metadata_dict[key]
+            elif key in important and important[key] not in lose:
+                incomplete_stream[key] = important[key]
+            elif metadata_dict[key] not in [incomplete_stream[key]] + lose:
+                raise ValueError(
+                    "Conflict with existing value '%s' and new "
+                    "value '%s'." % (incomplete_stream[key],
+                                     metadata_dict[key]))
+
+        for key, value in metadata_dict.iteritems():
+            if key not in incomplete_stream:
+                incomplete_stream[key] = value
 
     return stream
 

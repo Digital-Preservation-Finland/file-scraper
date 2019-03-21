@@ -33,7 +33,7 @@ class Pil(BaseScraper):
         """
         try:
             self._pil = PIL.Image.open(self.filename)
-        except Exception as e:
+        except Exception as e:  # pylint: disable=invalid-name, broad-except
             self.errors('Error in scraping file.')
             self.errors(str(e))
         else:
@@ -118,8 +118,8 @@ class Pil(BaseScraper):
             return None
         if self._pil.mode == 'F':
             return 'floating point'
-        else:
-            return 'integer'
+
+        return 'integer'
 
     def _s_compression(self):
         """Returns compression scheme

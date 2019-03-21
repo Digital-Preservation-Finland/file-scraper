@@ -35,7 +35,7 @@ class FFMpeg(BaseScraper):
         try:
             self._ffmpeg = ffmpeg.probe(self.filename)
             for stream in [self._ffmpeg['format']] + self._ffmpeg['streams']:
-                if not 'index' in stream:
+                if 'index' not in stream:
                     stream['index'] = 0
                 else:
                     stream['index'] = stream['index'] + 1
@@ -86,7 +86,7 @@ class FFMpeg(BaseScraper):
         """Check if file has a video container"""
         if self._ffmpeg is None:
             return False
-        if not 'codec_type' in self._ffmpeg['format']:
+        if 'codec_type' not in self._ffmpeg['format']:
             return True
         return False
 
@@ -129,7 +129,7 @@ class FFMpeg(BaseScraper):
         """
         if self._ffmpeg is None:
             return None
-        if not 'codec_type' in self._ffmpeg_stream and \
+        if 'codec_type' not in self._ffmpeg_stream and \
                 self._s_index() > 0:
             return 'other'
         if self._hascontainer() and self._s_index() == 0:
@@ -141,7 +141,7 @@ class FFMpeg(BaseScraper):
         """
         if self._ffmpeg is None:
             return 0
-        if not 'index' in self._ffmpeg_stream:
+        if 'index' not in self._ffmpeg_stream:
             return 0
         return self._ffmpeg_stream['index']
 
@@ -154,6 +154,7 @@ class FFMpeg(BaseScraper):
         if self._ffmpeg is None:
             return None
         if 'pix_fmt' in self._ffmpeg_stream:
+            # pylint: disable=no-else-return
             if self._ffmpeg_stream["pix_fmt"] in ["gray"]:
                 return "Grayscale"
             elif self._ffmpeg_stream["pix_fmt"] in ["monob", "monow"]:
@@ -218,6 +219,7 @@ class FFMpeg(BaseScraper):
         if self._ffmpeg is None:
             return None
         if 'bit_rate' in self._ffmpeg_stream:
+            # pylint: disable=no-else-return
             if self._ffmpeg_stream['codec_type'] == 'video':
                 return strip_zeros(str(float(
                     self._ffmpeg_stream['bit_rate'])/1000000))

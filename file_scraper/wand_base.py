@@ -29,7 +29,7 @@ class Wand(BaseScraper):
         """
         try:
             self._wand = wand.image.Image(filename=self.filename)
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-except, invalid-name
             self.errors('Error in scraping file.')
             self.errors(str(e))
         else:

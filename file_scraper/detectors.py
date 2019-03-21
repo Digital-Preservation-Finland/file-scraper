@@ -1,5 +1,7 @@
 """File format detectors.
 """
+# pylint: disable=import-error, ungrouped-imports
+
 import ctypes
 
 try:
@@ -22,7 +24,7 @@ class _FidoReader(Fido):
     """
 
     # Global variable in Fido
-    global defaults
+    global defaults  # pylint: disable=invalid-name, global-statement
 
     def __init__(self, filename):
         """Fido is done with old-style python and does not inherit object,
@@ -58,6 +60,7 @@ class _FidoReader(Fido):
         :delta_t: Not needed here, but originates from Fido
         :matchtype: Not needed here, but originates from Fido
         """
+        # pylint: disable=unused-argument
         for (item, _) in matches:
             self.puid = self.get_puid(item)
             if self.puid in PRONOM_DICT:
@@ -74,7 +77,6 @@ class _FidoReader(Fido):
             if self.mimetype is None:
                 self.puid = self.get_puid(item)
                 self._find_mime(item)
-
 
     def _find_mime(self, item):
         """Find mimetype and version in Fido

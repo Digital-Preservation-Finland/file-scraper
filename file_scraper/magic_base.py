@@ -1,5 +1,6 @@
 """Scraper for various binary and text file formats
 """
+# pylint: disable=ungrouped-imports
 import os.path
 import ctypes
 
@@ -60,13 +61,13 @@ class BinaryMagic(BaseScraper):
                 self._magic_version = self._magic_version.split(
                     self._endtag)[0]
             if self._s_mimetype() == self.mimetype or \
-                    (self._s_mimetype() in MIMETYPE_DICT and \
+                    (self._s_mimetype() in MIMETYPE_DICT and
                      MIMETYPE_DICT[self._s_mimetype()] == self.mimetype):
                 self.messages('The file was scraped successfully.')
             else:
                 self.errors('Given mimetype %s and detected mimetype %s do '
                             'not match.' % (self.mimetype, self._s_mimetype()))
-        except Exception as e:
+        except Exception as e:  # pylint: disable=invalid-name, broad-except
             self.errors('Error in scraping file.')
             self.errors(str(e))
         finally:
@@ -149,17 +150,16 @@ class TextMagic(BaseScraper):
             self._magic_charset = magic_.file(self.filename)
             magic_.close()
             if self._s_mimetype() == self.mimetype or \
-                    (self._s_mimetype() in MIMETYPE_DICT and \
+                    (self._s_mimetype() in MIMETYPE_DICT and
                      MIMETYPE_DICT[self._s_mimetype()] == self.mimetype):
                 self.messages('The file was scraped successfully.')
             else:
                 self.errors('Given mimetype %s and detected mimetype %s do '
                             'not match.' % (self.mimetype, self._s_mimetype()))
-        except Exception as e:
+        except Exception as e:  # pylint: disable=invalid-name, broad-except
             self.errors('Error in scraping file.')
             self.errors(str(e))
         finally:
-            # self._check_supported()
             self._collect_elements()
 
     @property
@@ -193,13 +193,13 @@ class TextMagic(BaseScraper):
             return None
         if self._magic_charset.upper() == 'US-ASCII':
             return 'UTF-8'
-        elif self._magic_charset.upper() == 'ISO-8859-1':
+        if self._magic_charset.upper() == 'ISO-8859-1':
             return 'ISO-8859-15'
-        elif self._magic_charset.upper() == 'UTF-16LE' \
+        if self._magic_charset.upper() == 'UTF-16LE' \
                 or self._magic_charset.upper() == 'UTF-16BE':
             return 'UTF-16'
-        else:
-            return self._magic_charset.upper()
+
+        return self._magic_charset.upper()
 
     # pylint: disable=no-self-use
     def _s_stream_type(self):

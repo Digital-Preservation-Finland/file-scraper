@@ -39,7 +39,7 @@ class Mediainfo(BaseScraper):
         """
         try:
             self._mediainfo = MediaInfo.parse(self.filename)
-        except Exception as e:
+        except Exception as e:  # pylint: disable=invalid-name, broad-except
             self.errors('Error in scraping file.')
             self.errors(str(e))
             self.set_tool_stream(0)
@@ -114,8 +114,8 @@ class Mediainfo(BaseScraper):
             return True
         if len(self._mediainfo.tracks) < 3:
             return False
-        else:
-            return True
+
+        return True
 
     def _s_version(self):
         """Return version of stream.
@@ -124,8 +124,8 @@ class Mediainfo(BaseScraper):
             return None
         if self._mediainfo_stream.format_version is not None:
             return str(self._mediainfo_stream.format_version)
-        else:
-            return ''
+
+        return ''
 
     def _s_stream_type(self):
         """Return stream type
@@ -133,7 +133,7 @@ class Mediainfo(BaseScraper):
         if self._mediainfo is None:
             return None
         if self._mediainfo_stream.track_type == 'General':
-            if self._hascontainer():
+            if self._hascontainer():  # pylint: disable=no-else-return
                 return 'videocontainer'
             else:
                 return None
@@ -146,8 +146,8 @@ class Mediainfo(BaseScraper):
             return 0
         if self._hascontainer() or len(self._mediainfo.tracks) <= 1:
             return self._mediainfo_index
-        else:
-            return self._mediainfo_index - 1
+
+        return self._mediainfo_index - 1
 
     def _s_color(self):
         """Returns color information. Only values from fixed list are
@@ -229,6 +229,7 @@ class Mediainfo(BaseScraper):
         if self._mediainfo is None:
             return None
         if self._mediainfo_stream.bit_rate is not None:
+            # pylint: disable=no-else-return
             if self._mediainfo_stream.track_type == 'Video':
                 return strip_zeros(str(float(
                     self._mediainfo_stream.bit_rate)/1000000))

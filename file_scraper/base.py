@@ -64,13 +64,14 @@ class Shell(object):
 class BaseScraper(object):
     """Base class for scrapers.
     """
+    # pylint: disable=too-many-instance-attributes
 
     __metaclass__ = abc.ABCMeta
 
     _supported = {}           # Dictionary of supported mimetypes and versions
     _allow_versions = False   # True: Allow other detected versions
     _only_wellformed = False  # True if the scraper does just well-formed
-                              # check, False otherwise
+                              # check, False otherwise  # noqa:E116,E114
 
     def __init__(self, filename, mimetype, validation=True, params=None):
         """Initialize scraper.
@@ -106,8 +107,7 @@ class BaseScraper(object):
         :returns: True if scraper is supported
         """
         if mimetype in cls._supported and \
-                (version is None or
-                 version in cls._supported[mimetype] or
+                (version in cls._supported[mimetype] + [None] or
                  cls._allow_versions) and \
                 (validation or not cls._only_wellformed):
             return True
@@ -226,13 +226,16 @@ class SkipElement(object):
     We are not able to use None or '' since those are reserved for
     other purposes already.
     """
-    def __init__():
+    # pylint: disable=too-few-public-methods
+
+    def __init__(self):
         pass
 
 
 class BaseDetector(object):
     """Class to identify file format.
     """
+    # pylint: disable=too-few-public-methods
 
     __metaclass__ = abc.ABCMeta
 
