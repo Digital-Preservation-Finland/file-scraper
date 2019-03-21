@@ -12,22 +12,35 @@
 Name:           file-scraper
 Version:        %{file_version}
 Release:        %{file_release_number}%{file_release_tag}.%{file_build_number}.git%{file_commit_ref}%{?dist}
-Summary:        Metadata scraper tool
+Summary:        File scraper analysis tool
 Group:          Applications/Archiving
 License:        LGPLv3+
 URL:            http://www.csc.fi
 Source0:        %{file_prefix}-v%{file_version}%{?file_release_tag}-%{file_build_number}-g%{file_commit_ref}.%{file_ext}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
+BuildRequires:  python-setuptools
+
+%package light
+Summary: 	Light file scraper analysis tool
+Group:          Applications/Archiving
+Requires:	python python2-pymediainfo python-pillow python-magic python-opf-fido
+Requires:       python-wand >= 0.5.1
+
+%package full
+Summary: 	Full file scraper analysis tool
+Group:          Applications/Archiving
 Requires:       python python2-pymediainfo python-pillow python-magic python-opf-fido
 Requires:       python-wand >= 0.5.1
 Requires:       ffmpeg-python ffmpeg ghostscript jhove python-lxml veraPDF dpx-validator
 Requires:       warc-tools >= 4.8.3
-Requires:	pngcheck libreoffice pspp file-5.30 xhtml1-dtds vnu iso-schematron-xslt1
-BuildRequires:  python-setuptools
+Requires:       pngcheck libreoffice pspp file-5.30 xhtml1-dtds vnu iso-schematron-xslt1
 
-%description
-File metadata and validation scraper
+%description light
+File detector and metadata collector
+
+%description full
+File detector, metadata collector and well-formed checker tool
 
 %prep
 %setup -n %{file_prefix}-v%{file_version}%{?file_release_tag}-%{file_build_number}-g%{file_commit_ref}
@@ -41,7 +54,10 @@ make install PREFIX="%{_prefix}" ROOT="%{buildroot}"
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%files -f INSTALLED_FILES
+%files light -f INSTALLED_FILES
+%defattr(-,root,root,-)
+
+%files full -f INSTALLED_FILES
 %defattr(-,root,root,-)
 
 # TODO: For now changelog must be last, because it is generated automatically
