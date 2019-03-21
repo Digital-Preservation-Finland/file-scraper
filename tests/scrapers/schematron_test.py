@@ -14,9 +14,10 @@ ROOTPATH = os.path.abspath(os.path.join(
         ('valid_1.0_well_formed.xml', {
             'purpose': 'Test valid file',
             'stdout_part': '<svrl:schematron-output',
-            'stderr_part': '', 'cache': False},
+            'stderr_part': ''},
          {'schematron': os.path.join(
-            ROOTPATH, 'tests/data/text_xml/local.sch')}),
+            ROOTPATH, 'tests/data/text_xml/local.sch'),
+          'cache': False}),
         ('invalid_1.0_local_xsd.xml', {
             'purpose': 'Test invalid file',
             'stdout_part': '<svrl:schematron-output',
