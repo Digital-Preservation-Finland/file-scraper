@@ -17,7 +17,7 @@ from file_scraper.scrapers.warctools import GzipWarctools, WarcWarctools, \
 from file_scraper.scrapers.ghostscript import GhostScript
 from file_scraper.scrapers.pngcheck import Pngcheck
 from file_scraper.scrapers.csv_scraper import Csv
-from file_scraper.scrapers.mediainfo import MpegMediainfo
+from file_scraper.scrapers.mediainfo import MpegMediainfo, WavMediainfo
 from file_scraper.scrapers.ffmpeg import FFMpeg
 from file_scraper.scrapers.office import Office
 from file_scraper.scrapers.magic import TextFileMagic, XmlFileMagic, \

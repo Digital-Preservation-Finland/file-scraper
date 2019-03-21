@@ -268,7 +268,10 @@ class Mediainfo(BaseScraper):
         if self._mediainfo is None:
             return None
         if self._mediainfo.tracks[0].count_of_audio_streams is not None \
-                and self._mediainfo.tracks[0].count_of_audio_streams > 0:
+                and int(self._mediainfo.tracks[0].count_of_audio_streams) > 0:
+            return 'Yes'
+        if self._mediainfo.tracks[0].audio_count is not None \
+                and int(self._mediainfo.tracks[0].audio_count) > 0:
             return 'Yes'
         return 'No'
 

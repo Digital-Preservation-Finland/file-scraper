@@ -3,6 +3,25 @@ from file_scraper.mediainfo_base import Mediainfo
 from file_scraper.base import SkipElement
 
 
+class WavMediainfo(Mediainfo):
+    """Scraper for WAV audio
+    """
+    _supported = {'audio/x-wav': ['2', '']}
+    _allow_versions = True  # Allow any version
+
+    def _s_version(self):
+        """Return version
+        """
+        if self._mediainfo is None:
+            return None
+        if self._s_stream_type() != 'audio':
+            return None
+        if self._mediainfo.tracks[0].bext_present is not None \
+                and self._mediainfo.tracks[0].bext_present == 'Yes':
+            return '2'
+        return ''
+
+
 class MpegMediainfo(Mediainfo):
     """Scraper for MPEG video and audio
     """

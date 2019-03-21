@@ -39,7 +39,7 @@ import pytest
         ("application/x-internet-archive", None, ["ArcFileMagic", "ArcWarctools"]),
         ("text/xml", None, ["Xmllint", "XmlEncoding", "XmlFileMagic"]),
         ("application/xhtml+xml", None, ["HtmlJHove", "XhtmlFileMagic"]),
-        ("audio/x-wav", None, ["WavJHove"]),
+        ("audio/x-wav", None, ["WavJHove", "WavMediainfo"]),
         ("application/vnd.oasis.opendocument.text", None,
          ["Office", "OfficeFileMagic"]),
         ("application/vnd.oasis.opendocument.spreadsheet", None,

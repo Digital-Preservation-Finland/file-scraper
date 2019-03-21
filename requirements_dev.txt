@@ -2,6 +2,8 @@ pytest
 coverage
 pytest-cov
 python-mimeparse
+six
+olefile
 opf-fido
 file-magic
 pymediainfo

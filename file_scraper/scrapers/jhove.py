@@ -232,27 +232,6 @@ class WavJHove(JHove):
             return None
         return '\n'.join(results)
 
-    def _s_num_channels(self):
-        """Returns audio data from the report
-        """
-        return self.aes_report_field("numChannels")
-
-    def _s_bits_per_sample(self):
-        """Returns audio data from the report
-        """
-        return self.aes_report_field("bitDepth")
-
-    def _s_sampling_frequency(self):
-        """Returns audio data from the report
-        """
-        if self.aes_report_field('sampleRate') is None:
-            return None
-        try:
-            return strip_zeros(str(float(
-                self.aes_report_field('sampleRate'))/1000))
-        except ValueError:
-            return None
-
     # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return file type
