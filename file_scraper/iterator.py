@@ -1,7 +1,7 @@
 """Scraper iterator"""
 # flake8: noqa
 # pylint:disable=unused-import
-from file_scraper.base import BaseScraper, BaseDetector
+from file_scraper.base import BaseScraper
 from file_scraper.detectors import FidoDetector, MagicDetector
 from file_scraper.jhove_base import JHove
 from file_scraper.magic_base import BinaryMagic, TextMagic
