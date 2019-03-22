@@ -1,5 +1,4 @@
-"""
-This is an DPX V2.0 scraper
+"""DPX V2.0 scraper
 """
 from file_scraper.base import BaseScraper, Shell
 
@@ -24,13 +23,11 @@ class Dpx(BaseScraper):
         self._check_supported()
         self._collect_elements()
 
-    # pylint: disable=no-self-use
-    def _s_version(sef):
+    def _s_version(self):
         """Return version
         """
         return '2.0'
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return file type
         """

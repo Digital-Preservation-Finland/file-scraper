@@ -1,5 +1,4 @@
-"""
-This is an PSPP scraper.
+"""PSPP scraper.
 """
 
 import os
@@ -51,13 +50,11 @@ class Pspp(BaseScraper):
             self._check_supported()
             self._collect_elements()
 
-    # pylint: disable=no-self-use
     def _s_version(self):
         """Return version
         """
         return ''
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return file type
         """

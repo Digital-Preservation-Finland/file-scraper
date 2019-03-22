@@ -1,10 +1,9 @@
 """Module for scraping files with Jhove scraper"""
 try:
     import mimeparse
-except:
+except ImportError:
     pass
 from file_scraper.jhove_base import JHove
-from file_scraper.utils import strip_zeros
 
 
 NAMESPACES = {'j': 'http://hul.harvard.edu/ois/xml/ns/jhove',
@@ -22,13 +21,12 @@ class GifJHove(JHove):
 
     def _s_version(self):
         """Jhove returns the version as '87a' or '89a' but '1987a'
-        or '1989a' is used. Hence '19' is prepended to the version returned by
+        or '1989a' is used. Hence '19' is prepended to the version returned byy
         Jhove"""
         if self.report_field("version"):
             return '19' + self.report_field("version")
         return None
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return file type
         """
@@ -48,7 +46,7 @@ class HtmlJHove(JHove):
         """Jhove returns the version as 'HTML 4.01' but in '4.01' is
         used. Hence we drop 'HTML ' prefix from the string returned by Jhove"""
         version = self.report_field("version")
-        if version is not None and len(version) > 0:
+        if version:
             version = version.split()[-1]
         return version
 
@@ -86,10 +84,8 @@ class HtmlJHove(JHove):
         """Get the charset from HTML/XML files"""
         if "xml" in self.mimetype:
             return self._get_charset_xml()
-        else:
-            return self._get_charset_html()
+        return self._get_charset_html()
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return file type
         """
@@ -111,7 +107,6 @@ class JpegJHove(JHove):
         """
         return None
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return file type
         """
@@ -131,7 +126,6 @@ class TiffJHove(JHove):
         """
         return '6.0'
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return file type
         """
@@ -150,7 +144,6 @@ class PdfJHove(JHove):
         """Return version"""
         return self.report_field("version")
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return file type
         """
@@ -182,7 +175,6 @@ class Utf8JHove(JHove):
             return 'UTF-8'
         return self.report_field('format')
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return file type
         """
@@ -206,10 +198,11 @@ class WavJHove(JHove):
         """Check if mimetype is of a WAV type, otherwise call the same
         method from the superclass."""
         if self.report_field('mimeType') is not None and \
-                self.report_field('mimeType').split(';')[0] == 'audio/vnd.wave':
+                (self.report_field('mimeType').split(';')[0]
+                 == 'audio/vnd.wave'):
             return 'audio/x-wav'
-        else:
-            return super(WavJHove, self)._s_mimetype()
+
+        return super(WavJHove, self)._s_mimetype()
 
     def _s_version(self):
         """Set version as '2' if profile is BWF, otherwise we don't know.
@@ -220,8 +213,8 @@ class WavJHove(JHove):
             self.errors('RF64 is not a supported format')
         elif 'BWF' in self.report_field('profile'):
             return '2'
-        else:
-            return None
+
+        return None
 
     def aes_report_field(self, field):
         """Query elements with the aes namespace from the scraper's
@@ -233,7 +226,6 @@ class WavJHove(JHove):
             return None
         return '\n'.join(results)
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return file type
         """

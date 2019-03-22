@@ -51,7 +51,7 @@ class XmlEncoding(BaseScraper):
         """
         parser = etree.XMLParser(dtd_validation=False, no_network=True,
                                  recover=True)
-        fd = open(self.filename)
+        fd = open(self.filename)  # pylint: disable=invalid-name
         tree = etree.parse(fd, parser)
         self._charset = tree.docinfo.encoding
         self.messages('Encoding metadata found.')
@@ -63,7 +63,6 @@ class XmlEncoding(BaseScraper):
         """
         return self._charset
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return file type
         """

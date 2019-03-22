@@ -18,8 +18,9 @@ class TiffWand(Wand):
             if key.startswith('tiff:endian'):
                 if value == 'msb':
                     return 'big endian'
-                else:
+                elif value == 'lsb':
                     return 'little endian'
+        return None
 
 
 class ImageWand(Wand):

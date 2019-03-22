@@ -10,7 +10,7 @@ class Csv(BaseScraper):
     """
 
     _supported = {'text/csv': ['']}  # Supported mimetype
-    _allow_versions = True           # Allow any version 
+    _allow_versions = True           # Allow any version
 
     def __init__(self, filename, mimetype, validation=True, params=None):
         """Initialize for delimiter and separator info.
@@ -52,7 +52,7 @@ class Csv(BaseScraper):
                 reader = csv.reader(csvfile, dialect='new_dialect')
                 self._csv_first_line = reader.next()
 
-                if len(self._csv_fields) > 0 and \
+                if self._csv_fields and \
                         len(self._csv_fields) != len(self._csv_first_line):
                     self.errors(
                         "CSV validation error: field counts in the given "
@@ -92,7 +92,6 @@ class Csv(BaseScraper):
         """
         return self._csv_first_line
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return file type
         """

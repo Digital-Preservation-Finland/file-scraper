@@ -1,5 +1,4 @@
-"""
-This is an ffmpeg wellformed scraper
+"""FFMpeg wellformed scraper
 """
 from file_scraper.base import BaseScraper, Shell
 
@@ -30,13 +29,11 @@ class FFMpeg(BaseScraper):
         self._check_supported()
         self._collect_elements()
 
-    # pylint: disable=no-self-use
-    def _s_version(sef):
+    def _s_version(self):
         """Return version
         """
         return None
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return file type
         """

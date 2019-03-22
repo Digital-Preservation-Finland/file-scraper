@@ -6,6 +6,7 @@ import tempfile
 from file_scraper.utils import sanitize_string
 from file_scraper.base import BaseScraper, Shell
 
+
 class GzipWarctools(BaseScraper):
     """ Scraper for compressed Warcs and Arcs.
     """
@@ -43,7 +44,6 @@ class GzipWarctools(BaseScraper):
         self.messages(messages)
         self.errors(errors)
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return file type
         """
@@ -88,7 +88,7 @@ class WarcWarctools(BaseScraper):
             warc_fd.close()
             with open(self.filename, 'r') as warc_fd:
                 line = warc_fd.readline()
-        except Exception as exception:
+        except Exception as exception:  # pylint: disable=broad-except
             # Compressed but corrupted gzip file
             self.errors(str(exception))
             self._check_supported()
@@ -103,7 +103,6 @@ class WarcWarctools(BaseScraper):
         self._check_supported()
         self._collect_elements()
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return file type
         """
@@ -146,7 +145,6 @@ class ArcWarctools(BaseScraper):
         self._check_supported()
         self._collect_elements()
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return file type
         """

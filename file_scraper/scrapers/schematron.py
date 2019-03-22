@@ -1,5 +1,4 @@
-"""
-This is a Schematron scraper.
+"""Schematron scraper.
 """
 import os
 import shutil
@@ -58,7 +57,7 @@ class Schematron(BaseScraper):
     def well_formed(self):
         """Check if document resulted errors.
         """
-        if len(self.errors()) == 0 and len(self.messages()) > 0:
+        if not self.errors() and self.messages():
             if self.messages().find('<svrl:failed-assert ') < 0 \
                     and self._returncode == 0:
                 return True
@@ -87,29 +86,29 @@ class Schematron(BaseScraper):
         self._check_supported()
         self._collect_elements()
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return file type
         """
         return 'text'
 
+    # pylint: disable=no-self-use
     def _filter_duplicate_elements(self, result):
         """Filter duplicate elements from the result
         :result: Result as string
         """
-        SVRL = {'svrl': 'http://purl.oclc.org/dsdl/svrl'}
+        svrl = {'svrl': 'http://purl.oclc.org/dsdl/svrl'}
         root = etree.fromstring(result)
-        patterns = root.xpath('./svrl:active-pattern', namespaces=SVRL)
+        patterns = root.xpath('./svrl:active-pattern', namespaces=svrl)
         for pattern in patterns:
             prev = pattern.xpath('preceding-sibling::svrl:active-pattern[1]',
-                                 namespaces=SVRL)
+                                 namespaces=svrl)
             if prev and pattern.get('id') == prev[0].get('id'):
                 pattern.getparent().remove(pattern)
 
-        rules = root.xpath('svrl:fired-rule', namespaces=SVRL)
+        rules = root.xpath('svrl:fired-rule', namespaces=svrl)
         for rule in rules:
             prev = rule.xpath('preceding-sibling::svrl:fired-rule[1]',
-                              namespaces=SVRL)
+                              namespaces=svrl)
             if prev and rule.get('context') == prev[0].get('context'):
                 rule.getparent().remove(rule)
 
@@ -117,6 +116,7 @@ class Schematron(BaseScraper):
             root, pretty_print=True, xml_declaration=False,
             encoding='UTF-8', with_comments=True)
 
+    # pylint: disable=too-many-arguments
     def _compile_phase(self, stylesheet, inputfile, valid_codes,
                        outputfile=None, outputfilter=False):
         """Compile one phase

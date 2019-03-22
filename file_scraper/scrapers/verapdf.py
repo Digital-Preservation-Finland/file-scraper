@@ -1,5 +1,4 @@
-"""
-This is an PDF/A scraper.
+"""PDF/A scraper.
 """
 try:
     import lxml.etree as ET
@@ -67,7 +66,6 @@ class VeraPdf(BaseScraper):
         important['version'] = self.version
         return important
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return file type
         """

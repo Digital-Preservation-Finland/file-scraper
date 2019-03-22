@@ -88,7 +88,7 @@ class JpegPil(Pil):
         """
         if self._pil is None:
             return None
-        exif_info = self._pil._getexif()
+        exif_info = self._pil._getexif()  # pylint: disable=protected-access
         if exif_info and 277 in exif_info.keys():
             return str(exif_info[277])
         return super(JpegPil, self)._s_samples_per_pixel()

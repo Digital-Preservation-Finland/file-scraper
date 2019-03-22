@@ -1,5 +1,4 @@
-"""
-This is a PDF scraper implemented with ghostscript.
+"""PDF scraper implemented with ghostscript.
 """
 
 from file_scraper.base import BaseScraper, Shell
@@ -35,7 +34,6 @@ class GhostScript(BaseScraper):
         self._check_supported()
         self._collect_elements()
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return file type
         """

@@ -10,7 +10,6 @@ class TextFileMagic(TextMagic):
     _supported = {'text/plain': [''], 'text/csv': ['']}
     _allow_versions = True  # Allow any version
 
-    # pylint: disable=no-self-use
     def _s_version(self):
         """Return version
         """
@@ -154,7 +153,6 @@ class PngFileMagic(BinaryMagic):
             return None
         return '1.2'
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return stream type
         """
@@ -171,7 +169,6 @@ class JpegFileMagic(BinaryMagic):
     _endtag = ','                    # Text after version in magic output
     _allow_versions = True  # Allow any version
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return stream type
         """
@@ -192,7 +189,6 @@ class Jp2FileMagic(BinaryMagic):
             return None
         return ''
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return stream type
         """
@@ -213,7 +209,6 @@ class TiffFileMagic(BinaryMagic):
             return None
         return '6.0'
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return stream type
         """

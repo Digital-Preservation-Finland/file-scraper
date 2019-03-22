@@ -87,7 +87,7 @@ class Xmllint(BaseScraper):
 
         # Try to validate well-formedness by opening file in XML parser
         try:
-            fd = open(self.filename)
+            fd = open(self.filename)  # pylint: disable=invalid-name
             parser = etree.XMLParser(dtd_validation=False, no_network=True)
             tree = etree.parse(fd, parser=parser)
             self.version = tree.docinfo.xml_version
@@ -176,7 +176,7 @@ class Xmllint(BaseScraper):
             # Contstruct the schema
             _, schema = tempfile.mkstemp(
                 prefix='file-scraper-', suffix='.tmp')
-            et = etree.ElementTree(schema_tree)
+            et = etree.ElementTree(schema_tree)  # pylint: disable=invalid-name
             et.write(schema)
             self._has_constructed_schema = True
 
@@ -230,7 +230,6 @@ class Xmllint(BaseScraper):
 
         return super(Xmllint, self).errors(error)
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return file type
         """

@@ -42,14 +42,13 @@ class Office(BaseScraper):
                 self.filename], env=env)
             self.errors(shell.stderr)
             self.messages(shell.stdout)
-        except Exception as e:
+        except Exception:  # pylint: disable=broad-except
             self.errors('Error reading file.')
         finally:
             shutil.rmtree(temp_dir)
             self._check_supported()
             self._collect_elements()
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return file type
         """

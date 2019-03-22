@@ -46,7 +46,7 @@ class FileExists(BaseScraper):
     def well_formed(self):
         """Let's give the actual decision to the real scrapers.
         """
-        if len(self.errors()) > 0:
+        if self.errors():
             return False
         return None
 

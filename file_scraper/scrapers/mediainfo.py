@@ -40,8 +40,6 @@ class MpegMediainfo(Mediainfo):
     _allow_versions = True  # Allow any version
     _containers = ['MPEG-TS', 'MPEG-PS', 'MPEG-4']
 
-
-    # pylint: disable=no-self-use
     def _s_signal_format(self):
         """Returns signal format
         """
@@ -85,8 +83,8 @@ class MpegMediainfo(Mediainfo):
                      'MPEG Audio': 'audio/mpeg'}
         if self._s_codec_name() in mime_dict:
             return mime_dict[self._s_codec_name()]
-        else:
-            return self.mimetype
+
+        return self.mimetype
 
     def _s_version(self):
         """Returns stream version
@@ -95,7 +93,6 @@ class MpegMediainfo(Mediainfo):
             return None
         if self._mediainfo_stream.format_version is not None:
             return self._mediainfo_stream.format_version[-1]
-        elif self.well_formed:
+        if self.well_formed:
             return ''
-        else:
-            return None
+        return None
