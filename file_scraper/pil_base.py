@@ -66,13 +66,11 @@ class Pil(BaseScraper):
             self._pil.seek(index)
             self._pil_index = index
 
-    # pylint: disable=no-self-use
     def _s_version(self):
         """Return version of file
         """
         return None
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return stream type
         """
@@ -85,6 +83,7 @@ class Pil(BaseScraper):
             return 0
         return self._pil_index
 
+    # pylint: disable=no-self-use
     def _s_colorspace(self):
         """Returns colorspace
         """

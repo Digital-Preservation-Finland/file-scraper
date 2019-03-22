@@ -90,13 +90,11 @@ class FFMpeg(BaseScraper):
             return True
         return False
 
-    # pylint: disable=no-self-use
     def _s_version(self):
         """Returns version of stream.
         """
         return None
 
-    # pylint: disable=no-self-use
     def _s_codec_quality(self):
         """Returns codec quality. Must be resolved, if returns None.
         Only values 'lossy' and 'lossless' are allowed.
@@ -105,7 +103,6 @@ class FFMpeg(BaseScraper):
             return SkipElement
         return None
 
-    # pylint: disable=no-self-use
     def _s_data_rate_mode(self):
         """Returns data rate mode. Must be resolved, if returns None.
         Only values 'Fixed' or 'Variable' are allowed.
@@ -114,7 +111,6 @@ class FFMpeg(BaseScraper):
             return SkipElement
         return None
 
-    # pylint: disable=no-self-use
     def _s_signal_format(self):
         """Returns signal format
         """
@@ -154,13 +150,11 @@ class FFMpeg(BaseScraper):
         if self._ffmpeg is None:
             return None
         if 'pix_fmt' in self._ffmpeg_stream:
-            # pylint: disable=no-else-return
             if self._ffmpeg_stream["pix_fmt"] in ["gray"]:
                 return "Grayscale"
-            elif self._ffmpeg_stream["pix_fmt"] in ["monob", "monow"]:
+            if self._ffmpeg_stream["pix_fmt"] in ["monob", "monow"]:
                 return "B&W"
-            else:
-                return 'Color'
+            return 'Color'
         return None
 
     def _s_width(self):

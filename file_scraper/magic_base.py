@@ -96,7 +96,6 @@ class BinaryMagic(BaseScraper):
             return None
         return self._magic_version
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return file type
         """
@@ -201,7 +200,6 @@ class TextMagic(BaseScraper):
 
         return self._magic_charset.upper()
 
-    # pylint: disable=no-self-use
     def _s_stream_type(self):
         """Return file type
         """

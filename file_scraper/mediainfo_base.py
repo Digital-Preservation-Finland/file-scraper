@@ -133,10 +133,9 @@ class Mediainfo(BaseScraper):
         if self._mediainfo is None:
             return None
         if self._mediainfo_stream.track_type == 'General':
-            if self._hascontainer():  # pylint: disable=no-else-return
-                return 'videocontainer'
-            else:
+            if not self._hascontainer():
                 return None
+            return 'videocontainer'
         return self._mediainfo_stream.track_type.lower()
 
     def _s_index(self):
@@ -164,7 +163,6 @@ class Mediainfo(BaseScraper):
                 return 'Grayscale'
         return None
 
-    # pylint: disable=no-self-use
     def _s_signal_format(self):
         """Returns signal format
         """

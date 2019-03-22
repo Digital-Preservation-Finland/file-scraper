@@ -106,6 +106,7 @@ class BaseScraper(object):
                  Used in some scrapers which override this method.
         :returns: True if scraper is supported
         """
+        # pylint: disable=unused-argument
         if mimetype in cls._supported and \
                 (version in cls._supported[mimetype] + [None] or
                  cls._allow_versions) and \
