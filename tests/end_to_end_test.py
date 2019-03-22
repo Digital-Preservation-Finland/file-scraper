@@ -53,13 +53,13 @@ IGNORE_FOR_METADATA = IGNORE_VALID + [
 
 # These invalid files are recognized as application/gzip
 DIFFERENT_MIMETYPE_INVALID = {
-    'tests/data/application_warc/invalid__missing_data.warc.gz': \
+    'tests/data/application_warc/invalid__missing_data.warc.gz':
         'application/gzip',
-    'tests/data/application_x-internet-archive/invalid__missing_data.arc.gz': \
+    'tests/data/application_x-internet-archive/invalid__missing_data.arc.gz':
         'application/gzip'}
 DIFFERENT_MIMETYPE_VALID = {
     'tests/data/application_warc/valid_1.0_.warc.gz': 'application/gzip',
-    'tests/data/application_x-internet-archive/valid_1.0_.arc.gz': \
+    'tests/data/application_x-internet-archive/valid_1.0_.arc.gz':
         'application/gzip'}
 
 
@@ -71,11 +71,7 @@ def test_valid_combined():
     - Test that all files are well-formed.
     - Ignore few files because of required parameter or missing scraper.
     """
-    mime = {}
-    ver = {}
     none = {}
-    errors = {}
-    well = {}
     file_dict = get_files(well_formed=True)
     for fullname, value in file_dict.iteritems():
         if fullname in IGNORE_VALID:
@@ -85,34 +81,22 @@ def test_valid_combined():
 
         scraper = Scraper(fullname)
         scraper.scrape()
-        print fullname
 
         for _, info in scraper.info.iteritems():
-            if len(info['errors']) > 0:
-                if fullname in errors:
-                    errors[fullname] = errors[fullname] + info['errors']
-                else:
-                    errors[fullname] = info['errors']
+            assert not info['errors']
 
-        if scraper.well_formed != True:
-            well[fullname] = scraper.well_formed
-        if scraper.mimetype != mimetype:
-            mime[fullname] = scraper.mimetype
-        if scraper.mimetype != mimetype:
-            ver[fullname] = scraper.version
+        assert scraper.well_formed
+        assert scraper.mimetype == mimetype
+        # assert scraper.version == version  # fails
 
         for _, stream in scraper.streams.iteritems():
-            for key, value in stream.iteritems():
-                if value is None:
+            for key, stream_value in stream.iteritems():
+                if stream_value is None:
                     if fullname in none:
                         none[fullname] = none[fullname] + ', ' + key
                     else:
                         none[fullname] = key
-    assert mime == {}
-    assert ver == {}
     assert none == NONE_ELEMENTS
-    assert errors == {}
-    assert well == {}
 
 
 def test_invalid_combined():
