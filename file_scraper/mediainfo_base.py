@@ -124,8 +124,10 @@ class Mediainfo(BaseScraper):
             return None
         if self._mediainfo_stream.format_version is not None:
             return str(self._mediainfo_stream.format_version)
-
-        return ''
+        elif self._s_stream_type() in ['videocontainer', 'video', 'audio']:
+            return ''
+        else:
+            return None
 
     def _s_stream_type(self):
         """Return stream type

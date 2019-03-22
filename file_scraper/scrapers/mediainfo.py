@@ -87,12 +87,12 @@ class MpegMediainfo(Mediainfo):
         return self.mimetype
 
     def _s_version(self):
-        """Returns stream version
+        """Return version of stream.
         """
         if self._mediainfo is None:
             return None
         if self._mediainfo_stream.format_version is not None:
-            return self._mediainfo_stream.format_version[-1]
-        if self.well_formed:
+            return str(self._mediainfo_stream.format_version)[-1]
+        elif self._s_stream_type() in ['videocontainer', 'video', 'audio']:
             return ''
         return None

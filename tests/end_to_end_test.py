@@ -7,6 +7,7 @@ from tests.common import get_files
 # These files will result none for some elements
 # For GIFs and TIFFs with 3 images inside, the version is missing from the
 # second and third streams, but exists in the first one.
+# MPEG-TS file contains "menu" stream, where version is None.
 NONE_ELEMENTS = {
     'tests/data/application_msword/valid_11.0.doc': 'version',
     'tests/data/application_vnd.ms-excel/valid_11.0.xls': 'version',
@@ -19,10 +20,11 @@ NONE_ELEMENTS = {
     '.sheet/valid_15.0.xlsx': 'version',
     'tests/data/application_vnd.openxmlformats-officedocument.word'
     'processingml.document/valid_15.0.docx': 'version',
-    'tests/data/application_x-internet-archive/valid_1.0_.arc.gz': 'version',
     'tests/data/image_gif/valid_1989a.gif': 'version, version',
-    'tests/data/image_tiff/valid_6.0_multiple_tiffs.tif': 'version, version'}
-
+    'tests/data/image_tiff/valid_6.0_multiple_tiffs.tif': 'version, version',
+    'tests/data/video_MP2T/valid_.ts': 'version'}
+NONE_ELEMENTS_EXTRA = {
+    'tests/data/application_x-internet-archive/valid_1.0_.arc.gz': 'version'}
 
 # These are actually valid with another mimetype or version
 # invalid_1.4_wrong_version.pdf -- is valid PDF 1.7
@@ -42,12 +44,15 @@ IGNORE_VALID = ['tests/data/text_xml/valid_1.0_xsd.xml',
                 'tests/data/text_xml/valid_1.0_catalog.xml',
                 'tests/data/video_x-matroska/valid__ffv1.mkv']
 
-# Ignore these we know that warc and dpx files are not currently supported
-# for full metadata scraping
+# Ignore these we know that warc, arc and dpx files are not currently
+# supported for full metadata scraping
 IGNORE_FOR_METADATA = IGNORE_VALID + [
     'tests/data/application_warc/valid_0.17.warc',
     'tests/data/application_warc/valid_0.18.warc',
     'tests/data/application_warc/valid_1.0.warc',
+    'tests/data/application_warc/valid_1.0_.warc.gz',
+    'tests/data/application_x-internet-archive/valid_1.0.arc',
+    'tests/data/application_x-internet-archive/valid_1.0_.arc.gz',
     'tests/data/image_x-dpx/valid_2.0.dpx']
 
 
@@ -56,10 +61,6 @@ DIFFERENT_MIMETYPE_INVALID = {
     'tests/data/application_warc/invalid__missing_data.warc.gz':
         'application/gzip',
     'tests/data/application_x-internet-archive/invalid__missing_data.arc.gz':
-        'application/gzip'}
-DIFFERENT_MIMETYPE_VALID = {
-    'tests/data/application_warc/valid_1.0_.warc.gz': 'application/gzip',
-    'tests/data/application_x-internet-archive/valid_1.0_.arc.gz':
         'application/gzip'}
 
 
@@ -89,6 +90,9 @@ def test_valid_combined():
         assert scraper.mimetype == mimetype
         # assert scraper.version == version  # fails
 
+        if scraper.streams is None or scraper.streams is {}:
+            none[fullname] = scraper.streams
+            continue
         for _, stream in scraper.streams.iteritems():
             for key, stream_value in stream.iteritems():
                 if stream_value is None:
@@ -150,6 +154,7 @@ def test_without_wellformed():
     """
     well = {}
     mime = {}
+    none = {}
     stream_dict = {}
     file_dict = get_files(well_formed=True)
     for fullname, value in file_dict.iteritems():
@@ -168,9 +173,16 @@ def test_without_wellformed():
             mime[fullname] = scraper.mimetype
             continue
 
-        if scraper.streams is None:
-            stream_dict[fullname] = None
+        if scraper.streams is None or scraper.streams is {}:
+            none[fullname] = scraper.streams
             continue
+        for _, stream in scraper.streams.iteritems():
+            for key, value in stream.iteritems():
+                if value is None:
+                    if fullname in none:
+                        none[fullname] = none[fullname] + ', ' + key
+                    else:
+                        none[fullname] = key
 
         mimepart = mimetype.split("/")[0]
         if 'stream_type' not in scraper.streams[0] or \
@@ -196,6 +208,7 @@ def test_without_wellformed():
             if 'delimiter' not in scraper.streams[0]:
                 stream_dict[fullname] = stream
 
-    assert mime == DIFFERENT_MIMETYPE_VALID
+    assert mime == {}
     assert stream_dict == {}
+    assert none == NONE_ELEMENTS
     assert well == {}

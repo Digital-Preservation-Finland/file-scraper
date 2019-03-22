@@ -66,4 +66,4 @@ MPEGTS_CONTAINER = {
 
 MPEGTS_OTHER = {
     'index': 3, 'mimetype': 'video/MP2T', 'stream_type': 'menu',
-    'version': ''}
+    'version': None}

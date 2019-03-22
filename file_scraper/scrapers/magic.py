@@ -13,7 +13,7 @@ class TextFileMagic(TextMagic):
     def _s_version(self):
         """Return version
         """
-        if not self.well_formed:
+        if self.mimetype != self._s_mimetype():
             return None
         return ''
 
@@ -133,7 +133,7 @@ class ArcFileMagic(BinaryMagic):
     def _s_version(self):
         """Return version
         """
-        if not self.well_formed:
+        if self.mimetype != self._s_mimetype():
             return None
         if self._magic_version == '1':
             return '1.0'
@@ -149,7 +149,7 @@ class PngFileMagic(BinaryMagic):
     def _s_version(self):
         """Return version
         """
-        if not self.well_formed:
+        if self.mimetype != self._s_mimetype():
             return None
         return '1.2'
 
@@ -185,7 +185,7 @@ class Jp2FileMagic(BinaryMagic):
     def _s_version(self):
         """Return version
         """
-        if not self.well_formed:
+        if self.mimetype != self._s_mimetype():
             return None
         return ''
 
@@ -205,7 +205,7 @@ class TiffFileMagic(BinaryMagic):
     def _s_version(self):
         """Return version
         """
-        if not self.well_formed:
+        if self.mimetype != self._s_mimetype():
             return None
         return '6.0'
 
