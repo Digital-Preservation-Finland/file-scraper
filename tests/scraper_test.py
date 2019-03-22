@@ -1,4 +1,18 @@
-"""Tests for main scraper
+"""
+Tests for main scraper.
+
+This module tests that:
+    - Monkeypatched is_textfile() returns true for 'textfile' and false for
+      'binaryfile'.
+    - checksum() method returns correct checksums both using MD5 and SHA-1
+      algorithms.
+    - checksum() method raises ValueError when illegal algorithm is given.
+    - checksum() method raises IOError when checksum calculation is attempted
+      for a file that does not exist.
+    - empty text files are not well-formed according to the scraper.
+    - non-existent files are not well-formed according to the scraper.
+    - giving None instead of a file name to the scraper results in successful
+      scraping with a result of not well-formed.
 """
 import pytest
 import file_scraper.scraper

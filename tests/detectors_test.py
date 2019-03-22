@@ -1,8 +1,14 @@
-"""Tests for Fido and Magic detectors
+"""
+Tests for Fido and Magic detectors.
+
+This module tests that:
+    - FidoDetector and MagicDetector detect MIME types correctly.
+    - FidoDetector returns an empty dict from is_important() and MagicDetector
+      returns one with mimetype in it.
 """
 import pytest
 from file_scraper.detectors import FidoDetector, MagicDetector
-from  tests.common import get_files
+from tests.common import get_files
 
 CHANGE_FIDO = {
     'tests/data/text_plain/valid__ascii.txt': None,
@@ -14,9 +20,9 @@ CHANGE_FIDO = {
     '.sheet/valid_15.0.xlsx': None,
     'tests/data/application_vnd.openxmlformats-officedocument.presentationml'
     '.presentation/valid_15.0.pptx': None,
-    'tests/data/application_vnd.oasis.opendocument.formula/valid_1.0.odf': \
+    'tests/data/application_vnd.oasis.opendocument.formula/valid_1.0.odf':
         'application/zip',
-    'tests/data/application_x-internet-archive/valid_1.0_.arc.gz': \
+    'tests/data/application_x-internet-archive/valid_1.0_.arc.gz':
         'application/gzip',
     'tests/data/application_warc/valid_1.0_.warc.gz': 'application/gzip',
     'tests/data/application_x-internet-archive/valid_1.0.arc': 'text/html',
@@ -24,7 +30,7 @@ CHANGE_FIDO = {
 
 CHANGE_MAGIC = {
     'tests/data/video_MP2T/valid_.ts': 'application/octet-stream',
-    'tests/data/application_x-internet-archive/valid_1.0_.arc.gz': \
+    'tests/data/application_x-internet-archive/valid_1.0_.arc.gz':
         'application/x-gzip',
     'tests/data/application_xhtml+xml/valid_1.0.xhtml': 'text/xml',
     'tests/data/application_warc/valid_1.0_.warc.gz': 'application/x-gzip'}

@@ -1,9 +1,29 @@
-"""Tests for Csv scraper"""
+"""
+Tests for Csv scraper
+
+This module tests that:
+    - mimetype, version and streams are scraped correctly when a csv file is
+      scraped.
+    - scraper class used for csv scraping is Csv.
+    - well-formedness of csv files is determined accurately.
+    - scraper reports errors in scraping as expected when there is a missing
+      quote or wrong field delimiter is given.
+    - scraping a file other than csv file results in:
+        - not well-formed
+        - success not reported in scraper messages
+        - some error recorded by the scraper
+    - scraper is able to extract the MIME type of a well-formed file and
+      identify the file as a well-formed one also when separator, delimiter
+      and fields are not given by user.
+    - all files with MIME type 'text/csv' are reported to be supported with or
+      without full validation and for empty, None or arbitrary string as the
+      version.
+    - MIME type other than 'text/csv' is not supported
+"""
 
 import os
-import pytest
-import lxml.etree
 from tempfile import NamedTemporaryFile
+import pytest
 
 from file_scraper.scrapers.csv_scraper import Csv
 from tests.common import parse_results
@@ -27,6 +47,7 @@ VALID_WITH_HEADER = HEADER + VALID_CSV
 MISSING_END_QUOTE = VALID_CSV + \
     '1999,Chevy,"Venture ""Extended Edition"","",4900.00\n'
 
+
 @pytest.mark.parametrize(
     ['csv_text', 'result_dict', 'prefix', 'header'],
     [
@@ -40,8 +61,10 @@ MISSING_END_QUOTE = VALID_CSV + \
                             'version': '',
                             'delimiter': ',',
                             'separator': '\n',
-                            'first_line': ['1997', 'Ford', 'E350', 'ac, abs, moon',
-                                          '3000.00']}}}, 'valid__', None),
+                            'first_line': ['1997', 'Ford', 'E350',
+                                           'ac, abs, moon',
+                                           '3000.00']}}},
+         'valid__', None),
         (VALID_WITH_HEADER, {
             'purpose': 'Test valid file with header.',
             'stdout_part': 'successfully',
@@ -52,8 +75,9 @@ MISSING_END_QUOTE = VALID_CSV + \
                             'version': '',
                             'delimiter': ',',
                             'separator': '\n',
-                            'first_line': ['year', 'brand', 'model', 'detail', 'other']
-                           }}}, 'valid__', ['year', 'brand', 'model', 'detail', 'other']),
+                            'first_line': ['year', 'brand', 'model', 'detail',
+                                           'other']}}},
+         'valid__', ['year', 'brand', 'model', 'detail', 'other']),
         (MISSING_END_QUOTE, {
             'purpose': 'Test missing end quote',
             'stdout_part': '',
@@ -64,8 +88,10 @@ MISSING_END_QUOTE = VALID_CSV + \
                             'version': '',
                             'delimiter': ',',
                             'separator': '\n',
-                            'first_line': ['1997', 'Ford', 'E350', 'ac, abs, moon',
-                                          '3000.00']}}}, 'invalid__', None),
+                            'first_line': ['1997', 'Ford', 'E350',
+                                           'ac, abs, moon',
+                                           '3000.00']}}},
+         'invalid__', None),
         (HEADER, {
             'purpose': 'Test single field',
             'stdout_part': 'successfully',
@@ -76,8 +102,8 @@ MISSING_END_QUOTE = VALID_CSV + \
                             'version': '',
                             'delimiter': ';',
                             'separator': '\n',
-                            'first_line': ['year,brand,model,detail,other']
-                           }}}, 'valid__', ['year,brand,model,detail,other']),
+                            'first_line': ['year,brand,model,detail,other']}}},
+         'valid__', ['year,brand,model,detail,other']),
         (VALID_WITH_HEADER, {
             'purpose': 'Invalid delimiter',
             'stdout_part': '',
@@ -88,9 +114,8 @@ MISSING_END_QUOTE = VALID_CSV + \
                             'version': '',
                             'delimiter': ';',
                             'separator': '\n',
-                            'first_line': ['year,brand,model,detail,other']
-                           }}}, 'invalid__',
-            ['year', 'brand', 'model', 'detail', 'other'])
+                            'first_line': ['year,brand,model,detail,other']}}},
+         'invalid__', ['year', 'brand', 'model', 'detail', 'other'])
     ]
 )
 def test_scraper(csv_text, result_dict, prefix, header):
@@ -133,7 +158,7 @@ def test_pdf_as_csv():
 
     assert not scraper.well_formed, scraper.messages() + scraper.errors()
     assert "successfully" not in scraper.messages()
-    assert len(scraper.errors()) > 0
+    assert scraper.errors()
 
 
 def test_no_parameters():
@@ -152,7 +177,7 @@ def test_no_parameters():
     assert scraper.mimetype == MIMETYPE
     assert scraper.version == ''
     assert 'successfully' in scraper.messages()
-    assert scraper.well_formed == True
+    assert scraper.well_formed
 
 
 def test_is_supported():

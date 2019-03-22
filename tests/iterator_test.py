@@ -1,8 +1,15 @@
-"""Test for file_scraper.scrapers. The purpose of this test is to make sure
-that all scrapers are able to be found."""
+"""
+Test for file_scraper.scrapers. The purpose of this test is to make sure
+that all scrapers are able to be found.
+
+This module tests that:
+    - iter_scrapers(mimetype, version) returns the correct scrapers.
+    - iter_detectors() returns the correct detectors.
+"""
+
+import pytest
 
 from file_scraper.iterator import iter_scrapers, iter_detectors
-import pytest
 
 
 @pytest.mark.parametrize(
@@ -22,21 +29,31 @@ import pytest
         ("application/pdf", "1.6", ["PdfFileMagic", "PdfJHove"]),
         ("application/pdf", "A-1a", ["PdfFileMagic", "PdfJHove", "VeraPdf"]),
         ("application/pdf", "A-1b", ["PdfFileMagic", "PdfJHove", "VeraPdf"]),
-        ("application/pdf", "A-2a", ["PdfFileMagic", "GhostScript", "VeraPdf"]),
-        ("application/pdf", "A-2b", ["PdfFileMagic", "GhostScript", "VeraPdf"]),
-        ("application/pdf", "A-2u", ["PdfFileMagic", "GhostScript", "VeraPdf"]),
-        ("application/pdf", "A-3a", ["PdfFileMagic", "GhostScript", "VeraPdf"]),
-        ("application/pdf", "A-3b", ["PdfFileMagic", "GhostScript", "VeraPdf"]),
-        ("application/pdf", "A-3u", ["PdfFileMagic", "GhostScript", "VeraPdf"]),
+        ("application/pdf", "A-2a",
+         ["PdfFileMagic", "GhostScript", "VeraPdf"]),
+        ("application/pdf", "A-2b",
+         ["PdfFileMagic", "GhostScript", "VeraPdf"]),
+        ("application/pdf", "A-2u",
+         ["PdfFileMagic", "GhostScript", "VeraPdf"]),
+        ("application/pdf", "A-3a",
+         ["PdfFileMagic", "GhostScript", "VeraPdf"]),
+        ("application/pdf", "A-3b",
+         ["PdfFileMagic", "GhostScript", "VeraPdf"]),
+        ("application/pdf", "A-3u",
+         ["PdfFileMagic", "GhostScript", "VeraPdf"]),
         ("application/pdf", "1.7", ["PdfFileMagic", "GhostScript"]),
-        ("image/tiff", None, ["TiffJHove", "TiffFileMagic", "TiffPil", "TiffWand"]),
-        ("image/jpeg", None, ["JpegJHove", "JpegFileMagic", "JpegPil", "ImageWand"]),
+        ("image/tiff", None,
+         ["TiffJHove", "TiffFileMagic", "TiffPil", "TiffWand"]),
+        ("image/jpeg", None,
+         ["JpegJHove", "JpegFileMagic", "JpegPil", "ImageWand"]),
         ("image/gif", None, ["GifJHove", "ImagePil", "ImageWand"]),
         ("text/html", "4.01", ["HtmlJHove", "HtmlFileMagic"]),
         ("text/html", "5.0", ["Vnu", "XmlEncoding", "HtmlFileMagic"]),
-        ("image/png", None, ["Pngcheck", "PngFileMagic", "ImagePil", "ImageWand"]),
+        ("image/png", None,
+         ["Pngcheck", "PngFileMagic", "ImagePil", "ImageWand"]),
         ("application/warc", None, ["WarcWarctools"]),
-        ("application/x-internet-archive", None, ["ArcFileMagic", "ArcWarctools"]),
+        ("application/x-internet-archive", None,
+         ["ArcFileMagic", "ArcWarctools"]),
         ("text/xml", None, ["Xmllint", "XmlEncoding", "XmlFileMagic"]),
         ("application/xhtml+xml", None, ["HtmlJHove", "XhtmlFileMagic"]),
         ("audio/x-wav", None, ["WavJHove", "WavMediainfo"]),

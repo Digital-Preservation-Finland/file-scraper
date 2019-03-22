@@ -14,7 +14,7 @@ def get_files(well_formed):
     else:
         prefix = 'invalid_'
     result_dict = {}
-    for root, directory, filenames in os.walk('tests/data'):
+    for root, _, filenames in os.walk('tests/data'):
         for fname in filenames:
             if fname.startswith(prefix):
                 fullname = os.path.join(root, fname)
@@ -30,6 +30,7 @@ def get_files(well_formed):
 class Correct(object):
     """Class for the correct results
     """
+    # pylint: disable=too-few-public-methods, too-many-instance-attributes
     def __init__(self):
         self.filename = None
         self.purpose = None
@@ -54,6 +55,7 @@ def parse_results(filename, mimetype, results, validation,
     :params: Parameters for the scraper
     :returns: Correct instance
     """
+    # pylint: disable=too-many-branches, too-many-locals, too-many-arguments
     well_dict = {'valid': True, 'invalid': False}
     path = os.path.join(basepath, mimetype.replace("/", "_"))
     words = filename.rsplit(".", 1)[0].split("_", 2)
@@ -85,9 +87,9 @@ def parse_results(filename, mimetype, results, validation,
         correct.streams = results['streams']
         correct.streams[0]['mimetype'] = mimetype
         correct.streams[0]['version'] = version
-        for index, stream in enumerate(correct.streams):
+        for index, _ in enumerate(correct.streams):
             correct.streams[index]['index'] = index
-        if not 'stream_type' in correct.streams[0]:
+        if 'stream_type' not in correct.streams[0]:
             correct.streams[0]['stream_type'] = stream_type
     else:
         correct.streams = {0: {
@@ -95,7 +97,7 @@ def parse_results(filename, mimetype, results, validation,
             'version': version,
             'index': 0,
             'stream_type': stream_type
-        }}   
+        }}
 
     if validation:
         correct.well_formed = well_dict[well_formed]
