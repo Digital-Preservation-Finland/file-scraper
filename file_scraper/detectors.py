@@ -17,6 +17,7 @@ from fido.pronomutils import get_local_pronom_versions
 from file_scraper.base import BaseDetector
 from file_scraper.defaults import PRONOM_DICT, MIMETYPE_DICT, VERSION_DICT, \
     PRIORITY_PRONOM
+from file_scraper.utils import encode
 
 
 class _FidoReader(Fido):
@@ -131,7 +132,7 @@ class MagicDetector(BaseDetector):
         """
         magic_ = magic.open(magic.MAGIC_MIME_TYPE)
         magic_.load()
-        mimetype = magic_.file(self.filename)
+        mimetype = magic_.file(encode(self.filename))
         magic_.close()
         if mimetype in MIMETYPE_DICT:
             self.mimetype = MIMETYPE_DICT[mimetype]

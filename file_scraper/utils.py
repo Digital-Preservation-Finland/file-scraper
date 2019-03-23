@@ -1,10 +1,18 @@
 """Utilities for scrapers"""
-
+import sys
 import os
 import subprocess
 import unicodedata
 import string
 import hashlib
+
+
+def encode(filename):
+    """Encode Unicode filenames
+    """
+    if isinstance(filename, unicode):
+        filename = filename.encode(sys.getfilesystemencoding())
+    return filename
 
 
 def hexdigest(filename, algorithm='sha1', extra_hash=None):

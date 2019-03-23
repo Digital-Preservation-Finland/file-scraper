@@ -18,6 +18,7 @@ except ImportError:
 
 from file_scraper.base import BaseScraper
 from file_scraper.defaults import MIMETYPE_DICT
+from file_scraper.utils import encode
 
 
 class BinaryMagic(BaseScraper):
@@ -49,13 +50,13 @@ class BinaryMagic(BaseScraper):
         try:
             magic_ = magic.open(magic.MAGIC_MIME_TYPE)
             magic_.load()
-            self._magic_mimetype = magic_.file(self.filename)
+            self._magic_mimetype = magic_.file(encode(self.filename))
             magic_.close()
 
             magic_ = magic.open(magic.MAGIC_NONE)
             magic_.load()
             self._magic_version = magic_.file(
-                self.filename).split(self._starttag)[-1]
+                encode(self.filename)).split(self._starttag)[-1]
             magic_.close()
             if self._endtag:
                 self._magic_version = self._magic_version.split(
@@ -132,13 +133,13 @@ class TextMagic(BaseScraper):
         try:
             magic_ = magic.open(magic.MAGIC_MIME_TYPE)
             magic_.load()
-            self._magic_mimetype = magic_.file(self.filename)
+            self._magic_mimetype = magic_.file(encode(self.filename))
             magic_.close()
 
             magic_ = magic.open(magic.MAGIC_NONE)
             magic_.load()
             self._magic_version = magic_.file(
-                self.filename).split(self._starttag)[-1]
+                encode(self.filename)).split(self._starttag)[-1]
             magic_.close()
             if self._endtag:
                 self._magic_version = self._magic_version.split(
@@ -146,7 +147,7 @@ class TextMagic(BaseScraper):
 
             magic_ = magic.open(magic.MAGIC_MIME_ENCODING)
             magic_.load()
-            self._magic_charset = magic_.file(self.filename)
+            self._magic_charset = magic_.file(encode(self.filename))
             magic_.close()
             if self._s_mimetype() == self.mimetype or \
                     (self._s_mimetype() in MIMETYPE_DICT and
