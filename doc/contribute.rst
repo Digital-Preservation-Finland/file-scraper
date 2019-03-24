@@ -16,7 +16,7 @@ The detectors inherit ``BaseDetector`` class, which contains an abstract method 
     * MAY detect also format version and store it in version attribute.
 
 The ``info`` attribute contains a dict of class name, and messages and errors occured during detection.
-See ``<scraper info X>`` from `README.rst<../README.rst>`_ for the content of the info attribute.
+See ``<scraper info X>`` from `README.rst <../README.rst>`_ for the content of the info attribute.
 
 Scraper tools
 -------------
@@ -56,14 +56,14 @@ A usable scraper tool class:
       The keys of the dict must correspond to the keys of streams dict.
 
 The ``info`` attribute contains a dict of class name, and messages and errors occured during scraping.
-See ``<scraper info X>`` from `README.rst<../README.rst>`_ for the content of the info attribute.
+See ``<scraper info X>`` from `README.rst <../README.rst>`_ for the content of the info attribute.
 
 Scraper sequence
 ----------------
 
 The main scraper iterates all detectors to determine mimetype and possibly file format version. The results of the detectors are given to scraper iterator,
 which forwards the values to ``is_supported()`` class method of the scraper. The ``is_supported()`` method makes the decision, whether it's scraper is supported or not.
-Supported scrapers are iterated, and the result of each scraper is combined directly to the final result. The resulted attributes are listed in `README.rst<../README.rst>`_.
+Supported scrapers are iterated, and the result of each scraper is combined directly to the final result. The resulted attributes are listed in `README.rst <../README.rst>`_.
 
 The main Scraper does everything in sequenced order. Should the scraper functionality be done in parallel, this can be changed by modifying the Scraper class
 and the utility functions it uses.

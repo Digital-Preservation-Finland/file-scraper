@@ -119,7 +119,7 @@ The following returns a checksum of the file with given algorithm (MD5 or SHA va
 Contributing
 ------------
 
-All contribution is welcome. Please see `Technical Notes<./doc/contribute.rst>`_ for more technical information about file-scraper.
+All contribution is welcome. Please see `Technical Notes <./doc/contribute.rst>`_ for more technical information about file-scraper.
 
 
 Misc notes
