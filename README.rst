@@ -112,6 +112,16 @@ Additionally, the following returns a boolean value True, if the file is a text 
 
     scraper.is_textfile()
 
+The following returns a checksum of the file with given algorithm (MD5 or SHA variant). The default algorithm is MD5::
+
+    scraper.checksum(algorithm=<algorithm>)
+
+Contributing
+------------
+
+All contribution is welcome. Please see `Technical Notes<./doc/contribute.rst>`_ for more technical information about file-scraper.
+
+
 Misc notes
 ----------
 
