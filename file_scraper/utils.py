@@ -103,12 +103,10 @@ def combine_metadata(stream, metadata, lose=None, important=None):
     """
     if not metadata:
         return stream
-    if stream is None:
-        stream = {}
-    if important is None:
-        important = {}
-    if lose is None:
-        lose = []
+
+    stream = {} if stream is None else stream
+    important = {} if important is None else important
+    lose = [] if lose is None else lose
 
     for stream_index, metadata_dict in metadata.iteritems():
 
