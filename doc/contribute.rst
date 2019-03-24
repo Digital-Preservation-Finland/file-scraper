@@ -37,7 +37,8 @@ A usable scraper tool class:
 
     * MUST have ``_supported`` class variable as a dict, which keys are supported mimetypes and values are lists of supported file format versions.
     * MUST have ``_only_wellformed = True`` class variable, if the scraper tools does just well-formed check.
-    * The scraper is normally launched also with other version numbers than listed (e.g. None). This MAY be disallowed with a class variable ``_allow_versions = False``.
+    * The scraper is normally launched also with other version numbers than listed (e.g. with ``None``).
+      This MAY be disallowed with a class variable ``_allow_versions = False``.
     * MUST call ``super()`` during initialization, if separate initialization method is created.
     * MUST implement ``scrape_file()`` for file scraping.
     * SHOULD call ``_check_supported()`` as the second last command of ``scrape_file()``. This checks that the final mimetype and version are supported ones, in case those
@@ -45,7 +46,7 @@ A usable scraper tool class:
     * MUST have a method for each metadata element that is needed to be resulted. These methods MUST be named with ``_s_`` prefix, e.g. ``_s_width()``, and MUST return string.
       The ``_collect_elements()`` in BaseScraper will collect the return values from all methods with ``_s_`` prefix automatically to ``streams`` attribute.
       The key of the metadata element in ``streams`` will be the method name without ``_s_`` prefix (e.g. ``width``), and value is the return value of the method.
-      A ``_s_ ``prefixed method MAY return ``SkipElement`` class (just class, not instance of a class) from file_scraper.base, if the methods needs to be omitted in
+      A ``_s_`` prefixed method MAY return ``SkipElement`` class (just class, not instance of a class) from file_scraper.base, if the methods needs to be omitted in
       collection phase. This may become handy with files containing different kinds of streams.
     * MUST implemet ``_s_stream_type()``, returning e.g. "text", "image", "audio", "video", "videocontainer", "binary".
     * MUST call ``_collect_elements()`` as the last command of ``scrape_file()`` regardless of the validation result.
