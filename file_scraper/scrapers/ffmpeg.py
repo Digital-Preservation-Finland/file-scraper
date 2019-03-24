@@ -3,7 +3,7 @@
 from file_scraper.base import BaseScraper, Shell
 
 
-class FFMpeg(BaseScraper):
+class FFMpegWellformed(BaseScraper):
     """FFMpeg Wellformed scraper
     """
 
@@ -18,6 +18,10 @@ class FFMpeg(BaseScraper):
     def scrape_file(self):
         """Scrape A/V files
         """
+        if not self._check_wellformed and self._only_wellformed:
+            self.messages('Skipping scraper: Well-formed check not used.')
+            self._collect_elements()
+            return
         shell = Shell(['ffmpeg', '-v', 'error', '-i', self.filename, '-f',
                        'null', '-'])
 

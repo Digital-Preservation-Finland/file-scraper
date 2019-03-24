@@ -6,8 +6,7 @@ except ImportError:
 from file_scraper.jhove_base import JHove
 
 
-NAMESPACES = {'j': 'http://hul.harvard.edu/ois/xml/ns/jhove',
-              'aes': 'http://www.aes.org/audioObject'}
+NAMESPACES = {'j': 'http://hul.harvard.edu/ois/xml/ns/jhove'}
 
 
 class GifJHove(JHove):
@@ -215,16 +214,6 @@ class WavJHove(JHove):
             return '2'
 
         return None
-
-    def aes_report_field(self, field):
-        """Query elements with the aes namespace from the scraper's
-        report."""
-
-        query = '//aes:%s/text()' % field
-        results = self._report.xpath(query, namespaces=NAMESPACES)
-        if results == []:
-            return None
-        return '\n'.join(results)
 
     def _s_stream_type(self):
         """Return file type

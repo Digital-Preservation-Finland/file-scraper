@@ -34,7 +34,7 @@ class XmlFileMagic(TextMagic):
         :mimetype: Identified mimetype
         :version: Identified version (if needed)
         :check_wellformed: True for the full well-formed check, False for just
-                            identification and metadata scraping
+                           detection and metadata scraping
         :params: Extra parameters needed for the scraper
         :returns: True if scraper is supported
         """

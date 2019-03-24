@@ -175,6 +175,14 @@ def test_scraper_invalid(filename, mimetype, class_):
     assert scraper.well_formed == correct.well_formed
 
 
+def test_no_wellformed():
+    """Test scraper without well-formed check"""
+    scraper = JpegFileMagic('valid_1.01.jpg', 'image/jpeg', False)
+    scraper.scrape_file()
+    assert not 'Skipping scraper' in scraper.messages()
+    assert scraper.well_formed is None
+
+
 @pytest.mark.parametrize(
     ['mime', 'ver', 'class_'],
     [
@@ -208,7 +216,7 @@ def test_scraper_invalid(filename, mimetype, class_):
     ]
 )
 def test_is_supported(mime, ver, class_):
-    """Test is_Supported method"""
+    """Test is_supported method"""
     assert class_.is_supported(mime, ver, True)
     assert class_.is_supported(mime, None, True)
     assert class_.is_supported(mime, ver, False)

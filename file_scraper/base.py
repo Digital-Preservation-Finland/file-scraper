@@ -193,7 +193,7 @@ class BaseScraper(object):
         """
         pass
 
-    def is_important(self):
+    def get_important(self):
         """Return values that are more important
         """
         return {}

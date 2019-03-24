@@ -125,3 +125,39 @@ def test_parallel_validation(filename, mimetype):
 
     for result in results:
         assert result.get(timeout=3)
+
+
+def test_no_wellformed():
+    """Test scraper without well-formed check"""
+    scraper = Office('valid_11.0.doc', 'application/msword', False)
+    scraper.scrape_file()
+    assert 'Skipping scraper' in scraper.messages()
+    assert scraper.well_formed is None
+
+
+@pytest.mark.parametrize(
+    ['mime', 'ver'],
+    [
+        ("application/vnd.oasis.opendocument.text", "1.1"),
+        ("application/msword", "11.0"),
+        ("application/vnd.openxmlformats-"
+         "officedocument.wordprocessingml.document", "15.0"),
+        ("application/vnd.oasis.opendocument.presentation", "1.1"),
+        ("application/vnd.ms-powerpoint", "11.0"),
+        ("application/vnd.openxml"
+         "formats-officedocument.presentationml.presentation", "15.0"),
+        ("application/vnd.oasis.opendocument.spreadsheet", "1.1"),
+        ("application/vnd.ms-excel", "11.0"),
+        ("application/vnd."
+         "openxmlformats-officedocument.spreadsheetml.sheet", "15.0"),
+        ("application/vnd.oasis.opendocument.graphics", "1.1"),
+        ("application/vnd.oasis.opendocument.formula", "1.0"),
+    ]
+)
+def test_is_supported(mime, ver):
+    """Test is_supported method"""
+    assert Office.is_supported(mime, ver, True)
+    assert Office.is_supported(mime, None, True)
+    assert not Office.is_supported(mime, ver, False)
+    assert Office.is_supported(mime, 'foo', True)
+    assert not Office.is_supported('foo', ver, True)

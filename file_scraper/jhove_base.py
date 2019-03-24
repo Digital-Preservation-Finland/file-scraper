@@ -26,7 +26,7 @@ class JHove(BaseScraper):
         :filename: File path
         :mimetype: Predicted mimetype of the file
         :check_wellformed: True for the full well-formed check, False for just
-                            identification and metadata scraping
+                           detection and metadata scraping
         :params: Extra parameters needed for the scraper
         """
         self._report = None  # JHove report
@@ -37,6 +37,10 @@ class JHove(BaseScraper):
     def scrape_file(self):
         """Run JHove command and store XML output to self.report
         """
+        if not self._check_wellformed and self._only_wellformed:
+            self.messages('Skipping scraper: Well-formed check not used.')
+            self._collect_elements()
+            return
         exec_cmd = ['jhove', '-h', 'XML', '-m',
                     self._jhove_module, self.filename]
         self._shell = Shell(exec_cmd)
@@ -72,6 +76,8 @@ class JHove(BaseScraper):
 
     def report_field(self, field):
         """Return field value from JHoves XML output stored to self.report."""
+        if self._report is None:
+            return None
         query = '//j:%s/text()' % field
         results = self._report.xpath(query, namespaces=NAMESPACES)
         if not results:

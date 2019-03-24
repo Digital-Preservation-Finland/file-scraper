@@ -48,8 +48,16 @@ def test_scraper_pdf(filename, result_dict):
         assert scraper.well_formed == correct.well_formed
 
 
+def test_no_wellformed():
+    """Test scraper without well-formed check"""
+    scraper = GhostScript('valid_1.4.pdf', 'application/pdf', False)
+    scraper.scrape_file()
+    assert 'Skipping scraper' in scraper.messages()
+    assert scraper.well_formed is None
+
+
 def test_is_supported():
-    """Test is_Supported method"""
+    """Test is_supported method"""
     mime = 'application/pdf'
     ver = '1.7'
     assert GhostScript.is_supported(mime, ver, True)

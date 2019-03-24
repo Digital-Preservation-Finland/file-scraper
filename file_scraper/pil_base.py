@@ -21,7 +21,7 @@ class Pil(BaseScraper):
         :filename: File path
         :mimetype: Predicted mimetype of the file
         :check_wellformed: True for the full well-formed check, False for just
-                            identification and metadata scraping
+                           detection and metadata scraping
         :params: Extra parameters needed for the scraper
         """
         self._pil = None        # Pil result
@@ -31,6 +31,10 @@ class Pil(BaseScraper):
     def scrape_file(self):
         """Scrape data from file.
         """
+        if not self._check_wellformed and self._only_wellformed:
+            self.messages('Skipping scraper: Well-formed check not used.')
+            self._collect_elements()
+            return
         try:
             self._pil = PIL.Image.open(self.filename)
         except Exception as e:  # pylint: disable=invalid-name, broad-except

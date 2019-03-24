@@ -37,7 +37,7 @@ class Xmllint(BaseScraper):
         :filename: File path
         :mimetype: Predicted mimetype of the file
         :check_wellformed: True for the full well-formed check, False for just
-                            identification and metadata scraping
+                           detection and metadata scraping
         :params: Extra parameters needed for the scraper
         """
         if params is None:
@@ -57,7 +57,7 @@ class Xmllint(BaseScraper):
         :mimetype: Identified mimetype
         :version: Identified version (if needed)
         :check_wellformed: True for the full well-formed check, False for just
-                            identification and metadata scraping
+                           detection and metadata scraping
         :params: Extra parameters needed for the scraper
         :returns: True if scraper is supported
         """
@@ -85,7 +85,10 @@ class Xmllint(BaseScraper):
 
         .. seealso:: https://wiki.csc.fi/wiki/KDK/XMLTiedostomuotojenSkeemat
         """
-
+        if not self._check_wellformed and self._only_wellformed:
+            self.messages('Skipping scraper: Well-formed check not used.')
+            self._collect_elements()
+            return
         # Try to check syntax by opening file in XML parser
         try:
             file_ = open(self.filename)

@@ -16,7 +16,7 @@ class Wand(BaseScraper):
         :filename: File path
         :mimetype: Predicted mimetype of the file
         :check_wellformed: True for the full well-formed check, False for just
-                            identification and metadata scraping
+                           detection and metadata scraping
         :params: Extra parameters needed for the scraper
         """
         self._wand_index = None   # Current wand stream index
@@ -28,6 +28,10 @@ class Wand(BaseScraper):
     def scrape_file(self):
         """Scrape data from file.
         """
+        if not self._check_wellformed and self._only_wellformed:
+            self.messages('Skipping scraper: Well-formed check not used.')
+            self._collect_elements()
+            return
         try:
             self._wand = wand.image.Image(filename=self.filename)
         except Exception as e:  # pylint: disable=broad-except, invalid-name

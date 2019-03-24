@@ -3,7 +3,7 @@ Tests for Fido and Magic detectors.
 
 This module tests that:
     - FidoDetector and MagicDetector detect MIME types correctly.
-    - FidoDetector returns an empty dict from is_important() with
+    - FidoDetector returns an empty dict from get_important() with
       certain mimetypes and MagicDetector returns certain mimetypes.
 """
 import pytest
@@ -72,6 +72,6 @@ def test_important(detector_class, mimetype):
     detector = detector_class('testfilename')
     detector.mimetype = mimetype
     if detector_class == FidoDetector:
-        assert detector.is_important() == {}
+        assert detector.get_important() == {}
     else:
-        assert detector.is_important() == {'mimetype': mimetype}
+        assert detector.get_important() == {'mimetype': mimetype}

@@ -21,7 +21,7 @@ class XmlEncoding(BaseScraper):
         :filename: File path
         :mimetype: Predicted mimetype of the file
         :check_wellformed: True for the full well-formed check, False for just
-                            identification and metadata scraping
+                           detection and metadata scraping
         :params: Extra parameters: delimiter and separator
         """
         self._charset = None
@@ -35,7 +35,7 @@ class XmlEncoding(BaseScraper):
         :mimetype: Identified mimetype
         :version: Identified version (if needed)
         :check_wellformed: True for the full well-formed check, False for just
-                            identification and metadata scraping
+                           detection and metadata scraping
         :params: Extra parameters needed for the scraper
         :returns: True if scraper is supported
         """
@@ -49,6 +49,10 @@ class XmlEncoding(BaseScraper):
     def scrape_file(self):
         """Scrape file.
         """
+        if not self._check_wellformed and self._only_wellformed:
+            self.messages('Skipping scraper: Well-formed check not used.')
+            self._collect_elements()
+            return
         parser = etree.XMLParser(dtd_validation=False, no_network=True,
                                  recover=True)
         file_ = open(self.filename)

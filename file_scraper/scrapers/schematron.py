@@ -19,7 +19,7 @@ class Schematron(BaseScraper):
         :filename: File path
         :mimetype: Predicted mimetype of the file
         :check_wellformed: True for the full well-formed check, False for just
-                            identification and metadata scraping
+                           detection and metadata scraping
         :params: Extra parameters needed for the scraper
         """
         if params is None:
@@ -42,7 +42,7 @@ class Schematron(BaseScraper):
         :mimetype: Identified mimetype
         :version: Identified version (if needed)
         :check_wellformed: True for the full well-formed check, False for just
-                            identification and metadata scraping
+                           detection and metadata scraping
         :params: Extra parameters needed for the scraper
         :returns: True if scraper is supported
         """
@@ -57,6 +57,8 @@ class Schematron(BaseScraper):
     def well_formed(self):
         """Check if document resulted errors.
         """
+        if not self._check_wellformed:
+            return None
         if not self.errors() and self.messages():
             if self.messages().find('<svrl:failed-assert ') < 0 \
                     and self._returncode == 0:
@@ -66,7 +68,14 @@ class Schematron(BaseScraper):
     def scrape_file(self):
         """Do the Schematron check.
         """
+        if not self._check_wellformed and self._only_wellformed:
+            self.messages('Skipping scraper: Well-formed check not used.')
+            self._collect_elements()
+            return
+
         if self._schematron_file is None:
+            self.errors('Schematron file missing from parameters.')
+            self._collect_elements()
             return
 
         xslt_filename = self._compile_schematron()

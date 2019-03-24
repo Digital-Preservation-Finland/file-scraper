@@ -174,8 +174,33 @@ def test_arc_scraper(filename, result_dict):
     assert scraper.well_formed == correct.well_formed
 
 
+def test_no_wellformed_gzip():
+    """Test scraper without well-formed check"""
+    scraper = GzipWarctools('valid_1.0_.warc.gz', 'application/gzip', False)
+    scraper.scrape_file()
+    assert 'Skipping scraper' in scraper.messages()
+    assert scraper.well_formed is None
+
+
+def test_no_wellformed_warc():
+    """Test scraper without well-formed check"""
+    scraper = WarcWarctools('valid_1.0_.warc', 'application/warc', False)
+    scraper.scrape_file()
+    assert 'Skipping scraper' in scraper.messages()
+    assert scraper.well_formed is None
+
+
+def test_no_wellformed_arc():
+    """Test scraper without well-formed check"""
+    scraper = ArcWarctools('valid_1.0_.arc', 'application/x-internet-archive',
+                           False)
+    scraper.scrape_file()
+    assert 'Skipping scraper' in scraper.messages()
+    assert scraper.well_formed is None
+
+
 def test_gzip_is_supported():
-    """Test is_Supported method"""
+    """Test is_supported method"""
     mime = 'application/gzip'
     ver = ''
     assert GzipWarctools.is_supported(mime, ver, True)
@@ -186,7 +211,7 @@ def test_gzip_is_supported():
 
 
 def test_warc_is_supported():
-    """Test is_Supported method"""
+    """Test is_supported method"""
     mime = 'application/warc'
     ver = ''
     assert WarcWarctools.is_supported(mime, ver, True)
@@ -197,7 +222,7 @@ def test_warc_is_supported():
 
 
 def test_arc_is_supported():
-    """Test is_Supported method"""
+    """Test is_supported method"""
     mime = 'application/x-internet-archive'
     ver = ''
     assert ArcWarctools.is_supported(mime, ver, True)

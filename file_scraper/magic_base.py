@@ -43,6 +43,10 @@ class BinaryMagic(BaseScraper):
     def scrape_file(self):
         """Scrape binary file
         """
+        if not self._check_wellformed and self._only_wellformed:
+            self.messages('Skipping scraper: Well-formed check not used.')
+            self._collect_elements()
+            return
         if not os.path.exists(self.filename):
             self.errors('File not found.')
             self._collect_elements()
@@ -115,7 +119,7 @@ class TextMagic(BaseScraper):
         :filename: File path
         :mimetype: Predicted mimetype of the file
         :check_wellformed: True for the full well-formed check, False for just
-                            identification and metadata scraping
+                           detection and metadata scraping
         :params: Extra parameters needed for the scraper
         """
         self._magic_mimetype = None  # Mimetype from magic
@@ -127,6 +131,10 @@ class TextMagic(BaseScraper):
     def scrape_file(self):
         """Scrape text file
         """
+        if not self._check_wellformed and self._only_wellformed:
+            self.messages('Skipping scraper: Well-formed check not used.')
+            self._collect_elements()
+            return
         if not os.path.exists(self.filename):
             self.errors('File not found.')
             self._collect_elements()

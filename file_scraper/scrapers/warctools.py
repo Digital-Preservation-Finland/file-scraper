@@ -18,6 +18,10 @@ class GzipWarctools(BaseScraper):
     def scrape_file(self):
         """Scrape file. If Warc fails, try Arc.
         """
+        if not self._check_wellformed and self._only_wellformed:
+            self.messages('Skipping scraper: Well-formed check not used.')
+            self._collect_elements()
+            return
         messages = None
         errors = None
         for class_ in [WarcWarctools, ArcWarctools]:
@@ -64,6 +68,10 @@ class WarcWarctools(BaseScraper):
     def scrape_file(self):
         """Scrape WARC file.
         """
+        if not self._check_wellformed and self._only_wellformed:
+            self.messages('Skipping scraper: Well-formed check not used.')
+            self._collect_elements()
+            return
         size = os.path.getsize(self.filename)
         if size == 0:
             self.errors('Empty file.')
@@ -120,6 +128,10 @@ class ArcWarctools(BaseScraper):
     def scrape_file(self):
         """Scrape ARC file by converting to WARC using Warctools' arc2warc
         converter."""
+        if not self._check_wellformed and self._only_wellformed:
+            self.messages('Skipping scraper: Well-formed check not used.')
+            self._collect_elements()
+            return
         size = os.path.getsize(self.filename)
         if size == 0:
             self.errors('Empty file.')

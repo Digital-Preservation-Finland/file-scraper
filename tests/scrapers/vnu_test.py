@@ -49,8 +49,16 @@ def test_scraper(filename, result_dict):
     assert scraper.well_formed == correct.well_formed
 
 
+def test_no_wellformed():
+    """Test scraper without well-formed check"""
+    scraper = Vnu('valid_5.0.html', MIMETYPE, False)
+    scraper.scrape_file()
+    assert 'Skipping scraper' in scraper.messages()
+    assert scraper.well_formed is None
+
+
 def test_is_supported():
-    """Test is_Supported method"""
+    """Test is_supported method"""
     mime = MIMETYPE
     ver = '5.0'
     assert Vnu.is_supported(mime, ver, True)

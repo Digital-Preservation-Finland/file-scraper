@@ -57,8 +57,16 @@ def test_scraper_invalid(filename, result_dict, params):
         assert 'have been suppressed' in scraper.messages()
 
 
+def test_no_wellformed():
+    """Test scraper without well-formed check"""
+    scraper = Schematron('valid_1.0_wellformed.xml', 'text/xml', False)
+    scraper.scrape_file()
+    assert 'Skipping scraper' in scraper.messages()
+    assert scraper.well_formed is None
+
+
 def test_is_supported():
-    """Test is_Supported method"""
+    """Test is_supported method"""
     mime = 'text/xml'
     ver = '1.0'
     assert Schematron.is_supported(mime, ver, True, {'schematron': None})

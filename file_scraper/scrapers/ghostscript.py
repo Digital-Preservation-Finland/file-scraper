@@ -17,7 +17,10 @@ class GhostScript(BaseScraper):
         """
         Scrape file
         """
-
+        if not self._check_wellformed and self._only_wellformed:
+            self.messages('Skipping scraper: Well-formed check not used.')
+            self._collect_elements()
+            return
         shell = Shell([
             'gs', '-o', '/dev/null', '-sDEVICE=nullpage',
             self.filename])

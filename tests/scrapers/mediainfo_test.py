@@ -194,6 +194,25 @@ def test_mediainfo_scraper_mpegts(filename, result_dict):
     assert scraper.well_formed == correct.well_formed
 
 
+def test_no_wellformed():
+    """Test scraper without well-formed check"""
+    scraper = WavMediainfo('valid__wav.wav', 'audio/x-wav', False)
+    scraper.scrape_file()
+    assert not 'Skipping scraper' in scraper.messages()
+    assert scraper.well_formed is None
+
+
+def test_is_supported_wav():
+    """Test is_supported method"""
+    mime = 'audio/x-wav'
+    ver = 2
+    assert WavMediainfo.is_supported(mime, ver, True)
+    assert WavMediainfo.is_supported(mime, None, True)
+    assert WavMediainfo.is_supported(mime, ver, False)
+    assert WavMediainfo.is_supported(mime, 'foo', True)
+    assert not WavMediainfo.is_supported('foo', ver, True)
+
+
 @pytest.mark.parametrize(
     ['mime', 'ver'],
     [
@@ -204,7 +223,7 @@ def test_mediainfo_scraper_mpegts(filename, result_dict):
         ('video/MP2T', ''),
     ]
 )
-def test_is_supportedi_mpeg(mime, ver):
+def test_is_supported_mpeg(mime, ver):
     """Test is_supported method"""
     assert MpegMediainfo.is_supported(mime, ver, True)
     assert MpegMediainfo.is_supported(mime, None, True)

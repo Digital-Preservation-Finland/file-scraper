@@ -11,14 +11,14 @@ class Csv(BaseScraper):
 
     _supported = {'text/csv': ['']}  # Supported mimetype
     _allow_versions = True           # Allow any version
-    _only_Wellformed = True
+    _only_wellformed = True
 
     def __init__(self, filename, mimetype, check_wellformed=True, params=None):
         """Initialize for delimiter and separator info.
         :filename: File path
         :mimetype: Predicted mimetype of the file
         :check_wellformed: True for the full well-formed check, False for just
-                            identification and metadata scraping
+                           detection and metadata scraping
         :params: Extra parameters: delimiter and separator
         """
         if params is None:
@@ -32,6 +32,10 @@ class Csv(BaseScraper):
     def scrape_file(self):
         """Scrape CSV file.
         """
+        if not self._check_wellformed and self._only_wellformed:
+            self.messages('Skipping scraper: Well-formed check not used.')
+            self._collect_elements()
+            return
         if self._csv_fields is None:
             self._csv_fields = []
         try:

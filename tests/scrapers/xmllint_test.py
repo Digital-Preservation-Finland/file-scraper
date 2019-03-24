@@ -114,8 +114,16 @@ def test_scraper_invalid(filename, result_dict, params):
     assert scraper.well_formed == correct.well_formed
 
 
+def test_no_wellformed_gzip():
+    """Test scraper without well-formed check"""
+    scraper = Xmllint('valid_1.0_wellformed.xml', 'text/xml', False)
+    scraper.scrape_file()
+    assert 'Skipping scraper' in scraper.messages()
+    assert scraper.well_formed is None
+
+
 def test_is_supported():
-    """Test is_Supported method"""
+    """Test is_supported method"""
     mime = 'text/xml'
     ver = '1.0'
     assert Xmllint.is_supported(mime, ver, True)

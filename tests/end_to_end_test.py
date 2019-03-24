@@ -212,7 +212,7 @@ def test_unicode_filename(testpath):
         unicode_name = os.path.join(testpath, u'äöå.%s' % ext)
         assert isinstance(unicode_name, unicode)
 
-        print fullname, " --> ", unicode_name
+        print "Rename to unicode and scrape: %s" % fullname
         shutil.copy(fullname, unicode_name)
         scraper = Scraper(unicode_name)
         scraper.scrape()

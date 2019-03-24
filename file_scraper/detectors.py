@@ -110,7 +110,7 @@ class FidoDetector(BaseDetector):
                      'messages': '',
                      'errors': ''}
 
-    def is_important(self):
+    def get_important(self):
         """Important mime types.
         :returns: Mime type
         """
@@ -142,7 +142,7 @@ class MagicDetector(BaseDetector):
                      'messages': '',
                      'errors': ''}
 
-    def is_important(self):
+    def get_important(self):
         """Important mime types.
         :returns: Mime type
         """

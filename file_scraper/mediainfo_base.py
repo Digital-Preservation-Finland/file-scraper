@@ -25,7 +25,7 @@ class Mediainfo(BaseScraper):
         :filename: File path
         :mimetype: Predicted mimetype of the file
         :check_wellformed: True for the full well-formed check, False for just
-                            identification and metadata scraping
+                           detection and metadata scraping
         :params: Extra parameters needed for the scraper
         """
         self._mediainfo_index = None   # Current mediainfo stream index
@@ -37,6 +37,10 @@ class Mediainfo(BaseScraper):
     def scrape_file(self):
         """Scrape the file.
         """
+        if not self._check_wellformed and self._only_wellformed:
+            self.messages('Skipping scraper: Well-formed check not used.')
+            self._collect_elements()
+            return
         try:
             self._mediainfo = MediaInfo.parse(self.filename)
         except Exception as e:  # pylint: disable=invalid-name, broad-except

@@ -44,8 +44,16 @@ def test_scraper(filename, result_dict):
     assert scraper.well_formed == correct.well_formed
 
 
+def test_no_wellformed():
+    """Test scraper without well-formed check"""
+    scraper = Pngcheck('valid_1.2.png', 'image/png', False)
+    scraper.scrape_file()
+    assert 'Skipping scraper' in scraper.messages()
+    assert scraper.well_formed is None
+
+
 def test_is_supported():
-    """Test is_Supported method"""
+    """Test is_supported method"""
     mime = MIMETYPE
     ver = '1.2'
     assert Pngcheck.is_supported(mime, ver, True)

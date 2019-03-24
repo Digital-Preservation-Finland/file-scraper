@@ -34,6 +34,10 @@ class Office(BaseScraper):
     def scrape_file(self):
         """Scrape file
         """
+        if not self._check_wellformed and self._only_wellformed:
+            self.messages('Skipping scraper: Well-formed check not used.')
+            self._collect_elements()
+            return
         temp_dir = tempfile.mkdtemp()
         try:
             env = {'HOME': temp_dir}

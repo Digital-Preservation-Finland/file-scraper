@@ -354,6 +354,14 @@ def test_scraper_wav(filename, result_dict, version):
     assert scraper.well_formed == correct.well_formed
 
 
+def test_no_wellformed():
+    """Test scraper without well-formed check"""
+    scraper = WavJHove('valid__wav.wav', 'audio/x-wav', False)
+    scraper.scrape_file()
+    assert 'Skipping scraper' in scraper.messages()
+    assert scraper.well_formed is None
+
+
 @pytest.mark.parametrize(
     ['mime', 'ver', 'class_'],
     [
@@ -364,7 +372,7 @@ def test_scraper_wav(filename, result_dict, version):
     ]
 )
 def test_is_supported_allow(mime, ver, class_):
-    """Test is_Supported method"""
+    """Test is_supported method, allow all versions"""
     assert class_.is_supported(mime, ver, True)
     assert class_.is_supported(mime, None, True)
     assert not class_.is_supported(mime, ver, False)
@@ -381,7 +389,7 @@ def test_is_supported_allow(mime, ver, class_):
     ]
 )
 def test_is_supported_deny(mime, ver, class_):
-    """Test is_Supported method"""
+    """Test is_supported method, allow only known versions"""
     assert class_.is_supported(mime, ver, True)
     assert class_.is_supported(mime, None, True)
     assert not class_.is_supported(mime, ver, False)
@@ -396,7 +404,7 @@ def test_is_supported_deny(mime, ver, class_):
     ]
 )
 def test_is_supported_utf8(mime, ver, class_):
-    """Test is_Supported method"""
+    """Test is_supported method, utf8 scraper"""
     assert not class_.is_supported(mime, ver, True)
     assert not class_.is_supported(mime, None, True)
     assert not class_.is_supported(mime, ver, False)

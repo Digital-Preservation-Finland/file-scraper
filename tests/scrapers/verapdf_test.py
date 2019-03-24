@@ -85,6 +85,14 @@ def test_scraper_invalid_pdfa(filename, result_dict):
     assert scraper.well_formed == correct.well_formed
 
 
+def test_no_wellformed():
+    """Test scraper without well-formed check"""
+    scraper = VeraPdf('valid_A-1a.pdf', 'application/pdf', False)
+    scraper.scrape_file()
+    assert 'Skipping scraper' in scraper.messages()
+    assert scraper.well_formed is None
+
+
 def test_is_supported():
     """Test is_supported method"""
     mime = MIMETYPE
@@ -105,6 +113,6 @@ def test_important(version):
     scraper = VeraPdf('testfilename', 'application/pdf')
     scraper.version = version
     scraper.messages('Success')
-    assert scraper.is_important() == {'version': version}
+    assert scraper.get_important() == {'version': version}
     scraper.errors('Error')
-    assert scraper.is_important() == {}
+    assert scraper.get_important() == {}

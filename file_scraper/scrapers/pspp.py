@@ -22,6 +22,11 @@ class Pspp(BaseScraper):
     def scrape_file(self):
         """Scrape file
         """
+        if not self._check_wellformed and self._only_wellformed:
+            self.messages('Skipping scraper: Well-formed check not used.')
+            self._collect_elements()
+            return
+
         # Check file header
         with open(self.filename) as input_file:
             first_line = input_file.readline()

@@ -39,7 +39,7 @@ class Scraper(object):
             tool = detector(self.filename)
             tool.detect()
             self.info[len(self.info)] = tool.info
-            important = tool.is_important()
+            important = tool.get_important()
             if self.mimetype in LOSE:
                 self.mimetype = tool.mimetype
             if self.mimetype == tool.mimetype and \
@@ -57,7 +57,7 @@ class Scraper(object):
         :scraper: Scraper instance
         """
         scraper.scrape_file()
-        self._important.update(scraper.is_important())
+        self._important.update(scraper.get_important())
         self.streams = combine_metadata(
             stream=self.streams, metadata=scraper.streams,
             lose=LOSE, important=self._important)
@@ -71,8 +71,7 @@ class Scraper(object):
         after actual scraping
         """
         if 'charset' in self.streams[0] and \
-                self.streams[0]['charset'] == 'UTF-8' and \
-                check_wellformed:
+                self.streams[0]['charset'] == 'UTF-8':
             scraper = Utf8JHove(self.filename, self.mimetype, check_wellformed)
             self._scrape_file(scraper)
 
@@ -100,7 +99,7 @@ class Scraper(object):
         file_exists = FileExists(self.filename, None)
         self._scrape_file(file_exists)
 
-        if file_exists.well_formed not in [None, True]:
+        if file_exists.well_formed is False:
             return
 
         self._identify()
