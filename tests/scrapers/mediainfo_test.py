@@ -2,7 +2,6 @@
 NOTE: Mediainfo accepts practically any file. We use another scrapers for
 well-formed checks.
 """
-import os
 import pytest
 from file_scraper.scrapers.mediainfo import MpegMediainfo, WavMediainfo
 from tests.common import parse_results
@@ -16,12 +15,12 @@ from tests.scrapers.stream_dicts import MPEG1_VIDEO, MPEG2_VIDEO, \
     [
         ("valid__wav.wav", {
             "purpose": "Test valid WAV.",
-            "stdout_part": "file was scraped successfully",
+            "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
             "streams": {0: WAV_AUDIO.copy()}}),
         ("valid_2_bwf.wav", {
             "purpose": "Test valid BWF.",
-            "stdout_part": "file was scraped successfully",
+            "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
             "streams": {0: WAV_AUDIO.copy()}}),
         ("invalid__empty.wav", {
@@ -54,12 +53,12 @@ def test_mediainfo_scraper_wav(filename, result_dict):
     [
         ("valid_1.m1v", {
             "purpose": "Test valid MPEG-1.",
-            "stdout_part": "file was scraped successfully",
+            "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
             "streams": {0: MPEG1_VIDEO.copy()}}),
         ("valid_2.m2v", {
             "purpose": "Test valid MPEG-2.",
-            "stdout_part": "file was scraped successfully",
+            "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
             "streams": {0: MPEG2_VIDEO.copy()}}),
         ("invalid_1_empty.m1v", {
@@ -93,10 +92,10 @@ def test_mediainfo_scraper_mpeg(filename, result_dict):
 
 @pytest.mark.parametrize(
     ["filename", "result_dict"],
-    [   
+    [
         ("valid__h264_aac.mp4", {
             "purpose": "Test valid mp4.",
-            "stdout_part": "file was scraped successfully",
+            "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
             "streams": {0: MPEG4_CONTAINER.copy(),
                         1: MPEG4_VIDEO.copy(),
@@ -128,10 +127,10 @@ def test_mediainfo_scraper_mp4(filename, result_dict):
 
 @pytest.mark.parametrize(
     ["filename", "result_dict"],
-    [   
+    [
         ("valid_1.mp3", {
             "purpose": "Test valid mp3.",
-            "stdout_part": "file was scraped successfully",
+            "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
             "streams": {0: MPEG1_AUDIO.copy()}}),
         ("invalid__empty.mp3", {
@@ -161,10 +160,10 @@ def test_mediainfo_scraper_mp3(filename, result_dict):
 
 @pytest.mark.parametrize(
     ["filename", "result_dict"],
-    [   
+    [
         ("valid_.ts", {
             "purpose": "Test valid MPEG-TS.",
-            "stdout_part": "file was scraped successfully",
+            "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
             "streams": {0: MPEGTS_CONTAINER.copy(),
                         1: MPEGTS_VIDEO.copy(),

@@ -17,17 +17,18 @@ class FFMpeg(BaseScraper):
 
     _only_wellformed = True
 
-    def __init__(self, filename, mimetype, validation=True, params=None):
+    def __init__(self, filename, mimetype, check_wellformed=True, params=None):
         """Initialize scraper.
         :filename: File path
         :mimetype: Predicted mimetype of the file
-        :validation: True for the full validation, False for just
-                     identification and metadata scraping
+        :check_wellformed: True for the full well-formed check, False for just
+                            identification and metadata scraping
         :params: Extra parameters needed for the scraper
         """
         self._ffmpeg_stream = None  # Current ffprobe stream
         self._ffmpeg = None         # All ffprobe streams
-        super(FFMpeg, self).__init__(filename, mimetype, validation, params)
+        super(FFMpeg, self).__init__(filename, mimetype, check_wellformed,
+                                     params)
 
     def scrape_file(self):
         """Scrape data from file.
@@ -41,10 +42,10 @@ class FFMpeg(BaseScraper):
                     stream['index'] = stream['index'] + 1
             self.set_tool_stream(0)
         except self._ffmpeg.Error as err:
-            self.errors('Error in scraping file.')
+            self.errors('Error in analyzing file.')
             self.errors(err.stderr)
         else:
-            self.messages('The file was scraped successfully.')
+            self.messages('The file was analyzed successfully.')
         finally:
             self._check_supported()
             self._collect_elements()
@@ -213,7 +214,6 @@ class FFMpeg(BaseScraper):
         if self._ffmpeg is None:
             return None
         if 'bit_rate' in self._ffmpeg_stream:
-            # pylint: disable=no-else-return
             if self._ffmpeg_stream['codec_type'] == 'video':
                 return strip_zeros(str(float(
                     self._ffmpeg_stream['bit_rate'])/1000000))

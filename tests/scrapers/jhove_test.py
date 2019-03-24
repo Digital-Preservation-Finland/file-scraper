@@ -1,5 +1,4 @@
 """Test module for jhove.py"""
-import os
 import pytest
 
 from file_scraper.scrapers.jhove import GifJHove, TiffJHove, PdfJHove, \
@@ -294,46 +293,46 @@ def test_scraper_html(filename, result_dict, mimetype, charset, version):
 
 
 @pytest.mark.parametrize(
-    ['filename', 'result_dict', 'version', 'others'],
+    ['filename', 'result_dict', 'version'],
     [
         ('valid__wav.wav', {
             'purpose': 'Test valid file.',
             'stdout_part': 'Well-Formed and valid',
             'stderr_part': ''},
-         None, True),
+         None),
         ('valid_2_bwf.wav', {
             'purpose': 'Test valid file.',
             'stdout_part': 'Well-Formed and valid',
             'stderr_part': ''},
-         '2', True),
+         '2'),
         ('invalid_2_bwf_data_bytes_missing.wav', {
             'purpose': 'Test data bytes missing.',
             'stdout_part': '',
             'stderr_part': 'Invalid character in Chunk ID'},
-         None, True),
+         None),
         ('invalid_2_bwf_RIFF_edited.wav', {
             'purpose': 'Test edited RIFF.',
             'stdout_part': '',
             'stderr_part': 'Invalid chunk size'},
-         None, False),
+         None),
         ('invalid__empty.wav', {
             'purpose': 'Test empty file.',
             'stdout_part': '',
             'stderr_part': 'Unexpected end of file'},
-         None, False),
+         None),
         ('invalid__data_bytes_missing.wav', {
             'purpose': 'Test data bytes missing.',
             'stdout_part': '',
             'stderr_part': 'Bytes missing'},
-         None, True),
+         None),
         ('invalid__RIFF_edited.wav', {
             'purpose': 'Test edited RIFF.',
             'stdout_part': '',
             'stderr_part': 'Invalid chunk size'},
-         None, False)
+         None)
     ]
 )
-def test_scraper_wav(filename, result_dict, version, others):
+def test_scraper_wav(filename, result_dict, version):
     """Test scraper"""
     correct = parse_results(filename, 'audio/x-wav',
                             result_dict, True)
@@ -372,6 +371,7 @@ def test_is_supported_allow(mime, ver, class_):
     assert class_.is_supported(mime, 'foo', True)
     assert not class_.is_supported('foo', ver, True)
 
+
 @pytest.mark.parametrize(
     ['mime', 'ver', 'class_'],
     [
@@ -387,6 +387,7 @@ def test_is_supported_deny(mime, ver, class_):
     assert not class_.is_supported(mime, ver, False)
     assert not class_.is_supported(mime, 'foo', True)
     assert not class_.is_supported('foo', ver, True)
+
 
 @pytest.mark.parametrize(
     ['mime', 'ver', 'class_'],

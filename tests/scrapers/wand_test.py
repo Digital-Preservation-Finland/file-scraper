@@ -1,7 +1,6 @@
 """
 Tests for ImageMagick scraper.
 """
-import os
 import pytest
 from file_scraper.scrapers.wand import TiffWand, ImageWand
 from tests.common import parse_results
@@ -88,7 +87,7 @@ def test_scraper_tif(filename, result_dict):
     correct.version = None
     correct.streams[0]['version'] = None
     scraper = TiffWand(correct.filename, correct.mimetype,
-                  True, correct.params)
+                       True, correct.params)
     scraper.scrape_file()
 
     assert scraper.mimetype == correct.mimetype
@@ -134,7 +133,7 @@ def test_scraper_jpg(filename, result_dict):
     correct.streams[0]['version'] = None
     correct.version = None
     scraper = ImageWand(correct.filename, correct.mimetype,
-                  True, correct.params)
+                        True, correct.params)
     scraper.scrape_file()
 
     assert scraper.mimetype == correct.mimetype
@@ -176,7 +175,7 @@ def test_scraper_jp2(filename, result_dict):
     correct.streams[0]['version'] = None
     correct.version = None
     scraper = ImageWand(correct.filename, correct.mimetype,
-                  True, correct.params)
+                        True, correct.params)
     scraper.scrape_file()
 
     assert scraper.mimetype == correct.mimetype
@@ -232,7 +231,7 @@ def test_scraper_png(filename, result_dict):
     correct.streams[0]['version'] = None
     correct.version = None
     scraper = ImageWand(correct.filename, correct.mimetype,
-                  True, correct.params)
+                        True, correct.params)
     scraper.scrape_file()
 
     assert scraper.mimetype == correct.mimetype
@@ -296,7 +295,7 @@ def test_scraper_gif(filename, result_dict):
     correct.version = None
 
     scraper = ImageWand(correct.filename, correct.mimetype,
-                  True, correct.params)
+                        True, correct.params)
     scraper.scrape_file()
 
     assert scraper.mimetype == correct.mimetype

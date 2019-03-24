@@ -7,6 +7,7 @@ from file_scraper.scrapers.dummy import ScraperNotFound, FileExists
 DEFAULTSTREAMS = {0: {'index': 0, 'version': None,
                       'stream_type': None}}
 
+
 @pytest.mark.parametrize(
     ["filepath", "mimetype"],
     [

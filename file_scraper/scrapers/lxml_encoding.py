@@ -16,26 +16,26 @@ class XmlEncoding(BaseScraper):
     _supported = {'text/xml': ['1.0'], 'text/html': ['5.0']}
     _only_wellformed = True  # Only well-formed check
 
-    def __init__(self, filename, mimetype, validation=True, params=None):
+    def __init__(self, filename, mimetype, check_wellformed=True, params=None):
         """Initialize scraper.
         :filename: File path
         :mimetype: Predicted mimetype of the file
-        :validation: True for the full validation, False for just
-                     identification and metadata scraping
+        :check_wellformed: True for the full well-formed check, False for just
+                            identification and metadata scraping
         :params: Extra parameters: delimiter and separator
         """
         self._charset = None
         super(XmlEncoding, self).__init__(filename, mimetype,
-                                          validation, params)
+                                          check_wellformed, params)
 
     @classmethod
     def is_supported(cls, mimetype, version=None,
-                     validation=True, params=None):
+                     check_wellformed=True, params=None):
         """This is not a Schematron scraper, we skip this in such case.
         :mimetype: Identified mimetype
         :version: Identified version (if needed)
-        :validation: True for the full validation, False for just
-                     identification and metadata scraping
+        :check_wellformed: True for the full well-formed check, False for just
+                            identification and metadata scraping
         :params: Extra parameters needed for the scraper
         :returns: True if scraper is supported
         """
@@ -44,15 +44,15 @@ class XmlEncoding(BaseScraper):
         if 'schematron' in params:
             return False
         return super(XmlEncoding, cls).is_supported(mimetype, version,
-                                                    validation, params)
+                                                    check_wellformed, params)
 
     def scrape_file(self):
         """Scrape file.
         """
         parser = etree.XMLParser(dtd_validation=False, no_network=True,
                                  recover=True)
-        fd = open(self.filename)  # pylint: disable=invalid-name
-        tree = etree.parse(fd, parser)
+        file_ = open(self.filename)
+        tree = etree.parse(file_, parser)
         self._charset = tree.docinfo.encoding
         self.messages('Encoding metadata found.')
         self._check_supported()

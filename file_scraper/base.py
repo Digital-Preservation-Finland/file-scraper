@@ -73,12 +73,12 @@ class BaseScraper(object):
     _only_wellformed = False  # True if the scraper does just well-formed
                               # check, False otherwise  # noqa:E116,E114
 
-    def __init__(self, filename, mimetype, validation=True, params=None):
+    def __init__(self, filename, mimetype, check_wellformed=True, params=None):
         """Initialize scraper.
         :filename: File path
         :mimetype: Predicted mimetype of the file
-        :validation: True for the full validation, False for just
-                     identification and metadata scraping
+        :check_wellformed: True for the full well-formed check, False for just
+                            identification and metadata scraping
         :params: Extra parameters needed for the scraper
         """
         if params is None:
@@ -90,18 +90,20 @@ class BaseScraper(object):
         self.info = None               # Class name, messages, errors
         self._messages = []            # Diagnostic messages in scraping
         self._errors = []              # Errors in scraping
-        self._validation = validation  # True if validation is wanted
+        self._check_wellformed = check_wellformed  # True for well-formed check
         self._params = params          # Extra parameters needed
 
     @classmethod
     def is_supported(cls, mimetype, version=None,
-                     validation=True, params=None):
-        """Check if mimetype is supported, if version matches (if needed),
-        and if validation is needed in scrapers which just validation.
+                     check_wellformed=True, params=None):
+        """Check
+        (1) if mimetype is supported,
+        (2) if version matches (if needed),
+        (3) if well-formed check is needed.
         :mimetype: Identified mimetype
         :version: Identified version (if needed)
-        :validation: True for the full validation, False for just
-                     identification and metadata scraping
+        :check_wellformed: True for the full well-formed check, False for just
+                            identification and metadata scraping
         :params: Extra parameters needed for the scraper.
                  Used in some scrapers which override this method.
         :returns: True if scraper is supported
@@ -110,7 +112,7 @@ class BaseScraper(object):
         if mimetype in cls._supported and \
                 (version in cls._supported[mimetype] + [None] or
                  cls._allow_versions) and \
-                (validation or not cls._only_wellformed):
+                (check_wellformed or not cls._only_wellformed):
             return True
         return False
 
@@ -123,7 +125,7 @@ class BaseScraper(object):
         pass
 
     def messages(self, message=None):
-        """Return validation diagnostic messages.
+        """Return diagnostic messages.
         :message: New message to add to the messages
         """
         if message is not None:
@@ -131,7 +133,7 @@ class BaseScraper(object):
         return concat(self._messages)
 
     def errors(self, error=None):
-        """Return validation error messages.
+        """Return error messages.
         :error: New error to add to the errors
         """
         if error is not None and error != "":
@@ -142,7 +144,7 @@ class BaseScraper(object):
     def well_formed(self):
         """Check if file is well-formed.
         """
-        if not self._validation:
+        if not self._check_wellformed:
             return None
         return len(self._messages) > 0 and len(self._errors) == 0
 

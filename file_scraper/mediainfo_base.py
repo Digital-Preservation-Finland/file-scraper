@@ -1,4 +1,4 @@
-"""Metadata scraper for video file formats and streams
+"""Metadata scraper for video file formats and streams.
 Please note that you can not use Mediainfo with FFMpeg.
 The streams are in different order, and there is no way
 to fix that.
@@ -20,18 +20,18 @@ class Mediainfo(BaseScraper):
 
     _containers = []  # Container codec names
 
-    def __init__(self, filename, mimetype, validation=True, params=None):
+    def __init__(self, filename, mimetype, check_wellformed=True, params=None):
         """Initialize scraper.
         :filename: File path
         :mimetype: Predicted mimetype of the file
-        :validation: True for the full validation, False for just
-                     identification and metadata scraping
+        :check_wellformed: True for the full well-formed check, False for just
+                            identification and metadata scraping
         :params: Extra parameters needed for the scraper
         """
         self._mediainfo_index = None   # Current mediainfo stream index
         self._mediainfo_stream = None  # Current mediainfo stream
         self._mediainfo = None         # All mediainfo streams
-        super(Mediainfo, self).__init__(filename, mimetype, validation,
+        super(Mediainfo, self).__init__(filename, mimetype, check_wellformed,
                                         params)
 
     def scrape_file(self):
@@ -40,7 +40,7 @@ class Mediainfo(BaseScraper):
         try:
             self._mediainfo = MediaInfo.parse(self.filename)
         except Exception as e:  # pylint: disable=invalid-name, broad-except
-            self.errors('Error in scraping file.')
+            self.errors('Error in analyzing file.')
             self.errors(str(e))
             self.set_tool_stream(0)
             self._check_supported()
@@ -71,7 +71,7 @@ class Mediainfo(BaseScraper):
         if not track_found:
             self.errors('No audio or video tracks found.')
         elif not truncated:
-            self.messages('The file was scraped successfully.')
+            self.messages('The file was analyzed successfully.')
 
         self.set_tool_stream(0)
         self._check_supported()

@@ -6,7 +6,6 @@ File-scraper.
 import os
 import pytest
 from file_scraper.iterator import iter_scrapers
-from pprint import pprint
 
 
 BASEPATH = "tests/data"
@@ -20,12 +19,15 @@ BASEPATH = "tests/data"
     ]
 )
 def test_scrape_valid_file(filename, mimetype):
+    """Valid case
+    """
     for class_ in iter_scrapers(mimetype, None):
         scraper = class_(
             os.path.join(BASEPATH, mimetype.replace('/', '_'), filename),
             mimetype)
         scraper.scrape_file()
         assert scraper.well_formed
+
 
 # Test invalid files
 @pytest.mark.parametrize(
@@ -39,10 +41,13 @@ def test_scrape_valid_file(filename, mimetype):
     ]
 )
 def test_scrape_invalid_file(filename, mimetype):
+    """Invalid case
+    """
     scraper_results = []
     for class_ in iter_scrapers(mimetype, None):
         scraper = class_(
-            os.path.join(BASEPATH, "application_vnd.oasis.opendocument.text", filename),
+            os.path.join(BASEPATH, "application_vnd.oasis.opendocument.text",
+                         filename),
             mimetype)
         scraper_results.append(scraper.well_formed)
 

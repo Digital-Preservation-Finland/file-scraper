@@ -1,5 +1,4 @@
 """Test the file_scraper.scrapers.warctools module"""
-import os
 import pytest
 from file_scraper.scrapers.warctools import GzipWarctools, WarcWarctools, \
     ArcWarctools
@@ -46,7 +45,7 @@ def test_gzip_scraper(filename, result_dict):
     correct = parse_results(filename, mime,
                             result_dict, True)
     scraper = GzipWarctools(correct.filename, 'application/gzip',
-                  True, correct.params)
+                            True, correct.params)
     scraper.scrape_file()
 
     if correct.version == '' or correct.mimetype == \
@@ -113,7 +112,7 @@ def test_warc_scraper(filename, result_dict):
     correct = parse_results(filename, 'application/warc',
                             result_dict, True)
     scraper = WarcWarctools(correct.filename, correct.mimetype,
-                  True, correct.params)
+                            True, correct.params)
     scraper.scrape_file()
     if correct.version == '':
         correct.version = None
@@ -163,11 +162,11 @@ def test_arc_scraper(filename, result_dict):
     correct = parse_results(filename, 'application/x-internet-archive',
                             result_dict, True)
     scraper = ArcWarctools(correct.filename, correct.mimetype,
-                  True, correct.params)
+                           True, correct.params)
     scraper.scrape_file()
     correct.streams[0]['version'] = None
     assert scraper.mimetype == correct.mimetype
-    assert scraper.version == None  # Scraper can not solve version
+    assert scraper.version is None  # Scraper can not solve version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'ArcWarctools'
     assert correct.stdout_part in scraper.messages()

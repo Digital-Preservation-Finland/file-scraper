@@ -35,5 +35,5 @@ class Dpx(BaseScraper):
 
 
 class DPXvError(Exception):
-    """DPX validator error."""
+    """DPX scraper error."""
     pass

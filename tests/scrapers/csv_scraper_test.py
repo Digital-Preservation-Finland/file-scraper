@@ -13,10 +13,10 @@ This module tests that:
         - success not reported in scraper messages
         - some error recorded by the scraper
     - scraper is able to extract the MIME type of a well-formed file and
-      identify the file as a well-formed one also when separator, delimiter
+      guess the file as a well-formed one also when separator, delimiter
       and fields are not given by user.
-    - all files with MIME type 'text/csv' are reported to be supported with or
-      without full validation and for empty, None or arbitrary string as the
+    - all files with MIME type 'text/csv' are reported to be supported with
+      full well-formed check and for empty, None or arbitrary string as the
       version.
     - MIME type other than 'text/csv' is not supported
 """
@@ -107,7 +107,7 @@ MISSING_END_QUOTE = VALID_CSV + \
         (VALID_WITH_HEADER, {
             'purpose': 'Invalid delimiter',
             'stdout_part': '',
-            'stderr_part': 'CSV validation error: field counts',
+            'stderr_part': 'CSV not well-formed: field counts',
             'streams': {0: {'stream_type': 'text',
                             'index': 0,
                             'mimetype': MIMETYPE,

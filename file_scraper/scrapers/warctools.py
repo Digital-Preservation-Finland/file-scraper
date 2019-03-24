@@ -70,7 +70,7 @@ class WarcWarctools(BaseScraper):
         shell = Shell(['warcvalid', self.filename])
 
         if shell.returncode != 0:
-            self.errors("Validation failed: returncode %s" % shell.returncode)
+            self.errors("Failed: returncode %s" % shell.returncode)
             # Filter some trash printed by warcvalid.
             filtered_errors = \
                 "\n".join([line for line in shell.stderr.split('\n')
@@ -99,7 +99,7 @@ class WarcWarctools(BaseScraper):
         if len(line.split("WARC/", 1)) > 1:
             self.version = line.split("WARC/", 1)[1].split(" ")[0].strip()
         if size > 0:
-            self.messages('File was scraped successfully.')
+            self.messages('File was analyzed successfully.')
         self._check_supported()
         self._collect_elements()
 
@@ -129,7 +129,7 @@ class ArcWarctools(BaseScraper):
                           output_file=warcfile)
 
             if shell.returncode != 0:
-                self.errors("Validation failed: returncode %s" %
+                self.errors("Failed: returncode %s" %
                             shell.returncode)
                 # replace non-utf8 characters
                 utf8string = shell.stderr.decode('utf8', errors='replace')
@@ -138,7 +138,7 @@ class ArcWarctools(BaseScraper):
                 # encode string to utf8 before adding to errors
                 self.errors(sanitized_string.encode('utf-8'))
             elif size > 0:
-                self.messages('File was scraped successfully.')
+                self.messages('File was analyzed successfully.')
             self.messages(shell.stdout)
 
         self.mimetype = 'application/x-internet-archive'

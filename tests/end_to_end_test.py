@@ -1,5 +1,8 @@
+# encoding: utf-8
 """Integration test for scrapers
 """
+import os
+import shutil
 from file_scraper.scraper import Scraper
 from tests.common import get_files
 
@@ -25,27 +28,23 @@ NONE_ELEMENTS = {
     'tests/data/image_tiff/valid_6.0_multiple_tiffs.tif': [
         'version', 'version'],
     'tests/data/video_MP2T/valid_.ts': ['version']}
-NONE_ELEMENTS_EXTRA = {
-    'tests/data/application_x-internet-archive/valid_1.0_.arc.gz':
-    ['version']}
 
 # These are actually valid with another mimetype or version
+# or due to special parameters or missing scraper
 # invalid_1.4_wrong_version.pdf -- is valid PDF 1.7
 # invalid__header_corrupted.por -- is valid text/plain
 # invalid__truncated.por - is valid text/plain
 # invalid_1.0_no_doctype.xhtml - is valid text/xml
-VALID_MARKED_AS_INVALID = [
+# Xml files would require schema or catalog, this is tested in
+# unit tests of Xmllint.
+# MKV files to not have a scraper
+IGNORE_INVALID = [
     'tests/data/application_pdf/invalid_1.4_wrong_version.pdf',
     'tests/data/application_x-spss-por/invalid__header_corrupted.por',
     'tests/data/application_x-spss-por/invalid__truncated.por',
-    'tests/data/application_xhtml+xml/invalid_1.0_no_doctype.xhtml']
-
-
-# These must be ignored due to special parameters or missing scraper
-IGNORE_INVALID = VALID_MARKED_AS_INVALID + [
+    'tests/data/application_xhtml+xml/invalid_1.0_no_doctype.xhtml',
     'tests/data/video_x-matroska/invalid__ffv1_missing_data.mkv',
     'tests/data/video_x-matroska/invalid__ffv1_wrong_duration.mkv']
-
 IGNORE_VALID = ['tests/data/text_xml/valid_1.0_xsd.xml',
                 'tests/data/text_xml/valid_1.0_local_xsd.xml',
                 'tests/data/text_xml/valid_1.0_catalog.xml',
@@ -61,7 +60,6 @@ IGNORE_FOR_METADATA = IGNORE_VALID + [
     'tests/data/application_x-internet-archive/valid_1.0.arc',
     'tests/data/application_x-internet-archive/valid_1.0_.arc.gz',
     'tests/data/image_x-dpx/valid_2.0.dpx']
-
 
 # These invalid files are recognized as application/gzip
 DIFFERENT_MIMETYPE_INVALID = {
@@ -190,3 +188,31 @@ def test_without_wellformed():
 
         if 'text/csv' in mimetype:
             assert 'delimiter' in scraper.streams[0]
+
+
+def test_unicode_filename(testpath):
+    """Integration test with unicode filename and with all scrapers.
+    - Test that mimetype matches.
+    - Test Find out all None elements.
+    - Test that errors are not given.
+    - Test that all files are well-formed.
+    - Ignore few files because of required parameter or missing scraper.
+    """
+    file_dict = get_files(well_formed=True)
+    for fullname, value in file_dict.iteritems():
+        if fullname in IGNORE_VALID + [
+                'tests/data/text_xml/valid_1.0_dtd.xml',
+                'tests/data/application_xhtml+xml//valid_1.0.xhtml']:
+            continue
+        mimetype = value[0]
+        if mimetype in ['application/xhtml+xml']:
+            continue
+        ext = fullname.rsplit(".", 1)[-1]
+        unicode_name = os.path.join(testpath, u'äöå.%s' % ext)
+        assert isinstance(unicode_name, unicode)
+
+        print fullname, " --> ", unicode_name
+        shutil.copy(fullname, unicode_name)
+        scraper = Scraper(unicode_name)
+        scraper.scrape()
+        assert scraper.well_formed

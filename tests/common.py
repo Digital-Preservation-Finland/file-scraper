@@ -43,27 +43,24 @@ class Correct(object):
         self.params = {}
 
 
-def parse_results(filename, mimetype, results, validation,
+def parse_results(filename, mimetype, results, check_wellformed,
                   params=None, basepath='tests/data'):
     """Parse results from filepath and given results.
     :filename: File name
     :mimetype: Mimetype
     :results: Results: purpose, part of stdout, part of stderr,
               streams if not default
-    :validation: True, if validation, otherwise False
+    :check_wellformed: True, if well-formed check, otherwise False
     :basepath: Base path
     :params: Parameters for the scraper
     :returns: Correct instance
     """
-    # pylint: disable=too-many-branches, too-many-locals, too-many-arguments
+    # pylint: disable=too-many-locals, too-many-arguments
     well_dict = {'valid': True, 'invalid': False}
     path = os.path.join(basepath, mimetype.replace("/", "_"))
     words = filename.rsplit(".", 1)[0].split("_", 2)
     well_formed = words[0]
-    if len(words) > 1:
-        version = words[1]
-    else:
-        version = ''
+    version = words[1] if len(words) > 1 else ''
     testfile = os.path.join(path, filename)
 
     correct = Correct()
@@ -99,7 +96,7 @@ def parse_results(filename, mimetype, results, validation,
             'stream_type': stream_type
         }}
 
-    if validation:
+    if check_wellformed:
         correct.well_formed = well_dict[well_formed]
 
     if 'inverse' in results and correct.well_formed is not None:

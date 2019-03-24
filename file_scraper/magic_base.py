@@ -27,18 +27,18 @@ class BinaryMagic(BaseScraper):
     _starttag = "version "  # Text before file format version in magic result.
     _endtag = None          # Text after file format version in magic result.
 
-    def __init__(self, filename, mimetype, validation=True, params=None):
+    def __init__(self, filename, mimetype, check_wellformed=True, params=None):
         """Initialize scraper.
         :filename: File path
         :mimetype: Predicted mimetype of the file
-        :validation: True for the full validation, False for just
-                     identification and metadata scraping
+        :check_wellformed: True for the full well-formed check, False for just
+                            identification and metadata scraping
         :params: Extra parameters needed for the scraper
         """
         self._magic_mimetype = None  # Mimetype from magic
         self._magic_version = None   # Version from magic
         super(BinaryMagic, self).__init__(filename, mimetype,
-                                          validation, params)
+                                          check_wellformed, params)
 
     def scrape_file(self):
         """Scrape binary file
@@ -64,12 +64,12 @@ class BinaryMagic(BaseScraper):
             if self._s_mimetype() == self.mimetype or \
                     (self._s_mimetype() in MIMETYPE_DICT and
                      MIMETYPE_DICT[self._s_mimetype()] == self.mimetype):
-                self.messages('The file was scraped successfully.')
+                self.messages('The file was analyzed successfully.')
             else:
                 self.errors('Given mimetype %s and detected mimetype %s do '
                             'not match.' % (self.mimetype, self._s_mimetype()))
         except Exception as e:  # pylint: disable=invalid-name, broad-except
-            self.errors('Error in scraping file.')
+            self.errors('Error in analyzing file.')
             self.errors(str(e))
         finally:
             self._check_supported()
@@ -79,7 +79,7 @@ class BinaryMagic(BaseScraper):
     def well_formed(self):
         """Return well formed info
         """
-        if not self._validation:
+        if not self._check_wellformed:
             return None
         if self._s_mimetype() == self.mimetype:
             return super(BinaryMagic, self).well_formed
@@ -110,18 +110,19 @@ class TextMagic(BaseScraper):
     _starttag = "version "  # Text before file format version in magic result.
     _endtag = None          # Text after file format version in magic result.
 
-    def __init__(self, filename, mimetype, validation=True, params=None):
+    def __init__(self, filename, mimetype, check_wellformed=True, params=None):
         """Initialize text magic scraper
         :filename: File path
         :mimetype: Predicted mimetype of the file
-        :validation: True for the full validation, False for just
-                     identification and metadata scraping
+        :check_wellformed: True for the full well-formed check, False for just
+                            identification and metadata scraping
         :params: Extra parameters needed for the scraper
         """
         self._magic_mimetype = None  # Mimetype from magic
         self._magic_version = None   # Version from magic
         self._magic_charset = None   # Charset from magic
-        super(TextMagic, self).__init__(filename, mimetype, validation, params)
+        super(TextMagic, self).__init__(filename, mimetype, check_wellformed,
+                                        params)
 
     def scrape_file(self):
         """Scrape text file
@@ -152,12 +153,12 @@ class TextMagic(BaseScraper):
             if self._s_mimetype() == self.mimetype or \
                     (self._s_mimetype() in MIMETYPE_DICT and
                      MIMETYPE_DICT[self._s_mimetype()] == self.mimetype):
-                self.messages('The file was scraped successfully.')
+                self.messages('The file was analyzed successfully.')
             else:
                 self.errors('Given mimetype %s and detected mimetype %s do '
                             'not match.' % (self.mimetype, self._s_mimetype()))
         except Exception as e:  # pylint: disable=invalid-name, broad-except
-            self.errors('Error in scraping file.')
+            self.errors('Error in analyzing file.')
             self.errors(str(e))
         finally:
             self._collect_elements()
@@ -166,7 +167,7 @@ class TextMagic(BaseScraper):
     def well_formed(self):
         """Return well formed info
         """
-        if not self._validation:
+        if not self._check_wellformed:
             return None
         if self._s_mimetype() == self.mimetype:
             return super(TextMagic, self).well_formed

@@ -1,5 +1,5 @@
-"""There is a need for a separate softer check, if the file is suitable as
-text file or not.
+"""There is a need for a separate softer check to see if the file is
+suitable as text file or not.
 """
 from file_scraper.base import BaseScraper, Shell
 

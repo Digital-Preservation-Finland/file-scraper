@@ -30,7 +30,7 @@ def test_scraper_pdf(filename, result_dict):
         correct = parse_results(filename, 'application/pdf',
                                 result_dict, True)
         scraper = GhostScript(correct.filename, correct.mimetype,
-                           True, correct.params)
+                              True, correct.params)
         scraper.scrape_file()
         # Ghostscript cannot handle version
         correct.version = None
@@ -46,6 +46,7 @@ def test_scraper_pdf(filename, result_dict):
             assert correct.stdout_part in scraper.messages()
         assert correct.stderr_part in scraper.errors()
         assert scraper.well_formed == correct.well_formed
+
 
 def test_is_supported():
     """Test is_Supported method"""

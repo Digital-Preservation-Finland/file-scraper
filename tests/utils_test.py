@@ -5,7 +5,7 @@ from tempfile import TemporaryFile
 import pytest
 
 from file_scraper.utils import hexdigest, sanitize_string,\
-        iso8601_duration, strip_zeros, combine_metadata, run_command
+    iso8601_duration, strip_zeros, combine_metadata, run_command
 
 
 @pytest.mark.parametrize(
@@ -35,7 +35,7 @@ def test_hexdigest(filepath, extra_hash, algorithm, expected_hash):
     [
         (u"already sanitized", "already sanitized"),
         (u"containsescape", "containsescape"),
-        (u"", "") # bell character
+        (u"", "")  # bell character
     ]
 )
 def test_sanitize_string(original_string, sanitized_string):
@@ -134,7 +134,8 @@ def test_strip_zeros(float_str, expected_output):
         ({0: {"key1": "value1", "commonkey": "commonvalue1", "index": 0}},
          {0: {"key2": "value2", "commonkey": "commonvalue2", "index": 0}},
          [], {"commonkey": "importantvalue"},
-         {0: {"key1": "value1", "key2": "value2", "commonkey": "importantvalue",
+         {0: {"key1": "value1", "key2": "value2",
+              "commonkey": "importantvalue",
               "index": 0}}),
 
         # conflict: conflicting key in both lose and  important
@@ -204,7 +205,8 @@ def test_run_command(command, expected_statuscode, expected_stdout,
 def test_run_command_to_file():
     """Test having output of a shell command directed to a file"""
     with TemporaryFile() as outfile:
-        (statuscode, stdout, stderr) = run_command(["seq", "5"], stdout=outfile)
+        (statuscode, stdout, stderr) = run_command(
+            ["seq", "5"], stdout=outfile)
 
         assert statuscode == 0
         assert not stdout

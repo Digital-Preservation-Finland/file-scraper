@@ -14,12 +14,12 @@ class Schematron(BaseScraper):
     _supported = {'text/xml': ['1.0']}  # Supported mimetypes
     _only_wellformed = True
 
-    def __init__(self, filename, mimetype, validation=True, params=None):
+    def __init__(self, filename, mimetype, check_wellformed=True, params=None):
         """Initialize instance.
         :filename: File path
         :mimetype: Predicted mimetype of the file
-        :validation: True for the full validation, False for just
-                     identification and metadata scraping
+        :check_wellformed: True for the full well-formed check, False for just
+                            identification and metadata scraping
         :params: Extra parameters needed for the scraper
         """
         if params is None:
@@ -33,16 +33,16 @@ class Schematron(BaseScraper):
         self._schematron_file = params.get('schematron', None)
         self._extra_hash = params.get('extra_hash', None)
         super(Schematron, self).__init__(filename, mimetype,
-                                         validation, params)
+                                         check_wellformed, params)
 
     @classmethod
     def is_supported(cls, mimetype, version=None,
-                     validation=True, params=None):
+                     check_wellformed=True, params=None):
         """We use this scraper only with a schematron file
         :mimetype: Identified mimetype
         :version: Identified version (if needed)
-        :validation: True for the full validation, False for just
-                     identification and metadata scraping
+        :check_wellformed: True for the full well-formed check, False for just
+                            identification and metadata scraping
         :params: Extra parameters needed for the scraper
         :returns: True if scraper is supported
         """
@@ -51,7 +51,7 @@ class Schematron(BaseScraper):
         if 'schematron' not in params:
             return False
         return super(Schematron, cls).is_supported(
-            mimetype, version, validation, params)
+            mimetype, version, check_wellformed, params)
 
     @property
     def well_formed(self):
@@ -64,17 +64,16 @@ class Schematron(BaseScraper):
         return False
 
     def scrape_file(self):
-        """Do the Schematron validation.
+        """Do the Schematron check.
         """
         if self._schematron_file is None:
             return
 
         xslt_filename = self._compile_schematron()
 
-        # The actual validation
         shell = self._compile_phase(
             stylesheet=xslt_filename,
-            inputfile=self.filename, valid_codes=[0, 6])
+            inputfile=self.filename, allowed_codes=[0, 6])
 
         self._returncode = shell.returncode
         self.errors(shell.stderr)
@@ -117,7 +116,7 @@ class Schematron(BaseScraper):
             encoding='UTF-8', with_comments=True)
 
     # pylint: disable=too-many-arguments
-    def _compile_phase(self, stylesheet, inputfile, valid_codes,
+    def _compile_phase(self, stylesheet, inputfile, allowed_codes,
                        outputfile=None, outputfilter=False):
         """Compile one phase
         :stylesheet: XSLT file to used in the conversion
@@ -134,7 +133,7 @@ class Schematron(BaseScraper):
         cmd = cmd + [os.path.join(self._schematron_dirname, stylesheet),
                      inputfile]
         shell = Shell(cmd)
-        if shell.returncode not in valid_codes:
+        if shell.returncode not in allowed_codes:
             raise SchematronValidatorError(
                 "Error %s\nstdout:\n%s\nstderr:\n%s" % (
                     shell.returncode, shell.stdout, shell.stderr))
@@ -156,23 +155,23 @@ class Schematron(BaseScraper):
                 stylesheet='iso_dsdl_include.xsl',
                 inputfile=self._schematron_file,
                 outputfile=os.path.join(tempdir, 'step1.xsl'),
-                valid_codes=[0])
+                allowed_codes=[0])
             self._compile_phase(
                 stylesheet='iso_abstract_expand.xsl',
                 inputfile=os.path.join(tempdir, 'step1.xsl'),
                 outputfile=os.path.join(tempdir, 'step2.xsl'),
-                valid_codes=[0])
+                allowed_codes=[0])
             self._compile_phase(
                 stylesheet='optimize_schematron.xsl',
                 inputfile=os.path.join(tempdir, 'step2.xsl'),
                 outputfile=os.path.join(tempdir, 'step3.xsl'),
-                valid_codes=[0])
+                allowed_codes=[0])
             self._compile_phase(
                 stylesheet='iso_svrl_for_xslt1.xsl',
                 inputfile=os.path.join(tempdir, 'step3.xsl'),
                 outputfile=os.path.join(tempdir, 'validator.xsl'),
                 outputfilter=not(self._verbose),
-                valid_codes=[0])
+                allowed_codes=[0])
 
             shutil.move(os.path.join(tempdir, 'validator.xsl'),
                         xslt_filename)

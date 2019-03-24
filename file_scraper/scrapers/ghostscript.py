@@ -24,7 +24,7 @@ class GhostScript(BaseScraper):
 
         # Ghostscript will result 0 if it can repair errors.
         # However, stderr is not then empty.
-        # This case should be handled as validation failure.
+        # This case should be handled as well-formed failure.
         if shell.stderr:
             self.errors(shell.stderr.decode('iso-8859-1').encode('utf8'))
         elif shell.returncode != 0:

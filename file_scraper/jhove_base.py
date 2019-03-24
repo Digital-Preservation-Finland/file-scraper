@@ -1,4 +1,4 @@
-"""Module for validating files with Jhove validator"""
+"""Module for checking files with Jhove scraper"""
 import os
 import abc
 try:
@@ -21,17 +21,18 @@ class JHove(BaseScraper):
     __metaclass__ = abc.ABCMeta
     _jhove_module = None         # JHove module
 
-    def __init__(self, filename, mimetype, validation=True, params=None):
+    def __init__(self, filename, mimetype, check_wellformed=True, params=None):
         """Initialize JHove base scarper.
         :filename: File path
         :mimetype: Predicted mimetype of the file
-        :validation: True for the full validation, False for just
-                     identification and metadata scraping
+        :check_wellformed: True for the full well-formed check, False for just
+                            identification and metadata scraping
         :params: Extra parameters needed for the scraper
         """
         self._report = None  # JHove report
         self._shell = None   # Shell object
-        super(JHove, self).__init__(filename, mimetype, validation, params)
+        super(JHove, self).__init__(filename, mimetype, check_wellformed,
+                                    params)
 
     def scrape_file(self):
         """Run JHove command and store XML output to self.report

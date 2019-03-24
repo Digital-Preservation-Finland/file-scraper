@@ -42,13 +42,13 @@ def iter_detectors():
         yield cls
 
 
-def iter_scrapers(mimetype, version, validation=True, params=None):
+def iter_scrapers(mimetype, version, check_wellformed=True, params=None):
     """
     Iterate scrapers
     :mimetype: Identified mimetype of the file
     :version: Identified file format version
-    :validation: True for the full validation, False for just
-                identification and metadata scraping
+    :check_wellformed: True for the full well-formed check, False for just
+                       identification and metadata scraping
     :params: Extra parameters needed for the scraper
     :returns: scraper class
     """
@@ -56,15 +56,15 @@ def iter_scrapers(mimetype, version, validation=True, params=None):
     # pylint: disable=no-member
     if params is None:
         params = {}
-    found_validator = False
+    found_scraper = False
 
     scraper_superclasses = [BaseScraper, BinaryMagic, TextMagic, JHove,
                             Mediainfo, Pil, Wand]
     for superclass in scraper_superclasses:
         for cls in superclass.__subclasses__():
-            if cls.is_supported(mimetype, version, validation, params):
-                found_validator = True
+            if cls.is_supported(mimetype, version, check_wellformed, params):
+                found_scraper = True
                 yield cls
 
-    if not found_validator:
+    if not found_scraper:
         yield ScraperNotFound

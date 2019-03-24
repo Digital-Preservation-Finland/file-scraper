@@ -19,10 +19,12 @@ import file_scraper.utils
 
 
 def test_shell(monkeypatch):
+    """Test Shell class
     """
-    """
+    # pylint: disable=unused-argument
     def _run_command(cmd, stdout=subprocess.PIPE, env=None):
         return (42, 'output message', 'error message')
+
     monkeypatch.setattr(file_scraper.base, 'run_command', _run_command)
     shell = Shell('testcommand')
     assert shell.returncode == 42
@@ -124,7 +126,7 @@ def test_scraper_properties():
     assert scraper.filename == 'testfilename'
     assert scraper.mimetype == 'test/mimetype'
     # pylint: disable=protected-access
-    assert scraper._validation
+    assert scraper._check_wellformed
     assert scraper._params == {'test': 'value'}
 
     scraper = BaseScraperBasic('testfilename', 'test/mimetype', False)
@@ -142,7 +144,7 @@ def test_collect_elements():
     assert scraper.streams == {
         0: {'mimetype': 'test/mimetype', 'version': None,
             'stream_type': 'test_stream', 'index': 0}}
-
+    # pylint: disable=redefined-variable-type
     scraper = BaseScraperVersion('testfilename', 'test/mimetype')
     scraper.version = '0.1'
     scraper._collect_elements()  # pylint: disable=protected-access

@@ -34,9 +34,9 @@ class VeraPdf(BaseScraper):
         try:
             report = ET.fromstring(shell.stdout)
             if report.xpath('//batchSummary')[0].get('failedToParse') == '0':
-                valid = report.xpath(
+                compliant = report.xpath(
                     '//validationReport')[0].get('isCompliant')
-                if valid == 'false':
+                if compliant == 'false':
                     self.errors(shell.stdout)
                 profile = \
                     report.xpath('//validationReport')[0].get('profileName')

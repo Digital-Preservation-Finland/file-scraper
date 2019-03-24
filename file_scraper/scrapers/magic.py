@@ -29,12 +29,12 @@ class XmlFileMagic(TextMagic):
 
     @classmethod
     def is_supported(cls, mimetype, version=None,
-                     validation=True, params=None):
-        """This is not a Schematron validator, skip this in such case.
+                     check_wellformed=True, params=None):
+        """This is not a Schematron scraper, skip this in such case.
         :mimetype: Identified mimetype
         :version: Identified version (if needed)
-        :validation: True for the full validation, False for just
-                     identification and metadata scraping
+        :check_wellformed: True for the full well-formed check, False for just
+                            identification and metadata scraping
         :params: Extra parameters needed for the scraper
         :returns: True if scraper is supported
         """
@@ -43,7 +43,7 @@ class XmlFileMagic(TextMagic):
         if 'schematron' in params:
             return False
         return super(XmlFileMagic, cls).is_supported(mimetype, version,
-                                                     validation, params)
+                                                     check_wellformed, params)
 
 
 class XhtmlFileMagic(TextMagic):
@@ -165,9 +165,9 @@ class JpegFileMagic(BinaryMagic):
 
     _supported = {'image/jpeg': ['1.00', '1.01', '1.02', '2.0', '2.1',
                                  '2.2', '2.2.1']}  # Supported mimetype
-    _starttag = 'standard '          # Text before version in magic output
-    _endtag = ','                    # Text after version in magic output
-    _allow_versions = True  # Allow any version
+    _starttag = 'standard '  # Text before version in magic output
+    _endtag = ','            # Text after version in magic output
+    _allow_versions = True   # Allow any version
 
     def _s_stream_type(self):
         """Return stream type

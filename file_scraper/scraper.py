@@ -66,14 +66,14 @@ class Scraper(object):
             if self.well_formed in [None, True]:
                 self.well_formed = scraper.well_formed
 
-    def _check_utf8(self, validation):
+    def _check_utf8(self, check_wellformed):
         """UTF-8 check only for UTF-8, we know the charset
         after actual scraping
         """
         if 'charset' in self.streams[0] and \
                 self.streams[0]['charset'] == 'UTF-8' and \
-                validation:
-            scraper = Utf8JHove(self.filename, self.mimetype, validation)
+                check_wellformed:
+            scraper = Utf8JHove(self.filename, self.mimetype, check_wellformed)
             self._scrape_file(scraper)
 
     def _check_mimetype_version(self):
@@ -89,9 +89,9 @@ class Scraper(object):
         else:
             self.streams[0]['version'] = self.version
 
-    def scrape(self, validation=True):
+    def scrape(self, check_wellformed=True):
         """Scrape file and collect metadata.
-        :validation: True, full scraping; False, skip well-formed check.
+        :check_wellformed: True, full scraping; False, skip well-formed check.
         """
         self.streams = None
         self.info = {}
@@ -106,12 +106,12 @@ class Scraper(object):
         self._identify()
         for scraper_class in iter_scrapers(
                 mimetype=self.mimetype, version=self.version,
-                validation=validation, params=self._params):
+                check_wellformed=check_wellformed, params=self._params):
             scraper = scraper_class(self.filename, self.mimetype,
-                                    validation, self._params)
+                                    check_wellformed, self._params)
             self._scrape_file(scraper)
 
-        self._check_utf8(validation)
+        self._check_utf8(check_wellformed)
         self._check_mimetype_version()
 
     def is_textfile(self):

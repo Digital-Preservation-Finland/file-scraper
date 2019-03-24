@@ -3,8 +3,8 @@ Tests for Office scraper.
 """
 
 import os
-import pytest
 from multiprocessing import Pool
+import pytest
 from file_scraper.scrapers.office import Office
 from tests.common import parse_results
 
@@ -33,7 +33,7 @@ BASEPATH = 'tests/data'
         ("valid_1.0.odf", "application/vnd.oasis.opendocument.formula"),
     ]
 )
-def test_scrape_valid_file(filename, mimetype):
+def test_scraper_valid_file(filename, mimetype):
     """Test valid files with scraper"""
     result_dict = {
         'purpose': 'Test valid file.',
@@ -59,7 +59,8 @@ def test_scrape_valid_file(filename, mimetype):
 @pytest.mark.parametrize(
     ['filename', 'mimetype'],
     [
-        ("invalid_1.1_corrupted.odt", "application/vnd.oasis.opendocument.text"),
+        ("invalid_1.1_corrupted.odt", "application/vnd.oasis.opendocument"
+         ".text"),
         ("invalid_15.0_corrupted.docx", "application/vnd.openxmlformats-"
          "officedocument.wordprocessingml.document"),
         ("invalid_1.1_corrupted.odp",
@@ -70,11 +71,14 @@ def test_scrape_valid_file(filename, mimetype):
          "application/vnd.oasis.opendocument.spreadsheet"),
         ("invalid_15.0_corrupted.xlsx", "application/vnd."
          "openxmlformats-officedocument.spreadsheetml.sheet"),
-        ("invalid_1.1_corrupted.odg", "application/vnd.oasis.opendocument.graphics"),
-        ("invalid_1.0_corrupted.odf", "application/vnd.oasis.opendocument.formula"),
+        ("invalid_1.1_corrupted.odg", "application/vnd.oasis.opendocument"
+         ".graphics"),
+        ("invalid_1.0_corrupted.odf", "application/vnd.oasis.opendocument"
+         ".formula"),
     ]
 )
-def test_scrape_invalid_file(filename, mimetype):
+def test_scraper_invalid_file(filename, mimetype):
+    """Test scraper with invalid files."""
     result_dict = {
         'purpose': 'Test invalid file.',
         'stdout_part': '',
@@ -96,7 +100,6 @@ def test_scrape_invalid_file(filename, mimetype):
     assert scraper.well_formed == correct.well_formed
 
 
-
 def _scrape(filename, mimetype):
     scraper = Office(os.path.join(BASEPATH, mimetype.replace('/', '_'),
                                   filename), mimetype)
@@ -115,9 +118,10 @@ def test_parallel_validation(filename, mimetype):
     freezing which would cause TimeOutError here.
     """
 
-    n = 3
-    pool = Pool(n)
-    results = [pool.apply_async(_scrape, (filename, mimetype)) for i in range(n)]
+    number = 3
+    pool = Pool(number)
+    results = [pool.apply_async(_scrape, (filename, mimetype))
+               for _ in range(number)]
 
     for result in results:
         assert result.get(timeout=3)

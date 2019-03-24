@@ -1,3 +1,5 @@
+"""Test CheckTextFile, which determines whether file is a text file or not.
+"""
 import pytest
 
 from file_scraper.scrapers.textfile import CheckTextFile
@@ -5,6 +7,7 @@ from tests.common import parse_results
 
 VALID_MSG = 'is a text file'
 INVALID_MSG = 'is not a text file'
+
 
 @pytest.mark.parametrize(
     ["filename", "mimetype", "is_textfile"],

@@ -13,7 +13,7 @@ class ScraperNotFound(BaseScraper):
         """
         self._collect_elements()
         self.messages('Proper scraper was not found. '
-                      'The file was not scraped.')
+                      'The file was not analyzed.')
 
     def _s_stream_type(self):
         """We don't know the stream type

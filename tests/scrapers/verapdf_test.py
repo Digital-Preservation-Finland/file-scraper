@@ -52,16 +52,16 @@ def test_scraper(filename, result_dict):
 
 @pytest.mark.parametrize(
     ['filename', 'result_dict'],
-    [   
+    [
         ('valid_1.7.pdf', {
             'purpose': 'Test valid PDF 1.7, but not valid PDF/A.',
             'inverse': True,
-            'stdout_part': '', 
+            'stdout_part': '',
             'stderr_part': 'is not compliant with Validation Profile'}),
         ('valid_1.4.pdf', {
             'purpose': 'Test valid PDF 1.4, but not valid PDF/A.',
             'inverse': True,
-            'stdout_part': '', 
+            'stdout_part': '',
             'stderr_part': 'is not compliant with Validation Profile'}),
     ]
 )

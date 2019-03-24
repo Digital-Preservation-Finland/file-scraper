@@ -28,8 +28,8 @@ class Pspp(BaseScraper):
         if SPSS_PORTABLE_HEADER not in first_line:
             self.errors("File is not SPSS Portable format.")
 
-        # Try to conver file with pspp-convert. If conversion is succesful
-        # (converted.por file is produced), the original file is valid.
+        # Try to convert file with pspp-convert. If conversion is succesful
+        # (converted.por file is produced), the original file is well-formed.
         temp_dir = tempfile.mkdtemp()
         temp_file = os.path.join(temp_dir, 'converted.por')
 

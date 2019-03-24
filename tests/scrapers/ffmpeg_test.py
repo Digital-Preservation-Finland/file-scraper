@@ -1,5 +1,4 @@
 """Test module for ffmpeg.py"""
-import os
 import pytest
 from file_scraper.scrapers.ffmpeg import FFMpeg
 from tests.common import parse_results
@@ -10,11 +9,11 @@ from tests.common import parse_results
     [
         ("valid_1.m1v", {
             "purpose": "Test valid MPEG-1.",
-            "stdout_part": "file was scraped successfully",
+            "stdout_part": "file was analyzed successfully",
             "stderr_part": ""}),
         ("valid_2.m2v", {
             "purpose": "Test valid MPEG-2.",
-            "stdout_part": "file was scraped successfully",
+            "stdout_part": "file was analyzed successfully",
             "stderr_part": ""}),
         ("invalid_1_missing_data.m1v", {
             "purpose": "Test invalid MPEG-1.",
@@ -54,10 +53,10 @@ def test_ffmpeg_scraper_mpeg(filename, result_dict):
 
 @pytest.mark.parametrize(
     ["filename", "result_dict"],
-    [   
+    [
         ("valid__h264_aac.mp4", {
             "purpose": "Test valid mp4.",
-            "stdout_part": "file was scraped successfully",
+            "stdout_part": "file was analyzed successfully",
             "stderr_part": ""}),
         ("invalid__h264_aac_missing_data.mp4", {
             "purpose": "Test invalid MPEG-4.",
@@ -89,10 +88,10 @@ def test_ffmpeg_scraper_mp4(filename, result_dict):
 
 @pytest.mark.parametrize(
     ["filename", "result_dict"],
-    [   
+    [
         ("valid_1.mp3", {
             "purpose": "Test valid mp3.",
-            "stdout_part": "file was scraped successfully",
+            "stdout_part": "file was analyzed successfully",
             "stderr_part": ""}),
         ("invalid_1_missing_data.mp3", {
             "purpose": "Test invalid mp3.",
@@ -128,10 +127,10 @@ def test_ffmpeg_scraper_mp3(filename, result_dict):
 
 @pytest.mark.parametrize(
     ["filename", "result_dict"],
-    [   
+    [
         ("valid_.ts", {
             "purpose": "Test valid MPEG-TS.",
-            "stdout_part": "file was scraped successfully",
+            "stdout_part": "file was analyzed successfully",
             "stderr_part": ""}),
         ("invalid__missing_data.ts", {
             "purpose": "Test invalid MPEG-TS.",

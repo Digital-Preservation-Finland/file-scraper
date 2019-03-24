@@ -16,13 +16,13 @@ class FFMpeg(BaseScraper):
     _allow_versions = True   # Allow any version
 
     def scrape_file(self):
-        """Scrape DPX.
+        """Scrape A/V files
         """
         shell = Shell(['ffmpeg', '-v', 'error', '-i', self.filename, '-f',
                        'null', '-'])
 
         if shell.returncode == 0:
-            self.messages('The file was scraped successfully.')
+            self.messages('The file was analyzed successfully.')
 
         self.errors(shell.stderr)
         self.messages(shell.stdout)

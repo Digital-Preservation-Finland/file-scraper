@@ -12,7 +12,7 @@ WAV_AUDIO = {
 MPEG1_VIDEO = {
     'mimetype': 'video/mpeg', 'index': 0, 'par': '1', 'frame_rate': '30',
     'data_rate': '0.171304', 'bits_per_sample': '8',
-    'data_rate_mode':'Variable', 'color': 'Color',
+    'data_rate_mode': 'Variable', 'color': 'Color',
     'codec_quality': 'lossy', 'signal_format': '(:unap)', 'dar': '1.778',
     'height': '180', 'sound': 'No', 'version': '1',
     'codec_name': 'MPEG Video',

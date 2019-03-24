@@ -11,18 +11,19 @@ class Wand(BaseScraper):
     """Scraper class for collecting image metadata.
     """
 
-    def __init__(self, filename, mimetype, validation=True, params=None):
+    def __init__(self, filename, mimetype, check_wellformed=True, params=None):
         """Initialize scraper
         :filename: File path
         :mimetype: Predicted mimetype of the file
-        :validation: True for the full validation, False for just
-                     identification and metadata scraping
+        :check_wellformed: True for the full well-formed check, False for just
+                            identification and metadata scraping
         :params: Extra parameters needed for the scraper
         """
         self._wand_index = None   # Current wand stream index
         self._wand_stream = None  # Current wand stream
         self._wand = None         # Resulted wand streams
-        super(Wand, self).__init__(filename, mimetype, validation, params)
+        super(Wand, self).__init__(filename, mimetype, check_wellformed,
+                                   params)
 
     def scrape_file(self):
         """Scrape data from file.
@@ -30,10 +31,10 @@ class Wand(BaseScraper):
         try:
             self._wand = wand.image.Image(filename=self.filename)
         except Exception as e:  # pylint: disable=broad-except, invalid-name
-            self.errors('Error in scraping file.')
+            self.errors('Error in analyzing file.')
             self.errors(str(e))
         else:
-            self.messages('The file was scraped successfully.')
+            self.messages('The file was analyzed successfully.')
         finally:
             self._check_supported()
             self._collect_elements()

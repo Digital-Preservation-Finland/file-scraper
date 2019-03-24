@@ -2,8 +2,8 @@
 Tests for main scraper.
 
 This module tests that:
-    - Monkeypatched is_textfile() returns true for 'textfile' and false for
-      'binaryfile'.
+    - Monkeypatched is_textfile() returns True when scraper returns
+      well-formed and False otherwise.
     - checksum() method returns correct checksums both using MD5 and SHA-1
       algorithms.
     - checksum() method raises ValueError when illegal algorithm is given.
@@ -31,10 +31,7 @@ class _TestScraper(BaseScraper):
 
     @property
     def well_formed(self):
-        if self.filename == 'textfile':
-            return True
-        else:
-            return False
+        return self.filename == 'textfile'
 
 
 def test_is_textfile(monkeypatch):

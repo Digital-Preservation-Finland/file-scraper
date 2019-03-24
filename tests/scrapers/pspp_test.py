@@ -46,6 +46,7 @@ def test_scraper(filename, result_dict):
     assert correct.stderr_part in scraper.errors()
     assert scraper.well_formed == correct.well_formed
 
+
 def test_is_supported():
     """Test is_Supported method"""
     mime = MIMETYPE

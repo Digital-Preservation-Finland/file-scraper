@@ -128,6 +128,7 @@ def test_is_supported():
 def test_parameters():
     """Test that parameters and default values work properly.
     """
+    # pylint: disable=protected-access
     scraper = Xmllint('testsfile', 'test/mimetype')
     assert scraper._schema is None
     assert scraper._catalogs

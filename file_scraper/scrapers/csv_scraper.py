@@ -11,13 +11,14 @@ class Csv(BaseScraper):
 
     _supported = {'text/csv': ['']}  # Supported mimetype
     _allow_versions = True           # Allow any version
+    _only_Wellformed = True
 
-    def __init__(self, filename, mimetype, validation=True, params=None):
+    def __init__(self, filename, mimetype, check_wellformed=True, params=None):
         """Initialize for delimiter and separator info.
         :filename: File path
         :mimetype: Predicted mimetype of the file
-        :validation: True for the full validation, False for just
-                     identification and metadata scraping
+        :check_wellformed: True for the full well-formed check, False for just
+                            identification and metadata scraping
         :params: Extra parameters: delimiter and separator
         """
         if params is None:
@@ -26,7 +27,7 @@ class Csv(BaseScraper):
         self._csv_separator = params.get('separator', None)
         self._csv_fields = params.get('fields', [])
         self._csv_first_line = None
-        super(Csv, self).__init__(filename, mimetype, validation, params)
+        super(Csv, self).__init__(filename, mimetype, check_wellformed, params)
 
     def scrape_file(self):
         """Scrape CSV file.
@@ -55,7 +56,7 @@ class Csv(BaseScraper):
                 if self._csv_fields and \
                         len(self._csv_fields) != len(self._csv_first_line):
                     self.errors(
-                        "CSV validation error: field counts in the given "
+                        "CSV not well-formed: field counts in the given "
                         "header parameter and the CSV header don't match."
                     )
                     return
@@ -67,7 +68,7 @@ class Csv(BaseScraper):
             self.errors("CSV error on line %s: %s" %
                         (reader.line_num, exception))
         else:
-            self.messages("CSV file was scraped successfully.")
+            self.messages("CSV file was checked successfully.")
         finally:
             self._check_supported()
             self._collect_elements()

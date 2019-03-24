@@ -1,4 +1,4 @@
-""" Class for XML file validation with Xmllint. """
+""" Class for XML file well-formed check with Xmllint. """
 
 import os
 import tempfile
@@ -25,19 +25,19 @@ SCHEMA_TEMPLATE = """<?xml version = "1.0" encoding = "UTF-8"?>
 
 class Xmllint(BaseScraper):
     """This class implements a plugin interface for scraper module and
-    validates XML files using Xmllint tool.
+    checks if XML files are well-formed using Xmllint tool.
     .. seealso:: http://xmlsoft.org/xmllint.html
     """
 
     _supported = {'text/xml': ['1.0']}  # Supported mimetype
     _only_wellformed = True             # Only well-formed check
 
-    def __init__(self, filename, mimetype, validation=True, params=None):
+    def __init__(self, filename, mimetype, check_wellformed=True, params=None):
         """Initialize scraper.
         :filename: File path
         :mimetype: Predicted mimetype of the file
-        :validation: True for the full validation, False for just
-                     identification and metadata scraping
+        :check_wellformed: True for the full well-formed check, False for just
+                            identification and metadata scraping
         :params: Extra parameters needed for the scraper
         """
         if params is None:
@@ -47,16 +47,17 @@ class Xmllint(BaseScraper):
         self._catalogs = params.get('catalogs', True)
         self._no_network = params.get('no_network', True)
         self._catalog_path = params.get('catalog_path', None)
-        super(Xmllint, self).__init__(filename, mimetype, validation, params)
+        super(Xmllint, self).__init__(filename, mimetype, check_wellformed,
+                                      params)
 
     @classmethod
     def is_supported(cls, mimetype, version=None,
-                     validation=True, params=None):
-        """This is not a Schematron validator
+                     check_wellformed=True, params=None):
+        """This is not a Schematron scraper
         :mimetype: Identified mimetype
         :version: Identified version (if needed)
-        :validation: True for the full validation, False for just
-                     identification and metadata scraping
+        :check_wellformed: True for the full well-formed check, False for just
+                            identification and metadata scraping
         :params: Extra parameters needed for the scraper
         :returns: True if scraper is supported
         """
@@ -65,17 +66,17 @@ class Xmllint(BaseScraper):
         if 'schematron' in params:
             return False
         return super(Xmllint, cls).is_supported(mimetype, version,
-                                                validation, params)
+                                                check_wellformed, params)
 
     def scrape_file(self):
-        """Validate XML file with Xmllint and return a tuple of results.
-        Strategy for XML file validation is
-            1) Try validate well-formedness by opening file.
-            2) If there's DTD specified in file do DTD validation
-            3) If there's no DTD and we have external XSD do validation againts
+        """Check XML file with Xmllint and return a tuple of results.
+        Strategy for XML file check is
+            1) Try to check syntax by opening file.
+            2) If there's DTD specified in file check against that.
+            3) If there's no DTD and we have external XSD check againtst
                that.
             4) If there's no external XSD read schemas used in file and do
-               validation againts them with schema catalog.
+               check againts them with schema catalog.
 
         :returns: Tuple (status, report, errors) where
             status -- 0 is success, anything else failure
@@ -85,13 +86,13 @@ class Xmllint(BaseScraper):
         .. seealso:: https://wiki.csc.fi/wiki/KDK/XMLTiedostomuotojenSkeemat
         """
 
-        # Try to validate well-formedness by opening file in XML parser
+        # Try to check syntax by opening file in XML parser
         try:
-            fd = open(self.filename)  # pylint: disable=invalid-name
+            file_ = open(self.filename)
             parser = etree.XMLParser(dtd_validation=False, no_network=True)
-            tree = etree.parse(fd, parser=parser)
+            tree = etree.parse(file_, parser=parser)
             self.version = tree.docinfo.xml_version
-            fd.close()
+            file_.close()
         except etree.XMLSyntaxError as exception:
             self.errors("Failed: document is not well-formed.")
             self.errors(str(exception))
@@ -103,11 +104,11 @@ class Xmllint(BaseScraper):
             self._collect_elements()
             return
 
-        # Try validate against DTD
+        # Try check against DTD
         if tree.docinfo.doctype:
-            (exitcode, stdout, stderr) = self.exec_xmllint(dtd_validate=True)
+            (exitcode, stdout, stderr) = self.exec_xmllint(dtd_check=True)
 
-        # Try validate againts XSD
+        # Try check againts XSD
         else:
             if not self._schema:
                 self._schema = self.construct_xsd(tree)
@@ -176,22 +177,22 @@ class Xmllint(BaseScraper):
             # Contstruct the schema
             _, schema = tempfile.mkstemp(
                 prefix='file-scraper-', suffix='.tmp')
-            et = etree.ElementTree(schema_tree)  # pylint: disable=invalid-name
-            et.write(schema)
+            elem_tree = etree.ElementTree(schema_tree)
+            elem_tree.write(schema)
             self._has_constructed_schema = True
 
             return schema
 
         return []
 
-    def exec_xmllint(self, dtd_validate=False, schema=None):
+    def exec_xmllint(self, dtd_check=False, schema=None):
         """Execute xmllint.
-        :dtd_validate: True, if validation against DTD, false otherwise
+        :dtd_check: True, if check against DTD, false otherwise
         :schema: Schema file
         :returns: tuple including: returncode, stdout, strderr
         """
         command = ['xmllint']
-        command += ['--valid'] if dtd_validate else []
+        command += ['--valid'] if dtd_check else []
         command += ['--huge']
         command += ['--noout']
         command += ['--nonet'] if self._no_network else []

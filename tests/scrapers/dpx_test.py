@@ -8,6 +8,7 @@ from file_scraper.scrapers.dpx import Dpx
 
 MIMETYPE = 'image/x-dpx'
 
+
 @pytest.mark.parametrize(
     ['filename', 'result_dict'],
     [
@@ -48,6 +49,7 @@ def test_scraper(filename, result_dict):
     assert correct.stdout_part in scraper.messages()
     assert correct.stderr_part in scraper.errors()
     assert scraper.well_formed == correct.well_formed
+
 
 def test_is_supported():
     """Test is_Supported method"""

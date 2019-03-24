@@ -34,7 +34,7 @@ def test_scraper(filename, result_dict):
     correct.streams[0]['version'] = None
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper.version == None
+    assert scraper.version is None
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'Pngcheck'
     if correct.well_formed:
@@ -42,6 +42,7 @@ def test_scraper(filename, result_dict):
     else:
         assert 'ERROR' in scraper.errors()
     assert scraper.well_formed == correct.well_formed
+
 
 def test_is_supported():
     """Test is_Supported method"""

@@ -8,6 +8,7 @@ from tests.common import parse_results
 ROOTPATH = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '../../'))
 
+
 @pytest.mark.parametrize(
     ['filename', 'result_dict', 'params'],
     [
@@ -16,7 +17,7 @@ ROOTPATH = os.path.abspath(os.path.join(
             'stdout_part': '<svrl:schematron-output',
             'stderr_part': ''},
          {'schematron': os.path.join(
-            ROOTPATH, 'tests/data/text_xml/local.sch'),
+             ROOTPATH, 'tests/data/text_xml/local.sch'),
           'cache': False}),
         ('invalid_1.0_local_xsd.xml', {
             'purpose': 'Test invalid file',
@@ -71,6 +72,7 @@ def test_is_supported():
 def test_parameters():
     """Test that parameters and default values work properly.
     """
+    # pylint: disable=protected-access
     scraper = Schematron('testsfile', 'test/mimetype')
     assert scraper._schematron_file is None
     assert scraper._extra_hash is None
@@ -91,6 +93,7 @@ def test_parameters():
 def test_xslt_filename():
     """Test that schecksum for xslt filename is calculated properly.
     """
+    # pylint: disable=protected-access
     scraper = Schematron('filename', 'text/xml')
     scraper._schematron_file = 'tests/data/text_xml/local.sch'
     assert '76ed62' in scraper._generate_xslt_filename()
@@ -101,9 +104,11 @@ def test_xslt_filename():
     scraper._verbose = False
     assert '791b2e' in scraper._generate_xslt_filename()
 
+
 def test_filter_duplicate_elements():
     """Test duplicate element filtering.
     """
+    # pylint: disable=protected-access
     schtest = \
         """<svrl:schematron-output
             xmlns:svrl="http://purl.oclc.org/dsdl/svrl">

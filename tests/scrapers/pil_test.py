@@ -1,14 +1,13 @@
 """
 Tests for PIL scraper.
 """
-import os
 import pytest
 from file_scraper.scrapers.pil import TiffPil, JpegPil, ImagePil
 from tests.common import parse_results
 
 
 VALID_MSG = 'successfully'
-INVALID_MSG = 'Error in scraping file.'
+INVALID_MSG = 'Error in analyzing file.'
 
 STREAM_VALID = {
     'bps_unit': 'integer',

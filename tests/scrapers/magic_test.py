@@ -3,7 +3,6 @@
 """
 Tests for File (libmagick) scraper.
 """
-import os
 import pytest
 from file_scraper.scrapers.magic import OfficeFileMagic, TextFileMagic, \
     XmlFileMagic, HtmlFileMagic, PngFileMagic, JpegFileMagic, TiffFileMagic, \
@@ -62,7 +61,7 @@ def test_scraper_valid(filename, mimetype, class_):
     correct = parse_results(filename, mimetype,
                             result_dict, True)
     scraper = class_(correct.filename, correct.mimetype,
-                  True, correct.params)
+                     True, correct.params)
     scraper.scrape_file()
 
     if class_ in [XhtmlFileMagic]:
@@ -119,11 +118,13 @@ def test_scraper_valid(filename, mimetype, class_):
         ("invalid_6.0_wrong_byte_order.tif", "image/tiff", TiffFileMagic),
         ("invalid__binary_data.txt", "text/plain", TextFileMagic),
         ("invalid_1.0_no_closing_tag.xml", "text/xml", XmlFileMagic),
-        ("invalid_1.0_no_doctype.xhtml", "application/xhtml+xml", XhtmlFileMagic),
+        ("invalid_1.0_no_doctype.xhtml", "application/xhtml+xml",
+         XhtmlFileMagic),
         ("invalid_4.01_nodoctype.html", "text/html", HtmlFileMagic),
         ("invalid_5.0_nodoctype.html", "text/html", HtmlFileMagic),
         ("invalid_1.4_removed_xref.pdf", "application/pdf", PdfFileMagic),
-        ("invalid_1.0_missing_field.arc", "application/x-internet-archive", ArcFileMagic),
+        ("invalid_1.0_missing_field.arc", "application/x-internet-archive",
+         ArcFileMagic),
         ("invalid__empty.doc", "application/msword", OfficeFileMagic),
         ("invalid__empty.txt", "text/plain", TextFileMagic),
     ])
@@ -136,7 +137,7 @@ def test_scraper_invalid(filename, mimetype, class_):
     correct = parse_results(filename, mimetype,
                             result_dict, True)
     scraper = class_(correct.filename, correct.mimetype,
-                  True, correct.params)
+                     True, correct.params)
     scraper.scrape_file()
 
     if class_ not in [HtmlFileMagic, XmlFileMagic, XhtmlFileMagic,
@@ -173,19 +174,26 @@ def test_scraper_invalid(filename, mimetype, class_):
     assert correct.stderr_part in scraper.errors()
     assert scraper.well_formed == correct.well_formed
 
+
 @pytest.mark.parametrize(
     ['mime', 'ver', 'class_'],
     [
         ('application/vnd.oasis.opendocument.text', '1.1', OfficeFileMagic),
         ('application/msword', '11.0', OfficeFileMagic),
-        ('application/vnd.openxmlformats-officedocument.wordprocessingml.document', '15.0', OfficeFileMagic),
-        ('application/vnd.oasis.opendocument.presentation', '1.1', OfficeFileMagic),
+        ('application/vnd.openxmlformats-officedocument.wordprocessingml'
+         '.document', '15.0', OfficeFileMagic),
+        ('application/vnd.oasis.opendocument.presentation', '1.1',
+         OfficeFileMagic),
         ('application/vnd.ms-powerpoint', '11.0', OfficeFileMagic),
-        ('application/vnd.openxmlformats-officedocument.presentationml.presentation', '15.0', OfficeFileMagic),
-        ('application/vnd.oasis.opendocument.spreadsheet', '1.1', OfficeFileMagic),
+        ('application/vnd.openxmlformats-officedocument.presentationml'
+         '.presentation', '15.0', OfficeFileMagic),
+        ('application/vnd.oasis.opendocument.spreadsheet', '1.1',
+         OfficeFileMagic),
         ('application/vnd.ms-excel', '8.0', OfficeFileMagic),
-        ('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', '15.0', OfficeFileMagic),
-        ('application/vnd.oasis.opendocument.graphics', '1.1', OfficeFileMagic),
+        ('application/vnd.openxmlformats-officedocument.spreadsheetml'
+         '.sheet', '15.0', OfficeFileMagic),
+        ('application/vnd.oasis.opendocument.graphics', '1.1',
+         OfficeFileMagic),
         ('application/vnd.oasis.opendocument.formula', '1.0', OfficeFileMagic),
         ('image/png', '1.2', PngFileMagic),
         ('image/jpeg', '1.01', JpegFileMagic),
