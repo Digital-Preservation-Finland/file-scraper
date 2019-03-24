@@ -50,7 +50,8 @@ def test_scraper_pdf(filename, result_dict):
 
 def test_no_wellformed():
     """Test scraper without well-formed check"""
-    scraper = GhostScript('valid_1.4.pdf', 'application/pdf', False)
+    scraper = GhostScript('tests/data/application_pdf/valid_1.4.pdf',
+                          'application/pdf', False)
     scraper.scrape_file()
     assert 'Skipping scraper' in scraper.messages()
     assert scraper.well_formed is None

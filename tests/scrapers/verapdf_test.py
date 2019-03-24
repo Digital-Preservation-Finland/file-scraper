@@ -87,7 +87,8 @@ def test_scraper_invalid_pdfa(filename, result_dict):
 
 def test_no_wellformed():
     """Test scraper without well-formed check"""
-    scraper = VeraPdf('valid_A-1a.pdf', 'application/pdf', False)
+    scraper = VeraPdf('tests/data/application_pdf/valid_A-1a.pdf',
+                      'application/pdf', False)
     scraper.scrape_file()
     assert 'Skipping scraper' in scraper.messages()
     assert scraper.well_formed is None

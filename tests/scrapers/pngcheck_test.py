@@ -46,7 +46,8 @@ def test_scraper(filename, result_dict):
 
 def test_no_wellformed():
     """Test scraper without well-formed check"""
-    scraper = Pngcheck('valid_1.2.png', 'image/png', False)
+    scraper = Pngcheck('tests/data/image_png/valid_1.2.png',
+                       'image/png', False)
     scraper.scrape_file()
     assert 'Skipping scraper' in scraper.messages()
     assert scraper.well_formed is None

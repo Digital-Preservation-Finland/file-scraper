@@ -129,7 +129,8 @@ def test_parallel_validation(filename, mimetype):
 
 def test_no_wellformed():
     """Test scraper without well-formed check"""
-    scraper = Office('valid_11.0.doc', 'application/msword', False)
+    scraper = Office('tests/data/application_msword/valid_11.0.doc',
+                     'application/msword', False)
     scraper.scrape_file()
     assert 'Skipping scraper' in scraper.messages()
     assert scraper.well_formed is None

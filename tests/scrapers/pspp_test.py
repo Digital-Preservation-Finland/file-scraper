@@ -49,7 +49,8 @@ def test_scraper(filename, result_dict):
 
 def test_no_wellformed():
     """Test scraper without well-formed check"""
-    scraper = Pspp('valid.por', MIMETYPE, False)
+    scraper = Pspp('tests/data/application_x-spss-por/valid.por',
+                   MIMETYPE, False)
     scraper.scrape_file()
     assert 'Skipping scraper' in scraper.messages()
     assert scraper.well_formed is None

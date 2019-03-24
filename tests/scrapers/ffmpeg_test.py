@@ -162,7 +162,8 @@ def test_ffmpeg_scraper_mpegts(filename, result_dict):
 
 def test_no_wellformed():
     """Test scraper without well-formed check"""
-    scraper = FFMpegWellformed('valid_1.m1v', 'video/mpeg', False)
+    scraper = FFMpegWellformed('tests/data/video_mpeg/valid_1.m1v',
+                               'video/mpeg', False)
     scraper.scrape_file()
     assert 'Skipping scraper' in scraper.messages()
     assert scraper.well_formed is None
@@ -178,7 +179,7 @@ def test_no_wellformed():
         ('video/MP2T', ''),
     ]
 )
-def test_is_supportedi_mpeg(mime, ver):
+def test_is_supported_mpeg(mime, ver):
     """Test is_supported method"""
     assert FFMpegWellformed.is_supported(mime, ver, True)
     assert FFMpegWellformed.is_supported(mime, None, True)

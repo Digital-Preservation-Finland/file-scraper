@@ -356,7 +356,8 @@ def test_scraper_wav(filename, result_dict, version):
 
 def test_no_wellformed():
     """Test scraper without well-formed check"""
-    scraper = WavJHove('valid__wav.wav', 'audio/x-wav', False)
+    scraper = WavJHove('tests/data/audio_x-wav/valid__wav.wav',
+                       'audio/x-wav', False)
     scraper.scrape_file()
     assert 'Skipping scraper' in scraper.messages()
     assert scraper.well_formed is None

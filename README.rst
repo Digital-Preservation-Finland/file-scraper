@@ -47,7 +47,7 @@ Use the scraper in the following way::
     scraper = Scraper(filename)
     scraper.scrape(check_wellformed=True/False)
 
-The ``check_wellformed`` option is True by default and does full file format well-formed check for the file. To collect metadata without file format check, this argument must be ``False``.
+The ``check_wellformed`` option is True by default and does full file format well-formed check for the file. To collect metadata without checking the well-formedness of the file, this argument must be ``False``.
 
 As a result the collected metadata and results are in the following instance variables:
 

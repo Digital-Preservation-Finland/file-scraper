@@ -59,7 +59,8 @@ def test_scraper_invalid(filename, result_dict, params):
 
 def test_no_wellformed():
     """Test scraper without well-formed check"""
-    scraper = Schematron('valid_1.0_wellformed.xml', 'text/xml', False)
+    scraper = Schematron('tests/data/text_xml/valid_1.0_wellformed.xml',
+                         'text/xml', False)
     scraper.scrape_file()
     assert 'Skipping scraper' in scraper.messages()
     assert scraper.well_formed is None

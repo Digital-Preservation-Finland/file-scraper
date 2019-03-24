@@ -53,7 +53,7 @@ def test_scraper(filename, result_dict):
 
 def test_no_wellformed():
     """Test scraper without well-formed check"""
-    scraper = Dpx('valid_2.0.dpx', MIMETYPE, False)
+    scraper = Dpx('tests/data/image_x-dpx/valid_2.0.dpx', MIMETYPE, False)
     scraper.scrape_file()
     assert 'Skipping scraper' in scraper.messages()
     assert scraper.well_formed is None

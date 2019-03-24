@@ -309,7 +309,8 @@ def test_scraper_gif(filename, result_dict):
 
 def test_no_wellformed():
     """Test scraper without well-formed check"""
-    scraper = ImageWand('valid_6.0.tif', 'image/tiff', False)
+    scraper = ImageWand('tests/data/image_tiff/valid_6.0.tif',
+                        'image/tiff', False)
     scraper.scrape_file()
     assert not 'Skipping scraper' in scraper.messages()
     assert scraper.well_formed is None

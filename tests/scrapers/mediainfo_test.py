@@ -196,7 +196,8 @@ def test_mediainfo_scraper_mpegts(filename, result_dict):
 
 def test_no_wellformed():
     """Test scraper without well-formed check"""
-    scraper = WavMediainfo('valid__wav.wav', 'audio/x-wav', False)
+    scraper = WavMediainfo('tests/data/audio_x-wav/valid__wav.wav',
+                           'audio/x-wav', False)
     scraper.scrape_file()
     assert not 'Skipping scraper' in scraper.messages()
     assert scraper.well_formed is None

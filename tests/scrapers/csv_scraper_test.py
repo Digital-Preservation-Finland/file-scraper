@@ -23,7 +23,6 @@ This module tests that:
 """
 
 import os
-from tempfile import NamedTemporaryFile
 import pytest
 
 from file_scraper.scrapers.csv_scraper import Csv
@@ -119,28 +118,25 @@ MISSING_END_QUOTE = VALID_CSV + \
          'invalid__', ['year', 'brand', 'model', 'detail', 'other'])
     ]
 )
-def test_scraper(csv_text, result_dict, prefix, header):
+def test_scraper(testpath, csv_text, result_dict, prefix, header):
     """Write test data and run csv scraping for the file"""
 
-    with NamedTemporaryFile(delete=False, prefix=prefix) as outfile:
+    with open(os.path.join(testpath, '%s.csv' % prefix), 'w') as outfile:
 
-        try:
-            outfile.write(csv_text)
-            outfile.close()
+        outfile.write(csv_text)
+        outfile.close()
 
-            words = outfile.name.rsplit("/", 1)
-            correct = parse_results(words[1], '', result_dict,
-                                    True, basepath=words[0])
-            correct.mimetype = MIMETYPE
-            correct.streams[0]['mimetype'] = MIMETYPE
-            scraper = Csv(
-                correct.filename, correct.mimetype, True, params={
-                    'separator': correct.streams[0]['separator'],
-                    'delimiter': correct.streams[0]['delimiter'],
-                    'fields': header})
-            scraper.scrape_file()
-        finally:
-            os.unlink(outfile.name)
+        words = outfile.name.rsplit("/", 1)
+        correct = parse_results(words[1], '', result_dict,
+                                True, basepath=words[0])
+        correct.mimetype = MIMETYPE
+        correct.streams[0]['mimetype'] = MIMETYPE
+        scraper = Csv(
+            correct.filename, correct.mimetype, True, params={
+                'separator': correct.streams[0]['separator'],
+                'delimiter': correct.streams[0]['delimiter'],
+                'fields': header})
+        scraper.scrape_file()
 
     assert scraper.mimetype == correct.mimetype
     assert scraper.version == correct.version
@@ -162,18 +158,15 @@ def test_pdf_as_csv():
     assert scraper.errors()
 
 
-def test_no_parameters():
+def test_no_parameters(testpath):
     """Test scraper without separate parameters"""
-    with NamedTemporaryFile(delete=False) as outfile:
+    with open(os.path.join(testpath, 'valid__.csv'), 'w') as outfile:
 
-        try:
-            outfile.write(VALID_CSV)
-            outfile.close()
+        outfile.write(VALID_CSV)
+        outfile.close()
 
-            scraper = Csv(outfile.name, MIMETYPE)
-            scraper.scrape_file()
-        finally:
-            os.unlink(outfile.name)
+        scraper = Csv(outfile.name, MIMETYPE)
+        scraper.scrape_file()
 
     assert scraper.mimetype == MIMETYPE
     assert scraper.version == ''
@@ -181,18 +174,15 @@ def test_no_parameters():
     assert scraper.well_formed
 
 
-def test_no_wellformed():
+def test_no_wellformed(testpath):
     """Test scraper without well-formed check"""
-    with NamedTemporaryFile(delete=False, prefix='valid__') as outfile:
+    with open(os.path.join(testpath, 'valid__.csv'), 'w') as outfile:
 
-        try:
-            outfile.write(VALID_CSV)
-            outfile.close()
+        outfile.write(VALID_CSV)
+        outfile.close()
 
-            scraper = Csv(outfile, 'text/csv', False)
-            scraper.scrape_file()
-        finally:
-            os.unlink(outfile.name)
+        scraper = Csv(outfile, 'text/csv', False)
+        scraper.scrape_file()
 
     assert 'Skipping scraper' in scraper.messages()
     assert scraper.well_formed is None

@@ -176,7 +176,8 @@ def test_arc_scraper(filename, result_dict):
 
 def test_no_wellformed_gzip():
     """Test scraper without well-formed check"""
-    scraper = GzipWarctools('valid_1.0_.warc.gz', 'application/gzip', False)
+    scraper = GzipWarctools('tests/data/application_warc/valid_1.0_.warc.gz',
+                            'application/gzip', False)
     scraper.scrape_file()
     assert 'Skipping scraper' in scraper.messages()
     assert scraper.well_formed is None
@@ -184,7 +185,8 @@ def test_no_wellformed_gzip():
 
 def test_no_wellformed_warc():
     """Test scraper without well-formed check"""
-    scraper = WarcWarctools('valid_1.0_.warc', 'application/warc', False)
+    scraper = WarcWarctools('tests/data/application_warc/valid_1.0_.warc',
+                            'application/warc', False)
     scraper.scrape_file()
     assert 'Skipping scraper' in scraper.messages()
     assert scraper.well_formed is None
@@ -192,7 +194,8 @@ def test_no_wellformed_warc():
 
 def test_no_wellformed_arc():
     """Test scraper without well-formed check"""
-    scraper = ArcWarctools('valid_1.0_.arc', 'application/x-internet-archive',
+    scraper = ArcWarctools('tests/data/application_x-internet-archive/valid'
+                           '_1.0_.arc', 'application/x-internet-archive',
                            False)
     scraper.scrape_file()
     assert 'Skipping scraper' in scraper.messages()

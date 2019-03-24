@@ -1,6 +1,6 @@
 """File format detectors.
 """
-# pylint: disable=import-error, ungrouped-imports
+# pylint: disable=ungrouped-imports
 
 import ctypes
 
@@ -25,7 +25,9 @@ class _FidoReader(Fido):
     """
 
     # Global variable in Fido
-    global defaults  # pylint: disable=invalid-name, global-statement
+    # pylint: disable=invalid-name, global-statement
+    # pylint: disable=global-variable-not-assigned
+    global defaults
 
     def __init__(self, filename):
         """Fido is done with old-style python and does not inherit object,

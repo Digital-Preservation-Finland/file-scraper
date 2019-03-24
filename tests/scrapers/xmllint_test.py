@@ -116,7 +116,8 @@ def test_scraper_invalid(filename, result_dict, params):
 
 def test_no_wellformed_gzip():
     """Test scraper without well-formed check"""
-    scraper = Xmllint('valid_1.0_wellformed.xml', 'text/xml', False)
+    scraper = Xmllint('tests/data/text_xml/valid_1.0_wellformed.xml',
+                      'text/xml', False)
     scraper.scrape_file()
     assert 'Skipping scraper' in scraper.messages()
     assert scraper.well_formed is None

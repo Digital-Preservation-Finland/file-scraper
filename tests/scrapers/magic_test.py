@@ -177,7 +177,8 @@ def test_scraper_invalid(filename, mimetype, class_):
 
 def test_no_wellformed():
     """Test scraper without well-formed check"""
-    scraper = JpegFileMagic('valid_1.01.jpg', 'image/jpeg', False)
+    scraper = JpegFileMagic('tests/data/image_jpeg/valid_1.01.jpg',
+                            'image/jpeg', False)
     scraper.scrape_file()
     assert not 'Skipping scraper' in scraper.messages()
     assert scraper.well_formed is None

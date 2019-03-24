@@ -267,7 +267,8 @@ def test_scraper_gif(filename, result_dict):
 
 def test_no_wellformed():
     """Test scraper without well-formed check"""
-    scraper = ImagePil('valid_1987a.gif', 'image/gif', False)
+    scraper = ImagePil('tests/data/image_gif/valid_1987a.gif',
+                       'image/gif', False)
     scraper.scrape_file()
     assert not 'Skipping scraper' in scraper.messages()
     assert scraper.well_formed is None

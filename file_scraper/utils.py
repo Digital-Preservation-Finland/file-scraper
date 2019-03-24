@@ -91,7 +91,7 @@ def strip_zeros(float_str):
     return float_str
 
 
-def combine_metadata(stream, metadata, lose=[], important=None):
+def combine_metadata(stream, metadata, lose=None, important=None):
     """Merge metadata dict to stream metadata dict. Will raise
     ValueError if two different values collide.
     :stream: Metadata dict where the new metadata is merged.
@@ -101,14 +101,14 @@ def combine_metadata(stream, metadata, lose=[], important=None):
                 in conflict situation, if given.
     :returns: Merged metadta
     """
-    # pylint: disable=dangerous-default-value
-
     if not metadata:
         return stream
     if stream is None:
         stream = {}
     if important is None:
         important = {}
+    if lose is None:
+        lose = []
 
     for stream_index, metadata_dict in metadata.iteritems():
 

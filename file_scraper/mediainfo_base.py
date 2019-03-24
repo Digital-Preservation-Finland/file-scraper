@@ -106,7 +106,9 @@ class Mediainfo(BaseScraper):
         """Set stream with given index
         :index: Index of the stream
         """
-        if self._mediainfo is not None:
+        if self._mediainfo is None or not self._mediainfo.tracks:
+            return 0
+        else:
             self._mediainfo_stream = self._mediainfo.tracks[index]
             self._mediainfo_index = index
 
@@ -233,7 +235,6 @@ class Mediainfo(BaseScraper):
         if self._mediainfo is None:
             return None
         if self._mediainfo_stream.bit_rate is not None:
-            # pylint: disable=no-else-return
             if self._mediainfo_stream.track_type == 'Video':
                 return strip_zeros(str(float(
                     self._mediainfo_stream.bit_rate)/1000000))
