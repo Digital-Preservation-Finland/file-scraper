@@ -1,4 +1,43 @@
-"""Test module for ffmpeg.py"""
+"""
+Test module for ffmpeg.py
+
+This module tests that:
+    - For valid MPEG-1 and MPEG-2 files the scraping is reported as successful,
+      the file is well-formed and other properties are:
+        - mimetype is video/mpeg
+        - version is None
+        - in streams, version and stream_type are None
+    - For empty MPEG files the results are similar but file is not well-formed
+      and errors should contain message 'Invalid data found when processing
+      input'.
+    - For MPEG files with missing data the file is not well-formed and errors
+      should contain "end mismatch".
+
+    - For valid mp4 files with h.264 video and AAC audio the scraping is
+      reported as successful, the file is well-formed and other properties are:
+        - mimetype is video/mp4
+        - version is None
+        - in streams, version and stream_type are None
+    - For empty mp4 files, the results are similar but file is not well-formed
+      and errors should contain message 'Invalid data found when processing
+      input'
+    - For mp4 files with missing data the file is not well-formed and errors
+      should contain "end mismatch"
+
+    - For valid mp3 files the scraping is reported as successful, the file is
+      well-formed and its other properties are:
+        - mimetype is audio/mpeg
+        - version is None
+        - in streams, version and stream_type are None
+    - For empty mp3 files, the results are similar but file is not well-formed
+      and errors should contain message 'could not find codec parameters'.
+    - For mp3 files with missing data, the file is not well-formed and errors
+      should contain 'Error while decoding stream'.
+    - For mp3 files with wrong version reported in the header, the file is not
+      well-formed and errors should contain 'Error while decoding stream'.
+
+    TODO: test_ffmpeg_scraper_mpegts and everything below missing
+"""
 import pytest
 from file_scraper.scrapers.ffmpeg import FFMpegWellformed
 from tests.common import parse_results
@@ -76,6 +115,7 @@ def test_ffmpeg_scraper_mp4(filename, result_dict):
     correct.version = None
     correct.streams[0]['version'] = None
     correct.streams[0]['stream_type'] = None
+
 
     assert scraper.mimetype == correct.mimetype
     assert scraper.version == correct.version
