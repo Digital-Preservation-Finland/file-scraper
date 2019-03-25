@@ -18,18 +18,30 @@ The detectors inherit ``BaseDetector`` class, which contains an abstract method 
 The ``info`` attribute contains a dict of class name, and messages and errors occured during detection.
 See ``<scraper info X>`` from `README.rst <../README.rst>`_ for the content of the info attribute.
 
+.. image:: scraper_tree.png
+
 Scraper tools
 -------------
 
 All the iterable and usable scraper tools are located in ``./file_scraper/scrapers/`` directory. These scraper tools are based on ``BaseScraper``,
 either with directly inheriting it, or via tool specific base class.
 
-.. image:: scraper_tree.png
-
-In the Figure, ``GhostScript`` scraper tool inherits ``BaseScraper`` directly, but ``TiffWand`` and ``ImageWand`` inherit it indirectly via ``Wand`` base class.
+In the Figure above, ``GhostScript`` scraper tool inherits ``BaseScraper`` directly, but ``TiffWand`` and ``ImageWand`` inherit it indirectly via ``Wand`` base class.
 Here, ``GhostScript``, ``TiffWand`` and ``ImageWand`` are the scraper tools located in ``./file_scraper/scrapers/`` directory. When the used 3rd party tool is
 file format specific, it can inherit ``BaseScraper`` directly, but with ``Wand``, we need to handle TIFF images in a diffrent way from the other image formats.
 This is why the actual functionality is done in the separate tool specific base class ``Wand``, and then the file format specific tools are able to inherit it.
+
+Should you create a new scraper tool for some file format, it probably already has a proper base class, for example:
+
+    * ``Pil`` and ``Wand`` for images: You need to create a file format specific scraping tool for  both to create full metadata collection.
+    * ``Mediainfo`` and ``FFMpeg`` for audio and video files: You can not use both for video container metadata scraping, since these tools return the streams in different order.
+    * ``TextMagic`` for text files: Finds out the charset of the file and checks mimetype and version.
+    * ``BinaryMagic`` for binary files: Checks mimetype and version, if not checked well enough in the actual well-formed check.
+    * ``JHove`` for various file formats: You may add a file format for JHove well-formed check, if applicable.
+    * ``BaseScraper`` is generic base class for scrapers not suitable to use any of the previous ones for full scraping and for new tool specific base classes.
+
+In parctice, just add proper values to class variables and override the needed ``_s_`` prefixed methods. The tool specific base classes already have ``scrape_file()`` method implemented.
+
 To maintain clarity, do not allow a tool specific base class to support any mimetype, and keep it away from ``./file_scraper/scrapers/`` directory. Instead,
 add the base class to ``./file_scraper/`` and create separate mimetype specific classes to inherit it.
 
@@ -40,24 +52,35 @@ A usable scraper tool class:
     * The scraper is normally launched also with other version numbers than listed (e.g. with ``None``).
       This MAY be disallowed with a class variable ``_allow_versions = False``.
     * MUST call ``super()`` during initialization, if separate initialization method is created.
-    * MUST implement ``scrape_file()`` for file scraping.
-    * SHOULD call ``_check_supported()`` as the second last command of ``scrape_file()``. This checks that the final mimetype and version are supported ones, in case those
-      have changed. This MAY be omitted, if ``check_wellformed`` is ``False``.
-    * MUST have a method for each metadata element that is needed to be resulted. These methods MUST be named with ``_s_`` prefix, e.g. ``_s_width()``, and MUST return string.
-      The ``_collect_elements()`` in BaseScraper will collect the return values from all methods with ``_s_`` prefix automatically to ``streams`` attribute.
+    * MUST implement ``scrape_file()`` for file scraping, if not implemented in the already existing base class:
+
+        * SHOULD call ``_check_supported()`` as the second last command of ``scrape_file()``. This checks that the final mimetype and version are supported ones, in case those
+          have changed. This MAY be omitted, if ``check_wellformed`` is ``False``.
+        * MUST call ``_collect_elements()`` as the last command of ``scrape_file()`` regardless of the validation result.
+          This will collect the metadata to ``streams`` attribute.
+
+    * MUST have a method for each metadata element that is needed to be resulted, if not implemented in the already existing base class.
+      These methods MUST be named with ``_s_`` prefix, e.g. ``_s_width()``, and MUST normally return string, with exception of ``_s_index()`` which returns stream index as integer.
+      The ``_s_`` prefixed methods must normalize the value to a normalized format. The formats described e.g. in AudioMD [1]_, VideoMD [1]_, and MIX [2]_ are used in normalization.
+      The ``_collect_elements()`` in ``BaseScraper`` will collect the return values from all methods with ``_s_`` prefix automatically to ``streams`` attribute.
       The key of the metadata element in ``streams`` will be the method name without ``_s_`` prefix (e.g. ``width``), and value is the return value of the method.
-      A ``_s_`` prefixed method MAY return ``SkipElement`` class (just class, not instance of a class) from file_scraper.base, if the methods needs to be omitted in
-      collection phase. This may become handy with files containing different kinds of streams.
-    * MUST implemet ``_s_stream_type()``, returning e.g. "text", "image", "audio", "video", "videocontainer", "binary".
-    * MUST call ``_collect_elements()`` as the last command of ``scrape_file()`` regardless of the validation result.
-      This will collect the metadata to ``streams`` attribute.
+      A ``_s_`` prefixed method MAY return ``SkipElement`` class (just class, not instance of a class) from ``file_scraper.base``, if the methods needs to be omitted in
+      collection phase. This may become handy with files containing different kinds of streams. The value ``None`` is used for the case that the value SHOULD be returned,
+      but the scraper tool is not capable to do that.
+    * MUST implemet ``_s_stream_type()``, returning e.g. "text", "image", "audio", "video", "videocontainer", "binary", if not implemented in the already existing base class.
+    * MUST use ``errors()`` for error messages and ``messages()`` for info messages.
+    * MUST crash in unexpected event, such as due to missing 3rd party tool.
     * Methods ``iter_tool_streams()`` and ``set_tool_streams()`` MUST be implemented to iterate and select stream from the 3rd party tool,
-      if the 3rd party tool is able to result several streams. These must cause the ``_s_`` prefixed methods to return value from the current stream.
+      if the 3rd party tool is able to result several streams, and if this is not implemented in existing base class.
+      These must cause the ``_s_`` prefixed methods to return value from the current stream.
     * Method ``get_important()`` MUST return a dict of those elements, which are needed to win in the combination phase.
       The keys of the dict must correspond to the keys of streams dict.
 
 The ``info`` attribute contains a dict of class name, and messages and errors occured during scraping.
 See ``<scraper info X>`` from `README.rst <../README.rst>`_ for the content of the info attribute.
+
+.. [1] https://www.loc.gov/standards/amdvmd/
+.. [2] http://www.loc.gov/standards/mix/
 
 Scraper sequence
 ----------------
