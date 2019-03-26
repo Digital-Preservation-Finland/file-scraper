@@ -1,5 +1,24 @@
 """
 Tests for PIL scraper.
+
+This module tests that:
+    - The MIME type, version, streams and well-formedness are scraped
+      correctly from well-formed tif, jpg, jp2, png and gif files with scraper
+      messages containing 'successfully'
+    - These are also scraped correctly from files of same type with errors
+      such as missing data, broken header or empty file, with scraper errors
+      containing 'Error in analyzing file'.
+    - If well-formedness is not tested, scraper messages contains 'Skipping
+      scraper' and well_formed is None.
+    - The following MIME type and version pairs are supported both with and
+      without well-formedness check:
+        - image/tiff, 6.0
+        - image/jpeg, 1.01
+        - image/jp2, ''
+        - image/png, 1.2
+        - image/gir, 1987a
+    - These MIME types are also supported with None or a made up version.
+    - A made up MIME type with any of these versions is not supported.
 """
 import pytest
 from file_scraper.scrapers.pil import TiffPil, JpegPil, ImagePil
@@ -270,7 +289,7 @@ def test_no_wellformed():
     scraper = ImagePil('tests/data/image_gif/valid_1987a.gif',
                        'image/gif', False)
     scraper.scrape_file()
-    assert not 'Skipping scraper' in scraper.messages()
+    assert 'Skipping scraper' not in scraper.messages()
     assert scraper.well_formed is None
 
 

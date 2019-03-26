@@ -1,5 +1,22 @@
 """
 Tests for PSPP scraper.
+
+This module tests that:
+    - MIME type, version, streams and well-formedness of por and sav files are
+      scraped correctly.
+    - When the format of the file is wrong, scraper errors contains 'File is
+      not SPSS Portable format.'
+    - When file with altered header is scraped, scraper errors contains 'Bad
+      date string length'.
+    - When file with missing data is scraped, scraper errors contains
+      'unexpected end of file'.
+    - When well-formedness is not checked, scraper messages contains 'Skipping
+      scraper' and well_formed is None.
+    - When well-formedness is checked, MIME type application/x-spss-por is
+      supported with '', None or 'foo' as a version
+    - When well-formedness is not checked, application/x-spss-por is not
+      supported.
+    - When well-formedness is checked, a made up MIME type is not supported.
 """
 import pytest
 from tests.common import parse_results

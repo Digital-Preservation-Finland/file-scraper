@@ -1,5 +1,33 @@
 """
 Tests for Office scraper.
+
+This module tests that:
+    - MIME type, version, streams and well-formedness of well-formed office
+      files (odt, doc, docx, odp, ppt, pptx, ods, xsl, xlsx, odg and odf) are
+      determined correctly and without anything recorded in scraper errors.
+    - MIME type, version, streams and well-formedness of corrupted office
+      files are determined correctly with 'source file could not be loaded'
+      being recorded in scraper errors.
+    - Without well-formedness check, scraper messages contain 'Skipping
+      scraper' and well_formed is None
+    - With well-formedness check, the following MIME type and version 
+      combinations are supported:
+        - application/vnd.oasis.opendocument.text, 1.1
+        - application/msword, 11.0
+        - application/vnd.openxmlformats-officedocument.wordprocessingml.document, 15.0
+        - application/vnd.oasis.opendocument.presentation, 1.1
+        - application/vnd.ms-powerpoint, 11.0
+        - application/vnd.openxmlformats-officedocument.presentationml.presentation, 15.0
+        - application/vnd.oasis.opendocument.spreadsheet, 1.1
+        - application/vnd.ms-excel, 11.0
+        - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,
+          15.0
+        - application/vnd.oasis.opendocument.graphics, 1.1
+        - application/vnd.oasis.opendocument.formula, 1.0
+    - These MIME types are also supported with a made up version or None as
+      the version.
+    - A made up MIME type is not supported.
+    - Without well-formedness check, none of these MIME types are supported.
 """
 
 import os
@@ -51,8 +79,8 @@ def test_scraper_valid_file(filename, mimetype):
     assert scraper.version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'Office'
-    assert len(scraper.messages()) > 0
-    assert len(scraper.errors()) == 0
+    assert scraper.messages()
+    assert not scraper.errors()
     assert scraper.well_formed == correct.well_formed
 
 

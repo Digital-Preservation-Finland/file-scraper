@@ -1,5 +1,26 @@
 """
 Test for pdf 1.7 ghostscript scraper.
+
+This module tests that:
+    - When full scraping is done for a valid pdf file, the following results
+      are reported:
+        - the file is well-formed
+        - MIME type is application/pdf
+        - scraper messages do not contain the word 'Error'
+        - version is None
+        - in streams, version is None
+    - When full scraping is done for a file where the payload has been altered,
+      or an XREF entry in XREF table has been removed, the results are similar
+      but the file is not well-formed, scraper messages are not checked and
+      scraper errors contain 'An error occurred while reading an XREF table.'
+    - When well-formedness is not checked, scraper messages should contain
+      'Skipping scraper' and well-formednes be reported as None
+    - MIME type application/pdf with version 1.7 or None is reported as
+      supported when full scraping is done
+    - When full scraping is not done, application/pdf version 1.7  is reported
+      as not supported
+    - Supported MIME type with made up version is reported as not supported
+    - Made up MIME type with supported version is reported as not supported
 """
 import pytest
 from tests.common import parse_results

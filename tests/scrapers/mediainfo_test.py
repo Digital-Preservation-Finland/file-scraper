@@ -1,6 +1,25 @@
-"""Test module for Mediainfo.
+"""
+Test module for Mediainfo.
+
 NOTE: Mediainfo accepts practically any file. We use another scrapers for
 well-formed checks.
+
+This module tests that:
+    - MIME type, version, streams, and well-formedness are scraped correctly
+      for wav, m1v, m2v, mp4, mp3 and ts files. For valid files scraper
+      messages contains 'file was analyzed successfully' and for empty file
+      scraper errors contains 'No audio or video tracks found'.
+    - When well-formedness is not checked, scraper messages contains 'Skipping
+      scraper' and well_formed is None.
+    - The following MIME type and version combinations are supported whether
+      well-formedness is checked or not:
+        - video/mpeg, '1'
+        - video/mp4, ''
+        - video/MP1S, ''
+        - video/MP2P, ''
+        - video/MP2T, ''
+    - These MIME types are also supported with a made up version.
+    - Made up MIME types are not supported.
 """
 import pytest
 from file_scraper.scrapers.mediainfo import MpegMediainfo, WavMediainfo
@@ -199,7 +218,7 @@ def test_no_wellformed():
     scraper = WavMediainfo('tests/data/audio_x-wav/valid__wav.wav',
                            'audio/x-wav', False)
     scraper.scrape_file()
-    assert not 'Skipping scraper' in scraper.messages()
+    assert 'Skipping scraper' not in scraper.messages()
     assert scraper.well_formed is None
 
 

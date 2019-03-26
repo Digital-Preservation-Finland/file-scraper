@@ -1,4 +1,13 @@
-"""Test CheckTextFile, which determines whether file is a text file or not.
+"""
+Test CheckTextFile, which determines whether file is a text file or not.
+
+This module tests that:
+    - Following files are correctly identified as text files and their MIME
+      type, version, streams and well-formedness are determined correctly:
+        - plain text with either UTF-8 or Latin-1 encoding
+        - xml document
+        - html document
+    - Empty file, pdf and gif files are identified as not text files.
 """
 import pytest
 

@@ -2,6 +2,18 @@
 # -*- coding: utf-8 -*-
 """
 Tests for XML encoding validator.
+
+This module tests that:
+    - Well-formed XML files with latin-1, utf-8 or utf-16 encodings are
+      reported as well_formed and the charset is identified correctly.
+    - When full scraping is not done, scraper messages contain 'Skipping
+      scraper' and well-formedness be reported as None.
+    - When full scraping is done, MIME type text/xml with version 1.0 or None
+      is reported as supported.
+    - When full scraping is not done, text/xml version 1.0 is reported as not
+      supported.
+    - A correct MIME type with made up version is reported as not supported.
+    - A made up MIME type with correct version is reported as not supported.
 """
 
 import os

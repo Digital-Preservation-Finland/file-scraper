@@ -1,4 +1,37 @@
-"""Schematron scraper tests
+"""
+Schematron scraper tests
+
+This module tests that:
+    - MIME type, version, streams and well-formedness are scraped correctly.
+    - For well-formed files, scraper messages contains
+      '<svrl:schematron-output'.
+    - For empty files, scraper errors contains 'Document is empty'.
+    - If and only if verbose option is set to False, scraper messages also
+      contain 'have been suppressed'.
+    - If well-formedness is not tested, scraper messages contain 'Skipping
+      scraper' and well_formed is None
+
+    - is_supported(cls, mimetype, version, check_wellformed, params) returns
+      False if params does not contain 'schematron' as a key.
+    - is_supported also returns False if check_wellformed is False.
+    - MIME type 'text/xml' with version 1.0 or None is supported.
+    - A made up MIME type or version is not supported.
+
+    - If schematron is not given any parameters, instance variables are given
+      the following values:
+        - _schematron_file is None
+        - _extra_hash is None
+        - _verbose is False
+        - _cache is True
+    - If the variables above are given new values as parameters, these values
+      affect the instance variables.
+
+    - XSLT filenames are generated using sha1 algorithm on
+      [_schematron_file][verbosity][ _extra_hash]
+      where [verbosity] is "verbose" if verbose is True, otherwise "".
+
+    - Schematron removes extra copies of identical elements, but not if their
+      attributes differ.
 """
 import os
 import pytest
@@ -32,7 +65,7 @@ ROOTPATH = os.path.abspath(os.path.join(
          {'schematron': 'tests/data/text_xml/local.sch'}),
     ]
 )
-def test_scraper_invalid(filename, result_dict, params):
+def test_scraper(filename, result_dict, params):
     """Test scraper"""
 
     correct = parse_results(filename, 'text/xml',
@@ -52,8 +85,8 @@ def test_scraper_invalid(filename, result_dict, params):
     assert scraper.well_formed == correct.well_formed
 
     if 'verbose' in correct.params and correct.params['verbose']:
-        assert not 'have been suppressed' in scraper.messages()
-    elif len(scraper.messages()) > 0:
+        assert 'have been suppressed' not in scraper.messages()
+    elif scraper.messages():
         assert 'have been suppressed' in scraper.messages()
 
 
@@ -94,13 +127,13 @@ def test_parameters():
                                  'verbose': True,
                                  'cache': False})
     assert scraper._schematron_file == 'schfile'
-    assert scraper._extra_hash is 'abc'
+    assert scraper._extra_hash == 'abc'
     assert scraper._verbose
     assert not scraper._cache
 
 
 def test_xslt_filename():
-    """Test that schecksum for xslt filename is calculated properly.
+    """Test that checksum for xslt filename is calculated properly.
     """
     # pylint: disable=protected-access
     scraper = Schematron('filename', 'text/xml')

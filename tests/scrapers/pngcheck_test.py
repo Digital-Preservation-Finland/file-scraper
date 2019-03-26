@@ -1,4 +1,19 @@
-"""Test the file_scraper.scrapers.pngcheck module"""
+"""
+Test the file_scraper.scrapers.pngcheck module
+
+This module tests that:
+    - MIME type, version, streams and well-formedness of png files are scraped
+      correctly.
+    - For well-formed files, scraper messages contains 'OK' and there are no
+      errors.
+    - For non-well-formed files, scraper error is recorded.
+    - When well-formedness is not checked, scraper messages contain 'Skipping
+      scraper' and well_formed is None.
+    - MIME type image/png is supported with version 1.2, None or a made up
+      version when well-formedness is checked.
+    - When well-formedness is not checked, image/png 1.2 is not supported.
+    - A made up MIME type is not supported.
+"""
 import pytest
 from tests.common import parse_results
 from file_scraper.scrapers.pngcheck import Pngcheck
@@ -39,6 +54,7 @@ def test_scraper(filename, result_dict):
     assert scraper.info['class'] == 'Pngcheck'
     if correct.well_formed:
         assert 'OK' in scraper.messages()
+        assert not scraper.errors()
     else:
         assert 'ERROR' in scraper.errors()
     assert scraper.well_formed == correct.well_formed

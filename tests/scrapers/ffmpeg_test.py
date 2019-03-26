@@ -36,7 +36,31 @@ This module tests that:
     - For mp3 files with wrong version reported in the header, the file is not
       well-formed and errors should contain 'Error while decoding stream'.
 
-    TODO: test_ffmpeg_scraper_mpegts and everything below missing
+    - For valid MPEG-TS files the scraping is reported as successful, the file
+      is well-formed and its other properties are:
+        - mimetype is 'video/MP2T'
+        - version is None
+        - in streams, version and stream_type are None
+    - For empty MPEG-TS files, the results are ismilar but file is not well-
+      formed and errors should contain message 'Invalid data found when
+      processing input'.
+    - For MPEG-TS files with missing data, the file is not well-formed and
+      errors should contain "invalid new backstep".
+
+    - When the scraper is run without well-formed check on a well-formed file,
+      well_formed is None and scraper messages contain 'Skipping scraper'.
+
+    - When well-formed check is performed, the scraper reports the following
+      combinations of mimetypes and versions as supported:
+        - video/mpeg, '1' or None
+        - video/mp4, '' or None
+        - video/MP1S, '' or None
+        - video/MP2P, '' or None
+        - video/MP2T, '' or None
+    - When well-formedness is not checked, the scraper reports valid
+      combinations as not supported.
+    - A made up version with supported MIME type is reported as supported.
+    - A made up MIME type with supported version is reported as not supported.
 """
 import pytest
 from file_scraper.scrapers.ffmpeg import FFMpegWellformed
