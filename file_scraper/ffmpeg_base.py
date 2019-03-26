@@ -7,8 +7,8 @@ try:
 except ImportError:
     pass
 
-from file_scraper.base import BaseScraper, SkipElement
-from file_scraper.utils import iso8601_duration, strip_zeros
+from file_scraper.base import BaseScraper, SkipElementException
+from file_scraper.utils import iso8601_duration, strip_zeros, metadata
 
 
 class FFMpeg(BaseScraper):
@@ -25,7 +25,7 @@ class FFMpeg(BaseScraper):
         :params: Extra parameters needed for the scraper
         """
         self._ffmpeg_stream = None  # Current ffprobe stream
-        self._ffmpeg = None         # All ffprobe streams
+        self._ffmpeg = None  # All ffprobe streams
         super(FFMpeg, self).__init__(filename, mimetype, check_wellformed,
                                      params)
 
@@ -97,10 +97,12 @@ class FFMpeg(BaseScraper):
             return True
         return False
 
+    @metadata()
     def _s_version(self):
         """Return version of stream."""
         return None
 
+    @metadata()
     def _s_codec_quality(self):
         """
         Return codec quality.
@@ -109,9 +111,10 @@ class FFMpeg(BaseScraper):
         are allowed.
         """
         if self._s_stream_type() not in ['video', 'audio']:
-            return SkipElement
+            raise SkipElementException()
         return None
 
+    @metadata()
     def _s_data_rate_mode(self):
         """
         Return data rate mode.
@@ -120,17 +123,19 @@ class FFMpeg(BaseScraper):
         are allowed.
         """
         if self._s_stream_type() not in ['video', 'audio']:
-            return SkipElement
+            raise SkipElementException()
         return None
 
+    @metadata()
     def _s_signal_format(self):
         """Return signal format."""
         if self._s_stream_type() not in ['video']:
-            return SkipElement
+            raise SkipElementException()
         if self._ffmpeg is None:
             return None
         return '(:unav)'
 
+    @metadata()
     def _s_stream_type(self):
         """Return stream type."""
         if self._ffmpeg is None:
@@ -142,6 +147,7 @@ class FFMpeg(BaseScraper):
             return 'videocontainer'
         return self._ffmpeg_stream['codec_type']
 
+    @metadata()
     def _s_index(self):
         """Return stream index."""
         if self._ffmpeg is None:
@@ -150,6 +156,7 @@ class FFMpeg(BaseScraper):
             return 0
         return self._ffmpeg_stream['index']
 
+    @metadata()
     def _s_color(self):
         """
         Return color information.
@@ -158,7 +165,7 @@ class FFMpeg(BaseScraper):
         None.
         """
         if self._s_stream_type() not in ['video']:
-            return SkipElement
+            raise SkipElementException()
         if self._ffmpeg is None:
             return None
         if 'pix_fmt' in self._ffmpeg_stream:
@@ -169,30 +176,33 @@ class FFMpeg(BaseScraper):
             return 'Color'
         return None
 
+    @metadata()
     def _s_width(self):
         """Return frame width."""
         if self._s_stream_type() not in ['video']:
-            return SkipElement
+            raise SkipElementException()
         if self._ffmpeg is None:
             return None
         if 'width' in self._ffmpeg_stream:
             return str(self._ffmpeg_stream['width'])
         return '(:unav)'
 
+    @metadata()
     def _s_height(self):
         """Return frame height."""
         if self._s_stream_type() not in ['video']:
-            return SkipElement
+            raise SkipElementException()
         if self._ffmpeg is None:
             return None
         if 'height' in self._ffmpeg_stream:
             return str(self._ffmpeg_stream['height'])
         return '(:unav)'
 
+    @metadata()
     def _s_par(self):
         """Return pixel aspect ratio."""
         if self._s_stream_type() not in ['video']:
-            return SkipElement
+            raise SkipElementException()
         if self._ffmpeg is None:
             return None
         if 'sample_aspect_ratio' in self._ffmpeg_stream:
@@ -201,10 +211,11 @@ class FFMpeg(BaseScraper):
 
         return '(:unav)'
 
+    @metadata()
     def _s_dar(self):
         """Return display aspect ratio."""
         if self._s_stream_type() not in ['video']:
-            return SkipElement
+            raise SkipElementException()
         if self._ffmpeg is None:
             return None
         if 'display_aspect_ratio' in self._ffmpeg_stream:
@@ -213,10 +224,11 @@ class FFMpeg(BaseScraper):
                     ':', '/'))))
         return '(:unav)'
 
+    @metadata()
     def _s_data_rate(self):
         """Return data rate (bit rate)."""
         if self._s_stream_type() not in ['video', 'audio']:
-            return SkipElement
+            raise SkipElementException()
         if self._ffmpeg is None:
             return None
         if 'bit_rate' in self._ffmpeg_stream:
@@ -228,20 +240,22 @@ class FFMpeg(BaseScraper):
                     self._ffmpeg_stream['bit_rate'])/1000))
         return '(:unav)'
 
+    @metadata()
     def _s_frame_rate(self):
         """Return frame rate."""
         if self._s_stream_type() not in ['video']:
-            return SkipElement
+            raise SkipElementException()
         if self._ffmpeg is None:
             return None
         if 'r_frame_rate' in self._ffmpeg_stream:
             return self._ffmpeg_stream['r_frame_rate'].split('/')[0]
         return '(:unav)'
 
+    @metadata()
     def _s_sampling(self):
         """Return chroma subsampling method."""
         if self._s_stream_type() not in ['video']:
-            return SkipElement
+            raise SkipElementException()
         if self._ffmpeg is None:
             return None
         sampling = "(:unav)"
@@ -252,10 +266,11 @@ class FFMpeg(BaseScraper):
                     break
         return sampling
 
+    @metadata()
     def _s_sound(self):
         """Return 'Yes' if sound channels are present, otherwise 'No'."""
         if self._s_stream_type() not in ['video']:
-            return SkipElement
+            raise SkipElementException()
         if self._ffmpeg is None:
             return None
         for stream in self._ffmpeg["streams"]:
@@ -263,20 +278,22 @@ class FFMpeg(BaseScraper):
                 return 'Yes'
         return 'No'
 
+    @metadata()
     def _s_audio_data_encoding(self):
         """Return audio data encoding."""
         if self._s_stream_type() not in ['audio']:
-            return SkipElement
+            raise SkipElementException()
         if self._ffmpeg is None:
             return None
         if 'codec_long_name' in self._ffmpeg_stream:
             return self._ffmpeg_stream['codec_long_name'].split(' ')[0]
         return '(:unav)'
 
+    @metadata()
     def _s_sampling_frequency(self):
         """Return sampling frequency."""
         if self._s_stream_type() not in ['audio']:
-            return SkipElement
+            raise SkipElementException()
         if self._ffmpeg is None:
             return None
         if 'sample_rate' in self._ffmpeg_stream:
@@ -284,32 +301,33 @@ class FFMpeg(BaseScraper):
                 self._ffmpeg_stream['sample_rate'])/1000))
         return '(:unav)'
 
+    @metadata()
     def _s_num_channels(self):
         """Return number of channels."""
         if self._s_stream_type() not in ['audio']:
-            return SkipElement
+            raise SkipElementException()
         if self._ffmpeg is None:
             return None
         if 'channels' in self._ffmpeg_stream:
             return str(self._ffmpeg_stream['channels'])
         return '(:unav)'
 
+    @metadata()
     def _s_codec_creator_app(self):
-        """Return creator application."""
-        if self._s_stream_type() not in [
-                'audio', 'video', 'videocontainer']:
-            return SkipElement
+        """Returns creator application."""
+        if self._s_stream_type() not in ['audio', 'video', 'videocontainer']:
+            raise SkipElementException()
         if self._ffmpeg is None:
             return None
         if 'encoder' in self._ffmpeg['format']:
             return self._ffmpeg['format']['encoder']
         return '(:unav)'
 
+    @metadata()
     def _s_codec_creator_app_version(self):
-        """Return creator application version."""
-        if self._s_stream_type() not in [
-                'audio', 'video', 'videocontainer']:
-            return SkipElement
+        """Returns creator application version."""
+        if self._s_stream_type() not in ['audio', 'video', 'videocontainer']:
+            raise SkipElementException()
         if self._ffmpeg is None:
             return None
         if 'encoder' in self._ffmpeg['format']:
@@ -319,31 +337,33 @@ class FFMpeg(BaseScraper):
                 return reg.group(1)
         return '(:unav)'
 
+    @metadata()
     def _s_codec_name(self):
-        """Return codec name."""
-        if self._s_stream_type() not in [
-                'audio', 'video', 'videocontainer']:
-            return SkipElement
+        """Returns codec name."""
+        if self._s_stream_type() not in ['audio', 'video', 'videocontainer']:
+            raise SkipElementException()
         if self._ffmpeg is None:
             return None
         if 'codec_long_name' in self._ffmpeg_stream:
             return self._ffmpeg_stream['codec_long_name']
         return '(:unav)'
 
+    @metadata()
     def _s_duration(self):
         """Return duration."""
         if self._s_stream_type() not in ['audio', 'video']:
-            return SkipElement
+            raise SkipElementException()
         if self._ffmpeg is None:
             return None
         if 'duration' in self._ffmpeg_stream:
             return iso8601_duration(float(self._ffmpeg_stream['duration']))
         return '(:unav)'
 
+    @metadata()
     def _s_bits_per_sample(self):
         """Return bits per sample."""
         if self._s_stream_type() not in ['audio', 'video']:
-            return SkipElement
+            raise SkipElementException()
         if self._ffmpeg is None:
             return None
         if 'bits_per_raw_sample' in self._ffmpeg_stream is not None:

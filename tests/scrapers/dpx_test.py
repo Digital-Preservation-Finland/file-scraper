@@ -61,7 +61,7 @@ def test_scraper(filename, result_dict):
     scraper.scrape_file()
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
+    assert scraper._version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'Dpx'
     assert correct.stdout_part in scraper.messages()

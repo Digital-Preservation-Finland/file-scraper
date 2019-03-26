@@ -78,7 +78,7 @@ def test_scraper_valid_file(filename, mimetype):
     correct.streams[0]['version'] = None
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
+    assert scraper._version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'Office'
     assert scraper.messages()
@@ -122,7 +122,7 @@ def test_scraper_invalid_file(filename, mimetype):
     correct.streams[0]['version'] = None
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
+    assert scraper._version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'Office'
     assert correct.stdout_part in scraper.messages()
@@ -157,7 +157,7 @@ def test_parallel_validation(filename, mimetype):
                for _ in range(number)]
 
     for result in results:
-        assert result.get(timeout=3)
+        assert result.get(timeout=5)
 
 
 def test_no_wellformed():

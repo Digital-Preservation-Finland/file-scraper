@@ -1,10 +1,12 @@
-"""Metadata scraper for image file formats."""
+"""Metadata scraper for image file formats"""
+
 try:
     import wand.image
 except ImportError:
     pass
 
 from file_scraper.base import BaseScraper
+from file_scraper.utils import metadata
 
 
 class Wand(BaseScraper):
@@ -67,20 +69,24 @@ class Wand(BaseScraper):
         self._wand_stream = self._wand.sequence[index]
         self._wand_index = index
 
+    @metadata()
     def _s_version(self):
         """Return version of file format."""
         return None
 
+    @metadata()
     def _s_stream_type(self):
         """Return stream type."""
         return 'image'
 
+    @metadata()
     def _s_index(self):
         """Return stream index."""
         if self._wand_index is None:
             return 0
         return self._wand_index
 
+    @metadata()
     def _s_colorspace(self):
         """Return colorspace."""
         if self._wand_stream is not None and \
@@ -88,6 +94,7 @@ class Wand(BaseScraper):
             return self._wand_stream.colorspace
         return None
 
+    @metadata()
     def _s_width(self):
         """Return image width."""
         if self._wand_stream is not None and \
@@ -95,6 +102,7 @@ class Wand(BaseScraper):
             return str(self._wand_stream.width)
         return None
 
+    @metadata()
     def _s_height(self):
         """Return image height."""
         if self._wand_stream is not None and \
@@ -102,6 +110,7 @@ class Wand(BaseScraper):
             return str(self._wand_stream.height)
         return None
 
+    @metadata()
     def _s_bps_value(self):
         """Return bits per sample."""
         if self._wand_stream is not None and \
@@ -110,10 +119,12 @@ class Wand(BaseScraper):
         return None
 
     # pylint: disable=no-self-use
+    @metadata()
     def _s_bps_unit(self):
         """Return sample unit."""
         return None
 
+    @metadata()
     def _s_compression(self):
         """Return compression scheme."""
         if self._wand is not None and \
@@ -121,6 +132,7 @@ class Wand(BaseScraper):
             return self._wand.compression
         return None
 
+    @metadata()
     def _s_samples_per_pixel(self):
         """Return samples per pixel."""
         return None

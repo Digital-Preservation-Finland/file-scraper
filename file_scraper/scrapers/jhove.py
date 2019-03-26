@@ -1,4 +1,6 @@
 """Module for scraping files with Jhove scraper."""
+from file_scraper.utils import metadata
+
 try:
     import mimeparse
 except ImportError:
@@ -18,6 +20,7 @@ class GifJHove(JHove):
     _jhove_module = 'GIF-hul'       # JHove module
     _allow_versions = True          # Allow any version
 
+    @metadata()
     def _s_version(self):
         """
         Return version.
@@ -30,6 +33,7 @@ class GifJHove(JHove):
             return '19' + self.report_field("version")
         return None
 
+    @metadata()
     def _s_stream_type(self):
         """Return file type."""
         return 'image'
@@ -44,6 +48,7 @@ class HtmlJHove(JHove):
     _only_wellformed = True     # Only well-formed check
     _jhove_module = 'HTML-hul'  # JHove module
 
+    @metadata()
     def _s_version(self):
         """
         Return version.
@@ -78,6 +83,7 @@ class HtmlJHove(JHove):
         except IndexError:
             return None
 
+    @metadata()
     def _s_mimetype(self):
         """Return MIME type."""
         mime = super(HtmlJHove, self)._s_mimetype()
@@ -85,12 +91,14 @@ class HtmlJHove(JHove):
             return 'application/xhtml+xml'
         return mime
 
+    @metadata()
     def _s_charset(self):
         """Get the charset from HTML/XML files."""
         if "xml" in self.mimetype:
             return self._get_charset_xml()
         return self._get_charset_html()
 
+    @metadata()
     def _s_stream_type(self):
         """Return file type."""
         return 'text'
@@ -106,10 +114,12 @@ class JpegJHove(JHove):
     _jhove_module = 'JPEG-hul'       # JHove module
     _allow_versions = True           # Allow any version
 
+    @metadata()
     def _s_version(self):
         """Return version."""
         return None
 
+    @metadata()
     def _s_stream_type(self):
         """Return file type."""
         return 'image'
@@ -123,10 +133,12 @@ class TiffJHove(JHove):
     _jhove_module = 'TIFF-hul'            # JHove module
     _allow_versions = True                # Allow any version
 
+    @metadata()
     def _s_version(self):
         """Return version."""
         return '6.0'
 
+    @metadata()
     def _s_stream_type(self):
         """Return file type."""
         return 'image'
@@ -141,10 +153,12 @@ class PdfJHove(JHove):
     _only_wellformed = True    # Only well-formed check
     _jhove_module = 'PDF-hul'  # JHove module
 
+    @metadata()
     def _s_version(self):
         """Return version."""
         return self.report_field("version")
 
+    @metadata()
     def _s_stream_type(self):
         """Return file type."""
         return 'binary'
@@ -163,20 +177,24 @@ class Utf8JHove(JHove):
     _only_wellformed = True     # Only well-formed check
     _jhove_module = 'UTF8-hul'  # JHove module
 
+    @metadata()
     def _s_mimetype(self):
         """Return None as we are only iterested in charset."""
         return None
 
+    @metadata()
     def _s_version(self):
         """Return None as we are only iterested in charset."""
         return None
 
+    @metadata()
     def _s_charset(self):
         """Return charset from JHOVE."""
         if self.well_formed:
             return 'UTF-8'
         return self.report_field('format')
 
+    @metadata()
     def _s_stream_type(self):
         """Return file type."""
         return 'text'
@@ -194,6 +212,7 @@ class WavJHove(JHove):
     _jhove_module = 'WAVE-hul'                # Jhove module
     _allow_versions = True                    # Allow any version
 
+    @metadata()
     def _s_mimetype(self):
         """
         Return mimetype.
@@ -208,6 +227,7 @@ class WavJHove(JHove):
 
         return super(WavJHove, self)._s_mimetype()
 
+    @metadata()
     def _s_version(self):
         """
         Return version.
@@ -224,6 +244,7 @@ class WavJHove(JHove):
 
         return None
 
+    @metadata()
     def _s_stream_type(self):
         """Return file type."""
         return 'audio'

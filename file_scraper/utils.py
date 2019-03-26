@@ -1,11 +1,11 @@
 """Utilities for scrapers."""
 import sys
 import os
-import subprocess
 import unicodedata
 import string
+import subprocess
 import hashlib
-from six import iteritems, ensure_str
+import six
 
 
 def encode(filename):
@@ -137,7 +137,7 @@ def combine_metadata(stream, metadata, lose=None, important=None):
     important = {} if important is None else important
     lose = [] if lose is None else lose
 
-    for stream_index, metadata_dict in iteritems(metadata):
+    for stream_index, metadata_dict in six.iteritems(metadata):
 
         if stream_index not in stream.keys():
             stream[stream_index] = metadata_dict
@@ -159,7 +159,7 @@ def combine_metadata(stream, metadata, lose=None, important=None):
                     "value '%s'." % (incomplete_stream[key],
                                      metadata_dict[key]))
 
-        for key, value in iteritems(metadata_dict):
+        for key, value in six.iteritems(metadata_dict):
             if key not in incomplete_stream:
                 incomplete_stream[key] = value
 
@@ -179,7 +179,7 @@ def run_command(cmd, stdout=subprocess.PIPE, env=None):
     _env = os.environ.copy()
 
     if env:
-        for key, value in iteritems(env):
+        for key, value in six.iteritems(env):
             _env[key] = value
 
     proc = subprocess.Popen(cmd,
@@ -195,3 +195,53 @@ def run_command(cmd, stdout=subprocess.PIPE, env=None):
         stderr_result = ""
     statuscode = proc.returncode
     return statuscode, stdout_result, stderr_result
+
+
+def metadata(important=False):
+    """Decorator to help set a flag attribute to the function that it
+    can be collected for metadata.
+    :param important: Whether or not this metadata is important and should
+        have priority when duplicate metadata key is discovered.
+    """
+
+    def _wrapper(func):
+        if callable(func):
+            func.important = important
+            func.metadata = True
+        return func
+
+    return _wrapper
+
+
+def is_metadata(func):
+    """To help let scraper know the given function has metadata flagged."""
+    return callable(func) and getattr(func, 'metadata', False)
+
+
+def is_important(func):
+    """To help let scraper know the given function is flagged important."""
+    return callable(func) and getattr(func, 'important', False)
+
+
+def ensure_str(s, encoding='utf-8', errors='strict'):
+    """Coerce *s* to `str`.
+
+    For Python 2:
+      - `unicode` -> encoded to `str`
+      - `str` -> `str`
+
+    For Python 3:
+      - `str` -> `str`
+      - `bytes` -> decoded to `str`
+
+    Direct copy from release 1.12::
+
+        https://github.com/benjaminp/six/blob/master/six.py#L892
+    """
+    if not isinstance(s, (six.text_type, six.binary_type)):
+        raise TypeError("not expecting type '%s'" % type(s))
+    if six.PY2 and isinstance(s, six.text_type):
+        s = s.encode(encoding, errors)
+    elif six.PY3 and isinstance(s, six.binary_type):
+        s = s.decode(encoding, errors)
+    return s

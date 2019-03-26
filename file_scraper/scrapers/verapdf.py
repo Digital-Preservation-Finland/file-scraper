@@ -1,11 +1,12 @@
 """PDF/A scraper."""
+from file_scraper.utils import metadata
+
 try:
     import lxml.etree as ET
 except ImportError:
     pass
 
 from file_scraper.base import BaseScraper, Shell
-
 
 VERAPDF_PATH = '/usr/share/java/verapdf/verapdf'
 
@@ -45,7 +46,7 @@ class VeraPdf(BaseScraper):
                     self.errors(shell.stdout)
                 profile = \
                     report.xpath('//validationReport')[0].get('profileName')
-                self.version = 'A' + profile.split("PDF/A")[1].split(
+                self._version = 'A' + profile.split("PDF/A")[1].split(
                     " validation profile")[0].lower()
             else:
                 self.errors(shell.stdout)
@@ -55,6 +56,7 @@ class VeraPdf(BaseScraper):
             self._check_supported()
             self._collect_elements()
 
+    @metadata(important=True)
     def _s_version(self):
         """
         If the file is well-formed, return version, otherwise return None.
@@ -63,9 +65,10 @@ class VeraPdf(BaseScraper):
         determine the version.
         """
         if self.well_formed:
-            return self.version
+            return self.version()
         return None
 
+    @metadata()
     def get_important(self):
         """Return important values."""
         if not self.well_formed:
@@ -77,6 +80,15 @@ class VeraPdf(BaseScraper):
     def _s_stream_type(self):
         """Return file type."""
         return 'binary'
+
+    def importants(self):
+        """Important metadata that should have priority when combining metadata.
+        Additional logic added that the important data has to be well_formed.
+        :return: Dictionary of metadata and their values.
+        """
+        if not self.well_formed:
+            return {}
+        return self._importants
 
 
 class VeraPDFError(Exception):

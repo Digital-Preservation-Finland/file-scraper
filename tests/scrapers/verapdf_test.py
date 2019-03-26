@@ -30,7 +30,6 @@ import pytest
 from tests.common import parse_results
 from file_scraper.scrapers.verapdf import VeraPdf
 
-
 MIMETYPE = 'application/pdf'
 
 
@@ -67,7 +66,7 @@ def test_scraper(filename, result_dict):
             correct.streams[0]['version'] = None
 
         assert scraper.mimetype == correct.mimetype
-        assert scraper.version == correct.version
+        assert scraper._version == correct.version
         assert scraper.streams == correct.streams
         assert scraper.info['class'] == 'VeraPdf'
         assert correct.stdout_part in scraper.messages()
@@ -102,7 +101,7 @@ def test_scraper_invalid_pdfa(filename, result_dict):
     correct.streams[0]['version'] = None
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
+    assert scraper._version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'VeraPdf'
     assert correct.stdout_part in scraper.messages()
@@ -128,16 +127,3 @@ def test_is_supported():
     assert not VeraPdf.is_supported(mime, ver, False)
     assert not VeraPdf.is_supported(mime, 'foo', True)
     assert not VeraPdf.is_supported('foo', ver, True)
-
-
-@pytest.mark.parametrize(
-    'version', ['A-1a', 'A-1b', 'A-2a', 'A-2b', 'A-2u', 'A-3a', 'A-3b', 'A-3u']
-)
-def test_important(version):
-    """Test important with cruical versions."""
-    scraper = VeraPdf('testfilename', 'application/pdf')
-    scraper.version = version
-    scraper.messages('Success')
-    assert scraper.get_important() == {'version': version}
-    scraper.errors('Error')
-    assert scraper.get_important() == {}

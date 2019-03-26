@@ -2,6 +2,7 @@
 import csv
 
 from file_scraper.base import BaseScraper
+from file_scraper.utils import metadata
 
 
 class Csv(BaseScraper):
@@ -78,22 +79,27 @@ class Csv(BaseScraper):
             self._check_supported()
             self._collect_elements()
 
+    @metadata()
     def _s_version(self):
         """Return version."""
         return ''
 
+    @metadata()
     def _s_delimiter(self):
         """Return delimiter."""
         return self._csv_delimiter
 
+    @metadata()
     def _s_separator(self):
         """Return separator."""
         return self._csv_separator
 
+    @metadata()
     def _s_first_line(self):
         """Return first line."""
         return self._csv_first_line
 
+    @metadata()
     def _s_stream_type(self):
         """Return file type."""
         return 'text'

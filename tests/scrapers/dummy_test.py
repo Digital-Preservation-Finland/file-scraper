@@ -50,7 +50,7 @@ def test_existing_files(filepath, mimetype):
     assert not scraper.errors()
     assert "was found" in scraper.messages()
     assert scraper.mimetype == mimetype
-    assert scraper.version is None
+    assert scraper._version is None
     assert scraper.streams == streams
     assert scraper.info['class'] == 'FileExists'
 
@@ -99,6 +99,6 @@ def test_scraper_not_found(filepath, mimetype):
 
     assert scraper.well_formed is None
     assert scraper.mimetype == mimetype
-    assert scraper.version is None
+    assert scraper._version is None
     assert scraper.streams == streams
     assert scraper.info['class'] == 'ScraperNotFound'

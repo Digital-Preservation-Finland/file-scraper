@@ -1,6 +1,7 @@
 """Metadata scraper for AV files."""
 from file_scraper.mediainfo_base import Mediainfo
-from file_scraper.base import SkipElement
+from file_scraper.base import SkipElementException
+from file_scraper.utils import metadata
 
 
 class WavMediainfo(Mediainfo):
@@ -9,6 +10,7 @@ class WavMediainfo(Mediainfo):
     _supported = {'audio/x-wav': ['2', '']}
     _allow_versions = True  # Allow any version
 
+    @metadata()
     def _s_version(self):
         """Return version."""
         if self._mediainfo is None:
@@ -20,11 +22,12 @@ class WavMediainfo(Mediainfo):
             return '2'
         return ''
 
+    @metadata()
     def _s_codec_quality(self):
         """Return codec quality."""
         if self._s_stream_type() == 'audio':
             return 'lossless'
-        return SkipElement
+        raise SkipElementException()
 
 
 class MpegMediainfo(Mediainfo):
@@ -38,34 +41,38 @@ class MpegMediainfo(Mediainfo):
     _allow_versions = True  # Allow any version
     _containers = ['MPEG-TS', 'MPEG-PS', 'MPEG-4']
 
+    @metadata()
     def _s_signal_format(self):
         """Return signal format."""
         if self._s_stream_type() not in ['video']:
-            return SkipElement
+            raise SkipElementException()
         if self._mediainfo is None:
             return None
         return '(:unap)'
 
+    @metadata()
     def _s_codec_quality(self):
         """Return codec quality."""
         if self._s_stream_type() not in ['video', 'audio']:
-            return SkipElement
+            raise SkipElementException()
         if self._mediainfo is None:
             return None
         if self._mediainfo_stream.compression_mode is not None:
             return self._mediainfo_stream.compression_mode.lower()
         return 'lossy'
 
+    @metadata()
     def _s_data_rate_mode(self):
         """Return data rate mode. Must be resolved."""
         if self._s_stream_type() not in ['video', 'audio']:
-            return SkipElement
+            raise SkipElementException()
         if self._mediainfo is None:
             return None
         if self._mediainfo_stream.bit_rate_mode == 'CBR':
             return 'Fixed'
         return 'Variable'
 
+    @metadata()
     def _s_mimetype(self):
         """Return mimetype for stream."""
         if self._mediainfo is None:
@@ -75,11 +82,14 @@ class MpegMediainfo(Mediainfo):
                      'MPEG-4': 'video/mp4',
                      'MPEG Video': 'video/mpeg',
                      'MPEG Audio': 'audio/mpeg'}
-        if self._s_codec_name() in mime_dict:
-            return mime_dict[self._s_codec_name()]
 
+        try:
+            return mime_dict[self._s_codec_name()]
+        except (SkipElementException, KeyError):
+            pass
         return self.mimetype
 
+    @metadata()
     def _s_version(self):
         """Return version of stream."""
         if self._mediainfo is None:

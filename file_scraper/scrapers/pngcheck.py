@@ -1,6 +1,7 @@
 """Module for pngcheck scraper."""
 
 from file_scraper.base import BaseScraper, Shell
+from file_scraper.utils import metadata
 
 
 class Pngcheck(BaseScraper):
@@ -30,6 +31,7 @@ class Pngcheck(BaseScraper):
         self._check_supported()
         self._collect_elements()
 
+    @metadata()
     def _s_stream_type(self):
         """Return file type."""
 

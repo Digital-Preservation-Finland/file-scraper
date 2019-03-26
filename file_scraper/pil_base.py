@@ -5,6 +5,7 @@ except ImportError:
     pass
 
 from file_scraper.base import BaseScraper
+from file_scraper.utils import metadata
 
 SAMPLES_PER_PIXEL = {'1': '1', 'L': '1', 'P': '1', 'RGB': '3', 'YCbCr': '3',
                      'LAB': '3', 'HSV': '3', 'RGBA': '4', 'CMYK': '4',
@@ -79,14 +80,17 @@ class Pil(BaseScraper):
             self._pil.seek(index)
             self._pil_index = index
 
+    @metadata()
     def _s_version(self):
         """Return version of file."""
         return None
 
+    @metadata()
     def _s_stream_type(self):
         """Return stream type."""
         return 'image'
 
+    @metadata()
     def _s_index(self):
         """Return stream index."""
         if self._pil_index is None:
@@ -94,10 +98,12 @@ class Pil(BaseScraper):
         return self._pil_index
 
     # pylint: disable=no-self-use
+    @metadata()
     def _s_colorspace(self):
         """Return colorspace."""
         return None
 
+    @metadata()
     def _s_width(self):
         """Return image width."""
         if self._pil is not None and \
@@ -105,6 +111,7 @@ class Pil(BaseScraper):
             return str(self._pil.width)
         return None
 
+    @metadata()
     def _s_height(self):
         """Return image height."""
         if self._pil is not None and \
@@ -112,10 +119,12 @@ class Pil(BaseScraper):
             return str(self._pil.height)
         return None
 
+    @metadata()
     def _s_bps_value(self):
         """Return bits per sample."""
         return None
 
+    @metadata()
     def _s_bps_unit(self):
         """Return sample unit."""
         if self._pil is None:
@@ -125,10 +134,12 @@ class Pil(BaseScraper):
 
         return 'integer'
 
+    @metadata()
     def _s_compression(self):
         """Return compression scheme."""
         return None
 
+    @metadata()
     def _s_samples_per_pixel(self):
         """Return samples per pixel."""
         if self._pil is None:

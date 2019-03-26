@@ -1,6 +1,9 @@
 """Module for checking files with Jhove scraper."""
 import os
 import abc
+
+from file_scraper.utils import metadata, ensure_str
+
 try:
     import lxml.etree
 except ImportError:
@@ -19,7 +22,7 @@ class JHove(BaseScraper):
     """Base class for Jhove file format scraper."""
 
     __metaclass__ = abc.ABCMeta
-    _jhove_module = None         # JHove module
+    _jhove_module = None  # JHove module
 
     def __init__(self, filename, mimetype, check_wellformed=True, params=None):
         """
@@ -32,7 +35,7 @@ class JHove(BaseScraper):
         :params: Extra parameters needed for the scraper
         """
         self._report = None  # JHove report
-        self._shell = None   # Shell object
+        self._shell = None  # Shell object
         super(JHove, self).__init__(filename, mimetype, check_wellformed,
                                     params)
 
@@ -59,19 +62,24 @@ class JHove(BaseScraper):
         self.messages(status)
         if 'Well-Formed and valid' not in status:
             self.errors("Validator returned error: %s\n%s" % (
-                self._shell.stdout, self._shell.stderr))
+                ensure_str(self._shell.stdout),
+                ensure_str(self._shell.stderr)
+            ))
         self._check_supported()
         self._collect_elements()
 
+    @metadata()
     def _s_mimetype(self):
         """Return mimetype given by JHove."""
         return self.report_field('mimeType')
 
+    @metadata()
     def _s_version(self):
         """Return version given by JHove."""
         return self.report_field("version")
 
     @abc.abstractmethod
+    @metadata()
     def _s_stream_type(self):
         """Implement in the file format specific classes."""
         pass

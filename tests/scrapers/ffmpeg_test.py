@@ -106,7 +106,7 @@ def test_ffmpeg_scraper_mpeg(filename, result_dict):
     correct.streams[0]['stream_type'] = None
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
+    assert scraper._version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'FFMpegWellformed'
     assert correct.stdout_part in scraper.messages()
@@ -142,7 +142,7 @@ def test_ffmpeg_scraper_mp4(filename, result_dict):
 
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
+    assert scraper._version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'FFMpegWellformed'
     assert correct.stdout_part in scraper.messages()
@@ -181,7 +181,7 @@ def test_ffmpeg_scraper_mp3(filename, result_dict):
     correct.streams[0]['stream_type'] = None
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
+    assert scraper._version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'FFMpegWellformed'
     assert correct.stdout_part in scraper.messages()
@@ -216,7 +216,7 @@ def test_ffmpeg_scraper_mpegts(filename, result_dict):
     correct.streams[0]['stream_type'] = None
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
+    assert scraper._version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'FFMpegWellformed'
     assert correct.stdout_part in scraper.messages()

@@ -5,7 +5,7 @@ import shutil
 import tempfile
 from io import open
 from file_scraper.base import BaseScraper, Shell
-
+from file_scraper.utils import metadata
 
 PSPP_PATH = '/usr/bin/pspp-convert'
 SPSS_PORTABLE_HEADER = b"SPSS PORT FILE"
@@ -53,10 +53,12 @@ class Pspp(BaseScraper):
             self._check_supported()
             self._collect_elements()
 
+    @metadata()
     def _s_version(self):
         """Return version."""
         return ''
 
+    @metadata()
     def _s_stream_type(self):
         """Return file type."""
         return 'binary'

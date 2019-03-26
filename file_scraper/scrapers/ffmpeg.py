@@ -1,5 +1,6 @@
 """FFMpeg wellformed scraper."""
 from file_scraper.base import BaseScraper, Shell
+from file_scraper.utils import metadata
 
 
 class FFMpegWellformed(BaseScraper):
@@ -30,10 +31,12 @@ class FFMpegWellformed(BaseScraper):
         self._check_supported()
         self._collect_elements()
 
+    @metadata()
     def _s_version(self):
         """Return version."""
         return None
 
+    @metadata()
     def _s_stream_type(self):
         """Return file type."""
         return None

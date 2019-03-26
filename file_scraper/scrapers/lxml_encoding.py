@@ -1,4 +1,6 @@
 """Class for XML and HTML5 header encoding check with lxml. """
+from file_scraper.utils import metadata
+
 try:
     from lxml import etree
 except ImportError:
@@ -66,10 +68,12 @@ class XmlEncoding(BaseScraper):
         self._check_supported()
         self._collect_elements()
 
+    @metadata()
     def _s_charset(self):
         """Return charset."""
         return self._charset
 
+    @metadata()
     def _s_stream_type(self):
         """Return file type."""
         return 'text'

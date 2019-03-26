@@ -5,6 +5,7 @@ import ctypes
 
 try:
     from file_scraper.defaults import MAGIC_LIBRARY
+
     ctypes.cdll.LoadLibrary(MAGIC_LIBRARY)
 except OSError:
     print('%s not found, MS Office detection may not work properly if '
@@ -17,14 +18,14 @@ except ImportError:
 
 from file_scraper.base import BaseScraper
 from file_scraper.defaults import MIMETYPE_DICT
-from file_scraper.utils import encode
+from file_scraper.utils import encode, metadata
 
 
 class BinaryMagic(BaseScraper):
     """Scraper for binary files."""
 
     _starttag = "version "  # Text before file format version in magic result.
-    _endtag = None          # Text after file format version in magic result.
+    _endtag = None  # Text after file format version in magic result.
 
     def __init__(self, filename, mimetype, check_wellformed=True, params=None):
         """
@@ -37,7 +38,7 @@ class BinaryMagic(BaseScraper):
         :params: Extra parameters needed for the scraper
         """
         self._magic_mimetype = None  # Mimetype from magic
-        self._magic_version = None   # Version from magic
+        self._magic_version = None  # Version from magic
         super(BinaryMagic, self).__init__(filename, mimetype,
                                           check_wellformed, params)
 
@@ -88,16 +89,19 @@ class BinaryMagic(BaseScraper):
             return super(BinaryMagic, self).well_formed
         return False
 
+    @metadata()
     def _s_mimetype(self):
         """Return mimetype."""
         return self._magic_mimetype
 
+    @metadata()
     def _s_version(self):
         """Return version."""
         if self._magic_version == 'data':
             return None
         return self._magic_version
 
+    @metadata()
     def _s_stream_type(self):
         """Return file type."""
         return 'binary'
@@ -107,7 +111,7 @@ class TextMagic(BaseScraper):
     """Scraper for text files."""
 
     _starttag = "version "  # Text before file format version in magic result.
-    _endtag = None          # Text after file format version in magic result.
+    _endtag = None  # Text after file format version in magic result.
 
     def __init__(self, filename, mimetype, check_wellformed=True, params=None):
         """
@@ -120,8 +124,8 @@ class TextMagic(BaseScraper):
         :params: Extra parameters needed for the scraper
         """
         self._magic_mimetype = None  # Mimetype from magic
-        self._magic_version = None   # Version from magic
-        self._magic_charset = None   # Charset from magic
+        self._magic_version = None  # Version from magic
+        self._magic_charset = None  # Charset from magic
         super(TextMagic, self).__init__(filename, mimetype, check_wellformed,
                                         params)
 
@@ -176,16 +180,19 @@ class TextMagic(BaseScraper):
             return super(TextMagic, self).well_formed
         return False
 
+    @metadata()
     def _s_mimetype(self):
         """Return charset."""
         return self._magic_mimetype
 
+    @metadata()
     def _s_version(self):
         """Return version."""
         if self._magic_version == 'data':
             return None
         return self._magic_version
 
+    @metadata()
     def _s_charset(self):
         """Return charset."""
         if self._magic_charset is None:
@@ -202,6 +209,7 @@ class TextMagic(BaseScraper):
 
         return self._magic_charset.upper()
 
+    @metadata()
     def _s_stream_type(self):
         """Return file type."""
         return 'text'

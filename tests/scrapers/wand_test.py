@@ -147,7 +147,7 @@ def test_scraper_tif(filename, result_dict):
     scraper.scrape_file()
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
+    assert scraper._version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'TiffWand'
     assert correct.stdout_part in scraper.messages()
@@ -193,7 +193,7 @@ def test_scraper_jpg(filename, result_dict):
     scraper.scrape_file()
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
+    assert scraper._version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'ImageWand'
     assert correct.stdout_part in scraper.messages()
@@ -235,7 +235,7 @@ def test_scraper_jp2(filename, result_dict):
     scraper.scrape_file()
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
+    assert scraper._version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'ImageWand'
     assert correct.stdout_part in scraper.messages()
@@ -291,7 +291,7 @@ def test_scraper_png(filename, result_dict):
     scraper.scrape_file()
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
+    assert scraper._version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'ImageWand'
     assert correct.stdout_part in scraper.messages()
@@ -355,7 +355,7 @@ def test_scraper_gif(filename, result_dict):
     scraper.scrape_file()
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
+    assert scraper._version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'ImageWand'
     assert correct.stdout_part in scraper.messages()

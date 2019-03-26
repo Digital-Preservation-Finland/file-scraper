@@ -5,6 +5,7 @@ import ctypes
 
 try:
     from file_scraper.defaults import MAGIC_LIBRARY
+
     ctypes.cdll.LoadLibrary(MAGIC_LIBRARY)
 except OSError:
     print('%s not found, MS Office detection may not work properly if '
@@ -120,10 +121,7 @@ class FidoDetector(BaseDetector):
         :returns: Mime type
         """
         important = {}
-        if self.mimetype not in [
-            None,
-            'text/html',
-            'application/zip']:
+        if self.mimetype not in [None, 'text/html', 'application/zip']:
             important['mimetype'] = self.mimetype
         return important
 
@@ -152,8 +150,7 @@ class MagicDetector(BaseDetector):
         :returns: Mime type
         """
         important = {}
-        if self.mimetype in [
-            'application/x-internet-archive',
-            'application/vnd.oasis.opendocument.formula']:
+        if self.mimetype in ['application/x-internet-archive',
+                             'application/vnd.oasis.opendocument.formula']:
             important['mimetype'] = self.mimetype
         return important

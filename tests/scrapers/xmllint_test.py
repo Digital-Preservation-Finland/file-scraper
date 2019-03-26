@@ -75,7 +75,7 @@ def test_scraper_valid(filename, result_dict, params):
     scraper.scrape_file()
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
+    assert scraper._version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'Xmllint'
     assert correct.stdout_part in scraper.messages()
@@ -134,7 +134,7 @@ def test_scraper_invalid(filename, result_dict, params):
         correct.streams[0]['version'] = None
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
+    assert scraper._version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'Xmllint'
     assert correct.stdout_part in scraper.messages()

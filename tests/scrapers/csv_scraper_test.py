@@ -137,7 +137,7 @@ def test_scraper(testpath, csv_text, result_dict, prefix, header):
     scraper.scrape_file()
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
+    assert scraper._version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'Csv'
     assert correct.stdout_part in scraper.messages()
@@ -165,7 +165,7 @@ def test_no_parameters(testpath):
     scraper.scrape_file()
 
     assert scraper.mimetype == MIMETYPE
-    assert scraper.version == ''
+    assert scraper._version == ''
     assert 'successfully' in scraper.messages()
     assert scraper.well_formed
 

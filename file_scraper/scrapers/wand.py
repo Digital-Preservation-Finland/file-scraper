@@ -1,4 +1,5 @@
 """Metadata scraper for image file formats."""
+from file_scraper.utils import metadata
 from file_scraper.wand_base import Wand
 
 
@@ -8,6 +9,7 @@ class TiffWand(Wand):
     _supported = {'image/tiff': ['6.0']}  # Supported mimetype
     _allow_versions = True                 # Allow any version
 
+    @metadata()
     def _s_byte_order(self):
         """Return byte order."""
         if self._wand is None:
@@ -16,7 +18,7 @@ class TiffWand(Wand):
             if key.startswith('tiff:endian'):
                 if value == 'msb':
                     return 'big endian'
-                elif value == 'lsb':
+                if value == 'lsb':
                     return 'little endian'
         return None
 

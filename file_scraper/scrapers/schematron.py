@@ -3,7 +3,7 @@ import os
 import shutil
 import tempfile
 import lxml.etree as etree
-from file_scraper.utils import hexdigest
+from file_scraper.utils import hexdigest, metadata, ensure_str
 from file_scraper.base import BaseScraper, Shell
 
 
@@ -97,6 +97,7 @@ class Schematron(BaseScraper):
         self._check_supported()
         self._collect_elements()
 
+    @metadata()
     def _s_stream_type(self):
         """Return file type."""
         return 'text'
@@ -151,7 +152,8 @@ class Schematron(BaseScraper):
         if shell.returncode not in allowed_codes:
             raise SchematronValidatorError(
                 "Error %s\nstdout:\n%s\nstderr:\n%s" % (
-                    shell.returncode, shell.stdout, shell.stderr))
+                    shell.returncode, ensure_str(shell.stdout),
+                    ensure_str(shell.stderr)))
         return shell
 
     def _compile_schematron(self):
@@ -187,7 +189,7 @@ class Schematron(BaseScraper):
                 stylesheet='iso_svrl_for_xslt1.xsl',
                 inputfile=os.path.join(tempdir, 'step3.xsl'),
                 outputfile=os.path.join(tempdir, 'validator.xsl'),
-                outputfilter=not(self._verbose),
+                outputfilter=not (self._verbose),
                 allowed_codes=[0])
 
             shutil.move(os.path.join(tempdir, 'validator.xsl'),

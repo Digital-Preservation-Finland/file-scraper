@@ -1,6 +1,7 @@
 """Dummy scrapers."""
 import os.path
 from file_scraper.base import BaseScraper
+from file_scraper.utils import metadata
 
 
 class ScraperNotFound(BaseScraper):
@@ -12,6 +13,7 @@ class ScraperNotFound(BaseScraper):
         self.messages('Proper scraper was not found. '
                       'The file was not analyzed.')
 
+    @metadata()
     def _s_stream_type(self):
         """Stram type is not known so return None."""
         return None
@@ -46,6 +48,7 @@ class FileExists(BaseScraper):
             return False
         return None
 
+    @metadata()
     def _s_stream_type(self):
         """Stream type is not known so return None."""
         return None

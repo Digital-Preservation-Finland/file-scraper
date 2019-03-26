@@ -2,6 +2,7 @@
 import tempfile
 import shutil
 from file_scraper.base import BaseScraper, Shell
+from file_scraper.utils import metadata
 
 
 class Office(BaseScraper):
@@ -49,6 +50,7 @@ class Office(BaseScraper):
             self._check_supported()
             self._collect_elements()
 
+    @metadata()
     def _s_stream_type(self):
         """Return file type."""
         return 'binary'

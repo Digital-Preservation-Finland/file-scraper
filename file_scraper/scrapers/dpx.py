@@ -1,5 +1,6 @@
 """DPX V2.0 scraper."""
 from file_scraper.base import BaseScraper, Shell
+from file_scraper.utils import metadata
 
 
 class Dpx(BaseScraper):
@@ -24,10 +25,12 @@ class Dpx(BaseScraper):
         self._check_supported()
         self._collect_elements()
 
+    @metadata()
     def _s_version(self):
         """Return version."""
         return '2.0'
 
+    @metadata()
     def _s_stream_type(self):
         """Return file type."""
         return 'image'

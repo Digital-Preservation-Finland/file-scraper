@@ -1,5 +1,6 @@
 """Metadata scraper for image file formats."""
 from file_scraper.pil_base import Pil
+from file_scraper.utils import metadata
 
 
 class TiffPil(Pil):
@@ -8,18 +9,22 @@ class TiffPil(Pil):
     _supported = {'image/tiff': ['6.0']}  # Supported mimetype
     _allow_versions = True                # Allow any version
 
+    @metadata()
     def _s_width(self):
         """We will get width from another scraper."""
         return None
 
+    @metadata()
     def _s_height(self):
         """We will get height from another scraper."""
         return None
 
+    @metadata()
     def _s_colorspace(self):
         """We will get colorspace from another scraper."""
         return None
 
+    @metadata()
     def _s_samples_per_pixel(self):
         """Return samples per pixel."""
         if self._pil is None:
@@ -39,14 +44,17 @@ class ImagePil(Pil):
                   'image/gif': ['1987a', '1989a']}
     _allow_versions = True  # Allow any version
 
+    @metadata()
     def _s_width(self):
         """Return None: we will get width from another scraper."""
         return None
 
+    @metadata()
     def _s_height(self):
         """Return None: we will get height from another scraper."""
         return None
 
+    @metadata()
     def _s_colorspace(self):
         """Return None: we will get colorspace from another scraper."""
         return None
@@ -59,18 +67,22 @@ class JpegPil(Pil):
                                  '2.2', '2.2.1']}  # Supported mimetypes
     _allow_versions = True  # Allow any version
 
+    @metadata()
     def _s_width(self):
         """Return none: we will get width from another scraper."""
         return None
 
+    @metadata()
     def _s_height(self):
         """Return None: We will get height from another scraper."""
         return None
 
+    @metadata()
     def _s_colorspace(self):
         """Return None: We will get colorspace from another scraper."""
         return None
 
+    @metadata()
     def _s_samples_per_pixel(self):
         """Return samples per pixel."""
         if self._pil is None:

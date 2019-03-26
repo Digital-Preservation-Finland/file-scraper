@@ -49,7 +49,7 @@ def test_scraper(filename, result_dict):
     correct.streams[0]['version'] = None
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper.version is None
+    assert scraper._version is None
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'Pngcheck'
     if correct.well_formed:

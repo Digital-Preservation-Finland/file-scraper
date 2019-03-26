@@ -1,8 +1,8 @@
 """Base module for scrapers."""
 import abc
 import subprocess
-from six import ensure_str
-from file_scraper.utils import (run_command, combine_metadata)
+from file_scraper.utils import (run_command, combine_metadata, ensure_str,
+                                metadata, is_metadata, is_important)
 
 
 class Shell(object):
@@ -75,10 +75,11 @@ class BaseScraper(object):
 
     __metaclass__ = abc.ABCMeta
 
-    _supported = {}           # Dictionary of supported mimetypes and versions
-    _allow_versions = False   # True: Allow other detected versions
+    _supported = {}  # Dictionary of supported mimetypes and versions
+    _allow_versions = False  # True: Allow other detected versions
     _only_wellformed = False  # True if the scraper does just well-formed
-                              # check, False otherwise  # noqa:E116,E114
+
+    # check, False otherwise  # noqa:E116,E114
 
     def __init__(self, filename, mimetype, check_wellformed=True, params=None):
         """
@@ -92,15 +93,16 @@ class BaseScraper(object):
         """
         if params is None:
             params = {}
-        self.filename = filename       # File name
-        self.mimetype = mimetype       # Resulted mime type
-        self._version = None           # Resulted file format version
-        self.streams = {}              # Resulted streams
-        self.info = None               # Class name, messages, errors
-        self._messages = []            # Diagnostic messages in scraping
-        self._errors = []              # Errors in scraping
+        self.filename = filename  # File name
+        self.mimetype = mimetype  # Resulted mime type
+        self._version = None  # Resulted file format version
+        self.streams = {}  # Resulted streams
+        self.info = None  # Class name, messages, errors
+        self._importants = {}  # Important metadata and their values
+        self._messages = []  # Diagnostic messages in scraping
+        self._errors = []  # Errors in scraping
         self._check_wellformed = check_wellformed  # True for well-formed check
-        self._params = params          # Extra parameters needed
+        self._params = params  # Extra parameters needed
 
     @classmethod
     def is_supported(cls, mimetype, version=None,
@@ -146,7 +148,7 @@ class BaseScraper(object):
         :message: New message to add to the messages
         """
         if message is not None:
-            self._messages.append(message)
+            self._messages.append(ensure_str(message))
         return concat(self._messages)
 
     def errors(self, error=None):
@@ -155,8 +157,9 @@ class BaseScraper(object):
 
         :error: New error to add to the errors
         """
-        if error is not None and error != "":
-            self._errors.append(error)
+        err_msg = ensure_str(error) if error is not None else None
+        if err_msg is not None and err_msg != "":
+            self._errors.append(err_msg)
         return concat(self._errors, 'ERROR: ')
 
     @property
@@ -175,15 +178,18 @@ class BaseScraper(object):
         for _ in self.iter_tool_streams(None):
             metadata = {}
             for method in dir(self):
-                if callable(getattr(self, method)) \
-                        and method.startswith('_s_'):
-                    item = getattr(self, method)()
-                    if item != SkipElement:
-                        metadata[method[3:]] = item
+                if is_metadata(getattr(self, method)):
+                    try:
+                        metadata[method[3:]] = getattr(self, method)()
+                    except SkipElementException:
+                        # happens when <method>-method is not to be indexed.
+                        pass
+                if is_important(getattr(self, method)):
+                    self._add_important(method[3:], getattr(self, method)())
             dict_meta = {metadata['index']: metadata}
             self.streams = combine_metadata(self.streams, dict_meta)
         self.mimetype = self.streams[0]['mimetype']
-        self.version = self.streams[0]['version']
+        self._version = self.streams[0]['version']
         self.info = {'class': self.__class__.__name__,
                      'messages': self.messages(),
                      'errors': self.errors()}
@@ -215,51 +221,67 @@ class BaseScraper(object):
         """
         pass
 
-    def get_important(self):
-        """Return values that are more important."""
-        return {}
-
     # Methods starting with '_s_' will be collected to the stream results.
     # All _s_ methods must return str, except _s_index, which returns int.
     # See: _collect_elements
 
+    @metadata()
     def _s_mimetype(self):
         """Return mimetype."""
         return self.mimetype
 
+    @metadata()
     def _s_version(self):
         """Return version."""
-        return self.version
+        return self.version()
 
+    @metadata()
     def _s_index(self):
         """Return stream index."""
         return 0
 
     @abc.abstractmethod
+    @metadata()
     def _s_stream_type(self):
         """Return stream type. Must be implemented in the scrapers."""
         pass
 
-    @property
     def version(self):
-        return self._version
+        """Version of the file
+        :return: Str if version assigned, else None.
+        """
+        return ensure_str(self._version) if self._version is not None else None
 
-    @version.setter
-    def version(self, value):
-        self._version = ensure_str(value) if value is not None else None
+    def importants(self):
+        """Important metadata that should have priority when combining metadata.
+        :return: Dictionary of metadata and their values.
+        """
+        return self._importants
+
+    def _add_important(self, key, value):
+        """Key along with the value added as important metadata.
+        Exception is raised if the key has already been defined important.
+        :param key: Metadata index key.
+        :param value: Metadata value.
+        :raises: ImportantMetadataAlreadyDefined
+        """
+        if key in self._importants and self._importants[key] != value:
+            raise ImportantMetadataAlreadyDefined(
+                '[%s] index is already important with [%s]. '
+                'Incoming value: [%s]' % (key, self._importants[key], value))
+        self._importants[key] = value
 
 
-class SkipElement(object):
-    """
-    Class used as a 'value' to tell the iterator to skip the element.
-
+class SkipElementException(Exception):
+    """Exception to tell the iterator to skip the element.
     We are not able to use None or '' since those are reserved for
     other purposes already.
     """
-    # pylint: disable=too-few-public-methods
 
-    def __init__(self):
-        pass
+
+class ImportantMetadataAlreadyDefined(Exception):
+    """Exception to tell that the given key has already been defined as
+    important."""
 
 
 class BaseDetector(object):

@@ -3,7 +3,7 @@ import os.path
 import gzip
 import tempfile
 from io import open
-from file_scraper.utils import sanitize_string
+from file_scraper.utils import sanitize_string, metadata
 from file_scraper.base import BaseScraper, Shell
 
 
@@ -25,13 +25,13 @@ class GzipWarctools(BaseScraper):
         for class_ in [WarcWarctools, ArcWarctools]:
             scraper = class_(self.filename, None)
             scraper.scrape_file()
-            if scraper.well_formed or scraper.version is not None:
+            if scraper.well_formed or scraper._version is not None:
                 self.mimetype = scraper.mimetype
-            self.version = scraper.version
+            self._version = scraper._version
             self.streams = scraper.streams
             self.streams[0]['mimetype'] = self.mimetype
             self.info = scraper.info
-            if not scraper.well_formed and scraper.version is None:
+            if not scraper.well_formed and scraper._version is None:
                 self.info['class'] = self.__class__.__name__
             if messages is not None and not scraper.well_formed:
                 messages = messages + scraper.messages()
@@ -46,6 +46,7 @@ class GzipWarctools(BaseScraper):
         self.messages(messages)
         self.errors(errors)
 
+    @metadata()
     def _s_stream_type(self):
         """Return file type."""
         return 'binary'
@@ -104,12 +105,13 @@ class WarcWarctools(BaseScraper):
 
         self.mimetype = 'application/warc'
         if len(line.split(b"WARC/", 1)) > 1:
-            self.version = line.split(b"WARC/", 1)[1].split(b" ")[0].strip()
+            self._version = line.split(b"WARC/", 1)[1].split(b" ")[0].strip()
         if size > 0:
             self.messages('File was analyzed successfully.')
         self._check_supported()
         self._collect_elements()
 
+    @metadata()
     def _s_stream_type(self):
         """Return file type."""
         return 'binary'
@@ -158,6 +160,7 @@ class ArcWarctools(BaseScraper):
         self._check_supported()
         self._collect_elements()
 
+    @metadata()
     def _s_stream_type(self):
         """Return file type."""
         return 'binary'

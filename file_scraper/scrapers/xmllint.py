@@ -9,7 +9,7 @@ except ImportError:
     pass
 
 from io import open
-from six import ensure_str
+from file_scraper.utils import ensure_str, metadata
 
 from file_scraper.base import BaseScraper, Shell
 
@@ -37,7 +37,7 @@ class Xmllint(BaseScraper):
     """
 
     _supported = {'text/xml': ['1.0']}  # Supported mimetype
-    _only_wellformed = True             # Only well-formed check
+    _only_wellformed = True  # Only well-formed check
 
     def __init__(self, filename, mimetype, check_wellformed=True, params=None):
         """
@@ -110,7 +110,7 @@ class Xmllint(BaseScraper):
             file_ = open(self.filename, 'rb')
             parser = etree.XMLParser(dtd_validation=False, no_network=True)
             tree = etree.parse(file_, parser=parser)
-            self.version = tree.docinfo.xml_version
+            self._version = tree.docinfo.xml_version
             file_.close()
         except etree.XMLSyntaxError as exception:
             self.errors("Failed: document is not well-formed.")
@@ -142,7 +142,7 @@ class Xmllint(BaseScraper):
             (exitcode, stdout, stderr) = self.exec_xmllint(schema=self._schema)
         if exitcode == 0:
             self.messages(
-                "%s Success\n%s" % (self.filename, stdout))
+                "%s Success\n%s" % (self.filename, ensure_str(stdout)))
         else:
             self.errors(stderr)
 
@@ -256,6 +256,7 @@ class Xmllint(BaseScraper):
 
         return super(Xmllint, self).errors(error)
 
+    @metadata()
     def _s_stream_type(self):
         """Return file type."""
         return 'text'

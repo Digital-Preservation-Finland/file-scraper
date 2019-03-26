@@ -45,7 +45,7 @@ def test_existing_files(filename, mimetype, is_textfile):
     correct.well_formed = is_textfile
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
+    assert scraper._version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'CheckTextFile'
     if correct.well_formed:

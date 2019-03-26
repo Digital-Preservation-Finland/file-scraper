@@ -13,8 +13,8 @@ This module tests:
     - Concatenation of strings or empty lists with and without prefix
 """
 import subprocess
-from file_scraper.base import Shell, BaseScraper, BaseDetector, concat, \
-    SkipElement
+from file_scraper.base import (Shell, BaseScraper, BaseDetector, concat,
+                               SkipElementException)
 import file_scraper.utils
 
 
@@ -22,13 +22,13 @@ def test_shell(monkeypatch):
     """Test Shell class."""
     # pylint: disable=unused-argument
     def _run_command(cmd, stdout=subprocess.PIPE, env=None):
-        return (42, 'output message', 'error message')
+        return (42, b'output message', b'error message')
 
     monkeypatch.setattr(file_scraper.base, 'run_command', _run_command)
     shell = Shell('testcommand')
     assert shell.returncode == 42
-    assert shell.stdout == 'output message'
-    assert shell.stderr == 'error message'
+    assert shell.stdout == b'output message'
+    assert shell.stderr == b'error message'
 
 
 class BaseScraperBasic(BaseScraper):
@@ -44,9 +44,11 @@ class BaseScraperBasic(BaseScraper):
     def scrape_file(self):
         pass
 
+    @file_scraper.utils.metadata()
     def _s_version(self):
-        return self.version
+        return self.version()
 
+    @file_scraper.utils.metadata()
     def _s_stream_type(self):
         return 'test_stream'
 
@@ -62,9 +64,11 @@ class BaseScraperVersion(BaseScraperBasic):
     _allow_versions = True
 
     # pylint: disable=no-self-use
+    @file_scraper.utils.metadata()
     def _s_skip_this(self):
-        return SkipElement
+        raise SkipElementException()
 
+    @file_scraper.utils.metadata()
     def _s_collect_this(self):
         return 'collected'
 
@@ -148,7 +152,7 @@ def test_collect_elements():
         0: {'mimetype': 'test/mimetype', 'version': None,
             'stream_type': 'test_stream', 'index': 0}}
     scraper = BaseScraperVersion('testfilename', 'test/mimetype')
-    scraper.version = '0.1'
+    scraper._version = '0.1'
     scraper._collect_elements()  # pylint: disable=protected-access
     assert scraper.streams == {
         0: {'mimetype': 'test/mimetype', 'version': '0.1',
@@ -164,17 +168,17 @@ def test_check_supported():
     assert scraper.errors() == ''
 
     scraper = BaseScraperBasic('testfilename', 'test/mimetype')
-    scraper.version = '0.1'
+    scraper._version = '0.1'
     scraper._check_supported()
     assert scraper.errors() == ''
 
     scraper = BaseScraperBasic('testfilename', 'test/mimetype')
-    scraper.version = '0.0'
+    scraper._version = '0.0'
     scraper._check_supported()
     assert scraper.errors() == 'ERROR: Version 0.0 is not supported.'
 
     scraper = BaseScraperBasic('testfilename', 'test/falsemime')
-    scraper.version = '0.1'
+    scraper._version = '0.1'
     scraper._check_supported()
     assert scraper.errors() == 'ERROR: Mimetype test/falsemime is not ' \
                                'supported.'
