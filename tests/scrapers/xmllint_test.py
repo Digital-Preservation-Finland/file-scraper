@@ -1,4 +1,33 @@
-"""Xmllint scraper tests
+"""
+Xmllint scraper tests
+
+This module tests that:
+    - MIME type, version, streams and well-formedness of xml files are scraped
+      correctly and scraper messages do not contain "<note>".
+    - For a well-formed document without schema, scraper messages contains
+      "Document is well-formed but does not contain schema."
+    - For other well-formed files, scraper messages contains "Success".
+    - For file with missing closing tag, scraper messages contains "Opening
+      and ending tag mismatch".
+    - For invalid given schema and a file without schema, scraper errors
+      contains "Schemas validity error".
+    - For invalid given schema and a valid file with schema, scraper errors
+      contains "parser error".
+    - For invalid file with local catalog, scraper errors contains "Missing
+      child element(s)".
+    - For invalid file with DTD, scraper errors contains "does not follow the
+      DTD".
+    - For empty file, scraper errors contains "Document is empty".
+
+    - Without well-formedness check, scraper messages contains "Skipping
+      scraper" and well_formed is None.
+
+    - MIME type text/xml with version 1.0 or None is supported when well-
+      formedness is checked.
+    - When well-formedness is not checked, text/xml 1.0 is not supported.
+    - A made up MIME type or version is not supported.
+
+    - Schema, catalogs and network-usage can be defined as parameters.
 """
 import os
 import pytest
@@ -50,7 +79,7 @@ def test_scraper_valid(filename, result_dict, params):
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'Xmllint'
     assert correct.stdout_part in scraper.messages()
-    assert not '<note>' in scraper.messages()
+    assert '<note>' not in scraper.messages()
     assert correct.stderr_part in scraper.errors()
     assert scraper.well_formed == correct.well_formed
 
@@ -109,12 +138,12 @@ def test_scraper_invalid(filename, result_dict, params):
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'Xmllint'
     assert correct.stdout_part in scraper.messages()
-    assert not '<note>' in scraper.messages()
+    assert '<note>' not in scraper.messages()
     assert correct.stderr_part in scraper.errors()
     assert scraper.well_formed == correct.well_formed
 
 
-def test_no_wellformed_gzip():
+def test_no_wellformed():
     """Test scraper without well-formed check"""
     scraper = Xmllint('tests/data/text_xml/valid_1.0_wellformed.xml',
                       'text/xml', False)

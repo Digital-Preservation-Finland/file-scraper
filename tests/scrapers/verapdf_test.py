@@ -1,5 +1,30 @@
 """
 Tests for VeraPDF scraper for PDF/A files.
+
+This module tests that:
+    - For pdf versions A-1a, A-2b and A-3b, MIME type, version, streams and
+      well-formedness are scraped correctly. This is tested using one
+      well-formed file and two erroneous ones (one with altered payload and
+      one in which a xref entry has been removed) for each version.
+    - For well-formed files, scraper messages contain "PDF file is compliant
+      with Validation Profile requirements".
+    - For the files with altered payload, scraper errors contain "can not
+      locate xref table".
+    - For the files with removed xref entry, scraper errors contain "In a
+      cross reference subsection header".
+    - For files that are valid PDF 1.7 or 1.4 but not valid PDF/A, MIME type,
+      version and streams are scraped correctly but they are reported as
+      not well-formed.
+    - When well-formedness is not checked, scraper messages contain "Skipping
+      scraper" and well_formed is None.
+    - The scraper supports MIME type application/pdf with versions A-1b or
+      None when well-formedness is checked, but does not support them when
+      well-formedness is not checked. The scraper also does not support  made
+      up MIME types or versions.
+    - Versions A-1a, A-1b, A-2a, A-2b, A-2u, A-3a, A-3b and A-3u are recorded
+      recorded in dict returned by get_important() function when scraper
+      messages contain "Success", but when scraper errors contain "Error",
+      the dict is empty.
 """
 import pytest
 from tests.common import parse_results

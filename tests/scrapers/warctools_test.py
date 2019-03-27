@@ -1,4 +1,37 @@
-"""Test the file_scraper.scrapers.warctools module"""
+"""
+Test the file_scraper.scrapers.warctools module
+
+This module tests that:
+    - MIME type, version, streams and well-formedneess are scraped correctly
+      using all scrapers.
+        - For all well-formed files, scraper messages contain "successfully".
+    - When using GzipWarctools:
+        - For empty files, scraper errors contains "Empty file."
+        - For files with missing data, scraper errors contains "unpack
+          requires a string argument of length 4".
+    - When using WarcWarctools:
+        - For whiles where the reported content length is shorter than the
+          actual content, scraper errors contains "warc errors at".
+    - When using ArcWarctools:
+        - For files where a header field is missing, scraper errors contains
+          "Exception: missing headers".
+        - For files with missing data, scraper errors contains "unpack
+          requires a string argument of length 4".
+
+    - When using any of these scrapers without checking well-formedness,
+      scraper messages contains "Skipping scraper" and well_formed is None.
+
+    - With well-formedness check, the following MIME types and versions are
+      supported:
+        - GzipWarctools supports application/gzip with '', None or a made up
+          string as a version.
+        - WarcWarctools supports application/warc with '', None or a made up
+          string as a version.
+        - ArcWarctools supports applivation/x-internet-archive with '', None or
+          a made up string as a version
+    - Without well-formedness check, these MIME types are not supported.
+    - None of these scrapers supports a made up MIME type.
+"""
 import pytest
 from file_scraper.scrapers.warctools import GzipWarctools, WarcWarctools, \
     ArcWarctools
@@ -81,18 +114,10 @@ def test_gzip_scraper(filename, result_dict):
             'purpose': 'Test valid file.',
             'stdout_part': 'successfully',
             'stderr_part': ''}),
-        ('valid_1.0_.warc.gz', {
-            'purpose': 'Test valid file.',
-            'stdout_part': 'successfully',
-            'stderr_part': ''}),
         ('invalid_0.17_too_short_content_length.warc', {
             'purpose': 'Test short content length.',
             'stdout_part': '',
             'stderr_part': 'warc errors at'}),
-        ('invalid__missing_data.warc.gz', {
-            'purpose': 'Test missing data.',
-            'stdout_part': '',
-            'stderr_part': 'unpack requires a string argument of length 4'}),
         ('invalid_0.18_too_short_content_length.warc', {
             'purpose': 'Test short content length.',
             'stdout_part': '',

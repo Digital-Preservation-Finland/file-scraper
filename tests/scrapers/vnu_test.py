@@ -1,5 +1,22 @@
 """
 Tests for Vnu scraper.
+
+This module tests that:
+    - MIME type, version, streams and well-formedness are scraped correctly for
+      html 5 files when well-formedness is checked.
+    - For well-formed file, scraper messages contain "valid_5.0.html".
+    - For file without doctype, scraper errors contain  "Start tag seen
+      without seeing a doctype first."
+    - For file with illegal tags in it, scraper errors contain "not allowed as
+      child of element".
+    - For empty file, scraper errors contain "End of file seen without seeing
+      a doctype first".
+    - When well-formedness is not checked, scraper messages contain "Skipping
+      scraper" and well_formed is None.
+    - When well-formedness is checked, MIME type text/html versions 5.0 and
+      None are supported. When well-formedness is not checked, this combination
+      is not supported.
+    - A made up MIME type or version is not supported.
 """
 import pytest
 from file_scraper.scrapers.vnu import Vnu

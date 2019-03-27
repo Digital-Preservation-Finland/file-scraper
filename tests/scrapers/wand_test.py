@@ -1,5 +1,61 @@
 """
 Tests for ImageMagick scraper.
+
+This module tests that:
+    - MIME type, version, streams and well-formedness are scraped correctly for
+      tiff files.
+        - For valid files containing one or more images, scraper messages
+          contain "successfully".
+        - For file where payload has been altered, scraper errors contain
+          "Failed to read directory at offset 182".
+        - For file with wrong byte order reported in the header, scraper errors
+          contain "Not a TIFF file, bad version number 10752".
+        - For an empty file, scraper errors contain "Cannot read TIFF header."
+    - MIME type, version, streams and well-formedness are scraped correctly for
+      jpeg files.
+        - For well-formed files, scraper messages contain "successfully".
+        - For file with altered payload, scraper errors contain "Bogus marker
+          length".
+        - For file without start marker, scraper errors contain "starts with
+          0xff 0xe0".
+        - For empty file, scraper errors contain "Empty input file".
+    - MIME type, version, streams and well-formedness are scraped correctly for
+      jp2 files.
+        - For well-formed files, scraper messages contain "successfully".
+        - For an empty file or a file with missing data, scraper errors
+          contain "unable to decode image file".
+    - MIME type, version, streams and well-formedness are scraped correctly for
+      png files.
+        - For well-formed files, scraper messages contain "successfully".
+        - For file with missing IEND or IHDR chunk or wrong CRC, scraper
+          errors contain "corrupt image".
+        - For file with invalid header, scraper errors contain "improper
+          image header".
+        - For empty file, scraper errors contain "improper image header".
+    - MIME type, version, streams and well-formedness are scraped correctly for
+      gif files.
+        - For well-formed files with one or more images, scraper messages
+          contain "successfully".
+        - For images with broken header, scraper errors contains "improper
+          image header".
+        - For truncated version 1987a file, scraper errors contains "corrupt
+          image".
+        -For truncated version 1989a file, scraper errors contains "negative
+         or zero image size".
+        - For empty file, scraper errors contains "imporoper image header".
+    - When well-formedness is not checked, scraper messages contains "Skipping
+      scraper" and well_formed is None.
+    - With or without well-formedness check, the following MIME type and
+      version pairs are supported:
+        - image/tiff, 6.0
+        - image/jpeg, 1.01
+        - image/jp2, ''
+        - image/png, 1.2
+        - image/gif, 1987a
+    - All these MIME types are also supported when None or a made up version
+      is given as the version.
+    - A made up MIME type is not supported.
+
 """
 import pytest
 from file_scraper.scrapers.wand import TiffWand, ImageWand
@@ -219,7 +275,7 @@ def test_scraper_jp2(filename, result_dict):
             'purpose': 'Test empty file.',
             'streams': {0: STREAM_INVALID.copy()},
             'stdout_part': '',
-            'stderr_part': 'improper image header'}),
+            'stderr_part': 'improper image header'})
     ]
 )
 def test_scraper_png(filename, result_dict):
@@ -312,7 +368,7 @@ def test_no_wellformed():
     scraper = ImageWand('tests/data/image_tiff/valid_6.0.tif',
                         'image/tiff', False)
     scraper.scrape_file()
-    assert not 'Skipping scraper' in scraper.messages()
+    assert 'Skipping scraper' not in scraper.messages()
     assert scraper.well_formed is None
 
 

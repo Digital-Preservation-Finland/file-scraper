@@ -1,6 +1,16 @@
 """
 Tests office-file scraping with combination of Office-scraper and
 File-scraper.
+
+This module tests that:
+    - For a well-formed odt file, all scrapers supporting
+      application/vnd.oasis.opendocument.text version 1.1 report it as
+      well-formed.
+    - For a corrupted odt file, at least one scraper supporting
+      application/vnd.oasis.opendocument.text reports it as not well-formed.
+    - When a valid odt file is scraped with scrapers selected using wrong MIME
+      type (application/msword) at least one of them reports it as not well-
+      formed.
 """
 
 import os
@@ -52,4 +62,4 @@ def test_scrape_invalid_file(filename, mimetype):
         scraper_results.append(scraper.well_formed)
 
     assert not all(scraper_results)
-    assert len(scraper_results) > 0
+    assert scraper_results > 0

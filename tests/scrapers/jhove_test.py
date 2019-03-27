@@ -1,4 +1,41 @@
-"""Test module for jhove.py"""
+"""
+Test module for jhove.py
+
+This module tests that:
+    - MIME type, version, streams and well-formedness of gif 1987a and 1989a
+      files is tested correctly.
+        - For well-formed files, scraper messages contains "Well-Formed and
+          valid".
+        - For files with broken header, scraper errors contains "Invalid GIF
+          header".
+        - For truncated files, scraper errors contains "Unknown data block
+          type".
+        - For empty files, scraper errors contains "Invalid GIF header".
+    - MIME type, version, streams and well-formedness of tiff files is tested
+      correctly.
+        - For well-formed files, scraper messages contains "Well-Formed and
+          valid".
+        - For files with altered payload, scraper messages contains "IDF offset
+          not word-aligned".
+        - For files with wrong byte order reported, scraper messages contains
+          "No TIFF magic number".
+        - For empty files, scraper errors contains "File is too short".
+    - MIME type, version, streams and well-formedness of UTF-8 text files is
+      tested correctly.
+        - For files with UTF-8 and ASCII (backwards compatibility) encodings
+          scraper messages contains "Well-Formed and valid".
+        - For files with ISO-8859 encoding scraper errors contains "Not valid
+          second byte of UTF-8 encoding"
+    - MIME type, version, streams and well-formedness of pdf 1.2, 1.3, 1.4,
+      1.5, 1.6 and A-1a files is tested correctly.
+        - For valid files, scraper messages contains "Well-formed and valid".
+        - For files with altered payload, scraper errors contains "Invalid
+          object definition".
+        - For files with removed xref entry, scraper errors contains
+          "Improperly nested dictionary delimiters".
+        - For files with wrong version in header, scraper errors contains
+          "Version 1.0 is not supported."
+"""
 import pytest
 
 from file_scraper.scrapers.jhove import GifJHove, TiffJHove, PdfJHove, \
