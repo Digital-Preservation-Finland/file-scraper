@@ -8,7 +8,7 @@ from file_scraper.scrapers.textfile import CheckTextFile
 from file_scraper.scrapers.dummy import FileExists
 from file_scraper.utils import hexdigest
 
-LOSE = [None, '0', '(:unav)', '(:unap)']
+LOSE = [None, '(:unav)', '(:unap)']
 
 
 class Scraper(object):
