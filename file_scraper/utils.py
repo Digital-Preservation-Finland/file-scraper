@@ -84,8 +84,8 @@ def strip_zeros(float_str):
     """
 
     # if '.' is found in the string and string
-    # ends in '0' or '.' strip last character
-    if float_str.find(".") != -1 and float_str[-1] in ['0', '.']:
+    # ends in '0', '.' or '_' strip last character
+    if float_str.find(".") != -1 and float_str[-1] in ['0', '.', '_']:
         return strip_zeros(float_str[:-1])
 
     return float_str
@@ -102,9 +102,9 @@ def combine_metadata(stream, metadata, lose=None, important=None):
     :returns: Merged metadta
     """
     if not metadata:
-        return stream
+        return stream.copy()
 
-    stream = {} if stream is None else stream
+    stream = {} if stream is None else stream.copy()
     important = {} if important is None else important
     lose = [] if lose is None else lose
 
