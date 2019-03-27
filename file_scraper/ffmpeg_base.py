@@ -169,7 +169,7 @@ class FFMpeg(BaseScraper):
             return None
         if 'width' in self._ffmpeg_stream:
             return str(self._ffmpeg_stream['width'])
-        return '0'
+        return '(:unav)'
 
     def _s_height(self):
         """Returns frame height
@@ -180,7 +180,7 @@ class FFMpeg(BaseScraper):
             return None
         if 'height' in self._ffmpeg_stream:
             return str(self._ffmpeg_stream['height'])
-        return '0'
+        return '(:unav)'
 
     def _s_par(self):
         """Returns pixel aspect ratio
@@ -193,7 +193,7 @@ class FFMpeg(BaseScraper):
             return strip_zeros("%.2f" % float(Fraction(
                 self._ffmpeg_stream['sample_aspect_ratio'].replace(':', '/'))))
 
-        return '0'
+        return '(:unav)'
 
     def _s_dar(self):
         """Returns display aspect ratio
@@ -222,7 +222,7 @@ class FFMpeg(BaseScraper):
             else:
                 return strip_zeros(str(float(
                     self._ffmpeg_stream['bit_rate'])/1000))
-        return '0'
+        return '(:unav)'
 
     def _s_frame_rate(self):
         """Returns frame rate
@@ -233,7 +233,7 @@ class FFMpeg(BaseScraper):
             return None
         if 'r_frame_rate' in self._ffmpeg_stream:
             return self._ffmpeg_stream['r_frame_rate'].split('/')[0]
-        return '0'
+        return '(:unav)'
 
     def _s_sampling(self):
         """Returns chroma subsampling method
@@ -283,7 +283,7 @@ class FFMpeg(BaseScraper):
         if 'sample_rate' in self._ffmpeg_stream:
             return strip_zeros(str(float(
                 self._ffmpeg_stream['sample_rate'])/1000))
-        return '0'
+        return '(:unav)'
 
     def _s_num_channels(self):
         """Returns number of channels
@@ -355,4 +355,4 @@ class FFMpeg(BaseScraper):
             return None
         if 'bits_per_raw_sample' in self._ffmpeg_stream is not None:
             return str(self._ffmpeg_stream['bits_per_raw_sample'])
-        return '0'
+        return '(:unav)'

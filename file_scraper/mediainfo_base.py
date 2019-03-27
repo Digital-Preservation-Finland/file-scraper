@@ -191,7 +191,7 @@ class Mediainfo(BaseScraper):
             return None
         if self._mediainfo_stream.width is not None:
             return str(self._mediainfo_stream.width)
-        return '0'
+        return '(:unav)'
 
     def _s_height(self):
         """Returns frame height
@@ -202,7 +202,7 @@ class Mediainfo(BaseScraper):
             return None
         if self._mediainfo_stream.height is not None:
             return str(self._mediainfo_stream.height)
-        return '0'
+        return '(:unav)'
 
     def _s_par(self):
         """Returns pixel aspect ratio
@@ -213,7 +213,7 @@ class Mediainfo(BaseScraper):
             return None
         if self._mediainfo_stream.pixel_aspect_ratio is not None:
             return strip_zeros(str(self._mediainfo_stream.pixel_aspect_ratio))
-        return '0'
+        return '(:unav)'
 
     def _s_dar(self):
         """Returns display aspect ratio
@@ -241,7 +241,7 @@ class Mediainfo(BaseScraper):
             else:
                 return strip_zeros(str(float(
                     self._mediainfo_stream.bit_rate)/1000))
-        return '0'
+        return '(:unav)'
 
     def _s_frame_rate(self):
         """Returns frame rate
@@ -252,7 +252,7 @@ class Mediainfo(BaseScraper):
             return None
         if self._mediainfo_stream.frame_rate is not None:
             return strip_zeros(str(self._mediainfo_stream.frame_rate))
-        return '0'
+        return '(:unav)'
 
     def _s_sampling(self):
         """Returns chroma subsampling method
@@ -327,7 +327,7 @@ class Mediainfo(BaseScraper):
         if self._mediainfo_stream.sampling_rate is not None:
             return strip_zeros(str(float(
                 self._mediainfo_stream.sampling_rate)/1000))
-        return '0'
+        return '(:unav)'
 
     def _s_num_channels(self):
         """Returns number of channels
@@ -400,4 +400,4 @@ class Mediainfo(BaseScraper):
             return None
         if self._mediainfo_stream.bit_depth is not None:
             return str(self._mediainfo_stream.bit_depth)
-        return '0'
+        return '(:unav)'
