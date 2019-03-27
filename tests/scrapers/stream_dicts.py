@@ -30,16 +30,16 @@ MPEG4_VIDEO = dict(MPEG1_VIDEO, **{
     'codec_creator_app': 'Lavf56.40.101'})
 
 MPEGTS_VIDEO = dict(MPEG1_VIDEO, **{
-    'data_rate': '0', 'index': 1, 'sound': 'Yes', 'version': '2'})
+    'data_rate': '(:unav)', 'index': 1, 'sound': 'Yes', 'version': '2'})
 
 MPEG1_AUDIO = {
     'mimetype': 'audio/mpeg', 'index': 0,
-    'audio_data_encoding': 'MPEG Audio', 'bits_per_sample': '0',
+    'audio_data_encoding': 'MPEG Audio', 'bits_per_sample': '(:unav)',
     'data_rate_mode': 'Variable', 'codec_quality': 'lossy', 'version': '1',
     'stream_type': 'audio', 'sampling_frequency': '44.1',
     'num_channels': '2', 'codec_name': 'MPEG Audio',
     'codec_creator_app_version': '(:unav)', 'duration': '(:unav)',
-    'data_rate': '0', 'codec_creator_app': '(:unav)'}
+    'data_rate': '(:unav)', 'codec_creator_app': '(:unav)'}
 
 MPEG4_AUDIO = dict(MPEG1_AUDIO, **{
     'mimetype': 'audio/mp4', 'index': 2, 'audio_data_encoding': 'AAC',
