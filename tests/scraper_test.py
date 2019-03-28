@@ -21,8 +21,8 @@ from file_scraper.base import BaseScraper
 
 
 class _TestScraper(BaseScraper):
-    """Monkey patch for CheckTextFile class
-    """
+    """Monkey patch for CheckTextFile class."""
+
     def scrape_file(self):
         pass
 
@@ -35,8 +35,7 @@ class _TestScraper(BaseScraper):
 
 
 def test_is_textfile(monkeypatch):
-    """Test that CheckTextFile well-formed value is returned.
-    """
+    """Test that CheckTextFile well-formed value is returned."""
     monkeypatch.setattr(file_scraper.scraper, 'CheckTextFile', _TestScraper)
     scraper = Scraper('textfile')
     assert scraper.is_textfile()
@@ -45,8 +44,7 @@ def test_is_textfile(monkeypatch):
 
 
 def test_checksum():
-    """Test that checksum value of the file is returned
-    """
+    """Test that checksum value of the file is returned."""
     scraper = Scraper('tests/data/text_plain/valid__utf8.txt')
     assert scraper.checksum() == 'b40c60d0770eb7bd1a345725f857c61a'
     assert scraper.checksum('SHA-1') == \
@@ -59,16 +57,14 @@ def test_checksum():
 
 
 def test_empty_file():
-    """Test empty file.
-    """
+    """Test empty file."""
     scraper = Scraper('test/data/text_plain/invalid__empty.txt')
     scraper.scrape()
     assert not scraper.well_formed
 
 
 def test_missing_file():
-    """Test missing file.
-    """
+    """Test missing file."""
     scraper = Scraper('missing_file')
     scraper.scrape()
     assert not scraper.well_formed

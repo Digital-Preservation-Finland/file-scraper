@@ -45,7 +45,7 @@ from file_scraper.scrapers.ghostscript import GhostScript
     ]
 )
 def test_scraper_pdf(filename, result_dict):
-    """Test scraper"""
+    """Test scraper."""
     for ver in ['1.7', 'A-1a', 'A-2b', 'A-3b']:
         filename = filename.replace('X', ver)
         correct = parse_results(filename, 'application/pdf',
@@ -70,7 +70,7 @@ def test_scraper_pdf(filename, result_dict):
 
 
 def test_no_wellformed():
-    """Test scraper without well-formed check"""
+    """Test scraper without well-formed check."""
     scraper = GhostScript('tests/data/application_pdf/valid_1.4.pdf',
                           'application/pdf', False)
     scraper.scrape_file()
@@ -79,7 +79,7 @@ def test_no_wellformed():
 
 
 def test_is_supported():
-    """Test is_supported method"""
+    """Test is_supported method."""
     mime = 'application/pdf'
     ver = '1.7'
     assert GhostScript.is_supported(mime, ver, True)

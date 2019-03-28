@@ -53,7 +53,7 @@ MIMETYPE = 'image/x-dpx'
     ]
 )
 def test_scraper(filename, result_dict):
-    """Test scraper"""
+    """Test scraper."""
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
     scraper = Dpx(correct.filename, correct.mimetype,
@@ -70,7 +70,7 @@ def test_scraper(filename, result_dict):
 
 
 def test_no_wellformed():
-    """Test scraper without well-formed check"""
+    """Test scraper without well-formed check."""
     scraper = Dpx('tests/data/image_x-dpx/valid_2.0.dpx', MIMETYPE, False)
     scraper.scrape_file()
     assert 'Skipping scraper' in scraper.messages()
@@ -78,7 +78,7 @@ def test_no_wellformed():
 
 
 def test_is_supported():
-    """Test is_supported method"""
+    """Test is_supported method."""
     mime = MIMETYPE
     ver = '2.0'
     assert Dpx.is_supported(mime, ver, True)

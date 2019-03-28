@@ -48,7 +48,7 @@ MIMETYPE = 'application/x-spss-por'
     ]
 )
 def test_scraper(filename, result_dict):
-    """Test scraper"""
+    """Test scraper."""
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
     scraper = Pspp(correct.filename, correct.mimetype,
@@ -65,7 +65,7 @@ def test_scraper(filename, result_dict):
 
 
 def test_no_wellformed():
-    """Test scraper without well-formed check"""
+    """Test scraper without well-formed check."""
     scraper = Pspp('tests/data/application_x-spss-por/valid.por',
                    MIMETYPE, False)
     scraper.scrape_file()
@@ -74,7 +74,7 @@ def test_no_wellformed():
 
 
 def test_is_supported():
-    """Test is_supported method"""
+    """Test is_supported method."""
     mime = MIMETYPE
     ver = ''
     assert Pspp.is_supported(mime, ver, True)

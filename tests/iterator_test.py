@@ -1,6 +1,5 @@
 """
-Test for file_scraper.scrapers. The purpose of this test is to make sure
-that all scrapers are able to be found.
+Test for file_scraper.scrapers.
 
 This module tests that:
     - iter_scrapers(mimetype, version) returns the correct scrapers.
@@ -79,17 +78,14 @@ from file_scraper.iterator import iter_scrapers, iter_detectors
         ("test/unknown", None, ["ScraperNotFound"])
     ])
 def test_iter_scrapers(mimetype, version, scraper_classes):
-    """
-    Test for scraper discovery.
-    """
+    """Test scraper discovery."""
     scrapers = iter_scrapers(mimetype, version)
     assert set(
         [x.__name__ for x in scrapers]) == set(scraper_classes)
 
 
 def test_iter_detectors():
-    """Test for detector discovery.
-    """
+    """Test detector discovery."""
     detectors = iter_detectors()
     assert set(
         [x.__name__ for x in detectors]) == set(["FidoDetector",

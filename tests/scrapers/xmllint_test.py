@@ -67,7 +67,7 @@ ROOTPATH = os.path.abspath(os.path.join(
     ]
 )
 def test_scraper_valid(filename, result_dict, params):
-    """Test scraper"""
+    """Test scraper."""
     correct = parse_results(filename, 'text/xml',
                             result_dict, True, params)
     scraper = Xmllint(correct.filename, correct.mimetype,
@@ -123,7 +123,7 @@ def test_scraper_valid(filename, result_dict, params):
     ]
 )
 def test_scraper_invalid(filename, result_dict, params):
-    """Test scraper"""
+    """Test scraper."""
     correct = parse_results(filename, 'text/xml',
                             result_dict, True, params)
     scraper = Xmllint(correct.filename, correct.mimetype,
@@ -144,7 +144,7 @@ def test_scraper_invalid(filename, result_dict, params):
 
 
 def test_no_wellformed():
-    """Test scraper without well-formed check"""
+    """Test scraper without well-formed check."""
     scraper = Xmllint('tests/data/text_xml/valid_1.0_wellformed.xml',
                       'text/xml', False)
     scraper.scrape_file()
@@ -153,7 +153,7 @@ def test_no_wellformed():
 
 
 def test_is_supported():
-    """Test is_supported method"""
+    """Test is_supported method."""
     mime = 'text/xml'
     ver = '1.0'
     assert Xmllint.is_supported(mime, ver, True)
@@ -164,8 +164,7 @@ def test_is_supported():
 
 
 def test_parameters():
-    """Test that parameters and default values work properly.
-    """
+    """Test that parameters and default values work properly."""
     # pylint: disable=protected-access
     scraper = Xmllint('testsfile', 'test/mimetype')
     assert scraper._schema is None

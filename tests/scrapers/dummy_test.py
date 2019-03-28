@@ -62,7 +62,7 @@ def test_existing_files(filepath, mimetype):
     ]
 )
 def test_nonexistent_files(filepath, mimetype):
-    """Test that non-existent files are identified correctly"""
+    """Test that non-existent files are identified correctly."""
     scraper = FileExists(filepath, mimetype, True)
     scraper.scrape_file()
 
@@ -71,7 +71,7 @@ def test_nonexistent_files(filepath, mimetype):
 
 
 def test_none_filename():
-    """Test that None filename results error"""
+    """Test that giving None filename results in error."""
     scraper = FileExists(None, None)
     scraper.scrape_file()
 
@@ -89,7 +89,7 @@ def test_none_filename():
     ]
 )
 def test_scraper_not_found(filepath, mimetype):
-    """Check ScraperNotFound results"""
+    """Check ScraperNotFound results."""
     scraper = ScraperNotFound(filepath, mimetype, True)
     scraper.scrape_file()
 

@@ -10,14 +10,16 @@ This module tests that:
       being recorded in scraper errors.
     - Without well-formedness check, scraper messages contain 'Skipping
       scraper' and well_formed is None
-    - With well-formedness check, the following MIME type and version 
+    - With well-formedness check, the following MIME type and version
       combinations are supported:
         - application/vnd.oasis.opendocument.text, 1.1
         - application/msword, 11.0
-        - application/vnd.openxmlformats-officedocument.wordprocessingml.document, 15.0
+        - application/vnd.openxmlformats-officedocument.wordprocessingml.document,
+          15.0
         - application/vnd.oasis.opendocument.presentation, 1.1
         - application/vnd.ms-powerpoint, 11.0
-        - application/vnd.openxmlformats-officedocument.presentationml.presentation, 15.0
+        - application/vnd.openxmlformats-officedocument.presentationml.presentation,
+          15.0
         - application/vnd.oasis.opendocument.spreadsheet, 1.1
         - application/vnd.ms-excel, 11.0
         - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,
@@ -62,7 +64,7 @@ BASEPATH = 'tests/data'
     ]
 )
 def test_scraper_valid_file(filename, mimetype):
-    """Test valid files with scraper"""
+    """Test valid files with scraper."""
     result_dict = {
         'purpose': 'Test valid file.',
         'stdout_part': '',
@@ -156,7 +158,7 @@ def test_parallel_validation(filename, mimetype):
 
 
 def test_no_wellformed():
-    """Test scraper without well-formed check"""
+    """Test scraper without well-formed check."""
     scraper = Office('tests/data/application_msword/valid_11.0.doc',
                      'application/msword', False)
     scraper.scrape_file()
@@ -184,7 +186,7 @@ def test_no_wellformed():
     ]
 )
 def test_is_supported(mime, ver):
-    """Test is_supported method"""
+    """Test is_supported method."""
     assert Office.is_supported(mime, ver, True)
     assert Office.is_supported(mime, None, True)
     assert not Office.is_supported(mime, ver, False)

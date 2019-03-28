@@ -121,7 +121,7 @@ from tests.common import parse_results
     ]
 )
 def test_scraper_gif(filename, result_dict, get_ver):
-    """Test scraper"""
+    """Test gif scraping."""
     for version in ['1987', '1989']:
         filename = filename.replace('XXXX', version)
         correct = parse_results(filename, 'image/gif',
@@ -164,7 +164,7 @@ def test_scraper_gif(filename, result_dict, get_ver):
     ]
 )
 def test_scraper_tiff(filename, result_dict):
-    """Test scraper"""
+    """Test tiff scraping."""
     correct = parse_results(filename, 'image/tiff',
                             result_dict, True)
     scraper = TiffJHove(correct.filename, correct.mimetype,
@@ -201,7 +201,7 @@ def test_scraper_tiff(filename, result_dict):
     ]
 )
 def test_scraper_utf8(filename, result_dict):
-    """Test scraper"""
+    """Test utf8 text file scraping."""
     correct = parse_results(filename, 'text/plain',
                             result_dict, True)
     scraper = Utf8JHove(correct.filename, correct.mimetype,
@@ -244,7 +244,7 @@ def test_scraper_utf8(filename, result_dict):
     ]
 )
 def test_scraper_pdf(filename, result_dict, version):
-    """Test scraper"""
+    """Test pdf scraping."""
     for ver in ['1.2', '1.3', '1.4', '1.5', '1.6', 'A-1a']:
         filename = filename.replace('X', ver)
         correct = parse_results(filename, 'application/pdf',
@@ -287,7 +287,7 @@ def test_scraper_pdf(filename, result_dict, version):
     ]
 )
 def test_scraper_jpeg(filename, result_dict):
-    """Test scraper"""
+    """Test jpeg scraping."""
     correct = parse_results(filename, 'image/jpeg',
                             result_dict, True)
     scraper = JpegJHove(correct.filename, correct.mimetype,
@@ -362,7 +362,7 @@ def test_scraper_jpeg(filename, result_dict):
     ]
 )
 def test_scraper_html(filename, result_dict, mimetype, charset, version):
-    """Test scraper"""
+    """Test html and xhtml scraping."""
     correct = parse_results(filename, mimetype,
                             result_dict, True)
     scraper = HtmlJHove(correct.filename, correct.mimetype,
@@ -426,7 +426,7 @@ def test_scraper_html(filename, result_dict, mimetype, charset, version):
     ]
 )
 def test_scraper_wav(filename, result_dict, version):
-    """Test scraper"""
+    """Test wav and bwf scraping."""
     correct = parse_results(filename, 'audio/x-wav',
                             result_dict, True)
     scraper = WavJHove(correct.filename, correct.mimetype,
@@ -460,7 +460,7 @@ def test_scraper_wav(filename, result_dict, version):
     ]
 )
 def test_no_wellformed(scraper_class, filename, mime):
-    """Test scrapers without well-formed check"""
+    """Test scrapers without well-formed check."""
     scraper = scraper_class(os.path.join('tests/data/',
                                          mime.replace('/', '_'),
                                          filename),
@@ -480,7 +480,7 @@ def test_no_wellformed(scraper_class, filename, mime):
     ]
 )
 def test_is_supported_allow(mime, ver, class_):
-    """Test is_supported method, allow all versions"""
+    """Test is_supported method, allow all versions."""
     assert class_.is_supported(mime, ver, True)
     assert class_.is_supported(mime, None, True)
     assert not class_.is_supported(mime, ver, False)
@@ -497,7 +497,7 @@ def test_is_supported_allow(mime, ver, class_):
     ]
 )
 def test_is_supported_deny(mime, ver, class_):
-    """Test is_supported method, allow only known versions"""
+    """Test is_supported method, allow only known versions."""
     assert class_.is_supported(mime, ver, True)
     assert class_.is_supported(mime, None, True)
     assert not class_.is_supported(mime, ver, False)
@@ -512,7 +512,7 @@ def test_is_supported_deny(mime, ver, class_):
     ]
 )
 def test_is_supported_utf8(mime, ver, class_):
-    """Test is_supported method, utf8 scraper"""
+    """Test is_supported method, utf8 scraper."""
     assert not class_.is_supported(mime, ver, True)
     assert not class_.is_supported(mime, None, True)
     assert not class_.is_supported(mime, ver, False)

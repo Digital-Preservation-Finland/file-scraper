@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Integration test for scrapers
-"""
+"""Integration test for scrapers."""
 import os
 import shutil
 from file_scraper.scraper import Scraper
@@ -71,7 +70,9 @@ DIFFERENT_MIMETYPE_INVALID = {
 
 
 def test_valid_combined():
-    """Integration test for valid files.
+    """
+    Integration test for valid files.
+
     - Test that mimetype matches.
     - Test Find out all None elements.
     - Test that errors are not given.
@@ -107,7 +108,9 @@ def test_valid_combined():
 
 
 def test_invalid_combined():
-    """Integration test for all invalid files.
+    """
+    Integration test for all invalid files.
+
     - Test that well_formed is False and mimetype is expected.
     - If well_formed is None, check that Scraper was not found.
     - Skip files that are known cases where it is identified
@@ -141,8 +144,9 @@ def test_invalid_combined():
 
 
 def test_without_wellformed():
-    """Test the case where we don't want to use well-formed check,
-    but we want to collect metadata.
+    """
+    Test the case where metadata is collected without well-formedness check.
+
     - Test that well-formed is always None.
     - Test that mimetype matches.
     - Test that there exists correct stream type for image, video, audio
@@ -192,7 +196,9 @@ def test_without_wellformed():
 
 
 def test_unicode_filename(testpath):
-    """Integration test with unicode filename and with all scrapers.
+    """
+    Integration test with unicode filename and with all scrapers.
+
     - Test that mimetype matches.
     - Test Find out all None elements.
     - Test that errors are not given.

@@ -4,7 +4,9 @@ import os
 
 
 def get_files(well_formed):
-    """Get all well-formed/not well-formed files from tests
+    """
+    Get all well-formed/not well-formed files from tests.
+
     :well_formed: True if well-formed file list, False for not well-formed.
     :returns: dict where  key is filename and value is tuple
               (mimetype, version)
@@ -28,8 +30,8 @@ def get_files(well_formed):
 
 
 class Correct(object):
-    """Class for the correct results
-    """
+    """Class for the correct results."""
+
     # pylint: disable=too-few-public-methods, too-many-instance-attributes
     def __init__(self):
         self.filename = None
@@ -45,7 +47,9 @@ class Correct(object):
 
 def parse_results(filename, mimetype, results, check_wellformed,
                   params=None, basepath='tests/data'):
-    """Parse results from filepath and given results.
+    """
+    Parse results from filepath and given results.
+
     :filename: File name
     :mimetype: Mimetype
     :results: Results: purpose, part of stdout, part of stderr,

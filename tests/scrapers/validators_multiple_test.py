@@ -29,8 +29,7 @@ BASEPATH = "tests/data"
     ]
 )
 def test_scrape_valid_file(filename, mimetype):
-    """Valid case
-    """
+    """Test scraping for a well-formed odt file."""
     for class_ in iter_scrapers(mimetype, None):
         scraper = class_(
             os.path.join(BASEPATH, mimetype.replace('/', '_'), filename),
@@ -51,8 +50,7 @@ def test_scrape_valid_file(filename, mimetype):
     ]
 )
 def test_scrape_invalid_file(filename, mimetype):
-    """Invalid case
-    """
+    """Test scraping for non well-formed odt file."""
     scraper_results = []
     for class_ in iter_scrapers(mimetype, None):
         scraper = class_(

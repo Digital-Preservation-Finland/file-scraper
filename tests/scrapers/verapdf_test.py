@@ -53,7 +53,7 @@ MIMETYPE = 'application/pdf'
     ]
 )
 def test_scraper(filename, result_dict):
-    """Test scraper"""
+    """Test scraper with PDF/A."""
     for ver in ['A-1a', 'A-2b', 'A-3b']:
         filename = filename.replace('X', ver)
         correct = parse_results(filename, MIMETYPE,
@@ -91,7 +91,7 @@ def test_scraper(filename, result_dict):
     ]
 )
 def test_scraper_invalid_pdfa(filename, result_dict):
-    """Test scraper"""
+    """Test scraper with files that are not valid PDF/A."""
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
     scraper = VeraPdf(correct.filename, correct.mimetype,
@@ -111,7 +111,7 @@ def test_scraper_invalid_pdfa(filename, result_dict):
 
 
 def test_no_wellformed():
-    """Test scraper without well-formed check"""
+    """Test scraper without well-formed check."""
     scraper = VeraPdf('tests/data/application_pdf/valid_A-1a.pdf',
                       'application/pdf', False)
     scraper.scrape_file()
@@ -120,7 +120,7 @@ def test_no_wellformed():
 
 
 def test_is_supported():
-    """Test is_supported method"""
+    """Test is_supported method."""
     mime = MIMETYPE
     ver = 'A-1b'
     assert VeraPdf.is_supported(mime, ver, True)
@@ -134,8 +134,7 @@ def test_is_supported():
     'version', ['A-1a', 'A-1b', 'A-2a', 'A-2b', 'A-2u', 'A-3a', 'A-3b', 'A-3u']
 )
 def test_important(version):
-    """Test important with cruical versions
-    """
+    """Test important with cruical versions."""
     scraper = VeraPdf('testfilename', 'application/pdf')
     scraper.version = version
     scraper.messages('Success')

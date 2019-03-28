@@ -97,7 +97,7 @@ from file_scraper.utils import hexdigest, sanitize_string,\
     ]
 )
 def test_hexdigest(filepath, extra_hash, algorithm, expected_hash):
-    """Test that hexdigest returns correct sha1 and MD5 hashes"""
+    """Test that hexdigest returns correct sha1 and MD5 hashes."""
     if algorithm is None:
         assert hexdigest(filepath, extra_hash=extra_hash) == expected_hash
     else:
@@ -116,7 +116,7 @@ def test_hexdigest(filepath, extra_hash, algorithm, expected_hash):
     ]
 )
 def test_sanitize_string(original_string, sanitized_string):
-    """Test sanitize_string"""
+    """Test sanitize_string."""
     assert sanitize_string(original_string) == sanitized_string
 
 
@@ -150,8 +150,12 @@ def test_sanitize_string(original_string, sanitized_string):
 )
 def test_iso8601_duration(seconds, expected_output):
     """
-    Test that for a given duration in seconds, a corresponding string
-    containing PT[hh]H[mm]M[ss]S is returned
+    Test that duration in seconds is converted to "PT[hh]H[mm]M[ss.ss]S".
+
+    If some parts are not present, e.g. there are no full hours or decimal
+    parts in seconds, it is checked that those parts are not present in the
+    returned string, with the exception that for a zero-duration time PT0S is
+    returned.
     """
 
     assert iso8601_duration(seconds) == expected_output
@@ -176,10 +180,7 @@ def test_iso8601_duration(seconds, expected_output):
     ]
 )
 def test_strip_zeros(float_str, expected_output):
-    """
-    Test that trailing zeroes (and only them) are stripped from a string
-    representation of a float
-    """
+    """Test stripping zeros from string representation of a float."""
 
     assert strip_zeros(float_str) == expected_output
 
@@ -259,10 +260,7 @@ def test_strip_zeros(float_str, expected_output):
     ]
 )
 def test_combine_metadata(dict1, dict2, lose, important, result_dict):
-    """
-    Test that all allowed use cases of combining stream and metadata
-    dicts are handled correctly.
-    """
+    """Test combining stream and metadata dicts."""
     assert (combine_metadata(dict1, dict2, lose=lose, important=important)
             == result_dict)
     for origdict in [dict1, dict2]:
@@ -272,10 +270,7 @@ def test_combine_metadata(dict1, dict2, lose, important, result_dict):
 
 
 def test_combine_metadata_conflict():
-    """
-    Test that combine_metadata raises a ValueError when there is unresolved
-    conflict in the two dicts.
-    """
+    """Test combining stream and metadata dicts with an unresolved conflict."""
     with pytest.raises(ValueError) as error:
         combine_metadata({0: {"key": "value1", "index": 0}},
                          {0: {"key": "value2", "index": 0}})
@@ -294,10 +289,7 @@ def test_combine_metadata_conflict():
 )
 def test_run_command(command, expected_statuscode, expected_stdout,
                      expected_stderr):
-    """
-    Test running commands normally: without directing stdout to a file or using
-    custom environment
-    """
+    """Test running commands normally."""
     (statuscode, stdout, stderr) = run_command(command)
     assert statuscode == expected_statuscode
     assert stderr == expected_stderr
@@ -307,7 +299,7 @@ def test_run_command(command, expected_statuscode, expected_stdout,
 
 
 def test_run_command_to_file():
-    """Test having output of a shell command directed to a file"""
+    """Test having output of a shell command directed to a file."""
     with TemporaryFile() as outfile:
         (statuscode, stdout, stderr) = run_command(
             ["seq", "5"], stdout=outfile)
@@ -324,7 +316,7 @@ def test_run_command_to_file():
 
 
 def test_run_command_with_env():
-    """Test using custom environment variables"""
+    """Test running commands using custom environment variables."""
     custom_env = os.environ.copy()
     custom_env["TEST_VARIABLE"] = "testing"
     (statuscode, stdout, stderr) = run_command(["printenv", "TEST_VARIABLE"],

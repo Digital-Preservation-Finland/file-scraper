@@ -19,8 +19,7 @@ import file_scraper.utils
 
 
 def test_shell(monkeypatch):
-    """Test Shell class
-    """
+    """Test Shell class."""
     # pylint: disable=unused-argument
     def _run_command(cmd, stdout=subprocess.PIPE, env=None):
         return (42, 'output message', 'error message')
@@ -33,9 +32,13 @@ def test_shell(monkeypatch):
 
 
 class BaseScraperBasic(BaseScraper):
-    """Scraper that allows only specific version in is_supported()
-    and is used for metadata collectin.
     """
+    A very basic scraper for only specific versions of one MIME type.
+
+    This scraper allows only one specific version in is_supported()
+    and is used for metadata collection.
+    """
+
     _supported = {'test/mimetype': ['0.1', '0.2']}
 
     def scrape_file(self):
@@ -49,9 +52,13 @@ class BaseScraperBasic(BaseScraper):
 
 
 class BaseScraperVersion(BaseScraperBasic):
-    """Scraper that allows any given version in is_supported()
+    """
+    A very basic scraper for multiple versions.
+
+    This scraper that allows any given version in is_supported()
     and is used for metadata collection
     """
+
     _allow_versions = True
 
     # pylint: disable=no-self-use
@@ -63,22 +70,21 @@ class BaseScraperVersion(BaseScraperBasic):
 
 
 class BaseScraperWellFormed(BaseScraperBasic):
-    """Scraper that allows only scraping for well_formed result.
-    """
+    """Scraper that allows only scraping for well_formed result."""
+
     _only_wellformed = True
 
 
 class BaseDetectorBasic(BaseDetector):
-    """Basic detector
-    """
+    """Basic detector."""
+
     # pylint: disable=too-few-public-methods
     def detect(self):
         pass
 
 
 def test_is_supported():
-    """Test scraper's is_supported() method
-    """
+    """Test scraper's is_supported() method."""
     assert BaseScraperBasic.is_supported('test/mimetype', '0.1', True)
     assert BaseScraperBasic.is_supported('test/mimetype', None, True)
     assert BaseScraperBasic.is_supported('test/mimetype', '0.1', False)
@@ -102,8 +108,7 @@ def test_is_supported():
 
 
 def test_messages_errors():
-    """Test scraper's messages and errors
-    """
+    """Test scraper's messages and errors."""
     scraper = BaseScraperBasic('testfilename', 'test/mimetype')
     scraper.messages('test message')
     scraper.messages('test message 2')
@@ -114,8 +119,7 @@ def test_messages_errors():
 
 
 def test_scraper_properties():
-    """Test scraper's attributes and well_formed property
-    """
+    """Test scraper's attributes and well_formed property."""
     scraper = BaseScraperBasic('testfilename', 'test/mimetype', True,
                                {'test': 'value'})
     scraper.messages('success')
@@ -137,14 +141,12 @@ def test_scraper_properties():
 
 
 def test_collect_elements():
-    """Test scraper's _collect_elements() method
-    """
+    """Test scraper's _collect_elements() method."""
     scraper = BaseScraperBasic('testfilename', 'test/mimetype')
     scraper._collect_elements()  # pylint: disable=protected-access
     assert scraper.streams == {
         0: {'mimetype': 'test/mimetype', 'version': None,
             'stream_type': 'test_stream', 'index': 0}}
-    # pylint: disable=redefined-variable-type
     scraper = BaseScraperVersion('testfilename', 'test/mimetype')
     scraper.version = '0.1'
     scraper._collect_elements()  # pylint: disable=protected-access
@@ -155,8 +157,7 @@ def test_collect_elements():
 
 
 def test_check_supported():
-    """Test scraper's _check_supported() method
-    """
+    """Test scraper's _check_supported() method."""
     # pylint: disable=protected-access
     scraper = BaseScraperBasic('testfilename', 'test/mimetype')
     scraper._check_supported()
@@ -184,15 +185,13 @@ def test_check_supported():
 
 
 def test_base_detector():
-    """Test base detector
-    """
+    """Test base detector."""
     detector = BaseDetectorBasic('testfilename')
     assert detector.filename == 'testfilename'
 
 
 def test_concat():
-    """Test concat function
-    """
+    """Test concat function."""
     assert concat([]) == ''
     assert concat(['test']) == 'test'
     assert concat(['test', 'test']) == 'test\ntest'

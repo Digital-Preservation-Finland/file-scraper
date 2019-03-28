@@ -82,7 +82,7 @@ STREAM_INVALID = {
     ]
 )
 def test_scraper_tif(filename, result_dict):
-    """Test scraper"""
+    """Test scraper with tiff files."""
     correct = parse_results(filename, 'image/tiff',
                             result_dict, True)
     correct.version = None
@@ -130,7 +130,7 @@ def test_scraper_tif(filename, result_dict):
     ]
 )
 def test_scraper_jpg(filename, result_dict):
-    """Test scraper"""
+    """Test scraper with jpeg files."""
     correct = parse_results(filename, 'image/jpeg',
                             result_dict, True)
     correct.streams[0]['version'] = None
@@ -165,7 +165,7 @@ def test_scraper_jpg(filename, result_dict):
     ]
 )
 def test_scraper_jp2(filename, result_dict):
-    """Test scraper"""
+    """Test scraper with jp2 files."""
     correct = parse_results(filename, 'image/jp2',
                             result_dict, True)
     correct.streams[0]['version'] = None
@@ -210,7 +210,7 @@ def test_scraper_jp2(filename, result_dict):
     ]
 )
 def test_scraper_png(filename, result_dict):
-    """Test scraper"""
+    """Test scraper with png files."""
     correct = parse_results(filename, 'image/png',
                             result_dict, True)
     correct.streams[0]['version'] = None
@@ -260,7 +260,7 @@ def test_scraper_png(filename, result_dict):
     ]
 )
 def test_scraper_gif(filename, result_dict):
-    """Test scraper"""
+    """Test scraper with gif files."""
     correct = parse_results(filename, 'image/gif',
                             result_dict, True)
     # GIF is an index image
@@ -285,7 +285,7 @@ def test_scraper_gif(filename, result_dict):
 
 
 def test_no_wellformed():
-    """Test scraper without well-formed check"""
+    """Test scraper without well-formed check."""
     scraper = ImagePil('tests/data/image_gif/valid_1987a.gif',
                        'image/gif', False)
     scraper.scrape_file()
@@ -304,7 +304,7 @@ def test_no_wellformed():
     ]
 )
 def test_is_supported(mime, ver, class_):
-    """Test is_supported method"""
+    """Test is_supported method."""
     assert class_.is_supported(mime, ver, True)
     assert class_.is_supported(mime, None, True)
     assert class_.is_supported(mime, ver, False)

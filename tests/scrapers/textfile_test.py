@@ -33,9 +33,7 @@ INVALID_MSG = 'is not a text file'
     ]
 )
 def test_existing_files(filename, mimetype, is_textfile):
-    """Test that given files are identified correctly as text files
-    and not text files.
-    """
+    """Test detecting whether file is a textfile."""
     correct = parse_results(filename, mimetype,
                             {}, True)
     scraper = CheckTextFile(correct.filename, correct.mimetype, True)

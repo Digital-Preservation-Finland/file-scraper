@@ -96,7 +96,7 @@ from tests.common import parse_results
             "stderr_part": "Invalid data found when processing input"})
     ])
 def test_ffmpeg_scraper_mpeg(filename, result_dict):
-    """Test cases for FFMpegWellformed"""
+    """Test FFMpegWellformed."""
     mimetype = 'video/mpeg'
     correct = parse_results(filename, mimetype, result_dict, True)
     scraper = FFMpegWellformed(correct.filename, mimetype, True)
@@ -131,7 +131,7 @@ def test_ffmpeg_scraper_mpeg(filename, result_dict):
             "stderr_part": "Invalid data found when processing input"})
     ])
 def test_ffmpeg_scraper_mp4(filename, result_dict):
-    """Test cases for FFMpegWellformed"""
+    """Test FFMpegWellformed."""
     mimetype = 'video/mp4'
     correct = parse_results(filename, mimetype, result_dict, True)
     scraper = FFMpegWellformed(correct.filename, mimetype, True)
@@ -171,7 +171,7 @@ def test_ffmpeg_scraper_mp4(filename, result_dict):
             "stderr_part": "could not find codec parameters"})
     ])
 def test_ffmpeg_scraper_mp3(filename, result_dict):
-    """Test cases for FFMpegWellformed"""
+    """Test FFMpegWellformed."""
     mimetype = 'audio/mpeg'
     correct = parse_results(filename, mimetype, result_dict, True)
     scraper = FFMpegWellformed(correct.filename, mimetype, True)
@@ -206,7 +206,7 @@ def test_ffmpeg_scraper_mp3(filename, result_dict):
             "stderr_part": "Invalid data found when processing input"})
     ])
 def test_ffmpeg_scraper_mpegts(filename, result_dict):
-    """Test cases for FFMpegWellformed"""
+    """Test FFMpegWellformed."""
     mimetype = 'video/MP2T'
     correct = parse_results(filename, mimetype, result_dict, True)
     scraper = FFMpegWellformed(correct.filename, mimetype, True)
@@ -225,7 +225,7 @@ def test_ffmpeg_scraper_mpegts(filename, result_dict):
 
 
 def test_no_wellformed():
-    """Test scraper without well-formed check"""
+    """Test scraper without well-formed check."""
     scraper = FFMpegWellformed('tests/data/video_mpeg/valid_1.m1v',
                                'video/mpeg', False)
     scraper.scrape_file()
@@ -244,7 +244,7 @@ def test_no_wellformed():
     ]
 )
 def test_is_supported_mpeg(mime, ver):
-    """Test is_supported method"""
+    """Test is_supported method."""
     assert FFMpegWellformed.is_supported(mime, ver, True)
     assert FFMpegWellformed.is_supported(mime, None, True)
     assert not FFMpegWellformed.is_supported(mime, ver, False)

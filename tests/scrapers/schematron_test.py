@@ -66,7 +66,7 @@ ROOTPATH = os.path.abspath(os.path.join(
     ]
 )
 def test_scraper(filename, result_dict, params):
-    """Test scraper"""
+    """Test scraper."""
 
     correct = parse_results(filename, 'text/xml',
                             result_dict, True, params)
@@ -91,7 +91,7 @@ def test_scraper(filename, result_dict, params):
 
 
 def test_no_wellformed():
-    """Test scraper without well-formed check"""
+    """Test scraper without well-formed check."""
     scraper = Schematron('tests/data/text_xml/valid_1.0_wellformed.xml',
                          'text/xml', False)
     scraper.scrape_file()
@@ -100,7 +100,7 @@ def test_no_wellformed():
 
 
 def test_is_supported():
-    """Test is_supported method"""
+    """Test is_supported method."""
     mime = 'text/xml'
     ver = '1.0'
     assert Schematron.is_supported(mime, ver, True, {'schematron': None})
@@ -112,8 +112,7 @@ def test_is_supported():
 
 
 def test_parameters():
-    """Test that parameters and default values work properly.
-    """
+    """Test that parameters and default values work properly."""
     # pylint: disable=protected-access
     scraper = Schematron('testsfile', 'test/mimetype')
     assert scraper._schematron_file is None
@@ -133,8 +132,7 @@ def test_parameters():
 
 
 def test_xslt_filename():
-    """Test that checksum for xslt filename is calculated properly.
-    """
+    """Test that checksum for xslt filename is calculated properly."""
     # pylint: disable=protected-access
     scraper = Schematron('filename', 'text/xml')
     scraper._schematron_file = 'tests/data/text_xml/local.sch'
@@ -148,8 +146,7 @@ def test_xslt_filename():
 
 
 def test_filter_duplicate_elements():
-    """Test duplicate element filtering.
-    """
+    """Test duplicate element filtering."""
     # pylint: disable=protected-access
     schtest = \
         """<svrl:schematron-output

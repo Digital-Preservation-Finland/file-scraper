@@ -48,7 +48,7 @@ MIMETYPE = 'text/html'
     ]
 )
 def test_scraper(filename, result_dict):
-    """Test scraper"""
+    """Test scraper."""
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
     scraper = Vnu(correct.filename, correct.mimetype,
@@ -67,7 +67,7 @@ def test_scraper(filename, result_dict):
 
 
 def test_no_wellformed():
-    """Test scraper without well-formed check"""
+    """Test scraper without well-formed check."""
     scraper = Vnu('tests/data/text_html/valid_5.0.html', MIMETYPE, False)
     scraper.scrape_file()
     assert 'Skipping scraper' in scraper.messages()
@@ -75,7 +75,7 @@ def test_no_wellformed():
 
 
 def test_is_supported():
-    """Test is_supported method"""
+    """Test is_supported method."""
     mime = MIMETYPE
     ver = '5.0'
     assert Vnu.is_supported(mime, ver, True)

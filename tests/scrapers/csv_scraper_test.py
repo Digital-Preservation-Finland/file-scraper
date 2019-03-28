@@ -119,7 +119,7 @@ MISSING_END_QUOTE = VALID_CSV + \
     ]
 )
 def test_scraper(testpath, csv_text, result_dict, prefix, header):
-    """Write test data and run csv scraping for the file"""
+    """Write test data and run csv scraping for the file."""
 
     with open(os.path.join(testpath, '%s.csv' % prefix), 'w') as outfile:
 
@@ -148,7 +148,7 @@ def test_scraper(testpath, csv_text, result_dict, prefix, header):
 
 
 def test_pdf_as_csv():
-    """Test CSV scraper with PDF files"""
+    """Test CSV scraper with PDF files."""
 
     scraper = Csv(PDF_PATH, MIMETYPE)
     scraper.scrape_file()
@@ -159,7 +159,7 @@ def test_pdf_as_csv():
 
 
 def test_no_parameters(testpath):
-    """Test scraper without separate parameters"""
+    """Test scraper without separate parameters."""
     with open(os.path.join(testpath, 'valid__.csv'), 'w') as outfile:
 
         outfile.write(VALID_CSV)
@@ -175,7 +175,7 @@ def test_no_parameters(testpath):
 
 
 def test_no_wellformed(testpath):
-    """Test scraper without well-formed check"""
+    """Test scraper without well-formed check."""
     with open(os.path.join(testpath, 'valid__.csv'), 'w') as outfile:
 
         outfile.write(VALID_CSV)
@@ -189,7 +189,7 @@ def test_no_wellformed(testpath):
 
 
 def test_is_supported():
-    """Test is_supported method"""
+    """Test is_supported method."""
     mime = MIMETYPE
     ver = ''
     assert Csv.is_supported(mime, ver, True)

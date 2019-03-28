@@ -48,7 +48,7 @@ from tests.scrapers.stream_dicts import MPEG1_VIDEO, MPEG2_VIDEO, \
             "stderr_part": "No audio or video tracks found"}),
     ])
 def test_mediainfo_scraper_wav(filename, result_dict):
-    """Test cases for WAV files with Mediainfo"""
+    """Test WAV scraping with Mediainfo."""
     mimetype = 'audio/x-wav'
     correct = parse_results(filename, mimetype, result_dict, True)
     scraper = WavMediainfo(correct.filename, mimetype, True)
@@ -90,7 +90,7 @@ def test_mediainfo_scraper_wav(filename, result_dict):
             "stderr_part": "No audio or video tracks found"})
     ])
 def test_mediainfo_scraper_mpeg(filename, result_dict):
-    """Test cases for MPEG files for MpegMediainfo"""
+    """Test MPEG scraping with MpegMediainfo."""
     mimetype = 'video/mpeg'
     correct = parse_results(filename, mimetype, result_dict, True)
     scraper = MpegMediainfo(correct.filename, mimetype, True)
@@ -125,7 +125,7 @@ def test_mediainfo_scraper_mpeg(filename, result_dict):
             "stderr_part": "No audio or video tracks found"})
     ])
 def test_mediainfo_scraper_mp4(filename, result_dict):
-    """Test cases for MP4 files for MpegMediainfo"""
+    """Test MP4 scraping with MpegMediainfo."""
     mimetype = 'video/mp4'
     correct = parse_results(filename, mimetype, result_dict, True)
     scraper = MpegMediainfo(correct.filename, mimetype, True)
@@ -158,7 +158,7 @@ def test_mediainfo_scraper_mp4(filename, result_dict):
             "stderr_part": "No audio or video tracks found"})
     ])
 def test_mediainfo_scraper_mp3(filename, result_dict):
-    """Test cases for MP3 files for MpegMediainfo"""
+    """Test MP3 scraping with MpegMediainfo."""
     mimetype = 'audio/mpeg'
     correct = parse_results(filename, mimetype, result_dict, True)
     scraper = MpegMediainfo(correct.filename, mimetype, True)
@@ -194,7 +194,7 @@ def test_mediainfo_scraper_mp3(filename, result_dict):
             "stderr_part": "No audio or video tracks found"})
     ])
 def test_mediainfo_scraper_mpegts(filename, result_dict):
-    """Test cases for MPEG Transport Stream with MpegMediainfo"""
+    """Test MPEG Transport Stream scraping with MpegMediainfo."""
     mimetype = 'video/MP2T'
     correct = parse_results(filename, mimetype, result_dict, True)
     scraper = MpegMediainfo(correct.filename, mimetype, True)
@@ -214,7 +214,7 @@ def test_mediainfo_scraper_mpegts(filename, result_dict):
 
 
 def test_no_wellformed():
-    """Test scraper without well-formed check"""
+    """Test scraper without well-formed check."""
     scraper = WavMediainfo('tests/data/audio_x-wav/valid__wav.wav',
                            'audio/x-wav', False)
     scraper.scrape_file()
@@ -223,7 +223,7 @@ def test_no_wellformed():
 
 
 def test_is_supported_wav():
-    """Test is_supported method"""
+    """Test is_supported method."""
     mime = 'audio/x-wav'
     ver = 2
     assert WavMediainfo.is_supported(mime, ver, True)
@@ -244,7 +244,7 @@ def test_is_supported_wav():
     ]
 )
 def test_is_supported_mpeg(mime, ver):
-    """Test is_supported method"""
+    """Test is_supported method."""
     assert MpegMediainfo.is_supported(mime, ver, True)
     assert MpegMediainfo.is_supported(mime, None, True)
     assert MpegMediainfo.is_supported(mime, ver, False)

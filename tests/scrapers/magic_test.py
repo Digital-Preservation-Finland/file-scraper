@@ -127,7 +127,7 @@ from tests.common import parse_results
         ("valid_1.0.arc", "application/x-internet-archive", ArcFileMagic),
     ])
 def test_scraper_valid(filename, mimetype, class_):
-    """Test scraper"""
+    """Test scraper."""
     result_dict = {
         'purpose': 'Test valid file.',
         'stdout_part': 'successfully',
@@ -183,7 +183,7 @@ def test_scraper_valid(filename, mimetype, class_):
         ("invalid__empty.doc", "application/msword"),
     ])
 def test_invalid_office(filename, mimetype):
-    """Test OfficeFileMagic scraper with invalid files"""
+    """Test OfficeFileMagic scraper with invalid files."""
     result_dict = {
         'purpose': 'Test invalid file.',
         'stdout_part': '',
@@ -225,7 +225,7 @@ def test_invalid_office(filename, mimetype):
          ArcFileMagic),
     ])
 def test_invalid_markdown_pdf_arc(filename, mimetype, class_):
-    """Test scrapers for invalid XML, XHTML, HTML, pdf and arc files"""
+    """Test scrapers for invalid XML, XHTML, HTML, pdf and arc files."""
     result_dict = {
         'purpose': 'Test invalid file.',
         'stdout_part': 'successfully',
@@ -265,7 +265,7 @@ def test_invalid_markdown_pdf_arc(filename, mimetype, class_):
         ("invalid_6.0_wrong_byte_order.tif", "image/tiff", TiffFileMagic),
     ])
 def test_invalid_images(filename, mimetype, class_):
-    """Test scrapes for invalid image files"""
+    """Test scrapes for invalid image files."""
     result_dict = {
         'purpose': 'Test invalid file.',
         'stdout_part': '',
@@ -299,7 +299,7 @@ def test_invalid_images(filename, mimetype, class_):
         ("invalid__empty.txt", "text/plain"),
     ])
 def test_invalid_text(filename, mimetype):
-    """Test TextFileMagic with invalid files"""
+    """Test TextFileMagic with invalid files."""
     result_dict = {
         'purpose': 'Test invalid file.',
         'stdout_part': '',
@@ -330,7 +330,7 @@ def test_invalid_text(filename, mimetype):
 
 
 def test_no_wellformed():
-    """Test scraper without well-formed check"""
+    """Test scraper without well-formed check."""
     scraper = JpegFileMagic('tests/data/image_jpeg/valid_1.01.jpg',
                             'image/jpeg', False)
     scraper.scrape_file()
@@ -371,7 +371,7 @@ def test_no_wellformed():
     ]
 )
 def test_is_supported(mime, ver, class_):
-    """Test is_supported method"""
+    """Test is_supported method."""
     assert class_.is_supported(mime, ver, True)
     assert class_.is_supported(mime, None, True)
     assert class_.is_supported(mime, ver, False)

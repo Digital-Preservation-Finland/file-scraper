@@ -29,8 +29,7 @@ from file_scraper.scrapers.lxml_encoding import XmlEncoding
     ]
 )
 def test_xml_encoding(testpath, file_encoding):
-    """Test that encoding check from XML header works.
-    """
+    """Test that encoding check from XML header works."""
     enc_match = {'latin_1': 'ISO-8859-15',
                  'utf_8': 'UTF-8',
                  'utf_16': 'UTF-16'}
@@ -47,7 +46,7 @@ def test_xml_encoding(testpath, file_encoding):
 
 
 def test_no_wellformed(testpath):
-    """Test scraper without well-formed check"""
+    """Test scraper without well-formed check."""
     (_, tmppath) = tempfile.mkstemp()
     xml = '''<?xml version="1.0" encoding="{}" ?>
              <a>åäö</a>'''.format('UTF-8')
@@ -61,7 +60,7 @@ def test_no_wellformed(testpath):
 
 
 def test_is_supported():
-    """Test is_supported method"""
+    """Test is_supported method."""
     mime = 'text/xml'
     ver = '1.0'
     assert XmlEncoding.is_supported(mime, ver, True)

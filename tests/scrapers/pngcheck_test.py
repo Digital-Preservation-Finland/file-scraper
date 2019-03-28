@@ -40,7 +40,7 @@ MIMETYPE = 'image/png'
     ]
 )
 def test_scraper(filename, result_dict):
-    """Test scraper"""
+    """Test scraper."""
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
     scraper = Pngcheck(correct.filename, correct.mimetype,
@@ -61,7 +61,7 @@ def test_scraper(filename, result_dict):
 
 
 def test_no_wellformed():
-    """Test scraper without well-formed check"""
+    """Test scraper without well-formed check."""
     scraper = Pngcheck('tests/data/image_png/valid_1.2.png',
                        'image/png', False)
     scraper.scrape_file()
@@ -70,7 +70,7 @@ def test_no_wellformed():
 
 
 def test_is_supported():
-    """Test is_supported method"""
+    """Test is_supported method."""
     mime = MIMETYPE
     ver = '1.2'
     assert Pngcheck.is_supported(mime, ver, True)
