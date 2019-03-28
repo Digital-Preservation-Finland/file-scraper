@@ -1,4 +1,4 @@
-"""Metadata scraper for image file formats"""
+"""Metadata scraper for image file formats."""
 try:
     import PIL.Image
 except ImportError:
@@ -13,11 +13,12 @@ SAMPLES_PER_PIXEL = {'1': '1', 'L': '1', 'P': '1', 'RGB': '3', 'YCbCr': '3',
 
 
 class Pil(BaseScraper):
-    """Scraper class for collecting image metadata
-    """
+    """Scraper class for collecting image metadata."""
 
     def __init__(self, filename, mimetype, check_wellformed=True, params=None):
-        """Initialize scraper
+        """
+        Initialize scraper.
+
         :filename: File path
         :mimetype: Predicted mimetype of the file
         :check_wellformed: True for the full well-formed check, False for just
@@ -29,8 +30,7 @@ class Pil(BaseScraper):
         super(Pil, self).__init__(filename, mimetype, check_wellformed, params)
 
     def scrape_file(self):
-        """Scrape data from file.
-        """
+        """Scrape data from file."""
         if not self._check_wellformed and self._only_wellformed:
             self.messages('Skipping scraper: Well-formed check not used.')
             self._collect_elements()
@@ -47,7 +47,9 @@ class Pil(BaseScraper):
             self._collect_elements()
 
     def iter_tool_streams(self, stream_type):
-        """Iterate image streams
+        """
+        Iterate image streams.
+
         :stream_type: Only image streams are allowed.
         """
         if self._pil is None:
@@ -63,7 +65,9 @@ class Pil(BaseScraper):
                     yield self._pil
 
     def set_tool_stream(self, index):
-        """Set image stream with given index
+        """
+        Set image stream with given index.
+
         :index: stream index
         """
         if self._pil is not None:
@@ -71,52 +75,44 @@ class Pil(BaseScraper):
             self._pil_index = index
 
     def _s_version(self):
-        """Return version of file
-        """
+        """Return version of file."""
         return None
 
     def _s_stream_type(self):
-        """Return stream type
-        """
+        """Return stream type."""
         return 'image'
 
     def _s_index(self):
-        """Return stream index
-        """
+        """Return stream index."""
         if self._pil_index is None:
             return 0
         return self._pil_index
 
     # pylint: disable=no-self-use
     def _s_colorspace(self):
-        """Returns colorspace
-        """
+        """Return colorspace."""
         return None
 
     def _s_width(self):
-        """Returns image width
-        """
+        """Return image width."""
         if self._pil is not None and \
                 self._pil.width is not None:
             return str(self._pil.width)
         return None
 
     def _s_height(self):
-        """Returns image height
-        """
+        """Return image height."""
         if self._pil is not None and \
                 self._pil.height is not None:
             return str(self._pil.height)
         return None
 
     def _s_bps_value(self):
-        """Returns bits per sample
-        """
+        """Return bits per sample."""
         return None
 
     def _s_bps_unit(self):
-        """Returns sample unit
-        """
+        """Return sample unit."""
         if self._pil is None:
             return None
         if self._pil.mode == 'F':
@@ -125,13 +121,11 @@ class Pil(BaseScraper):
         return 'integer'
 
     def _s_compression(self):
-        """Returns compression scheme
-        """
+        """Return compression scheme."""
         return None
 
     def _s_samples_per_pixel(self):
-        """Returns samples per pixel
-        """
+        """Return samples per pixel."""
         if self._pil is None:
             return None
         return SAMPLES_PER_PIXEL[self._pil.mode]

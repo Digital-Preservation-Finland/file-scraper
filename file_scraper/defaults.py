@@ -1,5 +1,4 @@
-"""Common constants and dictionaries
-"""
+"""Common constants and dictionaries"""
 
 MAGIC_LIBRARY = '/opt/file-5.30/lib64/libmagic.so.1'
 

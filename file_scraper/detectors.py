@@ -1,5 +1,4 @@
-"""File format detectors.
-"""
+"""File format detectors."""
 # pylint: disable=ungrouped-imports
 
 import ctypes
@@ -21,8 +20,7 @@ from file_scraper.utils import encode
 
 
 class _FidoReader(Fido):
-    """Fido wrapper to get pronom code, mimetype and version
-    """
+    """Fido wrapper to get pronom code, mimetype and version."""
 
     # Global variable in Fido
     # pylint: disable=invalid-name, global-statement
@@ -30,7 +28,10 @@ class _FidoReader(Fido):
     global defaults
 
     def __init__(self, filename):
-        """Fido is done with old-style python and does not inherit object,
+        """
+        Initialize the reader.
+
+        Fido is done with old-style python and does not inherit object,
         so super() is not available.
         :filename: File path
         """
@@ -42,8 +43,7 @@ class _FidoReader(Fido):
             'formats-v94.xml', 'format_extensions.xml'])
 
     def identify(self):
-        """Identify file format with using pronom registry
-        """
+        """Identify file format with using pronom registry."""
         versions = get_local_pronom_versions()
         defaults['xml_pronomSignature'] = versions.pronom_signature
         defaults['containersignature_file'] = \
@@ -56,8 +56,8 @@ class _FidoReader(Fido):
         self.identify_file(filename=self.filename, extension=False)
 
     def print_matches(self, fullname, matches, delta_t, matchtype=''):
-        """Use this method in FIDO to get puid, mimetype and version
-        instead of printing them to stdout
+        """Get puid, mimetype and version.
+
         :fullname: File path
         :matches: Matches tuples in Fido
         :delta_t: Not needed here, but originates from Fido
@@ -82,7 +82,8 @@ class _FidoReader(Fido):
                 self._find_mime(item)
 
     def _find_mime(self, item):
-        """Find mimetype and version in Fido
+        """Find mimetype and version in Fido.
+
         :item: Fido result
         """
         mime = item.find('mime')
@@ -98,12 +99,10 @@ class _FidoReader(Fido):
 
 
 class FidoDetector(BaseDetector):
-    """Fido detector.
-    """
+    """Fido detector."""
 
     def detect(self):
-        """Detect file format and version.
-        """
+        """Detect file format and version."""
         fido = _FidoReader(self.filename)
         fido.identify()
         self.mimetype = fido.mimetype
@@ -113,7 +112,8 @@ class FidoDetector(BaseDetector):
                      'errors': ''}
 
     def get_important(self):
-        """Important mime types.
+        """Return important mime types.
+
         :returns: Mime type
         """
         important = {}
@@ -126,12 +126,10 @@ class FidoDetector(BaseDetector):
 
 
 class MagicDetector(BaseDetector):
-    """File magic detector.
-    """
+    """File magic detector."""
 
     def detect(self):
-        """Detect mimetype.
-        """
+        """Detect mimetype."""
         magic_ = magic.open(magic.MAGIC_MIME_TYPE)
         magic_.load()
         mimetype = magic_.file(encode(self.filename))
@@ -145,7 +143,9 @@ class MagicDetector(BaseDetector):
                      'errors': ''}
 
     def get_important(self):
-        """Important mime types.
+        """
+        Important mime types.
+
         :returns: Mime type
         """
         important = {}

@@ -1,4 +1,4 @@
-"""Scraper iterator"""
+"""Scraper iterator."""
 # flake8: noqa
 # pylint:disable=unused-import
 from file_scraper.base import BaseScraper
@@ -34,7 +34,9 @@ from file_scraper.scrapers.dummy import ScraperNotFound
 
 
 def iter_detectors():
-    """Iterate detectors.
+    """
+    Iterate detectors.
+    
     We want to keep the detectors in ordered list.
     :returns: detector class
     """
@@ -44,7 +46,8 @@ def iter_detectors():
 
 def iter_scrapers(mimetype, version, check_wellformed=True, params=None):
     """
-    Iterate scrapers
+    Iterate scrapers.
+    
     :mimetype: Identified mimetype of the file
     :version: Identified file format version
     :check_wellformed: True for the full well-formed check, False for just

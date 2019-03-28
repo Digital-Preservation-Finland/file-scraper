@@ -1,4 +1,4 @@
-"""Utilities for scrapers"""
+"""Utilities for scrapers."""
 import sys
 import os
 import subprocess
@@ -8,15 +8,16 @@ import hashlib
 
 
 def encode(filename):
-    """Encode Unicode filenames
-    """
+    """Encode Unicode filenames."""
     if isinstance(filename, unicode):
         filename = filename.encode(sys.getfilesystemencoding())
     return filename
 
 
 def hexdigest(filename, algorithm='sha1', extra_hash=None):
-    """Calculte hash of given file.
+    """
+    Calculte hash of given file.
+
     :filename: File path
     :algorithm: Hash algorithm. MD5 or SHA variant.
     :extra_hash: Hash to be appended in calculation
@@ -33,7 +34,9 @@ def hexdigest(filename, algorithm='sha1', extra_hash=None):
 
 
 def sanitize_string(dirty_string):
-    """Strip non-printable control characters from unicode string
+    """
+    Strip non-printable control characters from unicode string.
+
     :dirty_string: String to sanitize
     :returns: Sanitized string
     """
@@ -44,9 +47,25 @@ def sanitize_string(dirty_string):
 
 
 def iso8601_duration(time):
-    """Convert seconds into ISO 8601 duration
-    PT[hours]H[minutes]M[seconds]S
-    with seconds given in two decimal precision.
+    """
+    Convert seconds into ISO 8601 duration.
+
+    PT[hours]H[minutes]M[seconds]S format is used with maximum of two decimal
+    places used with the seconds. If there are no hours, minutes or seconds,
+    that field is not included in the output, unless the total duration is
+    zero, at which case "PT0S" is returned.
+
+    >>> iso8601_duration(1.1)
+    "PT1.1S"
+    >>> iso8601_duration(1.001)
+    "PT1S"
+    >>> iso8601_duration(60)
+    "PT1M"
+    >>> iso8601_duration(3601)
+    "PT1H1S"
+    >>> iso8601_duration(0.001)
+    "PT0S"
+
     :time: Time in seconds
     :returns: ISO 8601 representation of time
     """
@@ -77,8 +96,21 @@ def iso8601_duration(time):
 
 
 def strip_zeros(float_str):
-    """Recursively strip trailing zeros from a float i.e. strip_zeros("44.10")
-    returns "44.1" and _srip_zeros("44.0") returns "44"
+    """
+    Recursively strip trailing zeros from a float.
+
+    Zeros in integer part are not affected. If no decimal part is left, the
+    decimal separator is also stripped. Underscores as described in PEP 515
+    are allowed in the given string and stripped where the trailing digits are
+    stripped, but otherwise unaffected.
+
+    >>> strip_zeros("44.10")
+    "44.1"
+    >>> strip_zeros("44.0")
+    "44"
+    >>> strip_zeros("1_234_000.000_000")
+    "1_234_000"
+
     :float_str: Float number as string
     :returns: Stripped float as string
     """
@@ -92,8 +124,11 @@ def strip_zeros(float_str):
 
 
 def combine_metadata(stream, metadata, lose=None, important=None):
-    """Merge metadata dict to stream metadata dict. Will raise
-    ValueError if two different values collide.
+    """
+    Merge metadata dict to stream metadata dict.
+
+    Will raise ValueError if two different values collide.
+
     :stream: Metadata dict where the new metadata is merged.
     :metadata: New metadata dict to be merged.
     :lose: These are generic values that are allowed to be lost
@@ -138,8 +173,11 @@ def combine_metadata(stream, metadata, lose=None, important=None):
 
 
 def run_command(cmd, stdout=subprocess.PIPE, env=None):
-    """Execute command. Scraper specific error handling is supported
-    by forwarding exceptions.
+    """
+    Execute command.
+
+    Scraper specific error handling is supported by forwarding exceptions.
+
     :param cmd: commandline command.
     :param stdout: a file handle can be given, for directing stdout to file.
     :param env: Override process environment variables

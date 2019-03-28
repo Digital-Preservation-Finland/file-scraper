@@ -1,5 +1,4 @@
-"""Base module for scrapers
-"""
+"""Base module for scrapers."""
 import abc
 import subprocess
 from file_scraper.utils import run_command
@@ -7,11 +6,12 @@ from file_scraper.utils import combine_metadata
 
 
 class Shell(object):
-    """Shell command handler for non-Python 3rd party software.
-    """
+    """Shell command handler for non-Python 3rd party software."""
 
     def __init__(self, command, output_file=subprocess.PIPE, env=None):
-        """Initialize instance.
+        """
+        Initialize instance.
+
         :command: Command to execute as list
         :output_file: Output file handle
         :env: Environment variables
@@ -26,27 +26,35 @@ class Shell(object):
 
     @property
     def returncode(self):
-        """Returncode from the command
+        """
+        Returncode from the command.
+
         :returns: Returncode
         """
         return self.run()["returncode"]
 
     @property
     def stderr(self):
-        """Standard error output from the command
+        """
+        Standard error output from the command.
+
         :returns: Stderr as string
         """
         return self.run()["stderr"]
 
     @property
     def stdout(self):
-        """Command standard error output.
+        """
+        Command standard error output.
+
         :returns: Stdout as string
         """
         return self.run()["stdout"]
 
     def run(self):
-        """Run the command and store results to class attributes for caching.
+        """
+        Run the command and store results to class attributes for caching.
+
         :returns: Returncode, stdout, stderr as dictionary
         """
         if self._returncode is None:
@@ -62,8 +70,7 @@ class Shell(object):
 
 
 class BaseScraper(object):
-    """Base class for scrapers.
-    """
+    """Base class for scrapers."""
     # pylint: disable=too-many-instance-attributes
 
     __metaclass__ = abc.ABCMeta
@@ -74,7 +81,9 @@ class BaseScraper(object):
                               # check, False otherwise  # noqa:E116,E114
 
     def __init__(self, filename, mimetype, check_wellformed=True, params=None):
-        """Initialize scraper.
+        """
+        Initialize scraper.
+
         :filename: File path
         :mimetype: Predicted mimetype of the file
         :check_wellformed: True for the full well-formed check, False for just
@@ -96,10 +105,14 @@ class BaseScraper(object):
     @classmethod
     def is_supported(cls, mimetype, version=None,
                      check_wellformed=True, params=None):
-        """Check
+        """
+        Return true if given MIME type and version are supported.
+
+        Check
         (1) if mimetype is supported,
         (2) if version matches (if needed),
         (3) if well-formed check is needed.
+
         :mimetype: Identified mimetype
         :version: Identified version (if needed)
         :check_wellformed: True for the full well-formed check, False for just
@@ -118,14 +131,18 @@ class BaseScraper(object):
 
     @abc.abstractmethod
     def scrape_file(self):
-        """Must implement the actual scraping in the scrapers.
+        """
+        Must implement the actual scraping in the scrapers.
+
         self._check_supported() is recommended after scraping.
         self._collect_elements() must be called in the end.
         """
         pass
 
     def messages(self, message=None):
-        """Return diagnostic messages.
+        """
+        Return diagnostic messages.
+
         :message: New message to add to the messages
         """
         if message is not None:
@@ -133,7 +150,9 @@ class BaseScraper(object):
         return concat(self._messages)
 
     def errors(self, error=None):
-        """Return error messages.
+        """
+        Return error messages.
+
         :error: New error to add to the errors
         """
         if error is not None and error != "":
@@ -142,14 +161,15 @@ class BaseScraper(object):
 
     @property
     def well_formed(self):
-        """Check if file is well-formed.
-        """
+        """Check if file is well-formed."""
         if not self._check_wellformed:
             return None
         return len(self._messages) > 0 and len(self._errors) == 0
 
     def _collect_elements(self):
-        """Collect metadata for the elements in streams.
+        """
+        Collect metadata for the elements in streams.
+
         Values returned from methods '_s_*' will be collected.
         """
         for _ in self.iter_tool_streams(None):
@@ -169,8 +189,7 @@ class BaseScraper(object):
                      'errors': self.errors()}
 
     def _check_supported(self):
-        """Check that resulted mimetype and possible version are supported.
-        """
+        """Check that resulted mimetype and possible version are supported."""
         if self._s_mimetype() is None:
             self.errors("None is not supported mimetype.")
         elif self._s_mimetype() and self._s_mimetype() not in self._supported:
@@ -181,21 +200,23 @@ class BaseScraper(object):
 
     # pylint: disable=no-self-use,unused-argument
     def iter_tool_streams(self, stream_type):
-        """Iterate streams with given stream type.
-        Implement in scraper, if needed.
-        Otherwise yield empty dict.
+        """
+        Iterate streams with given stream type.
+
+        Implement in scraper, if needed. Otherwise yield empty dict.
         """
         yield {}
 
     def set_tool_stream(self, index):
-        """Set stream. Implement in scraper, if needed.
-        Otherwise allow call but do nothing.
+        """
+        Set stream.
+
+        Implement in scraper, if needed. Otherwise allow call but do nothing.
         """
         pass
 
     def get_important(self):
-        """Return values that are more important
-        """
+        """Return values that are more important."""
         return {}
 
     # Methods starting with '_s_' will be collected to the stream results.
@@ -203,29 +224,27 @@ class BaseScraper(object):
     # See: _collect_elements
 
     def _s_mimetype(self):
-        """Return mimetype
-        """
+        """Return mimetype."""
         return self.mimetype
 
     def _s_version(self):
-        """Return version
-        """
+        """Return version."""
         return self.version
 
     def _s_index(self):
-        """Return stream index
-        """
+        """Return stream index."""
         return 0
 
     @abc.abstractmethod
     def _s_stream_type(self):
-        """Return stream type. Must be implemented in the scrapers.
-        """
+        """Return stream type. Must be implemented in the scrapers."""
         pass
 
 
 class SkipElement(object):
-    """Class used as a 'value' to tell the iterator to skip the element.
+    """
+    Class used as a 'value' to tell the iterator to skip the element.
+
     We are not able to use None or '' since those are reserved for
     other purposes already.
     """
@@ -236,15 +255,13 @@ class SkipElement(object):
 
 
 class BaseDetector(object):
-    """Class to identify file format.
-    """
+    """Class to identify file format."""
     # pylint: disable=too-few-public-methods
 
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, filename):
-        """Initialize detector
-        """
+        """Initialize detector."""
         self.filename = filename  # File path
         self.mimetype = None      # Identified mimetype
         self.version = None       # Identified file version
@@ -252,13 +269,14 @@ class BaseDetector(object):
 
     @abc.abstractmethod
     def detect(self):
-        """Detect file. Must be implemented in detectors.
-        """
+        """Detect file. Must be implemented in detectors."""
         pass
 
 
 def concat(lines, prefix=""):
-    """Join given list of strings to single string separated with newlines.
+    """
+    Join given list of strings to single string separated with newlines.
+
     :lines: List of string to join
     :prefix: Prefix to prepend each line with
     :returns: Joined lines as string

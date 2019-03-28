@@ -1,5 +1,4 @@
-"""Scraper for various binary and text file formats
-"""
+"""Scraper for various binary and text file formats."""
 # pylint: disable=ungrouped-imports
 import os.path
 import ctypes
@@ -22,13 +21,15 @@ from file_scraper.utils import encode
 
 
 class BinaryMagic(BaseScraper):
-    """Scraper for binary files"""
+    """Scraper for binary files."""
 
     _starttag = "version "  # Text before file format version in magic result.
     _endtag = None          # Text after file format version in magic result.
 
     def __init__(self, filename, mimetype, check_wellformed=True, params=None):
-        """Initialize scraper.
+        """
+        Initialize scraper.
+
         :filename: File path
         :mimetype: Predicted mimetype of the file
         :check_wellformed: True for the full well-formed check, False for just
@@ -41,8 +42,7 @@ class BinaryMagic(BaseScraper):
                                           check_wellformed, params)
 
     def scrape_file(self):
-        """Scrape binary file
-        """
+        """Scrape binary file."""
         if not self._check_wellformed and self._only_wellformed:
             self.messages('Skipping scraper: Well-formed check not used.')
             self._collect_elements()
@@ -81,8 +81,7 @@ class BinaryMagic(BaseScraper):
 
     @property
     def well_formed(self):
-        """Return well formed info
-        """
+        """Return well-formedness info."""
         if not self._check_wellformed:
             return None
         if self._s_mimetype() == self.mimetype:
@@ -90,32 +89,30 @@ class BinaryMagic(BaseScraper):
         return False
 
     def _s_mimetype(self):
-        """Return mimetype
-        """
+        """Return mimetype."""
         return self._magic_mimetype
 
     def _s_version(self):
-        """Return version
-        """
+        """Return version."""
         if self._magic_version == 'data':
             return None
         return self._magic_version
 
     def _s_stream_type(self):
-        """Return file type
-        """
+        """Return file type."""
         return 'binary'
 
 
 class TextMagic(BaseScraper):
-    """Scraper for text files
-    """
+    """Scraper for text files."""
 
     _starttag = "version "  # Text before file format version in magic result.
     _endtag = None          # Text after file format version in magic result.
 
     def __init__(self, filename, mimetype, check_wellformed=True, params=None):
-        """Initialize text magic scraper
+        """
+        Initialize text magic scraper.
+
         :filename: File path
         :mimetype: Predicted mimetype of the file
         :check_wellformed: True for the full well-formed check, False for just
@@ -129,8 +126,7 @@ class TextMagic(BaseScraper):
                                         params)
 
     def scrape_file(self):
-        """Scrape text file
-        """
+        """Scrape text file."""
         if not self._check_wellformed and self._only_wellformed:
             self.messages('Skipping scraper: Well-formed check not used.')
             self._collect_elements()
@@ -173,8 +169,7 @@ class TextMagic(BaseScraper):
 
     @property
     def well_formed(self):
-        """Return well formed info
-        """
+        """Return well formed info."""
         if not self._check_wellformed:
             return None
         if self._s_mimetype() == self.mimetype:
@@ -182,20 +177,17 @@ class TextMagic(BaseScraper):
         return False
 
     def _s_mimetype(self):
-        """Return charset
-        """
+        """Return charset."""
         return self._magic_mimetype
 
     def _s_version(self):
-        """Return version
-        """
+        """Return version."""
         if self._magic_version == 'data':
             return None
         return self._magic_version
 
     def _s_charset(self):
-        """Return charset
-        """
+        """Return charset."""
         if self._magic_charset is None:
             return None
         if self._magic_charset.upper() == 'BINARY':
@@ -211,6 +203,5 @@ class TextMagic(BaseScraper):
         return self._magic_charset.upper()
 
     def _s_stream_type(self):
-        """Return file type
-        """
+        """Return file type."""
         return 'text'

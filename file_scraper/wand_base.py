@@ -1,4 +1,4 @@
-"""Metadata scraper for image file formats"""
+"""Metadata scraper for image file formats."""
 try:
     import wand.image
 except ImportError:
@@ -8,11 +8,12 @@ from file_scraper.base import BaseScraper
 
 
 class Wand(BaseScraper):
-    """Scraper class for collecting image metadata.
-    """
+    """Scraper class for collecting image metadata."""
 
     def __init__(self, filename, mimetype, check_wellformed=True, params=None):
-        """Initialize scraper
+        """
+        Initialize scraper
+
         :filename: File path
         :mimetype: Predicted mimetype of the file
         :check_wellformed: True for the full well-formed check, False for just
@@ -26,8 +27,7 @@ class Wand(BaseScraper):
                                    params)
 
     def scrape_file(self):
-        """Scrape data from file.
-        """
+        """Scrape data from file."""
         if not self._check_wellformed and self._only_wellformed:
             self.messages('Skipping scraper: Well-formed check not used.')
             self._collect_elements()
@@ -44,7 +44,9 @@ class Wand(BaseScraper):
             self._collect_elements()
 
     def iter_tool_streams(self, stream_type):
-        """Iterate image streams
+        """
+        Iterate image streams.
+
         :stream_type: Only image streams can be iterated.
         """
         if self._wand is None:
@@ -57,56 +59,51 @@ class Wand(BaseScraper):
                 yield stream
 
     def set_tool_stream(self, index):
-        """Set image stream with given index.
+        """
+        Set image stream with given index.
+
         :index: Stream index
         """
         self._wand_stream = self._wand.sequence[index]
         self._wand_index = index
 
     def _s_version(self):
-        """Return version of file format
-        """
+        """Return version of file format."""
         return None
 
     def _s_stream_type(self):
-        """Return stream type
-        """
+        """Return stream type."""
         return 'image'
 
     def _s_index(self):
-        """Return stream index
-        """
+        """Return stream index."""
         if self._wand_index is None:
             return 0
         return self._wand_index
 
     def _s_colorspace(self):
-        """Returns colorspace
-        """
+        """Return colorspace."""
         if self._wand_stream is not None and \
                 self._wand_stream.colorspace is not None:
             return self._wand_stream.colorspace
         return None
 
     def _s_width(self):
-        """Returns image width
-        """
+        """Return image width."""
         if self._wand_stream is not None and \
                 self._wand_stream.width is not None:
             return str(self._wand_stream.width)
         return None
 
     def _s_height(self):
-        """Returns image height
-        """
+        """Return image height."""
         if self._wand_stream is not None and \
                 self._wand_stream.height is not None:
             return str(self._wand_stream.height)
         return None
 
     def _s_bps_value(self):
-        """Returns bits per sample
-        """
+        """Return bits per sample."""
         if self._wand_stream is not None and \
                 self._wand_stream.depth is not None:
             return str(self._wand_stream.depth)
@@ -114,19 +111,16 @@ class Wand(BaseScraper):
 
     # pylint: disable=no-self-use
     def _s_bps_unit(self):
-        """Returns sample unit
-        """
+        """Return sample unit."""
         return None
 
     def _s_compression(self):
-        """Returns compression scheme
-        """
+        """Return compression scheme."""
         if self._wand is not None and \
                 self._wand.compression is not None:
             return self._wand.compression
         return None
 
     def _s_samples_per_pixel(self):
-        """Returns samples per pixel
-        """
+        """Return samples per pixel."""
         return None

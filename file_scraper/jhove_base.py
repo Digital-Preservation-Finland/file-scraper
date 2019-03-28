@@ -1,4 +1,4 @@
-"""Module for checking files with Jhove scraper"""
+"""Module for checking files with Jhove scraper."""
 import os
 import abc
 try:
@@ -16,13 +16,15 @@ CP = os.path.join(JHOVE_HOME, 'bin/jhove-apps-1.18.1.jar') + ':' + EXTRA_JARS
 
 
 class JHove(BaseScraper):
-    """Base class for Jhove file format scraper"""
+    """Base class for Jhove file format scraper."""
 
     __metaclass__ = abc.ABCMeta
     _jhove_module = None         # JHove module
 
     def __init__(self, filename, mimetype, check_wellformed=True, params=None):
-        """Initialize JHove base scarper.
+        """
+        Initialize JHove base scarper.
+
         :filename: File path
         :mimetype: Predicted mimetype of the file
         :check_wellformed: True for the full well-formed check, False for just
@@ -35,7 +37,8 @@ class JHove(BaseScraper):
                                     params)
 
     def scrape_file(self):
-        """Run JHove command and store XML output to self.report
+        """
+        Run JHove command and store XML output to self.report.
         """
         exec_cmd = ['jhove', '-h', 'XML', '-m',
                     self._jhove_module, self.filename]
@@ -61,19 +64,16 @@ class JHove(BaseScraper):
         self._collect_elements()
 
     def _s_mimetype(self):
-        """Return mimetype given by JHove
-        """
+        """Return mimetype given by JHove."""
         return self.report_field('mimeType')
 
     def _s_version(self):
-        """Return version given by JHove
-        """
+        """Return version given by JHove."""
         return self.report_field("version")
 
     @abc.abstractmethod
     def _s_stream_type(self):
-        """Implement in the file format specific classes
-        """
+        """Implement in the file format specific classes."""
         pass
 
     def report_field(self, field):
