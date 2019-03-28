@@ -37,10 +37,6 @@ class JHove(BaseScraper):
     def scrape_file(self):
         """Run JHove command and store XML output to self.report
         """
-        if not self._check_wellformed and self._only_wellformed:
-            self.messages('Skipping scraper: Well-formed check not used.')
-            self._collect_elements()
-            return
         exec_cmd = ['jhove', '-h', 'XML', '-m',
                     self._jhove_module, self.filename]
         self._shell = Shell(exec_cmd)
@@ -50,6 +46,12 @@ class JHove(BaseScraper):
                 self._shell.returncode, self._shell.stderr))
 
         self._report = lxml.etree.fromstring(self._shell.stdout)
+
+        if not self._check_wellformed and self._only_wellformed:
+            self.messages('Skipping scraper: Well-formed check not used.')
+            self._collect_elements()
+            return
+
         status = self.report_field("status")
         self.messages(status)
         if 'Well-Formed and valid' not in status:

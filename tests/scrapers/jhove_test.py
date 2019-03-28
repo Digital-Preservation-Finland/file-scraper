@@ -35,7 +35,63 @@ This module tests that:
           "Improperly nested dictionary delimiters".
         - For files with wrong version in header, scraper errors contains
           "Version 1.0 is not supported."
+    - MIME type, version, streams and well-formedness of jpeg 1.01 files is
+      tested correctly
+        - For valid files, scraper messages contains "Well-formed and valid".
+        - For files with altered payload, scraper errors contains "Unexpected
+          end of file".
+        - For files without FF D8 FF start marker, scraper errors contains
+          "Invalid JPEG header".
+        - For empty files, scraper errors contains "Invalid JPEG header".
+    - MIME type, version, streams and well-formedness of html 4.01 and
+      xhtml 1.0 files is tested correctly
+        - For valid files, scraper messages contains "Well-formed and valid".
+        - For valid html file with version not supported by the scraper,
+          scraper errors contains "Unrecognized or missing DOCTYPE
+          declaration".
+        - For html files with illegal tags, scraper errors contains "Unknown
+          tag".
+        - For html files without doctype, scraper errors contains
+          "Unrecognized or missing DOCTYPE declaration".
+        - For empty files, scraper errors contains "Document is empty".
+        - For xhtml files with illegal tags, scraper errors contains "must be
+          declared".
+        - For xhtml files without doctype, scraper errors contains "Cannot
+          find the declaration of element".
+    - MIME type, version, streams and well-formedness of bwf and wav files is
+      tested correctly
+        - For valid files, scraper messages contains "Well-formed and valid".
+        - For bwf files with missing bytes, scraper messages contains "Invalid
+          character in Chunk ID".
+        - For bwf and wav files with bytes removed from the RIFF tag, scraper
+          errors contains "Invalid chunk size".
+        - For empty files, scraper errors contains "Unexpected end of file".
+        - For files with missing data bytes, scraper errors contains "Bytes
+          missing".
+
+    - When well-formedness is not checked, scraper errors contains "Skipping
+      scraper" and well_formed is None for all scrapers.
+
+    - The following MIME-type and version pairs are supported by their
+      respective scrapers when well-formedness is checked, in addition to
+      which these MIME types are also supported with None or a made up version.
+      When well-formedness is not checked, these MIME types are not supported.
+        - image/gif, 1989a
+        - image/tiff, 6.0
+        - image/jpeg, 1.01
+        - audio/x-wav, 2
+    - The following MIME type and version pairs are supported by their
+      respective scrapers when well-formedness is checked, in addition to which
+      these MIME types are also supported with None as the version. They are
+      not supported with a made up version or when well-formedness is not
+      checked.
+        - application/pdf, 1.4
+        - text/html, 4.01
+        - application/xhtml+xml, 1.0
+    - Utf8JHove reports MIME type text/plain with '', None or a made up version
+      as not supported, as well as a made up MIME type.
 """
+import os
 import pytest
 
 from file_scraper.scrapers.jhove import GifJHove, TiffJHove, PdfJHove, \
@@ -391,10 +447,24 @@ def test_scraper_wav(filename, result_dict, version):
     assert scraper.well_formed == correct.well_formed
 
 
-def test_no_wellformed():
-    """Test scraper without well-formed check"""
-    scraper = WavJHove('tests/data/audio_x-wav/valid__wav.wav',
-                       'audio/x-wav', False)
+@pytest.mark.parametrize(
+    ['scraper_class', 'filename', 'mime'],
+    [
+        (GifJHove, 'valid_1989a.gif', 'image/gif'),
+        (TiffJHove, 'valid_6.0.tif', 'image/tiff'),
+        (PdfJHove, 'valid_1.4.pdf', 'application/pdf'),
+        (Utf8JHove, 'valid__utf8.txt', 'text/plain'),
+        (JpegJHove, 'valid_1.01.jpg', 'image/jpeg'),
+        (HtmlJHove, 'valid_4.01.html', 'text/html'),
+        (WavJHove, 'valid__wav.wav', 'audio/x-wav')
+    ]
+)
+def test_no_wellformed(scraper_class, filename, mime):
+    """Test scrapers without well-formed check"""
+    scraper = scraper_class(os.path.join('tests/data/',
+                                         mime.replace('/', '_'),
+                                         filename),
+                            mime, False)
     scraper.scrape_file()
     assert 'Skipping scraper' in scraper.messages()
     assert scraper.well_formed is None
