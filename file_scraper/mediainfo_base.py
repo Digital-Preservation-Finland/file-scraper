@@ -13,7 +13,7 @@ except ImportError:
     pass
 
 from file_scraper.base import BaseScraper, SkipElementException
-from file_scraper.utils import iso8601_duration, strip_zeros, metadata
+from file_scraper.utils import iso8601_duration, strip_zeros, metadata, decode
 
 
 class Mediainfo(BaseScraper):
@@ -44,7 +44,7 @@ class Mediainfo(BaseScraper):
             self._collect_elements()
             return
         try:
-            self._mediainfo = MediaInfo.parse(self.filename)
+            self._mediainfo = MediaInfo.parse(decode(self.filename))
         except Exception as e:  # pylint: disable=invalid-name, broad-except
             self.errors('Error in analyzing file.')
             self.errors(str(e))

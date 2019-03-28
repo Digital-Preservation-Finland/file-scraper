@@ -39,7 +39,7 @@ NONE_ELEMENTS = {
 # invalid_1.0_no_doctype.xhtml - is valid text/xml
 # Xml files would require schema or catalog, this is tested in
 # unit tests of Xmllint.
-# MKV files to not have a scraper
+# MKV files do not have a scraper
 IGNORE_INVALID = [
     'tests/data/application_pdf/invalid_1.4_wrong_version.pdf',
     'tests/data/application_x-spss-por/invalid__header_corrupted.por',
@@ -142,7 +142,7 @@ def test_invalid_combined(fullname, mimetype):
 
     assert scraper.well_formed is False  # Could be also None (wrong)
     assert scraper.mimetype == mimetype or (
-            fullname in DIFFERENT_MIMETYPE_INVALID)
+        fullname in DIFFERENT_MIMETYPE_INVALID)
 
 
 @pytest.mark.parametrize(('fullname', 'mimetype'), get_files(well_formed=True))
@@ -179,23 +179,21 @@ def test_without_wellformed(fullname, mimetype):
 
 
 @pytest.mark.parametrize(('fullname', 'mimetype'), get_files(well_formed=True))
-def test_unicode_filename(testpath, fullname, mimetype):
-    """Integration test with unicode filename and with all scrapers.
-    - Test that mimetype matches.
-    - Test Find out all None elements.
-    - Test that errors are not given.
-    - Test that all files are well-formed.
-    - Ignore few files because of required parameter or missing scraper.
+def test_coded_filename(testpath, fullname, mimetype):
+    """Integration test with unicode and utf-8 filename and with all scrapers.
+    - Test that unicode filenames work with all mimetypes
+    - Test that utf-8 encoded filenames work with all mimetypes
     """
+    del mimetype
     if fullname in IGNORE_VALID + [
-        'tests/data/text_xml/valid_1.0_dtd.xml',
-        'tests/data/application_xhtml+xml//valid_1.0.xhtml']:
+            'tests/data/text_xml/valid_1.0_dtd.xml']:
         pytest.skip('[%s] in ignore' % fullname)
-    if mimetype in ['application/xhtml+xml']:
-        pytest.skip('application/xhtml+xml detected')
     ext = fullname.rsplit(".", 1)[-1]
     unicode_name = os.path.join(testpath, u'äöå.%s' % ext)
     shutil.copy(fullname, unicode_name)
     scraper = Scraper(unicode_name)
+    scraper.scrape()
+    assert scraper.well_formed
+    scraper = Scraper(unicode_name.encode('utf-8'))
     scraper.scrape()
     assert scraper.well_formed

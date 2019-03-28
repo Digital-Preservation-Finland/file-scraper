@@ -13,6 +13,13 @@ def encode(filename):
     return ensure_str(filename, encoding=sys.getfilesystemencoding())
 
 
+def decode(filename):
+    """Decode Unicode filenames."""
+    if not isinstance(filename, unicode):
+        return filename.decode(sys.getfilesystemencoding())
+    return filename
+
+
 def hexdigest(filename, algorithm='sha1', extra_hash=None):
     """Calculte hash of given file.
     :filename: File path
