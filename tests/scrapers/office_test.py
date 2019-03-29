@@ -78,7 +78,7 @@ def test_scraper_valid_file(filename, mimetype):
     correct.streams[0]['version'] = None
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper._version == correct.version
+    assert scraper.version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'Office'
     assert scraper.messages()
@@ -122,7 +122,7 @@ def test_scraper_invalid_file(filename, mimetype):
     correct.streams[0]['version'] = None
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper._version == correct.version
+    assert scraper.version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'Office'
     assert correct.stdout_part in scraper.messages()

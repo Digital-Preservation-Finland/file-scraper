@@ -100,7 +100,7 @@ def test_scraper_tif(filename, result_dict):
             correct.streams[index]['version'] = None
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper._version == correct.version
+    assert scraper.version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'TiffPil'
     if correct.well_formed:
@@ -140,7 +140,7 @@ def test_scraper_jpg(filename, result_dict):
     scraper.scrape_file()
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper._version == correct.version
+    assert scraper.version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'JpegPil'
     if correct.well_formed:
@@ -175,7 +175,7 @@ def test_scraper_jp2(filename, result_dict):
     scraper.scrape_file()
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper._version == correct.version
+    assert scraper.version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'ImagePil'
     if correct.well_formed:
@@ -220,7 +220,7 @@ def test_scraper_png(filename, result_dict):
     scraper.scrape_file()
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper._version == correct.version
+    assert scraper.version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'ImagePil'
     if correct.well_formed:
@@ -274,7 +274,7 @@ def test_scraper_gif(filename, result_dict):
     scraper.scrape_file()
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper._version == correct.version
+    assert scraper.version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'ImagePil'
     if correct.well_formed:

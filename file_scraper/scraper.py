@@ -23,7 +23,7 @@ class Scraper(object):
             filename = ensure_text(filename)
         self.filename = filename
         self.mimetype = None
-        self._version = None
+        self.version = None
         self.streams = None
         self.well_formed = None
         self.info = None
@@ -41,8 +41,8 @@ class Scraper(object):
             if self.mimetype in LOSE:
                 self.mimetype = tool.mimetype
             if self.mimetype == tool.mimetype and \
-                    self._version in LOSE:
-                self._version = tool.version
+                    self.version in LOSE:
+                self.version = tool.version
             if 'mimetype' in important and \
                     important['mimetype'] is not None:
                 self.mimetype = important['mimetype']
@@ -87,9 +87,9 @@ class Scraper(object):
         else:
             self.streams[0]['mimetype'] = self.mimetype
         if self.streams[0]['version'] is not None:
-            self._version = self.streams[0]['version']
+            self.version = self.streams[0]['version']
         else:
-            self.streams[0]['version'] = self.version()
+            self.streams[0]['version'] = self.version
 
     def scrape(self, check_wellformed=True):
         """Scrape file and collect metadata.
@@ -107,7 +107,7 @@ class Scraper(object):
 
         self._identify()
         for scraper_class in iter_scrapers(
-                mimetype=self.mimetype, version=self._version,
+                mimetype=self.mimetype, version=self.version,
                 check_wellformed=check_wellformed, params=self._params):
             scraper = scraper_class(self.filename, self.mimetype,
                                     check_wellformed, self._params)
@@ -130,9 +130,3 @@ class Scraper(object):
         :returns: Calculated checksum
         """
         return hexdigest(self.filename, algorithm)
-
-    def version(self):
-        """Version of the file
-        :return: Str if version assigned, else None.
-        """
-        return ensure_str(self._version) if self._version is not None else None

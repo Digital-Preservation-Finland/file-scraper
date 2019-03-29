@@ -149,7 +149,7 @@ def test_scraper_valid(filename, mimetype, class_):
         correct.streams[0]['charset'] = 'ISO-8859-15'
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper._version == correct.version
+    assert scraper.version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == class_.__name__
     assert correct.stdout_part in scraper.messages()
@@ -205,7 +205,7 @@ def test_invalid_office(filename, mimetype):
     correct.streams[0]['version'] = None
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper._version == correct.version
+    assert scraper.version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'OfficeFileMagic'
     assert correct.stderr_part in scraper.errors()
@@ -248,7 +248,7 @@ def test_invalid_markdown_pdf_arc(filename, mimetype, class_):
         correct.streams[0]['charset'] = 'UTF-8'
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper._version == correct.version
+    assert scraper.version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == class_.__name__
     assert correct.stdout_part in scraper.messages()
@@ -285,7 +285,7 @@ def test_invalid_images(filename, mimetype, class_):
     correct.streams[0]['version'] = None
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper._version == correct.version
+    assert scraper.version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == class_.__name__
     assert correct.stderr_part in scraper.errors()
@@ -322,7 +322,7 @@ def test_invalid_text(filename, mimetype):
     correct.streams[0]['charset'] = None
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper._version == correct.version
+    assert scraper.version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'TextFileMagic'
     assert correct.stderr_part in scraper.errors()

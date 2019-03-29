@@ -110,7 +110,7 @@ class Xmllint(BaseScraper):
             file_ = open(self.filename, 'rb')
             parser = etree.XMLParser(dtd_validation=False, no_network=True)
             tree = etree.parse(file_, parser=parser)
-            self._version = tree.docinfo.xml_version
+            self.version = tree.docinfo.xml_version
             file_.close()
         except etree.XMLSyntaxError as exception:
             self.errors("Failed: document is not well-formed.")

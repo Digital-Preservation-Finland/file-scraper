@@ -46,7 +46,7 @@ class VeraPdf(BaseScraper):
                     self.errors(shell.stdout)
                 profile = \
                     report.xpath('//validationReport')[0].get('profileName')
-                self._version = 'A' + profile.split("PDF/A")[1].split(
+                self.version = 'A' + profile.split("PDF/A")[1].split(
                     " validation profile")[0].lower()
             else:
                 self.errors(shell.stdout)
@@ -65,7 +65,7 @@ class VeraPdf(BaseScraper):
         determine the version.
         """
         if self.well_formed:
-            return self.version()
+            return self.version
         return None
 
     @metadata()

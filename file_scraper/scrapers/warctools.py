@@ -25,13 +25,13 @@ class GzipWarctools(BaseScraper):
         for class_ in [WarcWarctools, ArcWarctools]:
             scraper = class_(self.filename, None)
             scraper.scrape_file()
-            if scraper.well_formed or scraper._version is not None:
+            if scraper.well_formed or scraper.version is not None:
                 self.mimetype = scraper.mimetype
-            self._version = scraper._version
+            self.version = scraper.version
             self.streams = scraper.streams
             self.streams[0]['mimetype'] = self.mimetype
             self.info = scraper.info
-            if not scraper.well_formed and scraper._version is None:
+            if not scraper.well_formed and scraper.version is None:
                 self.info['class'] = self.__class__.__name__
             if messages is not None and not scraper.well_formed:
                 messages = messages + scraper.messages()
@@ -105,7 +105,7 @@ class WarcWarctools(BaseScraper):
 
         self.mimetype = 'application/warc'
         if len(line.split(b"WARC/", 1)) > 1:
-            self._version = ensure_str(
+            self.version = ensure_str(
                 line.split(b"WARC/", 1)[1].split(b" ")[0].strip()
             )
         if size > 0:

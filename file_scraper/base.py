@@ -95,7 +95,7 @@ class BaseScraper(object):
             params = {}
         self.filename = filename  # File name
         self.mimetype = mimetype  # Resulted mime type
-        self._version = None  # Resulted file format version
+        self.version = None  # Resulted file format version
         self.streams = {}  # Resulted streams
         self.info = None  # Class name, messages, errors
         self._importants = {}  # Important metadata and their values
@@ -189,7 +189,7 @@ class BaseScraper(object):
             dict_meta = {indexed_metadata['index']: indexed_metadata}
             self.streams = combine_metadata(self.streams, dict_meta)
         self.mimetype = self.streams[0]['mimetype']
-        self._version = self.streams[0]['version']
+        self.version = self.streams[0]['version']
         self.info = {'class': self.__class__.__name__,
                      'messages': self.messages(),
                      'errors': self.errors()}
@@ -233,7 +233,7 @@ class BaseScraper(object):
     @metadata()
     def _s_version(self):
         """Return version."""
-        return self.version()
+        return self.version
 
     @metadata()
     def _s_index(self):
@@ -245,12 +245,6 @@ class BaseScraper(object):
     def _s_stream_type(self):
         """Return stream type. Must be implemented in the scrapers."""
         pass
-
-    def version(self):
-        """Version of the file
-        :return: Str if version assigned, else None.
-        """
-        return self._version
 
     def importants(self):
         """Important metadata that should have priority when combining metadata.

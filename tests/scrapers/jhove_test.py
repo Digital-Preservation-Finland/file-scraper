@@ -134,7 +134,7 @@ def test_scraper_gif(filename, result_dict, get_ver):
             correct.streams[0]['version'] = None
 
         assert scraper.mimetype == correct.mimetype
-        assert scraper._version == correct.version
+        assert scraper.version == correct.version
         assert scraper.streams == correct.streams
         assert scraper.info['class'] == 'GifJHove'
         assert correct.stdout_part in scraper.messages()
@@ -174,7 +174,7 @@ def test_scraper_tiff(filename, result_dict):
     correct.streams[0]['version'] = '6.0'
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper._version == correct.version
+    assert scraper.version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'TiffJHove'
     assert correct.stdout_part in scraper.messages()
@@ -214,7 +214,7 @@ def test_scraper_utf8(filename, result_dict):
     correct.streams[0]['charset'] = 'UTF-8'
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper._version == correct.version
+    assert scraper.version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'Utf8JHove'
     assert correct.stdout_part in scraper.messages()
@@ -257,7 +257,7 @@ def test_scraper_pdf(filename, result_dict, version):
             correct.streams[0]['version'] = version
 
         assert scraper.mimetype == correct.mimetype
-        assert scraper._version == correct.version
+        assert scraper.version == correct.version
         assert scraper.streams == correct.streams
         assert scraper.info['class'] == 'PdfJHove'
         assert correct.stdout_part in scraper.messages()
@@ -297,7 +297,7 @@ def test_scraper_jpeg(filename, result_dict):
     correct.streams[0]['version'] = None
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper._version == correct.version
+    assert scraper.version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'JpegJHove'
     assert correct.stdout_part in scraper.messages()
@@ -377,7 +377,7 @@ def test_scraper_html(filename, result_dict, mimetype, charset, version):
         correct.streams[0]['mimetype'] = 'text/html'
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper._version == correct.version
+    assert scraper.version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'HtmlJHove'
     assert correct.stdout_part in scraper.messages()
@@ -439,7 +439,7 @@ def test_scraper_wav(filename, result_dict, version):
     correct.streams[0]['version'] = version
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper._version == correct.version
+    assert scraper.version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'WavJHove'
     assert correct.stdout_part in scraper.messages()

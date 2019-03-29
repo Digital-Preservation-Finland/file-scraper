@@ -20,6 +20,7 @@ import file_scraper.utils
 
 def test_shell(monkeypatch):
     """Test Shell class."""
+
     # pylint: disable=unused-argument
     def _run_command(cmd, stdout=subprocess.PIPE, env=None):
         return (42, b'output message', b'error message')
@@ -46,7 +47,7 @@ class BaseScraperBasic(BaseScraper):
 
     @file_scraper.utils.metadata()
     def _s_version(self):
-        return self.version()
+        return self.version
 
     @file_scraper.utils.metadata()
     def _s_stream_type(self):
@@ -152,7 +153,7 @@ def test_collect_elements():
         0: {'mimetype': 'test/mimetype', 'version': None,
             'stream_type': 'test_stream', 'index': 0}}
     scraper = BaseScraperVersion('testfilename', 'test/mimetype')
-    scraper._version = '0.1'
+    scraper.version = '0.1'
     scraper._collect_elements()  # pylint: disable=protected-access
     assert scraper.streams == {
         0: {'mimetype': 'test/mimetype', 'version': '0.1',
@@ -168,17 +169,17 @@ def test_check_supported():
     assert scraper.errors() == ''
 
     scraper = BaseScraperBasic('testfilename', 'test/mimetype')
-    scraper._version = '0.1'
+    scraper.version = '0.1'
     scraper._check_supported()
     assert scraper.errors() == ''
 
     scraper = BaseScraperBasic('testfilename', 'test/mimetype')
-    scraper._version = '0.0'
+    scraper.version = '0.0'
     scraper._check_supported()
     assert scraper.errors() == 'ERROR: Version 0.0 is not supported.'
 
     scraper = BaseScraperBasic('testfilename', 'test/falsemime')
-    scraper._version = '0.1'
+    scraper.version = '0.1'
     scraper._check_supported()
     assert scraper.errors() == 'ERROR: Mimetype test/falsemime is not ' \
                                'supported.'

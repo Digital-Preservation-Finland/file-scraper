@@ -91,7 +91,7 @@ def test_gzip_scraper(filename, result_dict):
         classname = 'GzipWarctools'
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper._version == correct.version
+    assert scraper.version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == classname
     assert correct.stdout_part in scraper.messages()
@@ -145,7 +145,7 @@ def test_warc_scraper(filename, result_dict):
         correct.streams[0]['version'] = None
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper._version == correct.version
+    assert scraper.version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'WarcWarctools'
     assert correct.stdout_part in scraper.messages()
@@ -191,7 +191,7 @@ def test_arc_scraper(filename, result_dict):
     scraper.scrape_file()
     correct.streams[0]['version'] = None
     assert scraper.mimetype == correct.mimetype
-    assert scraper._version is None  # Scraper can not solve version
+    assert scraper.version is None  # Scraper can not solve version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'ArcWarctools'
     assert correct.stdout_part in scraper.messages()

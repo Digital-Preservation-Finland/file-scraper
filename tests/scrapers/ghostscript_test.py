@@ -58,7 +58,7 @@ def test_scraper_pdf(filename, result_dict):
         correct.streams[0]['version'] = None
 
         assert scraper.mimetype == correct.mimetype
-        assert scraper._version == correct.version
+        assert scraper.version == correct.version
         assert scraper.streams == correct.streams
         assert scraper.info['class'] == 'GhostScript'
         if scraper.well_formed:

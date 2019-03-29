@@ -66,7 +66,7 @@ def test_scraper(filename, result_dict):
             correct.streams[0]['version'] = None
 
         assert scraper.mimetype == correct.mimetype
-        assert scraper._version == correct.version
+        assert scraper.version == correct.version
         assert scraper.streams == correct.streams
         assert scraper.info['class'] == 'VeraPdf'
         assert correct.stdout_part in scraper.messages()
@@ -101,7 +101,7 @@ def test_scraper_invalid_pdfa(filename, result_dict):
     correct.streams[0]['version'] = None
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper._version == correct.version
+    assert scraper.version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'VeraPdf'
     assert correct.stdout_part in scraper.messages()

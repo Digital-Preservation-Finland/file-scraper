@@ -77,7 +77,7 @@ def test_scraper(filename, result_dict, params):
     correct.streams[0]['version'] = None
 
     assert scraper.mimetype == correct.mimetype
-    assert scraper._version == correct.version
+    assert scraper.version == correct.version
     assert scraper.streams == correct.streams
     assert scraper.info['class'] == 'Schematron'
     assert correct.stdout_part in scraper.messages()
