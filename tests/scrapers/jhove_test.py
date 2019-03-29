@@ -96,7 +96,7 @@ import pytest
 
 from file_scraper.scrapers.jhove import GifJHove, TiffJHove, PdfJHove, \
     Utf8JHove, JpegJHove, HtmlJHove, WavJHove
-from tests.common import parse_results
+from tests.common import parse_results, evaluate_scraper
 
 
 @pytest.mark.parametrize(
@@ -133,13 +133,7 @@ def test_scraper_gif(filename, result_dict, get_ver):
             correct.version = None
             correct.streams[0]['version'] = None
 
-        assert scraper.mimetype == correct.mimetype
-        assert scraper.version == correct.version
-        assert scraper.streams == correct.streams
-        assert scraper.info['class'] == 'GifJHove'
-        assert correct.stdout_part in scraper.messages()
-        assert correct.stderr_part in scraper.errors()
-        assert scraper.well_formed == correct.well_formed
+        evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -173,13 +167,7 @@ def test_scraper_tiff(filename, result_dict):
     correct.version = '6.0'
     correct.streams[0]['version'] = '6.0'
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'TiffJHove'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -213,13 +201,7 @@ def test_scraper_utf8(filename, result_dict):
     correct.streams[0]['version'] = None
     correct.streams[0]['charset'] = 'UTF-8'
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'Utf8JHove'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -256,13 +238,7 @@ def test_scraper_pdf(filename, result_dict, version):
             correct.version = version
             correct.streams[0]['version'] = version
 
-        assert scraper.mimetype == correct.mimetype
-        assert scraper.version == correct.version
-        assert scraper.streams == correct.streams
-        assert scraper.info['class'] == 'PdfJHove'
-        assert correct.stdout_part in scraper.messages()
-        assert correct.stderr_part in scraper.errors()
-        assert scraper.well_formed == correct.well_formed
+        evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -296,13 +272,7 @@ def test_scraper_jpeg(filename, result_dict):
     correct.version = None
     correct.streams[0]['version'] = None
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'JpegJHove'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -376,13 +346,7 @@ def test_scraper_html(filename, result_dict, mimetype, charset, version):
         correct.mimetype = 'text/html'
         correct.streams[0]['mimetype'] = 'text/html'
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'HtmlJHove'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -438,13 +402,7 @@ def test_scraper_wav(filename, result_dict, version):
     correct.version = version
     correct.streams[0]['version'] = version
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'WavJHove'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(

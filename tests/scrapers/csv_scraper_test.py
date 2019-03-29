@@ -26,7 +26,7 @@ import os
 import pytest
 
 from file_scraper.scrapers.csv_scraper import Csv
-from tests.common import parse_results
+from tests.common import parse_results, evaluate_scraper
 
 MIMETYPE = 'text/csv'
 
@@ -136,13 +136,7 @@ def test_scraper(testpath, csv_text, result_dict, prefix, header):
             'fields': header})
     scraper.scrape_file()
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'Csv'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 def test_pdf_as_csv():

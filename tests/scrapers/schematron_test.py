@@ -36,7 +36,7 @@ This module tests that:
 import os
 import pytest
 from file_scraper.scrapers.schematron import Schematron
-from tests.common import parse_results
+from tests.common import parse_results, evaluate_scraper
 
 ROOTPATH = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '../../'))
@@ -51,7 +51,7 @@ ROOTPATH = os.path.abspath(os.path.join(
             'stderr_part': ''},
          {'schematron': os.path.join(
              ROOTPATH, 'tests/data/text_xml/local.sch'),
-          'cache': False}),
+             'cache': False}),
         ('invalid_1.0_local_xsd.xml', {
             'purpose': 'Test invalid file',
             'stdout_part': '<svrl:schematron-output',
@@ -76,13 +76,7 @@ def test_scraper(filename, result_dict, params):
     correct.version = None
     correct.streams[0]['version'] = None
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'Schematron'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
     if 'verbose' in correct.params and correct.params['verbose']:
         assert 'have been suppressed' not in scraper.messages()

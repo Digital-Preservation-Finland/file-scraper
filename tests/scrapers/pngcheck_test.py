@@ -15,9 +15,8 @@ This module tests that:
     - A made up MIME type is not supported.
 """
 import pytest
-from tests.common import parse_results
+from tests.common import parse_results, evaluate_scraper
 from file_scraper.scrapers.pngcheck import Pngcheck
-
 
 MIMETYPE = 'image/png'
 
@@ -46,18 +45,16 @@ def test_scraper(filename, result_dict):
     scraper = Pngcheck(correct.filename, correct.mimetype,
                        True, correct.params)
     scraper.scrape_file()
+    correct.version = None
     correct.streams[0]['version'] = None
-
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version is None
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'Pngcheck'
     if correct.well_formed:
-        assert 'OK' in scraper.messages()
-        assert not scraper.errors()
+        correct.stdout_part = 'OK'
+        correct.stderr_part = ''
     else:
-        assert 'ERROR' in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+        correct.stdout_part = ''
+        correct.stderr_part = 'ERROR'
+
+    evaluate_scraper(scraper, correct)
 
 
 def test_no_wellformed():

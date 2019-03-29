@@ -36,8 +36,7 @@ import os
 from multiprocessing import Pool
 import pytest
 from file_scraper.scrapers.office import Office
-from tests.common import parse_results
-
+from tests.common import parse_results, evaluate_scraper
 
 BASEPATH = 'tests/data'
 
@@ -77,13 +76,9 @@ def test_scraper_valid_file(filename, mimetype):
     correct.version = None
     correct.streams[0]['version'] = None
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'Office'
+    evaluate_scraper(scraper, correct, False)
     assert scraper.messages()
     assert not scraper.errors()
-    assert scraper.well_formed == correct.well_formed
 
 
 @pytest.mark.parametrize(
@@ -121,13 +116,7 @@ def test_scraper_invalid_file(filename, mimetype):
     correct.version = None
     correct.streams[0]['version'] = None
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'Office'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 def _scrape(filename, mimetype):

@@ -32,7 +32,7 @@ This module tests that:
 import os
 import pytest
 from file_scraper.scrapers.xmllint import Xmllint
-from tests.common import parse_results
+from tests.common import parse_results, evaluate_scraper
 
 ROOTPATH = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '../../'))
@@ -74,14 +74,8 @@ def test_scraper_valid(filename, result_dict, params):
                       True, correct.params)
     scraper.scrape_file()
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'Xmllint'
-    assert correct.stdout_part in scraper.messages()
+    evaluate_scraper(scraper, correct)
     assert '<note>' not in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
 
 
 @pytest.mark.parametrize(
@@ -133,14 +127,8 @@ def test_scraper_invalid(filename, result_dict, params):
         correct.version = None
         correct.streams[0]['version'] = None
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'Xmllint'
-    assert correct.stdout_part in scraper.messages()
+    evaluate_scraper(scraper, correct)
     assert '<note>' not in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
 
 
 def test_no_wellformed():

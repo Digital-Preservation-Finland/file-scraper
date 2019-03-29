@@ -19,9 +19,8 @@ This module tests that:
     - When well-formedness is checked, a made up MIME type is not supported.
 """
 import pytest
-from tests.common import parse_results
+from tests.common import parse_results, evaluate_scraper
 from file_scraper.scrapers.pspp import Pspp
-
 
 MIMETYPE = 'application/x-spss-por'
 
@@ -55,13 +54,7 @@ def test_scraper(filename, result_dict):
                    True, correct.params)
     scraper.scrape_file()
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'Pspp'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 def test_no_wellformed():

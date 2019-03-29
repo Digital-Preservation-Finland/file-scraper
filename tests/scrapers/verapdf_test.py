@@ -27,7 +27,7 @@ This module tests that:
       the dict is empty.
 """
 import pytest
-from tests.common import parse_results
+from tests.common import parse_results, evaluate_scraper
 from file_scraper.scrapers.verapdf import VeraPdf
 
 MIMETYPE = 'application/pdf'
@@ -65,13 +65,7 @@ def test_scraper(filename, result_dict):
             correct.version = None
             correct.streams[0]['version'] = None
 
-        assert scraper.mimetype == correct.mimetype
-        assert scraper.version == correct.version
-        assert scraper.streams == correct.streams
-        assert scraper.info['class'] == 'VeraPdf'
-        assert correct.stdout_part in scraper.messages()
-        assert correct.stderr_part in scraper.errors()
-        assert scraper.well_formed == correct.well_formed
+        evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -100,13 +94,7 @@ def test_scraper_invalid_pdfa(filename, result_dict):
     correct.version = None
     correct.streams[0]['version'] = None
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'VeraPdf'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 def test_no_wellformed():

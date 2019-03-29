@@ -59,8 +59,7 @@ This module tests that:
 """
 import pytest
 from file_scraper.scrapers.wand import TiffWand, ImageWand
-from tests.common import parse_results
-
+from tests.common import parse_results, evaluate_scraper
 
 STREAM_VALID = {
     'bps_unit': None,
@@ -146,13 +145,7 @@ def test_scraper_tif(filename, result_dict):
                        True, correct.params)
     scraper.scrape_file()
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'TiffWand'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -192,13 +185,7 @@ def test_scraper_jpg(filename, result_dict):
                         True, correct.params)
     scraper.scrape_file()
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'ImageWand'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -234,13 +221,7 @@ def test_scraper_jp2(filename, result_dict):
                         True, correct.params)
     scraper.scrape_file()
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'ImageWand'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -290,13 +271,7 @@ def test_scraper_png(filename, result_dict):
                         True, correct.params)
     scraper.scrape_file()
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'ImageWand'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -354,13 +329,7 @@ def test_scraper_gif(filename, result_dict):
                         True, correct.params)
     scraper.scrape_file()
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'ImageWand'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 def test_no_wellformed():

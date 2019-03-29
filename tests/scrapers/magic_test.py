@@ -81,7 +81,7 @@ import pytest
 from file_scraper.scrapers.magic import OfficeFileMagic, TextFileMagic, \
     XmlFileMagic, HtmlFileMagic, PngFileMagic, JpegFileMagic, TiffFileMagic, \
     Jp2FileMagic, XhtmlFileMagic, PdfFileMagic, ArcFileMagic
-from tests.common import parse_results
+from tests.common import parse_results, evaluate_scraper
 
 
 @pytest.mark.parametrize(
@@ -148,13 +148,7 @@ def test_scraper_valid(filename, mimetype, class_):
     if filename == 'valid__iso8859.txt':
         correct.streams[0]['charset'] = 'ISO-8859-15'
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == class_.__name__
-    assert correct.stdout_part in scraper.messages()
-    assert not scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -204,12 +198,7 @@ def test_invalid_office(filename, mimetype):
     correct.version = None
     correct.streams[0]['version'] = None
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'OfficeFileMagic'
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -247,13 +236,7 @@ def test_invalid_markdown_pdf_arc(filename, mimetype, class_):
     if class_ in [HtmlFileMagic, XmlFileMagic, XhtmlFileMagic]:
         correct.streams[0]['charset'] = 'UTF-8'
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == class_.__name__
-    assert correct.stdout_part in scraper.messages()
-    assert not scraper.errors()
-    assert scraper.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -284,12 +267,7 @@ def test_invalid_images(filename, mimetype, class_):
     correct.version = None
     correct.streams[0]['version'] = None
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == class_.__name__
-    assert correct.stderr_part in scraper.errors()
-    assert not scraper.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -321,12 +299,7 @@ def test_invalid_text(filename, mimetype):
     correct.streams[0]['version'] = None
     correct.streams[0]['charset'] = None
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'TextFileMagic'
-    assert correct.stderr_part in scraper.errors()
-    assert not scraper.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 def test_no_wellformed():

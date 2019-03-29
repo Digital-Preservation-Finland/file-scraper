@@ -22,8 +22,7 @@ This module tests that:
 """
 import pytest
 from file_scraper.scrapers.pil import TiffPil, JpegPil, ImagePil
-from tests.common import parse_results
-
+from tests.common import parse_results, evaluate_scraper
 
 VALID_MSG = 'successfully'
 INVALID_MSG = 'Error in analyzing file.'
@@ -87,6 +86,12 @@ def test_scraper_tif(filename, result_dict):
                             result_dict, True)
     correct.version = None
     correct.streams[0]['version'] = None
+    if correct.well_formed:
+        correct.stdout_part = VALID_MSG
+        correct.stderr_part = ''
+    else:
+        correct.stdout_part = ''
+        correct.stderr_part = INVALID_MSG
     scraper = TiffPil(correct.filename, correct.mimetype,
                       True, correct.params)
     scraper.scrape_file()
@@ -99,15 +104,7 @@ def test_scraper_tif(filename, result_dict):
                 correct.streams[0]['stream_type']
             correct.streams[index]['version'] = None
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'TiffPil'
-    if correct.well_formed:
-        assert VALID_MSG in scraper.messages()
-    else:
-        assert INVALID_MSG in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -135,19 +132,17 @@ def test_scraper_jpg(filename, result_dict):
                             result_dict, True)
     correct.streams[0]['version'] = None
     correct.version = None
+    if correct.well_formed:
+        correct.stdout_part = VALID_MSG
+        correct.stderr_part = ''
+    else:
+        correct.stdout_part = ''
+        correct.stderr_part = INVALID_MSG
     scraper = JpegPil(correct.filename, correct.mimetype,
                       True, correct.params)
     scraper.scrape_file()
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'JpegPil'
-    if correct.well_formed:
-        assert VALID_MSG in scraper.messages()
-    else:
-        assert INVALID_MSG in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -170,19 +165,17 @@ def test_scraper_jp2(filename, result_dict):
                             result_dict, True)
     correct.streams[0]['version'] = None
     correct.version = None
+    if correct.well_formed:
+        correct.stdout_part = VALID_MSG
+        correct.stderr_part = ''
+    else:
+        correct.stdout_part = ''
+        correct.stderr_part = INVALID_MSG
     scraper = ImagePil(correct.filename, correct.mimetype,
                        True, correct.params)
     scraper.scrape_file()
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'ImagePil'
-    if correct.well_formed:
-        assert VALID_MSG in scraper.messages()
-    else:
-        assert INVALID_MSG in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -215,19 +208,17 @@ def test_scraper_png(filename, result_dict):
                             result_dict, True)
     correct.streams[0]['version'] = None
     correct.version = None
+    if correct.well_formed:
+        correct.stdout_part = VALID_MSG
+        correct.stderr_part = ''
+    else:
+        correct.stdout_part = ''
+        correct.stderr_part = INVALID_MSG
     scraper = ImagePil(correct.filename, correct.mimetype,
                        True, correct.params)
     scraper.scrape_file()
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'ImagePil'
-    if correct.well_formed:
-        assert VALID_MSG in scraper.messages()
-    else:
-        assert INVALID_MSG in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -268,20 +259,17 @@ def test_scraper_gif(filename, result_dict):
         correct.streams[0]['samples_per_pixel'] = '1'
     correct.streams[0]['version'] = None
     correct.version = None
-
+    if correct.well_formed:
+        correct.stdout_part = VALID_MSG
+        correct.stderr_part = ''
+    else:
+        correct.stdout_part = ''
+        correct.stderr_part = INVALID_MSG
     scraper = ImagePil(correct.filename, correct.mimetype,
                        True, correct.params)
     scraper.scrape_file()
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'ImagePil'
-    if correct.well_formed:
-        assert VALID_MSG in scraper.messages()
-    else:
-        assert INVALID_MSG in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 def test_no_wellformed():

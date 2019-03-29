@@ -23,7 +23,7 @@ This module tests that:
     - Made up MIME type with supported version is reported as not supported
 """
 import pytest
-from tests.common import parse_results
+from tests.common import parse_results, evaluate_scraper
 from file_scraper.scrapers.ghostscript import GhostScript
 
 
@@ -56,17 +56,12 @@ def test_scraper_pdf(filename, result_dict):
         # Ghostscript cannot handle version
         correct.version = None
         correct.streams[0]['version'] = None
-
-        assert scraper.mimetype == correct.mimetype
-        assert scraper.version == correct.version
-        assert scraper.streams == correct.streams
-        assert scraper.info['class'] == 'GhostScript'
+        evaluate_scraper(scraper, correct, False)
         if scraper.well_formed:
             assert 'Error' not in scraper.messages()
         else:
             assert correct.stdout_part in scraper.messages()
         assert correct.stderr_part in scraper.errors()
-        assert scraper.well_formed == correct.well_formed
 
 
 def test_no_wellformed():
