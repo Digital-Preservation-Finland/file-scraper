@@ -250,7 +250,7 @@ class BaseScraper(object):
         """Version of the file
         :return: Str if version assigned, else None.
         """
-        return ensure_str(self._version) if self._version is not None else None
+        return self._version
 
     def importants(self):
         """Important metadata that should have priority when combining metadata.

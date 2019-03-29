@@ -3,7 +3,7 @@ import os.path
 import gzip
 import tempfile
 from io import open
-from file_scraper.utils import sanitize_string, metadata
+from file_scraper.utils import sanitize_string, metadata, ensure_str
 from file_scraper.base import BaseScraper, Shell
 
 
@@ -105,7 +105,9 @@ class WarcWarctools(BaseScraper):
 
         self.mimetype = 'application/warc'
         if len(line.split(b"WARC/", 1)) > 1:
-            self._version = line.split(b"WARC/", 1)[1].split(b" ")[0].strip()
+            self._version = ensure_str(
+                line.split(b"WARC/", 1)[1].split(b" ")[0].strip()
+            )
         if size > 0:
             self.messages('File was analyzed successfully.')
         self._check_supported()
