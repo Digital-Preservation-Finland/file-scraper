@@ -235,9 +235,8 @@ class FFMpeg(BaseScraper):
             if self._ffmpeg_stream['codec_type'] == 'video':
                 return strip_zeros(str(float(
                     self._ffmpeg_stream['bit_rate'])/1000000))
-            else:
-                return strip_zeros(str(float(
-                    self._ffmpeg_stream['bit_rate'])/1000))
+            return strip_zeros(str(float(
+                self._ffmpeg_stream['bit_rate']) / 1000))
         return '(:unav)'
 
     @metadata()

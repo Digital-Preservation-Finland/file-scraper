@@ -176,17 +176,17 @@ class BaseScraper(object):
         Values returned from methods '_s_*' will be collected.
         """
         for _ in self.iter_tool_streams(None):
-            metadata = {}
+            indexed_metadata = {}
             for method in dir(self):
                 if is_metadata(getattr(self, method)):
                     try:
-                        metadata[method[3:]] = getattr(self, method)()
+                        indexed_metadata[method[3:]] = getattr(self, method)()
                     except SkipElementException:
                         # happens when <method>-method is not to be indexed.
                         pass
                 if is_important(getattr(self, method)):
                     self._add_important(method[3:], getattr(self, method)())
-            dict_meta = {metadata['index']: metadata}
+            dict_meta = {indexed_metadata['index']: indexed_metadata}
             self.streams = combine_metadata(self.streams, dict_meta)
         self.mimetype = self.streams[0]['mimetype']
         self._version = self.streams[0]['version']

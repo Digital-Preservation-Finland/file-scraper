@@ -2,14 +2,13 @@
 import os
 import abc
 
-from file_scraper.utils import metadata, ensure_str
-
 try:
     import lxml.etree
 except ImportError:
     pass
 
 from file_scraper.base import BaseScraper, Shell
+from file_scraper.utils import metadata, ensure_str
 
 NAMESPACES = {'j': 'http://hul.harvard.edu/ois/xml/ns/jhove',
               'aes': 'http://www.aes.org/audioObject'}

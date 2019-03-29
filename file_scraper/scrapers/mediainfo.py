@@ -96,6 +96,6 @@ class MpegMediainfo(Mediainfo):
             return None
         if self._mediainfo_stream.format_version is not None:
             return str(self._mediainfo_stream.format_version)[-1]
-        elif self._s_stream_type() in ['videocontainer', 'video', 'audio']:
+        if self._s_stream_type() in ['videocontainer', 'video', 'audio']:
             return ''
         return None

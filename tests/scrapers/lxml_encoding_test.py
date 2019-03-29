@@ -18,8 +18,8 @@ This module tests that:
 
 import os
 import tempfile
-import pytest
 from io import open
+import pytest
 from file_scraper.scrapers.lxml_encoding import XmlEncoding
 
 

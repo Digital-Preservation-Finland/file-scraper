@@ -80,13 +80,11 @@ from file_scraper.iterator import iter_scrapers, iter_detectors
 def test_iter_scrapers(mimetype, version, scraper_classes):
     """Test scraper discovery."""
     scrapers = iter_scrapers(mimetype, version)
-    assert set(
-        [x.__name__ for x in scrapers]) == set(scraper_classes)
+    assert set([x.__name__ for x in scrapers]) == set(scraper_classes)
 
 
 def test_iter_detectors():
     """Test detector discovery."""
     detectors = iter_detectors()
-    assert set(
-        [x.__name__ for x in detectors]) == set(["FidoDetector",
-                                                 "MagicDetector"])
+    assert set([x.__name__ for x in detectors]) == set(["FidoDetector",
+                                                        "MagicDetector"])

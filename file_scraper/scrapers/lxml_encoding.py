@@ -1,5 +1,4 @@
 """Class for XML and HTML5 header encoding check with lxml. """
-from file_scraper.utils import metadata
 
 try:
     from lxml import etree
@@ -8,6 +7,7 @@ except ImportError:
 
 from io import open
 from file_scraper.base import BaseScraper
+from file_scraper.utils import metadata
 
 
 class XmlEncoding(BaseScraper):

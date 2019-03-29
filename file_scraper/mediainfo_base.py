@@ -245,9 +245,8 @@ class Mediainfo(BaseScraper):
             if self._mediainfo_stream.track_type == 'Video':
                 return strip_zeros(str(float(
                     self._mediainfo_stream.bit_rate) / 1000000))
-            else:
-                return strip_zeros(str(float(
-                    self._mediainfo_stream.bit_rate)/1000))
+            return strip_zeros(str(float(
+                self._mediainfo_stream.bit_rate)/1000))
         return '(:unav)'
 
     @metadata()

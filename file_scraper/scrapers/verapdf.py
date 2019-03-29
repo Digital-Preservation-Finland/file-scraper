@@ -1,5 +1,4 @@
 """PDF/A scraper."""
-from file_scraper.utils import metadata
 
 try:
     import lxml.etree as ET
@@ -7,6 +6,7 @@ except ImportError:
     pass
 
 from file_scraper.base import BaseScraper, Shell
+from file_scraper.utils import metadata
 
 VERAPDF_PATH = '/usr/share/java/verapdf/verapdf'
 

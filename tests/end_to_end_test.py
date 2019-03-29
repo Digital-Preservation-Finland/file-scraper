@@ -142,7 +142,7 @@ def test_invalid_combined(fullname, mimetype):
 
     assert scraper.well_formed is False  # Could be also None (wrong)
     assert scraper.mimetype == mimetype or (
-        fullname in DIFFERENT_MIMETYPE_INVALID)
+            fullname in DIFFERENT_MIMETYPE_INVALID)
 
 
 @pytest.mark.parametrize(('fullname', 'mimetype'), get_files(well_formed=True))
@@ -184,9 +184,8 @@ def test_coded_filename(testpath, fullname, mimetype):
     - Test that unicode filenames work with all mimetypes
     - Test that utf-8 encoded filenames work with all mimetypes
     """
-    del mimetype
-    if fullname in IGNORE_VALID + [
-            'tests/data/text_xml/valid_1.0_dtd.xml']:
+    _ = mimetype
+    if fullname in IGNORE_VALID + ['tests/data/text_xml/valid_1.0_dtd.xml']:
         pytest.skip('[%s] in ignore' % fullname)
     ext = fullname.rsplit(".", 1)[-1]
     unicode_name = os.path.join(testpath, u'äöå.%s' % ext)
