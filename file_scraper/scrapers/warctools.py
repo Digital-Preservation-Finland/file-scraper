@@ -1,5 +1,4 @@
-"""Warc file scraper
-"""
+"""Warc file scraper."""
 import os.path
 import gzip
 import tempfile
@@ -8,16 +7,14 @@ from file_scraper.base import BaseScraper, Shell
 
 
 class GzipWarctools(BaseScraper):
-    """ Scraper for compressed Warcs and Arcs.
-    """
+    """Scraper for compressed Warcs and Arcs."""
 
     _supported = {'application/gzip': []}  # Supported mimetype
     _only_wellformed = True                # Only well-formed check
     _allow_versions = True                 # Allow any version
 
     def scrape_file(self):
-        """Scrape file. If Warc fails, try Arc.
-        """
+        """Scrape file. If Warc fails, try Arc."""
         if not self._check_wellformed and self._only_wellformed:
             self.messages('Skipping scraper: Well-formed check not used.')
             self._collect_elements()
@@ -49,14 +46,16 @@ class GzipWarctools(BaseScraper):
         self.errors(errors)
 
     def _s_stream_type(self):
-        """Return file type
-        """
+        """Return file type."""
         return 'binary'
 
 
 class WarcWarctools(BaseScraper):
-    """Implements WARC file format scraper using Internet Archives warctools
-    scraper.
+    """
+    Implements WARC file format scraper.
+
+    This scraper uses Internet Archives warctools scraper.
+
     .. seealso:: https://github.com/internetarchive/warctools
     """
 
@@ -66,8 +65,7 @@ class WarcWarctools(BaseScraper):
     _allow_versions = True                 # Allow any version
 
     def scrape_file(self):
-        """Scrape WARC file.
-        """
+        """Scrape WARC file."""
         if not self._check_wellformed and self._only_wellformed:
             self.messages('Skipping scraper: Well-formed check not used.')
             self._collect_elements()
@@ -112,22 +110,24 @@ class WarcWarctools(BaseScraper):
         self._collect_elements()
 
     def _s_stream_type(self):
-        """Return file type
-        """
+        """Return file type."""
         return 'binary'
 
 
 class ArcWarctools(BaseScraper):
-    """Scraper for older arc files
-    """
+    """Scraper for older arc files."""
+
     # Supported mimetype and varsions
     _supported = {'application/x-internet-archive': ['1.0', '1.1']}
     _only_wellformed = True  # Only well-formed check
     _allow_versions = True   # Allow any version
 
     def scrape_file(self):
-        """Scrape ARC file by converting to WARC using Warctools' arc2warc
-        converter."""
+        """
+        Scrape ARC file by converting to WARC.
+
+        This is done using Warctools' arc2warc converter.
+        """
         if not self._check_wellformed and self._only_wellformed:
             self.messages('Skipping scraper: Well-formed check not used.')
             self._collect_elements()
@@ -158,6 +158,5 @@ class ArcWarctools(BaseScraper):
         self._collect_elements()
 
     def _s_stream_type(self):
-        """Return file type
-        """
+        """Return file type."""
         return 'binary'

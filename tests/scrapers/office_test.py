@@ -144,7 +144,10 @@ def _scrape(filename, mimetype):
     ]
 )
 def test_parallel_validation(filename, mimetype):
-    """Test validation in parallel. Libreoffice convert command is prone for
+    """
+    Test validation in parallel.
+
+    This is done because Libreoffice convert command is prone for
     freezing which would cause TimeOutError here.
     """
 

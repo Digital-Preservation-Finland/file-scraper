@@ -18,7 +18,7 @@ def testpath(request):
     temp_path = tempfile.mkdtemp(prefix="tests.testpath.")
 
     def fin():
-        """remove temporary path"""
+        """Remove temporary path."""
         shutil.rmtree(temp_path)
 
     request.addfinalizer(fin)

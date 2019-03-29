@@ -1,4 +1,5 @@
-"""Test module for dummy.py
+"""
+Test module for dummy.py
 
 This module tests the following scraper classes:
     - ScraperNotFound

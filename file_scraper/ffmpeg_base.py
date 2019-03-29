@@ -103,7 +103,7 @@ class FFMpeg(BaseScraper):
 
     def _s_codec_quality(self):
         """
-        Returns codec quality.
+        Return codec quality.
 
         Must be resolved, if returns None. Only values 'lossy' and 'lossless'
         are allowed.

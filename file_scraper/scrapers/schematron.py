@@ -1,5 +1,4 @@
-"""Schematron scraper.
-"""
+"""Schematron scraper."""
 import os
 import shutil
 import tempfile
@@ -9,13 +8,15 @@ from file_scraper.base import BaseScraper, Shell
 
 
 class Schematron(BaseScraper):
-    """Schematron scraper
-    """
+    """Schematron scraper."""
+
     _supported = {'text/xml': ['1.0']}  # Supported mimetypes
     _only_wellformed = True
 
     def __init__(self, filename, mimetype, check_wellformed=True, params=None):
-        """Initialize instance.
+        """
+        Initialize instance.
+
         :filename: File path
         :mimetype: Predicted mimetype of the file
         :check_wellformed: True for the full well-formed check, False for just
@@ -38,7 +39,11 @@ class Schematron(BaseScraper):
     @classmethod
     def is_supported(cls, mimetype, version=None,
                      check_wellformed=True, params=None):
-        """We use this scraper only with a schematron file
+        """
+        Return True if the MIME type and version are supported.
+
+        We use this scraper only with a schematron file.
+
         :mimetype: Identified mimetype
         :version: Identified version (if needed)
         :check_wellformed: True for the full well-formed check, False for just
@@ -55,8 +60,7 @@ class Schematron(BaseScraper):
 
     @property
     def well_formed(self):
-        """Check if document resulted errors.
-        """
+        """Check if document resulted errors."""
         if not self._check_wellformed:
             return None
         if not self.errors() and self.messages():
@@ -66,8 +70,7 @@ class Schematron(BaseScraper):
         return False
 
     def scrape_file(self):
-        """Do the Schematron check.
-        """
+        """Do the Schematron check."""
         if not self._check_wellformed and self._only_wellformed:
             self.messages('Skipping scraper: Well-formed check not used.')
             self._collect_elements()
@@ -95,13 +98,14 @@ class Schematron(BaseScraper):
         self._collect_elements()
 
     def _s_stream_type(self):
-        """Return file type
-        """
+        """Return file type."""
         return 'text'
 
     # pylint: disable=no-self-use
     def _filter_duplicate_elements(self, result):
-        """Filter duplicate elements from the result
+        """
+        Filter duplicate elements from the result.
+
         :result: Result as string
         """
         svrl = {'svrl': 'http://purl.oclc.org/dsdl/svrl'}
@@ -127,7 +131,9 @@ class Schematron(BaseScraper):
     # pylint: disable=too-many-arguments
     def _compile_phase(self, stylesheet, inputfile, allowed_codes,
                        outputfile=None, outputfilter=False):
-        """Compile one phase
+        """
+        Compile one phase.
+
         :stylesheet: XSLT file to used in the conversion
         :inputfile: Input document filename
         :outputfile: Filename of the resulted document, stdout if None
@@ -149,7 +155,9 @@ class Schematron(BaseScraper):
         return shell
 
     def _compile_schematron(self):
-        """Compile a schematron file
+        """
+        Compile a schematron file.
+
         :returns: XSLT file name
         """
         xslt_filename = self._generate_xslt_filename()
@@ -191,7 +199,9 @@ class Schematron(BaseScraper):
         return xslt_filename
 
     def _generate_xslt_filename(self):
-        """Generate XSLT filename from schematron file
+        """
+        Generate XSLT filename from schematron file.
+
         :returns: XSLT filename
         """
         try:
@@ -212,6 +222,6 @@ class Schematron(BaseScraper):
 
 
 class SchematronValidatorError(Exception):
-    """Throw error in compilation failure
-    """
+    """Throw error in case of a compilation failure."""
+
     pass

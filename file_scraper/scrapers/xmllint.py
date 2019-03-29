@@ -1,4 +1,4 @@
-""" Class for XML file well-formed check with Xmllint. """
+"""Class for XML file well-formed check with Xmllint."""
 
 import os
 import tempfile
@@ -24,7 +24,10 @@ SCHEMA_TEMPLATE = """<?xml version = "1.0" encoding = "UTF-8"?>
 
 
 class Xmllint(BaseScraper):
-    """This class implements a plugin interface for scraper module and
+    """
+    Xmllint scraper class.
+
+    This class implements a plugin interface for scraper module and
     checks if XML files are well-formed using Xmllint tool.
     .. seealso:: http://xmlsoft.org/xmllint.html
     """
@@ -33,7 +36,9 @@ class Xmllint(BaseScraper):
     _only_wellformed = True             # Only well-formed check
 
     def __init__(self, filename, mimetype, check_wellformed=True, params=None):
-        """Initialize scraper.
+        """
+        Initialize scraper.
+
         :filename: File path
         :mimetype: Predicted mimetype of the file
         :check_wellformed: True for the full well-formed check, False for just
@@ -53,7 +58,12 @@ class Xmllint(BaseScraper):
     @classmethod
     def is_supported(cls, mimetype, version=None,
                      check_wellformed=True, params=None):
-        """This is not a Schematron scraper
+        """
+        Return True if MIME type and version are supported.
+
+        This is not a Schematron scraper, so if params contain 'schematron',
+        False is returned.
+
         :mimetype: Identified mimetype
         :version: Identified version (if needed)
         :check_wellformed: True for the full well-formed check, False for just
@@ -69,7 +79,9 @@ class Xmllint(BaseScraper):
                                                 check_wellformed, params)
 
     def scrape_file(self):
-        """Check XML file with Xmllint and return a tuple of results.
+        """
+        Check XML file with Xmllint and return a tuple of results.
+
         Strategy for XML file check is
             1) Try to check syntax by opening file.
             2) If there's DTD specified in file check against that.
@@ -138,9 +150,9 @@ class Xmllint(BaseScraper):
         self._collect_elements()
 
     def construct_xsd(self, document_tree):
-        """This method constructs one schema file which collects all used
-        schemas from given document tree and imports all of them in one file.
-        :idocument_tree: XML tree (lxml.etree) where XSD is constructed
+        """
+        Construct one schema file for the given document tree.
+
         :returns: Path to the constructed XSD schema
         """
 
@@ -189,7 +201,9 @@ class Xmllint(BaseScraper):
         return []
 
     def exec_xmllint(self, dtd_check=False, schema=None):
-        """Execute xmllint.
+        """
+        Execute xmllint.
+
         :dtd_check: True, if check against DTD, false otherwise
         :schema: Schema file
         :returns: tuple including: returncode, stdout, strderr
@@ -215,8 +229,11 @@ class Xmllint(BaseScraper):
         return (shell.returncode, shell.stdout, shell.stderr)
 
     def errors(self, error=None):
-        """Remove the warning which we do not need to see from self.stderr.
+        """
+        Remove the warning which we do not need to see from self.stderr.
+
         See KDKPAS-1190.
+
         :error: Error messages
         :returns: Filtered error messages
         """
@@ -235,6 +252,5 @@ class Xmllint(BaseScraper):
         return super(Xmllint, self).errors(error)
 
     def _s_stream_type(self):
-        """Return file type
-        """
+        """Return file type."""
         return 'text'

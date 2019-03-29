@@ -293,7 +293,8 @@ class Mediainfo(BaseScraper):
         return None
 
     def _s_data_rate_mode(self):
-        """Return data rate mode.
+        """
+        Return data rate mode.
 
         Must be resolved, if returns None. The allowed values are 'Fixed' and
         'Variable'.

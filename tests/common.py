@@ -1,5 +1,4 @@
-"""Common functions for tests
-"""
+"""Common functions for tests."""
 import os
 
 

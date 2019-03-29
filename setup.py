@@ -1,4 +1,4 @@
-"""Installation script for the `file-scraper` package"""
+"""Installation script for the `file-scraper` package."""
 
 from setuptools import setup, find_packages
 

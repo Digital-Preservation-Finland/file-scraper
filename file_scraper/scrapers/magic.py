@@ -1,26 +1,23 @@
-"""Scraper for various binary and text file formats
-"""
+"""Scraper for various binary and text file formats."""
 from file_scraper.magic_base import TextMagic, BinaryMagic
 
 
 class TextFileMagic(TextMagic):
-    """Scraper for text files
-    """
+    """Scraper for text files."""
+
     # Supported mimetypes
     _supported = {'text/plain': [''], 'text/csv': ['']}
     _allow_versions = True  # Allow any version
 
     def _s_version(self):
-        """Return version
-        """
+        """Return version."""
         if self.mimetype != self._s_mimetype():
             return None
         return ''
 
 
 class XmlFileMagic(TextMagic):
-    """Scraper for xml files
-    """
+    """Scraper for xml files."""
 
     _supported = {'text/xml': ['1.0']}  # Supported mimetypes
     _starttag = 'XML '             # Text before version in magic output
@@ -30,7 +27,11 @@ class XmlFileMagic(TextMagic):
     @classmethod
     def is_supported(cls, mimetype, version=None,
                      check_wellformed=True, params=None):
-        """This is not a Schematron scraper, skip this in such case.
+        """
+        Return True if given MIME type and version are supported.
+
+        This is not a Schematron scraper, skip this in such case.
+
         :mimetype: Identified mimetype
         :version: Identified version (if needed)
         :check_wellformed: True for the full well-formed check, False for just
@@ -47,8 +48,8 @@ class XmlFileMagic(TextMagic):
 
 
 class XhtmlFileMagic(TextMagic):
-    """Scraper for (x)html files
-    """
+    """Scraper for (x)html files."""
+
     # Supported mimetypes
     _supported = {'application/xhtml+xml': ['1.0', '1.1']}
     _starttag = 'XML '      # Text before version in magic output
@@ -56,8 +57,7 @@ class XhtmlFileMagic(TextMagic):
     _allow_versions = True  # Allow any version
 
     def _s_mimetype(self):
-        """Modify result
-        """
+        """Return MIME type."""
         mime = super(XhtmlFileMagic, self)._s_mimetype()
         if mime == 'text/xml':
             return 'application/xhtml+xml'
@@ -65,21 +65,20 @@ class XhtmlFileMagic(TextMagic):
 
 
 class HtmlFileMagic(TextMagic):
-    """Scraper for (x)html files
-    """
+    """Scraper for (x)html files."""
+
     # Supported mimetypes
     _supported = {'text/html': ['4.01', '5.0']}
     _allow_versions = True  # Allow any version
 
     def _s_version(self):
-        """Return version
-        """
+        """Return version."""
         return None
 
 
 class PdfFileMagic(BinaryMagic):
-    """Scraper for PDF files
-    """
+    """Scraper for PDF files."""
+
     # Supported mimetype
     _supported = {'application/pdf': ['1.2', '1.3', '1.4', '1.5', '1.6',
                                       '1.7', 'A-1a', 'A-1b', 'A-2a', 'A-2b',
@@ -88,8 +87,8 @@ class PdfFileMagic(BinaryMagic):
 
 
 class OfficeFileMagic(BinaryMagic):
-    """Scraper for office files
-    """
+    """Scraper for office files."""
+
     # Supported mimetypes and versions
     _supported = {
         'application/vnd.oasis.opendocument.text': ['1.0', '1.1', '1.2'],
@@ -111,28 +110,25 @@ class OfficeFileMagic(BinaryMagic):
     _allow_versions = True  # Allow any version
 
     def _s_version(self):
-        """Return version
-        """
+        """Return version."""
         return None
 
 
 class ArcFileMagic(BinaryMagic):
-    """Scraper for Arc files
-    """
+    """Scraper for Arc files."""
+
     # Supported mimetype
     _supported = {'application/x-internet-archive': ['1.0', '1.1']}
     _allow_versions = True  # Allow any version
 
     def _s_mimetype(self):
-        """Return mimetype
-        """
+        """Return mimetype."""
         if self._magic_mimetype == 'application/x-ia-arc':
             return 'application/x-internet-archive'
         return self._magic_mimetype
 
     def _s_version(self):
-        """Return version
-        """
+        """Return version."""
         if self.mimetype != self._s_mimetype():
             return None
         if self._magic_version == '1':
@@ -141,27 +137,24 @@ class ArcFileMagic(BinaryMagic):
 
 
 class PngFileMagic(BinaryMagic):
-    """Scraper for PNG files
-    """
+    """Scraper for PNG files."""
+
     _supported = {'image/png': ['1.2']}  # Supported mimetype
     _allow_versions = True  # Allow any version
 
     def _s_version(self):
-        """Return version
-        """
+        """Return version."""
         if self.mimetype != self._s_mimetype():
             return None
         return '1.2'
 
     def _s_stream_type(self):
-        """Return stream type
-        """
+        """Return stream type."""
         return 'image'
 
 
 class JpegFileMagic(BinaryMagic):
-    """Scraper for JPEG files
-    """
+    """Scraper for JPEG files."""
 
     _supported = {'image/jpeg': ['1.00', '1.01', '1.02', '2.0', '2.1',
                                  '2.2', '2.2.1']}  # Supported mimetype
@@ -170,46 +163,39 @@ class JpegFileMagic(BinaryMagic):
     _allow_versions = True   # Allow any version
 
     def _s_stream_type(self):
-        """Return stream type
-        """
+        """Return stream type."""
         return 'image'
 
 
 class Jp2FileMagic(BinaryMagic):
-    """Scraper for JP2 files
-    """
+    """Scraper for JP2 files."""
 
     _supported = {'image/jp2': ['']}  # Supported mimetype
     _allow_versions = True  # Allow any version
 
     def _s_version(self):
-        """Return version
-        """
+        """Return version."""
         if self.mimetype != self._s_mimetype():
             return None
         return ''
 
     def _s_stream_type(self):
-        """Return stream type
-        """
+        """Return stream type."""
         return 'image'
 
 
 class TiffFileMagic(BinaryMagic):
-    """Scraper for TIFF files
-    """
+    """Scraper for TIFF files."""
 
     _supported = {'image/tiff': ['6.0']}  # Supported mimetype
     _allow_versions = True  # Allow any version
 
     def _s_version(self):
-        """Return version
-        """
+        """Return version."""
         if self.mimetype != self._s_mimetype():
             return None
         return '6.0'
 
     def _s_stream_type(self):
-        """Return stream type
-        """
+        """Return stream type."""
         return 'image'

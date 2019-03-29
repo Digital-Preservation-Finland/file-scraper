@@ -68,7 +68,8 @@ class Scraper(object):
                 self.well_formed = scraper.well_formed
 
     def _check_utf8(self, check_wellformed):
-        """UTF-8 check only for UTF-8.
+        """
+        UTF-8 check only for UTF-8.
 
         We know the charset after actual scraping
         """
@@ -78,7 +79,8 @@ class Scraper(object):
             self._scrape_file(scraper)
 
     def _check_mimetype_version(self):
-        """Detect the MIME type and version.
+        """
+        Detect the MIME type and version.
 
         Ideally the MIME type and version from the scraper are used, but if
         they are not used, values supplied by the detector are used.

@@ -1,5 +1,4 @@
-"""PDF/A scraper.
-"""
+"""PDF/A scraper."""
 try:
     import lxml.etree as ET
 except ImportError:
@@ -12,9 +11,8 @@ VERAPDF_PATH = '/usr/share/java/verapdf/verapdf'
 
 
 class VeraPdf(BaseScraper):
-    """
-    PDF/A scraper
-    """
+    """PDF/A scraper."""
+
     # Supported mimetypes and versions
     _supported = {
         "application/pdf": ['A-1a', 'A-1b', 'A-2a', 'A-2b', 'A-2u', 'A-3a',
@@ -22,7 +20,10 @@ class VeraPdf(BaseScraper):
     _only_wellformed = True  # Only well-formed check
 
     def scrape_file(self):
-        """Scrape file
+        """
+        Scrape file.
+
+        :raises: VeraPDFError
         """
         if not self._check_wellformed and self._only_wellformed:
             self.messages('Skipping scraper: Well-formed check not used.')
@@ -55,15 +56,18 @@ class VeraPdf(BaseScraper):
             self._collect_elements()
 
     def _s_version(self):
-        """We let other scrapers decide version, if not well-formed.
+        """
+        If the file is well-formed, return version, otherwise return None.
+
+        For files that are not PDF/A, other scrapers need to be used to
+        determine the version.
         """
         if self.well_formed:
             return self.version
         return None
 
     def get_important(self):
-        """Return important values
-        """
+        """Return important values."""
         if not self.well_formed:
             return {}
         important = {}
@@ -71,13 +75,15 @@ class VeraPdf(BaseScraper):
         return important
 
     def _s_stream_type(self):
-        """Return file type
-        """
+        """Return file type."""
         return 'binary'
 
 
 class VeraPDFError(Exception):
     """
-    VeraPDF Error
+    VeraPDF Error.
+
+    Raised if VeraPDF does not run successfully.
     """
+
     pass

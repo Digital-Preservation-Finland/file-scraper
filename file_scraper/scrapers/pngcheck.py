@@ -1,11 +1,12 @@
-"""Module for pngcheck scraper"""
+"""Module for pngcheck scraper."""
 
 from file_scraper.base import BaseScraper, Shell
 
 
 class Pngcheck(BaseScraper):
+    """
+    Pngcheck scraper.
 
-    """ Pngcheck scraper
     .. seealso:: http://www.libpng.org/pub/png/apps/pngcheck.html
     """
 
@@ -14,8 +15,7 @@ class Pngcheck(BaseScraper):
     _allow_versions = True               # Allow any version
 
     def scrape_file(self):
-        """Scrape file
-        """
+        """Scrape file."""
         if not self._check_wellformed and self._only_wellformed:
             self.messages('Skipping scraper: Well-formed check not used.')
             self._collect_elements()
@@ -31,6 +31,6 @@ class Pngcheck(BaseScraper):
         self._collect_elements()
 
     def _s_stream_type(self):
-        """Return file type
-        """
+        """Return file type."""
+
         return 'image'

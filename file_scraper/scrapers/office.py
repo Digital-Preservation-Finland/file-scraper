@@ -1,15 +1,12 @@
-"""
-This is an Office file scraper.
-"""
+"""Office file scraper."""
 import tempfile
 import shutil
 from file_scraper.base import BaseScraper, Shell
 
 
 class Office(BaseScraper):
-    """
-    Office file format scraper
-    """
+    """Office file format scraper."""
+
     # Supported mimetypes and versions
     _supported = {
         'application/vnd.oasis.opendocument.text': ['1.0', '1.1', '1.2'],
@@ -32,8 +29,7 @@ class Office(BaseScraper):
     _only_wellformed = True  # Only well-formed check
 
     def scrape_file(self):
-        """Scrape file
-        """
+        """Scrape file."""
         if not self._check_wellformed and self._only_wellformed:
             self.messages('Skipping scraper: Well-formed check not used.')
             self._collect_elements()
@@ -54,6 +50,5 @@ class Office(BaseScraper):
             self._collect_elements()
 
     def _s_stream_type(self):
-        """Return file type
-        """
+        """Return file type."""
         return 'binary'

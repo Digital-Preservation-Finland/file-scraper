@@ -1,20 +1,20 @@
-"""Scraper for CSV file formats
-"""
+"""Scraper for CSV file formats."""
 import csv
 
 from file_scraper.base import BaseScraper
 
 
 class Csv(BaseScraper):
-    """Scraper for CSV files.
-    """
+    """Scraper for CSV files."""
 
     _supported = {'text/csv': ['']}  # Supported mimetype
     _allow_versions = True           # Allow any version
     _only_wellformed = True
 
     def __init__(self, filename, mimetype, check_wellformed=True, params=None):
-        """Initialize for delimiter and separator info.
+        """
+        Initialize for delimiter and separator info.
+
         :filename: File path
         :mimetype: Predicted mimetype of the file
         :check_wellformed: True for the full well-formed check, False for just
@@ -30,8 +30,7 @@ class Csv(BaseScraper):
         super(Csv, self).__init__(filename, mimetype, check_wellformed, params)
 
     def scrape_file(self):
-        """Scrape CSV file.
-        """
+        """Scrape CSV file."""
         if not self._check_wellformed and self._only_wellformed:
             self.messages('Skipping scraper: Well-formed check not used.')
             self._collect_elements()
@@ -78,26 +77,21 @@ class Csv(BaseScraper):
             self._collect_elements()
 
     def _s_version(self):
-        """Return version
-        """
+        """Return version."""
         return ''
 
     def _s_delimiter(self):
-        """Return delimiter
-        """
+        """Return delimiter."""
         return self._csv_delimiter
 
     def _s_separator(self):
-        """Return separator
-        """
+        """Return separator."""
         return self._csv_separator
 
     def _s_first_line(self):
-        """Return first line
-        """
+        """Return first line."""
         return self._csv_first_line
 
     def _s_stream_type(self):
-        """Return file type
-        """
+        """Return file type."""
         return 'text'

@@ -1,11 +1,9 @@
-"""FFMpeg wellformed scraper
-"""
+"""FFMpeg wellformed scraper."""
 from file_scraper.base import BaseScraper, Shell
 
 
 class FFMpegWellformed(BaseScraper):
-    """FFMpeg Wellformed scraper
-    """
+    """FFMpeg Wellformed scraper."""
 
     # Supported mimetypes
     _supported = {'video/mpeg': ['1', '2'], 'video/mp4': [''],
@@ -16,8 +14,7 @@ class FFMpegWellformed(BaseScraper):
     _allow_versions = True   # Allow any version
 
     def scrape_file(self):
-        """Scrape A/V files
-        """
+        """Scrape A/V files."""
         if not self._check_wellformed and self._only_wellformed:
             self.messages('Skipping scraper: Well-formed check not used.')
             self._collect_elements()
@@ -34,11 +31,9 @@ class FFMpegWellformed(BaseScraper):
         self._collect_elements()
 
     def _s_version(self):
-        """Return version
-        """
+        """Return version."""
         return None
 
     def _s_stream_type(self):
-        """Return file type
-        """
+        """Return file type."""
         return None

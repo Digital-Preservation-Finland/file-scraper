@@ -1,22 +1,18 @@
-"""PDF scraper implemented with ghostscript.
-"""
+"""PDF scraper implemented with ghostscript."""
 
 from file_scraper.base import BaseScraper, Shell
 
 
 class GhostScript(BaseScraper):
-    """
-    Ghostscript pdf scraper.
-    """
+    """Ghostscript pdf scraper."""
+
     # Supported mimetype and versions
     _supported = {'application/pdf': ['1.7', 'A-2a', 'A-2b',
                                       'A-2u', 'A-3a', 'A-3b', 'A-3u']}
     _only_wellformed = True   # Only well-formed check
 
     def scrape_file(self):
-        """
-        Scrape file
-        """
+        """Scrape file."""
         if not self._check_wellformed and self._only_wellformed:
             self.messages('Skipping scraper: Well-formed check not used.')
             self._collect_elements()
@@ -38,6 +34,5 @@ class GhostScript(BaseScraper):
         self._collect_elements()
 
     def _s_stream_type(self):
-        """Return file type
-        """
+        """Return file type."""
         return 'binary'

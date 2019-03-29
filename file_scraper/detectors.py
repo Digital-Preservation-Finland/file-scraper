@@ -56,7 +56,8 @@ class _FidoReader(Fido):
         self.identify_file(filename=self.filename, extension=False)
 
     def print_matches(self, fullname, matches, delta_t, matchtype=''):
-        """Get puid, mimetype and version.
+        """
+        Get puid, mimetype and version.
 
         :fullname: File path
         :matches: Matches tuples in Fido
@@ -82,7 +83,8 @@ class _FidoReader(Fido):
                 self._find_mime(item)
 
     def _find_mime(self, item):
-        """Find mimetype and version in Fido.
+        """
+        Find mimetype and version in Fido.
 
         :item: Fido result
         """
@@ -112,7 +114,8 @@ class FidoDetector(BaseDetector):
                      'errors': ''}
 
     def get_important(self):
-        """Return important mime types.
+        """
+        Return important mime types.
 
         :returns: Mime type
         """

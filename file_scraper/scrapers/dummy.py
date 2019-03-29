@@ -1,39 +1,32 @@
-"""Dummy scrapers
-"""
+"""Dummy scrapers."""
 import os.path
 from file_scraper.base import BaseScraper
 
 
 class ScraperNotFound(BaseScraper):
-    """Scraper for the case where scraper was not found.
-    """
+    """Scraper for the case where scraper was not found."""
 
     def scrape_file(self):
-        """No need to scrape anything, just collect.
-        """
+        """No need to scrape anything, just collect."""
         self._collect_elements()
         self.messages('Proper scraper was not found. '
                       'The file was not analyzed.')
 
     def _s_stream_type(self):
-        """We don't know the stream type
-        """
+        """Stram type is not known so return None."""
         return None
 
     @property
     def well_formed(self):
-        """We don't know the well-formed result
-        """
+        """Well-formedness is not known so return None."""
         return None
 
 
 class FileExists(BaseScraper):
-    """Scraper for the case where file was not found.
-    """
+    """Scraper for the case where file was not found."""
 
     def scrape_file(self):
-        """Check if file exists
-        """
+        """Check if file exists."""
         if not self.filename:
             self.errors('No filename given.')
         elif os.path.isfile(self.filename):
@@ -44,13 +37,15 @@ class FileExists(BaseScraper):
 
     @property
     def well_formed(self):
-        """Let's give the actual decision to the real scrapers.
+        """
+        Return False if there are errors, otherwise None.
+
+        This is done as well-formedness of the file is not really known.
         """
         if self.errors():
             return False
         return None
 
     def _s_stream_type(self):
-        """We don't know the stream type
-        """
+        """Stream type is not known so return None."""
         return None
