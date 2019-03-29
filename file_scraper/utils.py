@@ -15,9 +15,7 @@ def encode(filename):
 
 def decode(filename):
     """Decode Unicode filenames."""
-    if not isinstance(filename, unicode):
-        return filename.decode(sys.getfilesystemencoding())
-    return filename
+    return ensure_text(filename, encoding=sys.getfilesystemencoding())
 
 
 def hexdigest(filename, algorithm='sha1', extra_hash=None):
@@ -243,7 +241,7 @@ def ensure_str(s, encoding='utf-8', errors='strict'):
 
     Direct copy from release 1.12::
 
-        https://github.com/benjaminp/six/blob/master/six.py#L892
+        https://github.com/benjaminp/six/blob/master/six.py#L872
     """
     if not isinstance(s, (six.text_type, six.binary_type)):
         raise TypeError("not expecting type '%s'" % type(s))
@@ -252,3 +250,26 @@ def ensure_str(s, encoding='utf-8', errors='strict'):
     elif six.PY3 and isinstance(s, six.binary_type):
         s = s.decode(encoding, errors)
     return s
+
+
+def ensure_text(s, encoding='utf-8', errors='strict'):
+    """Coerce *s* to six.text_type.
+
+    For Python 2:
+      - `unicode` -> `unicode`
+      - `str` -> `unicode`
+
+    For Python 3:
+      - `str` -> `str`
+      - `bytes` -> decoded to `str`
+
+    Direct copy from release 1.12::
+
+        https://github.com/benjaminp/six/blob/master/six.py#L892
+    """
+    if isinstance(s, six.binary_type):
+        return s.decode(encoding, errors)
+    elif isinstance(s, six.text_type):
+        return s
+    else:
+        raise TypeError("not expecting type '%s'" % type(s))
