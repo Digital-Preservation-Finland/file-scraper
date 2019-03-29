@@ -123,26 +123,26 @@ def strip_zeros(float_str):
     return float_str
 
 
-def combine_metadata(stream, metadata, lose=None, important=None):
+def combine_metadata(stream, indexed_metadata, lose=None, important=None):
     """Merge metadata dict to stream metadata dict.
 
     Will raise ValueError if two different values collide.
 
-    :stream: Metadata dict where the new metadata is merged.
-    :metadata: New metadata dict to be merged.
-    :lose: These are generic values that are allowed to be lost
-    :important: Important values as dict, which will be used
+    :param stream: Metadata dict where the new metadata is merged.
+    :param metadata: Indexed metadata dict to be merged with.
+    :param lose: These are generic values that are allowed to be lost
+    :param important: Important values as dict, which will be used
                 in conflict situation, if given.
-    :returns: Merged metadta
+    :returns: Merged metadata dict.
     """
-    if not metadata:
+    if not indexed_metadata:
         return stream.copy()
 
     stream = {} if stream is None else stream.copy()
     important = {} if important is None else important
     lose = [] if lose is None else lose
 
-    for stream_index, metadata_dict in six.iteritems(metadata):
+    for stream_index, metadata_dict in six.iteritems(indexed_metadata):
 
         if stream_index not in stream.keys():
             stream[stream_index] = metadata_dict

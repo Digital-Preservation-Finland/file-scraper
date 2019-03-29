@@ -3,7 +3,8 @@ from file_scraper.iterator import iter_scrapers, iter_detectors
 from file_scraper.scrapers.jhove import Utf8JHove
 from file_scraper.scrapers.textfile import CheckTextFile
 from file_scraper.scrapers.dummy import FileExists
-from file_scraper.utils import combine_metadata, hexdigest, ensure_str
+from file_scraper.utils import (combine_metadata, hexdigest, ensure_str,
+                                ensure_text)
 
 LOSE = [None, '(:unav)', '(:unap)']
 
@@ -18,6 +19,8 @@ class Scraper(object):
         :filename: File path
         :kwargs: Extra arguments for certain scrapers
         """
+        if filename is not None:
+            filename = ensure_text(filename)
         self.filename = filename
         self.mimetype = None
         self._version = None
@@ -54,7 +57,7 @@ class Scraper(object):
         scraper.scrape_file()
         self._important.update(scraper.importants())
         self.streams = combine_metadata(
-            stream=self.streams, metadata=scraper.streams,
+            stream=self.streams, indexed_metadata=scraper.streams,
             lose=LOSE, important=self._important)
         self.info[len(self.info)] = scraper.info
         if scraper.well_formed is not None:
