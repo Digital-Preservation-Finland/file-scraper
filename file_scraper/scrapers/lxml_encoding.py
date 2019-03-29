@@ -27,7 +27,7 @@ class XmlEncoding(BaseScraper):
                            detection and metadata scraping
         :params: Extra parameters: delimiter and separator
         """
-        self._charset = None
+        self.charset = None
         super(XmlEncoding, self).__init__(filename, mimetype,
                                           check_wellformed, params)
 
@@ -63,7 +63,7 @@ class XmlEncoding(BaseScraper):
                                  recover=True)
         file_ = open(self.filename, 'rb')
         tree = etree.parse(file_, parser)
-        self._charset = tree.docinfo.encoding
+        self.charset = tree.docinfo.encoding
         self.messages('Encoding metadata found.')
         self._check_supported()
         self._collect_elements()
@@ -71,7 +71,7 @@ class XmlEncoding(BaseScraper):
     @metadata()
     def _charset(self):
         """Return charset."""
-        return self._charset
+        return self.charset
 
     @metadata()
     def _stream_type(self):
