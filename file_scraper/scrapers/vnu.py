@@ -27,11 +27,11 @@ class Vnu(BaseScraper):
         self._collect_elements()
 
     @metadata()
-    def _s_version(self):
+    def _version(self):
         """Return version."""
         return '5.0'
 
     @metadata()
-    def _s_stream_type(self):
+    def _stream_type(self):
         """Return file type."""
         return 'text'

@@ -35,6 +35,6 @@ class GhostScript(BaseScraper):
         self._collect_elements()
 
     @metadata()
-    def _s_stream_type(self):
+    def _stream_type(self):
         """Return file type."""
         return 'binary'

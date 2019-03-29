@@ -81,17 +81,17 @@ class Pil(BaseScraper):
             self._pil_index = index
 
     @metadata()
-    def _s_version(self):
+    def _version(self):
         """Return version of file."""
         return None
 
     @metadata()
-    def _s_stream_type(self):
+    def _stream_type(self):
         """Return stream type."""
         return 'image'
 
     @metadata()
-    def _s_index(self):
+    def _index(self):
         """Return stream index."""
         if self._pil_index is None:
             return 0
@@ -99,12 +99,12 @@ class Pil(BaseScraper):
 
     # pylint: disable=no-self-use
     @metadata()
-    def _s_colorspace(self):
+    def _colorspace(self):
         """Return colorspace."""
         return None
 
     @metadata()
-    def _s_width(self):
+    def _width(self):
         """Return image width."""
         if self._pil is not None and \
                 self._pil.width is not None:
@@ -112,7 +112,7 @@ class Pil(BaseScraper):
         return None
 
     @metadata()
-    def _s_height(self):
+    def _height(self):
         """Return image height."""
         if self._pil is not None and \
                 self._pil.height is not None:
@@ -120,12 +120,12 @@ class Pil(BaseScraper):
         return None
 
     @metadata()
-    def _s_bps_value(self):
+    def _bps_value(self):
         """Return bits per sample."""
         return None
 
     @metadata()
-    def _s_bps_unit(self):
+    def _bps_unit(self):
         """Return sample unit."""
         if self._pil is None:
             return None
@@ -135,12 +135,12 @@ class Pil(BaseScraper):
         return 'integer'
 
     @metadata()
-    def _s_compression(self):
+    def _compression(self):
         """Return compression scheme."""
         return None
 
     @metadata()
-    def _s_samples_per_pixel(self):
+    def _samples_per_pixel(self):
         """Return samples per pixel."""
         if self._pil is None:
             return None

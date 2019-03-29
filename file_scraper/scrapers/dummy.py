@@ -14,8 +14,8 @@ class ScraperNotFound(BaseScraper):
                       'The file was not analyzed.')
 
     @metadata()
-    def _s_stream_type(self):
-        """Stram type is not known so return None."""
+    def _stream_type(self):
+        """Stream type is not known so return None."""
         return None
 
     @property
@@ -49,6 +49,6 @@ class FileExists(BaseScraper):
         return None
 
     @metadata()
-    def _s_stream_type(self):
+    def _stream_type(self):
         """Stream type is not known so return None."""
         return None

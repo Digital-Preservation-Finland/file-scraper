@@ -57,7 +57,7 @@ class VeraPdf(BaseScraper):
             self._collect_elements()
 
     @metadata(important=True)
-    def _s_version(self):
+    def _version(self):
         """
         If the file is well-formed, return version, otherwise return None.
 
@@ -77,7 +77,9 @@ class VeraPdf(BaseScraper):
         important['version'] = self.version
         return important
 
-    def _s_stream_type(self):
+
+    @metadata()
+    def _stream_type(self):
         """Return file type."""
         return 'binary'
 

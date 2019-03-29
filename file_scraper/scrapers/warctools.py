@@ -47,7 +47,7 @@ class GzipWarctools(BaseScraper):
         self.errors(errors)
 
     @metadata()
-    def _s_stream_type(self):
+    def _stream_type(self):
         """Return file type."""
         return 'binary'
 
@@ -114,7 +114,7 @@ class WarcWarctools(BaseScraper):
         self._collect_elements()
 
     @metadata()
-    def _s_stream_type(self):
+    def _stream_type(self):
         """Return file type."""
         return 'binary'
 
@@ -163,6 +163,6 @@ class ArcWarctools(BaseScraper):
         self._collect_elements()
 
     @metadata()
-    def _s_stream_type(self):
+    def _stream_type(self):
         """Return file type."""
         return 'binary'

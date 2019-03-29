@@ -11,9 +11,9 @@ class TextFileMagic(TextMagic):
     _allow_versions = True  # Allow any version
 
     @metadata()
-    def _s_version(self):
+    def _version(self):
         """Return version."""
-        if self.mimetype != self._s_mimetype():
+        if self.mimetype != self._mimetype():
             return None
         return ''
 
@@ -59,9 +59,9 @@ class XhtmlFileMagic(TextMagic):
     _allow_versions = True  # Allow any version
 
     @metadata()
-    def _s_mimetype(self):
+    def _mimetype(self):
         """Return MIME type."""
-        mime = super(XhtmlFileMagic, self)._s_mimetype()
+        mime = super(XhtmlFileMagic, self)._mimetype()
         if mime == 'text/xml':
             return 'application/xhtml+xml'
         return mime
@@ -75,7 +75,7 @@ class HtmlFileMagic(TextMagic):
     _allow_versions = True  # Allow any version
 
     @metadata()
-    def _s_version(self):
+    def _version(self):
         """Return version."""
         return None
 
@@ -114,7 +114,7 @@ class OfficeFileMagic(BinaryMagic):
     _allow_versions = True  # Allow any version
 
     @metadata()
-    def _s_version(self):
+    def _version(self):
         """Return version."""
         return None
 
@@ -127,16 +127,16 @@ class ArcFileMagic(BinaryMagic):
     _allow_versions = True  # Allow any version
 
     @metadata()
-    def _s_mimetype(self):
+    def _mimetype(self):
         """Return mimetype."""
         if self._magic_mimetype == 'application/x-ia-arc':
             return 'application/x-internet-archive'
         return self._magic_mimetype
 
     @metadata()
-    def _s_version(self):
+    def _version(self):
         """Return version."""
-        if self.mimetype != self._s_mimetype():
+        if self.mimetype != self._mimetype():
             return None
         if self._magic_version == '1':
             return '1.0'
@@ -150,14 +150,14 @@ class PngFileMagic(BinaryMagic):
     _allow_versions = True  # Allow any version
 
     @metadata()
-    def _s_version(self):
+    def _version(self):
         """Return version."""
-        if self.mimetype != self._s_mimetype():
+        if self.mimetype != self._mimetype():
             return None
         return '1.2'
 
     @metadata()
-    def _s_stream_type(self):
+    def _stream_type(self):
         """Return stream type."""
         return 'image'
 
@@ -172,7 +172,7 @@ class JpegFileMagic(BinaryMagic):
     _allow_versions = True   # Allow any version
 
     @metadata()
-    def _s_stream_type(self):
+    def _stream_type(self):
         """Return stream type."""
         return 'image'
 
@@ -184,14 +184,14 @@ class Jp2FileMagic(BinaryMagic):
     _allow_versions = True  # Allow any version
 
     @metadata()
-    def _s_version(self):
+    def _version(self):
         """Return version."""
-        if self.mimetype != self._s_mimetype():
+        if self.mimetype != self._mimetype():
             return None
         return ''
 
     @metadata()
-    def _s_stream_type(self):
+    def _stream_type(self):
         """Return stream type."""
         return 'image'
 
@@ -203,13 +203,13 @@ class TiffFileMagic(BinaryMagic):
     _allow_versions = True  # Allow any version
 
     @metadata()
-    def _s_version(self):
+    def _version(self):
         """Return version."""
-        if self.mimetype != self._s_mimetype():
+        if self.mimetype != self._mimetype():
             return None
         return '6.0'
 
     @metadata()
-    def _s_stream_type(self):
+    def _stream_type(self):
         """Return stream type."""
         return 'image'

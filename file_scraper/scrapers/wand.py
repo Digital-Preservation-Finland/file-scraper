@@ -10,7 +10,7 @@ class TiffWand(Wand):
     _allow_versions = True                 # Allow any version
 
     @metadata()
-    def _s_byte_order(self):
+    def _byte_order(self):
         """Return byte order."""
         if self._wand is None:
             return None

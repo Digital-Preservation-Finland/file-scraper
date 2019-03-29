@@ -66,13 +66,13 @@ class BinaryMagic(BaseScraper):
             if self._endtag:
                 self._magic_version = self._magic_version.split(
                     self._endtag)[0]
-            if self._s_mimetype() == self.mimetype or \
-                    (self._s_mimetype() in MIMETYPE_DICT and
-                     MIMETYPE_DICT[self._s_mimetype()] == self.mimetype):
+            if self._mimetype() == self.mimetype or \
+                    (self._mimetype() in MIMETYPE_DICT and
+                     MIMETYPE_DICT[self._mimetype()] == self.mimetype):
                 self.messages('The file was analyzed successfully.')
             else:
                 self.errors('Given mimetype %s and detected mimetype %s do '
-                            'not match.' % (self.mimetype, self._s_mimetype()))
+                            'not match.' % (self.mimetype, self._mimetype()))
         except Exception as e:  # pylint: disable=invalid-name, broad-except
             self.errors('Error in analyzing file.')
             self.errors(str(e))
@@ -85,24 +85,24 @@ class BinaryMagic(BaseScraper):
         """Return well-formedness info."""
         if not self._check_wellformed:
             return None
-        if self._s_mimetype() == self.mimetype:
+        if self._mimetype() == self.mimetype:
             return super(BinaryMagic, self).well_formed
         return False
 
     @metadata()
-    def _s_mimetype(self):
+    def _mimetype(self):
         """Return mimetype."""
         return self._magic_mimetype
 
     @metadata()
-    def _s_version(self):
+    def _version(self):
         """Return version."""
         if self._magic_version == 'data':
             return None
         return self._magic_version
 
     @metadata()
-    def _s_stream_type(self):
+    def _stream_type(self):
         """Return file type."""
         return 'binary'
 
@@ -158,13 +158,13 @@ class TextMagic(BaseScraper):
             magic_.load()
             self._magic_charset = magic_.file(encode(self.filename))
             magic_.close()
-            if self._s_mimetype() == self.mimetype or \
-                    (self._s_mimetype() in MIMETYPE_DICT and
-                     MIMETYPE_DICT[self._s_mimetype()] == self.mimetype):
+            if self._mimetype() == self.mimetype or \
+                    (self._mimetype() in MIMETYPE_DICT and
+                     MIMETYPE_DICT[self._mimetype()] == self.mimetype):
                 self.messages('The file was analyzed successfully.')
             else:
                 self.errors('Given mimetype %s and detected mimetype %s do '
-                            'not match.' % (self.mimetype, self._s_mimetype()))
+                            'not match.' % (self.mimetype, self._mimetype()))
         except Exception as e:  # pylint: disable=invalid-name, broad-except
             self.errors('Error in analyzing file.')
             self.errors(str(e))
@@ -176,24 +176,24 @@ class TextMagic(BaseScraper):
         """Return well formed info."""
         if not self._check_wellformed:
             return None
-        if self._s_mimetype() == self.mimetype:
+        if self._mimetype() == self.mimetype:
             return super(TextMagic, self).well_formed
         return False
 
     @metadata()
-    def _s_mimetype(self):
+    def _mimetype(self):
         """Return charset."""
         return self._magic_mimetype
 
     @metadata()
-    def _s_version(self):
+    def _version(self):
         """Return version."""
         if self._magic_version == 'data':
             return None
         return self._magic_version
 
     @metadata()
-    def _s_charset(self):
+    def _charset(self):
         """Return charset."""
         if self._magic_charset is None:
             return None
@@ -210,6 +210,6 @@ class TextMagic(BaseScraper):
         return self._magic_charset.upper()
 
     @metadata()
-    def _s_stream_type(self):
+    def _stream_type(self):
         """Return file type."""
         return 'text'

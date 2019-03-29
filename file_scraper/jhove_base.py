@@ -68,18 +68,18 @@ class JHove(BaseScraper):
         self._collect_elements()
 
     @metadata()
-    def _s_mimetype(self):
+    def _mimetype(self):
         """Return mimetype given by JHove."""
         return self.report_field('mimeType')
 
     @metadata()
-    def _s_version(self):
+    def _version(self):
         """Return version given by JHove."""
         return self.report_field("version")
 
     @abc.abstractmethod
     @metadata()
-    def _s_stream_type(self):
+    def _stream_type(self):
         """Implement in the file format specific classes."""
         pass
 

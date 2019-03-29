@@ -80,26 +80,26 @@ class Csv(BaseScraper):
             self._collect_elements()
 
     @metadata()
-    def _s_version(self):
+    def _version(self):
         """Return version."""
         return ''
 
     @metadata()
-    def _s_delimiter(self):
+    def _delimiter(self):
         """Return delimiter."""
         return self._csv_delimiter
 
     @metadata()
-    def _s_separator(self):
+    def _separator(self):
         """Return separator."""
         return self._csv_separator
 
     @metadata()
-    def _s_first_line(self):
+    def _first_line(self):
         """Return first line."""
         return self._csv_first_line
 
     @metadata()
-    def _s_stream_type(self):
+    def _stream_type(self):
         """Return file type."""
         return 'text'

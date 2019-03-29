@@ -11,11 +11,11 @@ class WavMediainfo(Mediainfo):
     _allow_versions = True  # Allow any version
 
     @metadata()
-    def _s_version(self):
-        """Return version."""
+    def _version(self):
+        """Returns version."""
         if self._mediainfo is None:
             return None
-        if self._s_stream_type() != 'audio':
+        if self._stream_type() != 'audio':
             return None
         if self._mediainfo.tracks[0].bext_present is not None \
                 and self._mediainfo.tracks[0].bext_present == 'Yes':
@@ -23,9 +23,9 @@ class WavMediainfo(Mediainfo):
         return ''
 
     @metadata()
-    def _s_codec_quality(self):
-        """Return codec quality."""
-        if self._s_stream_type() == 'audio':
+    def _codec_quality(self):
+        """Returns codec quality."""
+        if self._stream_type() == 'audio':
             return 'lossless'
         raise SkipElementException()
 
@@ -42,18 +42,18 @@ class MpegMediainfo(Mediainfo):
     _containers = ['MPEG-TS', 'MPEG-PS', 'MPEG-4']
 
     @metadata()
-    def _s_signal_format(self):
-        """Return signal format."""
-        if self._s_stream_type() not in ['video']:
+    def _signal_format(self):
+        """Returns signal format."""
+        if self._stream_type() not in ['video']:
             raise SkipElementException()
         if self._mediainfo is None:
             return None
         return '(:unap)'
 
     @metadata()
-    def _s_codec_quality(self):
-        """Return codec quality."""
-        if self._s_stream_type() not in ['video', 'audio']:
+    def _codec_quality(self):
+        """Returns codec quality."""
+        if self._stream_type() not in ['video', 'audio']:
             raise SkipElementException()
         if self._mediainfo is None:
             return None
@@ -62,9 +62,9 @@ class MpegMediainfo(Mediainfo):
         return 'lossy'
 
     @metadata()
-    def _s_data_rate_mode(self):
-        """Return data rate mode. Must be resolved."""
-        if self._s_stream_type() not in ['video', 'audio']:
+    def _data_rate_mode(self):
+        """Returns data rate mode. Must be resolved."""
+        if self._stream_type() not in ['video', 'audio']:
             raise SkipElementException()
         if self._mediainfo is None:
             return None
@@ -73,8 +73,8 @@ class MpegMediainfo(Mediainfo):
         return 'Variable'
 
     @metadata()
-    def _s_mimetype(self):
-        """Return mimetype for stream."""
+    def _mimetype(self):
+        """Returns mimetype for stream."""
         if self._mediainfo is None:
             return self.mimetype
         mime_dict = {'AAC': 'audio/mp4',
@@ -84,18 +84,18 @@ class MpegMediainfo(Mediainfo):
                      'MPEG Audio': 'audio/mpeg'}
 
         try:
-            return mime_dict[self._s_codec_name()]
+            return mime_dict[self._codec_name()]
         except (SkipElementException, KeyError):
             pass
         return self.mimetype
 
     @metadata()
-    def _s_version(self):
-        """Return version of stream."""
+    def _version(self):
+        """Return version of stream.."""
         if self._mediainfo is None:
             return None
         if self._mediainfo_stream.format_version is not None:
             return str(self._mediainfo_stream.format_version)[-1]
-        if self._s_stream_type() in ['videocontainer', 'video', 'audio']:
+        if self._stream_type() in ['videocontainer', 'video', 'audio']:
             return ''
         return None

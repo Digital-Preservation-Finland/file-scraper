@@ -70,24 +70,24 @@ class Wand(BaseScraper):
         self._wand_index = index
 
     @metadata()
-    def _s_version(self):
+    def _version(self):
         """Return version of file format."""
         return None
 
     @metadata()
-    def _s_stream_type(self):
+    def _stream_type(self):
         """Return stream type."""
         return 'image'
 
     @metadata()
-    def _s_index(self):
+    def _index(self):
         """Return stream index."""
         if self._wand_index is None:
             return 0
         return self._wand_index
 
     @metadata()
-    def _s_colorspace(self):
+    def _colorspace(self):
         """Return colorspace."""
         if self._wand_stream is not None and \
                 self._wand_stream.colorspace is not None:
@@ -95,7 +95,7 @@ class Wand(BaseScraper):
         return None
 
     @metadata()
-    def _s_width(self):
+    def _width(self):
         """Return image width."""
         if self._wand_stream is not None and \
                 self._wand_stream.width is not None:
@@ -103,7 +103,7 @@ class Wand(BaseScraper):
         return None
 
     @metadata()
-    def _s_height(self):
+    def _height(self):
         """Return image height."""
         if self._wand_stream is not None and \
                 self._wand_stream.height is not None:
@@ -111,7 +111,7 @@ class Wand(BaseScraper):
         return None
 
     @metadata()
-    def _s_bps_value(self):
+    def _bps_value(self):
         """Return bits per sample."""
         if self._wand_stream is not None and \
                 self._wand_stream.depth is not None:
@@ -120,12 +120,12 @@ class Wand(BaseScraper):
 
     # pylint: disable=no-self-use
     @metadata()
-    def _s_bps_unit(self):
+    def _bps_unit(self):
         """Return sample unit."""
         return None
 
     @metadata()
-    def _s_compression(self):
+    def _compression(self):
         """Return compression scheme."""
         if self._wand is not None and \
                 self._wand.compression is not None:
@@ -133,6 +133,6 @@ class Wand(BaseScraper):
         return None
 
     @metadata()
-    def _s_samples_per_pixel(self):
+    def _samples_per_pixel(self):
         """Return samples per pixel."""
         return None

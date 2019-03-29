@@ -46,11 +46,11 @@ class BaseScraperBasic(BaseScraper):
         pass
 
     @file_scraper.utils.metadata()
-    def _s_version(self):
+    def _version(self):
         return self.version
 
     @file_scraper.utils.metadata()
-    def _s_stream_type(self):
+    def _stream_type(self):
         return 'test_stream'
 
 
@@ -66,11 +66,11 @@ class BaseScraperVersion(BaseScraperBasic):
 
     # pylint: disable=no-self-use
     @file_scraper.utils.metadata()
-    def _s_skip_this(self):
+    def _skip_this(self):
         raise SkipElementException()
 
     @file_scraper.utils.metadata()
-    def _s_collect_this(self):
+    def _collect_this(self):
         return 'collected'
 
 

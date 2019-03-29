@@ -180,12 +180,12 @@ class BaseScraper(object):
             for method in dir(self):
                 if is_metadata(getattr(self, method)):
                     try:
-                        indexed_metadata[method[3:]] = getattr(self, method)()
+                        indexed_metadata[method[1:]] = getattr(self, method)()
                     except SkipElementException:
                         # happens when <method>-method is not to be indexed.
                         pass
                 if is_important(getattr(self, method)):
-                    self._add_important(method[3:], getattr(self, method)())
+                    self._add_important(method[1:], getattr(self, method)())
             dict_meta = {indexed_metadata['index']: indexed_metadata}
             self.streams = combine_metadata(self.streams, dict_meta)
         self.mimetype = self.streams[0]['mimetype']
@@ -196,13 +196,13 @@ class BaseScraper(object):
 
     def _check_supported(self):
         """Check that resulted mimetype and possible version are supported."""
-        if self._s_mimetype() is None:
+        if self._mimetype() is None:
             self.errors("None is not supported mimetype.")
-        elif self._s_mimetype() and self._s_mimetype() not in self._supported:
-            self.errors("Mimetype %s is not supported." % self._s_mimetype())
-        elif self._s_version() and self._s_version() not in \
-                self._supported[self._s_mimetype()]:
-            self.errors("Version %s is not supported." % self._s_version())
+        elif self._mimetype() and self._mimetype() not in self._supported:
+            self.errors("Mimetype %s is not supported." % self._mimetype())
+        elif self._version() and self._version() not in \
+                self._supported[self._mimetype()]:
+            self.errors("Version %s is not supported." % self._version())
 
     # pylint: disable=no-self-use,unused-argument
     def iter_tool_streams(self, stream_type):
@@ -226,23 +226,23 @@ class BaseScraper(object):
     # See: _collect_elements
 
     @metadata()
-    def _s_mimetype(self):
+    def _mimetype(self):
         """Return mimetype."""
         return self.mimetype
 
     @metadata()
-    def _s_version(self):
+    def _version(self):
         """Return version."""
         return self.version
 
     @metadata()
-    def _s_index(self):
+    def _index(self):
         """Return stream index."""
         return 0
 
     @abc.abstractmethod
     @metadata()
-    def _s_stream_type(self):
+    def _stream_type(self):
         """Return stream type. Must be implemented in the scrapers."""
         pass
 

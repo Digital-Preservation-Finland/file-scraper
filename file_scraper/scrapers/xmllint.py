@@ -257,6 +257,6 @@ class Xmllint(BaseScraper):
         return super(Xmllint, self).errors(error)
 
     @metadata()
-    def _s_stream_type(self):
+    def _stream_type(self):
         """Return file type."""
         return 'text'
