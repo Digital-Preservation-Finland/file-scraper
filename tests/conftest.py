@@ -6,20 +6,13 @@ import shutil
 import pytest
 
 
-@pytest.fixture(scope="function")
-def testpath(request):
+@pytest.yield_fixture(scope="function")
+def testpath():
     """
     Creates temporary directory and clean up after testing.
 
-    :request: Pytest request fixture
-    :returns: Path to temporary directory
-
+    :yields: Path to temporary directory
     """
     temp_path = tempfile.mkdtemp(prefix="tests.testpath.")
-
-    def fin():
-        """Remove temporary path."""
-        shutil.rmtree(temp_path)
-
-    request.addfinalizer(fin)
-    return temp_path
+    yield temp_path
+    shutil.rmtree(temp_path)
