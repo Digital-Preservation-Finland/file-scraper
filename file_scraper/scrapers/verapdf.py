@@ -69,16 +69,6 @@ class VeraPdf(BaseScraper):
         return None
 
     @metadata()
-    def get_important(self):
-        """Return important values."""
-        if not self.well_formed:
-            return {}
-        important = {}
-        important['version'] = self.version
-        return important
-
-
-    @metadata()
     def _stream_type(self):
         """Return file type."""
         return 'binary'
