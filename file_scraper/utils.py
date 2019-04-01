@@ -8,6 +8,20 @@ import hashlib
 import six
 
 
+def metadata(important=False):
+    """Decorator for functions scraping metadata."""
+    def _wrap(func):
+        func.is_metadata = True
+        func.is_important = important
+        return func
+    return _wrap
+
+
+def is_metadata(f):
+    """Return True if given a function with metadata flag, otherwise False."""
+    return callable(f) and getattr(f, 'is_metadata', False)
+
+
 def encode(filename):
     """Encode Unicode filenames."""
     return ensure_str(filename, encoding=sys.getfilesystemencoding())
