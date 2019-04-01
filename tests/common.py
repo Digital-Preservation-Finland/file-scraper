@@ -115,11 +115,16 @@ def evaluate_scraper(scraper, correct, eval_output=True, exp_scraper_cls=None):
     """
     if exp_scraper_cls is None:
         exp_scraper_cls = type(scraper).__name__
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == exp_scraper_cls
-    assert scraper.well_formed == correct.well_formed
+    assert scraper.mimetype == correct.mimetype, '%s != %s' % (
+        scraper.mimetype, correct.mimetype)
+    assert scraper.version == correct.version, '%s != %s' % (
+        scraper.version, correct.version)
+    assert scraper.streams == correct.streams, '%s != %s' % (
+        scraper.streams, correct.streams)
+    assert scraper.info['class'] == exp_scraper_cls, '%s != %s' % (
+        scraper.info['class'], exp_scraper_cls)
+    assert scraper.well_formed == correct.well_formed, '%s != %s' % (
+        scraper.well_formed, correct.well_formed)
     if eval_output:
         assert correct.stdout_part in scraper.messages()
         assert correct.stderr_part in scraper.errors()
