@@ -101,30 +101,3 @@ def parse_results(filename, mimetype, results, check_wellformed,
         correct.params = params
 
     return correct
-
-
-def evaluate_scraper(scraper, correct, eval_output=True, exp_scraper_cls=None):
-    """Make common asserts between initialized scraper and correct instance.
-
-    :param scraper: Scraper instance obj.
-    :param correct: Correct instance obj.
-    :param eval_output: True to also evaluate the stdin and stderr between
-        scraper and correct.
-    :param exp_scraper_cls: What is the actual expected scraper class name.
-        If None, will assume default type(scraper).__name__
-    """
-    if exp_scraper_cls is None:
-        exp_scraper_cls = type(scraper).__name__
-    assert scraper.mimetype == correct.mimetype, '%s != %s' % (
-        scraper.mimetype, correct.mimetype)
-    assert scraper.version == correct.version, '%s != %s' % (
-        scraper.version, correct.version)
-    assert scraper.streams == correct.streams, '%s != %s' % (
-        scraper.streams, correct.streams)
-    assert scraper.info['class'] == exp_scraper_cls, '%s != %s' % (
-        scraper.info['class'], exp_scraper_cls)
-    assert scraper.well_formed == correct.well_formed, '%s != %s' % (
-        scraper.well_formed, correct.well_formed)
-    if eval_output:
-        assert correct.stdout_part in scraper.messages()
-        assert correct.stderr_part in scraper.errors()

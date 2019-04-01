@@ -20,7 +20,7 @@ This module tests that:
       supported when only well-formed check is performed
 """
 import pytest
-from tests.common import parse_results, evaluate_scraper
+from tests.common import parse_results
 from file_scraper.scrapers.dpx import Dpx
 
 MIMETYPE = 'image/x-dpx'
@@ -51,7 +51,7 @@ MIMETYPE = 'image/x-dpx'
             'stderr_part': 'is more than file size'}),
     ]
 )
-def test_scraper(filename, result_dict):
+def test_scraper(filename, result_dict, evaluate_scraper):
     """Test scraper."""
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)

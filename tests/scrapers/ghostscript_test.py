@@ -23,7 +23,7 @@ This module tests that:
     - Made up MIME type with supported version is reported as not supported
 """
 import pytest
-from tests.common import parse_results, evaluate_scraper
+from tests.common import parse_results
 from file_scraper.scrapers.ghostscript import GhostScript
 
 
@@ -44,7 +44,7 @@ from file_scraper.scrapers.ghostscript import GhostScript
             'stderr_part': 'An error occurred while reading an XREF table.'}),
     ]
 )
-def test_scraper_pdf(filename, result_dict):
+def test_scraper_pdf(filename, result_dict, evaluate_scraper):
     """Test scraper."""
     for ver in ['1.7', 'A-1a', 'A-2b', 'A-3b']:
         filename = filename.replace('X', ver)

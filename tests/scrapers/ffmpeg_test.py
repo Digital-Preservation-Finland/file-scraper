@@ -64,7 +64,7 @@ This module tests that:
 """
 import pytest
 from file_scraper.scrapers.ffmpeg import FFMpegWellformed
-from tests.common import parse_results, evaluate_scraper
+from tests.common import parse_results
 
 
 @pytest.mark.parametrize(
@@ -95,7 +95,7 @@ from tests.common import parse_results, evaluate_scraper
             "stdout_part": "",
             "stderr_part": "Invalid data found when processing input"})
     ])
-def test_ffmpeg_scraper_mpeg(filename, result_dict):
+def test_ffmpeg_scraper_mpeg(filename, result_dict, evaluate_scraper):
     """Test FFMpegWellformed."""
     mimetype = 'video/mpeg'
     correct = parse_results(filename, mimetype, result_dict, True)
@@ -124,7 +124,7 @@ def test_ffmpeg_scraper_mpeg(filename, result_dict):
             "stdout_part": "",
             "stderr_part": "Invalid data found when processing input"})
     ])
-def test_ffmpeg_scraper_mp4(filename, result_dict):
+def test_ffmpeg_scraper_mp4(filename, result_dict, evaluate_scraper):
     """Test FFMpegWellformed."""
     mimetype = 'video/mp4'
     correct = parse_results(filename, mimetype, result_dict, True)
@@ -157,7 +157,7 @@ def test_ffmpeg_scraper_mp4(filename, result_dict):
             "stdout_part": "",
             "stderr_part": "could not find codec parameters"})
     ])
-def test_ffmpeg_scraper_mp3(filename, result_dict):
+def test_ffmpeg_scraper_mp3(filename, result_dict, evaluate_scraper):
     """Test FFMpegWellformed."""
     mimetype = 'audio/mpeg'
     correct = parse_results(filename, mimetype, result_dict, True)
@@ -186,7 +186,7 @@ def test_ffmpeg_scraper_mp3(filename, result_dict):
             "stdout_part": "",
             "stderr_part": "Invalid data found when processing input"})
     ])
-def test_ffmpeg_scraper_mpegts(filename, result_dict):
+def test_ffmpeg_scraper_mpegts(filename, result_dict, evaluate_scraper):
     """Test FFMpegWellformed."""
     mimetype = 'video/MP2T'
     correct = parse_results(filename, mimetype, result_dict, True)

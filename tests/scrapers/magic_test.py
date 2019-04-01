@@ -78,10 +78,13 @@ This module tests that:
     - When full scraping is not done, none of these combinations are supported.
 """
 import pytest
-from file_scraper.scrapers.magic import OfficeFileMagic, TextFileMagic, \
-    XmlFileMagic, HtmlFileMagic, PngFileMagic, JpegFileMagic, TiffFileMagic, \
-    Jp2FileMagic, XhtmlFileMagic, PdfFileMagic, ArcFileMagic
-from tests.common import parse_results, evaluate_scraper
+from file_scraper.scrapers.magic import (OfficeFileMagic, TextFileMagic,
+                                         XmlFileMagic, HtmlFileMagic,
+                                         PngFileMagic, JpegFileMagic,
+                                         TiffFileMagic, Jp2FileMagic,
+                                         XhtmlFileMagic, PdfFileMagic,
+                                         ArcFileMagic)
+from tests.common import parse_results
 
 
 @pytest.mark.parametrize(
@@ -126,7 +129,7 @@ from tests.common import parse_results, evaluate_scraper
         ("valid_1.4.pdf", "application/pdf", PdfFileMagic),
         ("valid_1.0.arc", "application/x-internet-archive", ArcFileMagic),
     ])
-def test_scraper_valid(filename, mimetype, class_):
+def test_scraper_valid(filename, mimetype, class_, evaluate_scraper):
     """Test scraper."""
     result_dict = {
         'purpose': 'Test valid file.',
@@ -164,7 +167,7 @@ def test_scraper_valid(filename, mimetype, class_):
          "application/vnd.oasis.opendocument.presentation"),
         ("invalid_11.0_missing_data.ppt", "application/vnd.ms-powerpoint"),
         ("invalid_15.0_missing_data.pptx", "application/vnd.openxml"
-         "formats-officedocument.presentationml.presentation"),
+                                           "formats-officedocument.presentationml.presentation"),
         ("invalid_1.1_missing_data.ods",
          "application/vnd.oasis.opendocument.spreadsheet"),
         ("invalid_11.0_missing_data.xls", "application/vnd.ms-excel"),
@@ -176,7 +179,7 @@ def test_scraper_valid(filename, mimetype, class_):
          "application/vnd.oasis.opendocument.formula"),
         ("invalid__empty.doc", "application/msword"),
     ])
-def test_invalid_office(filename, mimetype):
+def test_invalid_office(filename, mimetype, evaluate_scraper):
     """Test OfficeFileMagic scraper with invalid files."""
     result_dict = {
         'purpose': 'Test invalid file.',
@@ -213,7 +216,8 @@ def test_invalid_office(filename, mimetype):
         ("invalid_1.0_missing_field.arc", "application/x-internet-archive",
          ArcFileMagic),
     ])
-def test_invalid_markdown_pdf_arc(filename, mimetype, class_):
+def test_invalid_markdown_pdf_arc(filename, mimetype, class_,
+                                  evaluate_scraper):
     """Test scrapers for invalid XML, XHTML, HTML, pdf and arc files."""
     result_dict = {
         'purpose': 'Test invalid file.',
@@ -247,7 +251,7 @@ def test_invalid_markdown_pdf_arc(filename, mimetype, class_):
         ("invalid__data_missing.jp2", "image/jp2", Jp2FileMagic),
         ("invalid_6.0_wrong_byte_order.tif", "image/tiff", TiffFileMagic),
     ])
-def test_invalid_images(filename, mimetype, class_):
+def test_invalid_images(filename, mimetype, class_, evaluate_scraper):
     """Test scrapes for invalid image files."""
     result_dict = {
         'purpose': 'Test invalid file.',
@@ -276,7 +280,7 @@ def test_invalid_images(filename, mimetype, class_):
         ("invalid__binary_data.txt", "text/plain"),
         ("invalid__empty.txt", "text/plain"),
     ])
-def test_invalid_text(filename, mimetype):
+def test_invalid_text(filename, mimetype, evaluate_scraper):
     """Test TextFileMagic with invalid files."""
     result_dict = {
         'purpose': 'Test invalid file.',

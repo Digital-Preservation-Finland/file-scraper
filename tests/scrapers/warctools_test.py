@@ -33,9 +33,9 @@ This module tests that:
     - None of these scrapers supports a made up MIME type.
 """
 import pytest
-from file_scraper.scrapers.warctools import GzipWarctools, WarcWarctools, \
-    ArcWarctools
-from tests.common import parse_results, evaluate_scraper
+from file_scraper.scrapers.warctools import (GzipWarctools, WarcWarctools,
+                                             ArcWarctools)
+from tests.common import parse_results
 
 
 @pytest.mark.parametrize(
@@ -67,7 +67,7 @@ from tests.common import parse_results, evaluate_scraper
             'stderr_part': 'Empty file.'})
     ]
 )
-def test_gzip_scraper(filename, result_dict):
+def test_gzip_scraper(filename, result_dict, evaluate_scraper):
     """Test scraper."""
     if 'warc' in filename:
         mime = 'application/warc'
@@ -126,7 +126,7 @@ def test_gzip_scraper(filename, result_dict):
             'stderr_part': 'Empty file.'})
     ]
 )
-def test_warc_scraper(filename, result_dict):
+def test_warc_scraper(filename, result_dict, evaluate_scraper):
     """Test scraper."""
     correct = parse_results(filename, 'application/warc',
                             result_dict, True)
@@ -170,7 +170,7 @@ def test_warc_scraper(filename, result_dict):
             'stderr_part': 'unpack requires a string argument of length 4'})
     ]
 )
-def test_arc_scraper(filename, result_dict):
+def test_arc_scraper(filename, result_dict, evaluate_scraper):
     """Test scraper."""
     correct = parse_results(filename, 'application/x-internet-archive',
                             result_dict, True)

@@ -20,7 +20,7 @@ This module tests that:
 """
 import pytest
 from file_scraper.scrapers.vnu import Vnu
-from tests.common import parse_results, evaluate_scraper
+from tests.common import parse_results
 
 MIMETYPE = 'text/html'
 
@@ -46,7 +46,7 @@ MIMETYPE = 'text/html'
             'stderr_part': 'End of file seen without seeing a doctype first'}),
     ]
 )
-def test_scraper(filename, result_dict):
+def test_scraper(filename, result_dict, evaluate_scraper):
     """Test scraper."""
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)

@@ -36,7 +36,7 @@ This module tests that:
 import os
 import pytest
 from file_scraper.scrapers.schematron import Schematron
-from tests.common import parse_results, evaluate_scraper
+from tests.common import parse_results
 
 ROOTPATH = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '../../'))
@@ -65,7 +65,7 @@ ROOTPATH = os.path.abspath(os.path.join(
          {'schematron': 'tests/data/text_xml/local.sch'}),
     ]
 )
-def test_scraper(filename, result_dict, params):
+def test_scraper(filename, result_dict, params, evaluate_scraper):
     """Test scraper."""
 
     correct = parse_results(filename, 'text/xml',

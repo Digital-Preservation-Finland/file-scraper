@@ -12,7 +12,7 @@ This module tests that:
 import pytest
 
 from file_scraper.scrapers.textfile import CheckTextFile
-from tests.common import parse_results, evaluate_scraper
+from tests.common import parse_results
 
 VALID_MSG = 'is a text file'
 INVALID_MSG = 'is not a text file'
@@ -32,7 +32,7 @@ INVALID_MSG = 'is not a text file'
         ("invalid__empty.txt", "text/plain", False)
     ]
 )
-def test_existing_files(filename, mimetype, is_textfile):
+def test_existing_files(filename, mimetype, is_textfile, evaluate_scraper):
     """Test detecting whether file is a textfile."""
     correct = parse_results(filename, mimetype,
                             {}, True)

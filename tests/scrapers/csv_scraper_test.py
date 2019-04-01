@@ -26,7 +26,7 @@ import os
 import pytest
 
 from file_scraper.scrapers.csv_scraper import Csv
-from tests.common import parse_results, evaluate_scraper
+from tests.common import parse_results
 
 MIMETYPE = 'text/csv'
 
@@ -45,7 +45,7 @@ HEADER = b'year,brand,model,detail,other\n'
 VALID_WITH_HEADER = HEADER + VALID_CSV
 
 MISSING_END_QUOTE = VALID_CSV + \
-    b'1999,Chevy,"Venture ""Extended Edition"","",4900.00\n'
+                    b'1999,Chevy,"Venture ""Extended Edition"","",4900.00\n'
 
 
 @pytest.mark.parametrize(
@@ -118,7 +118,8 @@ MISSING_END_QUOTE = VALID_CSV + \
          'invalid__', ['year', 'brand', 'model', 'detail', 'other'])
     ]
 )
-def test_scraper(testpath, csv_text, result_dict, prefix, header):
+def test_scraper(testpath, csv_text, result_dict, prefix, header,
+                 evaluate_scraper):
     """Write test data and run csv scraping for the file."""
 
     with open(os.path.join(testpath, '%s.csv' % prefix), 'wb') as outfile:

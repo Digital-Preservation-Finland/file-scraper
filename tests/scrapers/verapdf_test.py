@@ -27,7 +27,7 @@ This module tests that:
       the dict is empty.
 """
 import pytest
-from tests.common import parse_results, evaluate_scraper
+from tests.common import parse_results
 from file_scraper.scrapers.verapdf import VeraPdf
 
 MIMETYPE = 'application/pdf'
@@ -51,7 +51,7 @@ MIMETYPE = 'application/pdf'
             'stderr_part': 'In a cross reference subsection header'}),
     ]
 )
-def test_scraper(filename, result_dict):
+def test_scraper(filename, result_dict, evaluate_scraper):
     """Test scraper with PDF/A."""
     for ver in ['A-1a', 'A-2b', 'A-3b']:
         filename = filename.replace('X', ver)
@@ -83,7 +83,7 @@ def test_scraper(filename, result_dict):
             'stderr_part': 'is not compliant with Validation Profile'}),
     ]
 )
-def test_scraper_invalid_pdfa(filename, result_dict):
+def test_scraper_invalid_pdfa(filename, result_dict, evaluate_scraper):
     """Test scraper with files that are not valid PDF/A."""
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)

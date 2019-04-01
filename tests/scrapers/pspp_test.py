@@ -19,7 +19,7 @@ This module tests that:
     - When well-formedness is checked, a made up MIME type is not supported.
 """
 import pytest
-from tests.common import parse_results, evaluate_scraper
+from tests.common import parse_results
 from file_scraper.scrapers.pspp import Pspp
 
 MIMETYPE = 'application/x-spss-por'
@@ -46,7 +46,7 @@ MIMETYPE = 'application/x-spss-por'
             'stderr_part': 'unexpected end of file'})
     ]
 )
-def test_scraper(filename, result_dict):
+def test_scraper(filename, result_dict, evaluate_scraper):
     """Test scraper."""
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)

@@ -22,7 +22,7 @@ This module tests that:
 """
 import pytest
 from file_scraper.scrapers.pil import TiffPil, JpegPil, ImagePil
-from tests.common import parse_results, evaluate_scraper
+from tests.common import parse_results
 
 VALID_MSG = 'successfully'
 INVALID_MSG = 'Error in analyzing file.'
@@ -80,7 +80,7 @@ STREAM_INVALID = {
             'streams': {0: STREAM_INVALID.copy()}}),
     ]
 )
-def test_scraper_tif(filename, result_dict):
+def test_scraper_tif(filename, result_dict, evaluate_scraper):
     """Test scraper with tiff files."""
     correct = parse_results(filename, 'image/tiff',
                             result_dict, True)
@@ -126,7 +126,7 @@ def test_scraper_tif(filename, result_dict):
             'streams': {0: STREAM_INVALID.copy()}}),
     ]
 )
-def test_scraper_jpg(filename, result_dict):
+def test_scraper_jpg(filename, result_dict, evaluate_scraper):
     """Test scraper with jpeg files."""
     correct = parse_results(filename, 'image/jpeg',
                             result_dict, True)
@@ -159,7 +159,7 @@ def test_scraper_jpg(filename, result_dict):
             'streams': {0: STREAM_INVALID.copy()}}),
     ]
 )
-def test_scraper_jp2(filename, result_dict):
+def test_scraper_jp2(filename, result_dict, evaluate_scraper):
     """Test scraper with jp2 files."""
     correct = parse_results(filename, 'image/jp2',
                             result_dict, True)
@@ -202,7 +202,7 @@ def test_scraper_jp2(filename, result_dict):
             'streams': {0: STREAM_INVALID.copy()}}),
     ]
 )
-def test_scraper_png(filename, result_dict):
+def test_scraper_png(filename, result_dict, evaluate_scraper):
     """Test scraper with png files."""
     correct = parse_results(filename, 'image/png',
                             result_dict, True)
@@ -250,7 +250,7 @@ def test_scraper_png(filename, result_dict):
             'streams': {0: STREAM_INVALID.copy()}})
     ]
 )
-def test_scraper_gif(filename, result_dict):
+def test_scraper_gif(filename, result_dict, evaluate_scraper):
     """Test scraper with gif files."""
     correct = parse_results(filename, 'image/gif',
                             result_dict, True)

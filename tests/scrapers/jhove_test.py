@@ -96,7 +96,7 @@ import pytest
 
 from file_scraper.scrapers.jhove import GifJHove, TiffJHove, PdfJHove, \
     Utf8JHove, JpegJHove, HtmlJHove, WavJHove
-from tests.common import parse_results, evaluate_scraper
+from tests.common import parse_results
 
 
 @pytest.mark.parametrize(
@@ -120,7 +120,7 @@ from tests.common import parse_results, evaluate_scraper
             'stderr_part': 'Invalid GIF header'}, False)
     ]
 )
-def test_scraper_gif(filename, result_dict, get_ver):
+def test_scraper_gif(filename, result_dict, get_ver, evaluate_scraper):
     """Test gif scraping."""
     for version in ['1987', '1989']:
         filename = filename.replace('XXXX', version)
@@ -157,7 +157,7 @@ def test_scraper_gif(filename, result_dict, get_ver):
             'stderr_part': 'File is too short'}),
     ]
 )
-def test_scraper_tiff(filename, result_dict):
+def test_scraper_tiff(filename, result_dict, evaluate_scraper):
     """Test tiff scraping."""
     correct = parse_results(filename, 'image/tiff',
                             result_dict, True)
@@ -188,7 +188,7 @@ def test_scraper_tiff(filename, result_dict):
             'stderr_part': 'Not valid second byte of UTF-8 encoding'})
     ]
 )
-def test_scraper_utf8(filename, result_dict):
+def test_scraper_utf8(filename, result_dict, evaluate_scraper):
     """Test utf8 text file scraping."""
     correct = parse_results(filename, 'text/plain',
                             result_dict, True)
@@ -225,7 +225,7 @@ def test_scraper_utf8(filename, result_dict):
             'stderr_part': 'Version 1.0 is not supported.'}, '1.0')
     ]
 )
-def test_scraper_pdf(filename, result_dict, version):
+def test_scraper_pdf(filename, result_dict, version, evaluate_scraper):
     """Test pdf scraping."""
     for ver in ['1.2', '1.3', '1.4', '1.5', '1.6', 'A-1a']:
         filename = filename.replace('X', ver)
@@ -262,7 +262,7 @@ def test_scraper_pdf(filename, result_dict, version):
             'stderr_part': 'Invalid JPEG header'})
     ]
 )
-def test_scraper_jpeg(filename, result_dict):
+def test_scraper_jpeg(filename, result_dict, evaluate_scraper):
     """Test jpeg scraping."""
     correct = parse_results(filename, 'image/jpeg',
                             result_dict, True)
@@ -331,7 +331,8 @@ def test_scraper_jpeg(filename, result_dict):
          'application/xhtml+xml', None, None)
     ]
 )
-def test_scraper_html(filename, result_dict, mimetype, charset, version):
+def test_scraper_html(filename, result_dict, mimetype, charset, version,
+                      evaluate_scraper):
     """Test html and xhtml scraping."""
     correct = parse_results(filename, mimetype,
                             result_dict, True)
@@ -389,7 +390,7 @@ def test_scraper_html(filename, result_dict, mimetype, charset, version):
          None)
     ]
 )
-def test_scraper_wav(filename, result_dict, version):
+def test_scraper_wav(filename, result_dict, version, evaluate_scraper):
     """Test wav and bwf scraping."""
     correct = parse_results(filename, 'audio/x-wav',
                             result_dict, True)
