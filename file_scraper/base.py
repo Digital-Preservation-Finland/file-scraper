@@ -148,7 +148,7 @@ class BaseScraper(object):
         :message: New message to add to the messages
         """
         if message is not None:
-            self._messages.append(ensure_str(message))
+            self._messages.append(message)
         return concat(self._messages)
 
     def errors(self, error=None):
@@ -159,7 +159,7 @@ class BaseScraper(object):
         """
         err_msg = ensure_str(error) if error is not None else None
         if err_msg is not None and err_msg != "":
-            self._errors.append(err_msg)
+            self._errors.append(error)
         return concat(self._errors, 'ERROR: ')
 
     @property
@@ -305,4 +305,4 @@ def concat(lines, prefix=""):
     :prefix: Prefix to prepend each line with
     :returns: Joined lines as string
     """
-    return "\n".join(["%s%s" % (prefix, line) for line in lines])
+    return "\n".join(["%s%s" % (prefix, ensure_str(line)) for line in lines])
