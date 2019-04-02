@@ -38,6 +38,11 @@ class WandScraper(BaseScraper):
 #             return
         try:
             wandresults = wand.image.Image(filename=self.filename)
+            for md_class in self._supported_metadata:
+                for image in wandresults.sequence:
+                    if not md_class.is_supported(image.container.mimetype):
+                        continue
+                    self.streams.append(md_class(image))
         except Exception as e:  # pylint: disable=broad-except, invalid-name
             self._errors.append("Error in analyzing file")
             self._errors.append(e)
@@ -48,8 +53,3 @@ class WandScraper(BaseScraper):
 #            self._check_supported()
 #            self._collect_elements()
 
-        for md_class in self._supported_metadata:
-            for image in wandresults.sequence:
-                if not md_class.is_supported(image.container.mimetype):
-                    continue
-                self.streams.append(md_class(image))
