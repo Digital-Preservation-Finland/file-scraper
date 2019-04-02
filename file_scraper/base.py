@@ -46,6 +46,7 @@ class BaseMeta(object):
     """
 
     _supported = []
+    _allow_versions = False
 
     @metadata()
     def mimetype(self):
@@ -57,13 +58,17 @@ class BaseMeta(object):
         return "(:unav)"
 
     @classmethod
-    def is_supported(cls, mimetype):
+    def is_supported(cls, mimetype, version=None):
         """
         TODO: Docstring for is_supported.
 
         :returns: TODO
         """
-        return mimetype in cls._supported
+        if mimetype not in cls._supported:
+            return False
+        if version in cls._supported[mimetype] or cls._allow_versions:
+            return True
+        return False
 
 
 class Shell(object):

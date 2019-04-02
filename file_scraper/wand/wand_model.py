@@ -7,7 +7,11 @@ from file_scraper.utils import metadata
 class WandImageMeta(BaseMeta):
     """TODO"""
 
-    _supported = ["image/png", "image/jpeg", "image/jp2", "image/gif"]
+    _supported = {"image/png": [],
+                  "image/jpeg": [],
+                  "image/jp2": [],
+                  "image/gif": []}
+    _allow_versions = True
 
     def __init__(self, image):
         """TODO"""
@@ -80,7 +84,8 @@ class WandImageMeta(BaseMeta):
 class WandTiffMeta(WandImageMeta):
     """TODO"""
 
-    _supported = ['image/tiff']
+    _supported = {'image/tiff': []}
+    _allow_versions = True
 
     @metadata()
     def byte_order(self):
