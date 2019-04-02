@@ -144,7 +144,7 @@ class Xmllint(BaseScraper):
             self.messages(
                 "%s Success\n%s" % (self.filename, ensure_str(stdout)))
         else:
-            self.errors(stderr)
+            self.errors(ensure_str(stderr))
 
         # Clean up constructed schemas
         if self._has_constructed_schema:

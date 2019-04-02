@@ -6,7 +6,7 @@ except ImportError:
     pass
 
 from file_scraper.base import BaseScraper, Shell
-from file_scraper.utils import metadata
+from file_scraper.utils import metadata, ensure_str
 
 VERAPDF_PATH = '/usr/share/java/verapdf/verapdf'
 
@@ -34,8 +34,8 @@ class VeraPdf(BaseScraper):
 
         shell = Shell(cmd)
         if shell.returncode != 0:
-            raise VeraPDFError(shell.stderr)
-        self.messages(shell.stdout)
+            raise VeraPDFError(ensure_str(shell.stderr))
+        self.messages(ensure_str(shell.stdout))
 
         try:
             report = ET.fromstring(shell.stdout)
@@ -43,15 +43,15 @@ class VeraPdf(BaseScraper):
                 compliant = report.xpath(
                     '//validationReport')[0].get('isCompliant')
                 if compliant == 'false':
-                    self.errors(shell.stdout)
+                    self.errors(ensure_str(shell.stdout))
                 profile = \
                     report.xpath('//validationReport')[0].get('profileName')
                 self.version = 'A' + profile.split("PDF/A")[1].split(
                     " validation profile")[0].lower()
             else:
-                self.errors(shell.stdout)
+                self.errors(ensure_str(shell.stdout))
         except ET.XMLSyntaxError:
-            self.errors(shell.stderr)
+            self.errors(ensure_str(shell.stderr))
         finally:
             self._check_supported()
             self._collect_elements()

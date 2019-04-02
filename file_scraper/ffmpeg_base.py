@@ -8,7 +8,8 @@ except ImportError:
     pass
 
 from file_scraper.base import BaseScraper, SkipElementException
-from file_scraper.utils import iso8601_duration, strip_zeros, metadata
+from file_scraper.utils import iso8601_duration, strip_zeros, metadata, \
+    ensure_str
 
 
 class FFMpeg(BaseScraper):
@@ -45,7 +46,7 @@ class FFMpeg(BaseScraper):
             self.set_tool_stream(0)
         except self._ffmpeg.Error as err:
             self.errors('Error in analyzing file.')
-            self.errors(err.stderr)
+            self.errors(ensure_str(err.stderr))
         else:
             self.messages('The file was analyzed successfully.')
         finally:

@@ -1,7 +1,7 @@
 """Module for pngcheck scraper."""
 
 from file_scraper.base import BaseScraper, Shell
-from file_scraper.utils import metadata
+from file_scraper.utils import metadata, ensure_str
 
 
 class Pngcheck(BaseScraper):
@@ -25,9 +25,9 @@ class Pngcheck(BaseScraper):
 
         if shell.returncode != 0:
             self.errors("Failed: returncode %s" % shell.returncode)
-            self.errors(shell.stderr)
+            self.errors(ensure_str(shell.stderr))
 
-        self.messages(shell.stdout)
+        self.messages(ensure_str(shell.stdout))
         self._check_supported()
         self._collect_elements()
 

@@ -85,7 +85,7 @@ class WarcWarctools(BaseScraper):
                             if b'ignored line' not in line])
             self.errors(filtered_errors)
 
-        self.messages(shell.stdout)
+        self.messages(ensure_str(shell.stdout))
 
         warc_fd = gzip.open(self.filename)
         try:
@@ -156,7 +156,7 @@ class ArcWarctools(BaseScraper):
                 self.errors(sanitized_string.encode('utf-8'))
             elif size > 0:
                 self.messages('File was analyzed successfully.')
-            self.messages(shell.stdout)
+            self.messages(ensure_str(shell.stdout))
 
         self.mimetype = 'application/x-internet-archive'
         self._check_supported()

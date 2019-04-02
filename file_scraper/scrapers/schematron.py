@@ -88,12 +88,13 @@ class Schematron(BaseScraper):
             inputfile=self.filename, allowed_codes=[0, 6])
 
         self._returncode = shell.returncode
-        self.errors(shell.stderr)
+        self.errors(ensure_str(shell.stderr))
 
         if not self._verbose and shell.returncode == 0:
-            self.messages(self._filter_duplicate_elements(shell.stdout))
+            self.messages(
+                ensure_str(self._filter_duplicate_elements(shell.stdout)))
         else:
-            self.messages(shell.stdout)
+            self.messages(ensure_str(shell.stdout))
         self._check_supported()
         self._collect_elements()
 

@@ -5,7 +5,7 @@ import shutil
 import tempfile
 from io import open
 from file_scraper.base import BaseScraper, Shell
-from file_scraper.utils import metadata
+from file_scraper.utils import metadata, ensure_str
 
 PSPP_PATH = '/usr/bin/pspp-convert'
 SPSS_PORTABLE_HEADER = b"SPSS PORT FILE"
@@ -42,8 +42,8 @@ class Pspp(BaseScraper):
                 self.filename,
                 temp_file
             ])
-            self.errors(shell.stderr)
-            self.messages(shell.stdout)
+            self.errors(ensure_str(shell.stderr))
+            self.messages(ensure_str(shell.stdout))
             if os.path.isfile(temp_file):
                 self.messages('File conversion was succesful.')
             else:

@@ -301,4 +301,4 @@ def concat(lines, prefix=""):
     :prefix: Prefix to prepend each line with
     :returns: Joined lines as string
     """
-    return "\n".join(["%s%s" % (prefix, ensure_str(line)) for line in lines])
+    return "\n".join(["%s%s" % (prefix, line) for line in lines])
