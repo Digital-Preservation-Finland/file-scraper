@@ -173,7 +173,7 @@ class BaseScraper(object):
         """
         Collect metadata for the elements in streams.
 
-        Values returned from methods '_s_*' will be collected.
+        Values returned from metadata-decorated methods will be collected.
         """
         for _ in self.iter_tool_streams(None):
             indexed_metadata = {}
@@ -220,10 +220,6 @@ class BaseScraper(object):
         Implement in scraper, if needed. Otherwise allow call but do nothing.
         """
         pass
-
-    # Methods starting with '_s_' will be collected to the stream results.
-    # All _s_ methods must return str, except _s_index, which returns int.
-    # See: _collect_elements
 
     @metadata()
     def _mimetype(self):
