@@ -40,7 +40,7 @@ Should you create a new scraper tool for some file format, it probably already h
     * ``JHove`` for various file formats: You may add a file format for JHove well-formed check, if applicable.
     * ``BaseScraper`` is generic base class for scrapers not suitable to use any of the previous ones for full scraping and for new tool specific base classes.
 
-In parctice, just add proper values to class variables and override the needed ``_s_`` prefixed methods. The tool specific base classes already have ``scrape_file()`` method implemented.
+In practice, just add proper values to class variables and override the needed metadata methods. The tool specific base classes already have ``scrape_file()`` method implemented.
 
 To maintain clarity, do not allow a tool specific base class to support any mimetype, and keep it away from ``./file_scraper/scrapers/`` directory. Instead,
 add the base class to ``./file_scraper/`` and create separate mimetype specific classes to inherit it.
@@ -60,21 +60,30 @@ A usable scraper tool class:
           This will collect the metadata to ``streams`` attribute.
 
     * MUST have a method for each metadata element that is needed to be resulted, if not implemented in the already existing base class.
-      These methods MUST be named with ``_s_`` prefix, e.g. ``_s_width()``, and MUST normally return string, with exception of ``_s_index()`` which returns stream index as integer.
-      The ``_s_`` prefixed methods must normalize the value to a normalized format. The formats described e.g. in AudioMD [1]_, VideoMD [1]_, and MIX [2]_ are used in normalization.
-      The ``_collect_elements()`` in ``BaseScraper`` will collect the return values from all methods with ``_s_`` prefix automatically to ``streams`` attribute.
-      The key of the metadata element in ``streams`` will be the method name without ``_s_`` prefix (e.g. ``width``), and value is the return value of the method.
-      A ``_s_`` prefixed method MAY return ``SkipElement`` class (just class, not instance of a class) from ``file_scraper.base``, if the methods needs to be omitted in
+      These methods MUST be named with ``_`` prefix and decorated with ``metadata``-function, e.g. ``_width()``, and MUST normally return string, with exception of ``_index()`` which returns stream index as integer.
+      The metadata methods must normalize the value to a normalized format. The formats described e.g. in AudioMD [1]_, VideoMD [1]_, and MIX [2]_ are used in normalization.
+      The ``_collect_elements()`` in ``BaseScraper`` will collect the return values from all ``metadata``-decorated methods with ``_`` prefix automatically to ``streams`` attribute.
+      The key of the metadata element in ``streams`` will be the method name without ``_`` prefix (e.g. ``width``), and value is the return value of the method.
+      Metadata method MAY raise ``SkipElement`` from ``file_scraper.base``, if the methods needs to be omitted in
       collection phase. This may become handy with files containing different kinds of streams. The value ``None`` is used for the case that the value SHOULD be returned,
-      but the scraper tool is not capable to do that.
-    * MUST implemet ``_s_stream_type()``, returning e.g. "text", "image", "audio", "video", "videocontainer", "binary", if not implemented in the already existing base class.
+      but the scraper tool is not capable to do that. Example:
+
+.. code-block::
+
+    @metadata
+    def _width():
+        return self._width
+..
+
+    * MUST implement metadata ``_stream_type()``, returning e.g. "text", "image", "audio", "video", "videocontainer", "binary", if not implemented in the already existing base class.
     * MUST use ``errors()`` for error messages and ``messages()`` for info messages.
     * MUST crash in unexpected event, such as due to missing 3rd party tool.
     * Methods ``iter_tool_streams()`` and ``set_tool_streams()`` MUST be implemented to iterate and select stream from the 3rd party tool,
       if the 3rd party tool is able to result several streams, and if this is not implemented in existing base class.
-      These must cause the ``_s_`` prefixed methods to return value from the current stream.
-    * Method ``get_important()`` MUST return a dict of those elements, which are needed to win in the combination phase.
-      The keys of the dict must correspond to the keys of streams dict.
+      These must cause the ``_`` prefixed metadata methods to return value from the current stream.
+    * Metadata keys that are needed to win in the combination phase is flagged by ``important`` as part of metadata-decorator.
+      By default, scraper will update the important list as it goes through the metadata. The list can then be fetched via ``importants()``-method.
+      Scrapers can override the default behaviour of ``importants()`` in their own class.
 
 The ``info`` attribute contains a dict of class name, and messages and errors occured during scraping.
 See ``<scraper info X>`` from `README.rst <../README.rst>`_ for the content of the info attribute.
