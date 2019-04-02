@@ -4,12 +4,19 @@ from file_scraper.base import BaseMeta
 from file_scraper.utils import metadata
 
 
-class CommonWandMeta(BaseMeta):
+class WandImageMeta(BaseMeta):
     """TODO"""
+
+    _supported = ["image/png", "image/jpeg", "image/jp2", "image/gif"]
 
     def __init__(self, image):
         """TODO"""
         self._image = image
+
+    @metadata()
+    def index(self):
+        """TODO"""
+        return self._image.index
 
     @metadata()
     def mimetype(self):
@@ -70,15 +77,10 @@ class CommonWandMeta(BaseMeta):
         return None
 
 
-class WandTiffMeta(CommonWandMeta):
+class WandTiffMeta(WandImageMeta):
     """TODO"""
 
     _supported = ['image/tiff']
-
-    @metadata()
-    def index(self):
-        """TODO"""
-        return self._image.index
 
     @metadata()
     def byte_order(self):
@@ -94,14 +96,3 @@ class WandTiffMeta(CommonWandMeta):
                     return 'little endian'
 
         return None
-
-
-class WandImageMeta(CommonWandMeta):
-    """TODO"""
-
-    _supported = ["image/png", "image/jpeg", "image/jp2", "image/gif"]
-
-    @metadata()
-    def index(self):
-        """TODO"""
-        return self._image.index

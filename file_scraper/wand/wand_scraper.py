@@ -53,5 +53,3 @@ class WandScraper(BaseScraper):
                 if not md_class.is_supported(image.container.mimetype):
                     continue
                 self.streams.append(md_class(image))
-
-        print self.streams
