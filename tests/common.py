@@ -3,29 +3,21 @@ import os
 
 
 def get_files(well_formed):
-    """
-    Get all well-formed/not well-formed files from tests.
+    """Get all well-formed/not well-formed files from tests.
 
     :well_formed: True if well-formed file list, False for not well-formed.
-    :returns: dict where  key is filename and value is tuple
-              (mimetype, version)
+    :returns: Generator that outputs tuple of (fullname, mimetype, version)
     """
     if well_formed:
         prefix = 'valid_'
     else:
         prefix = 'invalid_'
-    result_dict = {}
     for root, _, filenames in os.walk('tests/data'):
         for fname in filenames:
             if fname.startswith(prefix):
                 fullname = os.path.join(root, fname)
                 mimetype = root.split('/')[-1].replace("_", "/")
-                if '_' in fname:
-                    version = fname.rsplit('.', 1)[0].split('_')[1]
-                else:
-                    version = ''
-                result_dict[fullname] = (mimetype, version)
-    return result_dict
+                yield fullname, mimetype
 
 
 class Correct(object):

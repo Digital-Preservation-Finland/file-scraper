@@ -5,7 +5,7 @@ except ImportError:
     pass
 
 from file_scraper.base import BaseScraper
-
+from file_scraper.utils import metadata
 
 SAMPLES_PER_PIXEL = {'1': '1', 'L': '1', 'P': '1', 'RGB': '3', 'YCbCr': '3',
                      'LAB': '3', 'HSV': '3', 'RGBA': '4', 'CMYK': '4',
@@ -25,7 +25,7 @@ class Pil(BaseScraper):
                            detection and metadata scraping
         :params: Extra parameters needed for the scraper
         """
-        self._pil = None        # Pil result
+        self._pil = None  # Pil result
         self._pil_index = None  # Current index in Pil result
         super(Pil, self).__init__(filename, mimetype, check_wellformed, params)
 
@@ -55,7 +55,13 @@ class Pil(BaseScraper):
         if self._pil is None:
             yield {}
         if stream_type in [None, 'image']:
-            if not hasattr(self._pil, 'n_frames'):
+            try:
+                _n_frames = self._pil.n_frames
+            except (AttributeError, ValueError):
+                # ValueError happens when n_frame property exists, but
+                # the tile tries to extend outside of image.
+                _n_frames = None
+            if not _n_frames:
                 self._pil_index = 0
                 yield self._pil
             else:
@@ -74,44 +80,52 @@ class Pil(BaseScraper):
             self._pil.seek(index)
             self._pil_index = index
 
-    def _s_version(self):
+    @metadata()
+    def _version(self):
         """Return version of file."""
         return None
 
-    def _s_stream_type(self):
+    @metadata()
+    def _stream_type(self):
         """Return stream type."""
         return 'image'
 
-    def _s_index(self):
+    @metadata()
+    def _index(self):
         """Return stream index."""
         if self._pil_index is None:
             return 0
         return self._pil_index
 
     # pylint: disable=no-self-use
-    def _s_colorspace(self):
+    @metadata()
+    def _colorspace(self):
         """Return colorspace."""
         return None
 
-    def _s_width(self):
+    @metadata()
+    def _width(self):
         """Return image width."""
         if self._pil is not None and \
                 self._pil.width is not None:
             return str(self._pil.width)
         return None
 
-    def _s_height(self):
+    @metadata()
+    def _height(self):
         """Return image height."""
         if self._pil is not None and \
                 self._pil.height is not None:
             return str(self._pil.height)
         return None
 
-    def _s_bps_value(self):
+    @metadata()
+    def _bps_value(self):
         """Return bits per sample."""
         return None
 
-    def _s_bps_unit(self):
+    @metadata()
+    def _bps_unit(self):
         """Return sample unit."""
         if self._pil is None:
             return None
@@ -120,11 +134,13 @@ class Pil(BaseScraper):
 
         return 'integer'
 
-    def _s_compression(self):
+    @metadata()
+    def _compression(self):
         """Return compression scheme."""
         return None
 
-    def _s_samples_per_pixel(self):
+    @metadata()
+    def _samples_per_pixel(self):
         """Return samples per pixel."""
         if self._pil is None:
             return None

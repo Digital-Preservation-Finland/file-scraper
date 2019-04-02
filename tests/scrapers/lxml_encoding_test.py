@@ -18,6 +18,7 @@ This module tests that:
 
 import os
 import tempfile
+from io import open
 import pytest
 from file_scraper.scrapers.lxml_encoding import XmlEncoding
 
@@ -30,14 +31,14 @@ from file_scraper.scrapers.lxml_encoding import XmlEncoding
 )
 def test_xml_encoding(testpath, file_encoding):
     """Test that encoding check from XML header works."""
-    enc_match = {'latin_1': 'ISO-8859-15',
-                 'utf_8': 'UTF-8',
-                 'utf_16': 'UTF-16'}
-    xml = '''<?xml version="1.0" encoding="{}" ?>
-             <a>åäö</a>'''.format(enc_match[file_encoding])
+    enc_match = {'latin_1': u'ISO-8859-15',
+                 'utf_8': u'UTF-8',
+                 'utf_16': u'UTF-16'}
+    xml = u'''<?xml version="1.0" encoding="{}" ?>
+              <a>åäö</a>'''.format(enc_match[file_encoding])
     tmppath = os.path.join(testpath, 'valid__.csv')
-    with open(tmppath, 'w') as file_:
-        file_.write(xml.decode('utf8').encode(file_encoding))
+    with open(tmppath, 'wb') as file_:
+        file_.write(xml.encode(file_encoding))
 
     scraper = XmlEncoding(tmppath, 'text/xml')
     scraper.scrape_file()
@@ -48,10 +49,10 @@ def test_xml_encoding(testpath, file_encoding):
 def test_no_wellformed(testpath):
     """Test scraper without well-formed check."""
     (_, tmppath) = tempfile.mkstemp()
-    xml = '''<?xml version="1.0" encoding="{}" ?>
-             <a>åäö</a>'''.format('UTF-8')
+    xml = u'''<?xml version="1.0" encoding="UTF-8" ?>
+              <a>åäö</a>'''
     tmppath = os.path.join(testpath, 'valid__.csv')
-    with open(tmppath, 'w') as file_:
+    with open(tmppath, 'w', encoding='utf-8') as file_:
         file_.write(xml)
     scraper = XmlEncoding(tmppath, 'text/xml', False)
     scraper.scrape_file()

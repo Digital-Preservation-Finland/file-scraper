@@ -33,8 +33,8 @@ This module tests that:
     - None of these scrapers supports a made up MIME type.
 """
 import pytest
-from file_scraper.scrapers.warctools import GzipWarctools, WarcWarctools, \
-    ArcWarctools
+from file_scraper.scrapers.warctools import (GzipWarctools, WarcWarctools,
+                                             ArcWarctools)
 from tests.common import parse_results
 
 
@@ -67,7 +67,7 @@ from tests.common import parse_results
             'stderr_part': 'Empty file.'})
     ]
 )
-def test_gzip_scraper(filename, result_dict):
+def test_gzip_scraper(filename, result_dict, evaluate_scraper):
     """Test scraper."""
     if 'warc' in filename:
         mime = 'application/warc'
@@ -90,13 +90,7 @@ def test_gzip_scraper(filename, result_dict):
         correct.streams[0]['mimetype'] = 'application/gzip'
         classname = 'GzipWarctools'
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == classname
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct, exp_scraper_cls=classname)
 
 
 @pytest.mark.parametrize(
@@ -132,7 +126,7 @@ def test_gzip_scraper(filename, result_dict):
             'stderr_part': 'Empty file.'})
     ]
 )
-def test_warc_scraper(filename, result_dict):
+def test_warc_scraper(filename, result_dict, evaluate_scraper):
     """Test scraper."""
     correct = parse_results(filename, 'application/warc',
                             result_dict, True)
@@ -144,13 +138,7 @@ def test_warc_scraper(filename, result_dict):
     if correct.streams[0]['version'] == '':
         correct.streams[0]['version'] = None
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'WarcWarctools'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -182,7 +170,7 @@ def test_warc_scraper(filename, result_dict):
             'stderr_part': 'unpack requires a string argument of length 4'})
     ]
 )
-def test_arc_scraper(filename, result_dict):
+def test_arc_scraper(filename, result_dict, evaluate_scraper):
     """Test scraper."""
     correct = parse_results(filename, 'application/x-internet-archive',
                             result_dict, True)
@@ -190,13 +178,8 @@ def test_arc_scraper(filename, result_dict):
                            True, correct.params)
     scraper.scrape_file()
     correct.streams[0]['version'] = None
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version is None  # Scraper can not solve version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'ArcWarctools'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    correct.version = None
+    evaluate_scraper(scraper, correct)
 
 
 def test_no_wellformed_gzip():

@@ -2,6 +2,7 @@
 import tempfile
 import shutil
 from file_scraper.base import BaseScraper, Shell
+from file_scraper.utils import metadata, ensure_str
 
 
 class Office(BaseScraper):
@@ -40,8 +41,8 @@ class Office(BaseScraper):
             shell = Shell([
                 'soffice', '--convert-to', 'pdf', '--outdir', temp_dir,
                 self.filename], env=env)
-            self.errors(shell.stderr)
-            self.messages(shell.stdout)
+            self.errors(ensure_str(shell.stderr))
+            self.messages(ensure_str(shell.stdout))
         except Exception:  # pylint: disable=broad-except
             self.errors('Error reading file.')
         finally:
@@ -49,6 +50,7 @@ class Office(BaseScraper):
             self._check_supported()
             self._collect_elements()
 
-    def _s_stream_type(self):
+    @metadata()
+    def _stream_type(self):
         """Return file type."""
         return 'binary'

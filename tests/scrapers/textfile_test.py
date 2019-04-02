@@ -32,7 +32,7 @@ INVALID_MSG = 'is not a text file'
         ("invalid__empty.txt", "text/plain", False)
     ]
 )
-def test_existing_files(filename, mimetype, is_textfile):
+def test_existing_files(filename, mimetype, is_textfile, evaluate_scraper):
     """Test detecting whether file is a textfile."""
     correct = parse_results(filename, mimetype,
                             {}, True)
@@ -43,13 +43,11 @@ def test_existing_files(filename, mimetype, is_textfile):
     correct.streams[0]['version'] = None
     correct.streams[0]['stream_type'] = None
     correct.well_formed = is_textfile
-
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'CheckTextFile'
     if correct.well_formed:
-        assert VALID_MSG in scraper.messages()
+        correct.stdout_part = VALID_MSG
+        correct.stderr_part = ''
     else:
-        assert INVALID_MSG in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+        correct.stdout_part = ''
+        correct.stderr_part = INVALID_MSG
+
+    evaluate_scraper(scraper, correct)

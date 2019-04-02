@@ -1,11 +1,13 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Integration test for scrapers."""
 import os
 import shutil
+
+import pytest
+from six import iteritems
+
 from file_scraper.scraper import Scraper
 from tests.common import get_files
-
 
 # These files will result none for some elements
 # For GIFs and TIFFs with 3 images inside, the version is missing from the
@@ -37,7 +39,7 @@ NONE_ELEMENTS = {
 # invalid_1.0_no_doctype.xhtml - is valid text/xml
 # Xml files would require schema or catalog, this is tested in
 # unit tests of Xmllint.
-# MKV files to not have a scraper
+# MKV files do not have a scraper
 IGNORE_INVALID = [
     'tests/data/application_pdf/invalid_1.4_wrong_version.pdf',
     'tests/data/application_x-spss-por/invalid__header_corrupted.por',
@@ -64,53 +66,61 @@ IGNORE_FOR_METADATA = IGNORE_VALID + [
 # These invalid files are recognized as application/gzip
 DIFFERENT_MIMETYPE_INVALID = {
     'tests/data/application_warc/invalid__missing_data.warc.gz':
-    'application/gzip',
+        'application/gzip',
     'tests/data/application_x-internet-archive/invalid__missing_data.arc.gz':
-    'application/gzip'}
+        'application/gzip'}
 
 
-def test_valid_combined():
+def _assert_valid_scraper_result(scraper, fullname, mimetype, well_formed):
+    """Short hand function to assert the scrape result.
+
+    :param scraper: Scraper object instance.
+    :param fullname: Full filename in str.
+    :param mimetype: Expected mimetype in str.
+    :param well_formed: Expected well-formed as either truthy or falsey.
     """
-    Integration test for valid files.
+    if well_formed:
+        assert scraper.well_formed
+    else:
+        assert not scraper.well_formed
+    assert scraper.mimetype == mimetype
+    assert scraper.streams not in [None, {}]
 
+    none = []
+    for _, stream in iteritems(scraper.streams):
+        for key, stream_value in iteritems(stream):
+            if stream_value is None:
+                none.append(key)
+    if fullname in NONE_ELEMENTS:
+        assert none == NONE_ELEMENTS[fullname]
+    else:
+        assert not none
+
+
+@pytest.mark.parametrize(('fullname', 'mimetype'), get_files(well_formed=True))
+def test_valid_combined(fullname, mimetype):
+    """Integration test for valid files.
     - Test that mimetype matches.
     - Test Find out all None elements.
     - Test that errors are not given.
     - Test that all files are well-formed.
     - Ignore few files because of required parameter or missing scraper.
     """
-    file_dict = get_files(well_formed=True)
-    for fullname, value in file_dict.iteritems():
-        if fullname in IGNORE_VALID:
-            continue
-        mimetype = value[0]
-        print fullname
+    if fullname in IGNORE_VALID:
+        pytest.skip('[%s] in ignore' % fullname)
 
-        scraper = Scraper(fullname)
-        scraper.scrape()
+    scraper = Scraper(fullname)
+    scraper.scrape()
 
-        for _, info in scraper.info.iteritems():
-            assert not info['errors']
+    for _, info in iteritems(scraper.info):
+        assert not info['errors']
 
-        assert scraper.well_formed
-        assert scraper.mimetype == mimetype
-        assert scraper.streams not in [None, {}]
-
-        none = []
-        for _, stream in scraper.streams.iteritems():
-            for key, stream_value in stream.iteritems():
-                if stream_value is None:
-                    none.append(key)
-        if fullname in NONE_ELEMENTS:
-            assert none == NONE_ELEMENTS[fullname]
-        else:
-            assert none == []
+    _assert_valid_scraper_result(scraper, fullname, mimetype, True)
 
 
-def test_invalid_combined():
-    """
-    Integration test for all invalid files.
-
+@pytest.mark.parametrize(('fullname', 'mimetype'), get_files(well_formed=False))
+def test_invalid_combined(fullname, mimetype):
+    """Integration test for all invalid files.
     - Test that well_formed is False and mimetype is expected.
     - If well_formed is None, check that Scraper was not found.
     - Skip files that are known cases where it is identified
@@ -119,107 +129,70 @@ def test_invalid_combined():
     - Skip empty files, since those are detected as inode/x-empty
       and scraper is not found.
     """
-    file_dict = get_files(well_formed=False)
-    for fullname, _ in file_dict.iteritems():
-        if 'empty' in fullname:
-            continue
-        if fullname in IGNORE_INVALID:
-            continue
-        print fullname
+    if 'empty' in fullname or fullname in IGNORE_INVALID:
+        pytest.skip('[%s] has empty or in invalid ignore' % fullname)
 
-        mimetype = fullname.split("/")[-2].replace("_", "/")
-        scraper = Scraper(fullname)
-        scraper.scrape()
+    scraper = Scraper(fullname)
+    scraper.scrape()
 
-        skip = False
-        for _, info in scraper.info.iteritems():
-            if scraper.mimetype != mimetype and \
-                    info['class'] == 'ScraperNotFound':
-                skip = True
+    for _, info in iteritems(scraper.info):
+        if scraper.mimetype != mimetype and info['class'] == 'ScraperNotFound':
+            pytest.skip(('[%s] mimetype mismatches with scraper '
+                         'or scraper not found') % fullname)
 
-        if not skip:
-            assert scraper.well_formed is False  # Could be also None (wrong)
-            assert scraper.mimetype == mimetype or \
-                fullname in DIFFERENT_MIMETYPE_INVALID
+    assert scraper.well_formed is False  # Could be also None (wrong)
+    assert scraper.mimetype == mimetype or (
+            fullname in DIFFERENT_MIMETYPE_INVALID)
 
 
-def test_without_wellformed():
-    """
-    Test the case where metadata is collected without well-formedness check.
-
+@pytest.mark.parametrize(('fullname', 'mimetype'), get_files(well_formed=True))
+def test_without_wellformed(fullname, mimetype):
+    """Test the case where metadata is collected without well-formedness check.
     - Test that well-formed is always None.
     - Test that mimetype matches.
     - Test that there exists correct stream type for image, video, audio
       and text.
     - Test a random element existence for image, video, audio and text.
     """
-    file_dict = get_files(well_formed=True)
-    for fullname, _ in file_dict.iteritems():
-        if fullname in IGNORE_FOR_METADATA:
-            continue
-        print fullname
+    if fullname in IGNORE_FOR_METADATA:
+        pytest.skip('[%s] in ignore' % fullname)
 
-        mimetype = fullname.split("/")[-2].replace("_", "/")
-        scraper = Scraper(fullname)
-        scraper.scrape(False)
+    scraper = Scraper(fullname)
+    scraper.scrape(False)
 
-        assert scraper.well_formed is None
-        assert scraper.mimetype == mimetype
-        assert scraper.streams not in [None, {}]
-        assert 'stream_type' in scraper.streams[0]
-        assert scraper.streams[0]['stream_type'] is not None
+    _assert_valid_scraper_result(scraper, fullname, mimetype, False)
 
-        none = []
-        for _, stream in scraper.streams.iteritems():
-            for key, stream_value in stream.iteritems():
-                if stream_value is None:
-                    none.append(key)
-        if fullname in NONE_ELEMENTS:
-            assert none == NONE_ELEMENTS[fullname]
-        else:
-            assert none == []
+    mimepart = mimetype.split("/")[0]
+    assert mimepart not in ['image', 'video', 'text', 'audio'] or \
+           mimepart in scraper.streams[0]['stream_type']
 
-        mimepart = mimetype.split("/")[0]
-        assert mimepart not in ['image', 'video', 'text', 'audio'] or \
-            mimepart in scraper.streams[0]['stream_type']
+    elem_dict = {'image': 'colorspace', 'video': 'color',
+                 'videocontainer': 'codec_name',
+                 'text': 'charset', 'audio': 'num_channels'}
+    for _, stream in iteritems(scraper.streams):
+        assert stream['stream_type'] is not None
+        if stream['stream_type'] in elem_dict:
+            assert elem_dict[stream['stream_type']] in stream
 
-        elem_dict = {'image': 'colorspace', 'video': 'color',
-                     'videocontainer': 'codec_name',
-                     'text': 'charset', 'audio': 'num_channels'}
-        for _, stream in scraper.streams.iteritems():
-            assert 'stream_type' in stream
-            if stream['stream_type'] in elem_dict:
-                assert elem_dict[stream['stream_type']] in stream
-
-        if 'text/csv' in mimetype:
-            assert 'delimiter' in scraper.streams[0]
+    if 'text/csv' in mimetype:
+        assert 'delimiter' in scraper.streams[0]
 
 
-def test_unicode_filename(testpath):
+@pytest.mark.parametrize(('fullname', 'mimetype'), get_files(well_formed=True))
+def test_coded_filename(testpath, fullname, mimetype):
+    """Integration test with unicode and utf-8 filename and with all scrapers.
+    - Test that unicode filenames work with all mimetypes
+    - Test that utf-8 encoded filenames work with all mimetypes
     """
-    Integration test with unicode filename and with all scrapers.
-
-    - Test that mimetype matches.
-    - Test Find out all None elements.
-    - Test that errors are not given.
-    - Test that all files are well-formed.
-    - Ignore few files because of required parameter or missing scraper.
-    """
-    file_dict = get_files(well_formed=True)
-    for fullname, value in file_dict.iteritems():
-        if fullname in IGNORE_VALID + [
-                'tests/data/text_xml/valid_1.0_dtd.xml',
-                'tests/data/application_xhtml+xml//valid_1.0.xhtml']:
-            continue
-        mimetype = value[0]
-        if mimetype in ['application/xhtml+xml']:
-            continue
-        ext = fullname.rsplit(".", 1)[-1]
-        unicode_name = os.path.join(testpath, u'äöå.%s' % ext)
-        assert isinstance(unicode_name, unicode)
-
-        print "Rename to unicode and scrape: %s" % fullname
-        shutil.copy(fullname, unicode_name)
-        scraper = Scraper(unicode_name)
-        scraper.scrape()
-        assert scraper.well_formed
+    _ = mimetype
+    if fullname in IGNORE_VALID + ['tests/data/text_xml/valid_1.0_dtd.xml']:
+        pytest.skip('[%s] in ignore' % fullname)
+    ext = fullname.rsplit(".", 1)[-1]
+    unicode_name = os.path.join(testpath, u'äöå.%s' % ext)
+    shutil.copy(fullname, unicode_name)
+    scraper = Scraper(unicode_name)
+    scraper.scrape()
+    assert scraper.well_formed
+    scraper = Scraper(unicode_name.encode('utf-8'))
+    scraper.scrape()
+    assert scraper.well_formed

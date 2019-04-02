@@ -34,18 +34,18 @@ PDF_PATH = os.path.join(
     'tests/data/application_pdf/valid_1.4.pdf')
 
 VALID_CSV = (
-    '''1997,Ford,E350,"ac, abs, moon",3000.00\n'''
-    '''1999,Chevy,"Venture ""Extended Edition""","",4900.00\n'''
-    '''1999,Chevy,"Venture ""Extended Edition, Very Large""",,5000.00\n'''
-    '''1996,Jeep,Grand Cherokee,"MUST SELL!\n'''
-    '''air, moon roof, loaded",4799.00\n''')
+    b'''1997,Ford,E350,"ac, abs, moon",3000.00\n'''
+    b'''1999,Chevy,"Venture ""Extended Edition""","",4900.00\n'''
+    b'''1999,Chevy,"Venture ""Extended Edition, Very Large""",,5000.00\n'''
+    b'''1996,Jeep,Grand Cherokee,"MUST SELL!\n'''
+    b'''air, moon roof, loaded",4799.00\n''')
 
-HEADER = 'year,brand,model,detail,other\n'
+HEADER = b'year,brand,model,detail,other\n'
 
 VALID_WITH_HEADER = HEADER + VALID_CSV
 
 MISSING_END_QUOTE = VALID_CSV + \
-    '1999,Chevy,"Venture ""Extended Edition"","",4900.00\n'
+                    b'1999,Chevy,"Venture ""Extended Edition"","",4900.00\n'
 
 
 @pytest.mark.parametrize(
@@ -118,33 +118,26 @@ MISSING_END_QUOTE = VALID_CSV + \
          'invalid__', ['year', 'brand', 'model', 'detail', 'other'])
     ]
 )
-def test_scraper(testpath, csv_text, result_dict, prefix, header):
+def test_scraper(testpath, csv_text, result_dict, prefix, header,
+                 evaluate_scraper):
     """Write test data and run csv scraping for the file."""
 
-    with open(os.path.join(testpath, '%s.csv' % prefix), 'w') as outfile:
-
+    with open(os.path.join(testpath, '%s.csv' % prefix), 'wb') as outfile:
         outfile.write(csv_text)
-        outfile.close()
 
-        words = outfile.name.rsplit("/", 1)
-        correct = parse_results(words[1], '', result_dict,
-                                True, basepath=words[0])
-        correct.mimetype = MIMETYPE
-        correct.streams[0]['mimetype'] = MIMETYPE
-        scraper = Csv(
-            correct.filename, correct.mimetype, True, params={
-                'separator': correct.streams[0]['separator'],
-                'delimiter': correct.streams[0]['delimiter'],
-                'fields': header})
-        scraper.scrape_file()
+    words = outfile.name.rsplit("/", 1)
+    correct = parse_results(words[1], '', result_dict,
+                            True, basepath=words[0])
+    correct.mimetype = MIMETYPE
+    correct.streams[0]['mimetype'] = MIMETYPE
+    scraper = Csv(
+        correct.filename, correct.mimetype, True, params={
+            'separator': correct.streams[0]['separator'],
+            'delimiter': correct.streams[0]['delimiter'],
+            'fields': header})
+    scraper.scrape_file()
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'Csv'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 def test_pdf_as_csv():
@@ -160,13 +153,11 @@ def test_pdf_as_csv():
 
 def test_no_parameters(testpath):
     """Test scraper without separate parameters."""
-    with open(os.path.join(testpath, 'valid__.csv'), 'w') as outfile:
-
+    with open(os.path.join(testpath, 'valid__.csv'), 'wb') as outfile:
         outfile.write(VALID_CSV)
-        outfile.close()
 
-        scraper = Csv(outfile.name, MIMETYPE)
-        scraper.scrape_file()
+    scraper = Csv(outfile.name, MIMETYPE)
+    scraper.scrape_file()
 
     assert scraper.mimetype == MIMETYPE
     assert scraper.version == ''
@@ -176,13 +167,11 @@ def test_no_parameters(testpath):
 
 def test_no_wellformed(testpath):
     """Test scraper without well-formed check."""
-    with open(os.path.join(testpath, 'valid__.csv'), 'w') as outfile:
-
+    with open(os.path.join(testpath, 'valid__.csv'), 'wb') as outfile:
         outfile.write(VALID_CSV)
-        outfile.close()
 
-        scraper = Csv(outfile, 'text/csv', False)
-        scraper.scrape_file()
+    scraper = Csv(outfile, 'text/csv', False)
+    scraper.scrape_file()
 
     assert 'Skipping scraper' in scraper.messages()
     assert scraper.well_formed is None

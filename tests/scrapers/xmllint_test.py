@@ -66,7 +66,7 @@ ROOTPATH = os.path.abspath(os.path.join(
          {'catalogs': False})
     ]
 )
-def test_scraper_valid(filename, result_dict, params):
+def test_scraper_valid(filename, result_dict, params, evaluate_scraper):
     """Test scraper."""
     correct = parse_results(filename, 'text/xml',
                             result_dict, True, params)
@@ -74,14 +74,8 @@ def test_scraper_valid(filename, result_dict, params):
                       True, correct.params)
     scraper.scrape_file()
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'Xmllint'
-    assert correct.stdout_part in scraper.messages()
+    evaluate_scraper(scraper, correct)
     assert '<note>' not in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
 
 
 @pytest.mark.parametrize(
@@ -122,7 +116,7 @@ def test_scraper_valid(filename, result_dict, params):
             'stderr_part': 'Document is empty'}, {})
     ]
 )
-def test_scraper_invalid(filename, result_dict, params):
+def test_scraper_invalid(filename, result_dict, params, evaluate_scraper):
     """Test scraper."""
     correct = parse_results(filename, 'text/xml',
                             result_dict, True, params)
@@ -133,14 +127,8 @@ def test_scraper_invalid(filename, result_dict, params):
         correct.version = None
         correct.streams[0]['version'] = None
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'Xmllint'
-    assert correct.stdout_part in scraper.messages()
+    evaluate_scraper(scraper, correct)
     assert '<note>' not in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
 
 
 def test_no_wellformed():

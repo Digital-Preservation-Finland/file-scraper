@@ -17,7 +17,6 @@ import os
 import pytest
 from file_scraper.iterator import iter_scrapers
 
-
 BASEPATH = "tests/data"
 
 
@@ -60,4 +59,4 @@ def test_scrape_invalid_file(filename, mimetype):
         scraper_results.append(scraper.well_formed)
 
     assert not all(scraper_results)
-    assert scraper_results > 0
+    assert scraper_results

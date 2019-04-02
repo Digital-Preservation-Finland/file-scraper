@@ -23,7 +23,6 @@ import pytest
 from tests.common import parse_results
 from file_scraper.scrapers.dpx import Dpx
 
-
 MIMETYPE = 'image/x-dpx'
 
 
@@ -52,7 +51,7 @@ MIMETYPE = 'image/x-dpx'
             'stderr_part': 'is more than file size'}),
     ]
 )
-def test_scraper(filename, result_dict):
+def test_scraper(filename, result_dict, evaluate_scraper):
     """Test scraper."""
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
@@ -60,13 +59,7 @@ def test_scraper(filename, result_dict):
                   True, correct.params)
     scraper.scrape_file()
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'Dpx'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 def test_no_wellformed():

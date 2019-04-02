@@ -2,25 +2,29 @@
 
 import os
 import tempfile
+
 try:
     from lxml import etree
 except ImportError:
     pass
+
+from io import open
+from file_scraper.utils import ensure_str, metadata
 
 from file_scraper.base import BaseScraper, Shell
 
 XSI = 'http://www.w3.org/2001/XMLSchema-instance'
 XS = '{http://www.w3.org/2001/XMLSchema}'
 
-SCHEMA_TEMPLATE = """<?xml version = "1.0" encoding = "UTF-8"?>
-    <xs:schema xmlns="http://dummy"
-    targetNamespace="http://dummy"
-    xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    version="1.0"
-    elementFormDefault="qualified"
-    attributeFormDefault="unqualified">
-    </xs:schema>"""
+SCHEMA_TEMPLATE = b"""<?xml version = "1.0" encoding = "UTF-8"?>
+<xs:schema xmlns="http://dummy"
+targetNamespace="http://dummy"
+xmlns:xs="http://www.w3.org/2001/XMLSchema"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+version="1.0"
+elementFormDefault="qualified"
+attributeFormDefault="unqualified">
+</xs:schema>"""
 
 
 class Xmllint(BaseScraper):
@@ -33,7 +37,7 @@ class Xmllint(BaseScraper):
     """
 
     _supported = {'text/xml': ['1.0']}  # Supported mimetype
-    _only_wellformed = True             # Only well-formed check
+    _only_wellformed = True  # Only well-formed check
 
     def __init__(self, filename, mimetype, check_wellformed=True, params=None):
         """
@@ -103,7 +107,7 @@ class Xmllint(BaseScraper):
             return
         # Try to check syntax by opening file in XML parser
         try:
-            file_ = open(self.filename)
+            file_ = open(self.filename, 'rb')
             parser = etree.XMLParser(dtd_validation=False, no_network=True)
             tree = etree.parse(file_, parser=parser)
             self.version = tree.docinfo.xml_version
@@ -138,9 +142,9 @@ class Xmllint(BaseScraper):
             (exitcode, stdout, stderr) = self.exec_xmllint(schema=self._schema)
         if exitcode == 0:
             self.messages(
-                "%s Success\n%s" % (self.filename, stdout))
+                "%s Success\n%s" % (self.filename, ensure_str(stdout)))
         else:
-            self.errors(stderr)
+            self.errors(ensure_str(stderr))
 
         # Clean up constructed schemas
         if self._has_constructed_schema:
@@ -240,6 +244,7 @@ class Xmllint(BaseScraper):
         if error:
             filtered_errors = []
             for line in error.splitlines():
+                line = ensure_str(line)
                 if 'this namespace was already imported' in line:
                     continue
                 filtered_errors.append(line)
@@ -251,6 +256,7 @@ class Xmllint(BaseScraper):
 
         return super(Xmllint, self).errors(error)
 
-    def _s_stream_type(self):
+    @metadata()
+    def _stream_type(self):
         """Return file type."""
         return 'text'

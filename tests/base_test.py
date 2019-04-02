@@ -13,22 +13,23 @@ This module tests:
     - Concatenation of strings or empty lists with and without prefix
 """
 import subprocess
-from file_scraper.base import Shell, BaseScraper, BaseDetector, concat, \
-    SkipElement
+from file_scraper.base import (Shell, BaseScraper, BaseDetector, concat,
+                               SkipElementException)
 import file_scraper.utils
 
 
 def test_shell(monkeypatch):
     """Test Shell class."""
+
     # pylint: disable=unused-argument
     def _run_command(cmd, stdout=subprocess.PIPE, env=None):
-        return (42, 'output message', 'error message')
+        return (42, b'output message', b'error message')
 
     monkeypatch.setattr(file_scraper.base, 'run_command', _run_command)
     shell = Shell('testcommand')
     assert shell.returncode == 42
-    assert shell.stdout == 'output message'
-    assert shell.stderr == 'error message'
+    assert shell.stdout == b'output message'
+    assert shell.stderr == b'error message'
 
 
 class BaseScraperBasic(BaseScraper):
@@ -44,10 +45,12 @@ class BaseScraperBasic(BaseScraper):
     def scrape_file(self):
         pass
 
-    def _s_version(self):
+    @file_scraper.utils.metadata()
+    def _version(self):
         return self.version
 
-    def _s_stream_type(self):
+    @file_scraper.utils.metadata()
+    def _stream_type(self):
         return 'test_stream'
 
 
@@ -62,10 +65,12 @@ class BaseScraperVersion(BaseScraperBasic):
     _allow_versions = True
 
     # pylint: disable=no-self-use
-    def _s_skip_this(self):
-        return SkipElement
+    @file_scraper.utils.metadata()
+    def _skip_this(self):
+        raise SkipElementException()
 
-    def _s_collect_this(self):
+    @file_scraper.utils.metadata()
+    def _collect_this(self):
         return 'collected'
 
 

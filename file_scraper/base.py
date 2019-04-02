@@ -1,8 +1,8 @@
 """Base module for scrapers."""
 import abc
 import subprocess
-from file_scraper.utils import run_command
-from file_scraper.utils import combine_metadata
+from file_scraper.utils import (run_command, combine_metadata, ensure_str,
+                                metadata, is_metadata, is_important)
 
 
 class Shell(object):
@@ -66,7 +66,7 @@ class Shell(object):
             'returncode': self._returncode,
             'stderr': self._stderr,
             'stdout': self._stdout
-            }
+        }
 
 
 class BaseScraper(object):
@@ -75,10 +75,11 @@ class BaseScraper(object):
 
     __metaclass__ = abc.ABCMeta
 
-    _supported = {}           # Dictionary of supported mimetypes and versions
-    _allow_versions = False   # True: Allow other detected versions
+    _supported = {}  # Dictionary of supported mimetypes and versions
+    _allow_versions = False  # True: Allow other detected versions
     _only_wellformed = False  # True if the scraper does just well-formed
-                              # check, False otherwise  # noqa:E116,E114
+
+    # check, False otherwise  # noqa:E116,E114
 
     def __init__(self, filename, mimetype, check_wellformed=True, params=None):
         """
@@ -92,15 +93,16 @@ class BaseScraper(object):
         """
         if params is None:
             params = {}
-        self.filename = filename       # File name
-        self.mimetype = mimetype       # Resulted mime type
-        self.version = None            # Resulted file format version
-        self.streams = {}              # Resulted streams
-        self.info = None               # Class name, messages, errors
-        self._messages = []            # Diagnostic messages in scraping
-        self._errors = []              # Errors in scraping
+        self.filename = filename  # File name
+        self.mimetype = mimetype  # Resulted mime type
+        self.version = None  # Resulted file format version
+        self.streams = {}  # Resulted streams
+        self.info = None  # Class name, messages, errors
+        self._importants = {}  # Important metadata and their values
+        self._messages = []  # Diagnostic messages in scraping
+        self._errors = []  # Errors in scraping
         self._check_wellformed = check_wellformed  # True for well-formed check
-        self._params = params          # Extra parameters needed
+        self._params = params  # Extra parameters needed
 
     @classmethod
     def is_supported(cls, mimetype, version=None,
@@ -155,7 +157,8 @@ class BaseScraper(object):
 
         :error: New error to add to the errors
         """
-        if error is not None and error != "":
+        err_msg = ensure_str(error) if error is not None else None
+        if err_msg is not None and err_msg != "":
             self._errors.append(error)
         return concat(self._errors, 'ERROR: ')
 
@@ -170,17 +173,20 @@ class BaseScraper(object):
         """
         Collect metadata for the elements in streams.
 
-        Values returned from methods '_s_*' will be collected.
+        Values returned from metadata-decorated methods will be collected.
         """
         for _ in self.iter_tool_streams(None):
-            metadata = {}
+            indexed_metadata = {}
             for method in dir(self):
-                if callable(getattr(self, method)) \
-                        and method.startswith('_s_'):
-                    item = getattr(self, method)()
-                    if item != SkipElement:
-                        metadata[method[3:]] = item
-            dict_meta = {metadata['index']: metadata}
+                if is_metadata(getattr(self, method)):
+                    try:
+                        indexed_metadata[method[1:]] = getattr(self, method)()
+                    except SkipElementException:
+                        # happens when <method>-method is not to be indexed.
+                        pass
+                if is_important(getattr(self, method)):
+                    self._add_important(method[1:], getattr(self, method)())
+            dict_meta = {indexed_metadata['index']: indexed_metadata}
             self.streams = combine_metadata(self.streams, dict_meta)
         self.mimetype = self.streams[0]['mimetype']
         self.version = self.streams[0]['version']
@@ -190,13 +196,13 @@ class BaseScraper(object):
 
     def _check_supported(self):
         """Check that resulted mimetype and possible version are supported."""
-        if self._s_mimetype() is None:
+        if self._mimetype() is None:
             self.errors("None is not supported mimetype.")
-        elif self._s_mimetype() and self._s_mimetype() not in self._supported:
-            self.errors("Mimetype %s is not supported." % self._s_mimetype())
-        elif self._s_version() and self._s_version() not in \
-                self._supported[self._s_mimetype()]:
-            self.errors("Version %s is not supported." % self._s_version())
+        elif self._mimetype() and self._mimetype() not in self._supported:
+            self.errors("Mimetype %s is not supported." % self._mimetype())
+        elif self._version() and self._version() not in \
+                self._supported[self._mimetype()]:
+            self.errors("Version %s is not supported." % self._version())
 
     # pylint: disable=no-self-use,unused-argument
     def iter_tool_streams(self, stream_type):
@@ -215,43 +221,57 @@ class BaseScraper(object):
         """
         pass
 
-    def get_important(self):
-        """Return values that are more important."""
-        return {}
-
-    # Methods starting with '_s_' will be collected to the stream results.
-    # All _s_ methods must return str, except _s_index, which returns int.
-    # See: _collect_elements
-
-    def _s_mimetype(self):
+    @metadata()
+    def _mimetype(self):
         """Return mimetype."""
         return self.mimetype
 
-    def _s_version(self):
+    @metadata()
+    def _version(self):
         """Return version."""
         return self.version
 
-    def _s_index(self):
+    @metadata()
+    def _index(self):
         """Return stream index."""
         return 0
 
     @abc.abstractmethod
-    def _s_stream_type(self):
+    @metadata()
+    def _stream_type(self):
         """Return stream type. Must be implemented in the scrapers."""
         pass
 
+    def importants(self):
+        """Important metadata that should have priority when combining metadata.
+        :return: Dictionary of metadata and their values.
+        """
+        return self._importants
 
-class SkipElement(object):
-    """
-    Class used as a 'value' to tell the iterator to skip the element.
+    def _add_important(self, key, value):
+        """Key along with the value added as important metadata.
+        Exception is raised if the key has already been defined important.
+        :param key: Metadata index key.
+        :param value: Metadata value.
+        :raises: ImportantMetadataAlreadyDefined
+        """
+        if key in self._importants and self._importants[key] != value:
+            raise ImportantMetadataAlreadyDefined(
+                '[%s] index is already important with [%s]. '
+                'Incoming value: [%s]' % (key, self._importants[key], value))
+        self._importants[key] = value
 
+
+class SkipElementException(Exception):
+    """Exception to tell the iterator to skip the element.
     We are not able to use None or '' since those are reserved for
     other purposes already.
     """
-    # pylint: disable=too-few-public-methods
 
-    def __init__(self):
-        pass
+
+class ImportantMetadataAlreadyDefined(Exception):
+    """Exception to tell that the given key has already been defined as
+    important."""
 
 
 class BaseDetector(object):
@@ -263,9 +283,9 @@ class BaseDetector(object):
     def __init__(self, filename):
         """Initialize detector."""
         self.filename = filename  # File path
-        self.mimetype = None      # Identified mimetype
-        self.version = None       # Identified file version
-        self.info = None          # Class name, messages, errors
+        self.mimetype = None  # Identified mimetype
+        self.version = None  # Identified file version
+        self.info = None  # Class name, messages, errors
 
     @abc.abstractmethod
     def detect(self):

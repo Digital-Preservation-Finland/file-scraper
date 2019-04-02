@@ -38,7 +38,6 @@ import pytest
 from file_scraper.scrapers.office import Office
 from tests.common import parse_results
 
-
 BASEPATH = 'tests/data'
 
 
@@ -63,7 +62,7 @@ BASEPATH = 'tests/data'
         ("valid_1.0.odf", "application/vnd.oasis.opendocument.formula"),
     ]
 )
-def test_scraper_valid_file(filename, mimetype):
+def test_scraper_valid_file(filename, mimetype, evaluate_scraper):
     """Test valid files with scraper."""
     result_dict = {
         'purpose': 'Test valid file.',
@@ -77,13 +76,9 @@ def test_scraper_valid_file(filename, mimetype):
     correct.version = None
     correct.streams[0]['version'] = None
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'Office'
+    evaluate_scraper(scraper, correct, False)
     assert scraper.messages()
     assert not scraper.errors()
-    assert scraper.well_formed == correct.well_formed
 
 
 @pytest.mark.parametrize(
@@ -107,7 +102,7 @@ def test_scraper_valid_file(filename, mimetype):
          ".formula"),
     ]
 )
-def test_scraper_invalid_file(filename, mimetype):
+def test_scraper_invalid_file(filename, mimetype, evaluate_scraper):
     """Test scraper with invalid files."""
     result_dict = {
         'purpose': 'Test invalid file.',
@@ -121,13 +116,7 @@ def test_scraper_invalid_file(filename, mimetype):
     correct.version = None
     correct.streams[0]['version'] = None
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'Office'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 def _scrape(filename, mimetype):
@@ -157,7 +146,7 @@ def test_parallel_validation(filename, mimetype):
                for _ in range(number)]
 
     for result in results:
-        assert result.get(timeout=3)
+        assert result.get(timeout=5)
 
 
 def test_no_wellformed():

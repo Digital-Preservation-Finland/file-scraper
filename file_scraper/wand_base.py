@@ -1,10 +1,12 @@
-"""Metadata scraper for image file formats."""
+"""Metadata scraper for image file formats"""
+
 try:
     import wand.image
 except ImportError:
     pass
 
 from file_scraper.base import BaseScraper
+from file_scraper.utils import metadata
 
 
 class Wand(BaseScraper):
@@ -67,42 +69,49 @@ class Wand(BaseScraper):
         self._wand_stream = self._wand.sequence[index]
         self._wand_index = index
 
-    def _s_version(self):
+    @metadata()
+    def _version(self):
         """Return version of file format."""
         return None
 
-    def _s_stream_type(self):
+    @metadata()
+    def _stream_type(self):
         """Return stream type."""
         return 'image'
 
-    def _s_index(self):
+    @metadata()
+    def _index(self):
         """Return stream index."""
         if self._wand_index is None:
             return 0
         return self._wand_index
 
-    def _s_colorspace(self):
+    @metadata()
+    def _colorspace(self):
         """Return colorspace."""
         if self._wand_stream is not None and \
                 self._wand_stream.colorspace is not None:
             return self._wand_stream.colorspace
         return None
 
-    def _s_width(self):
+    @metadata()
+    def _width(self):
         """Return image width."""
         if self._wand_stream is not None and \
                 self._wand_stream.width is not None:
             return str(self._wand_stream.width)
         return None
 
-    def _s_height(self):
+    @metadata()
+    def _height(self):
         """Return image height."""
         if self._wand_stream is not None and \
                 self._wand_stream.height is not None:
             return str(self._wand_stream.height)
         return None
 
-    def _s_bps_value(self):
+    @metadata()
+    def _bps_value(self):
         """Return bits per sample."""
         if self._wand_stream is not None and \
                 self._wand_stream.depth is not None:
@@ -110,17 +119,20 @@ class Wand(BaseScraper):
         return None
 
     # pylint: disable=no-self-use
-    def _s_bps_unit(self):
+    @metadata()
+    def _bps_unit(self):
         """Return sample unit."""
         return None
 
-    def _s_compression(self):
+    @metadata()
+    def _compression(self):
         """Return compression scheme."""
         if self._wand is not None and \
                 self._wand.compression is not None:
             return self._wand.compression
         return None
 
-    def _s_samples_per_pixel(self):
+    @metadata()
+    def _samples_per_pixel(self):
         """Return samples per pixel."""
         return None

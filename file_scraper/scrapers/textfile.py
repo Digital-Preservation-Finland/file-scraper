@@ -1,5 +1,6 @@
 """Module for checking if the file is uitable as text file or not."""
 from file_scraper.base import BaseScraper, Shell
+from file_scraper.utils import metadata, ensure_str
 
 FILECMD_PATH = "/opt/file-5.30/bin/file"
 ENV = {'LD_LIBRARY_PATH': "/opt/file-5.30/lib64"}
@@ -24,7 +25,7 @@ class CheckTextFile(BaseScraper):
             self.filename], env=ENV)
 
         self.errors(shell.stderr)
-        mimetype = shell.stdout.strip()
+        mimetype = ensure_str(shell.stdout).strip()
 
         return mimetype
 
@@ -38,6 +39,7 @@ class CheckTextFile(BaseScraper):
             self.errors("File is not a text file")
         self._collect_elements()
 
-    def _s_stream_type(self):
+    @metadata()
+    def _stream_type(self):
         """Return stream type."""
         return None

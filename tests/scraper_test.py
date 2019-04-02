@@ -26,7 +26,7 @@ class _TestScraper(BaseScraper):
     def scrape_file(self):
         pass
 
-    def _s_stream_type(self):
+    def _stream_type(self):
         return None
 
     @property

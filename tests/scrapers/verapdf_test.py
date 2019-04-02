@@ -30,7 +30,6 @@ import pytest
 from tests.common import parse_results
 from file_scraper.scrapers.verapdf import VeraPdf
 
-
 MIMETYPE = 'application/pdf'
 
 
@@ -52,7 +51,7 @@ MIMETYPE = 'application/pdf'
             'stderr_part': 'In a cross reference subsection header'}),
     ]
 )
-def test_scraper(filename, result_dict):
+def test_scraper(filename, result_dict, evaluate_scraper):
     """Test scraper with PDF/A."""
     for ver in ['A-1a', 'A-2b', 'A-3b']:
         filename = filename.replace('X', ver)
@@ -66,13 +65,7 @@ def test_scraper(filename, result_dict):
             correct.version = None
             correct.streams[0]['version'] = None
 
-        assert scraper.mimetype == correct.mimetype
-        assert scraper.version == correct.version
-        assert scraper.streams == correct.streams
-        assert scraper.info['class'] == 'VeraPdf'
-        assert correct.stdout_part in scraper.messages()
-        assert correct.stderr_part in scraper.errors()
-        assert scraper.well_formed == correct.well_formed
+        evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -90,7 +83,7 @@ def test_scraper(filename, result_dict):
             'stderr_part': 'is not compliant with Validation Profile'}),
     ]
 )
-def test_scraper_invalid_pdfa(filename, result_dict):
+def test_scraper_invalid_pdfa(filename, result_dict, evaluate_scraper):
     """Test scraper with files that are not valid PDF/A."""
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
@@ -101,13 +94,7 @@ def test_scraper_invalid_pdfa(filename, result_dict):
     correct.version = None
     correct.streams[0]['version'] = None
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'VeraPdf'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 def test_no_wellformed():
@@ -128,16 +115,3 @@ def test_is_supported():
     assert not VeraPdf.is_supported(mime, ver, False)
     assert not VeraPdf.is_supported(mime, 'foo', True)
     assert not VeraPdf.is_supported('foo', ver, True)
-
-
-@pytest.mark.parametrize(
-    'version', ['A-1a', 'A-1b', 'A-2a', 'A-2b', 'A-2u', 'A-3a', 'A-3b', 'A-3u']
-)
-def test_important(version):
-    """Test important with cruical versions."""
-    scraper = VeraPdf('testfilename', 'application/pdf')
-    scraper.version = version
-    scraper.messages('Success')
-    assert scraper.get_important() == {'version': version}
-    scraper.errors('Error')
-    assert scraper.get_important() == {}

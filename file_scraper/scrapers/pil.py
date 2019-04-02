@@ -1,5 +1,6 @@
 """Metadata scraper for image file formats."""
 from file_scraper.pil_base import Pil
+from file_scraper.utils import metadata
 
 
 class TiffPil(Pil):
@@ -8,26 +9,30 @@ class TiffPil(Pil):
     _supported = {'image/tiff': ['6.0']}  # Supported mimetype
     _allow_versions = True                # Allow any version
 
-    def _s_width(self):
+    @metadata()
+    def _width(self):
         """We will get width from another scraper."""
         return None
 
-    def _s_height(self):
+    @metadata()
+    def _height(self):
         """We will get height from another scraper."""
         return None
 
-    def _s_colorspace(self):
+    @metadata()
+    def _colorspace(self):
         """We will get colorspace from another scraper."""
         return None
 
-    def _s_samples_per_pixel(self):
+    @metadata()
+    def _samples_per_pixel(self):
         """Return samples per pixel."""
         if self._pil is None:
             return None
         tag_info = self._pil.tag_v2
         if tag_info and 277 in tag_info.keys():
             return str(tag_info[277])
-        return super(TiffPil, self)._s_samples_per_pixel()
+        return super(TiffPil, self)._samples_per_pixel()
 
 
 class ImagePil(Pil):
@@ -39,15 +44,18 @@ class ImagePil(Pil):
                   'image/gif': ['1987a', '1989a']}
     _allow_versions = True  # Allow any version
 
-    def _s_width(self):
+    @metadata()
+    def _width(self):
         """Return None: we will get width from another scraper."""
         return None
 
-    def _s_height(self):
+    @metadata()
+    def _height(self):
         """Return None: we will get height from another scraper."""
         return None
 
-    def _s_colorspace(self):
+    @metadata()
+    def _colorspace(self):
         """Return None: we will get colorspace from another scraper."""
         return None
 
@@ -59,23 +67,27 @@ class JpegPil(Pil):
                                  '2.2', '2.2.1']}  # Supported mimetypes
     _allow_versions = True  # Allow any version
 
-    def _s_width(self):
+    @metadata()
+    def _width(self):
         """Return none: we will get width from another scraper."""
         return None
 
-    def _s_height(self):
+    @metadata()
+    def _height(self):
         """Return None: We will get height from another scraper."""
         return None
 
-    def _s_colorspace(self):
+    @metadata()
+    def _colorspace(self):
         """Return None: We will get colorspace from another scraper."""
         return None
 
-    def _s_samples_per_pixel(self):
+    @metadata()
+    def _samples_per_pixel(self):
         """Return samples per pixel."""
         if self._pil is None:
             return None
         exif_info = self._pil._getexif()  # pylint: disable=protected-access
         if exif_info and 277 in exif_info.keys():
             return str(exif_info[277])
-        return super(JpegPil, self)._s_samples_per_pixel()
+        return super(JpegPil, self)._samples_per_pixel()

@@ -95,7 +95,7 @@ from tests.common import parse_results
             "stdout_part": "",
             "stderr_part": "Invalid data found when processing input"})
     ])
-def test_ffmpeg_scraper_mpeg(filename, result_dict):
+def test_ffmpeg_scraper_mpeg(filename, result_dict, evaluate_scraper):
     """Test FFMpegWellformed."""
     mimetype = 'video/mpeg'
     correct = parse_results(filename, mimetype, result_dict, True)
@@ -105,13 +105,7 @@ def test_ffmpeg_scraper_mpeg(filename, result_dict):
     correct.streams[0]['version'] = None
     correct.streams[0]['stream_type'] = None
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'FFMpegWellformed'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -130,7 +124,7 @@ def test_ffmpeg_scraper_mpeg(filename, result_dict):
             "stdout_part": "",
             "stderr_part": "Invalid data found when processing input"})
     ])
-def test_ffmpeg_scraper_mp4(filename, result_dict):
+def test_ffmpeg_scraper_mp4(filename, result_dict, evaluate_scraper):
     """Test FFMpegWellformed."""
     mimetype = 'video/mp4'
     correct = parse_results(filename, mimetype, result_dict, True)
@@ -140,14 +134,7 @@ def test_ffmpeg_scraper_mp4(filename, result_dict):
     correct.streams[0]['version'] = None
     correct.streams[0]['stream_type'] = None
 
-
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'FFMpegWellformed'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -170,7 +157,7 @@ def test_ffmpeg_scraper_mp4(filename, result_dict):
             "stdout_part": "",
             "stderr_part": "could not find codec parameters"})
     ])
-def test_ffmpeg_scraper_mp3(filename, result_dict):
+def test_ffmpeg_scraper_mp3(filename, result_dict, evaluate_scraper):
     """Test FFMpegWellformed."""
     mimetype = 'audio/mpeg'
     correct = parse_results(filename, mimetype, result_dict, True)
@@ -180,13 +167,7 @@ def test_ffmpeg_scraper_mp3(filename, result_dict):
     correct.streams[0]['version'] = None
     correct.streams[0]['stream_type'] = None
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'FFMpegWellformed'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -205,7 +186,7 @@ def test_ffmpeg_scraper_mp3(filename, result_dict):
             "stdout_part": "",
             "stderr_part": "Invalid data found when processing input"})
     ])
-def test_ffmpeg_scraper_mpegts(filename, result_dict):
+def test_ffmpeg_scraper_mpegts(filename, result_dict, evaluate_scraper):
     """Test FFMpegWellformed."""
     mimetype = 'video/MP2T'
     correct = parse_results(filename, mimetype, result_dict, True)
@@ -215,13 +196,7 @@ def test_ffmpeg_scraper_mpegts(filename, result_dict):
     correct.streams[0]['version'] = None
     correct.streams[0]['stream_type'] = None
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'FFMpegWellformed'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 def test_no_wellformed():

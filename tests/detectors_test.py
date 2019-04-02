@@ -45,9 +45,8 @@ CHANGE_MAGIC = {
 )
 def test_detectors(detector_class, change_dict):
     """Test Fido and Magic detectors."""
-    file_dict = get_files(well_formed=True)
-    for filename, value in file_dict.iteritems():
-        mimetype = value[0]
+    for filename, mimetype in get_files(well_formed=True):
+        mimetype = mimetype
         detector = detector_class(filename)
         detector.detect()
         if filename in change_dict:

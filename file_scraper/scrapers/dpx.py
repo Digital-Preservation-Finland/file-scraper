@@ -1,5 +1,6 @@
 """DPX V2.0 scraper."""
 from file_scraper.base import BaseScraper, Shell
+from file_scraper.utils import metadata, ensure_str
 
 
 class Dpx(BaseScraper):
@@ -17,23 +18,24 @@ class Dpx(BaseScraper):
         shell = Shell(['dpxv', self.filename])
 
         if shell.returncode != 0:
-            raise DPXvError(shell.stderr)
+            raise DPXvError(ensure_str(shell.stderr))
 
-        self.errors(shell.stderr)
-        self.messages(shell.stdout)
+        self.errors(ensure_str(shell.stderr))
+        self.messages(ensure_str(shell.stdout))
         self._check_supported()
         self._collect_elements()
 
-    def _s_version(self):
+    @metadata()
+    def _version(self):
         """Return version."""
         return '2.0'
 
-    def _s_stream_type(self):
+    @metadata()
+    def _stream_type(self):
         """Return file type."""
         return 'image'
 
 
 class DPXvError(Exception):
     """DPX scraper error."""
-
     pass

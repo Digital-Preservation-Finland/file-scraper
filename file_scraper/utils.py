@@ -1,23 +1,25 @@
 """Utilities for scrapers."""
 import sys
 import os
-import subprocess
 import unicodedata
 import string
+import subprocess
 import hashlib
+import six
 
 
 def encode(filename):
     """Encode Unicode filenames."""
-    if isinstance(filename, unicode):
-        filename = filename.encode(sys.getfilesystemencoding())
-    return filename
+    return ensure_str(filename, encoding=sys.getfilesystemencoding())
+
+
+def decode(filename):
+    """Decode Unicode filenames."""
+    return ensure_text(filename, encoding=sys.getfilesystemencoding())
 
 
 def hexdigest(filename, algorithm='sha1', extra_hash=None):
-    """
-    Calculte hash of given file.
-
+    """Calculte hash of given file.
     :filename: File path
     :algorithm: Hash algorithm. MD5 or SHA variant.
     :extra_hash: Hash to be appended in calculation
@@ -29,14 +31,14 @@ def hexdigest(filename, algorithm='sha1', extra_hash=None):
         for chunk in iter(lambda: input_file.read(1024 * 1024), b''):
             checksum.update(chunk)
         if extra_hash:
+            if isinstance(extra_hash, str):
+                extra_hash = extra_hash.encode('utf-8')
             checksum.update(extra_hash)
     return checksum.hexdigest()
 
 
 def sanitize_string(dirty_string):
-    """
-    Strip non-printable control characters from unicode string.
-
+    """Strip non-printable control characters from unicode string
     :dirty_string: String to sanitize
     :returns: Sanitized string
     """
@@ -47,8 +49,7 @@ def sanitize_string(dirty_string):
 
 
 def iso8601_duration(time):
-    """
-    Convert seconds into ISO 8601 duration.
+    """Convert seconds into ISO 8601 duration.
 
     PT[hours]H[minutes]M[seconds]S format is used with maximum of two decimal
     places used with the seconds. If there are no hours, minutes or seconds,
@@ -69,7 +70,7 @@ def iso8601_duration(time):
     :time: Time in seconds
     :returns: ISO 8601 representation of time
     """
-    hours = time // (60*60)
+    hours = time // (60 * 60)
     minutes = time // 60 % 60
     seconds = round(time % 60, 2)
 
@@ -96,8 +97,7 @@ def iso8601_duration(time):
 
 
 def strip_zeros(float_str):
-    """
-    Recursively strip trailing zeros from a float.
+    """Recursively strip trailing zeros from a float.
 
     Zeros in integer part are not affected. If no decimal part is left, the
     decimal separator is also stripped. Underscores as described in PEP 515
@@ -123,27 +123,26 @@ def strip_zeros(float_str):
     return float_str
 
 
-def combine_metadata(stream, metadata, lose=None, important=None):
-    """
-    Merge metadata dict to stream metadata dict.
+def combine_metadata(stream, indexed_metadata, lose=None, important=None):
+    """Merge metadata dict to stream metadata dict.
 
     Will raise ValueError if two different values collide.
 
-    :stream: Metadata dict where the new metadata is merged.
-    :metadata: New metadata dict to be merged.
-    :lose: These are generic values that are allowed to be lost
-    :important: Important values as dict, which will be used
+    :param stream: Metadata dict where the new metadata is merged.
+    :param metadata: Indexed metadata dict to be merged with.
+    :param lose: These are generic values that are allowed to be lost
+    :param important: Important values as dict, which will be used
                 in conflict situation, if given.
-    :returns: Merged metadta
+    :returns: Merged metadata dict.
     """
-    if not metadata:
+    if not indexed_metadata:
         return stream.copy()
 
     stream = {} if stream is None else stream.copy()
     important = {} if important is None else important
     lose = [] if lose is None else lose
 
-    for stream_index, metadata_dict in metadata.iteritems():
+    for stream_index, metadata_dict in six.iteritems(indexed_metadata):
 
         if stream_index not in stream.keys():
             stream[stream_index] = metadata_dict
@@ -165,7 +164,7 @@ def combine_metadata(stream, metadata, lose=None, important=None):
                     "value '%s'." % (incomplete_stream[key],
                                      metadata_dict[key]))
 
-        for key, value in metadata_dict.iteritems():
+        for key, value in six.iteritems(metadata_dict):
             if key not in incomplete_stream:
                 incomplete_stream[key] = value
 
@@ -173,8 +172,7 @@ def combine_metadata(stream, metadata, lose=None, important=None):
 
 
 def run_command(cmd, stdout=subprocess.PIPE, env=None):
-    """
-    Execute command.
+    """Execute command.
 
     Scraper specific error handling is supported by forwarding exceptions.
 
@@ -186,7 +184,7 @@ def run_command(cmd, stdout=subprocess.PIPE, env=None):
     _env = os.environ.copy()
 
     if env:
-        for key, value in env.iteritems():
+        for key, value in six.iteritems(env):
             _env[key] = value
 
     proc = subprocess.Popen(cmd,
@@ -202,3 +200,76 @@ def run_command(cmd, stdout=subprocess.PIPE, env=None):
         stderr_result = ""
     statuscode = proc.returncode
     return statuscode, stdout_result, stderr_result
+
+
+def metadata(important=False):
+    """Decorator to help set a flag attribute to the function that it
+    can be collected for metadata.
+    :param important: Whether or not this metadata is important and should
+        have priority when duplicate metadata key is discovered.
+    """
+
+    def _wrapper(func):
+        if callable(func):
+            func.important = important
+            func.metadata = True
+        return func
+
+    return _wrapper
+
+
+def is_metadata(func):
+    """To help let scraper know the given function has metadata flagged."""
+    return callable(func) and getattr(func, 'metadata', False)
+
+
+def is_important(func):
+    """To help let scraper know the given function is flagged important."""
+    return callable(func) and getattr(func, 'important', False)
+
+
+def ensure_str(s, encoding='utf-8', errors='strict'):
+    """Coerce *s* to `str`.
+
+    For Python 2:
+      - `unicode` -> encoded to `str`
+      - `str` -> `str`
+
+    For Python 3:
+      - `str` -> `str`
+      - `bytes` -> decoded to `str`
+
+    Direct copy from release 1.12::
+
+        https://github.com/benjaminp/six/blob/master/six.py#L872
+    """
+    if not isinstance(s, (six.text_type, six.binary_type)):
+        raise TypeError("not expecting type '%s'" % type(s))
+    if six.PY2 and isinstance(s, six.text_type):
+        s = s.encode(encoding, errors)
+    elif six.PY3 and isinstance(s, six.binary_type):
+        s = s.decode(encoding, errors)
+    return s
+
+
+def ensure_text(s, encoding='utf-8', errors='strict'):
+    """Coerce *s* to six.text_type.
+
+    For Python 2:
+      - `unicode` -> `unicode`
+      - `str` -> `unicode`
+
+    For Python 3:
+      - `str` -> `str`
+      - `bytes` -> decoded to `str`
+
+    Direct copy from release 1.12::
+
+        https://github.com/benjaminp/six/blob/master/six.py#L892
+    """
+    if isinstance(s, six.binary_type):
+        return s.decode(encoding, errors)
+    elif isinstance(s, six.text_type):
+        return s
+    else:
+        raise TypeError("not expecting type '%s'" % type(s))

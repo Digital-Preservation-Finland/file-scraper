@@ -51,7 +51,7 @@ ROOTPATH = os.path.abspath(os.path.join(
             'stderr_part': ''},
          {'schematron': os.path.join(
              ROOTPATH, 'tests/data/text_xml/local.sch'),
-          'cache': False}),
+             'cache': False}),
         ('invalid_1.0_local_xsd.xml', {
             'purpose': 'Test invalid file',
             'stdout_part': '<svrl:schematron-output',
@@ -65,7 +65,7 @@ ROOTPATH = os.path.abspath(os.path.join(
          {'schematron': 'tests/data/text_xml/local.sch'}),
     ]
 )
-def test_scraper(filename, result_dict, params):
+def test_scraper(filename, result_dict, params, evaluate_scraper):
     """Test scraper."""
 
     correct = parse_results(filename, 'text/xml',
@@ -76,13 +76,7 @@ def test_scraper(filename, result_dict, params):
     correct.version = None
     correct.streams[0]['version'] = None
 
-    assert scraper.mimetype == correct.mimetype
-    assert scraper.version == correct.version
-    assert scraper.streams == correct.streams
-    assert scraper.info['class'] == 'Schematron'
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed == correct.well_formed
+    evaluate_scraper(scraper, correct)
 
     if 'verbose' in correct.params and correct.params['verbose']:
         assert 'have been suppressed' not in scraper.messages()
@@ -149,7 +143,7 @@ def test_filter_duplicate_elements():
     """Test duplicate element filtering."""
     # pylint: disable=protected-access
     schtest = \
-        """<svrl:schematron-output
+        b"""<svrl:schematron-output
             xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
                <svrl:active-pattern id="id"/>
                <svrl:active-pattern id="id"/>
@@ -166,6 +160,6 @@ def test_filter_duplicate_elements():
            </svrl:schematron-output>"""
     scraper = Schematron('filename', 'text/xml')
     result = scraper._filter_duplicate_elements(schtest)
-    assert result.count('<svrl:active-pattern') == 1
-    assert result.count('<svrl:fired-rule') == 1
-    assert result.count('<svrl:failed-assert') == 2
+    assert result.count(b'<svrl:active-pattern') == 1
+    assert result.count(b'<svrl:fired-rule') == 1
+    assert result.count(b'<svrl:failed-assert') == 2

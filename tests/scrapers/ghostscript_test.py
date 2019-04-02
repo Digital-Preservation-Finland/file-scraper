@@ -44,7 +44,7 @@ from file_scraper.scrapers.ghostscript import GhostScript
             'stderr_part': 'An error occurred while reading an XREF table.'}),
     ]
 )
-def test_scraper_pdf(filename, result_dict):
+def test_scraper_pdf(filename, result_dict, evaluate_scraper):
     """Test scraper."""
     for ver in ['1.7', 'A-1a', 'A-2b', 'A-3b']:
         filename = filename.replace('X', ver)
@@ -56,17 +56,12 @@ def test_scraper_pdf(filename, result_dict):
         # Ghostscript cannot handle version
         correct.version = None
         correct.streams[0]['version'] = None
-
-        assert scraper.mimetype == correct.mimetype
-        assert scraper.version == correct.version
-        assert scraper.streams == correct.streams
-        assert scraper.info['class'] == 'GhostScript'
+        evaluate_scraper(scraper, correct, False)
         if scraper.well_formed:
             assert 'Error' not in scraper.messages()
         else:
             assert correct.stdout_part in scraper.messages()
         assert correct.stderr_part in scraper.errors()
-        assert scraper.well_formed == correct.well_formed
 
 
 def test_no_wellformed():

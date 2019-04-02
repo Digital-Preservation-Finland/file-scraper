@@ -1,6 +1,7 @@
 """A HTML5 scraper module using The Nu Html Checker."""
 
 from file_scraper.base import BaseScraper, Shell
+from file_scraper.utils import metadata, ensure_str
 
 VNU_PATH = "/usr/share/java/vnu/vnu.jar"
 
@@ -20,15 +21,17 @@ class Vnu(BaseScraper):
         shell = Shell([
             'java', '-jar', VNU_PATH, '--verbose',
             self.filename])
-        self.errors(shell.stderr)
-        self.messages(shell.stdout)
+        self.errors(ensure_str(shell.stderr))
+        self.messages(ensure_str(shell.stdout))
         self._check_supported()
         self._collect_elements()
 
-    def _s_version(self):
+    @metadata()
+    def _version(self):
         """Return version."""
         return '5.0'
 
-    def _s_stream_type(self):
+    @metadata()
+    def _stream_type(self):
         """Return file type."""
         return 'text'
