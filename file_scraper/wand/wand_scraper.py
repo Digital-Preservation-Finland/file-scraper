@@ -6,7 +6,6 @@ except ImportError:
 
 from file_scraper.base import BaseScraper
 from file_scraper.wand.wand_model import WandTiffMeta, WandImageMeta
-#from file_scraper.scrapers.wand import TiffWand, ImageWand
 
 
 class WandScraper(BaseScraper):
@@ -38,18 +37,20 @@ class WandScraper(BaseScraper):
 #             return
         try:
             wandresults = wand.image.Image(filename=self.filename)
+        except Exception as e:  # pylint: disable=broad-except, invalid-name
+            self._errors.append("Error in analyzing file")
+            self._errors.append(e)
+        else:
             for md_class in self._supported_metadata:
                 for image in wandresults.sequence:
                     if not md_class.is_supported(image.container.mimetype):
                         continue
                     self.streams.append(md_class(image))
-        except Exception as e:  # pylint: disable=broad-except, invalid-name
-            self._errors.append("Error in analyzing file")
-            self._errors.append(e)
-        else:
-            self._messages.append("The file was analyzed successfully.")
-        finally:
-            pass
-#            self._check_supported()
-#            self._collect_elements()
 
+            # TODO moved here from finally because it doesn't make much sense
+            #      to raise an exception for when analyzing the image did not
+            #      work out and there are no streams so no MIME or version
+            #      either. Smart or dumb?
+            self._check_supported()
+
+            self._messages.append("The file was analyzed successfully.")

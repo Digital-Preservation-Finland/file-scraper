@@ -8,6 +8,8 @@ from file_scraper.utils import (run_command, ensure_str, metadata,
 class BaseScraper(object):
     """Base scraper implements common methods for all scrapers."""
 
+    _supported_metadata = []
+
     def __init__(self, filename):
         """
         Initialize scraper.
@@ -34,6 +36,24 @@ class BaseScraper(object):
         # """Return True if all streams are well-formed, otherwise False."""
         # return all([x.well_formed() for x in self.iter_streams()])
 
+    def _check_supported(self):
+        """
+        Check that the determined MIME type and version are supported.
+
+        :raises: UnsupportedTypeException if the MIME type and version are not
+                 supported
+        """
+        mimetype = self.streams[0].mimetype()
+        version = self.streams[0].version()
+
+        if mimetype is None:
+            raise UnsupportedTypeException("None is not a supported mimetype.")
+        elif not any([x.is_supported(mimetype, version=version) for x in
+                      self._supported_metadata]):
+            raise UnsupportedTypeException("MIME type %s with version %s is "
+                                           "not supported." % (mimetype,
+                                                               version))
+
 
 class BaseMeta(object):
     """
@@ -56,6 +76,24 @@ class BaseMeta(object):
         :returns: TODO
         """
         return "(:unav)"
+
+    @metadata()
+    def version(self):
+        """
+        TODO:
+
+        :returns: TODO
+        """
+        return "(:unav)"
+
+    def to_dict(self):
+        """TODO"""
+        stream = {}
+        for methodname in dir(self):
+            if not is_metadata(getattr(self, methodname)):
+                continue
+            stream[methodname] = getattr(self, methodname)()
+        return stream
 
     @classmethod
     def is_supported(cls, mimetype, version=None):
@@ -134,6 +172,10 @@ class Shell(object):
             'stdout': self._stdout
         }
 
+
+class UnsupportedTypeException(Exception):
+    """Exception for when scraper is used with unsupported MIME type/version"""
+    pass
 
 # class BaseScraper(object):
 #     """Base class for scrapers."""
@@ -305,6 +347,7 @@ class Shell(object):
 #     def _s_stream_type(self):
 #         """Return stream type. Must be implemented in the scrapers."""
 #         pass
+
 
 class SkipElementException(Exception):
     """Exception to tell the iterator to skip the element.
