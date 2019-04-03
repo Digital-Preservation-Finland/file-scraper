@@ -58,7 +58,7 @@ class WandImageMeta(BaseMeta):
         return str(self._image.height)
 
     @metadata()
-    def bps(self):
+    def bps_value(self):
         """TODO"""
         if not self._image:
             return None

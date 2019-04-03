@@ -9,8 +9,9 @@ class BaseScraper(object):
     """Base scraper implements common methods for all scrapers."""
 
     _supported_metadata = []
+    _only_wellformed = False
 
-    def __init__(self, filename):
+    def __init__(self, filename, check_wellformed=True, params=None):
         """
         Initialize scraper.
 
@@ -21,6 +22,9 @@ class BaseScraper(object):
         self.filename = filename
         self._messages = []
         self._errors = []
+        self._only_wellformed = False
+        self._check_wellformed = check_wellformed
+        self._params = params if params is not None else {}
 
     def iter_streams(self):
         """Iterate through all streams."""
@@ -36,6 +40,18 @@ class BaseScraper(object):
         # """Return True if all streams are well-formed, otherwise False."""
         # return all([x.well_formed() for x in self.iter_streams()])
 
+    @classmethod
+    def is_supported(cls, mimetype, version=None, check_wellformed=True):
+        """
+        TODO: Docstring for is_supported.
+
+        :returns: TODO
+        """
+        if cls._only_wellformed and not check_wellformed:
+            return False
+        return any([x.is_supported(mimetype, version) for x in
+                    cls._supported_metadata])
+
     def _check_supported(self):
         """
         Check that the determined MIME type and version are supported.
@@ -48,11 +64,24 @@ class BaseScraper(object):
 
         if mimetype is None:
             raise UnsupportedTypeException("None is not a supported mimetype.")
-        elif not any([x.is_supported(mimetype, version=version) for x in
-                      self._supported_metadata]):
+        elif not self.is_supported(mimetype, version):
             raise UnsupportedTypeException("MIME type %s with version %s is "
                                            "not supported." % (mimetype,
                                                                version))
+
+    def errors(self):
+        """TODO"""
+        return concat(self._errors, 'ERROR: ')
+
+    def messages(self):
+        """TODO"""
+        return concat(self._messages)
+
+    def info(self):
+        """TODO"""
+        return {'class': self.__class__.__name__,
+                'messages': self.messages(),
+                'errors': self.errors()}
 
 
 class BaseMeta(object):

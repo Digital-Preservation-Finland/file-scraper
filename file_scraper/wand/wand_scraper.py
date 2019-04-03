@@ -13,16 +13,6 @@ class WandScraper(BaseScraper):
 
     _supported_metadata = [WandTiffMeta, WandImageMeta]
 
-    def is_supported(self, mimetype):
-        """
-        Report whether the given MIME type is supported by this scraper.
-
-        :returns: True if any metadata model supports the given MIME type,
-                  otherwise False.
-        """
-        return any([x.is_supported(mimetype) for x in
-                    self._supported_metadata])
-
     def scrape_file(self):
         """
         Populate streams with supported metadata objects.
