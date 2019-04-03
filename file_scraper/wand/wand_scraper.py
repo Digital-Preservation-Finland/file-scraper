@@ -20,11 +20,14 @@ class WandScraper(BaseScraper):
         :filename: Path to the file that is being scraped.
         """
 
-#        mediainfo = MediaInfo().parse()
-#         if not self._check_wellformed and self._only_wellformed:
-#             self.messages('Skipping scraper: Well-formed check not used.')
-#             self._collect_elements()
-#             return
+        if not self._check_wellformed and self._only_wellformed:
+            self._messages.append("Skipping scraper: "
+                                  "Well-formed check not used.")
+            #  TODO originally there was a _collect_elements() call here but
+            #       does it make sense to get any information if according to
+            #       _only_wellformed this scraper is not capable of anything
+            #       besides checking well-formedness?
+            return
         try:
             wandresults = wand.image.Image(filename=self.filename)
         except Exception as e:  # pylint: disable=broad-except, invalid-name

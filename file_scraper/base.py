@@ -31,9 +31,12 @@ class BaseScraper(object):
         for stream in self.streams:
             yield stream
 
+    @property
     def well_formed(self):
         """TODO"""
         # toimii nyt kuten vanhassa paitsi ettei None ole mahdollisuus
+        if not self._check_wellformed:
+            return None
         return self._messages and not self._errors
 
         # poc-toteutus:
