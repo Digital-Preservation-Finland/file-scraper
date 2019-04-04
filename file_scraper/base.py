@@ -37,7 +37,7 @@ class BaseScraper(object):
         # toimii nyt kuten vanhassa paitsi ettei None ole mahdollisuus
         if not self._check_wellformed:
             return None
-        return self._messages and not self._errors
+        return len(self._messages) > 0 and len(self._errors) == 0
 
         # poc-toteutus:
         # """Return True if all streams are well-formed, otherwise False."""
@@ -118,6 +118,15 @@ class BaseMeta(object):
         """
         return "(:unav)"
 
+    @metadata()
+    def index(self):
+        """
+        TODO
+
+        :returns: TODO
+        """
+        return 0
+
     def to_dict(self):
         """TODO"""
         stream = {}
@@ -139,6 +148,12 @@ class BaseMeta(object):
         if version in cls._supported[mimetype] or cls._allow_versions:
             return True
         return False
+
+    def iterate_metadata_methods(self):
+        """Iterate through all metadata methods."""
+        for method in dir(self):
+            if is_metadata(getattr(self, method)):
+                yield getattr(self, method)
 
 
 class Shell(object):
