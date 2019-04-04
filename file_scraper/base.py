@@ -74,7 +74,7 @@ class BaseScraper(object):
 
     def errors(self):
         """TODO"""
-        return concat(self._errors, 'ERROR: ')
+        return concat(self._errors, "ERROR: ")
 
     def messages(self):
         """TODO"""
@@ -82,9 +82,9 @@ class BaseScraper(object):
 
     def info(self):
         """TODO"""
-        return {'class': self.__class__.__name__,
-                'messages': self.messages(),
-                'errors': self.errors()}
+        return {"class": self.__class__.__name__,
+                "messages": self.messages(),
+                "errors": self.errors()}
 
 
 class BaseMeta(object):
@@ -199,10 +199,10 @@ class Shell(object):
                                          stdout=self.output_file,
                                          env=self.env)
         return {
-            'returncode': self._returncode,
-            'stderr': self._stderr,
-            'stdout': self._stdout
-        }
+            "returncode": self._returncode,
+            "stderr": self._stderr,
+            "stdout": self._stdout
+            }
 
 
 class UnsupportedTypeException(Exception):

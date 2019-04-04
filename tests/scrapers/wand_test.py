@@ -64,57 +64,57 @@ from file_scraper.wand.wand_model import WandImageMeta, WandTiffMeta
 from tests.common import parse_results
 
 STREAM_VALID = {
-    'bps_unit': None,
-    'bps_value': '8',
-    'colorspace': 'srgb',
-    'height': '6',
-    'samples_per_pixel': None,
-    'width': '10'}
+    "bps_unit": None,
+    "bps_value": "8",
+    "colorspace": "srgb",
+    "height": "6",
+    "samples_per_pixel": None,
+    "width": "10"}
 
 GIF_APPEND = {
-    'bps_unit': None,
-    'bps_value': '8',
-    'colorspace': 'srgb',
-    'compression': 'lzw',
-    'height': '1',
-    'mimetype': 'image/gif',
-    'samples_per_pixel': None,
-    'stream_type': 'image',
-    'version': None,
-    'width': '1'}
+    "bps_unit": None,
+    "bps_value": "8",
+    "colorspace": "srgb",
+    "compression": "lzw",
+    "height": "1",
+    "mimetype": "image/gif",
+    "samples_per_pixel": None,
+    "stream_type": "image",
+    "version": None,
+    "width": "1"}
 
 
 @pytest.mark.parametrize(
-    ['filename', 'result_dict'],
+    ["filename", "result_dict"],
     [
-        ('valid_6.0.tif', {
-            'purpose': 'Test valid file.',
-            'streams': {0: STREAM_VALID.copy()},
-            'stdout_part': 'successfully',
-            'stderr_part': ''}),
-        ('valid_6.0_multiple_tiffs.tif', {
-            'purpose': 'Test valid multiple tiff file.',
-            'streams': {0: STREAM_VALID.copy(),
+        ("valid_6.0.tif", {
+            "purpose": "Test valid file.",
+            "streams": {0: STREAM_VALID.copy()},
+            "stdout_part": "successfully",
+            "stderr_part": ""}),
+        ("valid_6.0_multiple_tiffs.tif", {
+            "purpose": "Test valid multiple tiff file.",
+            "streams": {0: STREAM_VALID.copy(),
                         1: STREAM_VALID.copy(),
                         2: STREAM_VALID.copy()},
-            'stdout_part': 'successfully',
-            'stderr_part': ''})
+            "stdout_part": "successfully",
+            "stderr_part": ""})
     ]
 )
 def test_scraper_tif(filename, result_dict):
     """Test scraper with valid tiff files."""
-    correct = parse_results(filename, 'image/tiff',
+    correct = parse_results(filename, "image/tiff",
                             result_dict, True)
     for index in range(0, len(correct.streams)):
-        correct.streams[index]['compression'] = 'zip'
-        correct.streams[index]['byte_order'] = 'little endian'
-        correct.streams[index]['mimetype'] = \
-            correct.streams[0]['mimetype']
-        correct.streams[index]['stream_type'] = \
-            correct.streams[0]['stream_type']
-        correct.streams[index]['version'] = None
+        correct.streams[index]["compression"] = "zip"
+        correct.streams[index]["byte_order"] = "little endian"
+        correct.streams[index]["mimetype"] = \
+            correct.streams[0]["mimetype"]
+        correct.streams[index]["stream_type"] = \
+            correct.streams[0]["stream_type"]
+        correct.streams[index]["version"] = None
     correct.version = None
-    correct.streams[0]['version'] = None
+    correct.streams[0]["version"] = None
 
     scraper = WandScraper(correct.filename)
     scraper.scrape_file()
@@ -123,29 +123,29 @@ def test_scraper_tif(filename, result_dict):
         for key, value in stream_metadata.iteritems():
             assert getattr(scraped_metadata, key)() == value
 
-    assert scraper.info()['class'] == 'WandScraper'
+    assert scraper.info()["class"] == "WandScraper"
     assert correct.stdout_part in scraper.messages()
     assert correct.stderr_part in scraper.errors()
     assert scraper.well_formed
 
 
 @pytest.mark.parametrize(
-    ['filename', 'result_dict'],
+    ["filename", "result_dict"],
     [
-        ('valid_1.01.jpg', {
-            'purpose': 'Test valid file.',
-            'streams': {0: STREAM_VALID.copy()},
-            'stdout_part': 'successfully',
-            'stderr_part': ''}),
+        ("valid_1.01.jpg", {
+            "purpose": "Test valid file.",
+            "streams": {0: STREAM_VALID.copy()},
+            "stdout_part": "successfully",
+            "stderr_part": ""}),
     ]
 )
 def test_scraper_jpg(filename, result_dict):
     """Test scraper with jpeg files."""
-    correct = parse_results(filename, 'image/jpeg',
+    correct = parse_results(filename, "image/jpeg",
                             result_dict, True)
     if correct.well_formed:
-        correct.streams[0]['compression'] = 'jpeg'
-    correct.streams[0]['version'] = None
+        correct.streams[0]["compression"] = "jpeg"
+    correct.streams[0]["version"] = None
     correct.version = None
 
     scraper = WandScraper(correct.filename)
@@ -155,30 +155,30 @@ def test_scraper_jpg(filename, result_dict):
         for key, value in stream_metadata.iteritems():
             assert getattr(scraped_metadata, key)() == value
 
-    assert scraper.info()['class'] == 'WandScraper'
+    assert scraper.info()["class"] == "WandScraper"
     assert correct.stdout_part in scraper.messages()
     assert correct.stderr_part in scraper.errors()
     assert scraper.well_formed
 
 
 @pytest.mark.parametrize(
-    ['filename', 'result_dict'],
+    ["filename", "result_dict"],
     [
-        ('valid.jp2', {
-            'purpose': 'Test valid file.',
-            'streams': {0: STREAM_VALID.copy()},
-            'stdout_part': 'successfully',
-            'stderr_part': ''}),
+        ("valid.jp2", {
+            "purpose": "Test valid file.",
+            "streams": {0: STREAM_VALID.copy()},
+            "stdout_part": "successfully",
+            "stderr_part": ""}),
     ]
 )
 def test_scraper_jp2(filename, result_dict):
     """Test scraper with jp2 files."""
-    correct = parse_results(filename, 'image/jp2',
+    correct = parse_results(filename, "image/jp2",
                             result_dict, True)
     if correct.well_formed:
-        correct.streams[0]['compression'] = 'jpeg2000'
-        correct.streams[0]['colorspace'] = 'rgb'
-    correct.streams[0]['version'] = None
+        correct.streams[0]["compression"] = "jpeg2000"
+        correct.streams[0]["colorspace"] = "rgb"
+    correct.streams[0]["version"] = None
     correct.version = None
 
     scraper = WandScraper(correct.filename)
@@ -188,29 +188,29 @@ def test_scraper_jp2(filename, result_dict):
         for key, value in stream_metadata.iteritems():
             assert getattr(scraped_metadata, key)() == value
 
-    assert scraper.info()['class'] == 'WandScraper'
+    assert scraper.info()["class"] == "WandScraper"
     assert correct.stdout_part in scraper.messages()
     assert correct.stderr_part in scraper.errors()
     assert scraper.well_formed
 
 
 @pytest.mark.parametrize(
-    ['filename', 'result_dict'],
+    ["filename", "result_dict"],
     [
-        ('valid_1.2.png', {
-            'purpose': 'Test valid file.',
-            'streams': {0: STREAM_VALID.copy()},
-            'stdout_part': 'successfully',
-            'stderr_part': ''}),
+        ("valid_1.2.png", {
+            "purpose": "Test valid file.",
+            "streams": {0: STREAM_VALID.copy()},
+            "stdout_part": "successfully",
+            "stderr_part": ""}),
     ]
 )
 def test_scraper_png(filename, result_dict):
     """Test scraper with png files."""
-    correct = parse_results(filename, 'image/png',
+    correct = parse_results(filename, "image/png",
                             result_dict, True)
     if correct.well_formed:
-        correct.streams[0]['compression'] = 'zip'
-    correct.streams[0]['version'] = None
+        correct.streams[0]["compression"] = "zip"
+    correct.streams[0]["version"] = None
     correct.version = None
 
     scraper = WandScraper(correct.filename)
@@ -220,36 +220,36 @@ def test_scraper_png(filename, result_dict):
         for key, value in stream_metadata.iteritems():
             assert getattr(scraped_metadata, key)() == value
 
-    assert scraper.info()['class'] == 'WandScraper'
+    assert scraper.info()["class"] == "WandScraper"
     assert correct.stdout_part in scraper.messages()
     assert correct.stderr_part in scraper.errors()
     assert scraper.well_formed
 
 
 @pytest.mark.parametrize(
-    ['filename', 'result_dict'],
+    ["filename", "result_dict"],
     [
-        ('valid_1987a.gif', {
-            'purpose': 'Test valid file.',
-            'streams': {0: STREAM_VALID.copy()},
-            'stdout_part': 'successfully',
-            'stderr_part': ''}),
-        ('valid_1989a.gif', {
-            'purpose': 'Test valid file.',
-            'streams': {0: STREAM_VALID.copy(),
+        ("valid_1987a.gif", {
+            "purpose": "Test valid file.",
+            "streams": {0: STREAM_VALID.copy()},
+            "stdout_part": "successfully",
+            "stderr_part": ""}),
+        ("valid_1989a.gif", {
+            "purpose": "Test valid file.",
+            "streams": {0: STREAM_VALID.copy(),
                         1: GIF_APPEND.copy(),
                         2: GIF_APPEND.copy()},
-            'stdout_part': 'successfully',
-            'stderr_part': ''}),
+            "stdout_part": "successfully",
+            "stderr_part": ""}),
     ]
 )
 def test_scraper_gif(filename, result_dict):
     """Test scraper with gif files."""
-    correct = parse_results(filename, 'image/gif',
+    correct = parse_results(filename, "image/gif",
                             result_dict, True)
     if correct.well_formed:
-        correct.streams[0]['compression'] = 'lzw'
-    correct.streams[0]['version'] = None
+        correct.streams[0]["compression"] = "lzw"
+    correct.streams[0]["version"] = None
     correct.version = None
 
     scraper = WandScraper(correct.filename)
@@ -259,62 +259,62 @@ def test_scraper_gif(filename, result_dict):
         for key, value in stream_metadata.iteritems():
             assert getattr(scraped_metadata, key)() == value
 
-    assert scraper.info()['class'] == 'WandScraper'
+    assert scraper.info()["class"] == "WandScraper"
     assert correct.stdout_part in scraper.messages()
     assert correct.stderr_part in scraper.errors()
     assert scraper.well_formed
 
 
 @pytest.mark.parametrize(
-    ['filename', 'mimetype', 'stderr_part'],
+    ["filename", "mimetype", "stderr_part"],
     [
-        ('invalid_6.0_payload_altered.tif', 'image/tiff',
-         'Failed to read directory at offset 182'),
-        ('invalid_6.0_wrong_byte_order.tif', 'image/tiff',
-         'Not a TIFF file, bad version number 10752'),
-        ('invalid__empty.tif', 'image/tiff',
-         'Cannot read TIFF header.'),
-        ('invalid_1.01_data_changed.jpg', 'image/jpeg',
-         'Bogus marker length'),
-        ('invalid_1.01_no_start_marker.jpg', 'image/jpeg',
-         'starts with 0xff 0xe0'),
-        ('invalid__empty.jpg', 'image/jpeg',
-         'Empty input file'),
-        ('invalid__data_missing.jp2', 'image/jp2',
-         'unable to decode image file'),
-        ('invalid__empty.jp2', 'image/jp2',
-         'unable to decode image file'),
-        ('invalid_1.2_no_IEND.png', 'image/png',
-         'corrupt image'),
-        ('invalid_1.2_no_IHDR.png', 'image/png',
-         'corrupt image'),
-        ('invalid_1.2_wrong_CRC.png', 'image/png',
-         'corrupt image'),
-        ('invalid_1.2_wrong_header.png', 'image/png',
-         'improper image header'),
-        ('invalid__empty.png', 'image/png',
-         'improper image header'),
-        ('invalid_1987a_broken_header.gif', 'image/gif',
-         'improper image header'),
-        ('invalid_1987a_truncated.gif', 'image/gif',
-         'corrupt image'),
-        ('invalid_1989a_broken_header.gif', 'image/gif',
-         'improper image header'),
-        ('invalid_1989a_truncated.gif', 'image/gif',
-         'negative or zero image size'),
-        ('invalid__empty.gif', 'image/gif',
-         'improper image header')
+        ("invalid_6.0_payload_altered.tif", "image/tiff",
+         "Failed to read directory at offset 182"),
+        ("invalid_6.0_wrong_byte_order.tif", "image/tiff",
+         "Not a TIFF file, bad version number 10752"),
+        ("invalid__empty.tif", "image/tiff",
+         "Cannot read TIFF header."),
+        ("invalid_1.01_data_changed.jpg", "image/jpeg",
+         "Bogus marker length"),
+        ("invalid_1.01_no_start_marker.jpg", "image/jpeg",
+         "starts with 0xff 0xe0"),
+        ("invalid__empty.jpg", "image/jpeg",
+         "Empty input file"),
+        ("invalid__data_missing.jp2", "image/jp2",
+         "unable to decode image file"),
+        ("invalid__empty.jp2", "image/jp2",
+         "unable to decode image file"),
+        ("invalid_1.2_no_IEND.png", "image/png",
+         "corrupt image"),
+        ("invalid_1.2_no_IHDR.png", "image/png",
+         "corrupt image"),
+        ("invalid_1.2_wrong_CRC.png", "image/png",
+         "corrupt image"),
+        ("invalid_1.2_wrong_header.png", "image/png",
+         "improper image header"),
+        ("invalid__empty.png", "image/png",
+         "improper image header"),
+        ("invalid_1987a_broken_header.gif", "image/gif",
+         "improper image header"),
+        ("invalid_1987a_truncated.gif", "image/gif",
+         "corrupt image"),
+        ("invalid_1989a_broken_header.gif", "image/gif",
+         "improper image header"),
+        ("invalid_1989a_truncated.gif", "image/gif",
+         "negative or zero image size"),
+        ("invalid__empty.gif", "image/gif",
+         "improper image header")
     ]
 )
 def test_scraper_invalid(filename, mimetype, stderr_part):
     """Test WandScraper with invalid tiff files."""
     scraper = WandScraper(os.path.join("tests/data/",
-                                       mimetype.replace('/', '_'),
+                                       mimetype.replace("/", "_"),
                                        filename))
     scraper.scrape_file()
 
     assert not scraper.streams
-    assert scraper.info()['class'] == 'WandScraper'
+    assert scraper.info()["class"] == "WandScraper"
     assert not scraper.messages()
     assert stderr_part in scraper.errors()
     assert not scraper.well_formed
@@ -322,39 +322,39 @@ def test_scraper_invalid(filename, mimetype, stderr_part):
 
 def test_no_wellformed():
     """Test scraper without well-formed check."""
-    scraper = WandScraper('tests/data/image_tiff/valid_6.0.tif',
+    scraper = WandScraper("tests/data/image_tiff/valid_6.0.tif",
                           False)
     scraper.scrape_file()
-    assert 'Skipping scraper' not in scraper.messages()
+    assert "Skipping scraper" not in scraper.messages()
     assert scraper.well_formed is None
 
 
 @pytest.mark.parametrize(
-    ['mime', 'ver', 'class_'],
+    ["mime", "ver", "class_"],
     [
-        ('image/tiff', '6.0', WandTiffMeta),
-        ('image/jpeg', '1.01', WandImageMeta),
-        ('image/jp2', '', WandImageMeta),
-        ('image/png', '1.2', WandImageMeta),
-        ('image/gif', '1987a', WandImageMeta),
+        ("image/tiff", "6.0", WandTiffMeta),
+        ("image/jpeg", "1.01", WandImageMeta),
+        ("image/jp2", "", WandImageMeta),
+        ("image/png", "1.2", WandImageMeta),
+        ("image/gif", "1987a", WandImageMeta),
     ]
 )
 def test_model_is_supported(mime, ver, class_):
     """Test is_supported method for WandTiffMeta and WandImageMeta."""
     assert class_.is_supported(mime, ver)
     assert class_.is_supported(mime, None)
-    assert class_.is_supported(mime, 'foo')
-    assert not class_.is_supported('foo', ver)
+    assert class_.is_supported(mime, "foo")
+    assert not class_.is_supported("foo", ver)
 
 
 @pytest.mark.parametrize(
-    ['mime', 'ver'],
+    ["mime", "ver"],
     [
-        ('image/tiff', '6.0'),
-        ('image/jpeg', '1.01'),
-        ('image/jp2', ''),
-        ('image/png', '1.2'),
-        ('image/gif', '1987a'),
+        ("image/tiff", "6.0"),
+        ("image/jpeg", "1.01"),
+        ("image/jp2", ""),
+        ("image/png", "1.2"),
+        ("image/gif", "1987a"),
     ]
 )
 def test_scraper_is_supported(mime, ver):
@@ -362,5 +362,5 @@ def test_scraper_is_supported(mime, ver):
     assert WandScraper.is_supported(mime, ver, True)
     assert WandScraper.is_supported(mime, None, True)
     assert WandScraper.is_supported(mime, ver, False)
-    assert WandScraper.is_supported(mime, 'foo', True)
-    assert not WandScraper.is_supported('foo', ver, True)
+    assert WandScraper.is_supported(mime, "foo", True)
+    assert not WandScraper.is_supported("foo", ver, True)

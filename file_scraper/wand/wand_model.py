@@ -84,7 +84,7 @@ class WandImageMeta(BaseMeta):
 class WandTiffMeta(WandImageMeta):
     """TODO"""
 
-    _supported = {'image/tiff': []}
+    _supported = {"image/tiff": []}
     _allow_versions = True
 
     @metadata()
@@ -94,10 +94,10 @@ class WandTiffMeta(WandImageMeta):
             return None
 
         for key, value in self._image.container.metadata.items():
-            if key.startswith('tiff:endian'):
-                if value == 'msb':
-                    return 'big endian'
-                elif value == 'lsb':
-                    return 'little endian'
+            if key.startswith("tiff:endian"):
+                if value == "msb":
+                    return "big endian"
+                elif value == "lsb":
+                    return "little endian"
 
         return None
