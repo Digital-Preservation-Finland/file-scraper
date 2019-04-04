@@ -5,8 +5,8 @@ import unicodedata
 import string
 import subprocess
 import hashlib
-import six
 from itertools import chain
+import six
 
 
 def metadata(important=False):

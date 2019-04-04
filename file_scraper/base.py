@@ -1,8 +1,7 @@
 """Base module for scrapers."""
 import abc
 import subprocess
-from file_scraper.utils import (run_command, ensure_str, metadata,
-                                is_metadata, is_important)
+from file_scraper.utils import run_command, ensure_str, metadata
 
 
 class BaseScraper(object):

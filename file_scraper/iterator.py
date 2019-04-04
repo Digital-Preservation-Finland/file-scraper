@@ -7,7 +7,7 @@ from file_scraper.jhove_base import JHove
 from file_scraper.magic_base import BinaryMagic, TextMagic
 from file_scraper.mediainfo_base import Mediainfo
 from file_scraper.pil_base import Pil
-from file_scraper.wand_base import Wand
+from file_scraper.wand.wand_scraper import WandScraper
 from file_scraper.scrapers.jhove import GifJHove, HtmlJHove, JpegJHove, \
     PdfJHove, TiffJHove, Utf8JHove, WavJHove
 from file_scraper.scrapers.xmllint import Xmllint
@@ -56,19 +56,22 @@ def iter_scrapers(mimetype, version, check_wellformed=True, params=None):
     :params: Extra parameters needed for the scraper
     :returns: scraper class
     """
+    yield WandScraper
 
-    # pylint: disable=no-member
-    if params is None:
-        params = {}
-    found_scraper = False
-
-    scraper_superclasses = [BaseScraper, BinaryMagic, TextMagic, JHove,
-                            Mediainfo, Pil, Wand]
-    for superclass in scraper_superclasses:
-        for cls in superclass.__subclasses__():
-            if cls.is_supported(mimetype, version, check_wellformed, params):
-                found_scraper = True
-                yield cls
-
-    if not found_scraper:
-        yield ScraperNotFound
+    # TODO This old iterator can be reinstated when all scrapers are compatible
+    #      with the new design.
+#    # pylint: disable=no-member
+#    if params is None:
+#        params = {}
+#    found_scraper = False
+#
+#    scraper_superclasses = [BaseScraper, BinaryMagic, TextMagic, JHove,
+#                            Mediainfo, Pil, Wand]
+#    for superclass in scraper_superclasses:
+#        for cls in superclass.__subclasses__():
+#            if cls.is_supported(mimetype, version, check_wellformed, params):
+#                found_scraper = True
+#                yield cls
+#
+#    if not found_scraper:
+#        yield ScraperNotFound

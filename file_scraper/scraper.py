@@ -3,8 +3,8 @@ from file_scraper.iterator import iter_scrapers, iter_detectors
 from file_scraper.scrapers.jhove import Utf8JHove
 from file_scraper.scrapers.textfile import CheckTextFile
 from file_scraper.scrapers.dummy import FileExists
-from file_scraper.utils import (combine_metadata, hexdigest, ensure_str,
-                                ensure_text)
+from file_scraper.utils import (hexdigest, ensure_str, ensure_text,
+                                generate_metadata_dict)
 
 LOSE = [None, '(:unav)', '(:unap)']
 
@@ -29,6 +29,7 @@ class Scraper(object):
         self.info = None
         self._important = {}
         self._params = kwargs
+        self._scraper_results = []
 
     def _identify(self):
         """Identify file format and version."""
@@ -55,10 +56,12 @@ class Scraper(object):
         :scraper: Scraper instance
         """
         scraper.scrape_file()
-        self._important.update(scraper.importants())
-        self.streams = combine_metadata(
-            stream=self.streams, indexed_metadata=scraper.streams,
-            lose=LOSE, important=self._important)
+        if scraper.streams:
+            self._scraper_results.append(scraper.streams)
+#         self._important.update(scraper.get_important())  # TODO think
+#         self.streams = combine_metadata(
+#             stream=self.streams, metadata=scraper.streams,
+#             lose=LOSE, important=self._important)
         self.info[len(self.info)] = scraper.info
         if scraper.well_formed is not None:
             if self.well_formed in [None, True]:
@@ -109,12 +112,13 @@ class Scraper(object):
         for scraper_class in iter_scrapers(
                 mimetype=self.mimetype, version=self.version,
                 check_wellformed=check_wellformed, params=self._params):
-            scraper = scraper_class(self.filename, self.mimetype,
+            scraper = scraper_class(self.filename,  # self.mimetype,
                                     check_wellformed, self._params)
             self._scrape_file(scraper)
 
-        self._check_utf8(check_wellformed)
-        self._check_mimetype_version()
+        self.streams = generate_metadata_dict(self._scraper_results, LOSE)
+#        self._check_utf8(check_wellformed)  # TODO make this work
+#        self._check_mimetype_version()  # TODO make this work
 
     def is_textfile(self):
         """Find out if file is a text file.
