@@ -6,6 +6,7 @@ import string
 import subprocess
 import hashlib
 import six
+from itertools import chain
 
 
 def metadata(important=False):
@@ -216,32 +217,6 @@ def run_command(cmd, stdout=subprocess.PIPE, env=None):
     return statuscode, stdout_result, stderr_result
 
 
-def metadata(important=False):
-    """Decorator to help set a flag attribute to the function that it
-    can be collected for metadata.
-    :param important: Whether or not this metadata is important and should
-        have priority when duplicate metadata key is discovered.
-    """
-
-    def _wrapper(func):
-        if callable(func):
-            func.important = important
-            func.metadata = True
-        return func
-
-    return _wrapper
-
-
-def is_metadata(func):
-    """To help let scraper know the given function has metadata flagged."""
-    return callable(func) and getattr(func, 'metadata', False)
-
-
-def is_important(func):
-    """To help let scraper know the given function is flagged important."""
-    return callable(func) and getattr(func, 'important', False)
-
-
 def ensure_str(s, encoding='utf-8', errors='strict'):
     """Coerce *s* to `str`.
 
@@ -287,3 +262,57 @@ def ensure_text(s, encoding='utf-8', errors='strict'):
         return s
     else:
         raise TypeError("not expecting type '%s'" % type(s))
+
+def generate_metadata_dict(scraper_results, lose):
+    """
+    TODO
+
+    scraper_results is a list of lists, e.g.
+    [[scraper1_stream1, scraper1_stream2],
+     [scraper2_stream1, scraper2_stream2]]
+
+    :returns: TODO
+    """
+    streams = {}
+    importants = {}
+
+    for model in chain.from_iterable(scraper_results):
+        stream_index = model.index() + 1  # streams[0] is for container
+        if stream_index not in streams:
+            streams[stream_index] = {}
+        current_stream = streams[stream_index]
+
+        for method in model.iterate_metadata_methods():
+            method_name = method.__name__
+
+            if method_name not in current_stream:
+                current_stream[method_name] = method()
+                continue
+            if method() is None:
+                continue
+            if current_stream[method_name] == method():
+                continue
+
+            if method.important:
+                if method_name not in importants:
+                    current_stream[method_name] = method()
+                    importants[method_name] = method()
+#                            elif importants[method_name] == method():
+#                                current_stream[method_name] == method()
+                else:
+                    raise ValueError("Conflict with existing value"
+                                     " '%s' and new value '%s'."
+                                     % (importants[method_name],
+                                        method()))
+            elif current_stream[method_name] in lose:
+                current_stream[method_name] = method()
+            elif method_name in importants and \
+                    importants[method_name] not in lose:
+                current_stream[method_name] = \
+                        importants[method_name]
+            else:
+                current_stream[method_name] = method()
+
+    # TODO container metadata
+
+    return streams
