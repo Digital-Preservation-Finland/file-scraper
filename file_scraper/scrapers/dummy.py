@@ -30,12 +30,12 @@ class FileExists(BaseScraper):
     def scrape_file(self):
         """Check if file exists."""
         if not self.filename:
-            self.errors('No filename given.')
+            self._errors.append('No filename given.')
         elif os.path.isfile(self.filename):
-            self.messages('File %s was found.' % self.filename)
+            self._messages.append('File %s was found.' % self.filename)
         else:
-            self.errors('File %s does not exist.' % self.filename)
-        self._collect_elements()
+            self._errors.append('File %s does not exist.' % self.filename)
+#        self._collect_elements()
 
     @property
     def well_formed(self):
