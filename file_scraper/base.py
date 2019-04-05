@@ -15,7 +15,12 @@ class BaseScraper(object):
         Initialize scraper.
 
         BaseScraper.stream will contain all streams in standardized metadata
-        data model
+        data model.
+
+        :filename: Path to the file that is to be scraped
+        :check_wellformed: True for full scraping, False for skipping the well-
+                           formedness check
+        :params: Extra parameters that some scrapers can use.
         """
         self.streams = []
         self.filename = filename
@@ -32,7 +37,12 @@ class BaseScraper(object):
 
     @property
     def well_formed(self):
-        """TODO"""
+        """
+        Return well-formedness status of the scraped file.
+
+        :returns: None if scraper does not check well-formedness, True if the
+                  file has been scraped without errors and otherwise False
+        """
         # toimii nyt kuten vanhassa paitsi ettei None ole mahdollisuus
         if not self._check_wellformed:
             return None
@@ -45,9 +55,19 @@ class BaseScraper(object):
     @classmethod
     def is_supported(cls, mimetype, version=None, check_wellformed=True):
         """
-        TODO: Docstring for is_supported.
+        Report whether the scraper supports the given MIME type and version.
 
-        :returns: TODO
+        The scraper is considered to support the MIME type and version
+        combination if at least one of the metadata models supported by the
+        scraper supports the combination. If the scraper can only be used to
+        check the well-formedness of the file and well-formedness check is not
+        wanted, False is returned.
+
+        :mimetype: MIME type of a file
+        :version: Version of a file. Defaults to None.
+        :check_wellformed: True for scraping with well-formedness check, False
+                           for skipping the check. Defaults to True.
+        :returns: True if the MIME type and version are supported, False if not
         """
         if cls._only_wellformed and not check_wellformed:
             return False
@@ -73,15 +93,30 @@ class BaseScraper(object):
                                                                version))
 
     def errors(self):
-        """TODO"""
+        """
+        Return the logged errors.
+
+        Each error is on its own line, preceded py "ERROR: ".
+
+        :returns: string containing the logged errors
+        """
         return concat(self._errors, "ERROR: ")
 
     def messages(self):
-        """TODO"""
+        """
+        Return logged messages as a single string, one message per line.
+
+        :returns: string containing the logged messages
+        """
         return concat(self._messages)
 
     def info(self):
-        """TODO"""
+        """
+        Return a dict containing class name, messages and errors.
+
+        The returned dict contains keys "class", "messages" and "errors", each
+        having a single string as a value.
+        """
         return {"class": self.__class__.__name__,
                 "messages": self.messages(),
                 "errors": self.errors()}
@@ -96,6 +131,7 @@ class BaseMeta(object):
 
     Additional metadata and processing is implemented in subclasses.
     """
+    # pylint: disable=no-self-use
 
     _supported = []
     _allow_versions = False
@@ -103,32 +139,39 @@ class BaseMeta(object):
     @metadata()
     def mimetype(self):
         """
-        TODO: Docstring for mimetype.
+        BaseMeta does no real scraping. Should be implemented in subclasses.
 
-        :returns: TODO
+        :returns: "(:unav)"
         """
         return "(:unav)"
 
     @metadata()
     def version(self):
         """
-        TODO:
+        BaseMeta does no real scraping. Should be implemented in subclasses.
 
-        :returns: TODO
+        :returns: "(:unav)"
         """
         return "(:unav)"
 
     @metadata()
     def index(self):
         """
-        TODO
+        BaseMeta does no real scraping. Should be implemented in subclasses.
 
-        :returns: TODO
+        :returns: 0
         """
         return 0
 
     def to_dict(self):
-        """TODO"""
+        """
+        Construct a dict containing all metadata obtainable by this model.
+
+        All streams are kept as-is, container metadata is not separated to the
+        first stream.
+
+        :returns: Dict containing the scraped metadata
+        """
         stream = {}
         for methodname in dir(self):
             if not is_metadata(getattr(self, methodname)):
@@ -139,9 +182,14 @@ class BaseMeta(object):
     @classmethod
     def is_supported(cls, mimetype, version=None):
         """
-        TODO: Docstring for is_supported.
+        Report whether this model supports the given MIME type and version.
 
-        :returns: TODO
+        Version None is considered to be a supported version.
+
+        :mimetype: MIME type to be checked
+        :version: Version to be checked, defaults to None
+        :returns: True if MIME type is supported and all versions are allowed
+                  or the version is supported too.
         """
         if mimetype not in cls._supported:
             return False
