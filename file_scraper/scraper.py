@@ -117,8 +117,8 @@ class Scraper(object):
             self._scrape_file(scraper)
 
         self.streams = generate_metadata_dict(self._scraper_results, LOSE)
-#        self._check_utf8(check_wellformed)  # TODO make this work
-#        self._check_mimetype_version()  # TODO make this work
+        self._check_utf8(check_wellformed)
+        self._check_mimetype_version()
 
     def is_textfile(self):
         """Find out if file is a text file.
