@@ -73,6 +73,8 @@ This module tests the following utility functions:
           recorded in that file.
         - If custom environment variables are supplied, they are used when
           running the command.
+    - concat
+        - Concatenation of strings or empty lists with and without prefix
 """
 
 import os
@@ -80,7 +82,8 @@ from tempfile import TemporaryFile
 import pytest
 
 from file_scraper.utils import hexdigest, sanitize_string,\
-    iso8601_duration, strip_zeros, combine_metadata, run_command
+    iso8601_duration, strip_zeros, combine_metadata, run_command,\
+    concat
 
 
 @pytest.mark.parametrize(
@@ -324,3 +327,13 @@ def test_run_command_with_env():
     assert stdout == b"testing\n"
     assert statuscode == 0
     assert not stderr
+
+
+def test_concat():
+    """Test concat function."""
+    assert concat([]) == ''
+    assert concat(['test']) == 'test'
+    assert concat(['test', 'test']) == 'test\ntest'
+    assert concat([], 'prefix:') == ''
+    assert concat(['test'], 'prefix:') == 'prefix:test'
+    assert concat(['test', 'test'], 'prefix:') == 'prefix:test\nprefix:test'

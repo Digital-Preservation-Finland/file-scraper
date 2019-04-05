@@ -1,7 +1,7 @@
 """Base module for scrapers."""
 import abc
 import subprocess
-from file_scraper.utils import run_command, ensure_str, metadata
+from file_scraper.utils import run_command, metadata, is_metadata, concat
 
 
 class BaseScraper(object):
@@ -302,14 +302,3 @@ class BaseDetector(object):
     def detect(self):
         """Detect file. Must be implemented in detectors."""
         pass
-
-
-def concat(lines, prefix=""):
-    """
-    Join given list of strings to single string separated with newlines.
-
-    :lines: List of string to join
-    :prefix: Prefix to prepend each line with
-    :returns: Joined lines as string
-    """
-    return "\n".join(["%s%s" % (prefix, line) for line in lines])

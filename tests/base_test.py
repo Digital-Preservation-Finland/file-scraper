@@ -8,13 +8,12 @@ This module tests:
     - That messages and errors are returned properly.
     - That scraper attributes and well_formed property are set and retrieved
       correctly
-    - Concatenation of strings or empty lists with and without prefix
 """
 import subprocess
 import pytest
-from file_scraper.base import (Shell, BaseScraper, BaseMeta, BaseDetector,
-                               concat, UnsupportedTypeException)
 import file_scraper.base
+from file_scraper.base import (Shell, BaseScraper, BaseMeta, BaseDetector,
+                               UnsupportedTypeException)
 from file_scraper.utils import metadata
 
 
@@ -203,13 +202,3 @@ def test_base_detector():
     """Test base detector."""
     detector = BaseDetectorBasic('testfilename')
     assert detector.filename == 'testfilename'
-
-
-def test_concat():
-    """Test concat function."""
-    assert concat([]) == ''
-    assert concat(['test']) == 'test'
-    assert concat(['test', 'test']) == 'test\ntest'
-    assert concat([], 'prefix:') == ''
-    assert concat(['test'], 'prefix:') == 'prefix:test'
-    assert concat(['test', 'test'], 'prefix:') == 'prefix:test\nprefix:test'
