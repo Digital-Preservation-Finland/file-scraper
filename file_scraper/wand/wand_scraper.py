@@ -1,4 +1,17 @@
-"""Metadata scraper for image file formats."""
+"""Metadata scraper for image file formats.
+
+Wand is a ctypes-based simple ImageMagick binding for Python.
+
+http://docs.wand-py.org/en/0.5.2/
+
+Collects metadata from JPEG, PNG, JPEG2000, GIF and TIFF files.
+
+Checks well-formedess by testing if ImageMagick can open and read then
+file. More complete well-formedness test is required by specific validator
+tool.
+
+"""
+
 try:
     import wand.image
 except ImportError:
@@ -9,7 +22,7 @@ from file_scraper.wand.wand_model import WandTiffMeta, WandImageMeta
 
 
 class WandScraper(BaseScraper):
-    """Scraper for Metadata classes using wand."""
+    """Scraper for the Wand/ImageMagick library."""
 
     _supported_metadata = [WandTiffMeta, WandImageMeta]
 
