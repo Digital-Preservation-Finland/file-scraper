@@ -1,11 +1,12 @@
-"""TODO"""
+"""Metadata models for Wand"""
 
 from file_scraper.base import BaseMeta
 from file_scraper.utils import metadata
 
 
 class WandImageMeta(BaseMeta):
-    """TODO"""
+    """Metadata models for png, jpeg, jp2 and gif files scraped with Wand"""
+    # pylint: disable=no-self-use
 
     _supported = {"image/png": [],
                   "image/jpeg": [],
@@ -14,82 +15,94 @@ class WandImageMeta(BaseMeta):
     _allow_versions = True
 
     def __init__(self, image):
-        """TODO"""
+        """
+        Initialize the metadata model.
+
+        :image: Wand SingleImage object for which the metadata is collected
+        """
         self._image = image
 
     @metadata()
     def index(self):
-        """TODO"""
+        """Return the index of the SingleImage in its container."""
         return self._image.index
 
     @metadata()
     def mimetype(self):
+        """Return the MIME type of the image."""
         return self._image.container.mimetype
 
     @metadata()
     def version(self):
-        """TODO"""
+        """Return None as Wand does not know the version."""
         return None
 
     @metadata()
     def stream_type(self):
-        """TODO"""
+        """Wand is only used for images, so return "image"."""
         return "image"
 
     @metadata()
     def colorspace(self):
-        """TODO"""
+        """If image exists, return its colorspace, otherwise return None."""
         if not self._image:
             return None
         return str(self._image.colorspace)
 
     @metadata()
     def width(self):
-        """TODO"""
+        """If image exists, return its width, otherwise return None."""
         if not self._image:
             return None
         return str(self._image.width)
 
     @metadata()
     def height(self):
-        """TODO"""
+        """Ig image exists, return its height, otherwise return None."""
         if not self._image:
             return None
         return str(self._image.height)
 
     @metadata()
     def bps_value(self):
-        """TODO"""
+        """If image exists, return its colour depth, otherwise return None."""
         if not self._image:
             return None
         return str(self._image.depth)
 
     @metadata()
     def bps_unit(self):
-        """TODO"""
+        """Unit is always same, return None."""
         return None
 
     @metadata()
     def compression(self):
-        """TODO"""
+        """Return the compression type if image exists, otherwise None."""
         if not self._image:
             return None
         return self._image.compression
 
     @metadata()
     def samples_per_pixel(self):
+        """Samples per pixel not available from this scraper, return None."""
         return None
 
 
 class WandTiffMeta(WandImageMeta):
-    """TODO"""
+    """Metadata models for tiff files scraped with Wand"""
 
     _supported = {"image/tiff": []}
     _allow_versions = True
 
     @metadata()
     def byte_order(self):
-        """TODO"""
+        """
+        If image exists, return the byte order of the image, otherwise None.
+
+        :returns: "big endian" or "little endian" for existent images, None
+                  if there is no image.
+        :raises: ValueError if Wand reports a value other than "msb" or "lsb".
+        """
         if not self._image:
             return None
 
@@ -100,4 +113,4 @@ class WandTiffMeta(WandImageMeta):
                 elif value == "lsb":
                     return "little endian"
 
-        return None
+        raise ValueError("Unsupported byte order reported by Wand.")
