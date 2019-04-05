@@ -29,7 +29,8 @@ NONE_ELEMENTS = {
     'tests/data/image_gif/valid_1989a.gif': ['version', 'version'],
     'tests/data/image_tiff/valid_6.0_multiple_tiffs.tif': [
         'version', 'version'],
-    'tests/data/video_MP2T/valid_.ts': ['version']}
+    'tests/data/video_MP2T/valid_.ts': ['version'],
+    'tests/data/video_quicktime/valid__dv_wav.mov': ['version']}
 
 # These are actually valid with another mimetype or version
 # or due to special parameters or missing scraper
@@ -44,13 +45,10 @@ IGNORE_INVALID = [
     'tests/data/application_pdf/invalid_1.4_wrong_version.pdf',
     'tests/data/application_x-spss-por/invalid__header_corrupted.por',
     'tests/data/application_x-spss-por/invalid__truncated.por',
-    'tests/data/application_xhtml+xml/invalid_1.0_no_doctype.xhtml',
-    'tests/data/video_x-matroska/invalid__ffv1_missing_data.mkv',
-    'tests/data/video_x-matroska/invalid__ffv1_wrong_duration.mkv']
+    'tests/data/application_xhtml+xml/invalid_1.0_no_doctype.xhtml']
 IGNORE_VALID = ['tests/data/text_xml/valid_1.0_xsd.xml',
                 'tests/data/text_xml/valid_1.0_local_xsd.xml',
-                'tests/data/text_xml/valid_1.0_catalog.xml',
-                'tests/data/video_x-matroska/valid__ffv1.mkv']
+                'tests/data/text_xml/valid_1.0_catalog.xml']
 
 # Ignore these we know that warc, arc and dpx files are not currently
 # supported for full metadata scraping

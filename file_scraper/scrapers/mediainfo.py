@@ -4,6 +4,105 @@ from file_scraper.base import SkipElementException
 from file_scraper.utils import metadata
 
 
+class MovMediainfo(Mediainfo):
+    """Scraper for Quicktime Movie AV container and selected streams"""
+    _supported = {'video/quicktime': [''], 'video/dv': ['']}
+    _allow_versions = True  # Allow any version
+    _containers = ['QuickTime']
+
+    @metadata()
+    def _mimetype(self):
+        """Returns mimetype for stream."""
+        if self._mediainfo is None:
+            return self.mimetype
+        mime_dict = {'QuickTime': 'video/quicktime',
+                     'PCM': 'audio/x-wav',
+                     'DV': 'video/dv'}
+        try:
+            return mime_dict[self._codec_name()]
+        except (SkipElementException, KeyError):
+            pass
+        return self.mimetype
+
+    @metadata()
+    def _version(self):
+        """Return version of stream."""
+        if self._stream_type() in ['videocontainer', 'video', 'audio']:
+            return ''
+        return None
+
+    @metadata()
+    def _codec_quality(self):
+        """Returns codec quality."""
+        if self._stream_type() not in ['video', 'audio']:
+            raise SkipElementException()
+        if self._mediainfo is None:
+            return None
+        if self._mediainfo_stream.compression_mode is not None:
+            return self._mediainfo_stream.compression_mode.lower()
+        if self._stream_type() == 'audio':
+            return 'lossless'
+
+
+class MkvMediainfo(Mediainfo):
+    """Scraper for Matroska AV container with selected streams."""
+
+    _supported = {'video/x-matroska': ['']}
+    _allow_versions = True  # Allow any version
+    _containers = ['Matroska']
+
+    @metadata()
+    def _mimetype(self):
+        """Returns mimetype for stream."""
+        if self._mediainfo is None:
+            return self.mimetype
+        mime_dict = {'Matroska': 'video/x-matroska',
+                     'PCM': 'audio/x-wav',
+                     'FFV1': 'video/x-ffv'}
+        try:
+            return mime_dict[self._codec_name()]
+        except (SkipElementException, KeyError):
+            pass
+        return self.mimetype
+
+    @metadata()
+    def _version(self):
+        """Return version of stream."""
+        if self._mediainfo is None:
+            return None
+        if self._mediainfo_stream.format_version is not None:
+            if self._mediainfo_stream.format == 'Matroska':
+                return ''
+            if 'Version ' in str(self._mediainfo_stream.format_version):
+                return str(self._mediainfo_stream.format_version).replace(
+                    'Version ', '').split(".")[0]
+            return str(self._mediainfo_stream.format_version)
+        if self._stream_type() in ['videocontainer', 'video', 'audio']:
+            return ''
+        return None
+
+    @metadata()
+    def _signal_format(self):
+        """Returns signal format."""
+        if self._stream_type() not in ['video']:
+            raise SkipElementException()
+        if self._mediainfo is None:
+            return None
+        return '(:unap)'
+
+    @metadata()
+    def _codec_quality(self):
+        """Returns codec quality."""
+        if self._stream_type() not in ['video', 'audio']:
+            raise SkipElementException()
+        if self._mediainfo is None:
+            return None
+        if self._mediainfo_stream.compression_mode is not None:
+            return self._mediainfo_stream.compression_mode.lower()
+        if self._stream_type() == 'audio':
+            return 'lossless'
+
+
 class WavMediainfo(Mediainfo):
     """Scraper for WAV audio."""
 

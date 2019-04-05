@@ -1,5 +1,49 @@
 """Stream dicts"""
 
+MOV_CONTAINER = {
+    'codec_creator_app': 'Lavf56.40.101',
+    'codec_creator_app_version': '56.40.101',
+    'codec_name': 'MPEG-4', 'index': 0, 'mimetype': 'video/quicktime',
+    'stream_type': 'videocontainer', 'version': ''}
+
+DV_VIDEO = {
+    'bits_per_sample': '8', 'codec_creator_app': '(:unav)',
+    'codec_creator_app_version': '(:unav)', 'codec_name': 'DV',
+    'codec_quality': 'lossy', 'color': 'Color', 'dar': '1.778',
+    'data_rate': '24.4416', 'data_rate_mode': 'Fixed', 'duration': 'PT0.08S',
+    'frame_rate': '25', 'height': '576', 'index': 0, 'mimetype': 'video/dv',
+    'par': '1.422', 'sampling': '4:2:0', 'signal_format': 'PAL',
+    'sound': 'No', 'stream_type': 'video', 'version': '', 'width': '720'}
+
+MOV_DV_VIDEO = dict(DV_VIDEO, **{
+    'codec_creator_app': 'Lavf56.40.101',
+    'codec_creator_app_version': '56.40.101', 'sound': 'Yes'})
+
+MOV_TC = {
+    'index': 3, 'mimetype': 'video/quicktime', 'stream_type': 'other',
+    'version': None}
+
+
+MKV_CONTAINER = {
+    'codec_creator_app': 'Lavf56.40.101',
+    'codec_creator_app_version': '56.40.101',
+    'codec_name': 'Matroska', 'index': 0,
+    'mimetype': 'video/x-matroska',
+    'stream_type': 'videocontainer', 'version': ''}
+
+FFV_VIDEO = {
+    'bits_per_sample': '8', 'codec_creator_app': 'Lavf56.40.101',
+    'codec_creator_app_version': '56.40.101',
+    'codec_name': 'FFV1', 'codec_quality': 'lossless',
+    'color': 'Color', 'dar': '1.778', 'data_rate': '2.071061',
+    'data_rate_mode': 'Variable', 'duration': 'PT1S',
+    'frame_rate': '30', 'height': '180', 'index': 1,
+    'mimetype': 'video/x-ffv', 'par': '1', 'sampling': '4:2:0',
+    'signal_format': '(:unap)', 'sound': 'No', 'stream_type': 'video',
+    'version': '3', 'width': '320'}
+FFV_VIDEO_TRUNCATED = dict(FFV_VIDEO, **{
+    'data_rate': '2.077741', 'version': '0'})
+
 WAV_AUDIO = {
     'audio_data_encoding': 'PCM', 'bits_per_sample': '8',
     'codec_creator_app': 'Lavf56.40.101',

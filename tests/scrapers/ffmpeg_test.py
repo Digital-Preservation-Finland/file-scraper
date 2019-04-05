@@ -68,6 +68,70 @@ from tests.common import parse_results
 
 
 @pytest.mark.parametrize(
+    ["filename", "result_dict", "mimetype"],
+    [
+        ("valid__dv_wav.mov", {
+            "purpose": "Test valid MOV with DV and WAV.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": ""}, "video/quicktime"),
+        ("valid.dv", {
+            "purpose": "Test valid DV.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": ""}, "video/dv"),
+        ("invalid__missing_data.dv", {
+            "purpose": "Test truncated DV.",
+            "stdout_part": "",
+            "stderr_part": "AC EOB marker is absent"},
+         "video/dv"),
+        ("invalid__empty.dv", {
+            "purpose": "Test empty DV.",
+            "stdout_part": "",
+            "stderr_part": "Cannot find DV header"},
+         "video/dv"),
+    ])
+def test_ffmpeg_scraper_mov(filename, result_dict, mimetype,
+                            evaluate_scraper):
+    """Test FFMpegWellformed."""
+    correct = parse_results(filename, mimetype, result_dict, True)
+    scraper = FFMpegWellformed(correct.filename, mimetype, True)
+    scraper.scrape_file()
+    correct.version = None
+    correct.streams[0]['version'] = None
+    correct.streams[0]['stream_type'] = None
+
+    evaluate_scraper(scraper, correct)
+
+
+@pytest.mark.parametrize(
+    ["filename", "result_dict"],
+    [
+        ("valid__ffv1.mkv", {
+            "purpose": "Test valid MKV.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": ""}),
+        ("invalid__ffv1_missing_data.mkv", {
+            "purpose": "Test truncated MKV.",
+            "stdout_part": "",
+            "stderr_part": "Truncating packet of size"}),
+        ("invalid__empty.mkv", {
+            "purpose": "Test empty MKV.",
+            "stdout_part": "",
+            "stderr_part": "Invalid data found when processing input"}),
+    ])
+def test_ffmpeg_scraper_mkv(filename, result_dict, evaluate_scraper):
+    """Test FFMpegWellformed."""
+    mimetype = 'video/x-matroska'
+    correct = parse_results(filename, mimetype, result_dict, True)
+    scraper = FFMpegWellformed(correct.filename, mimetype, True)
+    scraper.scrape_file()
+    correct.version = None
+    correct.streams[0]['version'] = None
+    correct.streams[0]['stream_type'] = None
+
+    evaluate_scraper(scraper, correct)
+
+
+@pytest.mark.parametrize(
     ["filename", "result_dict"],
     [
         ("valid_1.m1v", {

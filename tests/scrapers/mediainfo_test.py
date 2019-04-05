@@ -13,6 +13,7 @@ This module tests that:
       scraper' and well_formed is None.
     - The following MIME type and version combinations are supported whether
       well-formedness is checked or not:
+        - audio/x-wav, '2'
         - video/mpeg, '1'
         - video/mp4, ''
         - video/MP1S, ''
@@ -22,13 +23,84 @@ This module tests that:
     - Made up MIME types are not supported.
 """
 import pytest
-from file_scraper.scrapers.mediainfo import MpegMediainfo, WavMediainfo
+from file_scraper.scrapers.mediainfo import MpegMediainfo, WavMediainfo, \
+    MkvMediainfo, MovMediainfo
 from tests.common import parse_results
-from tests.scrapers.stream_dicts import (MPEG1_VIDEO, MPEG2_VIDEO,
-                                         MPEG4_CONTAINER, MPEG4_VIDEO,
-                                         MPEG4_AUDIO, MPEG1_AUDIO,
-                                         MPEGTS_CONTAINER, MPEGTS_VIDEO,
-                                         MPEGTS_AUDIO, MPEGTS_OTHER, WAV_AUDIO)
+from tests.scrapers.stream_dicts import (
+    MPEG1_VIDEO, MPEG2_VIDEO, MPEG4_CONTAINER, MPEG4_VIDEO, MPEG4_AUDIO,
+    MPEG1_AUDIO, MPEGTS_CONTAINER, MPEGTS_VIDEO, MPEGTS_AUDIO, MPEGTS_OTHER,
+    WAV_AUDIO, MKV_CONTAINER, FFV_VIDEO, FFV_VIDEO_TRUNCATED, MOV_CONTAINER,
+    DV_VIDEO, MOV_TC, MOV_DV_VIDEO)
+
+
+@pytest.mark.parametrize(
+    ["filename", "result_dict", "mimetype"],
+    [
+        ("valid__dv_wav.mov", {
+            "purpose": "Test valid MOV with DV and WAV.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": "",
+            "streams": {0: MOV_CONTAINER,
+                        1: MOV_DV_VIDEO,
+                        2: WAV_AUDIO,
+                        3: MOV_TC}}, "video/quicktime"),
+        ("valid.dv", {
+            "purpose": "Test valid DV.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": "",
+            "streams": {0: DV_VIDEO}}, "video/dv"),
+        ("invalid__empty.dv", {
+            "purpose": "Test empty DV.",
+            "stdout_part": "",
+            "stderr_part": "No audio or video tracks found"},
+         "video/dv"),
+    ])
+def test_mediainfo_scraper_mov(filename, result_dict, mimetype,
+                               evaluate_scraper):
+    """Test Quicktime and DV scraping with Mediainfo."""
+    correct = parse_results(filename, mimetype, result_dict, True)
+    scraper = MovMediainfo(correct.filename, mimetype, True)
+    scraper.scrape_file()
+    if 'empty' in filename:
+        correct.version = None
+        correct.streams[0]['version'] = None
+        correct.streams[0]['stream_type'] = None
+
+    evaluate_scraper(scraper, correct)
+
+
+@pytest.mark.parametrize(
+    ["filename", "result_dict"],
+    [
+        ("valid__ffv1.mkv", {
+            "purpose": "Test valid MKV.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": "",
+            "streams": {0: MKV_CONTAINER,
+                        1: FFV_VIDEO}}),
+        ("invalid__ffv1_missing_data.mkv", {
+            "purpose": "Test truncated MKV.",
+            "stdout_part": "",
+            "stderr_part": "The file is truncated.",
+            "streams": {0: MKV_CONTAINER,
+                        1: FFV_VIDEO_TRUNCATED}}),
+        ("invalid__empty.mkv", {
+            "purpose": "Test empty MKV.",
+            "stdout_part": "",
+            "stderr_part": "No audio or video tracks found"}),
+    ])
+def test_mediainfo_scraper_mkv(filename, result_dict, evaluate_scraper):
+    """Test Matroska scraping with Mediainfo."""
+    mimetype = 'video/x-matroska'
+    correct = parse_results(filename, mimetype, result_dict, True)
+    scraper = MkvMediainfo(correct.filename, mimetype, True)
+    scraper.scrape_file()
+    if 'empty' in filename:
+        correct.version = None
+        correct.streams[0]['version'] = None
+        correct.streams[0]['stream_type'] = None
+
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -197,7 +269,7 @@ def test_no_wellformed():
 def test_is_supported_wav():
     """Test is_supported method."""
     mime = 'audio/x-wav'
-    ver = 2
+    ver = '2'
     assert WavMediainfo.is_supported(mime, ver, True)
     assert WavMediainfo.is_supported(mime, None, True)
     assert WavMediainfo.is_supported(mime, ver, False)
