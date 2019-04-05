@@ -313,7 +313,9 @@ def generate_metadata_dict(scraper_results, lose):
             else:
                 current_stream[method_name] = method()
 
-    # TODO container metadata
+    container = {"mimetype": streams[1]["mimetype"],
+                 "version": streams[1]["version"]}
+    streams[0] = container
 
     return streams
 
