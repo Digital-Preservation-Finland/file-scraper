@@ -65,7 +65,8 @@ class BaseScraper(object):
         version = self.streams[0].version()
 
         if mimetype is None:
-            raise UnsupportedTypeException("None is not a supported mimetype.")
+            raise UnsupportedTypeException("None is not a supported MIME "
+                                           "type.")
         elif not self.is_supported(mimetype, version):
             raise UnsupportedTypeException("MIME type %s with version %s is "
                                            "not supported." % (mimetype,
@@ -144,7 +145,7 @@ class BaseMeta(object):
         """
         if mimetype not in cls._supported:
             return False
-        if version in cls._supported[mimetype] or cls._allow_versions:
+        if version in cls._supported[mimetype] + [None] or cls._allow_versions:
             return True
         return False
 

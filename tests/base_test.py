@@ -5,17 +5,17 @@ This module tests:
     - Shell command execution.
     - That is_supported() method returns correct values for a variety of
       mimetypes and versions.
-    - That messages and errors are recorded and returned properly.
+    - That messages and errors are returned properly.
     - That scraper attributes and well_formed property are set and retrieved
       correctly
-    - That _collect_elements() method works and is able to gather all results
-      from metadata methods
     - Concatenation of strings or empty lists with and without prefix
 """
 import subprocess
-from file_scraper.base import (Shell, BaseScraper, BaseDetector, concat,
-                               SkipElementException)
-import file_scraper.utils
+import pytest
+from file_scraper.base import (Shell, BaseScraper, BaseMeta, BaseDetector,
+                               concat, UnsupportedTypeException)
+import file_scraper.base
+from file_scraper.utils import metadata
 
 
 def test_shell(monkeypatch):
@@ -32,6 +32,12 @@ def test_shell(monkeypatch):
     assert shell.stderr == b'error message'
 
 
+class BaseMetaBasic(BaseMeta):
+    """Metadata model supporting specific versions of one MIME type"""
+
+    _supported = {'test/mimetype': ['0.1', '0.2']}
+
+
 class BaseScraperBasic(BaseScraper):
     """
     A very basic scraper for only specific versions of one MIME type.
@@ -40,18 +46,18 @@ class BaseScraperBasic(BaseScraper):
     and is used for metadata collection.
     """
 
-    _supported = {'test/mimetype': ['0.1', '0.2']}
+    _supported_metadata = [BaseMetaBasic]
 
     def scrape_file(self):
+        """Do nothing, scraping not needed here."""
         pass
 
-    @file_scraper.utils.metadata()
-    def _version(self):
-        return self.version
 
-    @file_scraper.utils.metadata()
-    def _stream_type(self):
-        return 'test_stream'
+class BaseMetaVersion(BaseMeta):
+    """Basic metadata model supporting all versions of a single MIME type."""
+
+    _allow_versions = True
+    _supported = {'test/mimetype': []}
 
 
 class BaseScraperVersion(BaseScraperBasic):
@@ -62,16 +68,7 @@ class BaseScraperVersion(BaseScraperBasic):
     and is used for metadata collection
     """
 
-    _allow_versions = True
-
-    # pylint: disable=no-self-use
-    @file_scraper.utils.metadata()
-    def _skip_this(self):
-        raise SkipElementException()
-
-    @file_scraper.utils.metadata()
-    def _collect_this(self):
-        return 'collected'
+    _supported_metadata = [BaseMetaVersion]
 
 
 class BaseScraperWellFormed(BaseScraperBasic):
@@ -91,7 +88,7 @@ class BaseDetectorBasic(BaseDetector):
 def test_is_supported():
     """Test scraper's is_supported() method."""
     assert BaseScraperBasic.is_supported('test/mimetype', '0.1', True)
-    assert not BaseScraperBasic.is_supported('test/mimetype', None, True)
+    assert BaseScraperBasic.is_supported('test/mimetype', None, True)
     assert BaseScraperBasic.is_supported('test/mimetype', '0.1', False)
     assert not BaseScraperBasic.is_supported('test/notsupported', '0.1', True)
     assert not BaseScraperBasic.is_supported('test/mimetype', 'X', True)
@@ -104,7 +101,7 @@ def test_is_supported():
     assert BaseScraperVersion.is_supported('test/mimetype', 'X', True)
 
     assert BaseScraperWellFormed.is_supported('test/mimetype', '0.1', True)
-    assert not BaseScraperWellFormed.is_supported('test/mimetype', None, True)
+    assert BaseScraperWellFormed.is_supported('test/mimetype', None, True)
     assert not BaseScraperWellFormed.is_supported('test/mimetype', '0.1',
                                                   False)
     assert not BaseScraperWellFormed.is_supported('test/notsupported', '0.1',
@@ -115,78 +112,91 @@ def test_is_supported():
 def test_messages_errors():
     """Test scraper's messages and errors."""
     scraper = BaseScraperBasic('testfilename', 'test/mimetype')
-    scraper.messages('test message')
-    scraper.messages('test message 2')
-    scraper.errors('test error')
-    scraper.errors('test error 2')
+    # pylint: disable=protected-access
+    scraper._messages.append('test message')
+    scraper._messages.append('test message 2')
+    scraper._errors.append('test error')
+    scraper._errors.append('test error 2')
     assert scraper.messages() == 'test message\ntest message 2'
     assert scraper.errors() == 'ERROR: test error\nERROR: test error 2'
 
 
 def test_scraper_properties():
     """Test scraper's attributes and well_formed property."""
-    scraper = BaseScraperBasic('testfilename', 'test/mimetype', True,
-                               {'test': 'value'})
-    scraper.messages('success')
+    scraper = BaseScraperBasic('testfilename', True, {'test': 'value'})
+    # pylint: disable=protected-access
+    scraper._messages.append('success')
     assert scraper.well_formed
-    scraper.errors('error')
+    scraper._errors.append('error')
     assert not scraper.well_formed
 
     assert scraper.filename == 'testfilename'
-    assert scraper.mimetype == 'test/mimetype'
     # pylint: disable=protected-access
     assert scraper._check_wellformed
     assert scraper._params == {'test': 'value'}
 
-    scraper = BaseScraperBasic('testfilename', 'test/mimetype', False)
-    scraper.messages('success')
+    scraper = BaseScraperBasic('testfilename', False)
+    scraper._messages.append('success')
     assert scraper.well_formed is None
-    scraper.errors('error')
+    scraper._errors.append('error')
     assert scraper.well_formed is None
 
 
-def test_collect_elements():
-    """Test scraper's _collect_elements() method."""
-    scraper = BaseScraperBasic('testfilename', 'test/mimetype')
-    scraper._collect_elements()  # pylint: disable=protected-access
-    assert scraper.streams == {
-        0: {'mimetype': 'test/mimetype', 'version': None,
-            'stream_type': 'test_stream', 'index': 0}}
-    scraper = BaseScraperVersion('testfilename', 'test/mimetype')
-    scraper.version = '0.1'
-    scraper._collect_elements()  # pylint: disable=protected-access
-    assert scraper.streams == {
-        0: {'mimetype': 'test/mimetype', 'version': '0.1',
-            'stream_type': 'test_stream', 'index': 0,
-            'collect_this': 'collected'}}
+class BaseMetaCustom(BaseMeta):
+    """Metadata model that uses MIME type and version given to constructor."""
+
+    _supported = {'test/mimetype': ['0.1']}
+
+    def __init__(self, mimetype, version):
+        self._mimetype = mimetype
+        self._version = version
+
+    @metadata()
+    def mimetype(self):
+        return self._mimetype
+
+    @metadata()
+    def version(self):
+        return self._version
+
+
+class BaseScraperSupported(BaseScraper):
+    """Basic scraper using BaseMetaCustom metadata model."""
+
+    _supported_metadata = [BaseMetaCustom]
 
 
 def test_check_supported():
     """Test scraper's _check_supported() method."""
     # pylint: disable=protected-access
-    scraper = BaseScraperBasic('testfilename', 'test/mimetype')
+    scraper = BaseScraperSupported('testfilename', 'test/mimetype')
+    scraper.streams.append(BaseMetaCustom('test/mimetype', '0.1'))
     scraper._check_supported()
     assert scraper.errors() == ''
 
     scraper = BaseScraperBasic('testfilename', 'test/mimetype')
-    scraper.version = '0.1'
+    scraper.streams.append(BaseMetaCustom('test/mimetype', None))
     scraper._check_supported()
     assert scraper.errors() == ''
 
     scraper = BaseScraperBasic('testfilename', 'test/mimetype')
-    scraper.version = '0.0'
-    scraper._check_supported()
-    assert scraper.errors() == 'ERROR: Version 0.0 is not supported.'
+    scraper.streams.append(BaseMetaCustom('test/mimetype', '0.0'))
+    with pytest.raises(UnsupportedTypeException) as err:
+        scraper._check_supported()
+    assert 'version 0.0 is not supported.' in str(err.value)
 
     scraper = BaseScraperBasic('testfilename', 'test/falsemime')
-    scraper.version = '0.1'
-    scraper._check_supported()
-    assert scraper.errors() == 'ERROR: Mimetype test/falsemime is not ' \
-                               'supported.'
+    scraper.streams.append(BaseMetaCustom('test/falsemime', '0.1'))
+    with pytest.raises(UnsupportedTypeException) as err:
+        scraper._check_supported()
+    assert ('MIME type test/falsemime with version 0.1 is not supported.' in
+            str(err.value))
 
     scraper = BaseScraperBasic('testfilename', None)
-    scraper._check_supported()
-    assert scraper.errors() == 'ERROR: None is not supported mimetype.'
+    scraper.streams.append(BaseMetaCustom(None, '0.1'))
+    with pytest.raises(UnsupportedTypeException) as err:
+        scraper._check_supported()
+    assert 'None is not a supported MIME type.' in str(err.value)
 
 
 def test_base_detector():
