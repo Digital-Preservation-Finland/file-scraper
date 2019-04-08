@@ -26,7 +26,7 @@ CHANGE_FIDO = {
         'application/gzip',
     'tests/data/application_warc/valid_1.0_.warc.gz': 'application/gzip',
     'tests/data/application_x-internet-archive/valid_1.0.arc': 'text/html',
-    'tests/data/video_x-matroska/valid__ffv1.mkv': None}
+    'tests/data/video_x-matroska/valid_4_ffv1.mkv': None}
 
 CHANGE_MAGIC = {
     'tests/data/video_MP2T/valid_.ts': 'application/octet-stream',

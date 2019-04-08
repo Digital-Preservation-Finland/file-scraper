@@ -105,11 +105,11 @@ def test_ffmpeg_scraper_mov(filename, result_dict, mimetype,
 @pytest.mark.parametrize(
     ["filename", "result_dict"],
     [
-        ("valid__ffv1.mkv", {
+        ("valid_4_ffv1.mkv", {
             "purpose": "Test valid MKV.",
             "stdout_part": "file was analyzed successfully",
             "stderr_part": ""}),
-        ("invalid__ffv1_missing_data.mkv", {
+        ("invalid_4_ffv1_missing_data.mkv", {
             "purpose": "Test truncated MKV.",
             "stdout_part": "",
             "stderr_part": "Truncating packet of size"}),

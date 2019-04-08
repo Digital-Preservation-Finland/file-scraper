@@ -47,7 +47,7 @@ class MovMediainfo(Mediainfo):
 class MkvMediainfo(Mediainfo):
     """Scraper for Matroska AV container with selected streams."""
 
-    _supported = {'video/x-matroska': ['']}
+    _supported = {'video/x-matroska': ['4']}
     _allow_versions = True  # Allow any version
     _containers = ['Matroska']
 
@@ -68,18 +68,10 @@ class MkvMediainfo(Mediainfo):
     @metadata()
     def _version(self):
         """Return version of stream."""
-        if self._mediainfo is None:
-            return None
-        if self._mediainfo_stream.format_version is not None:
-            if self._mediainfo_stream.format == 'Matroska':
-                return ''
-            if 'Version ' in str(self._mediainfo_stream.format_version):
-                return str(self._mediainfo_stream.format_version).replace(
-                    'Version ', '').split(".")[0]
-            return str(self._mediainfo_stream.format_version)
-        if self._stream_type() in ['videocontainer', 'video', 'audio']:
-            return ''
-        return None
+        version = super(MkvMediainfo, self)._version()
+        if isinstance(version, str):
+            return version.split('.')[0]
+        return version
 
     @metadata()
     def _signal_format(self):

@@ -29,7 +29,7 @@ MKV_CONTAINER = {
     'codec_creator_app_version': '56.40.101',
     'codec_name': 'Matroska', 'index': 0,
     'mimetype': 'video/x-matroska',
-    'stream_type': 'videocontainer', 'version': ''}
+    'stream_type': 'videocontainer', 'version': '4'}
 
 FFV_VIDEO = {
     'bits_per_sample': '8', 'codec_creator_app': 'Lavf56.40.101',
