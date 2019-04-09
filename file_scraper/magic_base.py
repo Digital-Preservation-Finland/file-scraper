@@ -169,6 +169,7 @@ class TextMagic(BaseScraper):
             self.errors('Error in analyzing file.')
             self.errors(str(e))
         finally:
+            self._check_supported()
             self._collect_elements()
 
     @property

@@ -58,6 +58,7 @@ A usable scraper tool class:
           have changed. This MAY be omitted, if ``check_wellformed`` is ``False``.
         * MUST call ``_collect_elements()`` as the last command of ``scrape_file()`` regardless of the validation result.
           This will collect the metadata to ``streams`` attribute.
+        * MUST use ``errors()`` for error messages and ``messages()`` for info messages, before ``_collect_elements()``. is called.
 
     * MUST have a method for each metadata element that is needed to be resulted, if not implemented in the already existing base class.
       These methods MUST be named with ``_`` prefix and decorated with ``metadata``-function, e.g. ``_width()``, and MUST normally return string, with exception of ``_index()`` which returns stream index as integer.
@@ -66,17 +67,13 @@ A usable scraper tool class:
       The key of the metadata element in ``streams`` will be the method name without ``_`` prefix (e.g. ``width``), and value is the return value of the method.
       Metadata method MAY raise ``SkipElement`` from ``file_scraper.base``, if the methods needs to be omitted in
       collection phase. This may become handy with files containing different kinds of streams. The value ``None`` is used for the case that the value SHOULD be returned,
-      but the scraper tool is not capable to do that. Example:
+      but the scraper tool is not capable to do that. Example::
 
-.. code-block::
-
-    @metadata
-    def _width():
-        return self._width
-..
+        @metadata
+        def _width():
+            return self._width
 
     * MUST implement metadata ``_stream_type()``, returning e.g. "text", "image", "audio", "video", "videocontainer", "binary", if not implemented in the already existing base class.
-    * MUST use ``errors()`` for error messages and ``messages()`` for info messages.
     * MUST crash in unexpected event, such as due to missing 3rd party tool.
     * Methods ``iter_tool_streams()`` and ``set_tool_streams()`` MUST be implemented to iterate and select stream from the 3rd party tool,
       if the 3rd party tool is able to result several streams, and if this is not implemented in existing base class.
