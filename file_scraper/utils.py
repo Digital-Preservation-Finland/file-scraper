@@ -263,15 +263,110 @@ def ensure_text(s, encoding='utf-8', errors='strict'):
     else:
         raise TypeError("not expecting type '%s'" % type(s))
 
+
+def common_elements(list1, list2):
+    """
+    Return True if there is at least one common element in the two lists.
+
+    :list1: a list or some other iterable
+    :list2: a list or some other iterable
+    :returns: True if the two lists have a common element, otherwise False
+    """
+    set1 = set(list1)
+    set2 = set(list2)
+
+    return len(set1.intersection(set2)) > 0
+
+
+class OverlappingLoseAndImportantException(Exception):
+    """
+    Raised when important and unimportant values overlap.
+    """
+    pass
+
+
+def _merge_to_stream(stream, method, lose, importants):
+    """
+    Merges the results of the method into the stream dict.
+
+    Adds item 'method.__name__: method()' into the stream dict. If the method
+    is marked as important, it is also added into the importants dict. Both
+    dicts are edited in place.
+
+    If the stream dict already contains an entry with method.__name__ as the
+    key, the given lose and importants are examined:
+        - Important values are always used.
+        - Values within the lose list are overwritten.
+        - If neither entry is important or disposable, a ValueError is raised.
+
+    :stream: A dict representing the metadata of a single stream. E.g.
+             {"index": 0, "mimetype": "image/png", "width": "500"}
+    :method: A metadata method.
+    :lose: A list of values that can be overwritten.
+    :importants: A dict of keys and values that must not be overwritten.
+    :raises: ValueError if the old entry in the stream and the value returned
+             by the given method conflict but neither is disposable or both
+             are marked as important.
+    """
+    method_name = method.__name__
+
+    if method_name not in stream:
+        stream[method_name] = method()
+        if method.is_important:
+            importants[method_name] = method()
+        return
+    elif method() in lose:
+        return
+    if stream[method_name] == method():
+        return
+
+    if method.is_important:
+        if method_name not in importants:
+            stream[method_name] = method()
+            importants[method_name] = method()
+        elif importants[method_name] == method():
+            stream[method_name] = method()
+        else:
+            raise ValueError("Conflict with values '%s' and '%s' for '%s': "
+                             "both are marked important." %
+                             (importants[method_name],
+                              method(),
+                              method_name))
+    elif method_name in importants:
+        return
+    elif stream[method_name] in lose:
+        stream[method_name] = method()
+    else:
+        raise ValueError("Conflict with existing value '%s' and new value "
+                         "'%s'." % (stream[method_name], method()))
+
+
 def generate_metadata_dict(scraper_results, lose):
     """
-    TODO
+    Generate a metadata dict from the given scraper results.
+
+    The resulting dict contains the metadata of each stream as a dict,
+    retrievable by using the index of the stream as a key. The index zero is
+    reserved for container metadata containing entries "mimetype", "version"
+    and "index".
 
     scraper_results is a list of lists, e.g.
-    [[scraper1_stream1, scraper1_stream2],
-     [scraper2_stream1, scraper2_stream2]]
 
-    :returns: TODO
+    :scraper_results: A list containing lists of all metadata methods, methods
+                      of a single scraper in a single list. E.g.
+                      [[scraper1_stream1, scraper1_stream2],
+                       [scraper2_stream1, scraper2_stream2]]
+    :lose: A list of values that can be overwritten.
+    :returns: A dict containing the metadata of the file, metadata of each
+              stream in its own dict and container metadata in stream 0. E.g.
+              {0: {"mimetype": "video/mp4", "version": "", "index": 0},
+               1: {'mimetype': 'video/mp4', 'index': 1, 'frame_rate': '30',
+                   ...},
+                2: {'mimetype': 'audio/mp4', 'index': 2,
+                    'audio_data_encoding': 'AAC', ...}}
+    :raises: OverlappingLoseAndImportantException when metadata methods marked
+             as important return values that are present in the lose list i.e.
+             overwritable.
     """
     streams = {}
     importants = {}
@@ -283,39 +378,17 @@ def generate_metadata_dict(scraper_results, lose):
         current_stream = streams[stream_index]
 
         for method in model.iterate_metadata_methods():
-            method_name = method.__name__
-
-            if method_name not in current_stream:
-                current_stream[method_name] = method()
-                continue
-            if method() is None:
-                continue
-            if current_stream[method_name] == method():
-                continue
-
-            if method.important:
-                if method_name not in importants:
-                    current_stream[method_name] = method()
-                    importants[method_name] = method()
-#                            elif importants[method_name] == method():
-#                                current_stream[method_name] == method()
-                else:
-                    raise ValueError("Conflict with existing value"
-                                     " '%s' and new value '%s'."
-                                     % (importants[method_name],
-                                        method()))
-            elif current_stream[method_name] in lose:
-                current_stream[method_name] = method()
-            elif method_name in importants and \
-                    importants[method_name] not in lose:
-                current_stream[method_name] = \
-                        importants[method_name]
-            else:
-                current_stream[method_name] = method()
+            _merge_to_stream(current_stream, method, lose, importants)
 
     container = {"mimetype": streams[1]["mimetype"],
-                 "version": streams[1]["version"]}
+                 "version": streams[1]["version"],
+                 "index": 0}
     streams[0] = container
+
+    # Check that important values did not contain values marked as disposable
+    if common_elements(lose, importants.values):
+        raise OverlappingLoseAndImportantException(
+            "The given lose dict contains values that are marked as important")
 
     return streams
 
