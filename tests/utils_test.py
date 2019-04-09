@@ -83,7 +83,7 @@ import pytest
 
 from file_scraper.utils import hexdigest, sanitize_string,\
     iso8601_duration, strip_zeros, combine_metadata, run_command,\
-    concat
+    concat, metadata, _merge_to_stream, generate_metadata_dict
 
 
 @pytest.mark.parametrize(
@@ -187,96 +187,162 @@ def test_strip_zeros(float_str, expected_output):
     assert strip_zeros(float_str) == expected_output
 
 
+class TestMeta():
+    """A collection of metadata methods for testing purposes."""
+    # pylint: disable=no-self-use, missing-docstring
+
+    def __init__(self, value):
+        self.value = value
+
+    @metadata()
+    def key_notimportant(self):
+        return self.value
+
+    @metadata(important=True)
+    def key_important(self):
+        return self.value
+
+
 @pytest.mark.parametrize(
-    ["dict1", "dict2", "lose", "important", "result_dict"],
+    ["dict1", "method", "value", "lose", "importants", "result_dict",
+     "final_importants"],
     [
-        # "normal" case
-        ({0: {"key1": "value1", "index": 0}},
-         {0: {"key2": "value2", "index": 0}},
-         [], None,
-         {0: {"key1": "value1", "key2": "value2", "index": 0}}),
+        # add new key, nothing originally in importants or in lose
+        ({"key1": "value1"}, "key_notimportant", "value2", [], {},
+         {"key1": "value1", "key_notimportant": "value2"}, {}),
 
-        # "normal" case with more items
-        ({0: {"key1-1": "value1-1", "key1-2": "value1-2", "index": 0}},
-         {0: {"key2-1": "value2-1", "key2-2": "value2-2", "index": 0}},
-         [], None,
-         {0: {"key1-1": "value1-1", "key1-2": "value1-2",
-              "key2-1": "value2-1", "key2-2": "value2-2", "index": 0}}),
+        ({"key1": "value1"}, "key_important", "value2", [], {},
+         {"key1": "value1", "key_important": "value2"},
+         {"key_important": "value2"}),
 
-        # "normal" case with more streams in metadata dict
-        ({0: {"key1": "value1", "index": 0},
-          1: {"key3": "value3", "index": 1}},
-         {0: {"key2": "value2", "index": 0}},
-         [], None,
-         {0: {"key1": "value1", "key2": "value2", "index": 0},
-          1: {"key3": "value3", "index": 1}}),
+        ({"key1": "value1", "key3": "value3", "key4": "value4"},
+         "key_important", "value2", [], {},
+         {"key1": "value1", "key_important": "value2", "key3": "value3",
+          "key4": "value4"},
+         {"key_important": "value2"}),
 
-        # "normal" case with more streams in stream dict
-        ({0: {"key1": "value1", "index": 0}},
-         {0: {"key2": "value2", "index": 0},
-          1: {"key3": "value3", "index": 1}},
-         [], None,
-         {0: {"key1": "value1", "key2": "value2", "index": 0},
-          1: {"key3": "value3", "index": 1}}),
+        # add new key to an empty dict
+        ({}, "key_notimportant", "value", [], {},
+         {"key_notimportant": "value"}, {}),
 
-        # no conflict but an important key
-        ({0: {"key1": "value1", "importantkey": "dullvalue", "index": 0}},
-         {0: {"key2": "value2", "index": 0}},
-         [], {"importantkey": "importantvalue"},
-         {0: {"key1": "value1", "key2": "value2",
-              "importantkey": "dullvalue", "index": 0}}),
+        # add new key, value of which is None
+        ({"key1": "value1"}, "key_notimportant", None, [], {},
+         {"key1": "value1", "key_notimportant": None}, {}),
 
-        # conflict: conflicting key in lose
-        ({0: {"key1": "value1", "commonkey": "commonvalue1", "index": 0}},
-         {0: {"key2": "value2", "commonkey": "commonvalue2", "index": 0}},
-         ["commonvalue1"], None,
-         {0: {"key1": "value1", "key2": "value2", "commonkey": "commonvalue2",
-              "index": 0}}),
+        # old value overridden by important method
+        ({"key_important": "oldvalue"}, "key_important", "value1", [], {},
+         {"key_important": "value1"},
+         {"key_important": "value1"}),
 
-        # conflict: conflicting key in important
-        ({0: {"key1": "value1", "commonkey": "commonvalue1", "index": 0}},
-         {0: {"key2": "value2", "commonkey": "commonvalue2", "index": 0}},
-         [], {"commonkey": "importantvalue"},
-         {0: {"key1": "value1", "key2": "value2",
-              "commonkey": "importantvalue",
-              "index": 0}}),
+        # old value is important, new one is not
+        ({"key_notimportant": "oldvalue"}, "key_notimportant", "value1", [],
+         {"key_notimportant": "oldvalue"}, {"key_notimportant": "oldvalue"},
+         {"key_notimportant": "oldvalue"}),
 
-        # conflict: conflicting key in both lose and  important
-        ({0: {"key1": "value1", "commonkey": "commonvalue1", "index": 0}},
-         {0: {"key2": "value2", "commonkey": "commonvalue2", "index": 0}},
-         ["importantvalue", "commonvalue2"], {"commonkey": "importantvalue"},
-         {0: {"key1": "value1", "key2": "value2",
-              "commonkey": "commonvalue1",
-              "index": 0}}),
+        # old value in lose, new value not in important
+        ({"key_notimportant": "oldvalue"}, "key_notimportant", "value1",
+         ["oldvalue"], {}, {"key_notimportant": "value1"}, {}),
 
-        # no metadata
-        ({0: {"key1-1": "value1-1", "key1-2": "value1-2", "index": 0}},
-         None, [], None,
-         {0: {"key1-1": "value1-1", "key1-2": "value1-2", "index": 0}}),
+        # old value in lose, new value important
+        ({"key_important": "oldvalue"}, "key_important", "value1",
+         ["oldvalue"], {}, {"key_important": "value1"},
+         {"key_important": "value1"}),
 
-        # no stream
-        (None,
-         {0: {"key2-1": "value2-1", "key2-2": "value2-2", "index": 0}},
-         [], None,
-         {0: {"key2-1": "value2-1", "key2-2": "value2-2", "index": 0}})
+        # key already present but new value in lose
+        ({"key_notimportant": "oldvalue"}, "key_notimportant", "newvalue",
+         ["newvalue"], {}, {"key_notimportant": "oldvalue"}, {}),
+
+        # key already present, both old and new value in lose (old one is kept)
+        ({"key_notimportant": "oldvalue"}, "key_notimportant", "newvalue",
+         ["oldvalue", "newvalue"], {}, {"key_notimportant": "oldvalue"}, {}),
+
+        # both old and new values are important but there is no conflict
+        ({"key_important": "value1", "key2": "value2"}, "key_important",
+         "value1", [], {"key_important": "value1"},
+         {"key_important": "value1", "key2": "value2"},
+         {"key_important": "value1"}),
+#        # "normal" case with more streams in metadata dict
+#        ({0: {"key1": "value1", "index": 0},
+#          1: {"key3": "value3", "index": 1}},
+#         {0: {"key2": "value2", "index": 0}},
+#         [], None,
+#         {0: {"key1": "value1", "key2": "value2", "index": 0},
+#          1: {"key3": "value3", "index": 1}}),
+#
+#        # "normal" case with more streams in stream dict
+#        ({0: {"key1": "value1", "index": 0}},
+#         {0: {"key2": "value2", "index": 0},
+#          1: {"key3": "value3", "index": 1}},
+#         [], None,
+#         {0: {"key1": "value1", "key2": "value2", "index": 0},
+#          1: {"key3": "value3", "index": 1}}),
+#
+#        # conflict: conflicting key in lose
+#        ({0: {"key1": "value1", "commonkey": "commonvalue1", "index": 0}},
+#         {0: {"key2": "value2", "commonkey": "commonvalue2", "index": 0}},
+#         ["commonvalue1"], None,
+#         {0: {"key1": "value1", "key2": "value2", "commonkey": "commonvalue2",
+#              "index": 0}}),
+#
+#        # conflict: conflicting key in important
+#        ({0: {"key1": "value1", "commonkey": "commonvalue1", "index": 0}},
+#         {0: {"key2": "value2", "commonkey": "commonvalue2", "index": 0}},
+#         [], {"commonkey": "importantvalue"},
+#         {0: {"key1": "value1", "key2": "value2",
+#              "commonkey": "importantvalue",
+#              "index": 0}}),
+#
+#        # conflict: conflicting key in both lose and  important
+#        ({0: {"key1": "value1", "commonkey": "commonvalue1", "index": 0}},
+#         {0: {"key2": "value2", "commonkey": "commonvalue2", "index": 0}},
+#         ["importantvalue", "commonvalue2"], {"commonkey": "importantvalue"},
+#         {0: {"key1": "value1", "key2": "value2",
+#              "commonkey": "commonvalue1",
+#              "index": 0}}),
+#
+#        # no metadata
+#        ({0: {"key1-1": "value1-1", "key1-2": "value1-2", "index": 0}},
+#         None, [], None,
+#         {0: {"key1-1": "value1-1", "key1-2": "value1-2", "index": 0}}),
+#
+#        # no stream
+#        (None,
+#         {0: {"key2-1": "value2-1", "key2-2": "value2-2", "index": 0}},
+#         [], None,
+#         {0: {"key2-1": "value2-1", "key2-2": "value2-2", "index": 0}})
     ]
 )
-def test_combine_metadata(dict1, dict2, lose, important, result_dict):
+def test_merge_to_stream(dict1, method, value, lose, importants, result_dict,
+                         final_importants):
     """Test combining stream and metadata dicts."""
-    assert (combine_metadata(dict1, dict2, lose=lose, important=important)
-            == result_dict)
-    for origdict in [dict1, dict2]:
-        if origdict is not None:
-            origdict["newkey"] = "newvalue"
-            assert origdict != result_dict
+    testclass = TestMeta(value)
+    _merge_to_stream(dict1, getattr(testclass, method), lose, importants)
+    assert dict1 == result_dict
+    assert importants == final_importants
+#    if dict1 is not None:
+#        dict1["newkey"] = "newvalue"
+#        assert dict1 != result_dict
 
 
-def test_combine_metadata_conflict():
-    """Test combining stream and metadata dicts with an unresolved conflict."""
+def test_merge_normal_conflict():
+    """Test adding metadata to stream with conflicting unimportant values."""
+    testclass = TestMeta("newvalue")
     with pytest.raises(ValueError) as error:
-        combine_metadata({0: {"key": "value1", "index": 0}},
-                         {0: {"key": "value2", "index": 0}})
-    assert "Conflict with existing value" in str(error.value)
+        _merge_to_stream({"key_notimportant": "oldvalue"},
+                         getattr(testclass, "key_notimportant"),
+                         [], {})
+    assert ("Conflict with existing value 'oldvalue' and new value 'newvalue'"
+            in str(error.value))
+
+
+def test_merge_important_conflict():
+    """Test adding metadata to stream with conflicting important values."""
+    testclass = TestMeta("newvalue")
+    with pytest.raises(ValueError) as error:
+        _merge_to_stream({"key_important": "oldvalue"},
+                         getattr(testclass, "key_important"),
+                         [], {"key_important": "oldvalue"})
+    assert "Conflict with values 'oldvalue' and 'newvalue'" in str(error.value)
 
 
 @pytest.mark.parametrize(
