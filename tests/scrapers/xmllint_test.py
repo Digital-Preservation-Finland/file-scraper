@@ -25,7 +25,7 @@ This module tests that:
     - MIME type text/xml with version 1.0 or None is supported when well-
       formedness is checked.
     - When well-formedness is not checked, text/xml 1.0 is not supported.
-    - A made up MIME type or version is not supported.
+    - A made up MIME type is not supported, but version is.
 
     - Schema, catalogs and network-usage can be defined as parameters.
 """
@@ -147,7 +147,7 @@ def test_is_supported():
     assert Xmllint.is_supported(mime, ver, True)
     assert Xmllint.is_supported(mime, None, True)
     assert not Xmllint.is_supported(mime, ver, False)
-    assert not Xmllint.is_supported(mime, 'foo', True)
+    assert Xmllint.is_supported(mime, 'foo', True)
     assert not Xmllint.is_supported('foo', ver, True)
 
 

@@ -8,11 +8,12 @@ This module tests that:
       reported as well_formed and the charset is identified correctly.
     - When full scraping is not done, scraper messages contain 'Skipping
       scraper' and well-formedness be reported as None.
-    - When full scraping is done, MIME type text/xml with version 1.0 or None
-      is reported as supported.
+    - When full scraping is done, MIME type text/xml with version 1.0 and
+      text/html with version 5.0 is reported as supported.
     - When full scraping is not done, text/xml version 1.0 is reported as not
       supported.
-    - A correct MIME type with made up version is reported as not supported.
+    - A correct MIME type with made up version is reported as supported for
+      text/xml files but not for text/html files.
     - A made up MIME type with correct version is reported as not supported.
 """
 
@@ -60,12 +61,22 @@ def test_no_wellformed(testpath):
     assert scraper.well_formed is None
 
 
-def test_is_supported():
-    """Test is_supported method."""
+def test_is_supported_allow():
+    """Test is_supported method for xml files."""
     mime = 'text/xml'
     ver = '1.0'
     assert XmlEncoding.is_supported(mime, ver, True)
     assert XmlEncoding.is_supported(mime, None, True)
+    assert not XmlEncoding.is_supported(mime, ver, False)
+    assert XmlEncoding.is_supported(mime, 'foo', True)
+    assert not XmlEncoding.is_supported('foo', ver, True)
+
+def test_is_supported_deny():
+    """Test is_supported method for html files."""
+    mime = 'text/html'
+    ver = '5.0'
+    assert XmlEncoding.is_supported(mime, ver, True)
+    assert not XmlEncoding.is_supported(mime, None, True)
     assert not XmlEncoding.is_supported(mime, ver, False)
     assert not XmlEncoding.is_supported(mime, 'foo', True)
     assert not XmlEncoding.is_supported('foo', ver, True)

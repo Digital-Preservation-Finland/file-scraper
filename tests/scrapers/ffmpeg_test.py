@@ -2,54 +2,35 @@
 Test module for ffmpeg.py
 
 This module tests that:
-    - For valid MPEG-1 and MPEG-2 files the scraping is reported as successful,
-      the file is well-formed and other properties are:
-        - mimetype is video/mpeg
-        - version is None
-        - in streams, version and stream_type are None
-    - For empty MPEG files the results are similar but file is not well-formed
-      and errors should contain message 'Invalid data found when processing
-      input'.
-    - For MPEG files with missing data the file is not well-formed and errors
-      should contain "end mismatch".
-
-    - For valid mp4 files with h.264 video and AAC audio the scraping is
-      reported as successful, the file is well-formed and other properties are:
-        - mimetype is video/mp4
-        - version is None
-        - in streams, version and stream_type are None
-    - For empty mp4 files, the results are similar but file is not well-formed
-      and errors should contain message 'Invalid data found when processing
-      input'
-    - For mp4 files with missing data the file is not well-formed and errors
-      should contain "end mismatch"
-
-    - For valid mp3 files the scraping is reported as successful, the file is
-      well-formed and its other properties are:
-        - mimetype is audio/mpeg
-        - version is None
-        - in streams, version and stream_type are None
-    - For empty mp3 files, the results are similar but file is not well-formed
-      and errors should contain message 'could not find codec parameters'.
-    - For mp3 files with missing data, the file is not well-formed and errors
-      should contain 'Error while decoding stream'.
+    - For valid audio and video files the scraping is reported as successful,
+      the file is well-formed. Since this scraper does not really collect
+      metadata, the version and stream_type will be None. However, mimetype
+      is the expected mimetype.
+    - For empty files the results are similar but file is not well-formed
+      and errors should contain an error message. The error message should
+      contain the following string:
+        - With video/x-matroska, video/mpeg, video/mp4, video/MP2T files:
+          'Invalid data found when processing input'.
+        - With audio/mpeg files: 'could not find codec parameters'
+        - With video/dv files: 'Cannot find DV header'
+    - For invalid files the file is not well-formed and errors should contain
+      an error message. With the files with missing data the error message
+      should contain the following string:
+        - With video/x-matroska files: 'Truncating packet of size'
+        - With video/mpeg and video/mp4 files: 'end mismatch'
+        - With video/MP2T files: 'invalid new backstep'
+        - With audio/mpeg files: 'Error while decoding stream'
+        - With video/dv files: 'AC EOB marker is absent'
     - For mp3 files with wrong version reported in the header, the file is not
       well-formed and errors should contain 'Error while decoding stream'.
-
-    - For valid MPEG-TS files the scraping is reported as successful, the file
-      is well-formed and its other properties are:
-        - mimetype is 'video/MP2T'
-        - version is None
-        - in streams, version and stream_type are None
-    - For empty MPEG-TS files, the results are ismilar but file is not well-
-      formed and errors should contain message 'Invalid data found when
-      processing input'.
-    - For MPEG-TS files with missing data, the file is not well-formed and
-      errors should contain "invalid new backstep".
-
-    - When the scraper is run without well-formed check on a well-formed file,
-      well_formed is None and scraper messages contain 'Skipping scraper'.
-
+    - The mimetypes tested are:
+        - video/quicktime containing dv video and pcm (wav) audio stream
+        - video/x-matroska containing ffv1 video stream
+        - video/dv
+        - video/mpeg, with version 1 and 2 separately
+        - video/mp4 containing h264 video and aac audio streams
+        - video/MP2T file
+        - audio/mpeg version 1 file
     - When well-formed check is performed, the scraper reports the following
       combinations of mimetypes and versions as supported:
         - video/mpeg, '1' or None

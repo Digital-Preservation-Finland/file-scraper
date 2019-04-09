@@ -15,9 +15,9 @@ This module tests that:
       scraper errors contain 'An error occurred while reading an XREF table.'
     - When well-formedness is not checked, scraper messages should contain
       'Skipping scraper' and well-formednes be reported as None
-    - MIME type application/pdf with version 1.7 or None is reported as
+    - MIME type application/pdf with version 1.7 is reported as
       supported when full scraping is done
-    - When full scraping is not done, application/pdf version 1.7  is reported
+    - When full scraping is not done, application/pdf version 1.7 is reported
       as not supported
     - Supported MIME type with made up version is reported as not supported
     - Made up MIME type with supported version is reported as not supported
@@ -78,7 +78,7 @@ def test_is_supported():
     mime = 'application/pdf'
     ver = '1.7'
     assert GhostScript.is_supported(mime, ver, True)
-    assert GhostScript.is_supported(mime, None, True)
+    assert not GhostScript.is_supported(mime, None, True)
     assert not GhostScript.is_supported(mime, ver, False)
     assert not GhostScript.is_supported(mime, 'foo', True)
     assert not GhostScript.is_supported('foo', ver, True)

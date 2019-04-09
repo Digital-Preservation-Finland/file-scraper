@@ -50,6 +50,8 @@ class XmlEncoding(BaseScraper):
             params = {}
         if 'schematron' in params:
             return False
+        if mimetype == 'text/xml' and check_wellformed:
+            return True
         return super(XmlEncoding, cls).is_supported(mimetype, version,
                                                     check_wellformed, params)
 

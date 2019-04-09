@@ -125,7 +125,7 @@ class BaseScraper(object):
         """
         # pylint: disable=unused-argument
         if mimetype in cls._supported and \
-                (version in cls._supported[mimetype] + [None] or
+                (version in cls._supported[mimetype] or
                  cls._allow_versions) and \
                 (check_wellformed or not cls._only_wellformed):
             return True
@@ -198,7 +198,7 @@ class BaseScraper(object):
         """Check that resulted mimetype and possible version are supported."""
         if self._mimetype() is None:
             self.errors("None is not supported mimetype.")
-        elif self._mimetype() and self._mimetype() not in self._supported:
+        elif self._mimetype() not in self._supported:
             self.errors("Mimetype %s is not supported." % self._mimetype())
         elif self._version() and self._version() not in \
                 self._supported[self._mimetype()]:

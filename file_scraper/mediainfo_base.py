@@ -133,10 +133,8 @@ class Mediainfo(BaseScraper):
         if self._mediainfo is None:
             return None
         if self._mediainfo_stream.format_version is not None:
-            if 'Version ' in str(self._mediainfo_stream.format_version):
-                return str(self._mediainfo_stream.format_version).replace(
-                    'Version ', '')
-            return str(self._mediainfo_stream.format_version)
+            return self._mediainfo_stream.format_version.replace(
+                'Version ', '')
         if self._stream_type() in ['videocontainer', 'video', 'audio']:
             return ''
         return None

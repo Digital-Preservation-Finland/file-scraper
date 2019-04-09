@@ -13,6 +13,7 @@ from tests.common import get_files
 # For GIFs and TIFFs with 3 images inside, the version is missing from the
 # second and third streams, but exists in the first one.
 # MPEG-TS file contains "menu" stream, where version is None.
+# Quicktime file contains a timecode track, where version is None.
 NONE_ELEMENTS = {
     'tests/data/application_x-internet-archive/valid_1.0_.arc.gz': ['version'],
     'tests/data/application_msword/valid_11.0.doc': ['version'],
@@ -40,12 +41,14 @@ NONE_ELEMENTS = {
 # invalid_1.0_no_doctype.xhtml - is valid text/xml
 # Xml files would require schema or catalog, this is tested in
 # unit tests of Xmllint.
-# MKV files do not have a scraper
+# Scraper is not found for HTML files without doctype.
 IGNORE_INVALID = [
     'tests/data/application_pdf/invalid_1.4_wrong_version.pdf',
     'tests/data/application_x-spss-por/invalid__header_corrupted.por',
     'tests/data/application_x-spss-por/invalid__truncated.por',
-    'tests/data/application_xhtml+xml/invalid_1.0_no_doctype.xhtml']
+    'tests/data/application_xhtml+xml/invalid_1.0_no_doctype.xhtml',
+    'tests/data/text_html/invalid_5.0_nodoctype.html',
+    'tests/data/text_html/invalid_4.01_nodoctype.html']
 IGNORE_VALID = ['tests/data/text_xml/valid_1.0_xsd.xml',
                 'tests/data/text_xml/valid_1.0_local_xsd.xml',
                 'tests/data/text_xml/valid_1.0_catalog.xml']
@@ -136,7 +139,7 @@ def test_invalid_combined(fullname, mimetype):
     for _, info in iteritems(scraper.info):
         if scraper.mimetype != mimetype and info['class'] == 'ScraperNotFound':
             pytest.skip(('[%s] mimetype mismatches with scraper '
-                         'or scraper not found') % fullname)
+                         'and scraper not found') % fullname)
 
     assert scraper.well_formed is False  # Could be also None (wrong)
     assert scraper.mimetype == mimetype or (
@@ -194,3 +197,20 @@ def test_coded_filename(testpath, fullname, mimetype):
     scraper = Scraper(unicode_name.encode('utf-8'))
     scraper.scrape()
     assert scraper.well_formed
+
+
+@pytest.mark.parametrize(
+    ['fullname', 'mimetype'],
+    [
+        ('tests/data/text_html/invalid_5.0_nodoctype.html', 'text/html'),
+        ('tests/data/text_html/invalid_4.01_nodoctype.html', 'text/html')
+    ]
+) 
+def test_missing_scraper(fullname, mimetype):
+    """Integration test with missing scraper.
+    - Scraper is missing for the HTML files due to missing doctype.
+    """
+    scraper = Scraper(fullname)
+    scraper.scrape()
+    assert scraper.info[len(scraper.info)-1]['class'] == 'ScraperNotFound'
+    assert scraper.well_formed is None

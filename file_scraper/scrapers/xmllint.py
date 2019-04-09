@@ -38,6 +38,7 @@ class Xmllint(BaseScraper):
 
     _supported = {'text/xml': ['1.0']}  # Supported mimetype
     _only_wellformed = True  # Only well-formed check
+    _allow_versions = True
 
     def __init__(self, filename, mimetype, check_wellformed=True, params=None):
         """

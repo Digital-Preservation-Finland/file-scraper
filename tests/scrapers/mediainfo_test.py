@@ -6,11 +6,14 @@ well-formed checks.
 
 This module tests that:
     - MIME type, version, streams, and well-formedness are scraped correctly
-      for wav, m1v, m2v, mp4, mp3 and ts files. For valid files scraper
-      messages contains 'file was analyzed successfully' and for empty file
-      scraper errors contains 'No audio or video tracks found'.
-    - When well-formedness is not checked, scraper messages contains 'Skipping
-      scraper' and well_formed is None.
+      for dv, wav, m1v, m2v, mp4, mp3 and ts files. Additionally, this is
+      scraped correctly to mov video container containing dv video and pcm 
+      (i.e. wav) audio, and to mkv container containing ffv1 video. For valid
+      files scraper messages contains 'file was analyzed successfully' and for
+      empty file scraper errors contains 'No audio or video tracks found'.
+    - When well-formedness is not checked, scraper messages does NOT contain
+      'Skipping scraper' (i.e. the metadata is collected anyway), but
+      well_formed is None. This is tested with a wav file.
     - The following MIME type and version combinations are supported whether
       well-formedness is checked or not:
         - audio/x-wav, '2'
