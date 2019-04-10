@@ -7,6 +7,7 @@ import subprocess
 import hashlib
 from itertools import chain
 import six
+import file_scraper.base
 
 
 def metadata(important=False):
@@ -381,7 +382,11 @@ def generate_metadata_dict(scraper_results, lose):
         current_stream = streams[stream_index]
 
         for method in model.iterate_metadata_methods():
-            _merge_to_stream(current_stream, method, lose, importants)
+            try:
+                _merge_to_stream(current_stream, method, lose, importants)
+            except file_scraper.base.SkipElementException:
+                # happens when the method is not to be indexed
+                continue
 
     # set the correct indices for all streams, otherwise e.g.
     # streams[2]["index"] = 1 as individual scrapers do not know about

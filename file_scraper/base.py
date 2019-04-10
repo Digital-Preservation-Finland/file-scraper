@@ -158,22 +158,6 @@ class BaseMeta(object):
         """
         return 0
 
-    def to_dict(self):
-        """
-        Construct a dict containing all metadata obtainable by this model.
-
-        All streams are kept as-is, container metadata is not separated to the
-        first stream.
-
-        :returns: Dict containing the scraped metadata
-        """
-        stream = {}
-        for methodname in dir(self):
-            if not is_metadata(getattr(self, methodname)):
-                continue
-            stream[methodname] = getattr(self, methodname)()
-        return stream
-
     @classmethod
     def is_supported(cls, mimetype, version=None):
         """
