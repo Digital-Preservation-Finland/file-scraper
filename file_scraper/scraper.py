@@ -57,10 +57,6 @@ class Scraper(object):
         scraper.scrape_file()
         if scraper.streams:
             self._scraper_results.append(scraper.streams)
-#         self._important.update(scraper.get_important())  # TODO think
-#         self.streams = combine_metadata(
-#             stream=self.streams, metadata=scraper.streams,
-#             lose=LOSE, important=self._important)
         self.info[len(self.info)] = scraper.info()
         if scraper.well_formed is not None:
             if self.well_formed in [None, True]:
