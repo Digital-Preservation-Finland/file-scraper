@@ -43,14 +43,9 @@ class BaseScraper(object):
         :returns: None if scraper does not check well-formedness, True if the
                   file has been scraped without errors and otherwise False
         """
-        # toimii nyt kuten vanhassa paitsi ettei None ole mahdollisuus
         if not self._check_wellformed:
             return None
         return len(self._messages) > 0 and len(self._errors) == 0
-
-        # poc-toteutus:
-        # """Return True if all streams are well-formed, otherwise False."""
-        # return all([x.well_formed() for x in self.iter_streams()])
 
     @classmethod
     def is_supported(cls, mimetype, version=None, check_wellformed=True):
