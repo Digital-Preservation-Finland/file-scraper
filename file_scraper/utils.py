@@ -338,7 +338,8 @@ def _merge_to_stream(stream, method, lose, importants):
         stream[method_name] = method()
     else:
         raise ValueError("Conflict with existing value '%s' and new value "
-                         "'%s'." % (stream[method_name], method()))
+                         "'%s' for '%s'." % (stream[method_name], method(),
+                                             method_name))
 
 
 def generate_metadata_dict(scraper_results, lose):
@@ -380,13 +381,19 @@ def generate_metadata_dict(scraper_results, lose):
         for method in model.iterate_metadata_methods():
             _merge_to_stream(current_stream, method, lose, importants)
 
+    # set the correct indices for all streams, otherwise e.g.
+    # streams[2]["index"] = 1 as individual scrapers do not know about
+    # the container stream convention
+    for key in streams:
+        streams[key]["index"] = key
+
     container = {"mimetype": streams[1]["mimetype"],
                  "version": streams[1]["version"],
                  "index": 0}
     streams[0] = container
 
     # Check that important values did not contain values marked as disposable
-    if common_elements(lose, importants.values):
+    if common_elements(lose, importants.values()):
         raise OverlappingLoseAndImportantException(
             "The given lose dict contains values that are marked as important")
 

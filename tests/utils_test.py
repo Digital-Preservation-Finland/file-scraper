@@ -44,24 +44,38 @@ This module tests the following utility functions:
         - Underscores in the input do not affect the stripping, e.g.
           "1_000_000" is not altered but for "1_234_000.000_000", "1_234_000"
           is returned.
-    - combine_metadata
-        - A new dict containing keys from both given dicts is returned.
-        - Unique keys and their values in the inner dicts are all present in
-          the returned dict within their corresponding stream dict.
-        - 'important' dict has no effect unless there is a conflict between
-          the two dicts that are to be combined.
-        - If a key is present in both dicts but its values differ:
-            - if the key is present only in the important dict, the value form
-              important is used in the returned dict.
-            - if the key is present on in the lose list, the value from
-              metadata dict is used in the returned dict.
-            - if the key is present in both important and lose, the value from
-              stream dict is used in the returned dict.
-            - if the key is not present in important or lose, a ValueError
-              with message "Conflict with existing value" is raised
-        - If either metadata or stream dict is None, a new dict containing the
-          contents of the other dict is returned.
-        - Neither metadata nor stream dict is modified in-place.
+    - _merge_to_stream
+        - Value returned by the given metadata method is or is not added to
+          the given metadata dict with the method name as the key under the
+          following conditions:
+            - If the key is not present, a new key is always added whether the
+              value is in lose dict or not.
+            - If the key is already present but not important and the new
+              method is important, the old value is replaced by the new one.
+            - If the old value is important and the new one is not, the old
+              value is not replaced.
+            - If the old value is present in the lose list, the new value
+              replaces it whether the new one is important or not.
+            - If the new value is present in the lose list and the old one is
+              not, the old value is kept.
+            - When old and new value are identical, no exceptions are raised
+              and the value is kept as is.
+            - If old and new values differ aind neither is important nor in
+              lose, ValueError is raised.
+            - If old and new values differ and both are important, ValueError
+              is raised.
+        - If the method is important, the entry is also added to the importants
+          dict.
+    - generate_metadata_dict
+        - A dict with metadata method names as keys and return values as values
+          is returned with priority of conflicting values determined correctly
+          based on the given lose list and importantness of the methods.
+        - Container metadata consisting of mimetype and version is found in the
+          zero stream.
+        - Indexes of the other streams start from 1 and correspond to the keys
+          in the outer dict.
+        - If the lose list contains a value some method marks as important, an
+          OverlappingLoseAndImportantException is raised.
     - run_command
         - Given command is run and its statuscode is returned as the first
           member of the returned tuple.
@@ -81,9 +95,11 @@ import os
 from tempfile import TemporaryFile
 import pytest
 
+from file_scraper.base import BaseMeta
 from file_scraper.utils import hexdigest, sanitize_string,\
-    iso8601_duration, strip_zeros, combine_metadata, run_command,\
-    concat, metadata, _merge_to_stream, generate_metadata_dict
+    iso8601_duration, strip_zeros, run_command, concat,\
+    metadata, _merge_to_stream, generate_metadata_dict,\
+    OverlappingLoseAndImportantException
 
 
 @pytest.mark.parametrize(
@@ -187,7 +203,7 @@ def test_strip_zeros(float_str, expected_output):
     assert strip_zeros(float_str) == expected_output
 
 
-class TestMeta():
+class MetaTest(object):
     """A collection of metadata methods for testing purposes."""
     # pylint: disable=no-self-use, missing-docstring
 
@@ -225,6 +241,10 @@ class TestMeta():
         ({}, "key_notimportant", "value", [], {},
          {"key_notimportant": "value"}, {}),
 
+        # add new key, value of which is in lose
+        ({"key1": "value1"}, "key_notimportant", "value2", ["value2"], {},
+         {"key1": "value1", "key_notimportant": "value2"}, {}),
+
         # add new key, value of which is None
         ({"key1": "value1"}, "key_notimportant", None, [], {},
          {"key1": "value1", "key_notimportant": None}, {}),
@@ -261,72 +281,21 @@ class TestMeta():
          "value1", [], {"key_important": "value1"},
          {"key_important": "value1", "key2": "value2"},
          {"key_important": "value1"}),
-#        # "normal" case with more streams in metadata dict
-#        ({0: {"key1": "value1", "index": 0},
-#          1: {"key3": "value3", "index": 1}},
-#         {0: {"key2": "value2", "index": 0}},
-#         [], None,
-#         {0: {"key1": "value1", "key2": "value2", "index": 0},
-#          1: {"key3": "value3", "index": 1}}),
-#
-#        # "normal" case with more streams in stream dict
-#        ({0: {"key1": "value1", "index": 0}},
-#         {0: {"key2": "value2", "index": 0},
-#          1: {"key3": "value3", "index": 1}},
-#         [], None,
-#         {0: {"key1": "value1", "key2": "value2", "index": 0},
-#          1: {"key3": "value3", "index": 1}}),
-#
-#        # conflict: conflicting key in lose
-#        ({0: {"key1": "value1", "commonkey": "commonvalue1", "index": 0}},
-#         {0: {"key2": "value2", "commonkey": "commonvalue2", "index": 0}},
-#         ["commonvalue1"], None,
-#         {0: {"key1": "value1", "key2": "value2", "commonkey": "commonvalue2",
-#              "index": 0}}),
-#
-#        # conflict: conflicting key in important
-#        ({0: {"key1": "value1", "commonkey": "commonvalue1", "index": 0}},
-#         {0: {"key2": "value2", "commonkey": "commonvalue2", "index": 0}},
-#         [], {"commonkey": "importantvalue"},
-#         {0: {"key1": "value1", "key2": "value2",
-#              "commonkey": "importantvalue",
-#              "index": 0}}),
-#
-#        # conflict: conflicting key in both lose and  important
-#        ({0: {"key1": "value1", "commonkey": "commonvalue1", "index": 0}},
-#         {0: {"key2": "value2", "commonkey": "commonvalue2", "index": 0}},
-#         ["importantvalue", "commonvalue2"], {"commonkey": "importantvalue"},
-#         {0: {"key1": "value1", "key2": "value2",
-#              "commonkey": "commonvalue1",
-#              "index": 0}}),
-#
-#        # no metadata
-#        ({0: {"key1-1": "value1-1", "key1-2": "value1-2", "index": 0}},
-#         None, [], None,
-#         {0: {"key1-1": "value1-1", "key1-2": "value1-2", "index": 0}}),
-#
-#        # no stream
-#        (None,
-#         {0: {"key2-1": "value2-1", "key2-2": "value2-2", "index": 0}},
-#         [], None,
-#         {0: {"key2-1": "value2-1", "key2-2": "value2-2", "index": 0}})
     ]
 )
 def test_merge_to_stream(dict1, method, value, lose, importants, result_dict,
                          final_importants):
     """Test combining stream and metadata dicts."""
-    testclass = TestMeta(value)
+    # pylint: disable=too-many-arguments
+    testclass = MetaTest(value)
     _merge_to_stream(dict1, getattr(testclass, method), lose, importants)
     assert dict1 == result_dict
     assert importants == final_importants
-#    if dict1 is not None:
-#        dict1["newkey"] = "newvalue"
-#        assert dict1 != result_dict
 
 
 def test_merge_normal_conflict():
     """Test adding metadata to stream with conflicting unimportant values."""
-    testclass = TestMeta("newvalue")
+    testclass = MetaTest("newvalue")
     with pytest.raises(ValueError) as error:
         _merge_to_stream({"key_notimportant": "oldvalue"},
                          getattr(testclass, "key_notimportant"),
@@ -337,12 +306,129 @@ def test_merge_normal_conflict():
 
 def test_merge_important_conflict():
     """Test adding metadata to stream with conflicting important values."""
-    testclass = TestMeta("newvalue")
+    testclass = MetaTest("newvalue")
     with pytest.raises(ValueError) as error:
         _merge_to_stream({"key_important": "oldvalue"},
                          getattr(testclass, "key_important"),
                          [], {"key_important": "oldvalue"})
     assert "Conflict with values 'oldvalue' and 'newvalue'" in str(error.value)
+
+
+class Meta1(BaseMeta):
+    """Metadata class for testing generate_metadata_dict()"""
+    # pylint: disable=no-self-use, missing-docstring
+
+    @metadata()
+    def index(self):
+        return 0
+
+    @metadata()
+    def mimetype(self):
+        return "mime"
+
+    @metadata()
+    def version(self):
+        return 1.0
+
+    @metadata()
+    def key1(self):
+        return "value1-1"
+
+    @metadata()
+    def key2(self):
+        return "value2"
+
+    @metadata()
+    def key3(self):
+        return "key1-3"
+
+    @metadata(important=True)
+    def key4(self):
+        return "importantvalue"
+
+
+class Meta2(BaseMeta):
+    """Metadata class for testing generate_metadata_dict()"""
+    # pylint: disable=no-self-use, missing-docstring
+
+    @metadata()
+    def index(self):
+        return 0
+
+    @metadata()
+    def mimetype(self):
+        return "mime"
+
+    @metadata()
+    def version(self):
+        return 1.0
+
+    @metadata()
+    def key1(self):
+        return "value2-1"
+
+    @metadata()
+    def key2(self):
+        return "value2"
+
+    @metadata(important=True)
+    def key3(self):
+        return "key2-3"
+
+    @metadata()
+    def key4(self):
+        return "unimportant value"
+
+
+class Meta3(BaseMeta):
+    """Metadata class for testing generate_metadata_dict()"""
+    # pylint: disable=no-self-use, missing-docstring
+
+    @metadata()
+    def index(self):
+        return 1
+
+    @metadata()
+    def mimetype(self):
+        return "anothermime"
+
+    @metadata()
+    def version(self):
+        return 2
+
+    @metadata()
+    def key1(self):
+        return "value1"
+
+    @metadata()
+    def key2(self):
+        return "value2"
+
+
+def test_generate_metadata_dict():
+    """Test generating metadata dict using the metadata objects."""
+    results = [[Meta1()], [Meta2()], [Meta3()]]
+    lose = ["value2-1"]
+    metadata_dict = generate_metadata_dict(results, lose)
+    assert metadata_dict == {0: {"index": 0, "mimetype": "mime",
+                                 "version": 1.0},
+                             1: {"index": 1, "key1": "value1-1",
+                                 "key2": "value2", "key3": "key2-3",
+                                 "key4": "importantvalue",
+                                 "mimetype": "mime", "version": 1.0},
+                             2: {"index": 2, "key1": "value1",
+                                 "key2": "value2", "mimetype": "anothermime",
+                                 "version": 2}}
+
+
+def test_overlapping_error():
+    """Test that important values within the lose list cause an exception."""
+    results = [[Meta2()]]
+    lose = ["key2-3"]
+    with pytest.raises(OverlappingLoseAndImportantException) as e_info:
+        generate_metadata_dict(results, lose)
+    assert ("The given lose dict contains values that are marked as important"
+            in str(e_info.value))
 
 
 @pytest.mark.parametrize(
