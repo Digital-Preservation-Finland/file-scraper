@@ -34,6 +34,7 @@
 
 from file_scraper.detectors import FidoDetector, MagicDetector
 from file_scraper.wand.wand_scraper import WandScraper
+from file_scraper.ghostscript.ghostscript_scraper import GhostscriptScraper
 
 def iter_detectors():
     """
@@ -57,7 +58,9 @@ def iter_scrapers(mimetype, version, check_wellformed=True, params=None):
     :params: Extra parameters needed for the scraper
     :returns: scraper class
     """
-    yield WandScraper
+    for scraper in [WandScraper, GhostscriptScraper]:
+        if scraper.is_supported(mimetype, version, check_wellformed):
+            yield scraper
 
     # TODO This old iterator can be reinstated when all scrapers are compatible
     #      with the new design.
