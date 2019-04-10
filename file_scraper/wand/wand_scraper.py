@@ -36,10 +36,6 @@ class WandScraper(BaseScraper):
         if not self._check_wellformed and self._only_wellformed:
             self._messages.append("Skipping scraper: "
                                   "Well-formed check not used.")
-            #  TODO originally there was a _collect_elements() call here but
-            #       does it make sense to get any information if according to
-            #       _only_wellformed this scraper is not capable of anything
-            #       besides checking well-formedness?
             return
         try:
             wandresults = wand.image.Image(filename=self.filename)
@@ -52,11 +48,5 @@ class WandScraper(BaseScraper):
                     if not md_class.is_supported(image.container.mimetype):
                         continue
                     self.streams.append(md_class(image))
-
-            # TODO moved here from finally because it doesn't make much sense
-            #      to raise an exception for when analyzing the image did not
-            #      work out and there are no streams so no MIME or version
-            #      either. Smart or dumb?
             self._check_supported()
-
             self._messages.append("The file was analyzed successfully.")
