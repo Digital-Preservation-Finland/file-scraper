@@ -61,7 +61,7 @@ class Scraper(object):
 #         self.streams = combine_metadata(
 #             stream=self.streams, metadata=scraper.streams,
 #             lose=LOSE, important=self._important)
-        self.info[len(self.info)] = scraper.info
+        self.info[len(self.info)] = scraper.info()
         if scraper.well_formed is not None:
             if self.well_formed in [None, True]:
                 self.well_formed = scraper.well_formed
