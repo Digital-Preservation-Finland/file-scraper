@@ -18,9 +18,9 @@ def metadata(important=False):
     return _wrap
 
 
-def is_metadata(f):
+def is_metadata(fun):
     """Return True if given a function with metadata flag, otherwise False."""
-    return callable(f) and getattr(f, 'is_metadata', False)
+    return callable(fun) and getattr(fun, 'is_metadata', False)
 
 
 def encode(filename):
@@ -217,6 +217,7 @@ def run_command(cmd, stdout=subprocess.PIPE, env=None):
     return statuscode, stdout_result, stderr_result
 
 
+# pylint: disable=invalid-name
 def ensure_str(s, encoding='utf-8', errors='strict'):
     """Coerce *s* to `str`.
 
@@ -262,6 +263,7 @@ def ensure_text(s, encoding='utf-8', errors='strict'):
         return s
     else:
         raise TypeError("not expecting type '%s'" % type(s))
+# pylint: enable=invalid-name
 
 
 def common_elements(list1, list2):

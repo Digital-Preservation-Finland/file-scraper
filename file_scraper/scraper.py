@@ -3,8 +3,7 @@ from file_scraper.iterator import iter_scrapers, iter_detectors
 from file_scraper.scrapers.jhove import Utf8JHove
 from file_scraper.scrapers.textfile import CheckTextFile
 from file_scraper.scrapers.dummy import FileExists
-from file_scraper.utils import (hexdigest, ensure_str, ensure_text,
-                                generate_metadata_dict)
+from file_scraper.utils import (hexdigest, ensure_text, generate_metadata_dict)
 
 LOSE = [None, '(:unav)', '(:unap)']
 
