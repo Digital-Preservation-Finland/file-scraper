@@ -9,9 +9,9 @@ class ScraperNotFound(BaseScraper):
 
     def scrape_file(self):
         """No need to scrape anything, just collect."""
-        self._collect_elements()
         self.messages('Proper scraper was not found. '
                       'The file was not analyzed.')
+        self._collect_elements()
 
     @metadata()
     def _stream_type(self):
