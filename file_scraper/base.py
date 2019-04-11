@@ -26,7 +26,6 @@ class BaseScraper(object):
         self.filename = filename
         self._messages = []
         self._errors = []
-        self._only_wellformed = False
         self._check_wellformed = check_wellformed
         self._params = params if params is not None else {}
 

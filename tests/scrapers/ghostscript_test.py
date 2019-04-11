@@ -24,7 +24,7 @@ This module tests that:
 """
 import pytest
 from tests.common import parse_results
-from file_scraper.scrapers.ghostscript import GhostScript
+from file_scraper.ghostscript.ghostscript_scraper import GhostscriptScraper
 
 
 @pytest.mark.parametrize(
@@ -50,13 +50,17 @@ def test_scraper_pdf(filename, result_dict, evaluate_scraper):
         filename = filename.replace('X', ver)
         correct = parse_results(filename, 'application/pdf',
                                 result_dict, True)
-        scraper = GhostScript(correct.filename, correct.mimetype,
-                              True, correct.params)
+        scraper = GhostscriptScraper(correct.filename, True, correct.params)
         scraper.scrape_file()
-        # Ghostscript cannot handle version
-        correct.version = None
-        correct.streams[0]['version'] = None
-        evaluate_scraper(scraper, correct, False)
+
+        # Ghostscript cannot handle version or MIME type
+        correct.version = "(:unav)"
+        correct.streams[0]["version"] = "(:unav)"
+        correct.mimetype = "(:unav)"
+        correct.streams[0]["mimetype"] = "(:unav)"
+
+        evaluate_scraper(scraper, correct, eval_output=False)
+
         if scraper.well_formed:
             assert 'Error' not in scraper.messages()
         else:
@@ -66,8 +70,8 @@ def test_scraper_pdf(filename, result_dict, evaluate_scraper):
 
 def test_no_wellformed():
     """Test scraper without well-formed check."""
-    scraper = GhostScript('tests/data/application_pdf/valid_1.4.pdf',
-                          'application/pdf', False)
+    scraper = GhostscriptScraper('tests/data/application_pdf/valid_1.4.pdf',
+                                 False)
     scraper.scrape_file()
     assert 'Skipping scraper' in scraper.messages()
     assert scraper.well_formed is None
@@ -77,8 +81,8 @@ def test_is_supported():
     """Test is_supported method."""
     mime = 'application/pdf'
     ver = '1.7'
-    assert GhostScript.is_supported(mime, ver, True)
-    assert not GhostScript.is_supported(mime, None, True)
-    assert not GhostScript.is_supported(mime, ver, False)
-    assert not GhostScript.is_supported(mime, 'foo', True)
-    assert not GhostScript.is_supported('foo', ver, True)
+    assert GhostscriptScraper.is_supported(mime, ver, True)
+    assert GhostscriptScraper.is_supported(mime, None, True)
+    assert not GhostscriptScraper.is_supported(mime, ver, False)
+    assert not GhostscriptScraper.is_supported(mime, 'foo', True)
+    assert not GhostscriptScraper.is_supported('foo', ver, True)
