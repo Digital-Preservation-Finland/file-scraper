@@ -72,8 +72,10 @@ This module tests that:
         - text/html, 4.01
         - application/pdf, 1.4
         - application/x-internet-archive, 1.0
-    - Any of these MIME types with version None is also supported.
-    - Valid MIME type with made up version is supported
+    - Any of these MIME types with version None is also supported,
+      except text/html
+    - Valid MIME type with made up version is supported, except
+      text/html
     - Made up MIME type with any version is not supported
     - When full scraping is not done, none of these combinations are supported.
 """
@@ -342,15 +344,29 @@ def test_no_wellformed():
         ('text/plain', '', TextFileMagic),
         ('text/xml', '1.0', XmlFileMagic),
         ('application/xhtml+xml', '1.0', XhtmlFileMagic),
-        ('text/html', '4.01', HtmlFileMagic),
         ('application/pdf', '1.4', PdfFileMagic),
         ('application/x-internet-archive', '1.0', ArcFileMagic),
     ]
 )
-def test_is_supported(mime, ver, class_):
+def test_is_supported_allow(mime, ver, class_):
     """Test is_supported method."""
     assert class_.is_supported(mime, ver, True)
     assert class_.is_supported(mime, None, True)
     assert class_.is_supported(mime, ver, False)
     assert class_.is_supported(mime, 'foo', True)
+    assert not class_.is_supported('foo', ver, True)
+
+
+@pytest.mark.parametrize(
+    ['mime', 'ver', 'class_'],
+    [
+        ('text/html', '4.01', HtmlFileMagic),
+    ]
+)
+def test_is_supported_deny(mime, ver, class_):
+    """Test is_supported method."""
+    assert class_.is_supported(mime, ver, True)
+    assert not class_.is_supported(mime, None, True)
+    assert class_.is_supported(mime, ver, False)
+    assert not class_.is_supported(mime, 'foo', True)
     assert not class_.is_supported('foo', ver, True)

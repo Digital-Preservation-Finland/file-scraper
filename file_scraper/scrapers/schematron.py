@@ -12,6 +12,7 @@ class Schematron(BaseScraper):
 
     _supported = {'text/xml': ['1.0']}  # Supported mimetypes
     _only_wellformed = True
+    _allow_versions = True
 
     def __init__(self, filename, mimetype, check_wellformed=True, params=None):
         """

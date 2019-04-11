@@ -72,7 +72,7 @@ def test_is_supported():
     mime = MIMETYPE
     ver = '5.0'
     assert Vnu.is_supported(mime, ver, True)
-    assert Vnu.is_supported(mime, None, True)
+    assert not Vnu.is_supported(mime, None, True)
     assert not Vnu.is_supported(mime, ver, False)
     assert not Vnu.is_supported(mime, 'foo', True)
     assert not Vnu.is_supported('foo', ver, True)

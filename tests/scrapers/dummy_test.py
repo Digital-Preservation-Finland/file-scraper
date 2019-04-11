@@ -86,7 +86,7 @@ def test_none_filename():
         ("tests/data/image_gif/valid_1987a.gif", "image/gif"),
         ("tests/data/image_gif/valid_1987a.gif", "wrong/mime"),
         ("tests/data/image_gif/invalid_1987a_truncated.gif", "image/gif"),
-        ("tests/data/video_x-matroska/valid__ffv1.mkv", "video/x-matroska")
+        ("tests/data/video_x-matroska/valid_4_ffv1.mkv", "video/x-matroska")
     ]
 )
 def test_scraper_not_found(filepath, mimetype):

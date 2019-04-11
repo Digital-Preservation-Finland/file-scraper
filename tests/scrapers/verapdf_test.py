@@ -17,14 +17,14 @@ This module tests that:
       not well-formed.
     - When well-formedness is not checked, scraper messages contain "Skipping
       scraper" and well_formed is None.
-    - The scraper supports MIME type application/pdf with versions A-1b or
-      None when well-formedness is checked, but does not support them when
-      well-formedness is not checked. The scraper also does not support  made
+    - The scraper supports MIME type application/pdf with versions A-1b
+      when well-formedness is checked, but does not support them when
+      well-formedness is not checked. The scraper also does not support made
       up MIME types or versions.
     - Versions A-1a, A-1b, A-2a, A-2b, A-2u, A-3a, A-3b and A-3u are recorded
-      recorded in dict returned by get_important() function when scraper
-      messages contain "Success", but when scraper errors contain "Error",
-      the dict is empty.
+      in dict returned by get_important() function when scraper messages
+      contain "Success", but when scraper errors contain "Error", the dict is
+      empty.
 """
 import pytest
 from tests.common import parse_results
@@ -111,7 +111,7 @@ def test_is_supported():
     mime = MIMETYPE
     ver = 'A-1b'
     assert VeraPdf.is_supported(mime, ver, True)
-    assert VeraPdf.is_supported(mime, None, True)
+    assert not VeraPdf.is_supported(mime, None, True)
     assert not VeraPdf.is_supported(mime, ver, False)
     assert not VeraPdf.is_supported(mime, 'foo', True)
     assert not VeraPdf.is_supported('foo', ver, True)

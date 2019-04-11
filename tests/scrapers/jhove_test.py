@@ -81,10 +81,8 @@ This module tests that:
         - image/jpeg, 1.01
         - audio/x-wav, 2
     - The following MIME type and version pairs are supported by their
-      respective scrapers when well-formedness is checked, in addition to which
-      these MIME types are also supported with None as the version. They are
-      not supported with a made up version or when well-formedness is not
-      checked.
+      respective scrapers when well-formedness is checked. They are not
+      supported with a made up version or when well-formedness is not checked.
         - application/pdf, 1.4
         - text/html, 4.01
         - application/xhtml+xml, 1.0
@@ -458,7 +456,7 @@ def test_is_supported_allow(mime, ver, class_):
 def test_is_supported_deny(mime, ver, class_):
     """Test is_supported method, allow only known versions."""
     assert class_.is_supported(mime, ver, True)
-    assert class_.is_supported(mime, None, True)
+    assert not class_.is_supported(mime, None, True)
     assert not class_.is_supported(mime, ver, False)
     assert not class_.is_supported(mime, 'foo', True)
     assert not class_.is_supported('foo', ver, True)

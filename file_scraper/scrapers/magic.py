@@ -72,7 +72,6 @@ class HtmlFileMagic(TextMagic):
 
     # Supported mimetypes
     _supported = {'text/html': ['4.01', '5.0']}
-    _allow_versions = True  # Allow any version
 
     @metadata()
     def _version(self):

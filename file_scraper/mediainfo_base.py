@@ -133,7 +133,8 @@ class Mediainfo(BaseScraper):
         if self._mediainfo is None:
             return None
         if self._mediainfo_stream.format_version is not None:
-            return str(self._mediainfo_stream.format_version)
+            return self._mediainfo_stream.format_version.replace(
+                'Version ', '')
         if self._stream_type() in ['videocontainer', 'video', 'audio']:
             return ''
         return None
@@ -176,6 +177,8 @@ class Mediainfo(BaseScraper):
                 return 'Color'
             if self._mediainfo_stream.color_space in ['Y']:
                 return 'Grayscale'
+        if self._mediainfo_stream.chroma_subsampling is not None:
+            return 'Color'
         return None
 
     @metadata()

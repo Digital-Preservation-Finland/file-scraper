@@ -10,7 +10,8 @@ class FFMpegWellformed(BaseScraper):
     _supported = {'video/mpeg': ['1', '2'], 'video/mp4': [''],
                   'audio/mpeg': ['1', '2'], 'audio/mp4': [''],
                   'video/MP1S': [''], 'video/MP2P': [''],
-                  'video/MP2T': ['']}
+                  'video/MP2T': [''], 'video/x-matroska': [''],
+                  'video/quicktime': [''], 'video/dv': ['']}
     _only_wellformed = True  # Only well-formed check
     _allow_versions = True   # Allow any version
 

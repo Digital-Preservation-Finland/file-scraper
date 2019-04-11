@@ -104,12 +104,18 @@ class _FidoReader(Fido):
 class FidoDetector(BaseDetector):
     """Fido detector."""
 
+    def __init__(self, filename):
+        """Initialize detector."""
+        self._puid = None
+        super(FidoDetector, self).__init__(filename)
+
     def detect(self):
         """Detect file format and version."""
         fido = _FidoReader(self.filename)
         fido.identify()
         self.mimetype = fido.mimetype
         self.version = fido.version
+        self._puid = fido.puid
         self.info = {'class': self.__class__.__name__,
                      'messages': '',
                      'errors': ''}
@@ -118,10 +124,20 @@ class FidoDetector(BaseDetector):
         """
         Return important mime types.
 
+        We will always prefer Fido except in the the following cases:
+            - text/html when it is not HTML5 or HTML4.01.
+              HTML variant is recognized with pronom code.
+            - application/zip
+
+        Fido recognizes ARC files as text/html and OpenOffice Formula files
+        as application/zip, therefore these are given to other detectors.
+
         :returns: Mime type
         """
         important = {}
-        if self.mimetype not in [None, 'text/html', 'application/zip']:
+        if self._puid in ['fmt/471', 'fmt/100']:
+            important['mimetype'] = self.mimetype
+        elif self.mimetype not in [None, 'text/html', 'application/zip']:
             important['mimetype'] = self.mimetype
         return important
 
@@ -146,6 +162,10 @@ class MagicDetector(BaseDetector):
     def get_important(self):
         """
         Important mime types.
+
+        We will prefer file detector with the following mimetypes:
+            - application/x-internet-archive
+            - application/vnd.oasis.opendocument.formula
 
         :returns: Mime type
         """

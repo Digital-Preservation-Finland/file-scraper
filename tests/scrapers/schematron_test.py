@@ -14,8 +14,8 @@ This module tests that:
     - is_supported(cls, mimetype, version, check_wellformed, params) returns
       False if params does not contain 'schematron' as a key.
     - is_supported also returns False if check_wellformed is False.
-    - MIME type 'text/xml' with version 1.0 or None is supported.
-    - A made up MIME type or version is not supported.
+    - MIME type 'text/xml' with version 1.0 or made-up version is supported.
+    - A made up MIME type is not supported.
 
     - If schematron is not given any parameters, instance variables are given
       the following values:
@@ -101,7 +101,7 @@ def test_is_supported():
     assert not Schematron.is_supported(mime, ver, True)
     assert Schematron.is_supported(mime, None, True, {'schematron': None})
     assert not Schematron.is_supported(mime, ver, False, {'schematron': None})
-    assert not Schematron.is_supported(mime, 'foo', True, {'schematron': None})
+    assert Schematron.is_supported(mime, 'foo', True, {'schematron': None})
     assert not Schematron.is_supported('foo', ver, True, {'schematron': None})
 
 

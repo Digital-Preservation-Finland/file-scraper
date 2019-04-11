@@ -9,7 +9,7 @@ This module tests:
     - That scraper attributes and well_formed property are set and retrieved
       correctly
     - That _collect_elements() method works and is able to gather all results
-      from methods starting with _s_
+      from metadata methods
     - Concatenation of strings or empty lists with and without prefix
 """
 import subprocess
@@ -91,7 +91,7 @@ class BaseDetectorBasic(BaseDetector):
 def test_is_supported():
     """Test scraper's is_supported() method."""
     assert BaseScraperBasic.is_supported('test/mimetype', '0.1', True)
-    assert BaseScraperBasic.is_supported('test/mimetype', None, True)
+    assert not BaseScraperBasic.is_supported('test/mimetype', None, True)
     assert BaseScraperBasic.is_supported('test/mimetype', '0.1', False)
     assert not BaseScraperBasic.is_supported('test/notsupported', '0.1', True)
     assert not BaseScraperBasic.is_supported('test/mimetype', 'X', True)
@@ -104,7 +104,7 @@ def test_is_supported():
     assert BaseScraperVersion.is_supported('test/mimetype', 'X', True)
 
     assert BaseScraperWellFormed.is_supported('test/mimetype', '0.1', True)
-    assert BaseScraperWellFormed.is_supported('test/mimetype', None, True)
+    assert not BaseScraperWellFormed.is_supported('test/mimetype', None, True)
     assert not BaseScraperWellFormed.is_supported('test/mimetype', '0.1',
                                                   False)
     assert not BaseScraperWellFormed.is_supported('test/notsupported', '0.1',

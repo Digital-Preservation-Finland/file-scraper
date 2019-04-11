@@ -12,7 +12,7 @@ This module tests that:
           big-endian
     - when check_wellformed is set to False, well-formedness is reported as
       None and scraper messages report skipped scraping.
-    - the scraper reports MIME type 'image/x-dpx' with version 2.0 or None as
+    - the scraper reports MIME type 'image/x-dpx' with version 2.0 as
       supported when full scraping is done
     - the scraper reports other MIME type or version as not supported when
       full scraping is done
@@ -75,7 +75,7 @@ def test_is_supported():
     mime = MIMETYPE
     ver = '2.0'
     assert Dpx.is_supported(mime, ver, True)
-    assert Dpx.is_supported(mime, None, True)
+    assert not Dpx.is_supported(mime, None, True)
     assert not Dpx.is_supported(mime, ver, False)
     assert not Dpx.is_supported(mime, 'foo', True)
     assert not Dpx.is_supported('foo', ver, True)
