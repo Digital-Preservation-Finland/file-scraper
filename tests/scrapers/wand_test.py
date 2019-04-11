@@ -96,7 +96,7 @@ GIF_APPEND = {
             "stderr_part": ""})
     ]
 )
-def test_scraper_tif(filename, result_dict):
+def test_scraper_tif(filename, result_dict, evaluate_scraper):
     """Test scraper with valid tiff files."""
     correct = parse_results(filename, "image/tiff",
                             result_dict, True)
@@ -113,15 +113,7 @@ def test_scraper_tif(filename, result_dict):
 
     scraper = WandScraper(correct.filename)
     scraper.scrape_file()
-    for stream_index, stream_metadata in correct.streams.iteritems():
-        scraped_metadata = scraper.streams[stream_index]
-        for key, value in stream_metadata.iteritems():
-            assert getattr(scraped_metadata, key)() == value
-
-    assert scraper.info()["class"] == "WandScraper"
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -134,7 +126,7 @@ def test_scraper_tif(filename, result_dict):
             "stderr_part": ""}),
     ]
 )
-def test_scraper_jpg(filename, result_dict):
+def test_scraper_jpg(filename, result_dict, evaluate_scraper):
     """Test scraper with jpeg files."""
     correct = parse_results(filename, "image/jpeg",
                             result_dict, True)
@@ -145,15 +137,7 @@ def test_scraper_jpg(filename, result_dict):
 
     scraper = WandScraper(correct.filename)
     scraper.scrape_file()
-    for stream_index, stream_metadata in correct.streams.iteritems():
-        scraped_metadata = scraper.streams[stream_index]
-        for key, value in stream_metadata.iteritems():
-            assert getattr(scraped_metadata, key)() == value
-
-    assert scraper.info()["class"] == "WandScraper"
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -166,7 +150,7 @@ def test_scraper_jpg(filename, result_dict):
             "stderr_part": ""}),
     ]
 )
-def test_scraper_jp2(filename, result_dict):
+def test_scraper_jp2(filename, result_dict, evaluate_scraper):
     """Test scraper with jp2 files."""
     correct = parse_results(filename, "image/jp2",
                             result_dict, True)
@@ -178,15 +162,7 @@ def test_scraper_jp2(filename, result_dict):
 
     scraper = WandScraper(correct.filename)
     scraper.scrape_file()
-    for stream_index, stream_metadata in correct.streams.iteritems():
-        scraped_metadata = scraper.streams[stream_index]
-        for key, value in stream_metadata.iteritems():
-            assert getattr(scraped_metadata, key)() == value
-
-    assert scraper.info()["class"] == "WandScraper"
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -199,7 +175,7 @@ def test_scraper_jp2(filename, result_dict):
             "stderr_part": ""}),
     ]
 )
-def test_scraper_png(filename, result_dict):
+def test_scraper_png(filename, result_dict, evaluate_scraper):
     """Test scraper with png files."""
     correct = parse_results(filename, "image/png",
                             result_dict, True)
@@ -210,15 +186,7 @@ def test_scraper_png(filename, result_dict):
 
     scraper = WandScraper(correct.filename)
     scraper.scrape_file()
-    for stream_index, stream_metadata in correct.streams.iteritems():
-        scraped_metadata = scraper.streams[stream_index]
-        for key, value in stream_metadata.iteritems():
-            assert getattr(scraped_metadata, key)() == value
-
-    assert scraper.info()["class"] == "WandScraper"
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -238,7 +206,7 @@ def test_scraper_png(filename, result_dict):
             "stderr_part": ""}),
     ]
 )
-def test_scraper_gif(filename, result_dict):
+def test_scraper_gif(filename, result_dict, evaluate_scraper):
     """Test scraper with gif files."""
     correct = parse_results(filename, "image/gif",
                             result_dict, True)
@@ -249,15 +217,7 @@ def test_scraper_gif(filename, result_dict):
 
     scraper = WandScraper(correct.filename)
     scraper.scrape_file()
-    for stream_index, stream_metadata in correct.streams.iteritems():
-        scraped_metadata = scraper.streams[stream_index]
-        for key, value in stream_metadata.iteritems():
-            assert getattr(scraped_metadata, key)() == value
-
-    assert scraper.info()["class"] == "WandScraper"
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
-    assert scraper.well_formed
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
