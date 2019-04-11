@@ -133,7 +133,7 @@ class JHoveHtmlMeta(JHoveBaseMeta):
         """Get the charset from HTML/XML files."""
         if self._report is None:
             return None
-        if "xml" in self.mimetype:
+        if "xml" in self.mimetype():
             return self._get_charset_xml()
         return self._get_charset_html()
 

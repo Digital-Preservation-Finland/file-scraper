@@ -18,6 +18,7 @@ class JHoveScraperBase(BaseScraper):
 
     _supported_metadata = []
     _jhove_module = None
+    _only_wellformed = True
 
     def __init__(self, filename, check_wellformed=True, params=None):
         """
@@ -58,8 +59,14 @@ class JHoveScraperBase(BaseScraper):
                 ensure_str(self._shell.stderr)
             ))
 
+        mimetype = get_field(self._report, "mimeType")
+        if mimetype == "text/xml":  # XML MIME type has to be set manually
+            mimetype = "application/xhtml+xml"
+        elif mimetype is not None and "audio/vnd.wave" in mimetype:  # wav also
+            mimetype = "audio/x-wav"
+
         for md_class in self._supported_metadata:
-            if md_class.is_supported(get_field(self._report, "mimeType")):
+            if md_class.is_supported(mimetype):
                 self.streams.append(md_class(self._report, self._errors))
 
         self._check_supported()
