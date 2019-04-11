@@ -37,11 +37,15 @@ def evaluate_scraper():
         """
         if exp_scraper_cls is None:
             exp_scraper_cls = type(scraper).__name__
-        assert scraper.mimetype == correct.mimetype
-        assert scraper.version == correct.version
-        assert scraper.streams == correct.streams
-        assert scraper.info['class'] == exp_scraper_cls
+
+        for stream_index, stream_metadata in correct.streams.iteritems():
+            scraped_metadata = scraper.streams[stream_index]
+            for key, value in stream_metadata.iteritems():
+                assert getattr(scraped_metadata, key)() == value
+
+        assert scraper.info()['class'] == exp_scraper_cls
         assert scraper.well_formed == correct.well_formed
+
         if eval_output:
             assert correct.stdout_part in scraper.messages()
             assert correct.stderr_part in scraper.errors()
