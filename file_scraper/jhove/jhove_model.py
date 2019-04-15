@@ -240,3 +240,33 @@ class JHoveWavMeta(JHoveBaseMeta):
     def stream_type(self):
         """Return file type."""
         return "audio"
+
+
+class JHoveUtf8Meta(JHoveBaseMeta):
+    """
+    Metadata model for UTF-8 text.
+
+    We don't want to run this for all files, but just for UTF-8 text files
+    separately. This must be run after actual scraping, since we have to know
+    the charset of the file.
+    """
+
+    _supported = {}  # We will not run at normal stage
+    _only_wellformed = True  # Only well-formed check
+    _jhove_module = 'UTF8-hul'  # JHove module
+
+    @metadata()
+    def charset(self):
+        """Return charset from JHOVE."""
+        if self.well_formed:
+            return 'UTF-8'
+        return self.report_field('format')
+
+    @metadata()
+    def stream_type(self):
+        """Return file type."""
+        return 'text'
+
+    def check_supported(self):
+        """Do nothing: we dont care about the mimetype or version."""
+        pass

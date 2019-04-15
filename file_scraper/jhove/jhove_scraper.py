@@ -9,7 +9,7 @@ from file_scraper.base import BaseScraper, Shell
 from file_scraper.jhove.jhove_model import (JHoveGifMeta, JHoveHtmlMeta,
                                             JHoveJpegMeta, JHoveTiffMeta,
                                             JHovePdfMeta, JHoveWavMeta,
-                                            get_field)
+                                            JHoveUtf8Meta, get_field)
 from file_scraper.utils import ensure_str
 
 
@@ -112,3 +112,19 @@ class JHoveWavScraper(JHoveScraperBase):
 
     _jhove_module = "WAVE-hul"
     _supported_metadata = [JHoveWavMeta]
+
+
+class JHoveUtf8Scraper(JHoveScraperBase):
+    """
+    Scraper for checking wether a text file is a valid UTF-8 file.
+
+    We don't want to run this for all files, but just for UTF-8 text files
+    separately. This must be run after actual scraping, since we have to know
+    the charset of the file.
+    """
+    _jhove_module = "UTF8-hul"
+    _supported_metadata = [JHoveUtf8Meta]
+
+    def _check_supported(self):
+        """Do nothing: we dont care about the mimetype or version."""
+        pass

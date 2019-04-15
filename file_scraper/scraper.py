@@ -1,6 +1,6 @@
 """File metadata scraper."""
 from file_scraper.iterator import iter_scrapers, iter_detectors
-#from file_scraper.scrapers.jhove import Utf8JHove
+from file_scraper.jhove.jhove_scraper import JHoveUtf8Scraper
 from file_scraper.scrapers.textfile import CheckTextFile
 from file_scraper.scrapers.dummy import FileExists
 from file_scraper.utils import (hexdigest, ensure_text, generate_metadata_dict)
@@ -68,9 +68,9 @@ class Scraper(object):
 
         We know the charset after actual scraping.
         """
-        if 'charset' in self.streams[0] and \
-                self.streams[0]['charset'] == 'UTF-8':
-            scraper = Utf8JHove(self.filename, self.mimetype, check_wellformed)
+        if 'charset' in self.streams[1] and \
+                self.streams[1]['charset'] == 'UTF-8':
+            scraper = JHoveUtf8Scraper(self.filename, check_wellformed)
             self._scrape_file(scraper)
 
     def _check_mimetype_version(self):
