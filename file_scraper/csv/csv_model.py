@@ -6,7 +6,7 @@ from file_scraper.utils import metadata
 
 
 class CsvMeta(BaseMeta):
-    """Scraper for CSV files."""
+    """Metadata model for CSV files."""
 
     _supported = {"text/csv": []}  # Supported mimetype
     _allow_versions = True           # Allow any version
@@ -15,10 +15,9 @@ class CsvMeta(BaseMeta):
         """
         Initialize for delimiter and separator info.
 
-        :filename: File path
-        :mimetype: Predicted mimetype of the file
-        :check_wellformed: True for the full well-formed check, False for just
-                           detection and metadata scraping
+        :csvfile: The file for which the metadata is collected.
+        :errors: A list to which new errors are appended.
+        :messages: A list to which new messages are appended.
         :params: Extra parameters: delimiter and separator
         """
         if params is None:

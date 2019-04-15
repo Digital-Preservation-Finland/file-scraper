@@ -11,7 +11,7 @@ class CsvScraper(BaseScraper):
 
     def __init__(self, filename, check_wellformed=True, params=None):
         """
-        Initialize for delimiter and separator info.
+        Initializer for the scraper.
 
         :filename: File path
         :check_wellformed: True for the full well-formed check, False for just
