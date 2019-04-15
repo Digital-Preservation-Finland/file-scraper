@@ -460,7 +460,7 @@ def test_is_supported_allow(mime, ver, class_):
 def test_is_supported_deny(mime, ver, class_):
     """Test is_supported method, allow only known versions."""
     assert class_.is_supported(mime, ver, True)
-    assert not class_.is_supported(mime, None, True)
+    assert class_.is_supported(mime, None, True)
     assert not class_.is_supported(mime, ver, False)
     assert not class_.is_supported(mime, "foo", True)
     assert not class_.is_supported("foo", ver, True)
