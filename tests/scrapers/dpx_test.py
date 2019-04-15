@@ -40,11 +40,11 @@ MIMETYPE = "image/x-dpx"
         ("invalid_2.0_file_size_error.dpx", {
             "purpose": "Test file size error.",
             "stdout_part": "",
-            "stderr_part": "differs from filesystem size"}),
+            "stderr_part": "Different file sizes"}),
         ("invalid_2.0_missing_data.dpx", {
             "purpose": "Test missing data.",
             "stdout_part": "",
-            "stderr_part": "differs from filesystem size"}),
+            "stderr_part": "Different file sizes"}),
         ("invalid_2.0_wrong_endian.dpx", {
             "purpose": "Test wrong endian.",
             "stdout_part": "",
