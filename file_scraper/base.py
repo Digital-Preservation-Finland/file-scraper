@@ -127,7 +127,7 @@ class BaseMeta(object):
     """
     # pylint: disable=no-self-use
 
-    _supported = []
+    _supported = {}
     _allow_versions = False
 
     @metadata()

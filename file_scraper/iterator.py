@@ -33,6 +33,7 @@
 #from file_scraper.scrapers.dummy import ScraperNotFound
 
 from file_scraper.detectors import FidoDetector, MagicDetector
+from file_scraper.csv.csv_scraper import CsvScraper
 from file_scraper.jhove.jhove_scraper import (JHoveGifScraper, JHoveHtmlScraper,
                                               JHoveJpegScraper, JHoveTiffScraper,
                                               JHovePdfScraper, JHoveWavScraper)
@@ -63,7 +64,7 @@ def iter_scrapers(mimetype, version, check_wellformed=True, params=None):
     """
     for scraper in [WandScraper, GhostscriptScraper, JHoveGifScraper,
                     JHoveHtmlScraper, JHoveJpegScraper, JHoveTiffScraper,
-                    JHovePdfScraper, JHoveWavScraper]:
+                    JHovePdfScraper, JHoveWavScraper, CsvScraper]:
         if scraper.is_supported(mimetype, version, check_wellformed):
             yield scraper
 
