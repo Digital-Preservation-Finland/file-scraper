@@ -97,7 +97,8 @@ from file_scraper.jhove.jhove_scraper import (JHoveGifScraper,
                                               JHoveJpegScraper,
                                               JHoveTiffScraper,
                                               JHovePdfScraper,
-                                              JHoveWavScraper)
+                                              JHoveWavScraper,
+                                              JHoveUtf8Scraper)
 from file_scraper.base import UnsupportedTypeException
 from tests.common import parse_results
 
@@ -465,17 +466,16 @@ def test_is_supported_deny(mime, ver, class_):
     assert not class_.is_supported("foo", ver, True)
 
 
-# TODO enable testing when UTF-8 scraping is implemented
-#@pytest.mark.parametrize(
-#    ["mime", "ver", "class_"],
-#    [
-#        ("text/plain", "", JHoveUtf8Scraper)
-#    ]
-#)
-#def test_is_supported_utf8(mime, ver, class_):
-#    """Test is_supported method, utf8 scraper."""
-#    assert not class_.is_supported(mime, ver, True)
-#    assert not class_.is_supported(mime, None, True)
-#    assert not class_.is_supported(mime, ver, False)
-#    assert not class_.is_supported(mime, "foo", True)
-#    assert not class_.is_supported("foo", ver, True)
+@pytest.mark.parametrize(
+    ["mime", "ver", "class_"],
+    [
+        ("text/plain", "", JHoveUtf8Scraper)
+    ]
+)
+def test_is_supported_utf8(mime, ver, class_):
+    """Test is_supported method, utf8 scraper."""
+    assert not class_.is_supported(mime, ver, True)
+    assert not class_.is_supported(mime, None, True)
+    assert not class_.is_supported(mime, ver, False)
+    assert not class_.is_supported(mime, "foo", True)
+    assert not class_.is_supported("foo", ver, True)
