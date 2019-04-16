@@ -21,50 +21,46 @@ This module tests the following scraper classes:
 
 import pytest
 
-from file_scraper.scrapers.dummy import ScraperNotFound, FileExists
+from file_scraper.dummy.dummy_scraper import ScraperNotFound, FileExists
 
-DEFAULTSTREAMS = {0: {'index': 0, 'version': None,
-                      'stream_type': None}}
+DEFAULTSTREAMS = {0: {"index": 0, "version": "(:unav)",
+                      "stream_type": None, "mimetype": "(:unav)"}}
 
 
 @pytest.mark.parametrize(
-    ["filepath", "mimetype"],
+    "filepath",
     [
-        ("tests/data/image_gif/valid_1987a.gif", "image/gif"),
-        ("tests/data/image_gif/invalid_1987a_broken_header.gif",
-         "image/gif"),
-        ("tests/data/image_gif/invalid__empty.gif", "image/gif"),
-        ("tests/data/application_pdf/valid_1.4.pdf", "application/pdf")
+        "tests/data/image_gif/valid_1987a.gif",
+        "tests/data/image_gif/invalid_1987a_broken_header.gif",
+        "tests/data/image_gif/invalid__empty.gif",
+        "tests/data/application_pdf/valid_1.4.pdf"
     ]
 )
-def test_existing_files(filepath, mimetype):
+def test_existing_files(filepath):
     """Test that existent files are identified correctly."""
 
-    scraper = FileExists(filepath, mimetype, True)
+    scraper = FileExists(filepath, True)
     scraper.scrape_file()
 
     streams = DEFAULTSTREAMS.copy()
-    streams[0]['mimetype'] = mimetype
 
     assert scraper.well_formed is None
     assert not scraper.errors()
     assert "was found" in scraper.messages()
-    assert scraper.mimetype == mimetype
-    assert scraper.version is None
-    assert scraper.streams == streams
-    assert scraper.info['class'] == 'FileExists'
+    assert scraper.info()["class"] == "FileExists"
+    for stream_index, stream_metadata in streams.iteritems():
+        scraped_metadata = scraper.streams[stream_index]
+        for key, value in stream_metadata.iteritems():
+            print key
+            assert getattr(scraped_metadata, key)() == value
 
 
 @pytest.mark.parametrize(
-    ["filepath", "mimetype"],
-    [
-        ("tests/data/image_gif/nonexistent_file.gif", "image/gif"),
-        ("tests/data/nonexistent_dir/nonexistent_file.txt", "no/mime")
-    ]
+    "filepath", "tests/data/image_gif/nonexistent_file.gif"
 )
-def test_nonexistent_files(filepath, mimetype):
+def test_nonexistent_files(filepath):
     """Test that non-existent files are identified correctly."""
-    scraper = FileExists(filepath, mimetype, True)
+    scraper = FileExists(filepath, True)
     scraper.scrape_file()
 
     assert not scraper.well_formed
@@ -81,24 +77,24 @@ def test_none_filename():
 
 
 @pytest.mark.parametrize(
-    ["filepath", "mimetype"],
+    "filepath",
     [
-        ("tests/data/image_gif/valid_1987a.gif", "image/gif"),
-        ("tests/data/image_gif/valid_1987a.gif", "wrong/mime"),
-        ("tests/data/image_gif/invalid_1987a_truncated.gif", "image/gif"),
-        ("tests/data/video_x-matroska/valid_4_ffv1.mkv", "video/x-matroska")
+        "tests/data/image_gif/valid_1987a.gif",
+        "tests/data/image_gif/valid_1987a.gif",
+        "tests/data/image_gif/invalid_1987a_truncated.gif",
+        "tests/data/video_x-matroska/valid__ffv1.mkv"
     ]
 )
-def test_scraper_not_found(filepath, mimetype):
+def test_scraper_not_found(filepath):
     """Check ScraperNotFound results."""
-    scraper = ScraperNotFound(filepath, mimetype, True)
+    scraper = ScraperNotFound(filepath, True)
     scraper.scrape_file()
 
     streams = DEFAULTSTREAMS.copy()
-    streams[0]['mimetype'] = mimetype
 
     assert scraper.well_formed is None
-    assert scraper.mimetype == mimetype
-    assert scraper.version is None
-    assert scraper.streams == streams
-    assert scraper.info['class'] == 'ScraperNotFound'
+    for stream_index, stream_metadata in streams.iteritems():
+        scraped_metadata = scraper.streams[stream_index]
+        for key, value in stream_metadata.iteritems():
+            print key
+            assert getattr(scraped_metadata, key)() == value

@@ -34,6 +34,7 @@
 
 from file_scraper.detectors import FidoDetector, MagicDetector
 from file_scraper.csv.csv_scraper import CsvScraper
+from file_scraper.dummy.dummy_scraper import ScraperNotFound
 from file_scraper.jhove.jhove_scraper import (JHoveGifScraper, JHoveHtmlScraper,
                                               JHoveJpegScraper, JHoveTiffScraper,
                                               JHovePdfScraper, JHoveWavScraper)
@@ -62,11 +63,17 @@ def iter_scrapers(mimetype, version, check_wellformed=True, params=None):
     :params: Extra parameters needed for the scraper
     :returns: scraper class
     """
+    scraper_found = False
+
     for scraper in [WandScraper, GhostscriptScraper, JHoveGifScraper,
                     JHoveHtmlScraper, JHoveJpegScraper, JHoveTiffScraper,
                     JHovePdfScraper, JHoveWavScraper, CsvScraper]:
         if scraper.is_supported(mimetype, version, check_wellformed):
+            scraper_found = True
             yield scraper
+ 
+    if not scraper_found:
+        yield ScraperNotFound
 
     # TODO This old iterator can be reinstated when all scrapers are compatible
     #      with the new design.
