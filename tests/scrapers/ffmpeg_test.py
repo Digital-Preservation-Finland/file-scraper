@@ -4,8 +4,7 @@ Test module for ffmpeg.py
 This module tests that:
     - For valid audio and video files the scraping is reported as successful,
       the file is well-formed. Since this scraper does not really collect
-      metadata, the version and stream_type will be None. However, mimetype
-      is the expected mimetype.
+      metadata, the version and MIME type will be '(:unav)'.
     - For empty files the results are similar but file is not well-formed
       and errors should contain an error message. The error message should
       contain the following string:
@@ -44,7 +43,7 @@ This module tests that:
     - A made up MIME type with supported version is reported as not supported.
 """
 import pytest
-from file_scraper.scrapers.ffmpeg import FFMpegWellformed
+from file_scraper.ffmpeg.ffmpeg_scraper import FFMpegScraper
 from tests.common import parse_results
 
 
@@ -72,13 +71,14 @@ from tests.common import parse_results
     ])
 def test_ffmpeg_scraper_mov(filename, result_dict, mimetype,
                             evaluate_scraper):
-    """Test FFMpegWellformed."""
+    """Test FFMpegScraper."""
     correct = parse_results(filename, mimetype, result_dict, True)
-    scraper = FFMpegWellformed(correct.filename, mimetype, True)
+    scraper = FFMpegScraper(correct.filename, True)
     scraper.scrape_file()
     correct.version = None
-    correct.streams[0]['version'] = None
-    correct.streams[0]['stream_type'] = None
+    correct.streams[0]["mimetype"] = "(:unav)"
+    correct.streams[0]["version"] = "(:unav)"
+    correct.streams[0]["stream_type"] = None
 
     evaluate_scraper(scraper, correct)
 
@@ -100,14 +100,15 @@ def test_ffmpeg_scraper_mov(filename, result_dict, mimetype,
             "stderr_part": "Invalid data found when processing input"}),
     ])
 def test_ffmpeg_scraper_mkv(filename, result_dict, evaluate_scraper):
-    """Test FFMpegWellformed."""
-    mimetype = 'video/x-matroska'
+    """Test FFMpegScraper."""
+    mimetype = "video/x-matroska"
     correct = parse_results(filename, mimetype, result_dict, True)
-    scraper = FFMpegWellformed(correct.filename, mimetype, True)
+    scraper = FFMpegScraper(correct.filename, True)
     scraper.scrape_file()
     correct.version = None
-    correct.streams[0]['version'] = None
-    correct.streams[0]['stream_type'] = None
+    correct.streams[0]["mimetype"] = "(:unav)"
+    correct.streams[0]["version"] = "(:unav)"
+    correct.streams[0]["stream_type"] = None
 
     evaluate_scraper(scraper, correct)
 
@@ -141,14 +142,15 @@ def test_ffmpeg_scraper_mkv(filename, result_dict, evaluate_scraper):
             "stderr_part": "Invalid data found when processing input"})
     ])
 def test_ffmpeg_scraper_mpeg(filename, result_dict, evaluate_scraper):
-    """Test FFMpegWellformed."""
-    mimetype = 'video/mpeg'
+    """Test FFMpegScraper."""
+    mimetype = "video/mpeg"
     correct = parse_results(filename, mimetype, result_dict, True)
-    scraper = FFMpegWellformed(correct.filename, mimetype, True)
+    scraper = FFMpegScraper(correct.filename, True)
     scraper.scrape_file()
     correct.version = None
-    correct.streams[0]['version'] = None
-    correct.streams[0]['stream_type'] = None
+    correct.streams[0]["mimetype"] = "(:unav)"
+    correct.streams[0]["version"] = "(:unav)"
+    correct.streams[0]["stream_type"] = None
 
     evaluate_scraper(scraper, correct)
 
@@ -170,14 +172,15 @@ def test_ffmpeg_scraper_mpeg(filename, result_dict, evaluate_scraper):
             "stderr_part": "Invalid data found when processing input"})
     ])
 def test_ffmpeg_scraper_mp4(filename, result_dict, evaluate_scraper):
-    """Test FFMpegWellformed."""
-    mimetype = 'video/mp4'
+    """Test FFMpegScraper."""
+    mimetype = "video/mp4"
     correct = parse_results(filename, mimetype, result_dict, True)
-    scraper = FFMpegWellformed(correct.filename, mimetype, True)
+    scraper = FFMpegScraper(correct.filename, True)
     scraper.scrape_file()
     correct.version = None
-    correct.streams[0]['version'] = None
-    correct.streams[0]['stream_type'] = None
+    correct.streams[0]["mimetype"] = "(:unav)"
+    correct.streams[0]["version"] = "(:unav)"
+    correct.streams[0]["stream_type"] = None
 
     evaluate_scraper(scraper, correct)
 
@@ -203,14 +206,15 @@ def test_ffmpeg_scraper_mp4(filename, result_dict, evaluate_scraper):
             "stderr_part": "could not find codec parameters"})
     ])
 def test_ffmpeg_scraper_mp3(filename, result_dict, evaluate_scraper):
-    """Test FFMpegWellformed."""
-    mimetype = 'audio/mpeg'
+    """Test FFMpegScraper."""
+    mimetype = "audio/mpeg"
     correct = parse_results(filename, mimetype, result_dict, True)
-    scraper = FFMpegWellformed(correct.filename, mimetype, True)
+    scraper = FFMpegScraper(correct.filename, True)
     scraper.scrape_file()
     correct.version = None
-    correct.streams[0]['version'] = None
-    correct.streams[0]['stream_type'] = None
+    correct.streams[0]["mimetype"] = "(:unav)"
+    correct.streams[0]["version"] = "(:unav)"
+    correct.streams[0]["stream_type"] = None
 
     evaluate_scraper(scraper, correct)
 
@@ -232,41 +236,41 @@ def test_ffmpeg_scraper_mp3(filename, result_dict, evaluate_scraper):
             "stderr_part": "Invalid data found when processing input"})
     ])
 def test_ffmpeg_scraper_mpegts(filename, result_dict, evaluate_scraper):
-    """Test FFMpegWellformed."""
-    mimetype = 'video/MP2T'
+    """Test FFMpegScraper."""
+    mimetype = "video/MP2T"
     correct = parse_results(filename, mimetype, result_dict, True)
-    scraper = FFMpegWellformed(correct.filename, mimetype, True)
+    scraper = FFMpegScraper(correct.filename, True)
     scraper.scrape_file()
     correct.version = None
-    correct.streams[0]['version'] = None
-    correct.streams[0]['stream_type'] = None
+    correct.streams[0]["mimetype"] = "(:unav)"
+    correct.streams[0]["version"] = "(:unav)"
+    correct.streams[0]["stream_type"] = None
 
     evaluate_scraper(scraper, correct)
 
 
 def test_no_wellformed():
     """Test scraper without well-formed check."""
-    scraper = FFMpegWellformed('tests/data/video_mpeg/valid_1.m1v',
-                               'video/mpeg', False)
+    scraper = FFMpegScraper("tests/data/video_mpeg/valid_1.m1v", False)
     scraper.scrape_file()
-    assert 'Skipping scraper' in scraper.messages()
+    assert "Skipping scraper" in scraper.messages()
     assert scraper.well_formed is None
 
 
 @pytest.mark.parametrize(
-    ['mime', 'ver'],
+    ["mime", "ver"],
     [
-        ('video/mpeg', '1'),
-        ('video/mp4', ''),
-        ('video/MP1S', ''),
-        ('video/MP2P', ''),
-        ('video/MP2T', ''),
+        ("video/mpeg", "1"),
+        ("video/mp4", ""),
+        ("video/MP1S", ""),
+        ("video/MP2P", ""),
+        ("video/MP2T", ""),
     ]
 )
 def test_is_supported_mpeg(mime, ver):
     """Test is_supported method."""
-    assert FFMpegWellformed.is_supported(mime, ver, True)
-    assert FFMpegWellformed.is_supported(mime, None, True)
-    assert not FFMpegWellformed.is_supported(mime, ver, False)
-    assert FFMpegWellformed.is_supported(mime, 'foo', True)
-    assert not FFMpegWellformed.is_supported('foo', ver, True)
+    assert FFMpegScraper.is_supported(mime, ver, True)
+    assert FFMpegScraper.is_supported(mime, None, True)
+    assert not FFMpegScraper.is_supported(mime, ver, False)
+    assert FFMpegScraper.is_supported(mime, "foo", True)
+    assert not FFMpegScraper.is_supported("foo", ver, True)
