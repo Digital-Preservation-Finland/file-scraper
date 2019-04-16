@@ -5,31 +5,28 @@ try:
 except ImportError:
     pass
 
-from io import open
+from io import open as io_open
 from file_scraper.base import BaseScraper
-from file_scraper.utils import metadata
+from file_scraper.lxml.lxml_model import LxmlMeta
 
 
-class XmlEncoding(BaseScraper):
+class LxmlScraper(BaseScraper):
     """Scrape character encoding from XML/HTML header."""
 
     # We use JHOVE for HTML4 and XHTML files.
-    _supported = {'text/xml': ['1.0'], 'text/html': ['5.0']}
+    _supported_metadata = [LxmlMeta]
     _only_wellformed = True  # Only well-formed check
 
-    def __init__(self, filename, mimetype, check_wellformed=True, params=None):
+    def __init__(self, filename, check_wellformed=True, params=None):
         """
         Initialize scraper.
 
         :filename: File path
-        :mimetype: Predicted mimetype of the file
         :check_wellformed: True for the full well-formed check, False for just
                            detection and metadata scraping
         :params: Extra parameters: delimiter and separator
         """
-        self.charset = None
-        super(XmlEncoding, self).__init__(filename, mimetype,
-                                          check_wellformed, params)
+        super(LxmlScraper, self).__init__(filename, check_wellformed, params)
 
     @classmethod
     def is_supported(cls, mimetype, version=None,
@@ -48,34 +45,26 @@ class XmlEncoding(BaseScraper):
         """
         if params is None:
             params = {}
-        if 'schematron' in params:
+        if "schematron" in params:
             return False
-        if mimetype == 'text/xml' and check_wellformed:
+        if mimetype == "text/xml" and check_wellformed:
             return True
-        return super(XmlEncoding, cls).is_supported(mimetype, version,
+        return super(LxmlScraper, cls).is_supported(mimetype, version,
                                                     check_wellformed, params)
 
     def scrape_file(self):
         """Scrape file."""
         if not self._check_wellformed and self._only_wellformed:
-            self.messages('Skipping scraper: Well-formed check not used.')
-            self._collect_elements()
+            self._messages.append("Skipping scraper: Well-formed check not "
+                                  "used.")
             return
         parser = etree.XMLParser(dtd_validation=False, no_network=True,
                                  recover=True)
-        file_ = open(self.filename, 'rb')
+        file_ = io_open(self.filename, "rb")
         tree = etree.parse(file_, parser)
-        self.charset = tree.docinfo.encoding
-        self.messages('Encoding metadata found.')
-        self._check_supported()
-        self._collect_elements()
+        for md_class in self._supported_metadata:
+            self.streams.append(md_class(tree))
+        self._messages.append("Encoding metadata found.")
 
-    @metadata()
-    def _charset(self):
-        """Return charset."""
-        return self.charset
-
-    @metadata()
-    def _stream_type(self):
-        """Return file type."""
-        return 'text'
+        # TODO disabled, MIME or version not scraped
+        #self._check_supported()

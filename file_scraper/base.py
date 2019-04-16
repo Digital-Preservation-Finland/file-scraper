@@ -47,7 +47,8 @@ class BaseScraper(object):
         return len(self._messages) > 0 and len(self._errors) == 0
 
     @classmethod
-    def is_supported(cls, mimetype, version=None, check_wellformed=True):
+    def is_supported(cls, mimetype, version=None, check_wellformed=True,
+                     params=None):
         """
         Report whether the scraper supports the given MIME type and version.
 

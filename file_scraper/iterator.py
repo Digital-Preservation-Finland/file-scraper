@@ -39,6 +39,7 @@ from file_scraper.ffmpeg.ffmpeg_scraper import FFMpegScraper
 from file_scraper.jhove.jhove_scraper import (JHoveGifScraper, JHoveHtmlScraper,
                                               JHoveJpegScraper, JHoveTiffScraper,
                                               JHovePdfScraper, JHoveWavScraper)
+from file_scraper.lxml.lxml_scraper import LxmlScraper
 from file_scraper.wand.wand_scraper import WandScraper
 from file_scraper.ghostscript.ghostscript_scraper import GhostscriptScraper
 
@@ -68,10 +69,11 @@ def iter_scrapers(mimetype, version, check_wellformed=True, params=None):
 
     scrapers = [WandScraper, GhostscriptScraper, JHoveGifScraper,
                 JHoveHtmlScraper, JHoveJpegScraper, JHoveTiffScraper,
-                JHovePdfScraper, JHoveWavScraper, CsvScraper, FFMpegScraper]
+                JHovePdfScraper, JHoveWavScraper, CsvScraper, FFMpegScraper,
+                LxmlScraper]
 
     for scraper in scrapers:
-        if scraper.is_supported(mimetype, version, check_wellformed):
+        if scraper.is_supported(mimetype, version, check_wellformed, params):
             scraper_found = True
             yield scraper
 
