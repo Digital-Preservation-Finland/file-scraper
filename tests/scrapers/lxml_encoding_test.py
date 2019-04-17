@@ -55,7 +55,7 @@ def test_no_wellformed(testpath):
     tmppath = os.path.join(testpath, "valid__.csv")
     with open(tmppath, "w", encoding="utf-8") as file_:
         file_.write(xml)
-    scraper = LxmlScraper(tmppath, "text/xml", False)
+    scraper = LxmlScraper(tmppath, False)
     scraper.scrape_file()
     assert "Skipping scraper" in scraper.messages()
     assert scraper.well_formed is None
