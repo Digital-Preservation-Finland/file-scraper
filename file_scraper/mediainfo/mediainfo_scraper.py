@@ -25,6 +25,10 @@ class MediainfoScraper(BaseScraper):
             self._messages.append("Skipping scraper: Well-formed check not"
                                   "used.")
             return
+        if "mimetype" not in self._params:
+            raise AttributeError("MediainfoScraper was not given a parameter "
+                                 "dict containing mimetype of the file")
+
         try:
             mediainfo = MediaInfo.parse(decode(self.filename))
         except Exception as e:  # pylint: disable=invalid-name, broad-except
@@ -39,8 +43,8 @@ class MediainfoScraper(BaseScraper):
         # container first
         for index, track in enumerate(mediainfo.tracks):
             if track.track_type == 'General':
-                self._mediainfo.tracks.insert(
-                    0, self._mediainfo.tracks.pop(index))
+                mediainfo.tracks.insert(
+                    0, mediainfo.tracks.pop(index))
                 break
 
         # then video and audio tracks
@@ -70,11 +74,11 @@ class MediainfoScraper(BaseScraper):
         elif not truncated:
             self._messages.append('The file was analyzed successfully.')
 
-        for index, stream in enumerate(mediainfo.tracks):
+        mime_guess = self._params["mimetype"]
+        for index in range(len(mediainfo.tracks)):
             for md_class in self._supported_metadata:
-                md_object = md_class(stream, index, index == 0,
-                                     mediainfo.tracks[0])
-                if md_class.is_supported(md_object.mimetype()):
+                if md_class.is_supported(mime_guess):
+                    md_object = md_class(mediainfo.tracks, index, mime_guess)
                     self.streams.append(md_object)
 
         self._check_supported()

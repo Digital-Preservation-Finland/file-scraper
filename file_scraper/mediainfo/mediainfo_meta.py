@@ -1,31 +1,41 @@
-"""TODO"""
+"""Metadata scraper for AV files."""
 
 import re
-from file_scraper.base import BaseMeta, SkipElementException
+
+from file_scraper.base import BaseMeta
+from file_scraper.base import SkipElementException
 from file_scraper.utils import iso8601_duration, strip_zeros, metadata
 
 
 class BaseMediainfoMeta(BaseMeta):
     """TODO"""
 
-    def __init__(self, stream, index, is_container=False,
-                 container_stream=None):
+    _containers = []
+
+    def __init__(self, tracks, index, mimetype_guess):
         """
         TODO
 
-        :stream: TODO
-        :is_container: True if this metadata objecti represents container
-                       metadata.
-        :container_stream: A stream for the container within which this stream
-                           resides.
-        :has_container: True if this metadata object represents a stream within
-                        a container.
+        :tracks: TODO
+        :index: TODO
+        :mimetype_guess:
         """
-        self._stream = stream
+        self._stream = tracks[index]
         self._index = index
-        self.is_container = is_container
-        self._container = container_stream
+        self._tracks = tracks
+        self._mimetype_guess = mimetype_guess
+#        self.is_container = is_container
+#        self._container = container_stream
         super(BaseMediainfoMeta, self).__init__()
+
+    def _hascontainer(self):
+        """Find out if file is a video container."""
+        if self._tracks[0].format in self._containers:
+            return True
+        if len(self._tracks) < 3:
+            return False
+
+        return True
 
     @metadata()
     def version(self):
@@ -40,7 +50,7 @@ class BaseMediainfoMeta(BaseMeta):
     def stream_type(self):
         """Return stream type."""
         if self._stream.track_type == 'General':
-            if not self._container:
+            if not self._hascontainer():
                 return None
             return 'videocontainer'
         return self._stream.track_type.lower()
@@ -48,10 +58,10 @@ class BaseMediainfoMeta(BaseMeta):
     @metadata()
     def index(self):
         """Return stream index."""
-        if self._container:  # or len(self._mediainfo.tracks) <= 1: TODO
+        if self._hascontainer() or len(self._tracks) <= 1:
             return self._index
 
-        return self._index - 1
+        return self._index  # - 1 #TODO
 
     @metadata()
     def color(self):
@@ -154,15 +164,12 @@ class BaseMediainfoMeta(BaseMeta):
         """Return 'Yes' if sound channels are present, otherwise 'No'."""
         if self.stream_type() not in ['video']:
             raise SkipElementException()
-        if not self.is_container:
-            raise SkipElementException()
-        if self._container:
-            if (self._container.count_of_audio_streams is not None and
-                    int(self._container.count_of_audio_strams) > 0):
-                return 'Yes'
-            if (self._container.audio_count is not None and
-                    int(self._container.audio_count) > 0):
-                return "Yes"
+        if (self._tracks[0].count_of_audio_streams is not None and
+                int(self._tracks[0].count_of_audio_streams) > 0):
+            return 'Yes'
+        if (self._tracks[0].audio_count is not None and
+                int(self._tracks[0].audio_count) > 0):
+            return "Yes"
         return 'No'
 
     @metadata()
@@ -228,10 +235,8 @@ class BaseMediainfoMeta(BaseMeta):
         """Returns creator application."""
         if self.stream_type() not in ['video', 'audio', 'videocontainer']:
             raise SkipElementException()
-        if not self._container:
-            return "(:unav)"
-        if self._container.writing_application is not None:
-            return self._container.writing_application
+        if self._tracks[0].writing_application is not None:
+            return self._tracks[0].writing_application
         return '(:unav)'
 
     @metadata()
@@ -239,11 +244,9 @@ class BaseMediainfoMeta(BaseMeta):
         """Returns creator application version."""
         if self.stream_type() not in ['video', 'audio', 'videocontainer']:
             raise SkipElementException()
-        if not self._container:
-            return "(:unav)"
-        if self._container.writing_application is not None:
+        if self._tracks[0].writing_application is not None:
             reg = re.search(r'([\d.]+)$',
-                            self._container.writing_application)
+                            self._tracks[0].writing_application)
             if reg is not None:
                 return reg.group(1)
         return '(:unav)'
@@ -279,7 +282,7 @@ class BaseMediainfoMeta(BaseMeta):
 
 class MovMediainfoMeta(BaseMediainfoMeta):
     """Scraper for Quicktime Movie AV container and selected streams"""
-    _supported = {'video/quicktime': [], 'video/dv': []}
+    _supported = {'video/quicktime': [''], 'video/dv': ['']}
     _allow_versions = True  # Allow any version
     _containers = ['QuickTime']
 
@@ -291,13 +294,9 @@ class MovMediainfoMeta(BaseMediainfoMeta):
                      'DV': 'video/dv'}
         try:
             return mime_dict[self.codec_name()]
-        except SkipElementException:
-            return "(:unap)"
-        except KeyError:
-            return self.codec_name()  # TODO what do?
-        # except (SkipElementException, KeyError):
-        #     pass
-        # return self.mimetype
+        except (SkipElementException, KeyError):
+            pass
+        return self._mimetype_guess
 
     @metadata()
     def version(self):
@@ -320,7 +319,7 @@ class MovMediainfoMeta(BaseMediainfoMeta):
 class MkvMediainfoMeta(BaseMediainfoMeta):
     """Scraper for Matroska AV container with selected streams."""
 
-    _supported = {'video/x-matroska': []}
+    _supported = {'video/x-matroska': ['4']}
     _allow_versions = True  # Allow any version
     _containers = ['Matroska']
 
@@ -330,13 +329,11 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
         mime_dict = {'Matroska': 'video/x-matroska',
                      'PCM': 'audio/x-wav',
                      'FFV1': 'video/x-ffv'}
-        # TODO same as with the previous mimetype
         try:
             return mime_dict[self.codec_name()]
-        except SkipElementException:
-            return "(:unap)"
-        except KeyError:
-            return self.codec_name()  # TODO what do?
+        except (SkipElementException, KeyError):
+            pass
+        return self._mimetype_guess
 
     @metadata()
     def version(self):
@@ -367,16 +364,21 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
 class WavMediainfoMeta(BaseMediainfoMeta):
     """Scraper for WAV audio."""
 
-    _supported = {'audio/x-wav': []}
+    _supported = {'audio/x-wav': ['2', '']}
     _allow_versions = True  # Allow any version
+
+    @metadata()
+    def mimetype(self):
+        """Returns mimetype for stream."""
+        return self._mimetype_guess  # TODO just the guess??
 
     @metadata()
     def version(self):
         """Returns version."""
         if self.stream_type() != 'audio':
             return None
-        if self._container.bext_present is not None \
-                and self._container.bext_present == 'Yes':
+        if self._tracks[0].bext_present is not None \
+                and self._tracks[0].bext_present == 'Yes':
             return '2'
         return ''
 
@@ -433,13 +435,11 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
                      'MPEG Video': 'video/mpeg',
                      'MPEG Audio': 'audio/mpeg'}
 
-        # TODO same as with the previous mimetype
         try:
             return mime_dict[self.codec_name()]
-        except SkipElementException:
-            return "(:unap)"
-        except KeyError:
-            return self.codec_name()  # TODO what do?
+        except (SkipElementException, KeyError):
+            pass
+        return self._mimetype_guess
 
     @metadata()
     def version(self):
