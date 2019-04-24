@@ -104,6 +104,7 @@ class Scraper(object):
             return
 
         self._identify()
+        self._params["mimetype"] = self.mimetype
         for scraper_class in iter_scrapers(
                 mimetype=self.mimetype, version=self.version,
                 check_wellformed=check_wellformed, params=self._params):

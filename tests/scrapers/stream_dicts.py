@@ -57,6 +57,13 @@ WAV_AUDIO = {
     'index': 0, 'mimetype': 'audio/x-wav', 'num_channels': '2',
     'sampling_frequency': '44.1', 'stream_type': 'audio', 'version': ''}
 
+MPEG1_VIDEOCONTAINER = {'mimetype': 'video/mpeg', 'index': 0, 'version': '1'}
+
+MPEG2_VIDEOCONTAINER = {
+    'mimetype': 'video/mpeg', 'index': 0, 'stream_type': 'videocontainer',
+    'version': '2', 'codec_name': 'MPEG Video',
+    'codec_creator_app_version': '(:unav)', 'codec_creator_app': '(:unav)'}
+
 MPEG1_VIDEO = {
     'mimetype': 'video/mpeg', 'index': 0, 'par': '1', 'frame_rate': '30',
     'data_rate': '0.171304', 'bits_per_sample': '8',

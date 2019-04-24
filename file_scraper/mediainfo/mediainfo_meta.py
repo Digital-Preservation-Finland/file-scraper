@@ -11,6 +11,7 @@ class BaseMediainfoMeta(BaseMeta):
     """TODO"""
 
     _containers = []
+    container_stream = None
 
     def __init__(self, tracks, index, mimetype_guess):
         """
@@ -24,6 +25,8 @@ class BaseMediainfoMeta(BaseMeta):
         self._index = index
         self._tracks = tracks
         self._mimetype_guess = mimetype_guess
+        if self._hascontainer():
+            self.container_stream = tracks[0]
 #        self.is_container = is_container
 #        self._container = container_stream
         super(BaseMediainfoMeta, self).__init__()
@@ -58,10 +61,7 @@ class BaseMediainfoMeta(BaseMeta):
     @metadata()
     def index(self):
         """Return stream index."""
-        if self._hascontainer() or len(self._tracks) <= 1:
-            return self._index
-
-        return self._index  # - 1 #TODO
+        return self._index
 
     @metadata()
     def color(self):
@@ -399,8 +399,9 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
                   'video/MP1S': [''], 'video/MP2P': [''],
                   'video/MP2T': ['']}
     _allow_versions = True  # Allow any version
-    _containers = ['MPEG-TS', 'MPEG-PS', 'MPEG-4']
-
+    _containers = ['MPEG-TS', 'MPEG-PS', 'MPEG-4', "MPEG Video"]#, "MPEG Audio"]
+    # TODO MPEG Video and Audio added, their test data has general track that
+    #      looks pretty much how one might hope the container to look like
     @metadata()
     def signal_format(self):
         """Returns signal format."""
