@@ -1,11 +1,9 @@
-"""Office file scraper."""
-import tempfile
-import shutil
-from file_scraper.base import BaseScraper, Shell
-from file_scraper.utils import metadata, ensure_str
+"""Metadata model for office file scraper."""
+from file_scraper.base import BaseMeta
+from file_scraper.utils import metadata
 
 
-class Office(BaseScraper):
+class OfficeMeta(BaseMeta):
     """Office file format scraper."""
 
     # Supported mimetypes and versions
@@ -29,28 +27,7 @@ class Office(BaseScraper):
     _allow_versions = True  # Allow any version
     _only_wellformed = True  # Only well-formed check
 
-    def scrape_file(self):
-        """Scrape file."""
-        if not self._check_wellformed and self._only_wellformed:
-            self.messages('Skipping scraper: Well-formed check not used.')
-            self._collect_elements()
-            return
-        temp_dir = tempfile.mkdtemp()
-        try:
-            env = {'HOME': temp_dir}
-            shell = Shell([
-                'soffice', '--convert-to', 'pdf', '--outdir', temp_dir,
-                self.filename], env=env)
-            self.errors(ensure_str(shell.stderr))
-            self.messages(ensure_str(shell.stdout))
-        except Exception:  # pylint: disable=broad-except
-            self.errors('Error reading file.')
-        finally:
-            shutil.rmtree(temp_dir)
-            self._check_supported()
-            self._collect_elements()
-
     @metadata()
-    def _stream_type(self):
+    def stream_type(self):
         """Return file type."""
         return 'binary'

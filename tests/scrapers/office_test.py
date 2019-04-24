@@ -35,14 +35,14 @@ This module tests that:
 import os
 from multiprocessing import Pool
 import pytest
-from file_scraper.scrapers.office import Office
+from file_scraper.office.office_scraper import OfficeScraper
 from tests.common import parse_results
 
-BASEPATH = 'tests/data'
+BASEPATH = "tests/data"
 
 
 @pytest.mark.parametrize(
-    ['filename', 'mimetype'],
+    ["filename", "mimetype"],
     [
         ("valid_1.1.odt", "application/vnd.oasis.opendocument.text"),
         ("valid_11.0.doc", "application/msword"),
@@ -65,16 +65,15 @@ BASEPATH = 'tests/data'
 def test_scraper_valid_file(filename, mimetype, evaluate_scraper):
     """Test valid files with scraper."""
     result_dict = {
-        'purpose': 'Test valid file.',
-        'stdout_part': '',
-        'stderr_part': ''}
+        "purpose": "Test valid file.",
+        "stdout_part": "",
+        "stderr_part": ""}
     correct = parse_results(filename, mimetype,
                             result_dict, True)
-    scraper = Office(correct.filename, correct.mimetype,
-                     True, correct.params)
+    scraper = OfficeScraper(correct.filename, True, correct.params)
     scraper.scrape_file()
-    correct.version = None
-    correct.streams[0]['version'] = None
+    correct.streams[0]["version"] = "(:unav)"
+    correct.streams[0]["mimetype"] = "(:unav)"
 
     evaluate_scraper(scraper, correct, False)
     assert scraper.messages()
@@ -82,7 +81,7 @@ def test_scraper_valid_file(filename, mimetype, evaluate_scraper):
 
 
 @pytest.mark.parametrize(
-    ['filename', 'mimetype'],
+    ["filename", "mimetype"],
     [
         ("invalid_1.1_corrupted.odt", "application/vnd.oasis.opendocument"
          ".text"),
@@ -105,29 +104,27 @@ def test_scraper_valid_file(filename, mimetype, evaluate_scraper):
 def test_scraper_invalid_file(filename, mimetype, evaluate_scraper):
     """Test scraper with invalid files."""
     result_dict = {
-        'purpose': 'Test invalid file.',
-        'stdout_part': '',
-        'stderr_part': 'source file could not be loaded'}
-    correct = parse_results(filename, mimetype,
-                            result_dict, True)
-    scraper = Office(correct.filename, correct.mimetype,
-                     True, correct.params)
+        "purpose": "Test invalid file.",
+        "stdout_part": "",
+        "stderr_part": "source file could not be loaded"}
+    correct = parse_results(filename, mimetype, result_dict, True)
+    scraper = OfficeScraper(correct.filename, True, correct.params)
     scraper.scrape_file()
-    correct.version = None
-    correct.streams[0]['version'] = None
+    correct.streams[0]["version"] = "(:unav)"
+    correct.streams[0]["mimetype"] = "(:unav)"
 
     evaluate_scraper(scraper, correct)
 
 
 def _scrape(filename, mimetype):
-    scraper = Office(os.path.join(BASEPATH, mimetype.replace('/', '_'),
-                                  filename), mimetype)
+    scraper = OfficeScraper(os.path.join(BASEPATH, mimetype.replace("/", "_"),
+                                  filename))
     scraper.scrape_file()
     return scraper.well_formed
 
 
 @pytest.mark.parametrize(
-    ['filename', 'mimetype'],
+    ["filename", "mimetype"],
     [
         ("valid_1.1.odt", "application/vnd.oasis.opendocument.text"),
     ]
@@ -151,15 +148,15 @@ def test_parallel_validation(filename, mimetype):
 
 def test_no_wellformed():
     """Test scraper without well-formed check."""
-    scraper = Office('tests/data/application_msword/valid_11.0.doc',
-                     'application/msword', False)
+    scraper = OfficeScraper("tests/data/application_msword/valid_11.0.doc",
+                            False)
     scraper.scrape_file()
-    assert 'Skipping scraper' in scraper.messages()
+    assert "Skipping scraper" in scraper.messages()
     assert scraper.well_formed is None
 
 
 @pytest.mark.parametrize(
-    ['mime', 'ver'],
+    ["mime", "ver"],
     [
         ("application/vnd.oasis.opendocument.text", "1.1"),
         ("application/msword", "11.0"),
@@ -179,8 +176,8 @@ def test_no_wellformed():
 )
 def test_is_supported(mime, ver):
     """Test is_supported method."""
-    assert Office.is_supported(mime, ver, True)
-    assert Office.is_supported(mime, None, True)
-    assert not Office.is_supported(mime, ver, False)
-    assert Office.is_supported(mime, 'foo', True)
-    assert not Office.is_supported('foo', ver, True)
+    assert OfficeScraper.is_supported(mime, ver, True)
+    assert OfficeScraper.is_supported(mime, None, True)
+    assert not OfficeScraper.is_supported(mime, ver, False)
+    assert OfficeScraper.is_supported(mime, "foo", True)
+    assert not OfficeScraper.is_supported("foo", ver, True)
