@@ -6,19 +6,19 @@ import shutil
 import pytest
 
 
-@pytest.yield_fixture(scope='function')
+@pytest.yield_fixture(scope="function")
 def testpath():
     """
     Creates temporary directory and clean up after testing.
 
     :yields: Path to temporary directory
     """
-    temp_path = tempfile.mkdtemp(prefix='tests.testpath.')
+    temp_path = tempfile.mkdtemp(prefix="tests.testpath.")
     yield temp_path
     shutil.rmtree(temp_path)
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def evaluate_scraper():
     """Provide a function to evaluate between scraper- and correct-instance's
     values.
@@ -41,10 +41,9 @@ def evaluate_scraper():
         for stream_index, stream_metadata in correct.streams.iteritems():
             scraped_metadata = scraper.streams[stream_index]
             for key, value in stream_metadata.iteritems():
-                print key
                 assert getattr(scraped_metadata, key)() == value
 
-        assert scraper.info()['class'] == exp_scraper_cls
+        assert scraper.info()["class"] == exp_scraper_cls
         assert scraper.well_formed == correct.well_formed
 
         if eval_output:

@@ -61,8 +61,7 @@ MPEG1_VIDEOCONTAINER = {'mimetype': 'video/mpeg', 'index': 0, 'version': '1'}
 
 MPEG2_VIDEOCONTAINER = {
     'mimetype': 'video/mpeg', 'index': 0, 'stream_type': 'videocontainer',
-    'version': '2', 'codec_name': 'MPEG Video',
-    'codec_creator_app_version': '(:unav)', 'codec_creator_app': '(:unav)'}
+    'version': '2'}
 
 MPEG1_VIDEO = {
     'mimetype': 'video/mpeg', 'index': 0, 'par': '1', 'frame_rate': '30',
@@ -86,6 +85,9 @@ MPEG4_VIDEO = dict(MPEG1_VIDEO, **{
 
 MPEGTS_VIDEO = dict(MPEG1_VIDEO, **{
     'data_rate': '(:unav)', 'index': 1, 'sound': 'Yes', 'version': '2'})
+
+MPEG1_AUDIOCONTAINER = {
+    'mimetype': 'audio/mpeg', 'index': 0, 'version': None, 'stream_type': None}
 
 MPEG1_AUDIO = {
     'mimetype': 'audio/mpeg', 'index': 0,

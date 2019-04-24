@@ -375,7 +375,6 @@ def generate_metadata_dict(scraper_results, lose):
     # if there are no scraper results, return an empty dict
     if sum([len(x) for x in scraper_results]) == 0:
         return {}
-
     streams = {}
     importants = {}
 
@@ -390,17 +389,18 @@ def generate_metadata_dict(scraper_results, lose):
         current_stream = streams[stream_index]
 
         for method in model.iterate_metadata_methods():
+            # set the indices of the streams using the stream_index, otherwise
+            # it might be that e.g. streams[2]["index"] = 1 as individual
+            # scrapers may not know about the container stream convention
+            if method.__name__ == "index":
+                current_stream["index"] = stream_index
+                continue
+
             try:
                 _merge_to_stream(current_stream, method, lose, importants)
             except file_scraper.base.SkipElementException:
                 # happens when the method is not to be indexed
                 continue
-
-    # set the correct indices for all streams, otherwise e.g.
-    # streams[2]["index"] = 1 as individual scrapers may not know about
-    # the container stream convention
-    for key in streams:
-        streams[key]["index"] = key
 
     # if the metadata models did not have a stream for container, generate it
     if 0 not in streams:
