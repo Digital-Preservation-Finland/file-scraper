@@ -372,11 +372,19 @@ def generate_metadata_dict(scraper_results, lose):
              as important return values that are present in the lose list i.e.
              overwritable.
     """
+    # if there are no scraper results, return an empty dict
+    if sum([len(x) for x in scraper_results]) == 0:
+        return {}
+
     streams = {}
     importants = {}
 
     for model in chain.from_iterable(scraper_results):
-        stream_index = model.index() + 1  # streams[0] is for container
+        if model.container_stream:
+            stream_index = model.index()
+        else:
+            stream_index = model.index() + 1  # streams[0] is for container
+
         if stream_index not in streams:
             streams[stream_index] = {}
         current_stream = streams[stream_index]
@@ -389,15 +397,17 @@ def generate_metadata_dict(scraper_results, lose):
                 continue
 
     # set the correct indices for all streams, otherwise e.g.
-    # streams[2]["index"] = 1 as individual scrapers do not know about
+    # streams[2]["index"] = 1 as individual scrapers may not know about
     # the container stream convention
     for key in streams:
         streams[key]["index"] = key
 
-    container = {"mimetype": streams[1]["mimetype"],
-                 "version": streams[1]["version"],
-                 "index": 0}
-    streams[0] = container
+    # if the metadata models did not have a stream for container, generate it
+    if 0 not in streams:
+        container = {"mimetype": streams[1]["mimetype"],
+                     "version": streams[1]["version"],
+                     "index": 0}
+        streams[0] = container
 
     # Check that important values did not contain values marked as disposable
     if common_elements(lose, importants.values()):
