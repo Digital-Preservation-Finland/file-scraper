@@ -48,7 +48,7 @@ class BaseScraper(object):
 
     @classmethod
     def is_supported(cls, mimetype, version=None, check_wellformed=True,
-                     params=None):
+                     params=None):  # pylint: disable=unused-argument
         """
         Report whether the scraper supports the given MIME type and version.
 
@@ -62,6 +62,8 @@ class BaseScraper(object):
         :version: Version of a file. Defaults to None.
         :check_wellformed: True for scraping with well-formedness check, False
                            for skipping the check. Defaults to True.
+        :params: dict of other parameters that can be used by overriding
+                 methods
         :returns: True if the MIME type and version are supported, False if not
         """
         if cls._only_wellformed and not check_wellformed:

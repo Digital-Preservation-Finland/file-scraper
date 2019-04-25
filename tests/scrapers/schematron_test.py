@@ -35,92 +35,97 @@ This module tests that:
 """
 import os
 import pytest
-from file_scraper.scrapers.schematron import Schematron
+from file_scraper.schematron.schematron_scraper import SchematronScraper
 from tests.common import parse_results
 
 ROOTPATH = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), '../../'))
+    os.path.dirname(__file__), "../../"))
 
 
 @pytest.mark.parametrize(
-    ['filename', 'result_dict', 'params'],
+    ["filename", "result_dict", "params"],
     [
-        ('valid_1.0_well_formed.xml', {
-            'purpose': 'Test valid file',
-            'stdout_part': '<svrl:schematron-output',
-            'stderr_part': ''},
-         {'schematron': os.path.join(
-             ROOTPATH, 'tests/data/text_xml/local.sch'),
-             'cache': False}),
-        ('invalid_1.0_local_xsd.xml', {
-            'purpose': 'Test invalid file',
-            'stdout_part': '<svrl:schematron-output',
-            'stderr_part': ''},
-         {'schematron': 'tests/data/text_xml/local.sch',
-          'verbose': True, 'cache': False}),
-        ('invalid__empty.xml', {
-            'purpose': 'Test invalid xml with given schema.',
-            'stdout_part': '',
-            'stderr_part': 'Document is empty'},
-         {'schematron': 'tests/data/text_xml/local.sch'}),
+        ("valid_1.0_well_formed.xml", {
+            "purpose": "Test valid file",
+            "stdout_part": "<svrl:schematron-output",
+            "stderr_part": ""},
+         {"schematron": os.path.join(
+             ROOTPATH, "tests/data/text_xml/local.sch"),
+          "cache": False}),
+        ("invalid_1.0_local_xsd.xml", {
+            "purpose": "Test invalid file",
+            "stdout_part": "<svrl:schematron-output",
+            "stderr_part": ""},
+         {"schematron": "tests/data/text_xml/local.sch",
+          "verbose": True, "cache": False}),
+        ("invalid__empty.xml", {
+            "purpose": "Test invalid xml with given schema.",
+            "stdout_part": "",
+            "stderr_part": "Document is empty"},
+         {"schematron": "tests/data/text_xml/local.sch"}),
     ]
 )
 def test_scraper(filename, result_dict, params, evaluate_scraper):
     """Test scraper."""
 
-    correct = parse_results(filename, 'text/xml',
+    correct = parse_results(filename, "text/xml",
                             result_dict, True, params)
-    scraper = Schematron(correct.filename, correct.mimetype,
-                         True, correct.params)
+    scraper = SchematronScraper(correct.filename, True, correct.params)
     scraper.scrape_file()
     correct.version = None
-    correct.streams[0]['version'] = None
+    correct.streams[0]["version"] = "(:unav)"
+    correct.streams[0]["mimetype"] = "(:unav)"
 
     evaluate_scraper(scraper, correct)
 
-    if 'verbose' in correct.params and correct.params['verbose']:
-        assert 'have been suppressed' not in scraper.messages()
+    if "verbose" in correct.params and correct.params["verbose"]:
+        assert "have been suppressed" not in scraper.messages()
     elif scraper.messages():
-        assert 'have been suppressed' in scraper.messages()
+        assert "have been suppressed" in scraper.messages()
 
 
 def test_no_wellformed():
     """Test scraper without well-formed check."""
-    scraper = Schematron('tests/data/text_xml/valid_1.0_wellformed.xml',
-                         'text/xml', False)
+    scraper = SchematronScraper("tests/data/text_xml/valid_1.0_wellformed.xml",
+                                False)
     scraper.scrape_file()
-    assert 'Skipping scraper' in scraper.messages()
+    assert "Skipping scraper" in scraper.messages()
     assert scraper.well_formed is None
 
 
 def test_is_supported():
     """Test is_supported method."""
-    mime = 'text/xml'
-    ver = '1.0'
-    assert Schematron.is_supported(mime, ver, True, {'schematron': None})
-    assert not Schematron.is_supported(mime, ver, True)
-    assert Schematron.is_supported(mime, None, True, {'schematron': None})
-    assert not Schematron.is_supported(mime, ver, False, {'schematron': None})
-    assert Schematron.is_supported(mime, 'foo', True, {'schematron': None})
-    assert not Schematron.is_supported('foo', ver, True, {'schematron': None})
+    mime = "text/xml"
+    ver = "1.0"
+    assert SchematronScraper.is_supported(mime, ver, True,
+                                          {"schematron": None})
+    assert not SchematronScraper.is_supported(mime, ver, True)
+    assert SchematronScraper.is_supported(mime, None, True,
+                                          {"schematron": None})
+    assert not SchematronScraper.is_supported(mime, ver, False,
+                                              {"schematron": None})
+    assert SchematronScraper.is_supported(mime, "foo", True,
+                                          {"schematron": None})
+    assert not SchematronScraper.is_supported("foo", ver, True,
+                                              {"schematron": None})
 
 
 def test_parameters():
     """Test that parameters and default values work properly."""
     # pylint: disable=protected-access
-    scraper = Schematron('testsfile', 'test/mimetype')
+    scraper = SchematronScraper("testsfile", "test/mimetype")
     assert scraper._schematron_file is None
     assert scraper._extra_hash is None
     assert not scraper._verbose
     assert scraper._cache
 
-    scraper = Schematron('testfile', 'text/xml',
-                         params={'schematron': 'schfile',
-                                 'extra_hash': 'abc',
-                                 'verbose': True,
-                                 'cache': False})
-    assert scraper._schematron_file == 'schfile'
-    assert scraper._extra_hash == 'abc'
+    scraper = SchematronScraper("testfile", "text/xml",
+                                params={"schematron": "schfile",
+                                        "extra_hash": "abc",
+                                        "verbose": True,
+                                        "cache": False})
+    assert scraper._schematron_file == "schfile"
+    assert scraper._extra_hash == "abc"
     assert scraper._verbose
     assert not scraper._cache
 
@@ -128,15 +133,15 @@ def test_parameters():
 def test_xslt_filename():
     """Test that checksum for xslt filename is calculated properly."""
     # pylint: disable=protected-access
-    scraper = Schematron('filename', 'text/xml')
-    scraper._schematron_file = 'tests/data/text_xml/local.sch'
-    assert '76ed62' in scraper._generate_xslt_filename()
+    scraper = SchematronScraper("filename", "text/xml")
+    scraper._schematron_file = "tests/data/text_xml/local.sch"
+    assert "76ed62" in scraper._generate_xslt_filename()
     scraper._verbose = True
-    assert 'ddb11a' in scraper._generate_xslt_filename()
-    scraper._extra_hash = 'abc'
-    assert '550d66' in scraper._generate_xslt_filename()
+    assert "ddb11a" in scraper._generate_xslt_filename()
+    scraper._extra_hash = "abc"
+    assert "550d66" in scraper._generate_xslt_filename()
     scraper._verbose = False
-    assert '791b2e' in scraper._generate_xslt_filename()
+    assert "791b2e" in scraper._generate_xslt_filename()
 
 
 def test_filter_duplicate_elements():
@@ -158,8 +163,8 @@ def test_filter_duplicate_elements():
                <svrl:fired-rule context="context"/>
                <svrl:active-pattern id="id"/>
            </svrl:schematron-output>"""
-    scraper = Schematron('filename', 'text/xml')
+    scraper = SchematronScraper("filename", "text/xml")
     result = scraper._filter_duplicate_elements(schtest)
-    assert result.count(b'<svrl:active-pattern') == 1
-    assert result.count(b'<svrl:fired-rule') == 1
-    assert result.count(b'<svrl:failed-assert') == 2
+    assert result.count(b"<svrl:active-pattern") == 1
+    assert result.count(b"<svrl:fired-rule") == 1
+    assert result.count(b"<svrl:failed-assert") == 2
