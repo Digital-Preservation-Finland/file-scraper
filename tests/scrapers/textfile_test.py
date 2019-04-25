@@ -1,5 +1,5 @@
 """
-Test CheckTextFile, which determines whether file is a text file or not.
+Test TextfileScraper, which determines whether file is a text file or not.
 
 This module tests that:
     - Following files are correctly identified as text files and their MIME
@@ -11,7 +11,7 @@ This module tests that:
 """
 import pytest
 
-from file_scraper.scrapers.textfile import CheckTextFile
+from file_scraper.textfile.textfile_scraper import TextfileScraper
 from tests.common import parse_results
 
 VALID_MSG = 'is a text file'
@@ -36,18 +36,19 @@ def test_existing_files(filename, mimetype, is_textfile, evaluate_scraper):
     """Test detecting whether file is a textfile."""
     correct = parse_results(filename, mimetype,
                             {}, True)
-    scraper = CheckTextFile(correct.filename, correct.mimetype, True)
+    scraper = TextfileScraper(correct.filename, True)
     scraper.scrape_file()
 
     correct.version = None
-    correct.streams[0]['version'] = None
+    correct.streams[0]['version'] = "(:unav)"
+    correct.streams[0]['mimetype'] = "(:unav)"
     correct.streams[0]['stream_type'] = None
     correct.well_formed = is_textfile
     if correct.well_formed:
         correct.stdout_part = VALID_MSG
         correct.stderr_part = ''
+        evaluate_scraper(scraper, correct)
     else:
-        correct.stdout_part = ''
-        correct.stderr_part = INVALID_MSG
-
-    evaluate_scraper(scraper, correct)
+        assert INVALID_MSG in scraper.errors()
+        assert scraper.errors()
+        assert not scraper.well_formed
