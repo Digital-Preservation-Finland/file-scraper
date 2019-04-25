@@ -16,12 +16,12 @@ This module tests that:
         - image/jpeg, 1.01
         - image/jp2, ''
         - image/png, 1.2
-        - image/gir, 1987a
+        - image/gif, 1987a
     - These MIME types are also supported with None or a made up version.
     - A made up MIME type with any of these versions is not supported.
 """
 import pytest
-from file_scraper.scrapers.pil import TiffPil, JpegPil, ImagePil
+from file_scraper.pil.pil_scraper import PilScraper
 from tests.common import parse_results
 
 VALID_MSG = 'successfully'
@@ -48,14 +48,7 @@ GIF_APPEND = {
     'version': None,
     'width': None}
 
-STREAM_INVALID = {
-    'bps_unit': None,
-    'bps_value': None,
-    'colorspace': None,
-    'compression': None,
-    'height': None,
-    'samples_per_pixel': None,
-    'width': None}
+STREAM_INVALID = {}
 
 
 @pytest.mark.parametrize(
@@ -92,8 +85,7 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
     else:
         correct.stdout_part = ''
         correct.stderr_part = INVALID_MSG
-    scraper = TiffPil(correct.filename, correct.mimetype,
-                      True, correct.params)
+    scraper = PilScraper(correct.filename, True, correct.params)
     scraper.scrape_file()
 
     if correct.well_formed:
@@ -103,8 +95,12 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
             correct.streams[index]['stream_type'] = \
                 correct.streams[0]['stream_type']
             correct.streams[index]['version'] = None
-
-    evaluate_scraper(scraper, correct)
+        evaluate_scraper(scraper, correct)
+    else:
+        assert not scraper.well_formed
+        assert correct.stdout_part in scraper.messages()
+        assert correct.stderr_part in scraper.errors()
+        assert not scraper.streams
 
 
 @pytest.mark.parametrize(
@@ -138,11 +134,16 @@ def test_scraper_jpg(filename, result_dict, evaluate_scraper):
     else:
         correct.stdout_part = ''
         correct.stderr_part = INVALID_MSG
-    scraper = JpegPil(correct.filename, correct.mimetype,
-                      True, correct.params)
+    scraper = PilScraper(correct.filename, True, correct.params)
     scraper.scrape_file()
 
-    evaluate_scraper(scraper, correct)
+    if correct.well_formed:
+        evaluate_scraper(scraper, correct)
+    else:
+        assert not scraper.well_formed
+        assert correct.stdout_part in scraper.messages()
+        assert correct.stderr_part in scraper.errors()
+        assert not scraper.streams
 
 
 @pytest.mark.parametrize(
@@ -171,11 +172,16 @@ def test_scraper_jp2(filename, result_dict, evaluate_scraper):
     else:
         correct.stdout_part = ''
         correct.stderr_part = INVALID_MSG
-    scraper = ImagePil(correct.filename, correct.mimetype,
-                       True, correct.params)
+    scraper = PilScraper(correct.filename, True, correct.params)
     scraper.scrape_file()
 
-    evaluate_scraper(scraper, correct)
+    if correct.well_formed:
+        evaluate_scraper(scraper, correct)
+    else:
+        assert not scraper.well_formed
+        assert correct.stdout_part in scraper.messages()
+        assert correct.stderr_part in scraper.errors()
+        assert not scraper.streams
 
 
 @pytest.mark.parametrize(
@@ -214,11 +220,16 @@ def test_scraper_png(filename, result_dict, evaluate_scraper):
     else:
         correct.stdout_part = ''
         correct.stderr_part = INVALID_MSG
-    scraper = ImagePil(correct.filename, correct.mimetype,
-                       True, correct.params)
+    scraper = PilScraper(correct.filename, True, correct.params)
     scraper.scrape_file()
 
-    evaluate_scraper(scraper, correct)
+    if correct.well_formed:
+        evaluate_scraper(scraper, correct)
+    else:
+        assert not scraper.well_formed
+        assert correct.stdout_part in scraper.messages()
+        assert correct.stderr_part in scraper.errors()
+        assert not scraper.streams
 
 
 @pytest.mark.parametrize(
@@ -265,17 +276,21 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
     else:
         correct.stdout_part = ''
         correct.stderr_part = INVALID_MSG
-    scraper = ImagePil(correct.filename, correct.mimetype,
-                       True, correct.params)
+    scraper = PilScraper(correct.filename, True, correct.params)
     scraper.scrape_file()
 
-    evaluate_scraper(scraper, correct)
+    if correct.well_formed:
+        evaluate_scraper(scraper, correct)
+    else:
+        assert not scraper.well_formed
+        assert correct.stdout_part in scraper.messages()
+        assert correct.stderr_part in scraper.errors()
+        assert not scraper.streams
 
 
 def test_no_wellformed():
     """Test scraper without well-formed check."""
-    scraper = ImagePil('tests/data/image_gif/valid_1987a.gif',
-                       'image/gif', False)
+    scraper = PilScraper('tests/data/image_gif/valid_1987a.gif', False)
     scraper.scrape_file()
     assert 'Skipping scraper' not in scraper.messages()
     assert scraper.well_formed is None
@@ -284,11 +299,11 @@ def test_no_wellformed():
 @pytest.mark.parametrize(
     ['mime', 'ver', 'class_'],
     [
-        ('image/tiff', '6.0', TiffPil),
-        ('image/jpeg', '1.01', JpegPil),
-        ('image/jp2', '', ImagePil),
-        ('image/png', '1.2', ImagePil),
-        ('image/gif', '1987a', ImagePil),
+        ('image/tiff', '6.0', PilScraper),
+        ('image/jpeg', '1.01', PilScraper),
+        ('image/jp2', '', PilScraper),
+        ('image/png', '1.2', PilScraper),
+        ('image/gif', '1987a', PilScraper),
     ]
 )
 def test_is_supported(mime, ver, class_):

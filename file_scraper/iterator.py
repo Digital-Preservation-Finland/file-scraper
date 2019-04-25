@@ -42,6 +42,7 @@ from file_scraper.jhove.jhove_scraper import (JHoveGifScraper, JHoveHtmlScraper,
 from file_scraper.lxml.lxml_scraper import LxmlScraper
 from file_scraper.mediainfo.mediainfo_scraper import MediainfoScraper
 from file_scraper.office.office_scraper import OfficeScraper
+from file_scraper.pil.pil_scraper import PilScraper
 from file_scraper.wand.wand_scraper import WandScraper
 from file_scraper.ghostscript.ghostscript_scraper import GhostscriptScraper
 
@@ -72,7 +73,7 @@ def iter_scrapers(mimetype, version, check_wellformed=True, params=None):
     scrapers = [WandScraper, GhostscriptScraper, JHoveGifScraper,
                 JHoveHtmlScraper, JHoveJpegScraper, JHoveTiffScraper,
                 JHovePdfScraper, JHoveWavScraper, CsvScraper, FFMpegScraper,
-                LxmlScraper, MediainfoScraper, OfficeScraper]
+                LxmlScraper, MediainfoScraper, OfficeScraper, PilScraper]
 
     for scraper in scrapers:
         if scraper.is_supported(mimetype, version, check_wellformed, params):
