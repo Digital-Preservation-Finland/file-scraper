@@ -16,62 +16,61 @@ This module tests that:
 """
 import pytest
 from tests.common import parse_results
-from file_scraper.scrapers.pngcheck import Pngcheck
+from file_scraper.pngcheck.pngcheck_scraper import PngcheckScraper
 
-MIMETYPE = 'image/png'
+MIMETYPE = "image/png"
 
 
 @pytest.mark.parametrize(
-    ['filename', 'result_dict'],
+    ["filename", "result_dict"],
     [
-        ('valid_1.2.png', {
-            'purpose': 'Test valid file.'}),
-        ('invalid_1.2_no_IEND.png', {
-            'purpose': 'Test without IEND.'}),
-        ('invalid_1.2_no_IHDR.png', {
-            'purpose': 'Test without IHDR.'}),
-        ('invalid_1.2_wrong_CRC.png', {
-            'purpose': 'Test wrong CRC.'}),
-        ('invalid_1.2_wrong_header.png', {
-            'purpose': 'Test invalid header.'}),
-        ('invalid__empty.png', {
-            'purpose': 'Test empty file.'})
+        ("valid_1.2.png", {
+            "purpose": "Test valid file."}),
+        ("invalid_1.2_no_IEND.png", {
+            "purpose": "Test without IEND."}),
+        ("invalid_1.2_no_IHDR.png", {
+            "purpose": "Test without IHDR."}),
+        ("invalid_1.2_wrong_CRC.png", {
+            "purpose": "Test wrong CRC."}),
+        ("invalid_1.2_wrong_header.png", {
+            "purpose": "Test invalid header."}),
+        ("invalid__empty.png", {
+            "purpose": "Test empty file."})
     ]
 )
 def test_scraper(filename, result_dict, evaluate_scraper):
     """Test scraper."""
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
-    scraper = Pngcheck(correct.filename, correct.mimetype,
-                       True, correct.params)
+    scraper = PngcheckScraper(correct.filename, True, correct.params)
     scraper.scrape_file()
     correct.version = None
-    correct.streams[0]['version'] = None
+    correct.streams[0]["version"] = "(:unav)"
+    correct.streams[0]["mimetype"] = "(:unav)"
     if correct.well_formed:
-        correct.stdout_part = 'OK'
-        correct.stderr_part = ''
+        correct.stdout_part = "OK"
+        correct.stderr_part = ""
     else:
-        correct.stdout_part = ''
-        correct.stderr_part = 'ERROR'
+        correct.stdout_part = ""
+        correct.stderr_part = "ERROR"
 
     evaluate_scraper(scraper, correct)
 
 
 def test_no_wellformed():
     """Test scraper without well-formed check."""
-    scraper = Pngcheck('tests/data/image_png/valid_1.2.png',
-                       'image/png', False)
+    scraper = PngcheckScraper("tests/data/image_png/valid_1.2.png", False)
     scraper.scrape_file()
-    assert 'Skipping scraper' in scraper.messages()
+    assert "Skipping scraper" in scraper.messages()
     assert scraper.well_formed is None
 
 
 def test_is_supported():
     """Test is_supported method."""
     mime = MIMETYPE
-    ver = '1.2'
-    assert Pngcheck.is_supported(mime, ver, True)
-    assert Pngcheck.is_supported(mime, None, True)
-    assert not Pngcheck.is_supported(mime, ver, False)
-    assert Pngcheck.is_supported(mime, 'foo', True)
-    assert not Pngcheck.is_supported('foo', ver, True)
+    ver = "1.2"
+    assert PngcheckScraper.is_supported(mime, ver, True)
+    assert PngcheckScraper.is_supported(mime, None, True)
+    assert not PngcheckScraper.is_supported(mime, ver, False)
+    assert PngcheckScraper.is_supported(mime, "foo", True)
+    assert not PngcheckScraper.is_supported("foo", ver, True)
