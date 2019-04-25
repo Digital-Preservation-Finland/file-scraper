@@ -20,58 +20,58 @@ This module tests that:
 """
 import pytest
 from tests.common import parse_results
-from file_scraper.scrapers.pspp import Pspp
+from file_scraper.pspp.pspp_scraper import PsppScraper
 
-MIMETYPE = 'application/x-spss-por'
+MIMETYPE = "application/x-spss-por"
 
 
 @pytest.mark.parametrize(
-    ['filename', 'result_dict'],
+    ["filename", "result_dict"],
     [
-        ('valid.por', {
-            'purpose': 'Test valid file.',
-            'stdout_part': 'File conversion was succesful.',
-            'stderr_part': ''}),
-        ('invalid__wrong_spss_format.sav', {
-            'purpose': 'Test wrong format.',
-            'stdout_part': '',
-            'stderr_part': 'File is not SPSS Portable format.'}),
-        ('invalid__header_corrupted.por', {
-            'purpose': 'Test corrupted header.',
-            'stdout_part': '',
-            'stderr_part': 'Bad date string length'}),
-        ('invalid__truncated.por', {
-            'purpose': 'Test truncated file.',
-            'stdout_part': '',
-            'stderr_part': 'unexpected end of file'})
+        ("valid.por", {
+            "purpose": "Test valid file.",
+            "stdout_part": "File conversion was succesful.",
+            "stderr_part": ""}),
+        ("invalid__wrong_spss_format.sav", {
+            "purpose": "Test wrong format.",
+            "stdout_part": "",
+            "stderr_part": "File is not SPSS Portable format."}),
+        ("invalid__header_corrupted.por", {
+            "purpose": "Test corrupted header.",
+            "stdout_part": "",
+            "stderr_part": "Bad date string length"}),
+        ("invalid__truncated.por", {
+            "purpose": "Test truncated file.",
+            "stdout_part": "",
+            "stderr_part": "unexpected end of file"})
     ]
 )
 def test_scraper(filename, result_dict, evaluate_scraper):
     """Test scraper."""
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
-    scraper = Pspp(correct.filename, correct.mimetype,
-                   True, correct.params)
+    scraper = PsppScraper(correct.filename, True, correct.params)
     scraper.scrape_file()
+
+    correct.streams[0]["mimetype"] = "(:unav)"
 
     evaluate_scraper(scraper, correct)
 
 
 def test_no_wellformed():
     """Test scraper without well-formed check."""
-    scraper = Pspp('tests/data/application_x-spss-por/valid.por',
-                   MIMETYPE, False)
+    scraper = PsppScraper("tests/data/application_x-spss-por/valid.por", False)
     scraper.scrape_file()
-    assert 'Skipping scraper' in scraper.messages()
+    assert "Skipping scraper" in scraper.messages()
     assert scraper.well_formed is None
 
 
 def test_is_supported():
     """Test is_supported method."""
     mime = MIMETYPE
-    ver = ''
-    assert Pspp.is_supported(mime, ver, True)
-    assert Pspp.is_supported(mime, None, True)
-    assert not Pspp.is_supported(mime, ver, False)
-    assert Pspp.is_supported(mime, 'foo', True)
-    assert not Pspp.is_supported('foo', ver, True)
+    ver = ""
+    assert PsppScraper.is_supported(mime, ver, True)
+    assert PsppScraper.is_supported(mime, None, True)
+    assert not PsppScraper.is_supported(mime, ver, False)
+    assert PsppScraper.is_supported(mime, "foo", True)
+    assert not PsppScraper.is_supported("foo", ver, True)
