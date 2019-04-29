@@ -51,6 +51,7 @@ from file_scraper.verapdf.verapdf_scraper import VerapdfScraper
 from file_scraper.vnu.vnu_scraper import VnuScraper
 from file_scraper.wand.wand_scraper import WandScraper
 from file_scraper.ghostscript.ghostscript_scraper import GhostscriptScraper
+from file_scraper.xmllint.xmllint_scraper import XmllintScraper
 
 def iter_detectors():
     """
@@ -81,7 +82,7 @@ def iter_scrapers(mimetype, version, check_wellformed=True, params=None):
                 JHovePdfScraper, JHoveWavScraper, CsvScraper, FFMpegScraper,
                 LxmlScraper, MediainfoScraper, OfficeScraper, PilScraper,
                 PngcheckScraper, PsppScraper, SchematronScraper, TextfileScraper,
-                VerapdfScraper, VnuScraper]
+                VerapdfScraper, VnuScraper, XmllintScraper]
 
     for scraper in scrapers:
         if scraper.is_supported(mimetype, version, check_wellformed, params):
