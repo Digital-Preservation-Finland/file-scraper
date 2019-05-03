@@ -162,7 +162,7 @@ class BaseMeta(object):
         return 0
 
     @classmethod
-    def is_supported(cls, mimetype, version=None):
+    def is_supported(cls, mimetype, version=None, params=None):
         """
         Report whether this model supports the given MIME type and version.
 

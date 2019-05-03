@@ -4,15 +4,13 @@
 Tests for File (libmagick) scraper.
 
 This module tests that:
-    - For valid files, OfficeFileMagic, PngFileMagic, JpegFileMagic,
-      Jp2FileMagic, TiffFileMagic, TextFileMagic, XmlFileMagic, XhtmlFilemagic,
-      HtmlFileMagic, PdfFileMagic and ArcFileMagic are able to correctly
-      determine the following features of their corresponding file types:
+    - For valid files, MagicScraper is able to correctly determine the
+      following features of their corresponding file types:
         - MIME type
         - version
         - streams
         - well-formedness
-    - In addition to this, the scraper messages contain 'successfully' and no
+    - In addition to this, the scraper messages contain "successfully" and no
       errors are recorded.
 
     - For empty files, all these scrapers report MIME type as inode/x-empty.
@@ -22,12 +20,12 @@ This module tests that:
         - MIME type is application/octet-stream
         - version is None
         - streams are scraped correctly
-        - scraper errors contain 'do not match'
+        - scraper errors contain "do not match"
         - file is not well-formed
     - For XHTML files with missing closing tag:
         - MIME type, version and streams are scraped correctly
         - there are no scraper errors
-        - scraper messages contain 'successfully'
+        - scraper messages contain "successfully"
         - file is well-formed
     - For HTML files without doctype the same things are checked as with XHTML
       files but version must be None
@@ -36,17 +34,17 @@ This module tests that:
     - For image files (png, jpeg, jp2, tif) with errors:
         - MIME type is application/octet-stream
         - version and streams are scraped correctly
-        - scraper errors contain 'do not match'
+        - scraper errors contain "do not match"
         - file is not well-formed
 
     - For text files actually containing binary data:
         - version is None
         - MIME type is application/octet-stream
-        - scraper errors contains 'do not match'
+        - scraper errors contains "do not match"
         - file is not well-formed
 
     - Running scraper without full scraping results in well_formed being None
-      and scraper messages containing 'Skipping scraper'
+      and scraper messages containing "Skipping scraper"
 
     - The following MIME type and version pairs are supported when full
       scraping is performed:
@@ -64,9 +62,9 @@ This module tests that:
         - application/vnd.oasis.opendocument.formula, 1.0
         - image/png, 1.2
         - image/jpeg, 1.01
-        - image/jp2, ''
+        - image/jp2, ""
         - image/tiff, 6.0
-        - text/plain, ''
+        - text/plain, ""
         - text/xml, 1.0
         - application/xhtml+xml, 1.0
         - text/html, 4.01
@@ -78,86 +76,90 @@ This module tests that:
       text/html
     - Made up MIME type with any version is not supported
     - When full scraping is not done, none of these combinations are supported.
+
+    - The scraper requires the parameter dict to contain "mimetype" entry.
+    - If the scraper determines the file to be either XML or XHTML file and
+      would thus need to use the supplied MIME type from the dict, but the
+      given MIME type does not match either of the types, an error is recorded,
+      no metadata is scraped and the file is reported as not well-formed.
 """
 import pytest
-from file_scraper.scrapers.magic import (OfficeFileMagic, TextFileMagic,
-                                         XmlFileMagic, HtmlFileMagic,
-                                         PngFileMagic, JpegFileMagic,
-                                         TiffFileMagic, Jp2FileMagic,
-                                         XhtmlFileMagic, PdfFileMagic,
-                                         ArcFileMagic)
+from file_scraper.magic_scraper.magic_scraper import MagicScraper
+from file_scraper.magic_scraper.magic_model import (OfficeFileMagicMeta,
+                                                    HtmlFileMagicMeta)
 from tests.common import parse_results
 
 
 @pytest.mark.parametrize(
-    ['filename', 'mimetype', 'class_'],
+    ["filename", "mimetype"],
     [
         ("valid_1.1.odt",
-         "application/vnd.oasis.opendocument.text", OfficeFileMagic),
+         "application/vnd.oasis.opendocument.text"),
         ("valid_11.0.doc",
-         "application/msword", OfficeFileMagic),
+         "application/msword"),
         ("valid_15.0.docx",
          "application/vnd.openxmlformats-"
-         "officedocument.wordprocessingml.document", OfficeFileMagic),
+         "officedocument.wordprocessingml.document"),
         ("valid_1.1.odp",
-         "application/vnd.oasis.opendocument.presentation", OfficeFileMagic),
+         "application/vnd.oasis.opendocument.presentation"),
         ("valid_11.0.ppt",
-         "application/vnd.ms-powerpoint", OfficeFileMagic),
+         "application/vnd.ms-powerpoint"),
         ("valid_15.0.pptx",
          "application/vnd.openxml"
-         "formats-officedocument.presentationml.presentation",
-         OfficeFileMagic),
+         "formats-officedocument.presentationml.presentation"),
         ("valid_1.1.ods",
-         "application/vnd.oasis.opendocument.spreadsheet", OfficeFileMagic),
+         "application/vnd.oasis.opendocument.spreadsheet"),
         ("valid_11.0.xls",
-         "application/vnd.ms-excel", OfficeFileMagic),
+         "application/vnd.ms-excel"),
         ("valid_15.0.xlsx",
-         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-         OfficeFileMagic),
+         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
         ("valid_1.1.odg",
-         "application/vnd.oasis.opendocument.graphics", OfficeFileMagic),
+         "application/vnd.oasis.opendocument.graphics"),
         ("valid_1.0.odf",
-         "application/vnd.oasis.opendocument.formula", OfficeFileMagic),
-        ("valid_1.2.png", "image/png", PngFileMagic),
-        ("valid_1.01.jpg", "image/jpeg", JpegFileMagic),
-        ("valid.jp2", "image/jp2", Jp2FileMagic),
-        ("valid_6.0.tif", "image/tiff", TiffFileMagic),
-        ("valid__iso8859.txt", "text/plain", TextFileMagic),
-        ("valid__utf8.txt", "text/plain", TextFileMagic),
-        ("valid_1.0_well_formed.xml", "text/xml", XmlFileMagic),
-        ("valid_1.0.xhtml", "application/xhtml+xml", XhtmlFileMagic),
-        ("valid_4.01.html", "text/html", HtmlFileMagic),
-        ("valid_5.0.html", "text/html", HtmlFileMagic),
-        ("valid_1.4.pdf", "application/pdf", PdfFileMagic),
-        ("valid_1.0.arc", "application/x-internet-archive", ArcFileMagic),
+         "application/vnd.oasis.opendocument.formula"),
+        ("valid_1.2.png", "image/png"),
+        ("valid_1.01.jpg", "image/jpeg"),
+        ("valid.jp2", "image/jp2"),
+        ("valid_6.0.tif", "image/tiff"),
+        ("valid__iso8859.txt", "text/plain"),
+        ("valid__utf8.txt", "text/plain"),
+        ("valid_1.0_well_formed.xml", "text/xml"),
+        ("valid_1.0.xhtml", "application/xhtml+xml"),
+        ("valid_4.01.html", "text/html"),
+        ("valid_5.0.html", "text/html"),
+        ("valid_1.4.pdf", "application/pdf"),
+        ("valid_1.0.arc", "application/x-internet-archive"),
     ])
-def test_scraper_valid(filename, mimetype, class_, evaluate_scraper):
+def test_scraper_valid(filename, mimetype, evaluate_scraper):
     """Test scraper."""
     result_dict = {
-        'purpose': 'Test valid file.',
-        'stdout_part': 'successfully',
-        'stderr_part': ''}
+        "purpose": "Test valid file.",
+        "stdout_part": "successfully",
+        "stderr_part": ""}
     correct = parse_results(filename, mimetype,
                             result_dict, True)
-    scraper = class_(correct.filename, correct.mimetype,
-                     True, correct.params)
+    params = correct.params
+    params["mimetype"] = correct.mimetype
+    scraper = MagicScraper(correct.filename, True, params)
     scraper.scrape_file()
 
-    if class_ in [XhtmlFileMagic]:
-        correct.streams[0]['stream_type'] = 'text'
-    if class_ in [OfficeFileMagic, HtmlFileMagic]:
+    if correct.mimetype == "application/xhtml+xml":
+        correct.streams[0]["stream_type"] = "text"
+    if (OfficeFileMagicMeta.is_supported(correct.mimetype) or
+            HtmlFileMagicMeta.is_supported(correct.mimetype)):
         correct.version = None
-        correct.streams[0]['version'] = None
-    if class_ in [TextFileMagic, HtmlFileMagic, XmlFileMagic, XhtmlFileMagic]:
-        correct.streams[0]['charset'] = 'UTF-8'
-    if filename == 'valid__iso8859.txt':
-        correct.streams[0]['charset'] = 'ISO-8859-15'
+        correct.streams[0]["version"] = None
+    if correct.mimetype in ["text/plain", "text/csv"]:
+        correct.streams[0]["charset"] = "UTF-8"
+        correct.streams[0]["version"] = "(:unap)"
+    if filename == "valid__iso8859.txt":
+        correct.streams[0]["charset"] = "ISO-8859-15"
 
     evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
-    ['filename', 'mimetype'],
+    ["filename", "mimetype"],
     [
         ("invalid_1.1_missing_data.odt",
          "application/vnd.oasis.opendocument.text"),
@@ -169,7 +171,8 @@ def test_scraper_valid(filename, mimetype, class_, evaluate_scraper):
          "application/vnd.oasis.opendocument.presentation"),
         ("invalid_11.0_missing_data.ppt", "application/vnd.ms-powerpoint"),
         ("invalid_15.0_missing_data.pptx", "application/vnd.openxml"
-                                           "formats-officedocument.presentationml.presentation"),
+                                           "formats-officedocument."
+                                           "presentationml.presentation"),
         ("invalid_1.1_missing_data.ods",
          "application/vnd.oasis.opendocument.spreadsheet"),
         ("invalid_11.0_missing_data.xls", "application/vnd.ms-excel"),
@@ -181,192 +184,227 @@ def test_scraper_valid(filename, mimetype, class_, evaluate_scraper):
          "application/vnd.oasis.opendocument.formula"),
         ("invalid__empty.doc", "application/msword"),
     ])
-def test_invalid_office(filename, mimetype, evaluate_scraper):
+def test_invalid_office(filename, mimetype):
     """Test OfficeFileMagic scraper with invalid files."""
     result_dict = {
-        'purpose': 'Test invalid file.',
-        'stdout_part': '',
-        'stderr_part': 'do not match'}
+        "purpose": "Test invalid file.",
+        "stdout_part": "",
+        "stderr_part": "Unsupported MIME type"}
     correct = parse_results(filename, mimetype,
                             result_dict, True)
-    scraper = OfficeFileMagic(correct.filename, correct.mimetype, True,
-                              correct.params)
+    params = correct.params
+    params["mimetype"] = correct.mimetype
+    scraper = MagicScraper(correct.filename, True, params)
     scraper.scrape_file()
 
-    if 'empty' in filename:
-        correct.streams[0]['mimetype'] = 'inode/x-empty'
-        correct.mimetype = 'inode/x-empty'
+    if "empty" in filename:
+        correct.streams[0]["mimetype"] = "inode/x-empty"
+        correct.mimetype = "inode/x-empty"
     else:
-        correct.streams[0]['mimetype'] = 'application/octet-stream'
-        correct.mimetype = 'application/octet-stream'
+        correct.streams[0]["mimetype"] = "application/octet-stream"
+        correct.mimetype = "application/octet-stream"
 
     correct.version = None
-    correct.streams[0]['version'] = None
+    correct.streams[0]["version"] = None
 
-    evaluate_scraper(scraper, correct)
+    assert not scraper.well_formed
+    assert not scraper.streams
+    assert correct.stdout_part in scraper.messages()
+    assert correct.stderr_part in scraper.errors()
 
 
 @pytest.mark.parametrize(
-    ['filename', 'mimetype', 'class_'],
+    ["filename", "mimetype"],
     [
-        ("invalid_1.0_no_closing_tag.xml", "text/xml", XmlFileMagic),
-        ("invalid_1.0_no_doctype.xhtml", "application/xhtml+xml",
-         XhtmlFileMagic),
-        ("invalid_4.01_nodoctype.html", "text/html", HtmlFileMagic),
-        ("invalid_5.0_nodoctype.html", "text/html", HtmlFileMagic),
-        ("invalid_1.4_removed_xref.pdf", "application/pdf", PdfFileMagic),
-        ("invalid_1.0_missing_field.arc", "application/x-internet-archive",
-         ArcFileMagic),
+        ("invalid_1.0_no_closing_tag.xml", "text/xml"),
+        ("invalid_1.0_no_doctype.xhtml", "application/xhtml+xml"),
+        ("invalid_4.01_nodoctype.html", "text/html"),
+        ("invalid_5.0_nodoctype.html", "text/html"),
+        ("invalid_1.4_removed_xref.pdf", "application/pdf"),
+        ("invalid_1.0_missing_field.arc", "application/x-internet-archive"),
     ])
-def test_invalid_markdown_pdf_arc(filename, mimetype, class_,
-                                  evaluate_scraper):
+def test_invalid_markdown_pdf_arc(filename, mimetype, evaluate_scraper):
     """Test scrapers for invalid XML, XHTML, HTML, pdf and arc files."""
     result_dict = {
-        'purpose': 'Test invalid file.',
-        'stdout_part': 'successfully',
-        'stderr_part': ''}
+        "purpose": "Test invalid file.",
+        "stdout_part": "successfully",
+        "stderr_part": ""}
     correct = parse_results(filename, mimetype, result_dict, True)
-    scraper = class_(correct.filename, correct.mimetype, True, correct.params)
+    params = correct.params
+    params["mimetype"] = correct.mimetype
+    scraper = MagicScraper(correct.filename, True, params)
     scraper.scrape_file()
 
     correct.well_formed = True
 
-    if 'empty' in filename:
-        correct.streams[0]['mimetype'] = 'inode/x-empty'
+    if "empty" in filename:
+        correct.streams[0]["mimetype"] = "inode/x-empty"
 
-    if class_ == HtmlFileMagic:
+    if correct.mimetype == "text/html":
         correct.version = None
-        correct.streams[0]['version'] = None
-    if class_ in [XhtmlFileMagic]:
-        correct.streams[0]['stream_type'] = 'text'
-    if class_ in [HtmlFileMagic, XmlFileMagic, XhtmlFileMagic]:
-        correct.streams[0]['charset'] = 'UTF-8'
+        correct.streams[0]["version"] = None
+    if correct.mimetype == "application/xhtml+xml":
+        correct.streams[0]["stream_type"] = "text"
 
     evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
-    ['filename', 'mimetype', 'class_'],
+    ["filename", "mimetype"],
     [
-        ("invalid_1.2_wrong_header.png", "image/png", PngFileMagic),
-        ("invalid_1.01_no_start_marker.jpg", "image/jpeg", JpegFileMagic),
-        ("invalid__data_missing.jp2", "image/jp2", Jp2FileMagic),
-        ("invalid_6.0_wrong_byte_order.tif", "image/tiff", TiffFileMagic),
+        ("invalid_1.2_wrong_header.png", "image/png"),
+        ("invalid_1.01_no_start_marker.jpg", "image/jpeg"),
+        ("invalid__data_missing.jp2", "image/jp2"),
+        ("invalid_6.0_wrong_byte_order.tif", "image/tiff"),
     ])
-def test_invalid_images(filename, mimetype, class_, evaluate_scraper):
+def test_invalid_images(filename, mimetype):
     """Test scrapes for invalid image files."""
     result_dict = {
-        'purpose': 'Test invalid file.',
-        'stdout_part': '',
-        'stderr_part': 'do not match'}
+        "purpose": "Test invalid file.",
+        "stdout_part": "",
+        "stderr_part": "Unsupported MIME type"}
     correct = parse_results(filename, mimetype, result_dict, True)
-    scraper = class_(correct.filename, correct.mimetype, True, correct.params)
+    params = correct.params
+    params["mimetype"] = correct.mimetype
+    scraper = MagicScraper(correct.filename, True, params)
     scraper.scrape_file()
 
-    if 'empty' in filename:
-        correct.streams[0]['mimetype'] = 'inode/x-empty'
-        correct.mimetype = 'inode/x-empty'
+    if "empty" in filename:
+        correct.streams[0]["mimetype"] = "inode/x-empty"
+        correct.mimetype = "inode/x-empty"
     else:
-        correct.streams[0]['mimetype'] = 'application/octet-stream'
-        correct.mimetype = 'application/octet-stream'
+        correct.streams[0]["mimetype"] = "application/octet-stream"
+        correct.mimetype = "application/octet-stream"
 
     correct.version = None
-    correct.streams[0]['version'] = None
+    correct.streams[0]["version"] = None
 
-    evaluate_scraper(scraper, correct)
+    assert not scraper.well_formed
+    assert not scraper.streams
+    assert correct.stdout_part in scraper.messages()
+    assert correct.stderr_part in scraper.errors()
 
 
 @pytest.mark.parametrize(
-    ['filename', 'mimetype'],
+    ["filename", "mimetype"],
     [
         ("invalid__binary_data.txt", "text/plain"),
         ("invalid__empty.txt", "text/plain"),
     ])
-def test_invalid_text(filename, mimetype, evaluate_scraper):
+def test_invalid_text(filename, mimetype):
     """Test TextFileMagic with invalid files."""
     result_dict = {
-        'purpose': 'Test invalid file.',
-        'stdout_part': '',
-        'stderr_part': 'do not match'}
+        "purpose": "Test invalid file.",
+        "stdout_part": "",
+        "stderr_part": "Unsupported MIME type"}
     correct = parse_results(filename, mimetype,
                             result_dict, True)
-    scraper = TextFileMagic(correct.filename, correct.mimetype, True,
-                            correct.params)
+    params = correct.params
+    params["mimetype"] = correct.mimetype
+    scraper = MagicScraper(correct.filename, True, params)
     scraper.scrape_file()
 
-    if 'empty' in filename:
-        correct.streams[0]['mimetype'] = 'inode/x-empty'
-        correct.mimetype = 'inode/x-empty'
+    if "empty" in filename:
+        correct.streams[0]["mimetype"] = "inode/x-empty"
+        correct.mimetype = "inode/x-empty"
     else:
-        correct.streams[0]['mimetype'] = 'application/octet-stream'
-        correct.mimetype = 'application/octet-stream'
+        correct.streams[0]["mimetype"] = "application/octet-stream"
+        correct.mimetype = "application/octet-stream"
 
     correct.version = None
-    correct.streams[0]['version'] = None
-    correct.streams[0]['charset'] = None
+    correct.streams[0]["version"] = None
+    correct.streams[0]["charset"] = None
 
-    evaluate_scraper(scraper, correct)
+    assert not scraper.well_formed
+    assert not scraper.streams
+    assert correct.stdout_part in scraper.messages()
+    assert correct.stderr_part in scraper.errors()
+
+
+@pytest.mark.parametrize(
+    "filepath",
+    ["tests/data/text_xml/valid_1.0_catalog.xml",
+     "tests/data/application_xhtml+xml/valid_1.0.xhtml"])
+def test_wrong_mime_with_xml(filepath):
+    """
+    Test giving wrong MIME type for text/xml or application/xhtml+xml file.
+
+    This should cause an error to be recorded by the scraper, as those scrapers
+    need the MIME type information from outside.
+    """
+    scraper = MagicScraper(filepath, True, {"mimetype": "wrong/mime"})
+    scraper.scrape_file()
+    assert not scraper.well_formed
+    assert not scraper.streams
+    assert "does not match" in scraper.errors()
+
+
+def test_no__mime_given():
+    """Test that an error is recorded when no MIME type is given."""
+    scraper = MagicScraper("tests/data/text_plain/valid__utf8.txt", True, {})
+    with pytest.raises(AttributeError) as error:
+        scraper.scrape_file()
+    assert "not given a parameter dict containing mimetype" in str(error.value)
+    assert not scraper.well_formed
+    assert not scraper.streams
 
 
 def test_no_wellformed():
     """Test scraper without well-formed check."""
-    scraper = JpegFileMagic('tests/data/image_jpeg/valid_1.01.jpg',
-                            'image/jpeg', False)
+    scraper = MagicScraper("tests/data/image_jpeg/valid_1.01.jpg", False,
+                           {"mimetype": "image/jpeg"})
     scraper.scrape_file()
-    assert 'Skipping scraper' not in scraper.messages()
+    assert "Skipping scraper" not in scraper.messages()
     assert scraper.well_formed is None
 
 
 @pytest.mark.parametrize(
-    ['mime', 'ver', 'class_'],
+    ["mime", "ver"],
     [
-        ('application/vnd.oasis.opendocument.text', '1.1', OfficeFileMagic),
-        ('application/msword', '11.0', OfficeFileMagic),
-        ('application/vnd.openxmlformats-officedocument.wordprocessingml'
-         '.document', '15.0', OfficeFileMagic),
-        ('application/vnd.oasis.opendocument.presentation', '1.1',
-         OfficeFileMagic),
-        ('application/vnd.ms-powerpoint', '11.0', OfficeFileMagic),
-        ('application/vnd.openxmlformats-officedocument.presentationml'
-         '.presentation', '15.0', OfficeFileMagic),
-        ('application/vnd.oasis.opendocument.spreadsheet', '1.1',
-         OfficeFileMagic),
-        ('application/vnd.ms-excel', '8.0', OfficeFileMagic),
-        ('application/vnd.openxmlformats-officedocument.spreadsheetml'
-         '.sheet', '15.0', OfficeFileMagic),
-        ('application/vnd.oasis.opendocument.graphics', '1.1',
-         OfficeFileMagic),
-        ('application/vnd.oasis.opendocument.formula', '1.0', OfficeFileMagic),
-        ('image/png', '1.2', PngFileMagic),
-        ('image/jpeg', '1.01', JpegFileMagic),
-        ('image/jp2', '', Jp2FileMagic),
-        ('image/tiff', '6.0', TiffFileMagic),
-        ('text/plain', '', TextFileMagic),
-        ('text/xml', '1.0', XmlFileMagic),
-        ('application/xhtml+xml', '1.0', XhtmlFileMagic),
-        ('application/pdf', '1.4', PdfFileMagic),
-        ('application/x-internet-archive', '1.0', ArcFileMagic),
+        ("application/vnd.oasis.opendocument.text", "1.1"),
+        ("application/msword", "11.0"),
+        ("application/vnd.openxmlformats-officedocument.wordprocessingml"
+         ".document", "15.0"),
+        ("application/vnd.oasis.opendocument.presentation", "1.1"),
+        ("application/vnd.ms-powerpoint", "11.0"),
+        ("application/vnd.openxmlformats-officedocument.presentationml"
+         ".presentation", "15.0"),
+        ("application/vnd.oasis.opendocument.spreadsheet", "1.1"),
+        ("application/vnd.ms-excel", "8.0"),
+        ("application/vnd.openxmlformats-officedocument.spreadsheetml"
+         ".sheet", "15.0"),
+        ("application/vnd.oasis.opendocument.graphics", "1.1"),
+        ("application/vnd.oasis.opendocument.formula", "1.0"),
+        ("image/png", "1.2"),
+        ("image/jpeg", "1.01"),
+        ("image/jp2", ""),
+        ("image/tiff", "6.0"),
+        ("text/plain", ""),
+        ("text/xml", "1.0"),
+        ("application/xhtml+xml", "1.0"),
+        ("application/pdf", "1.4"),
+        ("application/x-internet-archive", "1.0"),
     ]
 )
-def test_is_supported_allow(mime, ver, class_):
+def test_is_supported_allow(mime, ver):
     """Test is_supported method."""
-    assert class_.is_supported(mime, ver, True)
-    assert class_.is_supported(mime, None, True)
-    assert class_.is_supported(mime, ver, False)
-    assert class_.is_supported(mime, 'foo', True)
-    assert not class_.is_supported('foo', ver, True)
+    assert MagicScraper.is_supported(mime, ver, True)
+    assert MagicScraper.is_supported(mime, None, True)
+    assert MagicScraper.is_supported(mime, ver, False)
+    assert MagicScraper.is_supported(mime, "foo", True)
+    assert not MagicScraper.is_supported("foo", ver, True)
 
 
 @pytest.mark.parametrize(
-    ['mime', 'ver', 'class_'],
+    ["mime", "ver"],
     [
-        ('text/html', '4.01', HtmlFileMagic),
+        ("text/html", "4.01"),
     ]
 )
-def test_is_supported_deny(mime, ver, class_):
+def test_is_supported_deny(mime, ver):
     """Test is_supported method."""
-    assert class_.is_supported(mime, ver, True)
-    assert not class_.is_supported(mime, None, True)
-    assert class_.is_supported(mime, ver, False)
-    assert not class_.is_supported(mime, 'foo', True)
-    assert not class_.is_supported('foo', ver, True)
+    assert MagicScraper.is_supported(mime, ver, True)
+    assert MagicScraper.is_supported(mime, None, True)
+    assert MagicScraper.is_supported(mime, ver, False)
+    assert not MagicScraper.is_supported(mime, "foo", True)
+    assert not MagicScraper.is_supported("foo", ver, True)

@@ -41,6 +41,7 @@ from file_scraper.jhove.jhove_scraper import (JHoveGifScraper, JHoveHtmlScraper,
                                               JHovePdfScraper, JHoveWavScraper)
 from file_scraper.lxml.lxml_scraper import LxmlScraper
 from file_scraper.mediainfo.mediainfo_scraper import MediainfoScraper
+from file_scraper.magic_scraper.magic_scraper import MagicScraper
 from file_scraper.office.office_scraper import OfficeScraper
 from file_scraper.pil.pil_scraper import PilScraper
 from file_scraper.pngcheck.pngcheck_scraper import PngcheckScraper
@@ -86,7 +87,7 @@ def iter_scrapers(mimetype, version, check_wellformed=True, params=None):
                 LxmlScraper, MediainfoScraper, OfficeScraper, PilScraper,
                 PngcheckScraper, PsppScraper, SchematronScraper, TextfileScraper,
                 VerapdfScraper, VnuScraper, XmllintScraper, GzipWarctoolsScraper,
-                WarcWarctoolsScraper, ArcWarctoolsScraper]
+                WarcWarctoolsScraper, ArcWarctoolsScraper, MagicScraper]
 
     for scraper in scrapers:
         if scraper.is_supported(mimetype, version, check_wellformed, params):
