@@ -37,13 +37,8 @@ class PilScraper(BaseScraper):
             n_frames = None
 
         mimetype = PIL.Image.MIME[pil.format]
-        if not n_frames:
-            pil_index = 0
+        n_frames = getattr(pil, 'n_frames', 1)
+        for pil_index in range(0, n_frames):
             for md_class in self._supported_metadata:
                 if md_class.is_supported(mimetype):
                     self.streams.append(md_class(pil, pil_index))
-        else:
-            for pil_index in range(0, n_frames):
-                for md_class in self._supported_metadata:
-                    if md_class.is_supported(mimetype):
-                        self.streams.append(md_class(pil, pil_index))
