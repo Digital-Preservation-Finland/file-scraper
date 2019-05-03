@@ -86,6 +86,7 @@ class WarcWarctoolsScraper(BaseScraper):
             filtered_errors = [line for line in shell.stderr.split(b"\n")
                                if b"ignored line" not in line]
             self._errors.append(filtered_errors)
+            return
 
         self._messages.append(ensure_str(shell.stdout))
 
@@ -100,11 +101,9 @@ class WarcWarctoolsScraper(BaseScraper):
                 line = warc_fd.readline()
         except Exception as exception:  # pylint: disable=broad-except
             # Compressed but corrupted gzip file
+            print "taalla"
             self._errors.append(str(exception))
             return
-
-        for md_class in self._supported_metadata:
-            self.streams.append(md_class(line))
 
         self._messages.append("File was analyzed successfully.")
         for md_class in self._supported_metadata:
