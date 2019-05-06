@@ -5,10 +5,10 @@ try:
 except ImportError:
     pass
 
-from file_scraper.mediainfo.mediainfo_meta import (MovMediainfoMeta,
-                                                   MkvMediainfoMeta,
-                                                   WavMediainfoMeta,
-                                                   MpegMediainfoMeta)
+from file_scraper.mediainfo.mediainfo_model import (MovMediainfoMeta,
+                                                    MkvMediainfoMeta,
+                                                    WavMediainfoMeta,
+                                                    MpegMediainfoMeta)
 from file_scraper.base import BaseScraper
 from file_scraper.utils import decode
 
