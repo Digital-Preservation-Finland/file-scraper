@@ -1,8 +1,8 @@
 """File metadata scraper."""
 from file_scraper.iterator import iter_scrapers, iter_detectors
 from file_scraper.jhove.jhove_scraper import JHoveUtf8Scraper
-from file_scraper.scrapers.textfile import CheckTextFile
-from file_scraper.scrapers.dummy import FileExists
+from file_scraper.textfile.textfile_scraper import TextfileScraper
+from file_scraper.dummy.dummy_scraper import FileExists
 from file_scraper.utils import (hexdigest, ensure_text, generate_metadata_dict)
 
 LOSE = [None, '(:unav)', '(:unap)']
@@ -120,7 +120,7 @@ class Scraper(object):
         """Find out if file is a text file.
         :returns: True, if file is a text file, false otherwise
         """
-        scraper = CheckTextFile(self.filename, self.mimetype)
+        scraper = TextfileScraper(self.filename, self.mimetype)
         scraper.scrape_file()
         return scraper.well_formed
 

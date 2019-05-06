@@ -36,7 +36,7 @@ class _TestScraper(BaseScraper):
 
 def test_is_textfile(monkeypatch):
     """Test that CheckTextFile well-formed value is returned."""
-    monkeypatch.setattr(file_scraper.scraper, 'CheckTextFile', _TestScraper)
+    monkeypatch.setattr(file_scraper.scraper, 'TextfileScraper', _TestScraper)
     scraper = Scraper('textfile')
     assert scraper.is_textfile()
     scraper = Scraper('binaryfile')
