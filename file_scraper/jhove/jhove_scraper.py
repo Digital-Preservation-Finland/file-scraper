@@ -19,6 +19,7 @@ class JHoveScraperBase(BaseScraper):
     _supported_metadata = []
     _jhove_module = None
     _only_wellformed = True
+    _force_metadata_use = False  # Skip checking if metadata model is supported
 
     def __init__(self, filename, check_wellformed=True, params=None):
         """
@@ -66,7 +67,7 @@ class JHoveScraperBase(BaseScraper):
             mimetype = "audio/x-wav"
 
         for md_class in self._supported_metadata:
-            if md_class.is_supported(mimetype):
+            if md_class.is_supported(mimetype) or self._force_metadata_use:
                 self.streams.append(md_class(self._report, self._errors))
 
         self._check_supported()
@@ -124,6 +125,7 @@ class JHoveUtf8Scraper(JHoveScraperBase):
     """
     _jhove_module = "UTF8-hul"
     _supported_metadata = [JHoveUtf8Meta]
+    _force_metadata_use = True
 
     def _check_supported(self):
         """Do nothing: we dont care about the mimetype or version."""

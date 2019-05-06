@@ -1,4 +1,4 @@
-""""TODO"""
+""""Scraper for video and audio files scraped using MediaInfo."""
 
 try:
     from pymediainfo import MediaInfo

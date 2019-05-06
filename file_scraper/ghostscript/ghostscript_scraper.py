@@ -39,9 +39,3 @@ class GhostscriptScraper(BaseScraper):
             self._errors.append("Ghostscript returned return code: %s"
                                 % shell.returncode)
         self._messages.append(shell.stdout.decode('iso-8859-1').encode('utf8'))
-
-        # TODO _check_supported() omitted as the scraper always returns
-        #       (:unav). Possible other solutions might be to either allow
-        #       (:unav) (problems with the iterator?) or overwrite the checking
-        #       method.
-#        self._check_supported()

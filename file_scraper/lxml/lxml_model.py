@@ -20,12 +20,12 @@ class LxmlMeta(BaseMeta):
         super(LxmlMeta, self).__init__()
 
     @metadata()
-    def _charset(self):
+    def charset(self):
         """Return charset."""
         return self._tree.docinfo.encoding
 
     # pylint: disable=no-self-use
     @metadata()
-    def _stream_type(self):
+    def stream_type(self):
         """Return file type."""
         return "text"

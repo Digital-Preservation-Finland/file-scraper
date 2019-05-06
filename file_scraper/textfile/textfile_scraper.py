@@ -21,7 +21,6 @@ class TextfileScraper(BaseScraper):
         """
         Detect mimetype with the soft option that excludes libmagick.
 
-        :shell_output: TODO
         :returns: file mimetype
         """
         shell = Shell([

@@ -67,8 +67,6 @@ class CsvMeta(BaseMeta):
             messages.append("CSV file was checked successfully.")
 
     # pylint: disable=no-self-use
-    # TODO hard-coded, is this ok? Anything does not seem to be actually
-    #      the MIME type in this or other scrapers.
     @metadata()
     def mimetype(self):
         return "text/csv"
@@ -76,7 +74,7 @@ class CsvMeta(BaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        return ""
+        return ""  # TODO should this be unap?
 
     @metadata()
     def delimiter(self):

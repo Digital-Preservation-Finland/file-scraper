@@ -17,17 +17,6 @@ class LxmlScraper(BaseScraper):
     _supported_metadata = [LxmlMeta]
     _only_wellformed = True  # Only well-formed check
 
-    def __init__(self, filename, check_wellformed=True, params=None):
-        """
-        Initialize scraper.
-
-        :filename: File path
-        :check_wellformed: True for the full well-formed check, False for just
-                           detection and metadata scraping
-        :params: Extra parameters: delimiter and separator
-        """
-        super(LxmlScraper, self).__init__(filename, check_wellformed, params)
-
     @classmethod
     def is_supported(cls, mimetype, version=None,
                      check_wellformed=True, params=None):
@@ -65,6 +54,3 @@ class LxmlScraper(BaseScraper):
         for md_class in self._supported_metadata:
             self.streams.append(md_class(tree))
         self._messages.append("Encoding metadata found.")
-
-        # TODO disabled, MIME or version not scraped
-        #self._check_supported()

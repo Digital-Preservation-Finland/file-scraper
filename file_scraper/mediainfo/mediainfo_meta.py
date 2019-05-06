@@ -410,7 +410,7 @@ class WavMediainfoMeta(BaseMediainfoMeta):
     @metadata()
     def mimetype(self):
         """Returns mimetype for stream."""
-        return self._mimetype_guess  # TODO just the guess??
+        return self._mimetype_guess  # TODO just the guess? Unav better?
 
     @metadata()
     def version(self):

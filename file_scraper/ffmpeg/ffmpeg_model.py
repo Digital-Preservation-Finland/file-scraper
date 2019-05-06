@@ -4,7 +4,12 @@ from file_scraper.utils import metadata
 
 
 class FFMpegMeta(BaseMeta):
-    """Metadata model for mpeg, mp4, MP1s, MP2T, MP2P, quicktime, matroska and dv files."""
+    """
+    Metadata model for a selection of video files.
+
+    This metadata model is used with mpeg, mp4, MP1s, MP2T, MP2P, quicktime,
+    matroska and dv files.
+    """
 
     # Supported mimetypes
     _supported = {"video/mpeg": [], "video/mp4": [],

@@ -25,7 +25,7 @@ This module tests that:
 import os
 import pytest
 
-from file_scraper.csv.csv_scraper import CsvScraper, CsvMeta
+from file_scraper.csv.csv_scraper import CsvScraper
 from tests.common import parse_results
 
 MIMETYPE = "text/csv"
@@ -125,7 +125,7 @@ def test_scraper(testpath, csv_text, result_dict, prefix, header,
     with open(os.path.join(testpath, '%s.csv' % prefix), 'wb') as outfile:
         outfile.write(csv_text)
 
-    words = outfile.name.rsplit("/", 1)
+    words = outfile.name.rsplit('/', 1)
     correct = parse_results(words[1], '', result_dict,
                             True, basepath=words[0])
     correct.mimetype = MIMETYPE
@@ -147,11 +147,11 @@ def test_pdf_as_csv():
     scraper.scrape_file()
 
     assert not scraper.well_formed, scraper.messages() + scraper.errors()
-    assert "successfully" not in scraper.messages()
+    assert 'successfully' not in scraper.messages()
     assert scraper.errors()
 
 
-def test_no_parameters(testpath):
+def test_no_parameters(testpath, evaluate_scraper):
     """Test scraper without separate parameters."""
     with open(os.path.join(testpath, 'valid__.csv'), 'wb') as outfile:
         outfile.write(VALID_CSV)
@@ -159,11 +159,22 @@ def test_no_parameters(testpath):
     scraper = CsvScraper(outfile.name)
     scraper.scrape_file()
 
-    # TODO
-#    assert scraper.mimetype == MIMETYPE
-#    assert scraper.version == ''
-    assert 'successfully' in scraper.messages()
-    assert scraper.well_formed
+    correct = parse_results('valid__.csv', MIMETYPE,
+                            {'purpose': 'Test valid file on default settings.',
+                             'stdout_part': 'successfully',
+                             'stderr_part': '',
+                             'streams':
+                             {0: {'stream_type': 'text',
+                                  'index': 0,
+                                  'mimetype': MIMETYPE,
+                                  'version': '',
+                                  'delimiter': ',',
+                                  'separator': '\r\n',
+                                  'first_line': ['1997', 'Ford', 'E350',
+                                                 'ac, abs, moon',
+                                                 '3000.00']}}},
+                            True)
+    evaluate_scraper(scraper, correct)
 
 
 def test_no_wellformed(testpath):

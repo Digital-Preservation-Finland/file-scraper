@@ -258,14 +258,23 @@ class JHoveUtf8Meta(JHoveBaseMeta):
     @metadata()
     def charset(self):
         """Return charset from JHOVE."""
-        if self.well_formed:
+        if "Well-formed and valid" in get_field(self._report, "status"):
             return "UTF-8"
-        return self.report_field("format")
+        return get_field(self._report, "format")
 
+    # pylint: disable=no-self-use
     @metadata()
     def stream_type(self):
         """Return file type."""
         return "text"
+
+    @metadata()
+    def mimetype(self):
+        return "(:unav)"
+
+    @metadata()
+    def version(self):
+        return "(:unav)"
 
     def check_supported(self):
         """Do nothing: we dont care about the mimetype or version."""

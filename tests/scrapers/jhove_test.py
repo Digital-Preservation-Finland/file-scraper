@@ -172,38 +172,37 @@ def test_scraper_tiff(filename, result_dict, evaluate_scraper):
     evaluate_scraper(scraper, correct)
 
 
-# TODO UTF-8 scraping is not implemented yet, so the test is disabled
-#@pytest.mark.parametrize(
-#    ["filename", "result_dict"],
-#    [
-#        ("valid__utf8.txt", {
-#            "purpose": "Test valid UTF-8 file.",
-#            "stdout_part": "Well-Formed and valid",
-#            "stderr_part": ""}),
-#        ("valid__ascii.txt", {
-#            "purpose": "Test valid ASCII file.",
-#            "stdout_part": "Well-Formed and valid",
-#            "stderr_part": ""}),
-#        ("valid__iso8859.txt", {
-#            "purpose": "Test valid ISO-8859 file, which is invalid.",
-#            "inverse": True,
-#            "stdout_part": "",
-#            "stderr_part": "Not valid second byte of UTF-8 encoding"})
-#    ]
-#)
-#def test_scraper_utf8(filename, result_dict, evaluate_scraper):
-#    """Test utf8 text file scraping."""
-#    correct = parse_results(filename, "text/plain",
-#                            result_dict, True)
-#    scraper = JHoveUtf8Scraper(correct.filename, True, correct.params)
-#    scraper.scrape_file()
-#    correct.mimetype = None
-#    correct.version = None
-#    correct.streams[0]["mimetype"] = None
-#    correct.streams[0]["version"] = None
-#    correct.streams[0]["charset"] = "UTF-8"
-#
-#    evaluate_scraper(scraper, correct)
+@pytest.mark.parametrize(
+    ["filename", "result_dict"],
+    [
+        ("valid__utf8.txt", {
+            "purpose": "Test valid UTF-8 file.",
+            "stdout_part": "Well-Formed and valid",
+            "stderr_part": ""}),
+        ("valid__ascii.txt", {
+            "purpose": "Test valid ASCII file.",
+            "stdout_part": "Well-Formed and valid",
+            "stderr_part": ""}),
+        ("valid__iso8859.txt", {
+            "purpose": "Test valid ISO-8859 file, which is invalid.",
+            "inverse": True,
+            "stdout_part": "",
+            "stderr_part": "Not valid second byte of UTF-8 encoding"})
+    ]
+)
+def test_scraper_utf8(filename, result_dict, evaluate_scraper):
+    """Test utf8 text file scraping."""
+    correct = parse_results(filename, "text/plain",
+                            result_dict, True)
+    scraper = JHoveUtf8Scraper(correct.filename, True, correct.params)
+    scraper.scrape_file()
+    correct.mimetype = None
+    correct.version = None
+    correct.streams[0]["mimetype"] = "(:unav)"
+    correct.streams[0]["version"] = "(:unav)"
+    correct.streams[0]["charset"] = "UTF-8"
+
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -414,7 +413,7 @@ def test_scraper_wav(filename, result_dict, version, evaluate_scraper):
         (JHoveGifScraper, "valid_1989a.gif", "image/gif"),
         (JHoveTiffScraper, "valid_6.0.tif", "image/tiff"),
         (JHovePdfScraper, "valid_1.4.pdf", "application/pdf"),
-#        (JHoveUtf8Scraper, "valid__utf8.txt", "text/plain"), # TODO enable
+        (JHoveUtf8Scraper, "valid__utf8.txt", "text/plain"),
         (JHoveJpegScraper, "valid_1.01.jpg", "image/jpeg"),
         (JHoveHtmlScraper, "valid_4.01.html", "text/html"),
         (JHoveWavScraper, "valid__wav.wav", "audio/x-wav")
