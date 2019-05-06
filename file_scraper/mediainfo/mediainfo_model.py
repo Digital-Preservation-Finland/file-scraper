@@ -415,8 +415,6 @@ class WavMediainfoMeta(BaseMediainfoMeta):
     @metadata()
     def version(self):
         """Returns version."""
-        if self.stream_type() != "audio":
-            return None
         if self._tracks[0].bext_present is not None \
                 and self._tracks[0].bext_present == "Yes":
             return "2"
@@ -447,7 +445,7 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
 
         This subclass has its own initializer in order to allow setting
         the container_stream despite _hascontainer() method returning
-        false for wav files.
+        false for mpeg files.
 
         :tracks: list of tracks containing all tracks in the file
         :index: index of the track represented by this metadata model
@@ -502,7 +500,14 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
 
     @metadata()
     def version(self):
-        """Return version of stream.."""
+        """Return version of stream."""
+        # mp3 "container" does not know the version, so it has to be checked
+        # from the first stream
+        if (self.mimetype() == "audio/mpeg" and
+                self._stream.track_type == "General" and
+                len(self._tracks) >= 2):
+            return str(self._tracks[1].format_version)[-1]
+
         if self._stream.format_version is not None:
             return str(self._stream.format_version)[-1]
         if self.stream_type() in ["videocontainer", "video", "audio"]:

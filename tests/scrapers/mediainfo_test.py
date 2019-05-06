@@ -144,7 +144,6 @@ def test_mediainfo_scraper_wav(filename, result_dict, evaluate_scraper):
                                params={"mimetype": mimetype})
     scraper.scrape_file()
 
-    correct.streams[0]["version"] = None
     del correct.streams[0]["stream_type"]
     if "2" in filename:
         correct.streams[1]["version"] = "2"
@@ -249,7 +248,6 @@ def test_mediainfo_scraper_mp3(filename, result_dict, evaluate_scraper):
     scraper = MediainfoScraper(correct.filename, True,
                                params={"mimetype": mimetype})
     scraper.scrape_file()
-    correct.streams[0]["version"] = None
 
     if "empty" in filename:
         assert correct.stdout_part in scraper.messages()
