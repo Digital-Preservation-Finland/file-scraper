@@ -2,6 +2,7 @@
 # flake8: noqa
 from file_scraper.detectors import FidoDetector, MagicDetector
 from file_scraper.csv.csv_scraper import CsvScraper
+from file_scraper.dpx.dpx_scraper import DpxScraper
 from file_scraper.dummy.dummy_scraper import ScraperNotFound
 from file_scraper.ffmpeg.ffmpeg_scraper import FFMpegScraper
 from file_scraper.jhove.jhove_scraper import (JHoveGifScraper, JHoveHtmlScraper,
@@ -54,7 +55,7 @@ def iter_scrapers(mimetype, version, check_wellformed=True, params=None):
                 LxmlScraper, MediainfoScraper, OfficeScraper, PilScraper,
                 PngcheckScraper, PsppScraper, SchematronScraper,
                 VerapdfScraper, VnuScraper, XmllintScraper, GzipWarctoolsScraper,
-                WarcWarctoolsScraper, ArcWarctoolsScraper, MagicScraper]
+                WarcWarctoolsScraper, ArcWarctoolsScraper, MagicScraper, DpxScraper]
 
     for scraper in scrapers:
         if scraper.is_supported(mimetype, version, check_wellformed, params):
