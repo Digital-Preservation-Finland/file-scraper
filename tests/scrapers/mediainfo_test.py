@@ -68,7 +68,7 @@ def test_mediainfo_scraper_mov(filename, result_dict, mimetype,
     scraper.scrape_file()
     if ".dv" in filename:
         correct.streams[0]["version"] = None
-        correct.streams[0]["stream_type"] = None
+        correct.streams[0].pop("stream_type", None)
 
     if "empty" in filename:
         assert correct.stdout_part in scraper.messages()
@@ -254,6 +254,7 @@ def test_mediainfo_scraper_mp3(filename, result_dict, evaluate_scraper):
         assert correct.stderr_part in scraper.errors()
         assert not scraper.streams
     else:
+        correct.streams[0].pop("stream_type", None)
         evaluate_scraper(scraper, correct)
 
 

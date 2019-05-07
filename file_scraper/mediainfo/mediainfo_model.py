@@ -54,9 +54,14 @@ class BaseMediainfoMeta(BaseMeta):
     def stream_type(self):
         """Return stream type."""
         if self._stream.track_type == "General":
-            if not self._hascontainer():
-                return None
-            return "videocontainer"
+            if self._hascontainer():
+                return "videocontainer"
+
+            # handle "containers" that are not videocontainers
+            if self.container_stream is self._stream:
+                raise SkipElementException
+
+            return None
         return self._stream.track_type.lower()
 
     @metadata()
@@ -322,8 +327,11 @@ class MovMediainfoMeta(BaseMediainfoMeta):
     @metadata()
     def version(self):
         """Return version of stream."""
-        if self.stream_type() in ["videocontainer", "video", "audio"]:
-            return ""
+        try:
+            if self.stream_type() in ["videocontainer", "video", "audio"]:
+                return ""
+        except SkipElementException:  # "container" stream of dv
+            return None
         return None
 
     # pylint: disable=inconsistent-return-statements

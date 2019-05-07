@@ -87,7 +87,7 @@ MPEGTS_VIDEO = dict(MPEG1_VIDEO, **{
     'data_rate': '(:unav)', 'index': 1, 'sound': 'Yes', 'version': '2'})
 
 MPEG1_AUDIOCONTAINER = {
-    'mimetype': 'audio/mpeg', 'index': 0, 'version': None, 'stream_type': None}
+    'mimetype': 'audio/mpeg', 'index': 0, 'version': None}
 
 MPEG1_AUDIO = {
     'mimetype': 'audio/mpeg', 'index': 0,
