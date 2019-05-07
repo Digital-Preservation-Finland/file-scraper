@@ -80,13 +80,13 @@ class Scraper(object):
         Ideally the MIME type and version from the scraper are used, but if
         they are not used, values supplied by the detector are used.
         """
-        if self.streams[0]['mimetype'] is not None:
+        if self.streams[0]['mimetype'] not in [None, "(:unav)"]:
             self.mimetype = self.streams[0]['mimetype']
         else:
             self.streams[0]['mimetype'] = self.mimetype
-        if self.streams[0]['version'] is not None:
+        if self.streams[0]['version'] not in [None, "(:unav)"]:
             self.version = self.streams[0]['version']
-        else:
+        elif self.version:
             self.streams[0]['version'] = self.version
 
     def scrape(self, check_wellformed=True):
