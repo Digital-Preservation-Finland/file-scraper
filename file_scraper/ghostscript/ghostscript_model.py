@@ -9,8 +9,8 @@ class GhostscriptMeta(BaseMeta):
     # pylint: disable=no-self-use
 
     # Supported mimetype and versions
-    _supported = {'application/pdf': ['1.7', 'A-2a', 'A-2b', 'A-2u', 'A-3a',
-                                      'A-3b', 'A-3u']}
+    _supported = {"application/pdf": ["1.7", "A-2a", "A-2b", "A-2u", "A-3a",
+                                      "A-3b", "A-3u"]}
 
     def __init__(self):
         pass
@@ -18,4 +18,4 @@ class GhostscriptMeta(BaseMeta):
     @metadata()
     def stream_type(self):
         """Return file type."""
-        return 'binary'
+        return "binary"

@@ -17,7 +17,7 @@ class PsppMeta(BaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        return ""
+        return "(:unav)"
 
     @metadata()
     def stream_type(self):

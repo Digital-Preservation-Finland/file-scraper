@@ -176,26 +176,23 @@ def test_check_supported():
     scraper = BaseScraperBasic('testfilename', 'test/mimetype')
     scraper.streams.append(BaseMetaCustom('test/mimetype', None))
     scraper._check_supported()
-    assert scraper.errors() == ''
+    assert "type test/mimetype with version None is not" in scraper.errors()
 
     scraper = BaseScraperBasic('testfilename', 'test/mimetype')
     scraper.streams.append(BaseMetaCustom('test/mimetype', '0.0'))
-    with pytest.raises(UnsupportedTypeException) as err:
-        scraper._check_supported()
-    assert 'version 0.0 is not supported.' in str(err.value)
+    scraper._check_supported()
+    assert 'test/mimetype with version 0.0 is not' in scraper.errors()
 
     scraper = BaseScraperBasic('testfilename', 'test/falsemime')
     scraper.streams.append(BaseMetaCustom('test/falsemime', '0.1'))
-    with pytest.raises(UnsupportedTypeException) as err:
-        scraper._check_supported()
+    scraper._check_supported()
     assert ('MIME type test/falsemime with version 0.1 is not supported.' in
-            str(err.value))
+            scraper.errors())
 
     scraper = BaseScraperBasic('testfilename', None)
     scraper.streams.append(BaseMetaCustom(None, '0.1'))
-    with pytest.raises(UnsupportedTypeException) as err:
-        scraper._check_supported()
-    assert 'None is not a supported MIME type.' in str(err.value)
+    scraper._check_supported()
+    assert 'None is not a supported MIME type.' in scraper.errors()
 
 
 def test_base_detector():

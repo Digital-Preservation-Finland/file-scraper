@@ -54,3 +54,5 @@ class LxmlScraper(BaseScraper):
         for md_class in self._supported_metadata:
             self.streams.append(md_class(tree))
         self._messages.append("Encoding metadata found.")
+
+        self._check_supported(allow_unav_mime=True, allow_unav_version=True)

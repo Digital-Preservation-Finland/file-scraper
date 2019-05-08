@@ -134,6 +134,7 @@ class XmllintScraper(BaseScraper):
                     self._messages.append("Success: Document is well-formed "
                                           "but does not contain schema.")
                     self._add_streams(tree)
+                    self._check_supported()
                     return
 
             (exitcode, stdout, stderr) = self.exec_xmllint(schema=self._schema)
@@ -149,6 +150,7 @@ class XmllintScraper(BaseScraper):
             os.remove(self._schema)
 
         self._add_streams(tree)
+        self._check_supported()
 
     def construct_xsd(self, document_tree):
         """

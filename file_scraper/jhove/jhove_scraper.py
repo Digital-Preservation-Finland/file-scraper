@@ -70,7 +70,7 @@ class JHoveScraperBase(BaseScraper):
             if md_class.is_supported(mimetype) or self._force_metadata_use:
                 self.streams.append(md_class(self._report, self._errors))
 
-        self._check_supported()
+        self._check_supported(allow_unav_version=True)
 
 
 class JHoveGifScraper(JHoveScraperBase):
@@ -127,6 +127,8 @@ class JHoveUtf8Scraper(JHoveScraperBase):
     _supported_metadata = [JHoveUtf8Meta]
     _force_metadata_use = True
 
-    def _check_supported(self):
+    def _check_supported(self, allow_unav_mime=False,
+                         allow_unav_version=False,
+                         allow_unap_version=False):
         """Do nothing: we dont care about the mimetype or version."""
         pass

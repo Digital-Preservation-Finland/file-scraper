@@ -36,3 +36,5 @@ class CsvScraper(BaseScraper):
         except IOError as err:
             self._errors.append("Error when reading the file: " +
                                 str(err))
+
+        self._check_supported(allow_unap_version=True)

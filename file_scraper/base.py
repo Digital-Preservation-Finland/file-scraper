@@ -71,23 +71,53 @@ class BaseScraper(object):
         return any([x.is_supported(mimetype, version) for x in
                     cls._supported_metadata])
 
-    def _check_supported(self):
+    def _check_supported(self, allow_unav_mime=False,
+                         allow_unav_version=False,
+                         allow_unap_version=False):
         """
         Check that the determined MIME type and version are supported.
 
-        :raises: UnsupportedTypeException if the MIME type and version are not
-                 supported
+        :allow_unav_mime: TODO
+        :allow_unav_version: TODO
         """
+        # TODO ok to check just the first stream? that should be where the
+        #      problematic cases (e.g. pdf) are, but theoretically some other
+        #      stream could also have bad MIME type or version. The old
+        #      implementation also checked just scraper.mimetype and
+        #      scraper.version, not streams.
         mimetype = self.streams[0].mimetype()
         version = self.streams[0].version()
 
         if mimetype is None:
-            raise UnsupportedTypeException("None is not a supported MIME "
-                                           "type.")
-        elif not self.is_supported(mimetype, version):
-            raise UnsupportedTypeException("MIME type %s with version %s is "
-                                           "not supported." % (mimetype,
-                                                               version))
+            self._errors.append("None is not a supported MIME type.")
+
+        if allow_unav_mime and mimetype == "(:unav)":
+            return
+        if allow_unav_version and version == "(:unav)":
+            return
+        if allow_unap_version and version == "(:unap)":
+            return
+
+        for md_class in self._supported_metadata:
+            if mimetype in md_class._supported:
+                if version in md_class._supported[mimetype]:
+                    return
+
+        # No supporting metadata models found.
+        self._errors.append("MIME type %s with version %s is not supported." %
+                            (mimetype, version))
+#        raise UnsupportedTypeException("MIME type %s with version %s is "
+#                                       "not supported." % (mimetype,
+#                                                           version))
+
+
+#        if mimetype is None:
+#            raise UnsupportedTypeException("None is not a supported MIME "
+#                                           "type.")
+#        elif not self.is_supported(mimetype, version):
+#            raise UnsupportedTypeException("MIME type %s with version %s is "
+#                                           "not supported." % (mimetype,
+#                                                               version))
 
     def errors(self):
         """

@@ -74,7 +74,7 @@ class CsvMeta(BaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        return ""  # TODO should this be unap?
+        return "(:unap)"  # TODO was "", ok this way?
 
     @metadata()
     def delimiter(self):

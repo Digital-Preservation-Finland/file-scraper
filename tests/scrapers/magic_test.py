@@ -154,6 +154,8 @@ def test_scraper_valid(filename, mimetype, evaluate_scraper):
         correct.streams[0]["version"] = "(:unap)"
     if filename == "valid__iso8859.txt":
         correct.streams[0]["charset"] = "ISO-8859-15"
+    if mimetype == "text/html" or "vnd." in mimetype or "msword" in mimetype:
+        correct.streams[0]["version"] = "(:unav)"
 
     evaluate_scraper(scraper, correct)
 
@@ -241,8 +243,7 @@ def test_invalid_markdown_pdf_arc(filename, mimetype, evaluate_scraper):
         correct.streams[0]["mimetype"] = "inode/x-empty"
 
     if correct.mimetype == "text/html":
-        correct.version = None
-        correct.streams[0]["version"] = None
+        correct.streams[0]["version"] = "(:unav)"
     if correct.mimetype == "application/xhtml+xml":
         correct.streams[0]["stream_type"] = "text"
 

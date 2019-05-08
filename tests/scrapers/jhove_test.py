@@ -134,7 +134,7 @@ def test_scraper_gif(filename, result_dict, get_ver, evaluate_scraper):
         scraper.scrape_file()
         if not get_ver:
             correct.version = None
-            correct.streams[0]["version"] = None
+            correct.streams[0]["version"] = "(:unav)"
 
         evaluate_scraper(scraper, correct)
 
@@ -244,10 +244,10 @@ def test_scraper_invalid_pdfversion():
                                   "invalid_X_wrong_version.pdf".replace("X",
                                                                         ver),
                                   True)
-    with pytest.raises(UnsupportedTypeException) as exception_info:
-        scraper.scrape_file()
+    scraper.scrape_file()
     assert ("MIME type application/pdf with version 1.0 is not supported."
-            in str(exception_info))
+            in scraper.errors())
+    assert not scraper.well_formed
 
 
 @pytest.mark.parametrize(
@@ -278,7 +278,7 @@ def test_scraper_jpeg(filename, result_dict, evaluate_scraper):
     scraper = JHoveJpegScraper(correct.filename, True, correct.params)
     scraper.scrape_file()
     correct.version = None
-    correct.streams[0]["version"] = None
+    correct.streams[0]["version"] = "(:unav)"
 
     evaluate_scraper(scraper, correct)
 
@@ -402,7 +402,8 @@ def test_scraper_wav(filename, result_dict, version, evaluate_scraper):
         correct.mimetype = None
         correct.streams[0]["mimetype"] = None
     correct.version = version
-    correct.streams[0]["version"] = version
+    if "invalid" in filename or "2" not in filename:
+        correct.streams[0]["version"] = "(:unav)"
 
     evaluate_scraper(scraper, correct)
 

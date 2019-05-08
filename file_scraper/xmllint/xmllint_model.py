@@ -9,7 +9,7 @@ class XmllintMeta(BaseMeta):
     Xmllint metadata model.
     """
 
-    _supported = {"text/xml": []}  # Supported mimetype
+    _supported = {"text/xml": ["1.0"]}  # Supported mimetype
     _allow_versions = True
 
     def __init__(self, tree):

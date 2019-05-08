@@ -68,5 +68,5 @@ class MagicScraper(BaseScraper):
                     continue
                 self.streams.append(md_class(self.filename, self._errors))
 
-        self._check_supported()
+        self._check_supported(allow_unav_version=True, allow_unap_version=True)
         self._messages.append("The file was analyzed successfully.")

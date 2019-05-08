@@ -33,3 +33,5 @@ class PngcheckScraper(BaseScraper):
         # is not useful. Just add metadata models.
         for md_class in self._supported_metadata:
             self.streams.append(md_class())
+
+        self._check_supported(allow_unav_mime=True, allow_unav_version=True)

@@ -34,8 +34,8 @@ class WandImageMeta(BaseMeta):
 
     @metadata()
     def version(self):
-        """Return None as Wand does not know the version."""
-        return None
+        """Return (:unav) as Wand does not know the version."""
+        return "(:unav)"
 
     @metadata()
     def stream_type(self):

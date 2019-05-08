@@ -39,3 +39,5 @@ class GhostscriptScraper(BaseScraper):
             self._errors.append("Ghostscript returned return code: %s"
                                 % shell.returncode)
         self._messages.append(shell.stdout.decode('iso-8859-1').encode('utf8'))
+
+        self._check_supported(allow_unav_mime=True, allow_unav_version=True)

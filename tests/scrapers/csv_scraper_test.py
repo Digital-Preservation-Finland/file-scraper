@@ -130,6 +130,7 @@ def test_scraper(testpath, csv_text, result_dict, prefix, header,
                             True, basepath=words[0])
     correct.mimetype = MIMETYPE
     correct.streams[0]['mimetype'] = MIMETYPE
+    correct.streams[0]['version'] = "(:unap)"
     scraper = CsvScraper(
         correct.filename, True, params={
             'separator': correct.streams[0]['separator'],
@@ -174,6 +175,7 @@ def test_no_parameters(testpath, evaluate_scraper):
                                                  'ac, abs, moon',
                                                  '3000.00']}}},
                             True)
+    correct.streams[0]['version'] = "(:unap)"
     evaluate_scraper(scraper, correct)
 
 

@@ -42,3 +42,5 @@ class PilScraper(BaseScraper):
             for md_class in self._supported_metadata:
                 if md_class.is_supported(mimetype):
                     self.streams.append(md_class(pil, pil_index))
+
+        self._check_supported(allow_unav_version=True)

@@ -49,14 +49,17 @@ class JHoveBaseMeta(BaseMeta):
     @metadata()
     def version(self):
         """Return version given by JHove."""
-        return get_field(self._report, "version")
+        version = get_field(self._report, "version")
+        if version:
+            return version
+        return "(:unav)"
 
 
 class JHoveGifMeta(JHoveBaseMeta):
     """Metadata model for gif files scraped with JHove"""
     # pylint: disable=no-self-use
 
-    _supported = {"image/gif": []}
+    _supported = {"image/gif": ['1987a', '1989a']}
     _allow_versions = True
 
     @metadata()
@@ -70,7 +73,7 @@ class JHoveGifMeta(JHoveBaseMeta):
         """
         if get_field(self._report, "version"):
             return "19" + get_field(self._report, "version")
-        return None
+        return "(:unav)"
 
     @metadata()
     def stream_type(self):
@@ -147,13 +150,14 @@ class JHoveJpegMeta(JHoveBaseMeta):
     """Metadata model for jpeg files scraped with JHove"""
     # pylint: disable=no-self-use
 
-    _supported = {"image/jpeg": []}
+    _supported = {"image/jpeg": ['1.00', '1.01', '1.02', '2.0',
+                                 '2.1', '2.2', '2.2.1']}
     _allow_versions = True
 
     @metadata()
     def version(self):
         """Return version."""
-        return None
+        return "(:unav)"
 
     @metadata()
     def stream_type(self):
@@ -165,7 +169,7 @@ class JHoveTiffMeta(JHoveBaseMeta):
     """Metadata model for tiff files scraped with JHove"""
     # pylint: disable=no-self-use
 
-    _supported = {"image/tiff": []}
+    _supported = {"image/tiff": ['6.0']}
     _allow_versions = True
 
     @metadata()
@@ -201,7 +205,7 @@ class JHoveWavMeta(JHoveBaseMeta):
     """Metadata model for wav files scraped with JHove"""
     # pylint: disable=no-self-use
 
-    _supported = {"audio/x-wav": []}
+    _supported = {"audio/x-wav": ['2']}
     _allow_versions = True
 
     @metadata()
@@ -228,13 +232,13 @@ class JHoveWavMeta(JHoveBaseMeta):
         For now, we don"t accept RF64.
         """
         if get_field(self._report, "profile") is None:
-            return None
+            return "(:unav)"  # TODO this was None
         if "RF64" in get_field(self._report, "profile"):
             self._errors.append("RF64 is not a supported format")
         elif "BWF" in get_field(self._report, "profile"):
             return "2"
 
-        return None
+        return "(:unav)"  # TODO this was None too
 
     @metadata()
     def stream_type(self):

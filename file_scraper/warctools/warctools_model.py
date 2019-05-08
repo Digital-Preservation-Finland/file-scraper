@@ -44,7 +44,7 @@ class WarcWarctoolsMeta(BaseWarctoolsMeta):
     """Metadata models for Warcs"""
 
     # Supported mimetype and versions
-    _supported = {"application/warc": []}
+    _supported = {"application/warc": ["0.17", "0.18", "1.0"]}
     _allow_versions = True  # Allow any version
 
     def __init__(self, line):
@@ -74,7 +74,7 @@ class ArcWarctoolsMeta(BaseWarctoolsMeta):
     """Metadata model for Arcs."""
 
     # Supported mimetype and varsions
-    _supported = {"application/x-internet-archive": []}
+    _supported = {"application/x-internet-archive": ["1.0", "1.1"]}
     _allow_versions = True  # Allow any version
 
     @metadata()

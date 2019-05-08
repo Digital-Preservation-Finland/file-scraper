@@ -33,8 +33,8 @@ class BasePilMeta(BaseMeta):
     # pylint: disable=no-self-use
     @metadata()
     def version(self):
-        """Return version of file."""
-        return None
+        """PIL does not know the version, return (:unav)."""
+        return "(:unav)"
 
     @metadata()
     def stream_type(self):

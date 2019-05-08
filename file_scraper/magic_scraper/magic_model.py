@@ -141,7 +141,7 @@ class TextFileMagicMeta(TextMagicBaseMeta):
 class XmlFileMagicMeta(TextMagicBaseMeta):
     """Metadata model for xml files."""
 
-    _supported = {"text/xml": []}  # Supported mimetypes
+    _supported = {"text/xml": ["1.0"]}  # Supported mimetypes
     _starttag = "XML "             # Text before version in magic output
     _endtag = " "                  # Text after version in magic output
     _allow_versions = True         # Allow any version
@@ -173,7 +173,7 @@ class XhtmlFileMagicMeta(TextMagicBaseMeta):
     """Metadata model for xhtml files."""
 
     # Supported mimetypes
-    _supported = {"application/xhtml+xml": []}
+    _supported = {"application/xhtml+xml": ["1.0", "1.1"]}
     _starttag = "XML "      # Text before version in magic output
     _endtag = " "           # Text after version in magic output
     _allow_versions = True  # Allow any version
@@ -196,7 +196,7 @@ class HtmlFileMagicMeta(TextMagicBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        return None  # TODO should this be (:unav)? Cons: check_supported fails
+        return "(:unav)"
 
 
 class PdfFileMagicMeta(BinaryMagicBaseMeta):
@@ -214,33 +214,35 @@ class OfficeFileMagicMeta(BinaryMagicBaseMeta):
 
     # Supported mimetypes and versions
     _supported = {
-        "application/vnd.oasis.opendocument.text": [],
-        "application/vnd.oasis.opendocument.spreadsheet": [],
-        "application/vnd.oasis.opendocument.presentation": [],
-        "application/vnd.oasis.opendocument.graphics": [],
-        "application/vnd.oasis.opendocument.formula": [],
-        "application/msword": [],
-        "application/vnd.ms-excel": [],
-        "application/vnd.ms-powerpoint": [],
+        "application/vnd.oasis.opendocument.text": ["1.0", "1.1", "1.2"],
+        "application/vnd.oasis.opendocument.spreadsheet": ["1.0", "1.1",
+                                                           "1.2"],
+        "application/vnd.oasis.opendocument.presentation": ["1.0", "1.1",
+                                                            "1.2"],
+        "application/vnd.oasis.opendocument.graphics": ["1.0", "1.1", "1.2"],
+        "application/vnd.oasis.opendocument.formula": ["1.0", "1.2"],
+        "application/msword": ["8.0", "8.5", "9.0", "10.0", "11.0"],
+        "application/vnd.ms-excel": ["8.0", "9.0", "10.0", "11.0"],
+        "application/vnd.ms-powerpoint": ["8.0", "9.0", "10.0", "11.0"],
         "application/vnd.openxmlformats-officedocument.wordprocessingml."
-        "document": [],
+        "document": ["12.0", "14.0", "15.0"],
         "application/vnd.openxmlformats-officedocument."
-        "spreadsheetml.sheet": [],
+        "spreadsheetml.sheet": ["12.0", "14.0", "15.0"],
         "application/vnd.openxmlformats-officedocument.presentationml."
-        "presentation": []}
+        "presentation": ["12.0", "14.0", "15.0"]}
     _allow_versions = True  # Allow any version
 
     @metadata()
     def version(self):
         """Return version."""
-        return None  # TODO None? Or (:unav)?
+        return "(:unav)"  # TODO None? Or (:unav)? Was None
 
 
 class ArcFileMagicMeta(BinaryMagicBaseMeta):
     """Metadata model for Arc files."""
 
     # Supported mimetype
-    _supported = {"application/x-internet-archive": []}
+    _supported = {"application/x-internet-archive": ["1.0", "1.1"]}
     _allow_versions = True  # Allow any version
 
     @metadata()
@@ -265,7 +267,7 @@ class ArcFileMagicMeta(BinaryMagicBaseMeta):
 class PngFileMagicMeta(BinaryMagicBaseMeta):
     """Metadata model for PNG files."""
 
-    _supported = {"image/png": []}  # Supported mimetype
+    _supported = {"image/png": ["1.2"]}  # Supported mimetype
     _allow_versions = True  # Allow any version
 
     @metadata()
@@ -284,7 +286,8 @@ class PngFileMagicMeta(BinaryMagicBaseMeta):
 class JpegFileMagicMeta(BinaryMagicBaseMeta):
     """Metadata model for JPEG files."""
 
-    _supported = {"image/jpeg": []}  # Supported mimetype
+    _supported = {"image/jpeg": ["1.00", "1.01", "1.02", "2.0", "2.1",
+                                 "2.2", "2.2.1"]}  # Supported mimetype
     _starttag = "standard "  # Text before version in magic output
     _endtag = ","            # Text after version in magic output
     _allow_versions = True   # Allow any version
@@ -317,7 +320,7 @@ class Jp2FileMagicMeta(BinaryMagicBaseMeta):
 class TiffFileMagicMeta(BinaryMagicBaseMeta):
     """Metadata model for TIFF files."""
 
-    _supported = {"image/tiff": []}  # Supported mimetype
+    _supported = {"image/tiff": ["6.0"]}  # Supported mimetype
     _allow_versions = True  # Allow any version
 
     @metadata()
