@@ -5,7 +5,7 @@ from file_scraper.textfile.textfile_scraper import TextfileScraper
 from file_scraper.dummy.dummy_scraper import FileExists
 from file_scraper.utils import (hexdigest, ensure_text, generate_metadata_dict)
 
-LOSE = [None, '(:unav)', '(:unap)']
+LOSE = [None, '(:unav)']
 
 
 class Scraper(object):
@@ -88,6 +88,9 @@ class Scraper(object):
             self.version = self.streams[0]['version']
         elif self.version:
             self.streams[0]['version'] = self.version
+            # Also update the stream within the container if needed
+            if self.streams[1]['version'] == '(:unav)':
+                self.streams[1]['version'] = self.version
 
     def scrape(self, check_wellformed=True):
         """Scrape file and collect metadata.
