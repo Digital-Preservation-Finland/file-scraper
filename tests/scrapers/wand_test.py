@@ -107,9 +107,7 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
             correct.streams[0]["mimetype"]
         correct.streams[index]["stream_type"] = \
             correct.streams[0]["stream_type"]
-        correct.streams[index]["version"] = None
-    correct.version = None
-    correct.streams[0]["version"] = None
+        correct.streams[index]["version"] = "(:unav)"
 
     scraper = WandScraper(correct.filename)
     scraper.scrape_file()
@@ -132,8 +130,7 @@ def test_scraper_jpg(filename, result_dict, evaluate_scraper):
                             result_dict, True)
     if correct.well_formed:
         correct.streams[0]["compression"] = "jpeg"
-    correct.streams[0]["version"] = None
-    correct.version = None
+    correct.streams[0]["version"] = "(:unav)"
 
     scraper = WandScraper(correct.filename)
     scraper.scrape_file()
@@ -157,7 +154,7 @@ def test_scraper_jp2(filename, result_dict, evaluate_scraper):
     if correct.well_formed:
         correct.streams[0]["compression"] = "jpeg2000"
         correct.streams[0]["colorspace"] = "rgb"
-    correct.streams[0]["version"] = None
+    correct.streams[0]["version"] = "(:unav)"
     correct.version = None
 
     scraper = WandScraper(correct.filename)
@@ -181,7 +178,7 @@ def test_scraper_png(filename, result_dict, evaluate_scraper):
                             result_dict, True)
     if correct.well_formed:
         correct.streams[0]["compression"] = "zip"
-    correct.streams[0]["version"] = None
+    correct.streams[0]["version"] = "(:unav)"
     correct.version = None
 
     scraper = WandScraper(correct.filename)
@@ -212,8 +209,8 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
                             result_dict, True)
     if correct.well_formed:
         correct.streams[0]["compression"] = "lzw"
-    correct.streams[0]["version"] = None
-    correct.version = None
+    for stream in correct.streams.values():
+        stream["version"] = "(:unav)"
 
     scraper = WandScraper(correct.filename)
     scraper.scrape_file()

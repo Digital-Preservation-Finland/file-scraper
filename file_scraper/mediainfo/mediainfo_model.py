@@ -47,8 +47,8 @@ class BaseMediainfoMeta(BaseMeta):
         if self._stream.format_version is not None:
             return self._stream.format_version.replace("Version ", "")
         if self.stream_type() in ["videocontainer", "video", "audio"]:
-            return ""
-        return None
+            return "(:unav)"
+        return "(:unav)"
 
     @metadata()
     def stream_type(self):
@@ -327,12 +327,13 @@ class MovMediainfoMeta(BaseMediainfoMeta):
     @metadata()
     def version(self):
         """Return version of stream."""
+        # TODO should this just return unav? earlier had either "" or None
         try:
             if self.stream_type() in ["videocontainer", "video", "audio"]:
-                return ""
+                return "(:unav)"
         except SkipElementException:  # "container" stream of dv
-            return None
-        return None
+            return "(:unav)"
+        return "(:unav)"
 
     # pylint: disable=inconsistent-return-statements
     @metadata()
@@ -519,5 +520,5 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
         if self._stream.format_version is not None:
             return str(self._stream.format_version)[-1]
         if self.stream_type() in ["videocontainer", "video", "audio"]:
-            return ""
-        return None
+            return "(:unav)"
+        return "(:unav)"

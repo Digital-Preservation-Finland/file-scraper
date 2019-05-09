@@ -64,7 +64,7 @@ class MediainfoScraper(BaseScraper):
                     md_object = md_class(mediainfo.tracks, index, mime_guess)
                     self.streams.append(md_object)
 
-        self._check_supported()
+        self._check_supported(allow_unav_version=True)
 
 
 def _sort_tracks(mediainfo):

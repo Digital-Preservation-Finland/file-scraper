@@ -66,8 +66,10 @@ def test_mediainfo_scraper_mov(filename, result_dict, mimetype,
     scraper = MediainfoScraper(correct.filename, True,
                                params={"mimetype": mimetype})
     scraper.scrape_file()
+
+    for stream in correct.streams.values():
+        stream["version"] = "(:unav)"
     if ".dv" in filename:
-        correct.streams[0]["version"] = None
         correct.streams[0].pop("stream_type", None)
 
     if "empty" in filename:
@@ -219,6 +221,8 @@ def test_mediainfo_scraper_mp4(filename, result_dict, evaluate_scraper):
                                params={"mimetype": mimetype})
     scraper.scrape_file()
 
+    for stream in correct.streams.values():
+        stream["version"] = "(:unav)"
     if "empty" in filename:
         assert correct.stdout_part in scraper.messages()
         assert correct.stderr_part in scraper.errors()
@@ -281,7 +285,9 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
     scraper = MediainfoScraper(correct.filename, True,
                                params={"mimetype": mimetype})
     scraper.scrape_file()
-
+    for stream in correct.streams.values():
+        if stream["mimetype"] == "video/MP2T":
+            stream["version"] = "(:unav)"
     if "empty" in filename:
         assert correct.stdout_part in scraper.messages()
         assert correct.stderr_part in scraper.errors()
