@@ -9,29 +9,48 @@ from six import iteritems
 from file_scraper.scraper import Scraper
 from tests.common import get_files
 
-# These files will result none for some elements
+# These files will result (:unav) for some elements
 # For GIFs and TIFFs with 3 images inside, the version is missing from the
 # second and third streams, but exists in the first one.
 # MPEG-TS file contains "menu" stream, where version is None.
 # Quicktime file contains a timecode track, where version is None.
-NONE_ELEMENTS = {
-    'tests/data/application_x-internet-archive/valid_1.0_.arc.gz': ['version'],
-    'tests/data/application_msword/valid_11.0.doc': ['version'],
-    'tests/data/application_vnd.ms-excel/valid_11.0.xls': ['version'],
-    'tests/data/application_vnd.ms-powerpoint/valid_11.0.ppt': ['version'],
-    'tests/data/application_vnd.oasis.opendocument.formula/valid_1.0'
-    '.odf': ['version'],
-    'tests/data/application_vnd.openxmlformats-officedocument.presentationml'
-    '.presentation/valid_15.0.pptx': ['version'],
-    'tests/data/application_vnd.openxmlformats-officedocument.spreadsheetml'
-    '.sheet/valid_15.0.xlsx': ['version'],
-    'tests/data/application_vnd.openxmlformats-officedocument.word'
-    'processingml.document/valid_15.0.docx': ['version'],
-    'tests/data/image_gif/valid_1989a.gif': ['version', 'version'],
-    'tests/data/image_tiff/valid_6.0_multiple_tiffs.tif': [
-        'version', 'version'],
-    'tests/data/video_MP2T/valid_.ts': ['version'],
-    'tests/data/video_quicktime/valid__dv_wav.mov': ['version']}
+UNAV_ELEMENTS = {
+    "tests/data/application_x-internet-archive/valid_1.0_.arc.gz": ["version",
+                                                                    "version"],
+    "tests/data/application_msword/valid_11.0.doc": ["version", "version"],
+    "tests/data/application_vnd.ms-excel/valid_11.0.xls": ["version",
+                                                           "version"],
+    "tests/data/application_vnd.ms-powerpoint/valid_11.0.ppt": ["version",
+                                                                "version"],
+    "tests/data/application_vnd.oasis.opendocument.formula/valid_1.0"
+    ".odf": ["version", "version"],
+    "tests/data/application_vnd.openxmlformats-officedocument.presentationml"
+    ".presentation/valid_15.0.pptx": ["version", "version"],
+    "tests/data/application_vnd.openxmlformats-officedocument.spreadsheetml"
+    ".sheet/valid_15.0.xlsx": ["version", "version"],
+    "tests/data/application_vnd.openxmlformats-officedocument.word"
+    "processingml.document/valid_15.0.docx": ["version", "version"],
+    "tests/data/image_gif/valid_1989a.gif": ["version", "version"],
+    "tests/data/image_tiff/valid_6.0_multiple_tiffs.tif": [
+        "version", "version"],
+    "tests/data/video_MP2T/valid_.ts": ["version", "codec_creator_app_version",
+                                        "codec_creator_app", "data_rate",
+                                        "codec_creator_app_version",
+                                        "codec_creator_app", "bits_per_sample",
+                                        "codec_creator_app_version",
+                                        "codec_creator_app", "version"],
+    "tests/data/video_quicktime/valid__dv_wav.mov": ["version", "version",
+                                                     "version", "version"],
+    "tests/data/audio_mpeg/valid_1.mp3": ["bits_per_sample",
+                                          "codec_creator_app_version",
+                                          "duration", "data_rate",
+                                          "codec_creator_app"],
+    "tests/data/video_mp4/valid__h264_aac.mp4": ["version", "version",
+                                                 "bits_per_sample", "version"],
+    "tests/data/video_mpeg/valid_1.m1v": ["codec_creator_app_version",
+                                          "codec_creator_app"],
+    "tests/data/video_mpeg/valid_2.m2v": ["codec_creator_app_version",
+                                          "codec_creator_app"]}
 
 # These are actually valid with another mimetype or version
 # or due to special parameters or missing scraper
@@ -41,35 +60,32 @@ NONE_ELEMENTS = {
 # invalid_1.0_no_doctype.xhtml - is valid text/xml
 # Xml files would require schema or catalog, this is tested in
 # unit tests of Xmllint.
-# Scraper is not found for HTML files without doctype.
 IGNORE_INVALID = [
-    'tests/data/application_pdf/invalid_1.4_wrong_version.pdf',
-    'tests/data/application_x-spss-por/invalid__header_corrupted.por',
-    'tests/data/application_x-spss-por/invalid__truncated.por',
-    'tests/data/application_xhtml+xml/invalid_1.0_no_doctype.xhtml',
-    'tests/data/text_html/invalid_5.0_nodoctype.html',
-    'tests/data/text_html/invalid_4.01_nodoctype.html']
-IGNORE_VALID = ['tests/data/text_xml/valid_1.0_xsd.xml',
-                'tests/data/text_xml/valid_1.0_local_xsd.xml',
-                'tests/data/text_xml/valid_1.0_catalog.xml']
+    "tests/data/application_pdf/invalid_1.4_wrong_version.pdf",
+    "tests/data/application_x-spss-por/invalid__header_corrupted.por",
+    "tests/data/application_x-spss-por/invalid__truncated.por",
+    "tests/data/application_xhtml+xml/invalid_1.0_no_doctype.xhtml"]
+IGNORE_VALID = ["tests/data/text_xml/valid_1.0_xsd.xml",
+                "tests/data/text_xml/valid_1.0_local_xsd.xml",
+                "tests/data/text_xml/valid_1.0_catalog.xml"]
 
 # Ignore these we know that warc, arc and dpx files are not currently
 # supported for full metadata scraping
 IGNORE_FOR_METADATA = IGNORE_VALID + [
-    'tests/data/application_warc/valid_0.17.warc',
-    'tests/data/application_warc/valid_0.18.warc',
-    'tests/data/application_warc/valid_1.0.warc',
-    'tests/data/application_warc/valid_1.0_.warc.gz',
-    'tests/data/application_x-internet-archive/valid_1.0.arc',
-    'tests/data/application_x-internet-archive/valid_1.0_.arc.gz',
-    'tests/data/image_x-dpx/valid_2.0.dpx']
+    "tests/data/application_warc/valid_0.17.warc",
+    "tests/data/application_warc/valid_0.18.warc",
+    "tests/data/application_warc/valid_1.0.warc",
+    "tests/data/application_warc/valid_1.0_.warc.gz",
+    "tests/data/application_x-internet-archive/valid_1.0.arc",
+    "tests/data/application_x-internet-archive/valid_1.0_.arc.gz",
+    "tests/data/image_x-dpx/valid_2.0.dpx"]
 
 # These invalid files are recognized as application/gzip
 DIFFERENT_MIMETYPE_INVALID = {
-    'tests/data/application_warc/invalid__missing_data.warc.gz':
-        'application/gzip',
-    'tests/data/application_x-internet-archive/invalid__missing_data.arc.gz':
-        'application/gzip'}
+    "tests/data/application_warc/invalid__missing_data.warc.gz":
+        "application/gzip",
+    "tests/data/application_x-internet-archive/invalid__missing_data.arc.gz":
+        "application/gzip"}
 
 
 def _assert_valid_scraper_result(scraper, fullname, mimetype, well_formed):
@@ -87,18 +103,19 @@ def _assert_valid_scraper_result(scraper, fullname, mimetype, well_formed):
     assert scraper.mimetype == mimetype
     assert scraper.streams not in [None, {}]
 
-    none = []
+    unavs = []
     for _, stream in iteritems(scraper.streams):
         for key, stream_value in iteritems(stream):
-            if stream_value is None:
-                none.append(key)
-    if fullname in NONE_ELEMENTS:
-        assert none == NONE_ELEMENTS[fullname]
+            if stream_value == "(:unav)":
+                unavs.append(key)
+
+    if fullname in UNAV_ELEMENTS:
+        assert unavs == UNAV_ELEMENTS[fullname]
     else:
-        assert not none
+        assert not unavs
 
 
-@pytest.mark.parametrize(('fullname', 'mimetype'), get_files(well_formed=True))
+@pytest.mark.parametrize(("fullname", "mimetype"), get_files(well_formed=True))
 def test_valid_combined(fullname, mimetype):
     """Integration test for valid files.
     - Test that mimetype matches.
@@ -108,18 +125,19 @@ def test_valid_combined(fullname, mimetype):
     - Ignore few files because of required parameter or missing scraper.
     """
     if fullname in IGNORE_VALID:
-        pytest.skip('[%s] in ignore' % fullname)
+        pytest.skip("[%s] in ignore" % fullname)
 
     scraper = Scraper(fullname)
     scraper.scrape()
 
     for _, info in iteritems(scraper.info):
-        assert not info['errors']
+        assert not info["errors"]
 
     _assert_valid_scraper_result(scraper, fullname, mimetype, True)
 
 
-@pytest.mark.parametrize(('fullname', 'mimetype'), get_files(well_formed=False))
+@pytest.mark.parametrize(("fullname", "mimetype"),
+                         get_files(well_formed=False))
 def test_invalid_combined(fullname, mimetype):
     """Integration test for all invalid files.
     - Test that well_formed is False and mimetype is expected.
@@ -130,23 +148,23 @@ def test_invalid_combined(fullname, mimetype):
     - Skip empty files, since those are detected as inode/x-empty
       and scraper is not found.
     """
-    if 'empty' in fullname or fullname in IGNORE_INVALID:
-        pytest.skip('[%s] has empty or in invalid ignore' % fullname)
+    if "empty" in fullname or fullname in IGNORE_INVALID:
+        pytest.skip("[%s] has empty or in invalid ignore" % fullname)
 
     scraper = Scraper(fullname)
     scraper.scrape()
 
     for _, info in iteritems(scraper.info):
-        if scraper.mimetype != mimetype and info['class'] == 'ScraperNotFound':
-            pytest.skip(('[%s] mimetype mismatches with scraper '
-                         'and scraper not found') % fullname)
+        if scraper.mimetype != mimetype and info["class"] == "ScraperNotFound":
+            pytest.skip(("[%s] mimetype mismatches with scraper "
+                         "and scraper not found") % fullname)
 
     assert scraper.well_formed is False  # Could be also None (wrong)
     assert scraper.mimetype == mimetype or (
-            fullname in DIFFERENT_MIMETYPE_INVALID)
+        fullname in DIFFERENT_MIMETYPE_INVALID)
 
 
-@pytest.mark.parametrize(('fullname', 'mimetype'), get_files(well_formed=True))
+@pytest.mark.parametrize(("fullname", "mimetype"), get_files(well_formed=True))
 def test_without_wellformed(fullname, mimetype):
     """Test the case where metadata is collected without well-formedness check.
     - Test that well-formed is always None.
@@ -156,7 +174,7 @@ def test_without_wellformed(fullname, mimetype):
     - Test a random element existence for image, video, audio and text.
     """
     if fullname in IGNORE_FOR_METADATA:
-        pytest.skip('[%s] in ignore' % fullname)
+        pytest.skip("[%s] in ignore" % fullname)
 
     scraper = Scraper(fullname)
     scraper.scrape(False)
@@ -164,53 +182,38 @@ def test_without_wellformed(fullname, mimetype):
     _assert_valid_scraper_result(scraper, fullname, mimetype, False)
 
     mimepart = mimetype.split("/")[0]
-    assert mimepart not in ['image', 'video', 'text', 'audio'] or \
-           mimepart in scraper.streams[0]['stream_type']
+    if mimepart in ["image", "video", "text", "audio"]:
+        assert mimepart in scraper.streams[1]["stream_type"]
 
-    elem_dict = {'image': 'colorspace', 'video': 'color',
-                 'videocontainer': 'codec_name',
-                 'text': 'charset', 'audio': 'num_channels'}
-    for _, stream in iteritems(scraper.streams):
-        assert stream['stream_type'] is not None
-        if stream['stream_type'] in elem_dict:
-            assert elem_dict[stream['stream_type']] in stream
+    elem_dict = {"image": "colorspace", "video": "color",
+                 "videocontainer": "codec_name",
+                 "text": "charset", "audio": "num_channels"}
+    for index, stream in iteritems(scraper.streams):
+        # container stream has stream_type only for container formats
+        if index != 0 or "stream_type" in stream:
+            assert stream["stream_type"] is not None
+            if stream["stream_type"] in elem_dict:
+                assert elem_dict[stream["stream_type"]] in stream
 
-    if 'text/csv' in mimetype:
-        assert 'delimiter' in scraper.streams[0]
+    if "text/csv" in mimetype:
+        assert "delimiter" in scraper.streams[0]
 
 
-@pytest.mark.parametrize(('fullname', 'mimetype'), get_files(well_formed=True))
+@pytest.mark.parametrize(("fullname", "mimetype"), get_files(well_formed=True))
 def test_coded_filename(testpath, fullname, mimetype):
     """Integration test with unicode and utf-8 filename and with all scrapers.
     - Test that unicode filenames work with all mimetypes
     - Test that utf-8 encoded filenames work with all mimetypes
     """
     _ = mimetype
-    if fullname in IGNORE_VALID + ['tests/data/text_xml/valid_1.0_dtd.xml']:
-        pytest.skip('[%s] in ignore' % fullname)
+    if fullname in IGNORE_VALID + ["tests/data/text_xml/valid_1.0_dtd.xml"]:
+        pytest.skip("[%s] in ignore" % fullname)
     ext = fullname.rsplit(".", 1)[-1]
-    unicode_name = os.path.join(testpath, u'äöå.%s' % ext)
+    unicode_name = os.path.join(testpath, u"äöå.%s" % ext)
     shutil.copy(fullname, unicode_name)
     scraper = Scraper(unicode_name)
     scraper.scrape()
     assert scraper.well_formed
-    scraper = Scraper(unicode_name.encode('utf-8'))
+    scraper = Scraper(unicode_name.encode("utf-8"))
     scraper.scrape()
     assert scraper.well_formed
-
-
-@pytest.mark.parametrize(
-    ['fullname', 'mimetype'],
-    [
-        ('tests/data/text_html/invalid_5.0_nodoctype.html', 'text/html'),
-        ('tests/data/text_html/invalid_4.01_nodoctype.html', 'text/html')
-    ]
-) 
-def test_missing_scraper(fullname, mimetype):
-    """Integration test with missing scraper.
-    - Scraper is missing for the HTML files due to missing doctype.
-    """
-    scraper = Scraper(fullname)
-    scraper.scrape()
-    assert scraper.info[len(scraper.info)-1]['class'] == 'ScraperNotFound'
-    assert scraper.well_formed is None
