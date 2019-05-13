@@ -24,9 +24,6 @@ import pytest
 from file_scraper.pil.pil_scraper import PilScraper
 from tests.common import parse_results
 
-# TODO remove
-from file_scraper.utils import generate_metadata_dict
-
 VALID_MSG = "successfully"
 INVALID_MSG = "Error in analyzing file."
 
