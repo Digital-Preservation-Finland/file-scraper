@@ -10,10 +10,8 @@ This module tests:
       correctly
 """
 import subprocess
-import pytest
 import file_scraper.base
-from file_scraper.base import (Shell, BaseScraper, BaseMeta, BaseDetector,
-                               UnsupportedTypeException)
+from file_scraper.base import (Shell, BaseScraper, BaseMeta, BaseDetector)
 from file_scraper.utils import metadata
 
 

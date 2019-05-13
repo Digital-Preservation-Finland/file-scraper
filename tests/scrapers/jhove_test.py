@@ -99,7 +99,6 @@ from file_scraper.jhove.jhove_scraper import (JHoveGifScraper,
                                               JHovePdfScraper,
                                               JHoveWavScraper,
                                               JHoveUtf8Scraper)
-from file_scraper.base import UnsupportedTypeException
 from tests.common import parse_results
 
 

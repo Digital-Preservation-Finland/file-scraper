@@ -99,25 +99,13 @@ class BaseScraper(object):
             return
 
         for md_class in self._supported_metadata:
-            if mimetype in md_class._supported:
-                if version in md_class._supported[mimetype]:
+            if mimetype in md_class.supported_mimetypes():
+                if version in md_class.supported_mimetypes()[mimetype]:
                     return
 
         # No supporting metadata models found.
         self._errors.append("MIME type %s with version %s is not supported." %
                             (mimetype, version))
-#        raise UnsupportedTypeException("MIME type %s with version %s is "
-#                                       "not supported." % (mimetype,
-#                                                           version))
-
-
-#        if mimetype is None:
-#            raise UnsupportedTypeException("None is not a supported MIME "
-#                                           "type.")
-#        elif not self.is_supported(mimetype, version):
-#            raise UnsupportedTypeException("MIME type %s with version %s is "
-#                                           "not supported." % (mimetype,
-#                                                               version))
 
     def errors(self):
         """
@@ -215,6 +203,11 @@ class BaseMeta(object):
             if is_metadata(getattr(self, method)):
                 yield getattr(self, method)
 
+    @classmethod
+    def supported_mimetypes(cls):
+        """Return the dict containing supported mimetypes and versions."""
+        return cls._supported
+
 
 class Shell(object):
     """Shell command handler for non-Python 3rd party software."""
@@ -278,11 +271,6 @@ class Shell(object):
             "stderr": self._stderr,
             "stdout": self._stdout
             }
-
-
-class UnsupportedTypeException(Exception):
-    """Exception for when scraper is used with unsupported MIME type/version"""
-    pass
 
 
 class SkipElementException(Exception):
