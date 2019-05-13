@@ -48,6 +48,7 @@ MISSING_END_QUOTE = VALID_CSV + \
                     b'1999,Chevy,"Venture ""Extended Edition"","",4900.00\n'
 
 
+# pylint: disable=too-many-arguments
 @pytest.mark.parametrize(
     ['csv_text', 'result_dict', 'prefix', 'header'],
     [
@@ -139,6 +140,7 @@ def test_scraper(testpath, csv_text, result_dict, prefix, header,
     scraper.scrape_file()
 
     evaluate_scraper(scraper, correct)
+# pylint: enable=too-many-arguments
 
 
 def test_pdf_as_csv():

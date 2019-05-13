@@ -24,10 +24,8 @@ class _TestScraper(BaseScraper):
     """Monkey patch for CheckTextFile class."""
 
     def scrape_file(self):
+        """Do nothing."""
         pass
-
-    def _stream_type(self):
-        return None
 
     @property
     def well_formed(self):

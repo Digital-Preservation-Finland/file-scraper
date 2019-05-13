@@ -438,7 +438,7 @@ def test_overlapping_error():
         (["seq", "5"], 0, b"1\n2\n3\n4\n5\n", ""),
         (["cd", "nonexistentdir"], 1, "",
          b"/usr/bin/cd: line 2: cd: nonexistentdir: No such file or directory\n"
-        )
+         )
     ]
 )
 def test_run_command(command, expected_statuscode, expected_stdout,

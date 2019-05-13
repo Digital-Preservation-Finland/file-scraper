@@ -282,6 +282,7 @@ def test_scraper_jpeg(filename, result_dict, evaluate_scraper):
     evaluate_scraper(scraper, correct)
 
 
+# pylint: disable=too-many-arguments
 @pytest.mark.parametrize(
     ["filename", "result_dict", "mimetype", "charset", "version"],
     [
@@ -354,6 +355,7 @@ def test_scraper_html(filename, result_dict, mimetype, charset, version,
         correct.streams[0]["mimetype"] = "text/html"
 
     evaluate_scraper(scraper, correct)
+# pylint: enable=too-many-arguments
 
 
 @pytest.mark.parametrize(

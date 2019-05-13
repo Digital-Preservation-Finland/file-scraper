@@ -118,7 +118,7 @@ def test_scraper_invalid_file(filename, mimetype, evaluate_scraper):
 
 def _scrape(filename, mimetype):
     scraper = OfficeScraper(os.path.join(BASEPATH, mimetype.replace("/", "_"),
-                                  filename))
+                                         filename))
     scraper.scrape_file()
     return scraper.well_formed
 

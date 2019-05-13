@@ -3,8 +3,9 @@ Tests for DPX scraper.
 
 This module tests that:
     - MIME type, version, streams and well-formedness of files are scraped
-      correctly using DpxScraper scraper when full well-formed check is performed.
-      This is done with a valid file and files with different errors in them:
+      correctly using DpxScraper scraper when full well-formed check is
+      performed. This is done with a valid file and files with different errors
+      in them:
         - empty file
         - file size is larger than is reported in the header
         - last byte of the file is missing

@@ -180,6 +180,7 @@ class BaseMeta(object):
         """
         return 0
 
+    # pylint: disable=unused-argument
     @classmethod
     def is_supported(cls, mimetype, version=None, params=None):
         """
@@ -189,6 +190,7 @@ class BaseMeta(object):
 
         :mimetype: MIME type to be checked
         :version: Version to be checked, defaults to None
+        :params: Parameter dict that can be used by some metadata models.
         :returns: True if MIME type is supported and all versions are allowed
                   or the version is supported too.
         """
@@ -197,6 +199,7 @@ class BaseMeta(object):
         if version in cls._supported[mimetype] + [None] or cls._allow_versions:
             return True
         return False
+    # pylint: enable=unused-argument
 
     def iterate_metadata_methods(self):
         """Iterate through all metadata methods."""
