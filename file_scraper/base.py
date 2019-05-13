@@ -77,8 +77,9 @@ class BaseScraper(object):
         """
         Check that the determined MIME type and version are supported.
 
-        :allow_unav_mime: TODO
-        :allow_unav_version: TODO
+        :allow_unav_mime: True if (:unav) is an acceptable MIME type
+        :allow_unav_version: True if (:unav) is an acceptable version
+        :allow_unap_version: True if (:unap) is an acceptable version
         """
         # TODO ok to check just the first stream? that should be where the
         #      problematic cases (e.g. pdf) are, but theoretically some other
