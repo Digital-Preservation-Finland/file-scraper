@@ -24,7 +24,7 @@ import pytest
 from file_scraper.dummy.dummy_scraper import ScraperNotFound, FileExists
 
 DEFAULTSTREAMS = {0: {"index": 0, "version": "(:unav)",
-                      "stream_type": None, "mimetype": "(:unav)"}}
+                      "stream_type": "(:unav)", "mimetype": "(:unav)"}}
 
 
 @pytest.mark.parametrize(
@@ -95,5 +95,4 @@ def test_scraper_not_found(filepath):
     for stream_index, stream_metadata in streams.iteritems():
         scraped_metadata = scraper.streams[stream_index]
         for key, value in stream_metadata.iteritems():
-            print key
             assert getattr(scraped_metadata, key)() == value

@@ -63,7 +63,7 @@ STREAM_VALID = {
     "bps_value": "8",
     "colorspace": "srgb",
     "height": "6",
-    "samples_per_pixel": None,
+    "samples_per_pixel": "(:unav)",
     "width": "10"}
 
 GIF_APPEND = {
@@ -73,7 +73,7 @@ GIF_APPEND = {
     "compression": "lzw",
     "height": "1",
     "mimetype": "image/gif",
-    "samples_per_pixel": None,
+    "samples_per_pixel": "(:unav)",
     "stream_type": "image",
     "version": None,
     "width": "1"}

@@ -327,12 +327,6 @@ class MovMediainfoMeta(BaseMediainfoMeta):
     @metadata()
     def version(self):
         """Return version of stream."""
-        # TODO should this just return unav? earlier had either "" or None
-        try:
-            if self.stream_type() in ["videocontainer", "video", "audio"]:
-                return "(:unav)"
-        except SkipElementException:  # "container" stream of dv
-            return "(:unav)"
         return "(:unav)"
 
     # pylint: disable=inconsistent-return-statements

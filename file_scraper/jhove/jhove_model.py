@@ -232,13 +232,13 @@ class JHoveWavMeta(JHoveBaseMeta):
         For now, we don"t accept RF64.
         """
         if get_field(self._report, "profile") is None:
-            return "(:unav)"  # TODO this was None
+            return "(:unav)"
         if "RF64" in get_field(self._report, "profile"):
             self._errors.append("RF64 is not a supported format")
         elif "BWF" in get_field(self._report, "profile"):
             return "2"
 
-        return "(:unav)"  # TODO this was None too
+        return "(:unav)"
 
     @metadata()
     def stream_type(self):

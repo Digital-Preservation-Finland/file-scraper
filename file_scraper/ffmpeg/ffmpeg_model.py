@@ -22,5 +22,5 @@ class FFMpegMeta(BaseMeta):
     # pylint: disable=no-self-use
     @metadata()
     def stream_type(self):
-        """Return file type."""
-        return None
+        """Stream type not known, return (:unav)."""
+        return "(:unav)"

@@ -133,8 +133,6 @@ class TextFileMagicMeta(TextMagicBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        # TODO is this ok, used to return "" or None but text files do not
-        #      really have versions do they?
         return "(:unap)"
 
 
@@ -235,7 +233,7 @@ class OfficeFileMagicMeta(BinaryMagicBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        return "(:unav)"  # TODO None? Or (:unav)? Was None
+        return "(:unav)"
 
 
 class ArcFileMagicMeta(BinaryMagicBaseMeta):

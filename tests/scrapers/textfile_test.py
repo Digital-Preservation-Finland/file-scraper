@@ -42,7 +42,7 @@ def test_existing_files(filename, mimetype, is_textfile, evaluate_scraper):
     correct.version = None
     correct.streams[0]['version'] = "(:unav)"
     correct.streams[0]['mimetype'] = "(:unav)"
-    correct.streams[0]['stream_type'] = None
+    correct.streams[0]['stream_type'] = "(:unav)"
     correct.well_formed = is_textfile
     if correct.well_formed:
         correct.stdout_part = VALID_MSG

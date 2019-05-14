@@ -29,24 +29,24 @@ INVALID_MSG = "Error in analyzing file."
 
 STREAM_VALID = {
     "bps_unit": "integer",
-    "bps_value": None,
-    "colorspace": None,
-    "height": None,
-    "width": None,
+    "bps_value": "(:unav)",
+    "colorspace": "(:unav)",
+    "height": "(:unav)",
+    "width": "(:unav)",
     "samples_per_pixel": "3",
-    "compression": None}
+    "compression": "(:unav)"}
 
 GIF_APPEND = {
     "bps_unit": "integer",
-    "bps_value": None,
-    "colorspace": None,
-    "compression": None,
-    "height": None,
+    "bps_value": "(:unav)",
+    "colorspace": "(:unav)",
+    "compression": "(:unav)",
+    "height": "(:unav)",
     "mimetype": "image/gif",
     "samples_per_pixel": "1",
     "stream_type": "image",
     "version": None,
-    "width": None}
+    "width": "(:unav)"}
 
 STREAM_INVALID = {}
 

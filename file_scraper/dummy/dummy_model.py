@@ -17,5 +17,5 @@ class DummyMeta(BaseMeta):
     # pylint: disable=no-self-use
     @metadata()
     def stream_type(self):
-        """Stream type is not known so return None."""
-        return None
+        """Stream type is not known so return (:unav)."""
+        return "(:unav)"

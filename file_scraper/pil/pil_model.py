@@ -49,7 +49,7 @@ class BasePilMeta(BaseMeta):
     @metadata()
     def colorspace(self):
         """Return colorspace."""
-        return None
+        return "(:unav)"
 
     @metadata()
     def width(self):
@@ -69,7 +69,7 @@ class BasePilMeta(BaseMeta):
     @metadata()
     def bps_value(self):
         """Return bits per sample."""
-        return None
+        return "(:unav)"
 
     @metadata()
     def bps_unit(self):
@@ -84,7 +84,7 @@ class BasePilMeta(BaseMeta):
     @metadata()
     def compression(self):
         """Return compression scheme."""
-        return None
+        return "(:unav)"
 
     @metadata()
     def samples_per_pixel(self):
@@ -101,17 +101,17 @@ class TiffPilMeta(BasePilMeta):
     @metadata()
     def width(self):
         """We will get width from another scraper."""
-        return None
+        return "(:unav)"
 
     @metadata()
     def height(self):
         """We will get height from another scraper."""
-        return None
+        return "(:unav)"
 
     @metadata()
     def colorspace(self):
         """We will get colorspace from another scraper."""
-        return None
+        return "(:unav)"
 
     @metadata()
     def samples_per_pixel(self):
@@ -143,18 +143,18 @@ class ImagePilMeta(BasePilMeta):
 
     @metadata()
     def width(self):
-        """Return None: we will get width from another scraper."""
-        return None
+        """Return (:unav): we will get width from another scraper."""
+        return "(:unav)"
 
     @metadata()
     def height(self):
-        """Return None: we will get height from another scraper."""
-        return None
+        """Return (:unav): we will get height from another scraper."""
+        return "(:unav)"
 
     @metadata()
     def colorspace(self):
-        """Return None: we will get colorspace from another scraper."""
-        return None
+        """Return (:unav): we will get colorspace from another scraper."""
+        return "(:unav)"
 
 
 class JpegPilMeta(BasePilMeta):
@@ -165,18 +165,18 @@ class JpegPilMeta(BasePilMeta):
 
     @metadata()
     def width(self):
-        """Return none: we will get width from another scraper."""
-        return None
+        """Return (:unav): we will get width from another scraper."""
+        return "(:unav)"
 
     @metadata()
     def height(self):
-        """Return None: We will get height from another scraper."""
-        return None
+        """Return (:unav): We will get height from another scraper."""
+        return "(:unav)"
 
     @metadata()
     def colorspace(self):
-        """Return None: We will get colorspace from another scraper."""
-        return None
+        """Return (:unav): We will get colorspace from another scraper."""
+        return "(:unav)"
 
     @metadata()
     def samples_per_pixel(self):

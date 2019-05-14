@@ -13,4 +13,4 @@ class TextFileMeta(BaseMeta):
     @metadata()
     def stream_type(self):
         """Return stream type."""
-        return None
+        return "(:unav)"

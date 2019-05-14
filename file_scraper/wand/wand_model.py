@@ -84,8 +84,8 @@ class WandImageMeta(BaseMeta):
 
     @metadata()
     def samples_per_pixel(self):
-        """Samples per pixel not available from this scraper, return None."""
-        return None
+        """Samples per pxel not available from this scraper, return (:unav)."""
+        return "(:unav)"
 
 
 class WandTiffMeta(WandImageMeta):

@@ -78,7 +78,7 @@ def test_ffmpeg_scraper_mov(filename, result_dict, mimetype,
     correct.version = None
     correct.streams[0]["mimetype"] = "(:unav)"
     correct.streams[0]["version"] = "(:unav)"
-    correct.streams[0]["stream_type"] = None
+    correct.streams[0]["stream_type"] = "(:unav)"
 
     evaluate_scraper(scraper, correct)
 
@@ -108,7 +108,7 @@ def test_ffmpeg_scraper_mkv(filename, result_dict, evaluate_scraper):
     correct.version = None
     correct.streams[0]["mimetype"] = "(:unav)"
     correct.streams[0]["version"] = "(:unav)"
-    correct.streams[0]["stream_type"] = None
+    correct.streams[0]["stream_type"] = "(:unav)"
 
     evaluate_scraper(scraper, correct)
 
@@ -150,7 +150,7 @@ def test_ffmpeg_scraper_mpeg(filename, result_dict, evaluate_scraper):
     correct.version = None
     correct.streams[0]["mimetype"] = "(:unav)"
     correct.streams[0]["version"] = "(:unav)"
-    correct.streams[0]["stream_type"] = None
+    correct.streams[0]["stream_type"] = "(:unav)"
 
     evaluate_scraper(scraper, correct)
 
@@ -180,7 +180,7 @@ def test_ffmpeg_scraper_mp4(filename, result_dict, evaluate_scraper):
     correct.version = None
     correct.streams[0]["mimetype"] = "(:unav)"
     correct.streams[0]["version"] = "(:unav)"
-    correct.streams[0]["stream_type"] = None
+    correct.streams[0]["stream_type"] = "(:unav)"
 
     evaluate_scraper(scraper, correct)
 
@@ -214,7 +214,7 @@ def test_ffmpeg_scraper_mp3(filename, result_dict, evaluate_scraper):
     correct.version = None
     correct.streams[0]["mimetype"] = "(:unav)"
     correct.streams[0]["version"] = "(:unav)"
-    correct.streams[0]["stream_type"] = None
+    correct.streams[0]["stream_type"] = "(:unav)"
 
     evaluate_scraper(scraper, correct)
 
@@ -244,7 +244,7 @@ def test_ffmpeg_scraper_mpegts(filename, result_dict, evaluate_scraper):
     correct.version = None
     correct.streams[0]["mimetype"] = "(:unav)"
     correct.streams[0]["version"] = "(:unav)"
-    correct.streams[0]["stream_type"] = None
+    correct.streams[0]["stream_type"] = "(:unav)"
 
     evaluate_scraper(scraper, correct)
 
