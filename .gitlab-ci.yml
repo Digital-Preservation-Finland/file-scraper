@@ -61,6 +61,16 @@ coverage-python36:
   except:
     - master
 
+unit-test-python36:
+  stage: local-test
+  tags:
+    - docker
+  script:
+    - 'unit-test-virtualenv.sh python36'
+  allow_failure: true
+  except:
+    - master
+
 e2e-localhost-archives:
   stage: local-test
   script:
