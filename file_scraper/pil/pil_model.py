@@ -134,6 +134,14 @@ class ImagePilMeta(BasePilMeta):
     _allow_versions = True  # Allow any version
 
     @metadata()
+    def mimetype(self):
+        mime = super(ImagePilMeta, self).mimetype()
+        # Pillow 5.0.0 misidentifies JPEG2000
+        if mime == "image/jpx":
+            return "image/jp2"
+        return mime
+
+    @metadata()
     def width(self):
         """Return None: we will get width from another scraper."""
         return None
