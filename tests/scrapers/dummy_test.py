@@ -51,7 +51,6 @@ def test_existing_files(filepath):
     for stream_index, stream_metadata in streams.iteritems():
         scraped_metadata = scraper.streams[stream_index]
         for key, value in stream_metadata.iteritems():
-            print key
             assert getattr(scraped_metadata, key)() == value
 
 

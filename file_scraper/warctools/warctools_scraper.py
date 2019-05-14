@@ -101,7 +101,6 @@ class WarcWarctoolsScraper(BaseScraper):
                 line = warc_fd.readline()
         except Exception as exception:  # pylint: disable=broad-except
             # Compressed but corrupted gzip file
-            print "taalla"
             self._errors.append(str(exception))
             return
 
