@@ -29,11 +29,6 @@ class BaseScraper(object):
         self._check_wellformed = check_wellformed
         self._params = params if params is not None else {}
 
-    def iter_streams(self):
-        """Iterate through all streams."""
-        for stream in self.streams:
-            yield stream
-
     @property
     def well_formed(self):
         """

@@ -26,7 +26,6 @@ class Scraper(object):
         self.streams = None
         self.well_formed = None
         self.info = None
-        self._important = {}
         self._params = kwargs
         self._scraper_results = []
 
