@@ -5,45 +5,56 @@
     <id>UMLClass</id>
     <coordinates>
       <x>490</x>
-      <y>0</y>
+      <y>10</y>
       <w>210</w>
-      <h>450</h>
+      <h>235</h>
     </coordinates>
     <panel_attributes>BaseScraper
 --
 +filename
-+mimetype
-+version
 +streams
-+info
 -_messages
 -_errors
 -_check_wellformed
 -_params
-__supported_
-__allow_versions_
-__only_wellformed_
+_-_supported_metadata_
+_-_only_wellformed_
 --
 _+is_supported()_
 /+scrape_file()/
 +&lt;&lt;property&gt;&gt; well_formed()
 +messages()
 +errors()
-+get_important()
--_iter_tool_streams()
--_set_tool_stream()
--_collect_elements()
--_check_supported()
--_s_mimetype()
--_s_version()
--_s_index()
-/-_s_stream_type()/</panel_attributes>
+</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>190</x>
+      <x>490</x>
+      <y>270</y>
+      <w>210</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>BaseMeta
+--
++container_stream
+-_supported
+-_allow_versions
+--
++&lt;&lt;metadata&gt;&gt;mimetype()
++&lt;&lt;metadata&gt;&gt;version()
++&lt;&lt;metadata&gt;&gt;index()
++iterate_metadata_methods()
+_+is_supported()_
+_+supported_mimetypes()_
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>177</x>
       <y>0</y>
       <w>100</w>
       <h>30</h>
@@ -55,68 +66,68 @@ _+is_supported()_
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>290</x>
+      <x>277</x>
       <y>100</y>
-      <w>100</w>
+      <w>126</w>
       <h>30</h>
     </coordinates>
-    <panel_attributes>WandBase</panel_attributes>
+    <panel_attributes>JHoveScraperBase</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>30</x>
+      <x>17</x>
       <y>210</y>
-      <w>100</w>
+      <w>126</w>
       <h>30</h>
     </coordinates>
-    <panel_attributes>GhostScript</panel_attributes>
+    <panel_attributes>GhostscriptScraper</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>210</x>
+      <x>197</x>
       <y>210</y>
-      <w>100</w>
+      <w>126</w>
       <h>30</h>
     </coordinates>
-    <panel_attributes>TiffWand</panel_attributes>
+    <panel_attributes>JHoveGifScraper</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>370</x>
+      <x>357</x>
       <y>210</y>
-      <w>100</w>
+      <w>126</w>
       <h>30</h>
     </coordinates>
-    <panel_attributes>ImageWand</panel_attributes>
+    <panel_attributes>JHoveHtmlScraper</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>230</x>
+      <x>217</x>
       <y>20</y>
-      <w>130</w>
+      <w>140</w>
       <h>100</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;110.0;80.0</additional_attributes>
+    <additional_attributes>10;10;120;80</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>70</x>
+      <x>67</x>
       <y>20</y>
-      <w>190</w>
+      <w>180</w>
       <h>210</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>170.0;10.0;10.0;190.0</additional_attributes>
+    <additional_attributes>160;10;10;190</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -175,8 +186,8 @@ _+is_supported()_
 +streams
 +info
 +well_formed
--_important
 -_params
+-_scraper_results
 --
 +scrape()
 +is_textfile()
@@ -653,7 +664,7 @@ scrape_file()</panel_attributes>
       <h>40</h>
     </coordinates>
     <panel_attributes>lt=-&gt;&gt;
-get attribute values</panel_attributes>
+get streams</panel_attributes>
     <additional_attributes>10.0;20.0;650.0;20.0</additional_attributes>
   </element>
   <element>
@@ -665,7 +676,7 @@ get attribute values</panel_attributes>
       <h>40</h>
     </coordinates>
     <panel_attributes>lt=-&gt;&gt;
-get attribute values</panel_attributes>
+get streams</panel_attributes>
     <additional_attributes>10.0;20.0;530.0;20.0</additional_attributes>
   </element>
   <element>
@@ -702,7 +713,7 @@ get attribute values</panel_attributes>
     </coordinates>
     <panel_attributes>lt=-&gt;&gt;
 is_supported()</panel_attributes>
-    <additional_attributes>10.0;20.0;120.0;20.0</additional_attributes>
+    <additional_attributes>10.0;20.0;360.0;20.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -713,7 +724,7 @@ is_supported()</panel_attributes>
       <h>30</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;120.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;360.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -725,7 +736,7 @@ is_supported()</panel_attributes>
     </coordinates>
     <panel_attributes>lt=-&gt;&gt;
 is_supported()</panel_attributes>
-    <additional_attributes>10.0;20.0;120.0;20.0</additional_attributes>
+    <additional_attributes>10.0;20.0;480.0;20.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -736,6 +747,6 @@ is_supported()</panel_attributes>
       <h>30</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;120.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;480.0;10.0</additional_attributes>
   </element>
 </diagram>
