@@ -23,67 +23,52 @@ See ``<scraper info X>`` from `README.rst <../README.rst>`_ for the content of t
 Scraper tools
 -------------
 
-All the iterable and usable scraper tools are located in ``./file_scraper/scrapers/`` directory. These scraper tools are based on ``BaseScraper``,
-either with directly inheriting it, or via tool specific base class.
+All the iterable and usable scraper tools are located in subdirectories of ``./file_scraper/`` directory. These scraper tools are based on ``BaseScraper``,
+either with directly inheriting it, or via inheriting a tool specific base class that inherits ``BaseScraper``.
 
-In the Figure above, ``GhostScript`` scraper tool inherits ``BaseScraper`` directly, but ``TiffWand`` and ``ImageWand`` inherit it indirectly via ``Wand`` base class.
-Here, ``GhostScript``, ``TiffWand`` and ``ImageWand`` are the scraper tools located in ``./file_scraper/scrapers/`` directory. When the used 3rd party tool is
-file format specific, it can inherit ``BaseScraper`` directly, but with ``Wand``, we need to handle TIFF images in a diffrent way from the other image formats.
-This is why the actual functionality is done in the separate tool specific base class ``Wand``, and then the file format specific tools are able to inherit it.
-
-Should you create a new scraper tool for some file format, it probably already has a proper base class, for example:
-
-    * ``Pil`` and ``Wand`` for images: You need to create a file format specific scraping tool for  both to create full metadata collection.
-    * ``Mediainfo`` and ``FFMpeg`` for audio and video files: You can not use both for video container metadata scraping, since these tools return the streams in different order.
-    * ``TextMagic`` for text files: Finds out the charset of the file and checks mimetype and version.
-    * ``BinaryMagic`` for binary files: Checks mimetype and version, if not checked well enough in the actual well-formed check.
-    * ``JHove`` for various file formats: You may add a file format for JHove well-formed check, if applicable.
-    * ``BaseScraper`` is generic base class for scrapers not suitable to use any of the previous ones for full scraping and for new tool specific base classes.
-
-In practice, just add proper values to class variables and override the needed metadata methods. The tool specific base classes already have ``scrape_file()`` method implemented.
-
-To maintain clarity, do not allow a tool specific base class to support any mimetype, and keep it away from ``./file_scraper/scrapers/`` directory. Instead,
-add the base class to ``./file_scraper/`` and create separate mimetype specific classes to inherit it.
+In the Figure above, ``GhostScriptScraper`` inherits ``BaseScraper`` directly, but ``JHoveGifScraper`` and ``JHoveHtmlScraper`` inherit it indirectly via ``JHoveScraperBase`` base class, as do other subclasses of JHoveScraperBase not shown in the Figure.
+These scraper tools are located in ``./file_scraper/ghostscript/`` and ``./file_scraper/jhove/`` directories. When the used 3rd party tool is
+file format specific, it can inherit ``BaseScraper`` directly, but as different JHOVE modules are able to handle a number of file types, including the mentioned GIF and HTML files among others, we need custom handling for different file types. This is why each module has its own scraper that inherits the ``JHoveBaseScraper`` providing the core scraping function. In many cases a single scraper class supporting multiple metadata models for different file types can be sufficient though.
 
 A usable scraper tool class:
 
-    * MUST have ``_supported`` class variable as a dict, which keys are supported mimetypes and values are lists of supported file format versions.
+    * MUST have ``_supported_metadata`` class variable which is a list of metadata classes supported by the scraper.
     * MUST have ``_only_wellformed = True`` class variable, if the scraper tools does just well-formed check.
-    * The scraper is normally launched also with other version numbers than listed (e.g. with ``None``).
-      This MAY be disallowed with a class variable ``_allow_versions = False``.
     * MUST call ``super()`` during initialization, if separate initialization method is created.
-    * MUST implement ``scrape_file()`` for file scraping, if not implemented in the already existing base class:
+    * MUST implement ``scrape_file()`` for file scraping, if not implemented in the already existing base class. This method:
 
-        * SHOULD call ``_check_supported()`` as the second last command of ``scrape_file()``. This checks that the final mimetype and version are supported ones, in case those
-          have changed. This MAY be omitted, if ``check_wellformed`` is ``False``.
-        * MUST call ``_collect_elements()`` as the last command of ``scrape_file()`` regardless of the validation result.
-          This will collect the metadata to ``streams`` attribute.
-        * MUST use ``errors()`` for error messages and ``messages()`` for info messages, before ``_collect_elements()``. is called.
+        * MUST add metadata objects of all metadata models to ``streams`` list for each stream in the file.
+        * SHOULD call ``_check_supported()`` when the metadata has been collected. This checks that the final mimetype and version are supported ones, in case those have changed.
+        * MUST log all errors to ``_errors`` list and messages to ``_messages`` list.
+    * The ``info()`` method of a scraper MUST return a dict of class name, and messages and errors occured during scraping. See ``<scraper info X>`` from `README.rst <../README.rst>`_ for the content of the info attribute.
 
-    * MUST have a method for each metadata element that is needed to be resulted, if not implemented in the already existing base class.
-      These methods MUST be named with ``_`` prefix and decorated with ``metadata``-function, e.g. ``_width()``, and MUST normally return string, with exception of ``_index()`` which returns stream index as integer.
+The metadata is represented by metadata model objects, e.g. ``GhostscriptMeta`` used by ``GhostscriptScraper``, and ``JHoveGifMeta``, ``JHoveHtmlMeta`` and others used by ``JHoveScraper``. These metadata model classes:
+
+    * MUST have _supported class variable as a dict, the keys of which are supported mimetypes and values are lists of supported file format versions.
+    * Using the metadata model without prior knowledge of the version or with an unlisted version MAY be allowed by setting class variable ``_allow_versions = True``.
+    * MUST have a method for each metadata element that is scraped, if not implemented in the already existing base class.
+      These methods MUST be decorated with ``metadata``-function, and MUST normally return string, with exception of ``index()`` which returns stream index as integer.
       The metadata methods must normalize the value to a normalized format. The formats described e.g. in AudioMD [1]_, VideoMD [1]_, and MIX [2]_ are used in normalization.
-      The ``_collect_elements()`` in ``BaseScraper`` will collect the return values from all ``metadata``-decorated methods with ``_`` prefix automatically to ``streams`` attribute.
-      The key of the metadata element in ``streams`` will be the method name without ``_`` prefix (e.g. ``width``), and value is the return value of the method.
+      The key of the metadata element in ``streams`` will be the method, and value is the return value of the method.
       Metadata method MAY raise ``SkipElement`` from ``file_scraper.base``, if the methods needs to be omitted in
       collection phase. This may become handy with files containing different kinds of streams. The value ``None`` is used for the case that the value SHOULD be returned,
-      but the scraper tool is not capable to do that. Example::
-
+      but the scraper tool is not capable of doing that. Value ``(:unav)`` is returned when a scraper cannot determine the value of a metadata element and ``(:unap)`` when the metadata element is not applicable to the stream type. Example of a metadata method::
         @metadata
-        def _width():
+        def width():
             return self._width
+    * MUST implement metadata method ``stream_type()``, returning e.g. "text", "image", "audio", "video", "videocontainer", "binary", if not implemented in the already existing base class.
+    * MUST crash or log an error in unexpected event, such as due to missing 3rd party tool.
+    * Metadata keys that are needed to win in the combination phase are flagged by ``important`` as part of metadata-decorator.
 
-    * MUST implement metadata ``_stream_type()``, returning e.g. "text", "image", "audio", "video", "videocontainer", "binary", if not implemented in the already existing base class.
-    * MUST crash in unexpected event, such as due to missing 3rd party tool.
-    * Methods ``iter_tool_streams()`` and ``set_tool_streams()`` MUST be implemented to iterate and select stream from the 3rd party tool,
-      if the 3rd party tool is able to result several streams, and if this is not implemented in existing base class.
-      These must cause the ``_`` prefixed metadata methods to return value from the current stream.
-    * Metadata keys that are needed to win in the combination phase is flagged by ``important`` as part of metadata-decorator.
-      By default, scraper will update the important list as it goes through the metadata. The list can then be fetched via ``importants()``-method.
-      Scrapers can override the default behaviour of ``importants()`` in their own class.
+Should you create a new scraper tool for some file format, it probably already has a proper base class, for example:
 
-The ``info`` attribute contains a dict of class name, and messages and errors occured during scraping.
-See ``<scraper info X>`` from `README.rst <../README.rst>`_ for the content of the info attribute.
+    * ``PilScraper`` and ``WandScraper`` for images: You need to create a file format specific scraping tool for  both to create full metadata collection.
+    * ``MediainfoScraper`` and ``FFMpegScraper`` for audio and video files: You can not use both for video container metadata scraping, since these tools return the streams in different order.
+    * ``MagicScraper`` for a variety of files, including text and markup (HTML, XML) files, some image formats, pdf and office files.
+    * ``JHove`` for various file formats: You may add a file format for JHove well-formed check, if applicable.
+    * ``BaseScraper`` is generic base class for scrapers not suitable to use any of the previous ones for full scraping and for new tool specific base classes.
+
+In practice, just add proper values to class variables, and write the ``scrape_file()`` method and metadata model class(es). The tool specific base classes already have ``scrape_file()`` method implemented. To maintain clarity, the new scraper classes and metadata models should be created into their tool-specific subdirectories under ``./file_scraper/``.
 
 .. [1] https://www.loc.gov/standards/amdvmd/
 .. [2] http://www.loc.gov/standards/mix/
@@ -92,7 +77,7 @@ Scraper sequence
 ----------------
 
 The main scraper iterates all detectors to determine mimetype and possibly file format version. The results of the detectors are given to scraper iterator,
-which forwards the values to ``is_supported()`` class method of the scraper. The ``is_supported()`` method makes the decision, whether it's scraper is supported or not.
+which forwards the values to ``is_supported()`` class method of the scraper. The ``is_supported()`` method makes the decision, whether its scraper is supported or not.
 Supported scrapers are iterated, and the result of each scraper is combined directly to the final result. The resulted attributes are listed in `README.rst <../README.rst>`_.
 
 The main Scraper does everything in sequenced order. Should the scraper functionality be done in parallel, this can be changed by modifying the Scraper class
