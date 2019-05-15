@@ -47,7 +47,7 @@ Use the scraper in the following way::
     scraper = Scraper(filename)
     scraper.scrape(check_wellformed=True/False)
 
-The ``check_wellformed`` option is True by default and does full file format well-formed check for the file. To collect metadata without checking the well-formedness of the file, this argument must be ``False``.
+The ``check_wellformed`` option is ``True`` by default and does full file format well-formed check for the file. To collect metadata without checking the well-formedness of the file, this argument must be ``False``.
 
 As a result the collected metadata and results are in the following instance variables:
 
@@ -62,12 +62,13 @@ The ``scraper.streams`` includes a following kind of dict::
 
     {0: <stream 0>, 1: <stream 1>, ...}
 
-where ``<stream X>`` contains resulted metadata elements from stream X. In video containers the ``<stream 0>`` contains info about the container.
-The following keys exist in all stream metadata::
+where ``<stream X>`` is a dict containing the metadata elements from stream X and the key ``index``, value of which is a copy of the corresponding key in ``scraper.streams``. The first stream (``<stream 0>``) contains information about the container, which can include e.g. the name of the used codec. For files that are not container formats, the first stream contains just the MIME type and version of the stream.
+
+The rest of the streams represent the stream metadata. These streams can contain a variety of keys depending on the file type, e.g. ``height`` and ``width`` for images or ``audio_data_encoding`` for audio streams. The following keys exist in all stream metadata::
 
     {'mimetype': <mimetype>,         # Mimetype of the stream
      'version': <version>,           # Format version of the stream
-     'index': <index>,               # Stream index (is a copy of the corresponding key)
+     'index': <index>,               # Stream index
      'stream_type': <stream type>,   # Stream type: 'videocontainer', 'video', 'audio', 'image', 'text', 'binary'
      ...}                            # Other metadata keys, different keys in different stream types
 
@@ -81,7 +82,7 @@ where ``<scraper info X>`` contains name of the scraper, the resulted info messa
      'messages': <messages from scraper>,
      'errors': <errors from scraper>}
 
-The type of elements in the previous dictionaries is string, in exception of the 'index' elemenent, which is integer.
+The type of elements in the previous dictionaries is string, in exception of the ``index`` elemenent, which is integer.
 
 The following additional arguments for the Scraper are also possible:
 
@@ -126,7 +127,7 @@ Misc notes
 ----------
 
     * Without the Warctools scraper tool, gzipped WARC and ARC files are identified as 'application/gzip'.
-    * For image files with multiple images inside (i.e. TIFF and GIF), the mimetype and version key is filled only in the first image stream, where as these are ``None`` in the other streams.
+
 
 Copyright
 ---------
