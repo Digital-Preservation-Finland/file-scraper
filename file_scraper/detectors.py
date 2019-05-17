@@ -8,8 +8,8 @@ try:
 
     ctypes.cdll.LoadLibrary(MAGIC_LIBRARY)
 except OSError:
-    print('%s not found, MS Office detection may not work properly if '
-          'file command library is older.' % MAGIC_LIBRARY)
+    print("%s not found, MS Office detection may not work properly if "
+          "file command library is older." % MAGIC_LIBRARY)
 
 import magic
 from fido.fido import Fido, defaults
@@ -41,22 +41,22 @@ class _FidoReader(Fido):
         self.mimetype = None  # Identified mime type
         self.version = None  # Identified file format version
         Fido.__init__(self, quiet=True, format_files=[
-            'formats-v94.xml', 'format_extensions.xml'])
+            "formats-v94.xml", "format_extensions.xml"])
 
     def identify(self):
         """Identify file format with using pronom registry."""
         versions = get_local_pronom_versions()
-        defaults['xml_pronomSignature'] = versions.pronom_signature
-        defaults['containersignature_file'] = \
+        defaults["xml_pronomSignature"] = versions.pronom_signature
+        defaults["containersignature_file"] = \
             versions.pronom_container_signature
-        defaults['xml_fidoExtensionSignature'] = \
+        defaults["xml_fidoExtensionSignature"] = \
             versions.fido_extension_signature
-        defaults['format_files'] = [defaults['xml_pronomSignature']]
-        defaults['format_files'].append(
-            defaults['xml_fidoExtensionSignature'])
+        defaults["format_files"] = [defaults["xml_pronomSignature"]]
+        defaults["format_files"].append(
+            defaults["xml_fidoExtensionSignature"])
         self.identify_file(filename=self.filename, extension=False)
 
-    def print_matches(self, fullname, matches, delta_t, matchtype=''):
+    def print_matches(self, fullname, matches, delta_t, matchtype=""):
         """
         Get puid, mimetype and version.
 
@@ -89,9 +89,9 @@ class _FidoReader(Fido):
 
         :item: Fido result
         """
-        mime = item.find('mime')
+        mime = item.find("mime")
         self.mimetype = mime.text if mime is not None else None
-        version = item.find('version')
+        version = item.find("version")
         self.version = version.text if version is not None else None
         if self.mimetype in MIMETYPE_DICT:
             self.mimetype = MIMETYPE_DICT[self.mimetype]
@@ -116,9 +116,9 @@ class FidoDetector(BaseDetector):
         self.mimetype = fido.mimetype
         self.version = fido.version
         self._puid = fido.puid
-        self.info = {'class': self.__class__.__name__,
-                     'messages': '',
-                     'errors': ''}
+        self.info = {"class": self.__class__.__name__,
+                     "messages": "",
+                     "errors": ""}
 
     def get_important(self):
         """
@@ -135,10 +135,10 @@ class FidoDetector(BaseDetector):
         :returns: Mime type
         """
         important = {}
-        if self._puid in ['fmt/471', 'fmt/100']:
-            important['mimetype'] = self.mimetype
-        elif self.mimetype not in [None, 'text/html', 'application/zip']:
-            important['mimetype'] = self.mimetype
+        if self._puid in ["fmt/471", "fmt/100"]:
+            important["mimetype"] = self.mimetype
+        elif self.mimetype not in [None, "text/html", "application/zip"]:
+            important["mimetype"] = self.mimetype
         return important
 
 
@@ -155,9 +155,9 @@ class MagicDetector(BaseDetector):
             self.mimetype = MIMETYPE_DICT[mimetype]
         else:
             self.mimetype = mimetype
-        self.info = {'class': self.__class__.__name__,
-                     'messages': '',
-                     'errors': ''}
+        self.info = {"class": self.__class__.__name__,
+                     "messages": "",
+                     "errors": ""}
 
     def get_important(self):
         """
@@ -170,7 +170,7 @@ class MagicDetector(BaseDetector):
         :returns: Mime type
         """
         important = {}
-        if self.mimetype in ['application/x-internet-archive',
-                             'application/vnd.oasis.opendocument.formula']:
-            important['mimetype'] = self.mimetype
+        if self.mimetype in ["application/x-internet-archive",
+                             "application/vnd.oasis.opendocument.formula"]:
+            important["mimetype"] = self.mimetype
         return important

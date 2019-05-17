@@ -59,7 +59,7 @@ class JHoveGifMeta(JHoveBaseMeta):
     """Metadata model for gif files scraped with JHove"""
     # pylint: disable=no-self-use
 
-    _supported = {"image/gif": ['1987a', '1989a']}
+    _supported = {"image/gif": ["1987a", "1989a"]}
     _allow_versions = True
 
     @metadata()
@@ -150,8 +150,8 @@ class JHoveJpegMeta(JHoveBaseMeta):
     """Metadata model for jpeg files scraped with JHove"""
     # pylint: disable=no-self-use
 
-    _supported = {"image/jpeg": ['1.00', '1.01', '1.02', '2.0',
-                                 '2.1', '2.2', '2.2.1']}
+    _supported = {"image/jpeg": ["1.00", "1.01", "1.02", "2.0",
+                                 "2.1", "2.2", "2.2.1"]}
     _allow_versions = True
 
     @metadata()
@@ -169,7 +169,7 @@ class JHoveTiffMeta(JHoveBaseMeta):
     """Metadata model for tiff files scraped with JHove"""
     # pylint: disable=no-self-use
 
-    _supported = {"image/tiff": ['6.0']}
+    _supported = {"image/tiff": ["6.0"]}
     _allow_versions = True
 
     @metadata()
@@ -205,7 +205,7 @@ class JHoveWavMeta(JHoveBaseMeta):
     """Metadata model for wav files scraped with JHove"""
     # pylint: disable=no-self-use
 
-    _supported = {"audio/x-wav": ['2']}
+    _supported = {"audio/x-wav": ["2"]}
     _allow_versions = True
 
     @metadata()

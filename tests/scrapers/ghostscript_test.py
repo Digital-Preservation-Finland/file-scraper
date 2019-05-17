@@ -28,27 +28,27 @@ from file_scraper.ghostscript.ghostscript_scraper import GhostscriptScraper
 
 
 @pytest.mark.parametrize(
-    ['filename', 'result_dict'],
+    ["filename", "result_dict"],
     [
-        ('valid_X.pdf', {
-            'purpose': 'Test valid file.',
-            'stdout_part': 'Well-Formed and valid',
-            'stderr_part': ''}),
-        ('invalid_X_payload_altered.pdf', {
-            'purpose': 'Test payload altered file.',
-            'stdout_part': '',
-            'stderr_part': 'An error occurred while reading an XREF table.'}),
-        ('invalid_X_removed_xref.pdf', {
-            'purpose': 'Test xref change.',
-            'stdout_part': '',
-            'stderr_part': 'An error occurred while reading an XREF table.'}),
+        ("valid_X.pdf", {
+            "purpose": "Test valid file.",
+            "stdout_part": "Well-Formed and valid",
+            "stderr_part": ""}),
+        ("invalid_X_payload_altered.pdf", {
+            "purpose": "Test payload altered file.",
+            "stdout_part": "",
+            "stderr_part": "An error occurred while reading an XREF table."}),
+        ("invalid_X_removed_xref.pdf", {
+            "purpose": "Test xref change.",
+            "stdout_part": "",
+            "stderr_part": "An error occurred while reading an XREF table."}),
     ]
 )
 def test_scraper_pdf(filename, result_dict, evaluate_scraper):
     """Test scraper."""
-    for ver in ['1.7', 'A-1a', 'A-2b', 'A-3b']:
-        filename = filename.replace('X', ver)
-        correct = parse_results(filename, 'application/pdf',
+    for ver in ["1.7", "A-1a", "A-2b", "A-3b"]:
+        filename = filename.replace("X", ver)
+        correct = parse_results(filename, "application/pdf",
                                 result_dict, True)
         scraper = GhostscriptScraper(correct.filename, True, correct.params)
         scraper.scrape_file()
@@ -62,7 +62,7 @@ def test_scraper_pdf(filename, result_dict, evaluate_scraper):
         evaluate_scraper(scraper, correct, eval_output=False)
 
         if scraper.well_formed:
-            assert 'Error' not in scraper.messages()
+            assert "Error" not in scraper.messages()
         else:
             assert correct.stdout_part in scraper.messages()
         assert correct.stderr_part in scraper.errors()
@@ -70,19 +70,19 @@ def test_scraper_pdf(filename, result_dict, evaluate_scraper):
 
 def test_no_wellformed():
     """Test scraper without well-formed check."""
-    scraper = GhostscriptScraper('tests/data/application_pdf/valid_1.4.pdf',
+    scraper = GhostscriptScraper("tests/data/application_pdf/valid_1.4.pdf",
                                  False)
     scraper.scrape_file()
-    assert 'Skipping scraper' in scraper.messages()
+    assert "Skipping scraper" in scraper.messages()
     assert scraper.well_formed is None
 
 
 def test_is_supported():
     """Test is_supported method."""
-    mime = 'application/pdf'
-    ver = '1.7'
+    mime = "application/pdf"
+    ver = "1.7"
     assert GhostscriptScraper.is_supported(mime, ver, True)
     assert GhostscriptScraper.is_supported(mime, None, True)
     assert not GhostscriptScraper.is_supported(mime, ver, False)
-    assert not GhostscriptScraper.is_supported(mime, 'foo', True)
-    assert not GhostscriptScraper.is_supported('foo', ver, True)
+    assert not GhostscriptScraper.is_supported(mime, "foo", True)
+    assert not GhostscriptScraper.is_supported("foo", ver, True)

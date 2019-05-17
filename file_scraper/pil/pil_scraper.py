@@ -40,7 +40,7 @@ class PilScraper(BaseScraper):
         # Pillow 5.0.0 returns MIME type image/jpx for jp2 files
         if mimetype == "image/jpx":
             mimetype = "image/jp2"
-        n_frames = getattr(pil, 'n_frames', 1)
+        n_frames = getattr(pil, "n_frames", 1)
         for pil_index in range(0, n_frames):
             for md_class in self._supported_metadata:
                 if md_class.is_supported(mimetype):

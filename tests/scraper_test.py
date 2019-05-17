@@ -29,41 +29,41 @@ class _TestScraper(BaseScraper):
 
     @property
     def well_formed(self):
-        return self.filename == 'textfile'
+        return self.filename == "textfile"
 
 
 def test_is_textfile(monkeypatch):
     """Test that CheckTextFile well-formed value is returned."""
-    monkeypatch.setattr(file_scraper.scraper, 'TextfileScraper', _TestScraper)
-    scraper = Scraper('textfile')
+    monkeypatch.setattr(file_scraper.scraper, "TextfileScraper", _TestScraper)
+    scraper = Scraper("textfile")
     assert scraper.is_textfile()
-    scraper = Scraper('binaryfile')
+    scraper = Scraper("binaryfile")
     assert not scraper.is_textfile()
 
 
 def test_checksum():
     """Test that checksum value of the file is returned."""
-    scraper = Scraper('tests/data/text_plain/valid__utf8.txt')
-    assert scraper.checksum() == 'b40c60d0770eb7bd1a345725f857c61a'
-    assert scraper.checksum('SHA-1') == \
-        'a0d01fcbff5d86327d542687dcfd8b299d054147'
+    scraper = Scraper("tests/data/text_plain/valid__utf8.txt")
+    assert scraper.checksum() == "b40c60d0770eb7bd1a345725f857c61a"
+    assert scraper.checksum("SHA-1") == \
+        "a0d01fcbff5d86327d542687dcfd8b299d054147"
     with pytest.raises(ValueError):
-        assert scraper.checksum('foo')
+        assert scraper.checksum("foo")
     with pytest.raises(IOError):
-        scraper = Scraper('non_exists')
+        scraper = Scraper("non_exists")
         assert scraper.checksum()
 
 
 def test_empty_file():
     """Test empty file."""
-    scraper = Scraper('test/data/text_plain/invalid__empty.txt')
+    scraper = Scraper("test/data/text_plain/invalid__empty.txt")
     scraper.scrape()
     assert not scraper.well_formed
 
 
 def test_missing_file():
     """Test missing file."""
-    scraper = Scraper('missing_file')
+    scraper = Scraper("missing_file")
     scraper.scrape()
     assert not scraper.well_formed
 

@@ -21,7 +21,7 @@ def metadata(important=False):
 
 def is_metadata(fun):
     """Return True if given a function with metadata flag, otherwise False."""
-    return callable(fun) and getattr(fun, 'is_metadata', False)
+    return callable(fun) and getattr(fun, "is_metadata", False)
 
 
 def encode(filename):
@@ -34,7 +34,7 @@ def decode(filename):
     return ensure_text(filename, encoding=sys.getfilesystemencoding())
 
 
-def hexdigest(filename, algorithm='sha1', extra_hash=None):
+def hexdigest(filename, algorithm="sha1", extra_hash=None):
     """Calculte hash of given file.
     :filename: File path
     :algorithm: Hash algorithm. MD5 or SHA variant.
@@ -43,12 +43,12 @@ def hexdigest(filename, algorithm='sha1', extra_hash=None):
     """
     algorithm = algorithm.replace("-", "").lower().strip()
     checksum = hashlib.new(algorithm)
-    with open(filename, 'rb') as input_file:
-        for chunk in iter(lambda: input_file.read(1024 * 1024), b''):
+    with open(filename, "rb") as input_file:
+        for chunk in iter(lambda: input_file.read(1024 * 1024), b""):
             checksum.update(chunk)
         if extra_hash:
             if isinstance(extra_hash, str):
-                extra_hash = extra_hash.encode('utf-8')
+                extra_hash = extra_hash.encode("utf-8")
             checksum.update(extra_hash)
     return checksum.hexdigest()
 
@@ -106,8 +106,8 @@ def iso8601_duration(time):
     if seconds > 0:
         seconds = strip_zeros("%.2f" % seconds)
         duration += "%sS" % seconds
-    if duration == 'PT':
-        duration = 'PT0S'
+    if duration == "PT":
+        duration = "PT0S"
 
     return duration
 
@@ -133,7 +133,7 @@ def strip_zeros(float_str):
 
     # if '.' is found in the string and string
     # ends in '0', '.' or '_' strip last character
-    if float_str.find(".") != -1 and float_str[-1] in ['0', '.', '_']:
+    if float_str.find(".") != -1 and float_str[-1] in ["0", ".", "_"]:
         return strip_zeros(float_str[:-1])
 
     return float_str
@@ -219,7 +219,7 @@ def run_command(cmd, stdout=subprocess.PIPE, env=None):
 
 
 # pylint: disable=invalid-name
-def ensure_str(s, encoding='utf-8', errors='strict'):
+def ensure_str(s, encoding="utf-8", errors="strict"):
     """Coerce *s* to `str`.
 
     For Python 2:
@@ -235,7 +235,7 @@ def ensure_str(s, encoding='utf-8', errors='strict'):
         https://github.com/benjaminp/six/blob/master/six.py#L872
     """
     if not isinstance(s, (six.text_type, six.binary_type)):
-        raise TypeError("not expecting type '%s'" % type(s))
+        raise TypeError("not expecting type 's'" % type(s))
     if six.PY2 and isinstance(s, six.text_type):
         s = s.encode(encoding, errors)
     elif six.PY3 and isinstance(s, six.binary_type):
@@ -243,7 +243,7 @@ def ensure_str(s, encoding='utf-8', errors='strict'):
     return s
 
 
-def ensure_text(s, encoding='utf-8', errors='strict'):
+def ensure_text(s, encoding="utf-8", errors="strict"):
     """Coerce *s* to six.text_type.
 
     For Python 2:

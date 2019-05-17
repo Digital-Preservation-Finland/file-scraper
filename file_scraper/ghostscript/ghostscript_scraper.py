@@ -23,7 +23,7 @@ class GhostscriptScraper(BaseScraper):
                                   "used.")
             return
         shell = Shell([
-            'gs', '-o', '/dev/null', '-sDEVICE=nullpage',
+            "gs", "-o", "/dev/null", "-sDEVICE=nullpage",
             self.filename])
 
         for model in self._supported_metadata:
@@ -33,11 +33,11 @@ class GhostscriptScraper(BaseScraper):
         # However, stderr is not then empty.
         # This case should be handled as well-formed failure.
         if shell.stderr:
-            self._errors.append(shell.stderr.decode('iso-8859-1').
-                                encode('utf8'))
+            self._errors.append(shell.stderr.decode("iso-8859-1").
+                                encode("utf8"))
         elif shell.returncode != 0:
             self._errors.append("Ghostscript returned return code: %s"
                                 % shell.returncode)
-        self._messages.append(shell.stdout.decode('iso-8859-1').encode('utf8'))
+        self._messages.append(shell.stdout.decode("iso-8859-1").encode("utf8"))
 
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)

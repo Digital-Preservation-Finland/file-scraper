@@ -14,8 +14,8 @@ import pytest
 from file_scraper.textfile.textfile_scraper import TextfileScraper
 from tests.common import parse_results
 
-VALID_MSG = 'is a text file'
-INVALID_MSG = 'is not a text file'
+VALID_MSG = "is a text file"
+INVALID_MSG = "is not a text file"
 
 
 @pytest.mark.parametrize(
@@ -40,13 +40,13 @@ def test_existing_files(filename, mimetype, is_textfile, evaluate_scraper):
     scraper.scrape_file()
 
     correct.version = None
-    correct.streams[0]['version'] = "(:unav)"
-    correct.streams[0]['mimetype'] = "(:unav)"
-    correct.streams[0]['stream_type'] = "(:unav)"
+    correct.streams[0]["version"] = "(:unav)"
+    correct.streams[0]["mimetype"] = "(:unav)"
+    correct.streams[0]["stream_type"] = "(:unav)"
     correct.well_formed = is_textfile
     if correct.well_formed:
         correct.stdout_part = VALID_MSG
-        correct.stderr_part = ''
+        correct.stderr_part = ""
         evaluate_scraper(scraper, correct)
     else:
         assert INVALID_MSG in scraper.errors()
