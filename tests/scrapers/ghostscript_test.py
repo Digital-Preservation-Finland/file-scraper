@@ -68,6 +68,33 @@ def test_scraper_pdf(filename, result_dict, evaluate_scraper):
         assert correct.stderr_part in scraper.errors()
 
 
+def test_jpeg2000_inside_pdf(evaluate_scraper):
+    """
+    Test scraping a pdf file containing JPEG2000 image.
+
+    Default Ghostscript installation on CentOS 7 does not support pdf files
+    containing JPXDecode data. This test verifies that the installed version is
+    recent enough.
+    """
+    filename = "valid_1.7-jpeg2000.pdf"
+    mimetype = "application/pdf"
+    result_dict = {"purpose": "Test pdf with JPEG2000 inside it.",
+                   "stdout_part": "Well-formed and valid",
+                   "stderr_part": ""}
+    correct = parse_results(filename, mimetype, result_dict, True)
+
+    scraper = GhostscriptScraper(correct.filename, True)
+    scraper.scrape_file()
+
+    # Ghostscript cannot handle version or MIME type
+    correct.version = "(:unav)"
+    correct.streams[0]["version"] = "(:unav)"
+    correct.mimetype = "(:unav)"
+    correct.streams[0]["mimetype"] = "(:unav)"
+
+    evaluate_scraper(scraper, correct, eval_output=False)
+
+
 def test_no_wellformed():
     """Test scraper without well-formed check."""
     scraper = GhostscriptScraper("tests/data/application_pdf/valid_1.4.pdf",
