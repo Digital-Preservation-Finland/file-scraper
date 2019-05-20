@@ -9,6 +9,7 @@ This module tests that:
         - scraper messages do not contain the word 'Error'
         - version is None
         - in streams, version is None
+    - Files containing JPEG2000 images are scraped correctly.
     - When full scraping is done for a file where the payload has been altered,
       or an XREF entry in XREF table has been removed, the results are similar
       but the file is not well-formed, scraper messages are not checked and
