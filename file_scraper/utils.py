@@ -151,7 +151,8 @@ def combine_metadata(stream, indexed_metadata, lose=None, important=None):
         incomplete_stream = stream[stream_index]
 
         for key in incomplete_stream.keys():
-            if key not in metadata_dict or metadata_dict[key] is None:
+            # skip missing values and values that are None or empty strings
+            if key not in metadata_dict or not metadata_dict[key]:
                 continue
 
             if incomplete_stream[key] in lose:
