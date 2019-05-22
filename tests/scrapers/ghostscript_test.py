@@ -77,7 +77,7 @@ def test_jpeg2000_inside_pdf(evaluate_scraper):
     containing JPXDecode data. This test verifies that the installed version is
     recent enough.
     """
-    filename = "valid_1.6_jpeg2000.pdf"
+    filename = "valid_1.7_jpeg2000.pdf"
     mimetype = "application/pdf"
     result_dict = {"purpose": "Test pdf with JPEG2000 inside it.",
                    "stdout_part": "Well-formed and valid",

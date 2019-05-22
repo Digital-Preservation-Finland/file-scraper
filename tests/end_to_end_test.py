@@ -69,8 +69,7 @@ IGNORE_INVALID = [
 # version is recent enough to handle it.
 IGNORE_VALID = ["tests/data/text_xml/valid_1.0_xsd.xml",
                 "tests/data/text_xml/valid_1.0_local_xsd.xml",
-                "tests/data/text_xml/valid_1.0_catalog.xml",
-                "tests/data/application_pdf/valid_1.6_jpeg2000.pdf"]
+                "tests/data/text_xml/valid_1.0_catalog.xml"]
 
 # Ignore these we know that warc, arc and dpx files are not currently
 # supported for full metadata scraping
