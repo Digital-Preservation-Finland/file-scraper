@@ -69,25 +69,33 @@ class MediainfoScraper(BaseScraper):
 
 def _sort_tracks(mediainfo):
     """
-    Sort tracks within the given mediainfo object.
+    Return a list containing the tracks of the given mediainfo object.
 
-    The container comes first, followed by audio and video tracks.
+    The tracks are sorted so that the container comes first, followed by audio
+    and video tracks and finally other tracks.
 
     :mediainfo: Mediainfo.parse() result
+    :return: List of tracks
     """
+    sorted_tracks = [None] * len(mediainfo.tracks)
+    sorted_index = 0
+
     # container first
-    for index, track in enumerate(mediainfo.tracks):
+    for track in mediainfo.tracks:
         if track.track_type == "General":
-            mediainfo.tracks.insert(
-                0, mediainfo.tracks.pop(index))
+            sorted_tracks[sorted_index] = track
             break
 
     # then video and audio tracks
-    stream_index = 1
-    track_index = 1
-    while track_index < len(mediainfo.tracks):
-        if mediainfo.tracks[track_index].track_type in ["Audio", "Video"]:
-            mediainfo.tracks.insert(stream_index,
-                                    mediainfo.tracks.pop(track_index))
-            stream_index += 1
-        track_index += 1
+    for track in mediainfo.tracks:
+        if track.track_type in ["Audio", "Video"]:
+            sorted_tracks[sorted_index] = track
+            sorted_index += 1
+
+    # finally the rest of the tracks
+    for track in mediainfo.tracks:
+        if track not in sorted_tracks:
+            sorted_tracks[sorted_index] = track
+            sorted_index += 1
+
+    return sorted_tracks
