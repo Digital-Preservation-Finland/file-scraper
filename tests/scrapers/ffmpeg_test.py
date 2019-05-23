@@ -4,24 +4,24 @@ Test module for ffmpeg.py
 This module tests that:
     - For valid audio and video files the scraping is reported as successful,
       the file is well-formed. Since this scraper does not really collect
-      metadata, the version and MIME type will be '(:unav)'.
+      metadata, the version and MIME type will be "(:unav)".
     - For empty files the results are similar but file is not well-formed
       and errors should contain an error message. The error message should
       contain the following string:
         - With video/x-matroska, video/mpeg, video/mp4, video/MP2T files:
-          'Invalid data found when processing input'.
-        - With audio/mpeg files: 'could not find codec parameters'
-        - With video/dv files: 'Cannot find DV header'
+          "Invalid data found when processing input".
+        - With audio/mpeg files: "could not find codec parameters"
+        - With video/dv files: "Cannot find DV header"
     - For invalid files the file is not well-formed and errors should contain
       an error message. With the files with missing data the error message
       should contain the following string:
-        - With video/x-matroska files: 'Truncating packet of size'
-        - With video/mpeg and video/mp4 files: 'end mismatch'
-        - With video/MP2T files: 'invalid new backstep'
-        - With audio/mpeg files: 'Error while decoding stream'
-        - With video/dv files: 'AC EOB marker is absent'
+        - With video/x-matroska files: "Truncating packet of size"
+        - With video/mpeg and video/mp4 files: "end mismatch"
+        - With video/MP2T files: "invalid new backstep"
+        - With audio/mpeg files: "Error while decoding stream"
+        - With video/dv files: "AC EOB marker is absent"
     - For mp3 files with wrong version reported in the header, the file is not
-      well-formed and errors should contain 'Error while decoding stream'.
+      well-formed and errors should contain "Error while decoding stream".
     - The mimetypes tested are:
         - video/quicktime containing dv video and pcm (wav) audio stream
         - video/x-matroska containing ffv1 video stream
@@ -32,11 +32,11 @@ This module tests that:
         - audio/mpeg version 1 file
     - When well-formed check is performed, the scraper reports the following
       combinations of mimetypes and versions as supported:
-        - video/mpeg, '1' or None
-        - video/mp4, '' or None
-        - video/MP1S, '' or None
-        - video/MP2P, '' or None
-        - video/MP2T, '' or None
+        - video/mpeg, "1" or None
+        - video/mp4, "" or None
+        - video/MP1S, "" or None
+        - video/MP2P, "" or None
+        - video/MP2T, "" or None
     - When well-formedness is not checked, the scraper reports valid
       combinations as not supported.
     - A made up version with supported MIME type is reported as supported.
@@ -46,6 +46,8 @@ import pytest
 from file_scraper.ffmpeg.ffmpeg_scraper import FFMpegScraper
 from tests.common import parse_results
 
+from file_scraper.utils import generate_metadata_dict # TODO remove
+
 
 @pytest.mark.parametrize(
     ["filename", "result_dict", "mimetype"],
@@ -53,35 +55,213 @@ from tests.common import parse_results
         ("valid__dv_wav.mov", {
             "purpose": "Test valid MOV with DV and WAV.",
             "stdout_part": "file was analyzed successfully",
-            "stderr_part": ""}, "video/quicktime"),
+            "stderr_part": "",
+            "streams": {
+                0: {
+                    "index": 0,
+                    "stream_type": "videocontainer"},
+                1: {
+                    "index": 1,
+                    "par": "1.422",
+                    "frame_rate": u"25",
+                    "data_rate_mode": None,
+                    "color": "Color",
+                    "codec_quality": None,
+                    "dar": "1.778",
+                    "height": "576",
+                    "sound": "Yes",
+                    "codec_name": "DV",
+                    "sampling": "4:2:0",
+                    "stream_type": u"video",
+                    "width": "720"},
+                2: {
+                    "index": 2,
+                    "audio_data_encoding": u"PCM",
+                    "data_rate_mode": None,
+                    "codec_quality": None,
+                    "stream_type": u"audio",
+                    "sampling_frequency": "44.1",
+                    "num_channels": "2",
+                    "codec_name": "PCM",
+                    "data_rate": "705.6"},
+                3: {"index": 3,
+                    "stream_type": "other"}}},
+         "video/quicktime"),
         ("valid.dv", {
             "purpose": "Test valid DV.",
             "stdout_part": "file was analyzed successfully",
-            "stderr_part": ""}, "video/dv"),
+            "stderr_part": "",
+            "streams": {
+                0: {
+                    "index": 0,
+                    "stream_type": "videocontainer"},
+                1: {
+                    "index": 1,
+                    "par": "1.422",
+                    "frame_rate": u"25",
+                    "data_rate_mode": None,
+                    "color": "Color",
+                    "codec_quality": None,
+                    "dar": "1.778",
+                    "height": "576",
+                    "sound": "No",
+                    "codec_name": "DV",
+                    "sampling": "4:2:0",
+                    "stream_type": u"video",
+                    "width": "720"}}},
+         "video/dv"),
         ("valid_4_ffv1.mkv", {
             "purpose": "Test valid MKV.",
             "stdout_part": "file was analyzed successfully",
-            "stderr_part": ""}, "video/x-matroska"),
+            "stderr_part": "",
+            "streams": {
+                0: {
+                    "index": 0,
+                    "stream_type": "videocontainer"},
+                1: {
+                    "index": 1,
+                    "par": "1",
+                    "frame_rate": u"30",
+                    "bits_per_sample": "8",
+                    "data_rate_mode": None,
+                    "color": "Color",
+                    "codec_quality": None,
+                    "dar": "1.778",
+                    "height": "180",
+                    "sound": "No",
+                    "codec_name": "FFV1",
+                    "sampling": "4:2:0",
+                    "stream_type": u"video",
+                    "width": "320"}}},
+         "video/x-matroska"),
         ("valid_1.m1v", {
             "purpose": "Test valid MPEG-1.",
             "stdout_part": "file was analyzed successfully",
-            "stderr_part": ""}, "video/mpeg"),
+            "stderr_part": "",
+            "streams": {
+                0: {
+                    "index": 0,
+                    "stream_type": "videocontainer"},
+                1: {
+                    "index": 1,
+                    "par": "1",
+                    "frame_rate": u"30",
+                    "data_rate_mode": None,
+                    "color": "Color",
+                    "codec_quality": None,
+                    "dar": "1.778",
+                    "height": "180",
+                    "sound": "No",
+                    "codec_name": "MPEG Video",
+                    "sampling": "4:2:0",
+                    "stream_type": u"video",
+                    "width": "320"}}}, "video/mpeg"),
         ("valid_2.m2v", {
             "purpose": "Test valid MPEG-2.",
             "stdout_part": "file was analyzed successfully",
-            "stderr_part": ""}, "video/mpeg"),
+            "stderr_part": "",
+            "streams": {
+                0: {
+                    "index": 0,
+                    "stream_type": "videocontainer"},
+                1: {
+                    "index": 1,
+                    "par": "1",
+                    "frame_rate": u"30",
+                    "data_rate_mode": None,
+                    "color": "Color",
+                    "codec_quality": None,
+                    "dar": "1.778",
+                    "height": "180",
+                    "sound": "No",
+                    "codec_name": "MPEG Video",
+                    "sampling": "4:2:0",
+                    "stream_type": u"video",
+                    "width": "320"}}}, "video/mpeg"),
         ("valid__h264_aac.mp4", {
             "purpose": "Test valid mp4.",
             "stdout_part": "file was analyzed successfully",
-            "stderr_part": ""}, "video/mp4"),
+            "stderr_part": "",
+            "streams": {
+                0: {
+                    "index": 0,
+                    "stream_type": "videocontainer"},
+                1: {
+                    "index": 1,
+                    "par": "1",
+                    "frame_rate": u"30",
+                    "bits_per_sample": "8",
+                    "data_rate_mode": None,
+                    "color": "Color",
+                    "codec_quality": None,
+                    "dar": "1.778",
+                    "height": "180",
+                    "sound": "Yes",
+                    "sampling": "4:2:0",
+                    "stream_type": u"video",
+                    "width": "320"},
+                2: {
+                    "index": 2,
+                    "audio_data_encoding": u"AAC",
+                    "data_rate_mode": None,
+                    "codec_quality": None,
+                    "stream_type": u"audio",
+                    "sampling_frequency": "44.1",
+                    "num_channels": "2",
+                    "codec_name": "AAC",
+                    "data_rate": "135.233"}}}, "video/mp4"),
         ("valid_1.mp3", {
             "purpose": "Test valid mp3.",
             "stdout_part": "file was analyzed successfully",
-            "stderr_part": ""}, "audio/mpeg"),
+            "stderr_part": "",
+            "streams": {
+                0: {
+                    "index": 0,
+                    "data_rate_mode": None,
+                    "codec_quality": None,
+                    "stream_type": "audio"},
+                1: {
+                    "index": 1,
+                    "audio_data_encoding": "MPEG Audio",
+                    "data_rate_mode": None,
+                    "codec_quality": None,
+                    "stream_type": u"audio",
+                    "sampling_frequency": "44.1",
+                    "num_channels": "2",
+                    "codec_name": "MPEG Audio",
+                    "data_rate": "128"}}}, "audio/mpeg"),
         ("valid_.ts", {
             "purpose": "Test valid MPEG-TS.",
             "stdout_part": "file was analyzed successfully",
-            "stderr_part": ""}, "video/MP2T"),
+            "stderr_part": "",
+            "streams": {
+                0: {
+                    "index": 0,
+                    "stream_type": "videocontainer"},
+                1: {
+                    "index": 1,
+                    "par": "1",
+                    "frame_rate": u"30",
+                    "data_rate_mode": None,
+                    "color": "Color",
+                    "codec_quality": None,
+                    "dar": "1.778",
+                    "height": "180",
+                    "sound": "Yes",
+                    "codec_name": "MPEG Video",
+                    "sampling": "4:2:0",
+                    "stream_type": u"video",
+                    "width": "320"},
+                2: {
+                    "index": 2,
+                    "audio_data_encoding": "MPEG Audio",
+                    "data_rate_mode": None,
+                    "codec_quality": None,
+                    "stream_type": u"audio",
+                    "sampling_frequency": "44.1",
+                    "num_channels": "2",
+                    "codec_name": "MPEG Audio",
+                    "data_rate": "128"}}}, "video/MP2T"),
     ])
 def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
                               evaluate_scraper):
@@ -100,6 +280,8 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
 
         scraper = FFMpegScraper(correct.filename, check_well_formed)
         scraper.scrape_file()
+        print generate_metadata_dict([scraper.streams], [])
+        assert len(correct.streams) > 1
 
         evaluate_scraper(scraper, correct)
 
