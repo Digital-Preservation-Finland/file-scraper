@@ -43,14 +43,16 @@ UNAV_ELEMENTS = {
                                                      "version", "version"],
     "tests/data/audio_mpeg/valid_1.mp3": ["bits_per_sample",
                                           "codec_creator_app_version",
-                                          "duration", "data_rate",
-                                          "codec_creator_app"],
+                                          "duration", "codec_name",
+                                          "codec_creator_app", "num_channels"],
     "tests/data/video_mp4/valid__h264_aac.mp4": ["version", "version",
                                                  "bits_per_sample", "version"],
     "tests/data/video_mpeg/valid_1.m1v": ["codec_creator_app_version",
-                                          "codec_creator_app"],
+                                          "codec_creator_app",
+                                          "codec_name"],
     "tests/data/video_mpeg/valid_2.m2v": ["codec_creator_app_version",
-                                          "codec_creator_app"]}
+                                          "codec_creator_app",
+                                          "codec_name"]}
 
 # These are actually valid with another mimetype or version
 # or due to special parameters or missing scraper
@@ -110,7 +112,7 @@ def _assert_valid_scraper_result(scraper, fullname, mimetype, well_formed):
                 unavs.append(key)
 
     if fullname in UNAV_ELEMENTS:
-        assert unavs == UNAV_ELEMENTS[fullname]
+        assert set(unavs) == set(UNAV_ELEMENTS[fullname])
     else:
         assert not unavs
 
