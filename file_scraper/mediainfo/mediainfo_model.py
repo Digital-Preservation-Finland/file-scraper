@@ -59,8 +59,11 @@ class BaseMediainfoMeta(BaseMeta):
 
             # handle "containers" that are not videocontainers
             if self.container_stream is self._stream:
-                raise SkipElementException
-
+                if "video" in self._stream.format.lower():
+                    return "videocontainer"
+                if ("audio" in self._stream.format.lower() or
+                        "wave" in self._stream.format.lower()):
+                    return "audio"
             return None
         return self._stream.track_type.lower()
 
@@ -138,6 +141,8 @@ class BaseMediainfoMeta(BaseMeta):
     def data_rate(self):
         """Return data rate (bit rate)."""
         if self.stream_type() not in ["video", "audio"]:
+            raise SkipElementException()
+        if self._stream == self.container_stream:
             raise SkipElementException()
         if self._stream.bit_rate is not None:
             if self._stream.track_type == "Video":
@@ -222,6 +227,8 @@ class BaseMediainfoMeta(BaseMeta):
         """Return sampling frequency."""
         if self.stream_type() not in ["audio"]:
             raise SkipElementException()
+        if self._stream == self.container_stream:
+            raise SkipElementException()
         if self._stream.sampling_rate is not None:
             return strip_zeros(str(float(
                 self._stream.sampling_rate)/1000))
@@ -231,6 +238,8 @@ class BaseMediainfoMeta(BaseMeta):
     def num_channels(self):
         """Return number of channels."""
         if self.stream_type() not in ["audio"]:
+            raise SkipElementException()
+        if self._stream == self.container_stream:
             raise SkipElementException()
         if self._stream.channel_s is not None:
             return str(self._stream.channel_s)
@@ -280,6 +289,8 @@ class BaseMediainfoMeta(BaseMeta):
     def bits_per_sample(self):
         """Return bits per sample."""
         if self.stream_type() not in ["video", "audio"]:
+            raise SkipElementException()
+        if self._stream == self.container_stream:
             raise SkipElementException()
         if self._stream.bit_depth is not None:
             return str(self._stream.bit_depth)

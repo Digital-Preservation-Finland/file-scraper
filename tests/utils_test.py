@@ -331,6 +331,10 @@ class Meta1(BaseMeta):
         return 1.0
 
     @metadata()
+    def stream_type(self):
+        return "binary"
+
+    @metadata()
     def key1(self):
         return "value1-1"
 
@@ -362,6 +366,10 @@ class Meta2(BaseMeta):
     @metadata()
     def version(self):
         return 1.0
+
+    @metadata()
+    def stream_type(self):
+        return "binary"
 
     @metadata()
     def key1(self):
@@ -397,6 +405,10 @@ class Meta3(BaseMeta):
         return 2
 
     @metadata()
+    def stream_type(self):
+        return "binary"
+
+    @metadata()
     def key1(self):
         return "value1"
 
@@ -411,14 +423,15 @@ def test_generate_metadata_dict():
     lose = ["value2-1"]
     metadata_dict = generate_metadata_dict(results, lose)
     assert metadata_dict == {0: {"index": 0, "mimetype": "mime",
-                                 "version": 1.0},
+                                 "version": 1.0, "stream_type": "binary"},
                              1: {"index": 1, "key1": "value1-1",
                                  "key2": "value2", "key3": "key2-3",
                                  "key4": "importantvalue",
-                                 "mimetype": "mime", "version": 1.0},
+                                 "mimetype": "mime", "version": 1.0,
+                                 "stream_type": "binary"},
                              2: {"index": 2, "key1": "value1",
                                  "key2": "value2", "mimetype": "anothermime",
-                                 "version": 2}}
+                                 "version": 2, "stream_type": "binary"}}
 
 
 def test_overlapping_error():

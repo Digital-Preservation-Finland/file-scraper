@@ -406,7 +406,8 @@ def generate_metadata_dict(scraper_results, lose):
     if 0 not in streams:
         container = {"mimetype": streams[1]["mimetype"],
                      "version": streams[1]["version"],
-                     "index": 0}
+                     "index": 0,
+                     "stream_type": streams[1]["stream_type"]}
         streams[0] = container
 
     # Check that important values did not contain values marked as disposable

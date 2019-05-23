@@ -43,16 +43,14 @@ UNAV_ELEMENTS = {
                                                      "version", "version"],
     "tests/data/audio_mpeg/valid_1.mp3": ["bits_per_sample",
                                           "codec_creator_app_version",
-                                          "duration", "codec_name",
-                                          "codec_creator_app", "num_channels"],
+                                          "duration", "codec_creator_app",
+                                          "num_channels"],
     "tests/data/video_mp4/valid__h264_aac.mp4": ["version", "version",
                                                  "bits_per_sample", "version"],
     "tests/data/video_mpeg/valid_1.m1v": ["codec_creator_app_version",
-                                          "codec_creator_app",
-                                          "codec_name"],
+                                          "codec_creator_app"],
     "tests/data/video_mpeg/valid_2.m2v": ["codec_creator_app_version",
-                                          "codec_creator_app",
-                                          "codec_name"]}
+                                          "codec_creator_app"]}
 
 # These are actually valid with another mimetype or version
 # or due to special parameters or missing scraper
@@ -190,10 +188,10 @@ def test_without_wellformed(fullname, mimetype):
     elem_dict = {"image": "colorspace", "video": "color",
                  "videocontainer": "codec_name",
                  "text": "charset", "audio": "num_channels"}
+
     for index, stream in iteritems(scraper.streams):
-        # container stream has stream_type only for container formats
-        if index != 0 or "stream_type" in stream:
-            assert stream["stream_type"] is not None
+        assert stream["stream_type"] is not None
+        if index != 0:
             if stream["stream_type"] in elem_dict:
                 assert elem_dict[stream["stream_type"]] in stream
 
