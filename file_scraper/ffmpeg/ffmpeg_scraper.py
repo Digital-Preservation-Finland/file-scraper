@@ -46,5 +46,5 @@ class FFMpegScraper(BaseScraper):
         for index in range(len(streams)):
             for md_class in self._supported_metadata:
                 self.streams.append(md_class(probe_results, index))
-        
+
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)
