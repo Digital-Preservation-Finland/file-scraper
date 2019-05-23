@@ -46,8 +46,6 @@ import pytest
 from file_scraper.ffmpeg.ffmpeg_scraper import FFMpegScraper
 from tests.common import parse_results
 
-from file_scraper.utils import generate_metadata_dict # TODO remove
-
 
 @pytest.mark.parametrize(
     ["filename", "result_dict", "mimetype"],
@@ -280,8 +278,6 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
 
         scraper = FFMpegScraper(correct.filename, check_well_formed)
         scraper.scrape_file()
-        print generate_metadata_dict([scraper.streams], [])
-        assert len(correct.streams) > 1
 
         evaluate_scraper(scraper, correct)
 
