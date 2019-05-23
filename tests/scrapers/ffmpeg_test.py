@@ -58,6 +58,64 @@ from tests.common import parse_results
             "purpose": "Test valid DV.",
             "stdout_part": "file was analyzed successfully",
             "stderr_part": ""}, "video/dv"),
+        ("valid_4_ffv1.mkv", {
+            "purpose": "Test valid MKV.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": ""}, "video/x-matroska"),
+        ("valid_1.m1v", {
+            "purpose": "Test valid MPEG-1.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": ""}, "video/mpeg"),
+        ("valid_2.m2v", {
+            "purpose": "Test valid MPEG-2.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": ""}, "video/mpeg"),
+        ("valid__h264_aac.mp4", {
+            "purpose": "Test valid mp4.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": ""}, "video/mp4"),
+        ("valid_1.mp3", {
+            "purpose": "Test valid mp3.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": ""}, "audio/mpeg"),
+        ("valid_.ts", {
+            "purpose": "Test valid MPEG-TS.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": ""}, "video/MP2T"),
+    ])
+def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
+                              evaluate_scraper):
+    """Test FFMpegScraper with valid files."""
+    for check_well_formed in [True, False]:
+        correct = parse_results(filename, mimetype, result_dict,
+                                check_well_formed)
+        correct.streams[0]["mimetype"] = "(:unav)"
+        correct.streams[0]["version"] = "(:unav)"
+        if "audio" in mimetype:
+            correct.streams[0]["stream_type"] = "audio"
+        else:
+            correct.streams[0]["stream_type"] = "videocontainer"
+        if not check_well_formed:
+            correct.well_formed = None
+
+        scraper = FFMpegScraper(correct.filename, check_well_formed)
+        scraper.scrape_file()
+
+        evaluate_scraper(scraper, correct)
+
+
+@pytest.mark.parametrize(
+    ["filename", "result_dict", "mimetype"],
+    [
+        ("invalid_4_ffv1_missing_data.mkv", {
+            "purpose": "Test truncated MKV.",
+            "stdout_part": "",
+            "stderr_part": "Truncating packet of size"}, "video/x-matroska"),
+        ("invalid__empty.mkv", {
+            "purpose": "Test empty MKV.",
+            "stdout_part": "",
+            "stderr_part": "Invalid data found when processing input"},
+         "video/x-matroska"),
         ("invalid__missing_data.dv", {
             "purpose": "Test truncated DV.",
             "stdout_part": "",
@@ -68,207 +126,67 @@ from tests.common import parse_results
             "stdout_part": "",
             "stderr_part": "Cannot find DV header"},
          "video/dv"),
-    ])
-def test_ffmpeg_scraper_mov(filename, result_dict, mimetype,
-                            evaluate_scraper):
-    """Test FFMpegScraper."""
-    correct = parse_results(filename, mimetype, result_dict, True)
-    scraper = FFMpegScraper(correct.filename, True)
-    scraper.scrape_file()
-    correct.streams[0]["mimetype"] = "(:unav)"
-    correct.streams[0]["version"] = "(:unav)"
-    correct.streams[0]["stream_type"] = "videocontainer"
-
-    if "invalid" in filename:
-        correct.streams = {}
-
-    evaluate_scraper(scraper, correct)
-
-
-@pytest.mark.parametrize(
-    ["filename", "result_dict"],
-    [
-        ("valid_4_ffv1.mkv", {
-            "purpose": "Test valid MKV.",
-            "stdout_part": "file was analyzed successfully",
-            "stderr_part": ""}),
-        ("invalid_4_ffv1_missing_data.mkv", {
-            "purpose": "Test truncated MKV.",
-            "stdout_part": "",
-            "stderr_part": "Truncating packet of size"}),
-        ("invalid__empty.mkv", {
-            "purpose": "Test empty MKV.",
-            "stdout_part": "",
-            "stderr_part": "Invalid data found when processing input"}),
-    ])
-def test_ffmpeg_scraper_mkv(filename, result_dict, evaluate_scraper):
-    """Test FFMpegScraper."""
-    mimetype = "video/x-matroska"
-    correct = parse_results(filename, mimetype, result_dict, True)
-    scraper = FFMpegScraper(correct.filename, True)
-    scraper.scrape_file()
-    correct.streams[0]["mimetype"] = "(:unav)"
-    correct.streams[0]["version"] = "(:unav)"
-    correct.streams[0]["stream_type"] = "videocontainer"
-
-    if "invalid" in filename:
-        correct.streams = {}
-
-    evaluate_scraper(scraper, correct)
-
-
-@pytest.mark.parametrize(
-    ["filename", "result_dict"],
-    [
-        ("valid_1.m1v", {
-            "purpose": "Test valid MPEG-1.",
-            "stdout_part": "file was analyzed successfully",
-            "stderr_part": ""}),
-        ("valid_2.m2v", {
-            "purpose": "Test valid MPEG-2.",
-            "stdout_part": "file was analyzed successfully",
-            "stderr_part": ""}),
         ("invalid_1_missing_data.m1v", {
             "purpose": "Test invalid MPEG-1.",
             "stdout_part": "",
-            "stderr_part": "end mismatch"}),
+            "stderr_part": "end mismatch"}, "video/mpeg"),
         ("invalid_1_empty.m1v", {
             "purpose": "Test empty MPEG-1.",
             "stdout_part": "",
-            "stderr_part": "Invalid data found when processing input"}),
+            "stderr_part": "Invalid data found when processing input"},
+         "video/mpeg"),
         ("invalid_2_missing_data.m2v", {
             "purpose": "Test invalid MPEG-2.",
             "stdout_part": "",
-            "stderr_part": "end mismatch"}),
+            "stderr_part": "end mismatch"}, "video/mpeg"),
         ("invalid_2_empty.m2v", {
             "purpose": "Test empty MPEG-2.",
             "stdout_part": "",
-            "stderr_part": "Invalid data found when processing input"})
-    ])
-def test_ffmpeg_scraper_mpeg(filename, result_dict, evaluate_scraper):
-    """Test FFMpegScraper."""
-    mimetype = "video/mpeg"
-    correct = parse_results(filename, mimetype, result_dict, True)
-    scraper = FFMpegScraper(correct.filename, True)
-    scraper.scrape_file()
-    correct.streams[0]["mimetype"] = "(:unav)"
-    correct.streams[0]["version"] = "(:unav)"
-    correct.streams[0]["stream_type"] = "videocontainer"
-
-    if "invalid" in filename:
-        correct.streams = {}
-
-    evaluate_scraper(scraper, correct)
-
-
-@pytest.mark.parametrize(
-    ["filename", "result_dict"],
-    [
-        ("valid__h264_aac.mp4", {
-            "purpose": "Test valid mp4.",
-            "stdout_part": "file was analyzed successfully",
-            "stderr_part": ""}),
+            "stderr_part": "Invalid data found when processing input"},
+         "video/mpeg"),
         ("invalid__h264_aac_missing_data.mp4", {
             "purpose": "Test invalid MPEG-4.",
             "stdout_part": "",
-            "stderr_part": "moov atom not found"}),
+            "stderr_part": "moov atom not found"}, "video/mp4"),
         ("invalid__empty.mp4", {
             "purpose": "Test invalid MPEG-4.",
             "stdout_part": "",
-            "stderr_part": "Invalid data found when processing input"})
-    ])
-def test_ffmpeg_scraper_mp4(filename, result_dict, evaluate_scraper):
-    """Test FFMpegScraper."""
-    mimetype = "video/mp4"
-    correct = parse_results(filename, mimetype, result_dict, True)
-    scraper = FFMpegScraper(correct.filename, True)
-    scraper.scrape_file()
-    correct.streams[0]["mimetype"] = "(:unav)"
-    correct.streams[0]["version"] = "(:unav)"
-    correct.streams[0]["stream_type"] = "videocontainer"
-
-    if "invalid" in filename:
-        correct.streams = {}
-
-    evaluate_scraper(scraper, correct)
-
-
-@pytest.mark.parametrize(
-    ["filename", "result_dict"],
-    [
-        ("valid_1.mp3", {
-            "purpose": "Test valid mp3.",
-            "stdout_part": "file was analyzed successfully",
-            "stderr_part": ""}),
+            "stderr_part": "Invalid data found when processing input"},
+         "video/mp4"),
         ("invalid_1_missing_data.mp3", {
             "purpose": "Test invalid mp3.",
             "stdout_part": "",
-            "stderr_part": "Header missing"}),
+            "stderr_part": "Header missing"}, "audio/mpeg"),
         ("invalid_1_wrong_version.mp3", {
             "purpose": "Test invalid mp3.",
             "stdout_part": "",
-            "stderr_part": "Error while decoding stream"}),
+            "stderr_part": "Error while decoding stream"}, "audio/mpeg"),
         ("invalid__empty.mp3", {
             "purpose": "Test empty mp3",
             "stdout_part": "",
-            "stderr_part": "could not find codec parameters"})
-    ])
-def test_ffmpeg_scraper_mp3(filename, result_dict, evaluate_scraper):
-    """Test FFMpegScraper."""
-    mimetype = "audio/mpeg"
-    correct = parse_results(filename, mimetype, result_dict, True)
-    scraper = FFMpegScraper(correct.filename, True)
-    scraper.scrape_file()
-    correct.version = None
-    correct.streams[0]["mimetype"] = "(:unav)"
-    correct.streams[0]["version"] = "(:unav)"
-    correct.streams[0]["stream_type"] = "audio"
-
-    if "invalid" in filename:
-        correct.streams = {}
-
-    evaluate_scraper(scraper, correct)
-
-
-@pytest.mark.parametrize(
-    ["filename", "result_dict"],
-    [
-        ("valid_.ts", {
-            "purpose": "Test valid MPEG-TS.",
-            "stdout_part": "file was analyzed successfully",
-            "stderr_part": ""}),
+            "stderr_part": "could not find codec parameters"}, "audio/mpeg"),
         ("invalid__missing_data.ts", {
             "purpose": "Test invalid MPEG-TS.",
             "stdout_part": "",
-            "stderr_part": "invalid new backstep"}),
+            "stderr_part": "invalid new backstep"}, "video/MP2T"),
         ("invalid__empty.ts", {
             "purpose": "Test empty MPEG-TS.",
             "stdout_part": "",
-            "stderr_part": "Invalid data found when processing input"})
+            "stderr_part": "Invalid data found when processing input"},
+         "video/MP2T")
     ])
-def test_ffmpeg_scraper_mpegts(filename, result_dict, evaluate_scraper):
-    """Test FFMpegScraper."""
-    mimetype = "video/MP2T"
-    correct = parse_results(filename, mimetype, result_dict, True)
-    scraper = FFMpegScraper(correct.filename, True)
-    scraper.scrape_file()
-    correct.version = None
-    correct.streams[0]["mimetype"] = "(:unav)"
-    correct.streams[0]["version"] = "(:unav)"
-    correct.streams[0]["stream_type"] = "videocontainer"
-
-    if "invalid" in filename:
+def test_ffmpeg_scraper_invalid(filename, result_dict, mimetype,
+                                evaluate_scraper):
+    """Test FFMpegScraper with invalid files."""
+    for check_well_formed in [True, False]:
+        correct = parse_results(filename, mimetype, result_dict,
+                                check_well_formed)
         correct.streams = {}
 
-    evaluate_scraper(scraper, correct)
+        scraper = FFMpegScraper(correct.filename, check_well_formed)
+        scraper.scrape_file()
 
-
-#def test_no_wellformed():
-#    """Test scraper without well-formed check."""
-#    scraper = FFMpegScraper("tests/data/video_mpeg/valid_1.m1v", False)
-#    scraper.scrape_file()
-#    assert "Skipping scraper" in scraper.messages()
-#    assert scraper.well_formed is None
+        evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
