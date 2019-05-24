@@ -315,81 +315,126 @@ def test_merge_important_conflict():
 
 
 class Meta1(BaseMeta):
-    """Metadata class for testing generate_metadata_dict()"""
+    """
+    Metadata class for testing generate_metadata_dict().
+
+    This metadata class is used to test merging two metadata models with
+    identical indices. This and Meta2 contain a variety of compatible and
+    conflicting metadata methods that allow testing both important values
+    and LOSE dict.
+    """
     # pylint: disable=no-self-use, missing-docstring
 
     @metadata()
     def index(self):
+        """Return 0: this metadata class will be merged with Meta2."""
         return 0
 
     @metadata()
     def mimetype(self):
+        """Same MIME type as Meta2 has."""
         return "mime"
 
     @metadata()
     def version(self):
+        """Same version as Meta2 has."""
         return 1.0
 
     @metadata()
     def stream_type(self):
+        """Same stream type as Meta2 has."""
         return "binary"
 
     @metadata()
     def key1(self):
+        """
+        This value conflicts with Meta2 and neither is important.
+
+        This method can be used to test the LOSE dict.
+        """
         return "value1-1"
 
     @metadata()
     def key2(self):
+        """This value is compatible with Meta2."""
         return "value2"
 
     @metadata()
     def key3(self):
+        """This value conflicts with Meta2 and the Meta2 value is important."""
         return "key1-3"
 
     @metadata(important=True)
     def key4(self):
+        """This value conflicts with Meta2 and this value is important."""
         return "importantvalue"
 
 
 class Meta2(BaseMeta):
-    """Metadata class for testing generate_metadata_dict()"""
+    """
+    Metadata class for testing generate_metadata_dict().
+
+    This metadata class is used to test merging two metadata models with
+    identical indices. This and Meta1 contain a variety of compatible and
+    conflicting metadata methods that allow testing both important values
+    and LOSE dict.
+    """
     # pylint: disable=no-self-use, missing-docstring
 
     @metadata()
     def index(self):
+        """Return 0: this metadata class will be merged with Meta1."""
         return 0
 
     @metadata()
     def mimetype(self):
+        """Same MIME type as Meta1 has."""
         return "mime"
 
     @metadata()
     def version(self):
+        """Same version as Meta1 has."""
         return 1.0
 
     @metadata()
     def stream_type(self):
+        """Same stream type as Meta1 has."""
         return "binary"
 
     @metadata()
     def key1(self):
+        """
+        This value conflicts with Meta1 and neither is important.
+
+        This method can be used to test the LOSE dict.
+        """
         return "value2-1"
 
     @metadata()
     def key2(self):
+        """This value is compatible with Meta1."""
         return "value2"
 
     @metadata(important=True)
     def key3(self):
+        """This value conflicts with Meta1 and this value is important."""
         return "key2-3"
 
     @metadata()
     def key4(self):
+        """This value conflicts with Meta1 and the Meta1 value is important."""
         return "unimportant value"
 
 
 class Meta3(BaseMeta):
-    """Metadata class for testing generate_metadata_dict()"""
+    """
+    Metadata class for testing generate_metadata_dict().
+
+    This metadata class is used to test that metadata models with different
+    indices yield different streams in the metadata dict. Values of MIME type,
+    version, stream_type or other metadata fields do not need to match the
+    other streams.
+    """
     # pylint: disable=no-self-use, missing-docstring
 
     @metadata()
@@ -406,7 +451,7 @@ class Meta3(BaseMeta):
 
     @metadata()
     def stream_type(self):
-        return "binary"
+        return "text"
 
     @metadata()
     def key1(self):
@@ -431,7 +476,7 @@ def test_generate_metadata_dict():
                                  "stream_type": "binary"},
                              2: {"index": 2, "key1": "value1",
                                  "key2": "value2", "mimetype": "anothermime",
-                                 "version": 2, "stream_type": "binary"}}
+                                 "version": 2, "stream_type": "text"}}
 
 
 def test_overlapping_error():
