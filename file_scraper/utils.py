@@ -408,6 +408,8 @@ def generate_metadata_dict(scraper_results, lose):
                      "version": streams[1]["version"],
                      "index": 0,
                      "stream_type": streams[1]["stream_type"]}
+        if container["stream_type"] == "text":
+            container["charset"] = streams[1]["charset"]
         streams[0] = container
 
     # Check that important values did not contain values marked as disposable

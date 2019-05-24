@@ -451,7 +451,7 @@ class Meta3(BaseMeta):
 
     @metadata()
     def stream_type(self):
-        return "text"
+        return "audio"
 
     @metadata()
     def key1(self):
@@ -476,7 +476,7 @@ def test_generate_metadata_dict():
                                  "stream_type": "binary"},
                              2: {"index": 2, "key1": "value1",
                                  "key2": "value2", "mimetype": "anothermime",
-                                 "version": 2, "stream_type": "text"}}
+                                 "version": 2, "stream_type": "audio"}}
 
 
 def test_overlapping_error():
