@@ -235,7 +235,7 @@ def ensure_str(s, encoding="utf-8", errors="strict"):
         https://github.com/benjaminp/six/blob/master/six.py#L872
     """
     if not isinstance(s, (six.text_type, six.binary_type)):
-        raise TypeError("not expecting type 's'" % type(s))
+        raise TypeError("not expecting type '{}'".format(type(s)))
     if six.PY2 and isinstance(s, six.text_type):
         s = s.encode(encoding, errors)
     elif six.PY3 and isinstance(s, six.binary_type):
@@ -263,7 +263,7 @@ def ensure_text(s, encoding="utf-8", errors="strict"):
     elif isinstance(s, six.text_type):
         return s
     else:
-        raise TypeError("not expecting type '%s'" % type(s))
+        raise TypeError("not expecting type '{}'".format(type(s)))
 # pylint: enable=invalid-name
 
 
