@@ -76,6 +76,7 @@ This module tests the following utility functions:
           in the outer dict.
         - If the lose list contains a value some method marks as important, an
           OverlappingLoseAndImportantException is raised.
+        - Text files have charset in the container stream.
     - run_command
         - Given command is run and its statuscode is returned as the first
           member of the returned tuple.
@@ -323,7 +324,7 @@ class Meta1(BaseMeta):
     conflicting metadata methods that allow testing both important values
     and LOSE dict.
     """
-    # pylint: disable=no-self-use, missing-docstring
+    # pylint: disable=no-self-use
 
     @metadata()
     def index(self):
@@ -379,7 +380,7 @@ class Meta2(BaseMeta):
     conflicting metadata methods that allow testing both important values
     and LOSE dict.
     """
-    # pylint: disable=no-self-use, missing-docstring
+    # pylint: disable=no-self-use
 
     @metadata()
     def index(self):
@@ -487,6 +488,39 @@ def test_overlapping_error():
         generate_metadata_dict(results, lose)
     assert ("The given lose dict contains values that are marked as important"
             in str(e_info.value))
+
+
+class TextMeta(BaseMeta):
+    """Metadata model for a text file, which needs charset."""
+    # pylint: disable=no-self-use, missing-docstring
+
+    @metadata()
+    def index(self):
+        return 0
+
+    @metadata()
+    def mimetype(self):
+        return "mime"
+
+    @metadata()
+    def version(self):
+        return 1.0
+
+    @metadata()
+    def stream_type(self):
+        """Return "text" so that this stream also needs charset."""
+        return "text"
+
+    @metadata()
+    def charset(self):
+        return "UTF-8"
+
+
+def test_container_stream_charset():
+    """Test that container streams contain charset for text files."""
+    results = [[TextMeta()]]
+    streams = generate_metadata_dict(results, [])
+    assert "charset" in streams[0]
 
 
 @pytest.mark.parametrize(
