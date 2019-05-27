@@ -81,6 +81,8 @@ class FFMpegMeta(BaseMeta):
         """
         if self.stream_type() not in ["video", "audio"]:
             raise SkipElementException()
+        if self.container_stream == self._ffmpeg_stream:
+            raise SkipElementException()
         return None
 
     @metadata()

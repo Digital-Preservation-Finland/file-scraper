@@ -207,6 +207,8 @@ class BaseMediainfoMeta(BaseMeta):
         """
         if self.stream_type() not in ["video", "audio"]:
             raise SkipElementException()
+        if self.container_stream is self._stream:
+            raise SkipElementException()
         if self._stream.bit_rate_mode == "CBR":
             return "Fixed"
         if self._stream.bit_rate_mode is not None:

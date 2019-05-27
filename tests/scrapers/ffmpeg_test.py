@@ -215,7 +215,6 @@ from tests.common import parse_results
             "streams": {
                 0: {
                     "index": 0,
-                    "data_rate_mode": None,
                     "codec_quality": None,
                     "stream_type": "audio"},
                 1: {
