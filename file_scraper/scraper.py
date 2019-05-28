@@ -67,8 +67,8 @@ class Scraper(object):
 
         We know the charset after actual scraping.
         """
-        if "charset" in self.streams[1] and \
-                self.streams[1]["charset"] == "UTF-8":
+        if "charset" in self.streams[0] and \
+                self.streams[0]["charset"] == "UTF-8":
             scraper = JHoveUtf8Scraper(self.filename, check_wellformed)
             self._scrape_file(scraper)
 
@@ -87,9 +87,6 @@ class Scraper(object):
             self.version = self.streams[0]["version"]
         elif self.version:
             self.streams[0]["version"] = self.version
-            # Also update the stream within the container if needed
-            if self.streams[1]["version"] == "(:unav)":
-                self.streams[1]["version"] = self.version
 
     def scrape(self, check_wellformed=True):
         """Scrape file and collect metadata.

@@ -183,7 +183,7 @@ def test_without_wellformed(fullname, mimetype):
 
     mimepart = mimetype.split("/")[0]
     if mimepart in ["image", "video", "text", "audio"]:
-        assert mimepart in scraper.streams[1]["stream_type"]
+        assert mimepart in scraper.streams[0]["stream_type"]
 
     elem_dict = {"image": "colorspace", "video": "color",
                  "videocontainer": "codec_name",
@@ -191,9 +191,8 @@ def test_without_wellformed(fullname, mimetype):
 
     for index, stream in iteritems(scraper.streams):
         assert stream["stream_type"] is not None
-        if index != 0:
-            if stream["stream_type"] in elem_dict:
-                assert elem_dict[stream["stream_type"]] in stream
+        if stream["stream_type"] in elem_dict:
+            assert elem_dict[stream["stream_type"]] in stream
 
     if "text/csv" in mimetype:
         assert "delimiter" in scraper.streams[0]

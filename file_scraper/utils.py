@@ -350,9 +350,8 @@ def generate_metadata_dict(scraper_results, lose):
     Generate a metadata dict from the given scraper results.
 
     The resulting dict contains the metadata of each stream as a dict,
-    retrievable by using the index of the stream as a key. The index zero is
-    reserved for container metadata containing entries "mimetype", "version"
-    and "index".
+    retrievable by using the index of the stream as a key. The indexing starts
+    from zero.
 
     scraper_results is a list of lists, e.g.
 
@@ -362,11 +361,10 @@ def generate_metadata_dict(scraper_results, lose):
                        [scraper2_stream1, scraper2_stream2]]
     :lose: A list of values that can be overwritten.
     :returns: A dict containing the metadata of the file, metadata of each
-              stream in its own dict and container metadata in stream 0. E.g.
-              {0: {"mimetype": "video/mp4", "version": "", "index": 0},
-               1: {'mimetype': 'video/mp4', 'index': 1, 'frame_rate': '30',
+              stream in its own dict. E.g.
+              {0: {'mimetype': 'video/mp4', 'index': 1, 'frame_rate': '30',
                    ...},
-                2: {'mimetype': 'audio/mp4', 'index': 2,
+               1: {'mimetype': 'audio/mp4', 'index': 2,
                     'audio_data_encoding': 'AAC', ...}}
     :raises: OverlappingLoseAndImportantException when metadata methods marked
              as important return values that are present in the lose list i.e.
@@ -379,38 +377,18 @@ def generate_metadata_dict(scraper_results, lose):
     importants = {}
 
     for model in chain.from_iterable(scraper_results):
-        if model.container_stream:
-            stream_index = model.index()
-        else:
-            stream_index = model.index() + 1  # streams[0] is for container
+        stream_index = model.index()
 
         if stream_index not in streams:
             streams[stream_index] = {}
         current_stream = streams[stream_index]
 
         for method in model.iterate_metadata_methods():
-            # set the indices of the streams using the stream_index, otherwise
-            # it might be that e.g. streams[2]["index"] = 1 as individual
-            # scrapers may not know about the container stream convention
-            if method.__name__ == "index":
-                current_stream["index"] = stream_index
-                continue
-
             try:
                 _merge_to_stream(current_stream, method, lose, importants)
             except file_scraper.base.SkipElementException:
                 # happens when the method is not to be indexed
                 continue
-
-    # if the metadata models did not have a stream for container, generate it
-    if 0 not in streams:
-        container = {"mimetype": streams[1]["mimetype"],
-                     "version": streams[1]["version"],
-                     "index": 0,
-                     "stream_type": streams[1]["stream_type"]}
-        if container["stream_type"] == "text":
-            container["charset"] = streams[1]["charset"]
-        streams[0] = container
 
     # Check that important values did not contain values marked as disposable
     if common_elements(lose, importants.values()):

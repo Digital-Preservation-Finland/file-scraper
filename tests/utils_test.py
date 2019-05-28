@@ -70,9 +70,7 @@ This module tests the following utility functions:
         - A dict with metadata method names as keys and return values as values
           is returned with priority of conflicting values determined correctly
           based on the given lose list and importantness of the methods.
-        - Container metadata consisting of mimetype and version is found in the
-          zero stream.
-        - Indexes of the other streams start from 1 and correspond to the keys
+        - Indexes of the streams start from 0 and correspond to the keys
           in the outer dict.
         - If the lose list contains a value some method marks as important, an
           OverlappingLoseAndImportantException is raised.
@@ -468,14 +466,12 @@ def test_generate_metadata_dict():
     results = [[Meta1()], [Meta2()], [Meta3()]]
     lose = ["value2-1"]
     metadata_dict = generate_metadata_dict(results, lose)
-    assert metadata_dict == {0: {"index": 0, "mimetype": "mime",
-                                 "version": 1.0, "stream_type": "binary"},
-                             1: {"index": 1, "key1": "value1-1",
+    assert metadata_dict == {0: {"index": 0, "key1": "value1-1",
                                  "key2": "value2", "key3": "key2-3",
                                  "key4": "importantvalue",
                                  "mimetype": "mime", "version": 1.0,
                                  "stream_type": "binary"},
-                             2: {"index": 2, "key1": "value1",
+                             1: {"index": 1, "key1": "value1",
                                  "key2": "value2", "mimetype": "anothermime",
                                  "version": 2, "stream_type": "audio"}}
 
