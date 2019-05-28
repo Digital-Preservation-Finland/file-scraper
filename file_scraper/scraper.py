@@ -103,6 +103,7 @@ class Scraper(object):
         self._scrape_file(file_exists)
 
         if file_exists.well_formed is False:
+            self.streams = {}
             return
 
         self._identify()
@@ -113,7 +114,6 @@ class Scraper(object):
             scraper = scraper_class(self.filename,  # self.mimetype,
                                     check_wellformed, self._params)
             self._scrape_file(scraper)
-
         self.streams = generate_metadata_dict(self._scraper_results, LOSE)
         self._check_utf8(check_wellformed)
         self._check_mimetype_version()
