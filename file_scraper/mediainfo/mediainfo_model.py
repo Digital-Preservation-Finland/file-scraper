@@ -58,15 +58,6 @@ class BaseMediainfoMeta(BaseMeta):
         if self._stream.track_type == "General":
             if self.hascontainer():
                 return "videocontainer"
-
-            # handle "containers" that are not videocontainers
-            if self.container_stream is self._stream:
-                if "video" in self._stream.format.lower():
-                    return "videocontainer"
-                if ("audio" in self._stream.format.lower() or
-                        "wave" in self._stream.format.lower()):
-                    return "audio"
-            return None
         return self._stream.track_type.lower()
 
     @metadata()
