@@ -40,17 +40,20 @@ class FFMpegMeta(BaseMeta):
         :probe_results: List of streams returned by ffmpeg.probe.
         :index:  Index of the current stream.
         """
-        if index == 0:
+        self._probe_results = probe_results
+        if index == 0 and self._hascontainer():
             self._ffmpeg_stream = probe_results["format"]
         else:
             self._ffmpeg_stream = probe_results["streams"][index-1]
-        self._probe_results = probe_results
         if self._hascontainer():
             self.container_stream = self._probe_results["format"]
 
     def _hascontainer(self):
         """Check if file has a video container."""
         if "codec_type" not in self._probe_results["format"]:
+            if self._probe_results["format"]["format_name"] in ["mp3",
+                                                                "mpegvideo"]:
+                return False
             return True
         return False
 
@@ -97,10 +100,8 @@ class FFMpegMeta(BaseMeta):
         """Return stream type."""
         if "codec_type" not in self._ffmpeg_stream and \
                 self.index() > 0:
-            return "data"
+            return "other"
         if self._hascontainer() and self.index() == 0:
-            if "audio" in self._ffmpeg_stream["format_long_name"]:
-                return "audio"
             return "videocontainer"
         if self._ffmpeg_stream["codec_type"] == "data":
             return "other"
@@ -111,7 +112,9 @@ class FFMpegMeta(BaseMeta):
         """Return stream index."""
         if "index" not in self._ffmpeg_stream:
             return 0
-        return self._ffmpeg_stream["index"]
+        if self._hascontainer():
+            return self._ffmpeg_stream["index"]
+        return self._ffmpeg_stream["index"] - 1
 
     @metadata()
     def color(self):
