@@ -29,11 +29,10 @@ import pytest
 from file_scraper.mediainfo.mediainfo_scraper import MediainfoScraper
 from tests.common import parse_results
 from tests.scrapers.stream_dicts import (
-    MPEG1_VIDEOCONTAINER, MPEG1_VIDEO, MPEG2_VIDEOCONTAINER, MPEG2_VIDEO,
-    MPEG4_CONTAINER, MPEG4_VIDEO, MPEG4_AUDIO, MPEG1_AUDIOCONTAINER,
+    MPEG1_VIDEO, MPEG2_VIDEO, MPEG4_CONTAINER, MPEG4_VIDEO, MPEG4_AUDIO,
     MPEG1_AUDIO, MPEGTS_CONTAINER, MPEGTS_VIDEO, MPEGTS_AUDIO, MPEGTS_OTHER,
-    WAV_CONTAINER, WAV_AUDIO, MKV_CONTAINER, FFV_VIDEO, FFV_VIDEO_TRUNCATED,
-    MOV_CONTAINER, DV_CONTAINER, DV_VIDEO, MOV_TC, MOV_DV_VIDEO)
+    WAV_AUDIO, MKV_CONTAINER, FFV_VIDEO, FFV_VIDEO_TRUNCATED, MOV_CONTAINER,
+    DV_VIDEO, MOV_TC, MOV_DV_VIDEO)
 
 
 @pytest.mark.parametrize(
@@ -51,7 +50,7 @@ from tests.scrapers.stream_dicts import (
             "purpose": "Test valid DV.",
             "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
-            "streams": {0: DV_CONTAINER.copy(), 1: DV_VIDEO.copy()}},
+            "streams": {0: DV_VIDEO.copy()}},
          "video/dv"),
         ("invalid__empty.dv", {
             "purpose": "Test empty DV.",
@@ -127,12 +126,12 @@ def test_mediainfo_scraper_mkv(filename, result_dict, evaluate_scraper):
             "purpose": "Test valid WAV.",
             "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
-            "streams": {0: WAV_CONTAINER.copy(), 1: WAV_AUDIO.copy()}}),
+            "streams": {0: WAV_AUDIO.copy()}}),
         ("valid_2_bwf.wav", {
             "purpose": "Test valid BWF.",
             "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
-            "streams": {0: WAV_CONTAINER.copy(), 1: WAV_AUDIO.copy()}}),
+            "streams": {0: WAV_AUDIO.copy()}}),
         ("invalid__empty.wav", {
             "purpose": "Test empty WAV.",
             "stdout_part": "",
@@ -145,10 +144,6 @@ def test_mediainfo_scraper_wav(filename, result_dict, evaluate_scraper):
     scraper = MediainfoScraper(correct.filename, True,
                                params={"mimetype": mimetype})
     scraper.scrape_file()
-
-    del correct.streams[0]["stream_type"]
-    if "2" in filename:
-        correct.streams[1]["version"] = "2"
 
     if "empty" in filename:
         assert correct.stdout_part in scraper.messages()
@@ -165,14 +160,12 @@ def test_mediainfo_scraper_wav(filename, result_dict, evaluate_scraper):
             "purpose": "Test valid MPEG-1.",
             "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
-            "streams": {0: MPEG1_VIDEOCONTAINER.copy(),
-                        1: MPEG1_VIDEO.copy()}}),
+            "streams": {0: MPEG1_VIDEO.copy()}}),
         ("valid_2.m2v", {
             "purpose": "Test valid MPEG-2.",
             "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
-            "streams": {0: MPEG2_VIDEOCONTAINER.copy(),
-                        1: MPEG2_VIDEO.copy()}}),
+            "streams": {0: MPEG2_VIDEO.copy()}}),
         ("invalid_1_empty.m1v", {
             "purpose": "Test empty MPEG-1.",
             "stdout_part": "",
@@ -238,8 +231,7 @@ def test_mediainfo_scraper_mp4(filename, result_dict, evaluate_scraper):
             "purpose": "Test valid mp3.",
             "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
-            "streams": {0: MPEG1_AUDIOCONTAINER.copy(),
-                        1: MPEG1_AUDIO.copy()}}),
+            "streams": {0: MPEG1_AUDIO.copy()}}),
         ("invalid__empty.mp3", {
             "purpose": "Test empty mp3",
             "stdout_part": "",

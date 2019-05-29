@@ -62,6 +62,7 @@ class MediainfoScraper(BaseScraper):
             for md_class in self._supported_metadata:
                 if md_class.is_supported(mime_guess):
                     md_object = md_class(mediainfo.tracks, index, mime_guess)
+                    if not md_object.hascontainer() and index == 0:
+                        continue
                     self.streams.append(md_object)
-
         self._check_supported(allow_unav_version=True)

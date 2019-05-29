@@ -25,14 +25,16 @@ class BaseMediainfoMeta(BaseMeta):
                          value is used instead.
         """
         self._stream = tracks[index]
-        self._index = index
         self._tracks = tracks
         self._mimetype_guess = mimetype_guess
-        if self._hascontainer():
+        if self.hascontainer():
+            self._index = index
             self.container_stream = tracks[0]
+        else:
+            self._index = index - 1
         super(BaseMediainfoMeta, self).__init__()
 
-    def _hascontainer(self):
+    def hascontainer(self):
         """Find out if file is a video container."""
         if self._tracks[0].format in self._containers:
             return True
@@ -54,7 +56,7 @@ class BaseMediainfoMeta(BaseMeta):
     def stream_type(self):
         """Return stream type."""
         if self._stream.track_type == "General":
-            if self._hascontainer():
+            if self.hascontainer():
                 return "videocontainer"
 
             # handle "containers" that are not videocontainers
@@ -142,8 +144,6 @@ class BaseMediainfoMeta(BaseMeta):
         """Return data rate (bit rate)."""
         if self.stream_type() not in ["video", "audio"]:
             raise SkipElementException()
-        if self._stream == self.container_stream:
-            raise SkipElementException()
         if self._stream.bit_rate is not None:
             if self._stream.track_type == "Video":
                 return strip_zeros(str(float(
@@ -207,8 +207,6 @@ class BaseMediainfoMeta(BaseMeta):
         """
         if self.stream_type() not in ["video", "audio"]:
             raise SkipElementException()
-        if self.container_stream is self._stream:
-            raise SkipElementException()
         if self._stream.bit_rate_mode == "CBR":
             return "Fixed"
         if self._stream.bit_rate_mode is not None:
@@ -229,8 +227,6 @@ class BaseMediainfoMeta(BaseMeta):
         """Return sampling frequency."""
         if self.stream_type() not in ["audio"]:
             raise SkipElementException()
-        if self._stream == self.container_stream:
-            raise SkipElementException()
         if self._stream.sampling_rate is not None:
             return strip_zeros(str(float(
                 self._stream.sampling_rate)/1000))
@@ -240,8 +236,6 @@ class BaseMediainfoMeta(BaseMeta):
     def num_channels(self):
         """Return number of channels."""
         if self.stream_type() not in ["audio"]:
-            raise SkipElementException()
-        if self._stream == self.container_stream:
             raise SkipElementException()
         if self._stream.channel_s is not None:
             return str(self._stream.channel_s)
@@ -292,8 +286,6 @@ class BaseMediainfoMeta(BaseMeta):
         """Return bits per sample."""
         if self.stream_type() not in ["video", "audio"]:
             raise SkipElementException()
-        if self._stream == self.container_stream:
-            raise SkipElementException()
         if self._stream.bit_depth is not None:
             return str(self._stream.bit_depth)
         return "(:unav)"
@@ -304,26 +296,6 @@ class MovMediainfoMeta(BaseMediainfoMeta):
     _supported = {"video/quicktime": [""], "video/dv": [""]}
     _allow_versions = True  # Allow any version
     _containers = ["QuickTime"]
-
-    def __init__(self, tracks, index, mimetype_guess):
-        """
-        Initialize the metadata model.
-
-        This subclass has its own initializer in order to allow setting
-        the container_stream despite _hascontainer() method returning
-        false for dv files.
-
-        :tracks: list of tracks containing all tracks in the file
-        :index: index of the track represented by this metadata model
-        :mimetype_guess: MIME type of the file. For some file types, the
-                         scraper cannot determine the mimetype and this
-                         value is used instead.
-        """
-        super(MovMediainfoMeta, self).__init__(tracks, index, mimetype_guess)
-        # TODO is this enough checking? could there be files where this would
-        #      be bad? E.g. only one stream?
-        if self.mimetype() == "video/dv":
-            self.container_stream = tracks[0]
 
     @metadata()
     def mimetype(self):
@@ -406,23 +378,6 @@ class WavMediainfoMeta(BaseMediainfoMeta):
     _supported = {"audio/x-wav": ["2", ""]}
     _allow_versions = True  # Allow any version
 
-    def __init__(self, tracks, index, mimetype_guess):
-        """
-        Initialize the metadata model.
-
-        This subclass has its own initializer in order to allow setting
-        the container_stream despite _hascontainer() method returning
-        false for wav files.
-
-        :tracks: list of tracks containing all tracks in the file
-        :index: index of the track represented by this metadata model
-        :mimetype_guess: MIME type of the file. For some file types, the
-                         scraper cannot determine the mimetype and this
-                         value is used instead.
-        """
-        super(WavMediainfoMeta, self).__init__(tracks, index, mimetype_guess)
-        self.container_stream = tracks[0]
-
     @metadata()
     def mimetype(self):
         """Returns mimetype for stream."""
@@ -454,25 +409,6 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
                   "video/MP2T": [""]}
     _allow_versions = True  # Allow any version
     _containers = ["MPEG-TS", "MPEG-PS", "MPEG-4"]
-
-    def __init__(self, tracks, index, mimetype_guess):
-        """
-        Initialize the metadata model.
-
-        This subclass has its own initializer in order to allow setting
-        the container_stream despite _hascontainer() method returning
-        false for mpeg files.
-
-        :tracks: list of tracks containing all tracks in the file
-        :index: index of the track represented by this metadata model
-        :mimetype_guess: MIME type of the file. For some file types, the
-                         scraper cannot determine the mimetype and this
-                         value is used instead.
-        """
-        super(MpegMediainfoMeta, self).__init__(tracks, index, mimetype_guess)
-        # TODO ok?
-        if self.mimetype() == "video/mpeg" or self.mimetype() == "audio/mpeg":
-            self.container_stream = tracks[0]
 
     @metadata()
     def signal_format(self):

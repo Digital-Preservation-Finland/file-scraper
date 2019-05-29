@@ -6,8 +6,6 @@ MOV_CONTAINER = {
     "codec_name": "MPEG-4", "index": 0, "mimetype": "video/quicktime",
     "stream_type": "videocontainer", "version": ""}
 
-DV_CONTAINER = {"mimetype": "video/dv", "index": 0, "version": None}
-
 DV_VIDEO = {
     "bits_per_sample": "8", "codec_creator_app": "(:unav)",
     "codec_creator_app_version": "(:unav)", "codec_name": "DV",
@@ -46,8 +44,6 @@ FFV_VIDEO = {
 FFV_VIDEO_TRUNCATED = dict(FFV_VIDEO, **{
     "data_rate": "2.077741", "version": "0"})
 
-WAV_CONTAINER = {"mimetype": "audio/x-wav", "index": 0, "version": ""}
-
 WAV_AUDIO = {
     "audio_data_encoding": "PCM", "bits_per_sample": "8",
     "codec_creator_app": "Lavf56.40.101",
@@ -56,12 +52,6 @@ WAV_AUDIO = {
     "data_rate": "705.6", "data_rate_mode": "Fixed", "duration": "PT0.86S",
     "index": 0, "mimetype": "audio/x-wav", "num_channels": "2",
     "sampling_frequency": "44.1", "stream_type": "audio", "version": ""}
-
-MPEG1_VIDEOCONTAINER = {"mimetype": "video/mpeg", "index": 0, "version": "1"}
-
-MPEG2_VIDEOCONTAINER = {
-    "mimetype": "video/mpeg", "index": 0, "stream_type": "videocontainer",
-    "version": "2"}
 
 MPEG1_VIDEO = {
     "mimetype": "video/mpeg", "index": 0, "par": "1", "frame_rate": "30",
@@ -85,9 +75,6 @@ MPEG4_VIDEO = dict(MPEG1_VIDEO, **{
 
 MPEGTS_VIDEO = dict(MPEG1_VIDEO, **{
     "data_rate": "(:unav)", "index": 1, "sound": "Yes", "version": "2"})
-
-MPEG1_AUDIOCONTAINER = {
-    "mimetype": "audio/mpeg", "index": 0, "version": None}
 
 MPEG1_AUDIO = {
     "mimetype": "audio/mpeg", "index": 0,
