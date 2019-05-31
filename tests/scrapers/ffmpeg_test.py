@@ -139,9 +139,6 @@ from tests.common import parse_results
             "streams": {
                 0: {
                     "index": 0,
-                    "stream_type": "videocontainer"},
-                1: {
-                    "index": 1,
                     "par": "1",
                     "frame_rate": u"30",
                     "data_rate_mode": None,
@@ -161,9 +158,6 @@ from tests.common import parse_results
             "streams": {
                 0: {
                     "index": 0,
-                    "stream_type": "videocontainer"},
-                1: {
-                    "index": 1,
                     "par": "1",
                     "frame_rate": u"30",
                     "data_rate_mode": None,
@@ -215,10 +209,6 @@ from tests.common import parse_results
             "streams": {
                 0: {
                     "index": 0,
-                    "codec_quality": None,
-                    "stream_type": "audio"},
-                1: {
-                    "index": 1,
                     "audio_data_encoding": "MPEG Audio",
                     "data_rate_mode": None,
                     "codec_quality": None,
@@ -268,10 +258,6 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
                                 check_well_formed)
         correct.streams[0]["mimetype"] = "(:unav)"
         correct.streams[0]["version"] = "(:unav)"
-        if "audio" in mimetype:
-            correct.streams[0]["stream_type"] = "audio"
-        else:
-            correct.streams[0]["stream_type"] = "videocontainer"
         if not check_well_formed:
             correct.well_formed = None
 
