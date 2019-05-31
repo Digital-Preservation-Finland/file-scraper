@@ -62,9 +62,7 @@ The ``scraper.streams`` includes a following kind of dict::
 
     {0: <stream 0>, 1: <stream 1>, ...}
 
-where ``<stream X>`` is a dict containing the metadata elements from stream X and the key ``index``, value of which is a copy of the corresponding key in ``scraper.streams``. The first stream (``<stream 0>``) contains information about the container, which can include e.g. the name of the used codec. For files that are not container formats, the first stream contains just the MIME type and version of the stream.
-
-The rest of the streams represent the stream metadata. These streams can contain a variety of keys depending on the file type, e.g. ``height`` and ``width`` for images or ``audio_data_encoding`` for audio streams. The following keys exist in all stream metadata::
+where ``<stream X>`` is a dict containing the metadata elements from stream X and the key ``index``, value of which is a copy of the corresponding key in ``scraper.streams``. These streams can contain a variety of keys depending on the file type, e.g. ``height`` and ``width`` for images or ``audio_data_encoding`` for audio streams. The following keys exist in all stream metadata::
 
     {'mimetype': <mimetype>,         # Mimetype of the stream
      'version': <version>,           # Format version of the stream
