@@ -146,7 +146,6 @@ class BaseMeta(object):
 
     _supported = {}
     _allow_versions = False
-    container_stream = None
 
     @metadata()
     def mimetype(self):

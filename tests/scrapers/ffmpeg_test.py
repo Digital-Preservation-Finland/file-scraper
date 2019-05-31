@@ -3,8 +3,7 @@ Test module for ffmpeg.py
 
 This module tests that:
     - For valid audio and video files the scraping is reported as successful,
-      the file is well-formed. Since this scraper does not really collect
-      metadata, the version and MIME type will be "(:unav)".
+      the file is well-formed and metadata is scraped correctly.
     - For empty files the results are similar but file is not well-formed
       and errors should contain an error message. The error message should
       contain the following string:
@@ -30,15 +29,13 @@ This module tests that:
         - video/mp4 containing h264 video and aac audio streams
         - video/MP2T file
         - audio/mpeg version 1 file
-    - When well-formed check is performed, the scraper reports the following
-      combinations of mimetypes and versions as supported:
+    - Whether well-formed check is performed or not, the scraper reports the
+      following combinations of mimetypes and versions as supported:
         - video/mpeg, "1" or None
         - video/mp4, "" or None
         - video/MP1S, "" or None
         - video/MP2P, "" or None
         - video/MP2T, "" or None
-    - When well-formedness is not checked, the scraper reports valid
-      combinations as not supported.
     - A made up version with supported MIME type is reported as supported.
     - A made up MIME type with supported version is reported as not supported.
 """
