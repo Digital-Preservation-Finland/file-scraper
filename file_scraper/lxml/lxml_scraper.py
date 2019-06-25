@@ -5,7 +5,6 @@ try:
 except ImportError:
     pass
 
-from io import open as io_open
 from file_scraper.base import BaseScraper
 from file_scraper.lxml.lxml_model import LxmlMeta
 
@@ -49,8 +48,8 @@ class LxmlScraper(BaseScraper):
             return
         parser = etree.XMLParser(dtd_validation=False, no_network=True,
                                  recover=True)
-        file_ = io_open(self.filename, "rb")
-        tree = etree.parse(file_, parser)
+        with open(self.filename, "rb") as file_:
+            tree = etree.parse(file_, parser)
         for md_class in self._supported_metadata:
             self.streams.append(md_class(tree))
         self._messages.append("Encoding metadata found.")
