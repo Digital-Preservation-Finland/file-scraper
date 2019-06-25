@@ -371,7 +371,7 @@ def generate_metadata_dict(scraper_results, lose):
              overwritable.
     """
     # if there are no scraper results, return an empty dict
-    if sum([len(x) for x in scraper_results]) == 0:
+    if not any(scraper_results):
         return {}
     streams = {}
     importants = {}
