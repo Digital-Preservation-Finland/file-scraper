@@ -29,7 +29,7 @@ class CsvScraper(BaseScraper):
                                   "used.")
             return
         try:
-            with open(self.filename, "r") as csvfile:
+            with open(self.filename, "rt") as csvfile:
                 for md_class in self._supported_metadata:
                     self.streams.append(md_class(csvfile, self._errors,
                                                  self._messages, self._params))
