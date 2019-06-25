@@ -54,7 +54,7 @@ The metadata is represented by metadata model objects, e.g. ``GhostscriptMeta`` 
         * Example of a metadata method::
         
             @metadata
-            def width():
+            def width(self):
                 return self._width
                 
     * MUST implement metadata method ``stream_type()``, returning e.g. "text", "image", "audio", "video", "videocontainer", "binary", if not implemented in the already existing base class.
