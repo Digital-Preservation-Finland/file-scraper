@@ -102,6 +102,7 @@ class WarcWarctoolsScraper(BaseScraper):
         except Exception as exception:  # pylint: disable=broad-except
             # Compressed but corrupted gzip file
             self._errors.append(str(exception))
+            warc_fd.close()
             return
 
         self._messages.append("File was analyzed successfully.")
