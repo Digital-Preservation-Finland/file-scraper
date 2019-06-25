@@ -30,8 +30,8 @@ class GhostscriptScraper(BaseScraper):
             self.streams.append(model())
 
         # Ghostscript will result 0 if it can repair errors.
-        # However, stderr is not then empty.
-        # This case should be handled as well-formed failure.
+        # However, in those cases an error is logged to either _errors or
+        # _messages. This case should be handled as well-formed failure.
         if shell.stderr:
             self._errors.append(shell.stderr.decode("iso-8859-1").
                                 encode("utf8"))
@@ -41,3 +41,21 @@ class GhostscriptScraper(BaseScraper):
         self._messages.append(shell.stdout.decode("iso-8859-1").encode("utf8"))
 
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)
+
+    @property
+    def well_formed(self):
+        """
+        Overwrite the normal well-formedness check to also look at the stdout.
+
+        This is needed as ghostscript can log errors to stdout if it has been
+        able to repair the file. In these cases, scraper messages contain
+        "**** Error" or "**** Warning" (any capitalization is detected), which
+        is interpreted as well-formedness failure.
+
+        :returns: True if the file is well-formed, False if it is not.
+        """
+        for message in self._messages:
+            if ("**** error" in message.lower() or
+                    "**** warning" in message.lower()):
+                return False
+        return super(GhostscriptScraper, self).well_formed
