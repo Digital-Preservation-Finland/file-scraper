@@ -1,4 +1,6 @@
 """Metadata models for files scraped using magic."""
+from __future__ import with_statement
+
 import ctypes
 
 from file_scraper.base import BaseMeta
@@ -36,11 +38,12 @@ class BaseMagicMeta(BaseMeta):
             magic_ = magic.open(magic.MAGIC_MIME_TYPE)
             magic_.load()
             mimetype = magic_.file(encode(self._filename))
-            magic_.close()
         except Exception as exception:  # pylint: disable=broad-except
             self._errors.append("Error in analysing file")
             self._errors.append(str(exception))
             return None
+        finally:
+            magic_.close()
 
         if mimetype in MIMETYPE_DICT:
             mimetype = MIMETYPE_DICT[mimetype]
@@ -53,11 +56,13 @@ class BaseMagicMeta(BaseMeta):
             magic_.load()
             magic_version = magic_.file(
                 encode(self._filename)).split(self._starttag)[-1]
-            magic_.close()
         except Exception as exception:  # pylint: disable=broad-except
             self._errors.append("Error in analysing file")
             self._errors.append(str(exception))
             return None
+        finally:
+            magic_.close()
+
         if self._endtag:
             return magic_version.split(self._endtag)[0]
         return magic_version
@@ -99,11 +104,12 @@ class TextMagicBaseMeta(BaseMagicMeta):
             magic_ = magic.open(magic.MAGIC_MIME_ENCODING)
             magic_.load()
             magic_charset = magic_.file(encode(self._filename))
-            magic_.close()
         except Exception as exception:  # pylint: disable=broad-except
             self._errors.append("Error in analyzing file")
             self._errors.append(str(exception))
             return None
+        finally:
+            magic_.close()
 
         if magic_charset is None or magic_charset.upper() == "BINARY":
             return None
