@@ -4,7 +4,7 @@ import os
 import shutil
 import tempfile
 from io import open
-from file_scraper.base import BaseScraper, Shell
+from file_scraper.base import BaseScraper, ProcessRunner
 from file_scraper.pspp.pspp_model import PsppMeta
 from file_scraper.utils import ensure_str
 
@@ -37,7 +37,7 @@ class PsppScraper(BaseScraper):
         temp_file = os.path.join(temp_dir, "converted.por")
 
         try:
-            shell = Shell([
+            shell = ProcessRunner([
                 PSPP_PATH,
                 self.filename,
                 temp_file

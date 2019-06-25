@@ -5,7 +5,7 @@ try:
 except ImportError:
     pass
 
-from file_scraper.base import BaseScraper, Shell
+from file_scraper.base import BaseScraper, ProcessRunner
 from file_scraper.verapdf.verapdf_model import VerapdfMeta
 from file_scraper.utils import ensure_str
 
@@ -31,7 +31,7 @@ class VerapdfScraper(BaseScraper):
             return
         cmd = [VERAPDF_PATH, self.filename]
 
-        shell = Shell(cmd)
+        shell = ProcessRunner(cmd)
         if shell.returncode != 0:
             raise VeraPDFError(ensure_str(shell.stderr))
         self._messages.append(ensure_str(shell.stdout))

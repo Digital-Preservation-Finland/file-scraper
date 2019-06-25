@@ -9,7 +9,7 @@ except ImportError:
     pass
 
 from io import open
-from file_scraper.base import BaseScraper, Shell
+from file_scraper.base import BaseScraper, ProcessRunner
 from file_scraper.utils import ensure_str
 from file_scraper.xmllint.xmllint_model import XmllintMeta
 
@@ -227,7 +227,7 @@ class XmllintScraper(BaseScraper):
         else:
             environment = None
 
-        shell = Shell(command, env=environment)
+        shell = ProcessRunner(command, env=environment)
 
         return (shell.returncode, shell.stdout, shell.stderr)
 

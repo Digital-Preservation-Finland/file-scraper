@@ -207,7 +207,7 @@ class BaseMeta(object):
         return cls._supported
 
 
-class Shell(object):
+class ProcessRunner(object):
     """Shell command handler for non-Python 3rd party software."""
 
     def __init__(self, command, output_file=subprocess.PIPE, env=None):

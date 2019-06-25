@@ -1,6 +1,6 @@
 """Module for pngcheck scraper."""
 
-from file_scraper.base import BaseScraper, Shell
+from file_scraper.base import BaseScraper, ProcessRunner
 from file_scraper.pngcheck.pngcheck_model import PngcheckMeta
 from file_scraper.utils import ensure_str
 
@@ -21,7 +21,7 @@ class PngcheckScraper(BaseScraper):
             self._messages.append("Skipping scraper: Well-formed check not "
                                   "used.")
             return
-        shell = Shell(["pngcheck", self.filename])
+        shell = ProcessRunner(["pngcheck", self.filename])
 
         if shell.returncode != 0:
             self._errors.append("Failed: returncode %s" % shell.returncode)

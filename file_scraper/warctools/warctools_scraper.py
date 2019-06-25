@@ -3,7 +3,7 @@ import os.path
 import gzip
 import tempfile
 from io import open
-from file_scraper.base import BaseScraper, Shell
+from file_scraper.base import BaseScraper, ProcessRunner
 from file_scraper.warctools.warctools_model import (WarcWarctoolsMeta,
                                                     ArcWarctoolsMeta,
                                                     GzipWarctoolsMeta)
@@ -78,7 +78,7 @@ class WarcWarctoolsScraper(BaseScraper):
         if size == 0:
             self._errors.append("Empty file.")
             return
-        shell = Shell(["warcvalid", self.filename])
+        shell = ProcessRunner(["warcvalid", self.filename])
 
         if shell.returncode != 0:
             self._errors.append("Failed: returncode %s" % shell.returncode)
@@ -133,8 +133,8 @@ class ArcWarctoolsScraper(BaseScraper):
             return
         with tempfile.NamedTemporaryFile(prefix="scraper-warctools.") \
                 as warcfile:
-            shell = Shell(command=["arc2warc", self.filename],
-                          output_file=warcfile)
+            shell = ProcessRunner(command=["arc2warc", self.filename],
+                                  output_file=warcfile)
             if shell.returncode != 0:
                 self._errors.append("Failed: returncode %s" %
                                     shell.returncode)

@@ -1,5 +1,5 @@
 """DPX V2.0 scraper."""
-from file_scraper.base import BaseScraper, Shell
+from file_scraper.base import BaseScraper, ProcessRunner
 from file_scraper.dpx.dpx_model import DpxMeta
 from file_scraper.utils import ensure_str
 
@@ -16,7 +16,7 @@ class DpxScraper(BaseScraper):
             self._messages.append("Skipping scraper: Well-formed check not "
                                   "used.")
             return
-        shell = Shell(["dpxv", self.filename])
+        shell = ProcessRunner(["dpxv", self.filename])
 
         if shell.returncode != 0:
             raise DPXvError(ensure_str(shell.stderr))

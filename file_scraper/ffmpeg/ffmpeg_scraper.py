@@ -1,5 +1,5 @@
 """FFMpeg wellformed scraper."""
-from file_scraper.base import BaseScraper, Shell
+from file_scraper.base import BaseScraper, ProcessRunner
 from file_scraper.ffmpeg.ffmpeg_model import FFMpegMeta
 from file_scraper.utils import ensure_str
 
@@ -35,8 +35,8 @@ class FFMpegScraper(BaseScraper):
             self._errors.append(ensure_str(err.stderr))
 
         # this detects empty files and other problems
-        shell = Shell(["ffmpeg", "-v", "error", "-i", self.filename, "-f",
-                       "null", "-"])
+        shell = ProcessRunner(["ffmpeg", "-v", "error", "-i", self.filename,
+                               "-f", "null", "-"])
         if shell.returncode == 0:
             self._messages.append("The file was analyzed successfully.")
         if shell.stderr:

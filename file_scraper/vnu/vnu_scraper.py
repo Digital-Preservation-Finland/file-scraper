@@ -1,6 +1,6 @@
 """A HTML5 scraper module using The Nu Html Checker."""
 
-from file_scraper.base import BaseScraper, Shell
+from file_scraper.base import BaseScraper, ProcessRunner
 from file_scraper.vnu.vnu_model import VnuMeta
 from file_scraper.utils import ensure_str
 
@@ -19,7 +19,7 @@ class VnuScraper(BaseScraper):
             self._messages.append("Skipping scraper: Well-formed check not "
                                   "used.")
             return
-        shell = Shell([
+        shell = ProcessRunner([
             "java", "-jar", VNU_PATH, "--verbose",
             self.filename])
 

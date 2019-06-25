@@ -3,7 +3,7 @@ import os
 import shutil
 import tempfile
 import lxml.etree as etree
-from file_scraper.base import BaseScraper, Shell
+from file_scraper.base import BaseScraper, ProcessRunner
 from file_scraper.schematron.schematron_model import SchematronMeta
 from file_scraper.utils import hexdigest, ensure_str
 
@@ -139,7 +139,7 @@ class SchematronScraper(BaseScraper):
         :inputfile: Input document filename
         :outputfile: Filename of the resulted document, stdout if None
         :outputfilter: Use outputfilter parameter with value only_messages
-        :return: Shell instance
+        :return: ProcessRunner instance
         """
         cmd = ["xsltproc"]
         if outputfile:
@@ -148,7 +148,7 @@ class SchematronScraper(BaseScraper):
             cmd = cmd + ["--stringparam", "outputfilter", "only_messages"]
         cmd = cmd + [os.path.join(self._schematron_dirname, stylesheet),
                      inputfile]
-        shell = Shell(cmd)
+        shell = ProcessRunner(cmd)
         if shell.returncode not in allowed_codes:
             raise SchematronValidatorError(
                 "Error %s\nstdout:\n%s\nstderr:\n%s" % (

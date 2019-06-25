@@ -1,7 +1,7 @@
 """Office file scraper."""
 import tempfile
 import shutil
-from file_scraper.base import BaseScraper, Shell
+from file_scraper.base import BaseScraper, ProcessRunner
 from file_scraper.office.office_model import OfficeMeta
 from file_scraper.utils import ensure_str
 
@@ -21,7 +21,7 @@ class OfficeScraper(BaseScraper):
         temp_dir = tempfile.mkdtemp()
         try:
             env = {"HOME": temp_dir}
-            shell = Shell([
+            shell = ProcessRunner([
                 "soffice", "--convert-to", "pdf", "--outdir", temp_dir,
                 self.filename], env=env)
             if shell.stderr:

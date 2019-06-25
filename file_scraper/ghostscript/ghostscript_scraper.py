@@ -5,7 +5,7 @@ This scraper does not scrape metadata but instead checks well-formedness of pdf
 versions 1.7, A-2a, A-2b, A-2u, A-3a, A-3b and A-3u.
 """
 
-from file_scraper.base import BaseScraper, Shell
+from file_scraper.base import BaseScraper, ProcessRunner
 from file_scraper.ghostscript.ghostscript_model import GhostscriptMeta
 
 
@@ -22,7 +22,7 @@ class GhostscriptScraper(BaseScraper):
             self._messages.append("Skipping scraper: Well-formed check not"
                                   "used.")
             return
-        shell = Shell([
+        shell = ProcessRunner([
             "gs", "-o", "/dev/null", "-sDEVICE=nullpage",
             self.filename])
 

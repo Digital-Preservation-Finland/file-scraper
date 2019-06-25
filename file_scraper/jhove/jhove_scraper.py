@@ -5,7 +5,7 @@ try:
 except ImportError:
     pass
 
-from file_scraper.base import BaseScraper, Shell
+from file_scraper.base import BaseScraper, ProcessRunner
 from file_scraper.jhove.jhove_model import (JHoveGifMeta, JHoveHtmlMeta,
                                             JHoveJpegMeta, JHoveTiffMeta,
                                             JHovePdfMeta, JHoveWavMeta,
@@ -31,7 +31,7 @@ class JHoveScraperBase(BaseScraper):
         :params: Extra parameters needed for the scraper
         """
         self._report = None  # JHove report
-        self._shell = None  # Shell object
+        self._shell = None  # ProcessRunner object
         super(JHoveScraperBase, self).__init__(filename, check_wellformed,
                                                params)
 
@@ -44,7 +44,7 @@ class JHoveScraperBase(BaseScraper):
 
         exec_cmd = ["jhove", "-h", "XML", "-m",
                     self._jhove_module, self.filename]
-        self._shell = Shell(exec_cmd)
+        self._shell = ProcessRunner(exec_cmd)
 
         if self._shell.returncode != 0:
             self._errors.append("JHove returned error: %s\n%s" % (

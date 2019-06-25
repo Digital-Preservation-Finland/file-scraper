@@ -1,5 +1,5 @@
 """Module for checking if the file is uitable as text file or not."""
-from file_scraper.base import BaseScraper, Shell
+from file_scraper.base import BaseScraper, ProcessRunner
 from file_scraper.textfile.textfile_model import TextFileMeta
 from file_scraper.utils import ensure_str
 
@@ -23,7 +23,7 @@ class TextfileScraper(BaseScraper):
 
         :returns: file mimetype
         """
-        shell = Shell([
+        shell = ProcessRunner([
             FILECMD_PATH, "-be", "soft", "--mime-type",
             self.filename], env=ENV)
         if shell.stderr:
