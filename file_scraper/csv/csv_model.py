@@ -38,7 +38,7 @@ class CsvMeta(BaseMeta):
             if not self._csv_separator:
                 self._csv_separator = dialect.lineterminator
             csv.register_dialect("new_dialect",
-                                 delimiter=self._csv_delimiter,
+                                 delimiter=str(self._csv_delimiter),
                                  lineterminator=self._csv_separator,
                                  strict=True,
                                  doublequote=True)

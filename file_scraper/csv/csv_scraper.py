@@ -1,4 +1,7 @@
 """Scraper for CSV file formats."""
+
+from io import open as io_open
+
 from file_scraper.base import BaseScraper
 from file_scraper.csv.csv_model import CsvMeta
 
@@ -29,7 +32,7 @@ class CsvScraper(BaseScraper):
                                   "used.")
             return
         try:
-            with open(self.filename, "rt") as csvfile:
+            with io_open(self.filename, "rt") as csvfile:
                 for md_class in self._supported_metadata:
                     self.streams.append(md_class(csvfile, self._errors,
                                                  self._messages, self._params))
