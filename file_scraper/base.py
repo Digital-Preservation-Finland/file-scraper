@@ -76,11 +76,14 @@ class BaseScraper(object):
         :allow_unav_version: True if (:unav) is an acceptable version
         :allow_unap_version: True if (:unap) is an acceptable version
         """
-        # TODO ok to check just the first stream? that should be where the
-        #      problematic cases (e.g. pdf) are, but theoretically some other
-        #      stream could also have bad MIME type or version. The old
-        #      implementation also checked just scraper.mimetype and
-        #      scraper.version, not streams.
+
+        # If there are no streams, the scraper does not support the determined
+        # MIME type and version combination at all (i.e. the initial MIME type
+        # guess used to choose scrapers has been inaccurate).
+        if not self.streams:
+            self._errors.append("MIME type not supported by this scraper.")
+            return
+
         mimetype = self.streams[0].mimetype()
         version = self.streams[0].version()
 
