@@ -84,7 +84,7 @@ class BaseDetectorBasic(BaseDetector):
 
 
 def test_is_supported():
-    """Test scraper"s is_supported() method."""
+    """Test scraper's is_supported() method."""
     assert BaseScraperBasic.is_supported("test/mimetype", "0.1", True)
     assert BaseScraperBasic.is_supported("test/mimetype", None, True)
     assert BaseScraperBasic.is_supported("test/mimetype", "0.1", False)
@@ -108,7 +108,7 @@ def test_is_supported():
 
 
 def test_messages_errors():
-    """Test scraper"s messages and errors."""
+    """Test scraper's messages and errors."""
     scraper = BaseScraperBasic("testfilename", "test/mimetype")
     # pylint: disable=protected-access
     scraper._messages.append("test message")
@@ -120,7 +120,7 @@ def test_messages_errors():
 
 
 def test_scraper_properties():
-    """Test scraper"s attributes and well_formed property."""
+    """Test scraper's attributes and well_formed property."""
     scraper = BaseScraperBasic("testfilename", True, {"test": "value"})
     # pylint: disable=protected-access
     scraper._messages.append("success")
@@ -165,7 +165,7 @@ class BaseScraperSupported(BaseScraper):
 
 
 def test_check_supported():
-    """Test scraper"s _check_supported() method."""
+    """Test scraper's _check_supported() method."""
     # pylint: disable=protected-access
     scraper = BaseScraperSupported("testfilename", "test/mimetype")
     scraper.streams.append(BaseMetaCustom("test/mimetype", "0.1"))

@@ -88,10 +88,10 @@ class XmllintScraper(BaseScraper):
 
         Strategy for XML file check is
             1) Try to check syntax by opening file.
-            2) If there"s DTD specified in file check against that.
-            3) If there"s no DTD and we have external XSD check againtst
+            2) If there's DTD specified in file check against that.
+            3) If there's no DTD and we have external XSD check againtst
                that.
-            4) If there"s no external XSD read schemas used in file and do
+            4) If there's no external XSD read schemas used in file and do
                check againts them with schema catalog.
 
         :returns: Tuple (status, report, errors) where
