@@ -79,11 +79,11 @@ class Scraper(object):
         Ideally the MIME type and version from the scraper are used, but if
         they are not used, values supplied by the detector are used.
         """
-        if self.streams[0]["mimetype"] not in [None, "(:unav)"]:
+        if self.streams[0]["mimetype"] not in LOSE:
             self.mimetype = self.streams[0]["mimetype"]
         else:
             self.streams[0]["mimetype"] = self.mimetype
-        if self.streams[0]["version"] not in [None, "(:unav)"]:
+        if self.streams[0]["version"] not in LOSE:
             self.version = self.streams[0]["version"]
         elif self.version:
             self.streams[0]["version"] = self.version
