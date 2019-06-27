@@ -19,7 +19,7 @@ PRIORITY_PRONOM = [
     "fmt/133", "fmt/124", "fmt/3", "fmt/4", "fmt/131", "fmt/5", "x-fmt/385",
     "x-fmt/386", "fmt/585", "fmt/200", "fmt/337", "x-fmt/384"]
 
-# Dict between detectors" results and known mimetypes.
+# Dict between detectors' results and known mimetypes.
 MIMETYPE_DICT = {
     "application/xml": "text/xml",
     "application/mp4": None,
@@ -28,7 +28,7 @@ MIMETYPE_DICT = {
     "application/x-ia-arc": "application/x-internet-archive"
 }
 
-# Dict between detectors" results and known file format versions.
+# Dict between detectors' results and known file format versions.
 VERSION_DICT = {
     "text/html": {"5": "5.0"},
     "application/pdf": {"1a": "A-1a", "1b": "A-1b",
@@ -46,7 +46,7 @@ VERSION_DICT = {
     ".spreadsheetml.sheet": {"2007 onwards": None}
 }
 
-# Dict between detectors" pronom results and known mimetypes and versions.
+# Dict between detectors' pronom results and known mimetypes and versions.
 PRONOM_DICT = {
     "x-fmt/135": ("audio/x-aiff", "1.3"),
     "fmt/541": ("image/x-dpx", "2.0"),
