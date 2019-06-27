@@ -19,9 +19,9 @@ def metadata(important=False):
     return _wrap
 
 
-def is_metadata(fun):
+def is_metadata(func):
     """Return True if given a function with metadata flag, otherwise False."""
-    return callable(fun) and getattr(fun, "is_metadata", False)
+    return callable(func) and getattr(func, "is_metadata", False)
 
 
 def encode(filename):
