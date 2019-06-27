@@ -41,14 +41,14 @@ class FFMpegMeta(BaseMeta):
         :index:  Index of the current stream.
         """
         self._probe_results = probe_results
-        if index == 0 and self._hascontainer():
+        if index == 0 and self.hascontainer():
             self._ffmpeg_stream = probe_results["format"]
         else:
             self._ffmpeg_stream = probe_results["streams"][index-1]
-        if self._hascontainer():
+        if self.hascontainer():
             self.container_stream = self._probe_results["format"]
 
-    def _hascontainer(self):
+    def hascontainer(self):
         """Check if file has a video container."""
         if "codec_type" not in self._probe_results["format"]:
             if self._probe_results["format"]["format_name"] in ["mp3",
@@ -101,7 +101,7 @@ class FFMpegMeta(BaseMeta):
         if "codec_type" not in self._ffmpeg_stream and \
                 self.index() > 0:
             return "other"
-        if self._hascontainer() and self.index() == 0:
+        if self.hascontainer() and self.index() == 0:
             return "videocontainer"
         if self._ffmpeg_stream["codec_type"] == "data":
             return "other"
@@ -112,7 +112,7 @@ class FFMpegMeta(BaseMeta):
         """Return stream index."""
         if "index" not in self._ffmpeg_stream:
             return 0
-        if self._hascontainer():
+        if self.hascontainer():
             return self._ffmpeg_stream["index"]
         return self._ffmpeg_stream["index"] - 1
 
@@ -184,11 +184,6 @@ class FFMpegMeta(BaseMeta):
         if "bit_rate" in self._ffmpeg_stream:
             if self._ffmpeg_stream["codec_type"] == "video":
                 return "(:unav)"
-                # TODO the old implementation below seems to sometimes
-                #      return values totally unrelated to ones from other
-                #      scrapers
-#                return strip_zeros(str(float(
-#                    self._ffmpeg_stream["bit_rate"])/1000000))
             return strip_zeros(str(float(
                 self._ffmpeg_stream["bit_rate"]) / 1000))
         return "(:unav)"
@@ -289,18 +284,6 @@ class FFMpegMeta(BaseMeta):
                 return self._codec_names[codec]
             return codec
         return "(:unav)"
-
-# TODO ffmpeg durations are unreliable for some types:
-#      "Estimating duration from bitrate, this may be inaccurate"
-#      Think what should be done. Mark other sources for duration important?
-#    @metadata()
-#    def duration(self):
-#        """Return duration."""
-#        if self.stream_type() not in ["audio", "video"]:
-#            raise SkipElementException()
-#        if "duration" in self._ffmpeg_stream:
-#            return iso8601_duration(float(self._ffmpeg_stream["duration"]))
-#        return "(:unav)"
 
     @metadata()
     def bits_per_sample(self):

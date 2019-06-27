@@ -3,7 +3,7 @@
 import os
 import shutil
 import tempfile
-from io import open
+from io import open as io_open
 from file_scraper.base import BaseScraper, ProcessRunner
 from file_scraper.pspp.pspp_model import PsppMeta
 from file_scraper.utils import ensure_str
@@ -26,7 +26,7 @@ class PsppScraper(BaseScraper):
             return
 
         # Check file header
-        with open(self.filename, "rb") as input_file:
+        with io_open(self.filename, "rb") as input_file:
             first_line = input_file.readline()
         if SPSS_PORTABLE_HEADER not in first_line:
             self._errors.append("File is not SPSS Portable format.")

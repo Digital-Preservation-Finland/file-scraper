@@ -2,7 +2,7 @@
 import os.path
 import gzip
 import tempfile
-from io import open
+from io import open as io_open
 from file_scraper.base import BaseScraper, ProcessRunner
 from file_scraper.warctools.warctools_model import (WarcWarctoolsMeta,
                                                     ArcWarctoolsMeta,
@@ -97,7 +97,7 @@ class WarcWarctoolsScraper(BaseScraper):
         except IOError:
             # Not compressed archive
             warc_fd.close()
-            with open(self.filename, "rb") as warc_fd:
+            with io_open(self.filename, "rb") as warc_fd:
                 line = warc_fd.readline()
         except Exception as exception:  # pylint: disable=broad-except
             # Compressed but corrupted gzip file

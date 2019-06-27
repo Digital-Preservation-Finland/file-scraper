@@ -46,7 +46,7 @@ class FFMpegScraper(BaseScraper):
         for index in range(len(streams)):
             for md_class in self._supported_metadata:
                 stream = md_class(probe_results, index)
-                if index == 0 and not stream._hascontainer():
+                if index == 0 and not stream.hascontainer():
                     continue
                 self.streams.append(stream)
 

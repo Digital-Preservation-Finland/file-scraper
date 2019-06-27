@@ -53,7 +53,7 @@ class MediainfoScraper(BaseScraper):
                 track_found = True
         if not track_found:
             self._errors.append("No audio or video tracks found.")
-            return  # TODO new addition, is return reasonable here?
+            return
         elif not truncated:
             self._messages.append("The file was analyzed successfully.")
 

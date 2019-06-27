@@ -8,7 +8,7 @@ try:
 except ImportError:
     pass
 
-from io import open
+from io import open as io_open
 from file_scraper.base import BaseScraper, ProcessRunner
 from file_scraper.utils import ensure_str
 from file_scraper.xmllint.xmllint_model import XmllintMeta
@@ -107,7 +107,7 @@ class XmllintScraper(BaseScraper):
             return
         # Try to check syntax by opening file in XML parser
         try:
-            file_ = open(self.filename, "rb")
+            file_ = io_open(self.filename, "rb")
             parser = etree.XMLParser(dtd_validation=False, no_network=True)
             tree = etree.parse(file_, parser=parser)
             file_.close()

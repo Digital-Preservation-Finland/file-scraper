@@ -305,7 +305,7 @@ class MovMediainfoMeta(BaseMediainfoMeta):
         """Return version of stream."""
         return "(:unav)"
 
-    # pylint: disable=inconsistent-return-statements
+    # pylint: disable=inconsistent-return-statements, bad-option-value
     @metadata()
     def codec_quality(self):
         """Returns codec quality."""
@@ -372,7 +372,7 @@ class WavMediainfoMeta(BaseMediainfoMeta):
     @metadata()
     def mimetype(self):
         """Returns mimetype for stream."""
-        return self._mimetype_guess  # TODO just the guess? Unav better?
+        return self._mimetype_guess
 
     @metadata()
     def version(self):
