@@ -108,8 +108,8 @@ class Scraper(object):
         for scraper_class in iter_scrapers(
                 mimetype=self.mimetype, version=self.version,
                 check_wellformed=check_wellformed, params=self._params):
-            scraper = scraper_class(self.filename,  # self.mimetype,
-                                    check_wellformed, self._params)
+            scraper = scraper_class(self.filename, check_wellformed,
+                                    self._params)
             self._scrape_file(scraper)
         self.streams = generate_metadata_dict(self._scraper_results, LOSE)
         self._check_utf8(check_wellformed)
