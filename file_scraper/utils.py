@@ -312,36 +312,37 @@ def _merge_to_stream(stream, method, lose, importants):
              are marked as important.
     """
     method_name = method.__name__
+    method_value = method()
 
     if method_name not in stream:
-        stream[method_name] = method()
+        stream[method_name] = method_value
         if method.is_important:
-            importants[method_name] = method()
+            importants[method_name] = method_value
         return
-    elif method() in lose:
+    elif method_value in lose:
         return
-    if stream[method_name] == method():
+    if stream[method_name] == method_value:
         return
 
     if method.is_important:
         if method_name not in importants:
-            stream[method_name] = method()
-            importants[method_name] = method()
-        elif importants[method_name] == method():
-            stream[method_name] = method()
+            stream[method_name] = method_value
+            importants[method_name] = method_value
+        elif importants[method_name] == method_value:
+            stream[method_name] = method_value
         else:
             raise ValueError("Conflict with values '%s' and '%s' for '%s': "
                              "both are marked important." %
                              (importants[method_name],
-                              method(),
+                              method_value,
                               method_name))
     elif method_name in importants:
         return
     elif stream[method_name] in lose:
-        stream[method_name] = method()
+        stream[method_name] = method_value
     else:
         raise ValueError("Conflict with existing value '%s' and new value "
-                         "'%s' for '%s'." % (stream[method_name], method(),
+                         "'%s' for '%s'." % (stream[method_name], method_value,
                                              method_name))
 
 
