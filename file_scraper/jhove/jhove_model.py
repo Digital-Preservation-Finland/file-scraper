@@ -109,9 +109,7 @@ class JHoveHtmlMeta(JHoveBaseMeta):
             result_mimetype = mimeparse.parse_mime_type(results[0])
             params = result_mimetype[2]
             return params.get("charset")
-        except mimeparse.MimeTypeParseException:
-            return None
-        except IndexError:
+        except (mimeparse.MimeTypeParseException, IndexError):
             return None
 
     def _get_charset_xml(self):
