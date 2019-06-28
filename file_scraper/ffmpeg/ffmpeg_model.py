@@ -50,12 +50,9 @@ class FFMpegMeta(BaseMeta):
 
     def hascontainer(self):
         """Check if file has a video container."""
-        if "codec_type" not in self._probe_results["format"]:
-            if self._probe_results["format"]["format_name"] in ["mp3",
-                                                                "mpegvideo"]:
-                return False
-            return True
-        return False
+        return ("codec_type" not in self._probe_results["format"]
+                and self._probe_results["format"]["format_name"] not in
+                ["mp3", "mpegvideo"])
 
     @metadata()
     def version(self):
