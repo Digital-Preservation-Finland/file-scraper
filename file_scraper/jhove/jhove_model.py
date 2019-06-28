@@ -277,7 +277,3 @@ class JHoveUtf8Meta(JHoveBaseMeta):
     @metadata()
     def version(self):
         return "(:unav)"
-
-    def check_supported(self):
-        """Do nothing: we dont care about the mimetype or version."""
-        pass
