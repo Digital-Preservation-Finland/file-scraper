@@ -12,9 +12,6 @@ class GhostscriptMeta(BaseMeta):
     _supported = {"application/pdf": ["1.7", "A-2a", "A-2b", "A-2u", "A-3a",
                                       "A-3b", "A-3u"]}
 
-    def __init__(self):
-        pass
-
     @metadata()
     def stream_type(self):
         """Return file type."""
