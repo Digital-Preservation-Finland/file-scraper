@@ -55,6 +55,10 @@ class CsvMeta(BaseMeta):
                 )
                 return
 
+            # Read the whole file in case it contains errors. If there are any,
+            # an exception will be raised, triggering recording an error to the
+            # given errors list (which should in normal use be _errors from
+            # BaseScraper).
             for _ in reader:
                 pass
 
