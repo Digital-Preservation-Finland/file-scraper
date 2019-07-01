@@ -7,6 +7,7 @@ versions 1.7, A-2a, A-2b, A-2u, A-3a, A-3b and A-3u.
 
 from file_scraper.base import BaseScraper, ProcessRunner
 from file_scraper.ghostscript.ghostscript_model import GhostscriptMeta
+from file_scraper.utils import ensure_str
 
 
 class GhostscriptScraper(BaseScraper):
@@ -29,16 +30,27 @@ class GhostscriptScraper(BaseScraper):
         for model in self._supported_metadata:
             self.streams.append(model())
 
+        stdout_message = ensure_str(shell.stdout)
+        stderr_message = ensure_str(shell.stderr)
+        self._messages.append(stdout_message)
+
         # Ghostscript will result 0 if it can repair errors.
         # However, in those cases an error is logged to either _errors or
         # _messages. This case should be handled as well-formed failure.
-        if shell.stderr:
-            self._errors.append(shell.stderr.decode("iso-8859-1").
-                                encode("utf8"))
+        if stderr_message:
+            self._errors.append(stderr_message)
         elif shell.returncode != 0:
             self._errors.append("Ghostscript returned return code: %s"
                                 % shell.returncode)
-        self._messages.append(shell.stdout.decode("iso-8859-1").encode("utf8"))
+
+        # Sometimes errors and warnings go to stdout
+        if ("**** error" in stdout_message.lower() or
+                "**** warning" in stdout_message.lower()):
+            self._errors.append("Ghostscript produced errors or warnings.")
+
+        # If no errors have been logged, the file is valid.
+        if not self._errors:
+            self._messages.append("Well-Formed and valid")
 
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)
 

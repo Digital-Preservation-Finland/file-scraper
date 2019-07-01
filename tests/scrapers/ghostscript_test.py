@@ -38,11 +38,11 @@ from file_scraper.ghostscript.ghostscript_scraper import GhostscriptScraper
         ("invalid_X_payload_altered.pdf", {
             "purpose": "Test payload altered file.",
             "stdout_part": "An error occurred while reading an XREF table.",
-            "stderr_part": ""}),
+            "stderr_part": "Ghostscript produced errors or warnings"}),
         ("invalid_X_removed_xref.pdf", {
             "purpose": "Test xref change.",
             "stdout_part": "An error occurred while reading an XREF table.",
-            "stderr_part": ""}),
+            "stderr_part": "Ghostscript produced errors or warnings"}),
     ]
 )
 def test_scraper_pdf(filename, result_dict, evaluate_scraper):
@@ -64,9 +64,10 @@ def test_scraper_pdf(filename, result_dict, evaluate_scraper):
 
         if scraper.well_formed:
             assert "Error" not in scraper.messages()
+            assert not scraper.errors()
         else:
+            assert correct.stderr_part in scraper.errors()
             assert correct.stdout_part in scraper.messages()
-        assert correct.stderr_part in scraper.errors()
 
 
 def test_jpeg2000_inside_pdf(evaluate_scraper):

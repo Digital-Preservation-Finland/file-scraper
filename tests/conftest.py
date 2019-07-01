@@ -38,9 +38,9 @@ def evaluate_scraper():
         if exp_scraper_cls is None:
             exp_scraper_cls = type(scraper).__name__
 
-        for stream_index, stream_metadata in correct.streams.iteritems():
+        for stream_index, stream_metadata in correct.streams.items():
             scraped_metadata = scraper.streams[stream_index]
-            for key, value in stream_metadata.iteritems():
+            for key, value in stream_metadata.items():
                 assert getattr(scraped_metadata, key)() == value
 
         assert scraper.info()["class"] == exp_scraper_cls
