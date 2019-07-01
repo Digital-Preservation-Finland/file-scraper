@@ -33,15 +33,13 @@ class BaseMagicMeta(BaseMeta):
     def mimetype(self):
         """Return MIME type."""
         try:
-            magic_ = magic.open(magic.MAGIC_MIME_TYPE)
-            magic_.load()
-            mimetype = magic_.file(encode(self._filename))
+            detect_results = magic.detect_from_filename(
+                self._filename.encode("utf-8"))
+            mimetype = detect_results.mime_type
         except Exception as exception:  # pylint: disable=broad-except
             self._errors.append("Error in analysing file")
             self._errors.append(str(exception))
             return None
-        finally:
-            magic_.close()
 
         if mimetype in MIMETYPE_DICT:
             mimetype = MIMETYPE_DICT[mimetype]
