@@ -1,7 +1,7 @@
 File Scraper
 ============
 
-This software identifies files, collects metadata from them, and does a format well-formed check for a file.
+This software identifies files, collects metadata from them, and checks well-formedness of a file.
 
 Installation
 ------------
@@ -72,7 +72,7 @@ where ``<stream X>`` is a dict containing the metadata elements from stream X an
 
 The ``scraper.info`` includes a following kind of dict::
 
-    {1: <scraper info 0>, 1: <scraper info 1>, ...}
+    {0: <scraper info 0>, 1: <scraper info 1>, ...}
 
 where ``<scraper info X>`` contains name of the scraper, the resulted info messages and the resulted errors::
 
@@ -80,7 +80,7 @@ where ``<scraper info X>`` contains name of the scraper, the resulted info messa
      'messages': <messages from scraper>,
      'errors': <errors from scraper>}
 
-The type of elements in the previous dictionaries is string, in exception of the ``index`` elemenent, which is integer.
+The type of elements in the previous dictionaries is string, in exception of the ``index`` element, which is integer.
 
 The following additional arguments for the Scraper are also possible:
 
