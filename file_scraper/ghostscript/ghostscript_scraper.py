@@ -43,13 +43,8 @@ class GhostscriptScraper(BaseScraper):
             self._errors.append("Ghostscript returned return code: %s"
                                 % shell.returncode)
 
-        # Sometimes errors and warnings go to stdout
-        if ("**** error" in stdout_message.lower() or
-                "**** warning" in stdout_message.lower()):
-            self._errors.append("Ghostscript produced errors or warnings.")
-
         # If no errors have been logged, the file is valid.
-        if not self._errors:
+        else:
             self._messages.append("Well-Formed and valid")
 
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)

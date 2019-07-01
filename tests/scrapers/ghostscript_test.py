@@ -37,12 +37,12 @@ from file_scraper.ghostscript.ghostscript_scraper import GhostscriptScraper
             "stderr_part": ""}),
         ("invalid_X_payload_altered.pdf", {
             "purpose": "Test payload altered file.",
-            "stdout_part": "An error occurred while reading an XREF table.",
-            "stderr_part": "Ghostscript produced errors or warnings"}),
+            "stdout_part": "Error: Tf refers to an unknown resource name",
+            "stderr_part": ""}),
         ("invalid_X_removed_xref.pdf", {
             "purpose": "Test xref change.",
-            "stdout_part": "An error occurred while reading an XREF table.",
-            "stderr_part": "Ghostscript produced errors or warnings"}),
+            "stdout_part": "Error:  An error occurred while reading an XREF",
+            "stderr_part": ""}),
     ]
 )
 def test_scraper_pdf(filename, result_dict, evaluate_scraper):
