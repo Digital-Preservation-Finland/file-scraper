@@ -1,6 +1,4 @@
 """Metadata models for files scraped using magic."""
-from __future__ import with_statement
-
 import ctypes
 
 from file_scraper.base import BaseMeta
