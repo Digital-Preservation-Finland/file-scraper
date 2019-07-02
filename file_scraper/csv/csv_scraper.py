@@ -1,5 +1,6 @@
 """Scraper for CSV file formats."""
 
+import csv
 from io import open as io_open
 
 from file_scraper.base import BaseScraper
@@ -31,11 +32,56 @@ class CsvScraper(BaseScraper):
             self._messages.append("Skipping scraper: Well-formed check not "
                                   "used.")
             return
+        delimiter = self._params.get("delimiter", None)
+        separator = self._params.get("separator", None)
+        fields = self._params.get("fields", [])
+        first_line = None
         try:
             with io_open(self.filename, "rt") as csvfile:
+                try:
+                    reader = csv.reader(csvfile)
+                    csvfile.seek(0)
+                    dialect = csv.Sniffer().sniff(csvfile.read(1024))
+                    if not delimiter:
+                        delimiter = dialect.delimiter
+                    if not separator:
+                        separator = dialect.lineterminator
+                    csv.register_dialect("new_dialect",
+                                         delimiter=str(delimiter),
+                                         lineterminator=separator,
+                                         strict=True,
+                                         doublequote=True)
+
+                    csvfile.seek(0)
+                    reader = csv.reader(csvfile, dialect="new_dialect")
+                    first_line = next(reader)
+
+                    if fields and len(fields) != len(first_line):
+                        self._errors.append(
+                            "CSV not well-formed: field counts in the given "
+                            "header parameter and the CSV header don't match."
+                        )
+
+                    # Read the whole file in case it contains errors. If there
+                    # are any, an exception will be raised, triggering
+                    # recording an error
+                    for _ in reader:
+                        pass
+
+                except csv.Error as exception:
+                    self._errors.append("CSV error on line %s: %s" %
+                                        (reader.line_num, exception))
+                except UnicodeDecodeError:
+                    self._errors.append("Error reading file as CSV")
+                else:
+                    self._messages.append("CSV file was checked successfully.")
+
+                # add metadata
                 for md_class in self._supported_metadata:
-                    self.streams.append(md_class(csvfile, self._errors,
-                                                 self._messages, self._params))
+                    self.streams.append(md_class({"delimiter": delimiter,
+                                                  "separator": separator,
+                                                  "fields": fields,
+                                                  "first_line": first_line}))
         except IOError as err:
             self._errors.append("Error when reading the file: " +
                                 str(err))

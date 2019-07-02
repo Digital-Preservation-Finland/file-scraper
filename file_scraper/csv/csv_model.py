@@ -1,5 +1,4 @@
 """Scraper for CSV file formats."""
-import csv
 
 from file_scraper.base import BaseMeta
 from file_scraper.utils import metadata
@@ -11,64 +10,27 @@ class CsvMeta(BaseMeta):
     _supported = {"text/csv": []}  # Supported mimetype
     _allow_versions = True           # Allow any version
 
-    def __init__(self, csvfile, errors, messages, params=None):
+    def __init__(self, params):
         """
         Initialize for delimiter and separator info.
 
-        :csvfile: The file for which the metadata is collected.
-        :errors: A list to which new errors are appended.
-        :messages: A list to which new messages are appended.
-        :params: Extra parameters: delimiter and separator
+        :params: A dict containing the following keys:
+                 delimiter:  the field delimiter used in the file
+                 separator:  the line separator
+                 fields:     list of columns
+                 first_line: contents of the first line
         """
-        if params is None:
-            params = {}
-        self._csv_delimiter = params.get("delimiter", None)
-        self._csv_separator = params.get("separator", None)
-        self._csv_fields = params.get("fields", [])
-        self._csv_first_line = None
+        # Check that a proper parameter dict was supplied
+        if any([key not in params for key in ["delimiter", "separator",
+                                              "fields", "first_line"]]):
+            raise ValueError("CsvMeta must be given a dict containing keys "
+                             "'delimiter', 'separator', 'fields' and "
+                             "'first_line' as a parameter.")
 
-        if self._csv_fields is None:
-            self._csv_fields = []
-        try:
-            reader = csv.reader(csvfile)
-            csvfile.seek(0)
-            dialect = csv.Sniffer().sniff(csvfile.read(1024))
-            if not self._csv_delimiter:
-                self._csv_delimiter = dialect.delimiter
-            if not self._csv_separator:
-                self._csv_separator = dialect.lineterminator
-            csv.register_dialect("new_dialect",
-                                 delimiter=str(self._csv_delimiter),
-                                 lineterminator=self._csv_separator,
-                                 strict=True,
-                                 doublequote=True)
-
-            csvfile.seek(0)
-            reader = csv.reader(csvfile, dialect="new_dialect")
-            self._csv_first_line = next(reader)
-
-            if self._csv_fields and \
-                    len(self._csv_fields) != len(self._csv_first_line):
-                errors.append(
-                    "CSV not well-formed: field counts in the given "
-                    "header parameter and the CSV header don't match."
-                )
-                return
-
-            # Read the whole file in case it contains errors. If there are any,
-            # an exception will be raised, triggering recording an error to the
-            # given errors list (which should in normal use be _errors from
-            # BaseScraper).
-            for _ in reader:
-                pass
-
-        except csv.Error as exception:
-            errors.append("CSV error on line %s: %s" %
-                          (reader.line_num, exception))
-        except UnicodeDecodeError:
-            errors.append("Error reading file as CSV")
-        else:
-            messages.append("CSV file was checked successfully.")
+        self._csv_delimiter = params["delimiter"]
+        self._csv_separator = params["separator"]
+        self._csv_fields = params["fields"]
+        self._csv_first_line = params["first_line"]
 
     # pylint: disable=no-self-use
     @metadata()
