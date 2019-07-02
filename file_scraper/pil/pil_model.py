@@ -10,6 +10,7 @@ from file_scraper.utils import metadata
 SAMPLES_PER_PIXEL = {"1": "1", "L": "1", "P": "1", "RGB": "3", "YCbCr": "3",
                      "LAB": "3", "HSV": "3", "RGBA": "4", "CMYK": "4",
                      "I": "1", "F": "1"}
+SAMPLES_PER_PIXEL_TAG = 277
 
 
 class BasePilMeta(BaseMeta):
@@ -119,8 +120,8 @@ class TiffPilMeta(BasePilMeta):
         if self._pil is None:
             return None
         tag_info = self._pil.tag_v2
-        if tag_info and 277 in tag_info.keys():
-            return str(tag_info[277])
+        if tag_info and SAMPLES_PER_PIXEL_TAG in tag_info.keys():
+            return str(tag_info[SAMPLES_PER_PIXEL_TAG])
         return super(TiffPilMeta, self).samples_per_pixel()
 
 
@@ -182,6 +183,6 @@ class JpegPilMeta(BasePilMeta):
     def samples_per_pixel(self):
         """Return samples per pixel."""
         exif_info = self._pil._getexif()  # pylint: disable=protected-access
-        if exif_info and 277 in exif_info.keys():
-            return str(exif_info[277])
+        if exif_info and SAMPLES_PER_PIXEL_TAG in exif_info.keys():
+            return str(exif_info[SAMPLES_PER_PIXEL_TAG])
         return super(JpegPilMeta, self).samples_per_pixel()
