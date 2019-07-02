@@ -85,7 +85,7 @@ class WarcWarctoolsScraper(BaseScraper):
             # Filter some trash printed by warcvalid.
             filtered_errors = [line for line in shell.stderr.split(b"\n")
                                if b"ignored line" not in line]
-            self._errors.append(filtered_errors)
+            self._errors.append(ensure_str(b"\n".join(filtered_errors)))
             return
 
         self._messages.append(ensure_str(shell.stdout))
@@ -143,7 +143,8 @@ class ArcWarctoolsScraper(BaseScraper):
                 # remove non-printable characters
                 sanitized_string = sanitize_string(utf8string)
                 # encode string to utf8 before adding to errors
-                self._errors.append(sanitized_string.encode("utf-8"))
+                self._errors.append(
+                    ensure_str(sanitized_string.encode("utf-8")))
                 return
             self._messages.append("File was analyzed successfully.")
             self._messages.append(ensure_str(shell.stdout))
