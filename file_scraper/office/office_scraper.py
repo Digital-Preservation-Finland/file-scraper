@@ -27,8 +27,8 @@ class OfficeScraper(BaseScraper):
             if shell.stderr:
                 self._errors.append(ensure_str(shell.stderr))
             self._messages.append(ensure_str(shell.stdout))
-        except Exception:  # pylint: disable=broad-except
-            self._errors.append("Error reading file.")
+        except OSError as error:
+            self._errors.append("Error handling file: " + str(error))
         finally:
             shutil.rmtree(temp_dir)
             for md_class in self._supported_metadata:
