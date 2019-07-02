@@ -3,9 +3,6 @@
 from file_scraper.base import BaseMeta
 from file_scraper.utils import metadata
 
-PSPP_PATH = "/usr/bin/pspp-convert"
-SPSS_PORTABLE_HEADER = b"SPSS PORT FILE"
-
 
 class PsppMeta(BaseMeta):
     """Metadata model for pspp scraping."""
