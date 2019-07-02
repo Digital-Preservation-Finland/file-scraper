@@ -27,7 +27,7 @@ class TextfileScraper(BaseScraper):
             FILECMD_PATH, "-be", "soft", "--mime-type",
             self.filename], env=ENV)
         if shell.stderr:
-            self._errors.append(shell.stderr)
+            self._errors.append(ensure_str(shell.stderr))
 
         return ensure_str(shell.stdout).strip()
 
