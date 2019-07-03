@@ -3,18 +3,18 @@
 import os
 
 from file_scraper.base import BaseScraper
-from file_scraper.magic_scraper.magic_model import (BaseMagicMeta,
-                                                    TextFileMagicMeta,
-                                                    XmlFileMagicMeta,
-                                                    XhtmlFileMagicMeta,
-                                                    HtmlFileMagicMeta,
-                                                    PdfFileMagicMeta,
-                                                    OfficeFileMagicMeta,
-                                                    ArcFileMagicMeta,
-                                                    PngFileMagicMeta,
-                                                    JpegFileMagicMeta,
-                                                    Jp2FileMagicMeta,
-                                                    TiffFileMagicMeta)
+from file_scraper.magic.magic_model import (BaseMagicMeta,
+                                            TextFileMagicMeta,
+                                            XmlFileMagicMeta,
+                                            XhtmlFileMagicMeta,
+                                            HtmlFileMagicMeta,
+                                            PdfFileMagicMeta,
+                                            OfficeFileMagicMeta,
+                                            ArcFileMagicMeta,
+                                            PngFileMagicMeta,
+                                            JpegFileMagicMeta,
+                                            Jp2FileMagicMeta,
+                                            TiffFileMagicMeta)
 
 
 class MagicScraper(BaseScraper):

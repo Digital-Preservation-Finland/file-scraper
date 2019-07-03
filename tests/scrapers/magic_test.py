@@ -84,9 +84,9 @@ This module tests that:
       no metadata is scraped and the file is reported as not well-formed.
 """
 import pytest
-from file_scraper.magic_scraper.magic_scraper import MagicScraper
-from file_scraper.magic_scraper.magic_model import (OfficeFileMagicMeta,
-                                                    HtmlFileMagicMeta)
+from file_scraper.magic.magic_scraper import MagicScraper
+from file_scraper.magic.magic_model import (OfficeFileMagicMeta,
+                                            HtmlFileMagicMeta)
 from tests.common import parse_results
 
 
