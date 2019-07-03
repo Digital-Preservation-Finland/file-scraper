@@ -87,7 +87,16 @@ requirements:
         - If custom environment variables are supplied, they are used when
           running the command.
     - concat
-        - Concatenation of strings or empty lists with and without prefix
+        - Concatenation of empty list with or without a prefix produces an
+          empty string.
+        - Concatenation of a single string list produces the same string.
+        - Concatenation of two item list produces a single string containing
+          the items separated by a newline.
+        - Concatenation of a single string list while using a prefix produces
+          a single string containing the prefix followed by the list item.
+        - Concatenation of a two item list while using a prefix produces
+          a single string containing each of the items prefixed with the
+          prefix, and the two separated by a newline.
 """
 
 import os
@@ -540,7 +549,8 @@ def test_concat():
     """Test concat function."""
     assert concat([]) == ""
     assert concat(["test"]) == "test"
-    assert concat(["test", "test"]) == "test\ntest"
+    assert concat(["test1", "test2"]) == "test1\ntest2"
     assert concat([], "prefix:") == ""
     assert concat(["test"], "prefix:") == "prefix:test"
-    assert concat(["test", "test"], "prefix:") == "prefix:test\nprefix:test"
+    assert (concat(["test1", "test2"], "prefix:") ==
+            "prefix:test1\nprefix:test2")
