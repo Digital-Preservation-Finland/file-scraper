@@ -15,21 +15,18 @@ from tests.common import get_files
 # MPEG-TS file contains "menu" stream, where version is None.
 # Quicktime file contains a timecode track, where version is None.
 UNAV_ELEMENTS = {
-    "tests/data/application_x-internet-archive/valid_1.0_.arc.gz": ["version",
-                                                                    "version"],
-    "tests/data/application_msword/valid_11.0.doc": ["version", "version"],
-    "tests/data/application_vnd.ms-excel/valid_11.0.xls": ["version",
-                                                           "version"],
-    "tests/data/application_vnd.ms-powerpoint/valid_11.0.ppt": ["version",
-                                                                "version"],
+    "tests/data/application_x-internet-archive/valid_1.0_.arc.gz": ["version"],
+    "tests/data/application_msword/valid_11.0.doc": ["version"],
+    "tests/data/application_vnd.ms-excel/valid_11.0.xls": ["version"],
+    "tests/data/application_vnd.ms-powerpoint/valid_11.0.ppt": ["version"],
     "tests/data/application_vnd.oasis.opendocument.formula/valid_1.0"
-    ".odf": ["version", "version"],
+    ".odf": ["version"],
     "tests/data/application_vnd.openxmlformats-officedocument.presentationml"
-    ".presentation/valid_15.0.pptx": ["version", "version"],
+    ".presentation/valid_15.0.pptx": ["version"],
     "tests/data/application_vnd.openxmlformats-officedocument.spreadsheetml"
-    ".sheet/valid_15.0.xlsx": ["version", "version"],
+    ".sheet/valid_15.0.xlsx": ["version"],
     "tests/data/application_vnd.openxmlformats-officedocument.word"
-    "processingml.document/valid_15.0.docx": ["version", "version"],
+    "processingml.document/valid_15.0.docx": ["version"],
     "tests/data/image_gif/valid_1989a.gif": ["version", "version"],
     "tests/data/image_tiff/valid_6.0_multiple_tiffs.tif": [
         "version", "version"],
@@ -112,7 +109,7 @@ def _assert_valid_scraper_result(scraper, fullname, mimetype, well_formed):
                 unavs.append(key)
 
     if fullname in UNAV_ELEMENTS:
-        assert set(unavs) == set(UNAV_ELEMENTS[fullname])
+        assert sorted(unavs) == sorted(UNAV_ELEMENTS[fullname])
     else:
         assert not unavs
 
