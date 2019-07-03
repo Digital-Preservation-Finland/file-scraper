@@ -1,6 +1,6 @@
 """FFMpeg wellformed scraper."""
 from file_scraper.base import BaseScraper, ProcessRunner
-from file_scraper.ffmpeg.ffmpeg_model import FFMpegMeta
+from file_scraper.ffmpeg.ffmpeg_model import FFMpegSimpleMeta
 from file_scraper.utils import ensure_str
 
 try:
@@ -13,7 +13,13 @@ class FFMpegScraper(BaseScraper):
     """FFMpeg Wellformed scraper."""
 
     # Supported mimetypes
-    _supported_metadata = [FFMpegMeta]
+    _supported_metadata = [FFMpegSimpleMeta]
+
+    # If stream order problems are solved, this metadata model can be used to
+    # collect more information about the file.
+    # _supported_metadata = [FFMpegMeta]
+
+    _only_wellformed = True
 
     def scrape_file(self):
         """Scrape A/V files."""
@@ -34,7 +40,6 @@ class FFMpegScraper(BaseScraper):
             self._errors.append("Error in analyzing file.")
             self._errors.append(ensure_str(err.stderr))
 
-        # this detects empty files and other problems
         shell = ProcessRunner(["ffmpeg", "-v", "error", "-i", self.filename,
                                "-f", "null", "-"])
         if shell.returncode == 0:
@@ -43,11 +48,8 @@ class FFMpegScraper(BaseScraper):
             self._errors.append(ensure_str(shell.stderr))
             return
 
-        for index in range(len(streams)):
-            for md_class in self._supported_metadata:
-                stream = md_class(probe_results, index)
-                if index == 0 and not stream.hascontainer():
-                    continue
-                self.streams.append(stream)
+        for md_class in self._supported_metadata:
+            stream = md_class()
+            self.streams.append(stream)
 
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)

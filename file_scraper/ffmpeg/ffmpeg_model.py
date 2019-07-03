@@ -5,12 +5,40 @@ from file_scraper.base import BaseMeta, SkipElementException
 from file_scraper.utils import metadata, strip_zeros
 
 
+class FFMpegSimpleMeta(BaseMeta):
+    """
+    A simple metadata class for not scraping any metadata using FFMpeg.
+
+    See FFMpegMeta docstring for reasons to use this metadata model.
+    """
+
+    # Supported mimetypes
+    _supported = {"video/mpeg": [], "video/mp4": [],
+                  "audio/mpeg": [], "audio/mp4": [],
+                  "video/MP1S": [], "video/MP2P": [],
+                  "video/MP2T": [], "video/x-matroska": [],
+                  "video/quicktime": [], "video/dv": []}
+    _allow_versions = True   # Allow any version
+
+    @metadata()
+    def stream_type(self):
+        """
+        This metadata model scrapes nothing, return (:unav).
+        """
+        return "(:unav)"
+
+
 class FFMpegMeta(BaseMeta):
     """
     Metadata model for a selection of video files.
 
-    This metadata model is used with mpeg, mp4, MP1s, MP2T, MP2P, quicktime,
-    matroska and dv files.
+    This metadata model can be used with mpeg, mp4, MP1s, MP2T, MP2P,
+    quicktime, matroska and dv files.
+
+    NB: This metadata model is not currently used. Mediainfo scrapes many of
+        the same file types, but can return streams in different order, causing
+        problems when the scraper results would be combined. Until this problem
+        has been solved, only FFMpegSimpleMeta metadata model should be used.
     """
     # pylint: disable=too-many-public-methods
 
