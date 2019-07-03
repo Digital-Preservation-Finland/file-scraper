@@ -10,6 +10,8 @@ This module tests:
       correctly
 """
 import subprocess
+import pytest
+
 import file_scraper.base
 from file_scraper.base import (ProcessRunner, BaseScraper, BaseMeta,
                                BaseDetector)
@@ -83,28 +85,31 @@ class BaseDetectorBasic(BaseDetector):
         pass
 
 
-def test_is_supported():
+@pytest.mark.parametrize(
+    ["scraper_class", "mimetype", "version", "check_wellformed", "supported"],
+    [
+        (BaseScraperBasic, "test/mimetype", "0.1", True, True),
+        (BaseScraperBasic, "test/mimetype", None, True, True),
+        (BaseScraperBasic, "test/mimetype", "0.1", False, True),
+        (BaseScraperBasic, "test/notsupported", "0.1", True, False),
+        (BaseScraperBasic, "test/mimetype", "X", True, False),
+        (BaseScraperVersion, "test/mimetype", "0.1", True, True),
+        (BaseScraperVersion, "test/mimetype", None, True, True),
+        (BaseScraperVersion, "test/mimetype", "0.1", False, True),
+        (BaseScraperVersion, "test/notsupported", "0.1", True, False),
+        (BaseScraperVersion, "test/mimetype", "X", True, True),
+        (BaseScraperWellFormed, "test/mimetype", "0.1", True, True),
+        (BaseScraperWellFormed, "test/mimetype", None, True, True),
+        (BaseScraperWellFormed, "test/mimetype", "0.1", False, False),
+        (BaseScraperWellFormed, "test/notsupported", "0.1", False, False),
+        (BaseScraperWellFormed, "test/mimetype", "X", True, False),
+    ]
+)
+def test_is_supported(scraper_class, mimetype, version, check_wellformed,
+                      supported):
     """Test scraper's is_supported() method."""
-    assert BaseScraperBasic.is_supported("test/mimetype", "0.1", True)
-    assert BaseScraperBasic.is_supported("test/mimetype", None, True)
-    assert BaseScraperBasic.is_supported("test/mimetype", "0.1", False)
-    assert not BaseScraperBasic.is_supported("test/notsupported", "0.1", True)
-    assert not BaseScraperBasic.is_supported("test/mimetype", "X", True)
-
-    assert BaseScraperVersion.is_supported("test/mimetype", "0.1", True)
-    assert BaseScraperVersion.is_supported("test/mimetype", None, True)
-    assert BaseScraperVersion.is_supported("test/mimetype", "0.1", False)
-    assert not BaseScraperVersion.is_supported("test/notsupported", "0.1",
-                                               True)
-    assert BaseScraperVersion.is_supported("test/mimetype", "X", True)
-
-    assert BaseScraperWellFormed.is_supported("test/mimetype", "0.1", True)
-    assert BaseScraperWellFormed.is_supported("test/mimetype", None, True)
-    assert not BaseScraperWellFormed.is_supported("test/mimetype", "0.1",
-                                                  False)
-    assert not BaseScraperWellFormed.is_supported("test/notsupported", "0.1",
-                                                  True)
-    assert not BaseScraperWellFormed.is_supported("test/mimetype", "X", True)
+    assert (scraper_class.is_supported(mimetype, version, check_wellformed) ==
+            supported)
 
 
 def test_messages_errors():
@@ -164,34 +169,30 @@ class BaseScraperSupported(BaseScraper):
     _supported_metadata = [BaseMetaCustom]
 
 
-def test_check_supported():
+@pytest.mark.parametrize(
+    ["scraper_class", "mimetype", "version", "errors"],
+    [
+        (BaseScraperSupported, "test/mimetype", "0.1", None),
+        (BaseScraperBasic, "test/mimetype", None,
+         "type test/mimetype with version None is not supported"),
+        (BaseScraperBasic, "test/mimetype", "0.0",
+         "type test/mimetype with version 0.0 is not supported"),
+        (BaseScraperBasic, "test/falsemime", "0.1",
+         "type test/falsemime with version 0.1 is not supported"),
+        (BaseScraperBasic, None, "0.1",
+         "None is not a supported MIME type")
+    ]
+)
+def test_check_supported(scraper_class, mimetype, version, errors):
     """Test scraper's _check_supported() method."""
     # pylint: disable=protected-access
-    scraper = BaseScraperSupported("testfilename", "test/mimetype")
-    scraper.streams.append(BaseMetaCustom("test/mimetype", "0.1"))
+    scraper = scraper_class("testfilename", mimetype)
+    scraper.streams.append(BaseMetaCustom(mimetype, version))
     scraper._check_supported()
-    assert scraper.errors() == ""
-
-    scraper = BaseScraperBasic("testfilename", "test/mimetype")
-    scraper.streams.append(BaseMetaCustom("test/mimetype", None))
-    scraper._check_supported()
-    assert "type test/mimetype with version None is not" in scraper.errors()
-
-    scraper = BaseScraperBasic("testfilename", "test/mimetype")
-    scraper.streams.append(BaseMetaCustom("test/mimetype", "0.0"))
-    scraper._check_supported()
-    assert "test/mimetype with version 0.0 is not" in scraper.errors()
-
-    scraper = BaseScraperBasic("testfilename", "test/falsemime")
-    scraper.streams.append(BaseMetaCustom("test/falsemime", "0.1"))
-    scraper._check_supported()
-    assert ("MIME type test/falsemime with version 0.1 is not supported." in
-            scraper.errors())
-
-    scraper = BaseScraperBasic("testfilename", None)
-    scraper.streams.append(BaseMetaCustom(None, "0.1"))
-    scraper._check_supported()
-    assert "None is not a supported MIME type." in scraper.errors()
+    if not errors:
+        assert scraper.errors() == ""
+    else:
+        assert errors in scraper.errors()
 
 
 def test_base_detector():
