@@ -10,7 +10,7 @@ from file_scraper.jhove.jhove_scraper import (JHoveGifScraper, JHoveHtmlScraper,
                                               JHoveJpegScraper, JHoveTiffScraper,
                                               JHovePdfScraper, JHoveWavScraper)
 from file_scraper.lxml.lxml_scraper import LxmlScraper
-from file_scraper.magic.magic_scraper import MagicScraper
+from file_scraper.magic_scraper.magic_scraper import MagicScraper
 from file_scraper.mediainfo.mediainfo_scraper import MediainfoScraper
 from file_scraper.office.office_scraper import OfficeScraper
 from file_scraper.pil.pil_scraper import PilScraper
