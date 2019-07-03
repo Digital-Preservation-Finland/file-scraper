@@ -1,7 +1,8 @@
 """
 Tests for utils.py
 
-This module tests the following utility functions:
+This module tests that the following utility functions fulfil the following
+requirements:
     - hexdigest
         - Returns the hash of the given file, both for text and binary data.
         - Defaults to SHA-1 algorithm for calculating the hash.
