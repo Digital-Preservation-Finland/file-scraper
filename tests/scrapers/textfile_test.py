@@ -9,6 +9,8 @@ This module tests that:
         - html document
     - Empty file, pdf and gif files are identified as not text files.
 """
+from __future__ import unicode_literals
+
 import pytest
 
 from file_scraper.textfile.textfile_scraper import TextfileScraper

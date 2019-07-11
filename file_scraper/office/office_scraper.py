@@ -1,9 +1,12 @@
 """Office file scraper."""
-import tempfile
+from __future__ import unicode_literals
+
 import shutil
+import tempfile
+
 from file_scraper.base import BaseScraper, ProcessRunner
 from file_scraper.office.office_model import OfficeMeta
-from file_scraper.utils import ensure_str
+from file_scraper.utils import ensure_text, encode_path
 
 
 class OfficeScraper(BaseScraper):
@@ -23,12 +26,12 @@ class OfficeScraper(BaseScraper):
             env = {"HOME": temp_dir}
             shell = ProcessRunner([
                 "soffice", "--convert-to", "pdf", "--outdir", temp_dir,
-                self.filename], env=env)
+                encode_path(self.filename)], env=env)
             if shell.stderr:
-                self._errors.append(ensure_str(shell.stderr))
-            self._messages.append(ensure_str(shell.stdout))
+                self._errors.append(ensure_text(shell.stderr))
+            self._messages.append(ensure_text(shell.stdout))
         except OSError as error:
-            self._errors.append("Error handling file: " + str(error))
+            self._errors.append("Error handling file: {}".format(error))
         finally:
             shutil.rmtree(temp_dir)
             for md_class in self._supported_metadata:

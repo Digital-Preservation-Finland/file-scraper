@@ -1,13 +1,18 @@
 """Warc file scraper."""
-import os.path
+from __future__ import unicode_literals
+
 import gzip
+import os.path
 import tempfile
 from io import open as io_open
+
+import six
+
 from file_scraper.base import BaseScraper, ProcessRunner
-from file_scraper.warctools.warctools_model import (WarcWarctoolsMeta,
-                                                    ArcWarctoolsMeta,
-                                                    GzipWarctoolsMeta)
-from file_scraper.utils import sanitize_string, ensure_str
+from file_scraper.utils import ensure_text, sanitize_string, encode_path
+from file_scraper.warctools.warctools_model import (ArcWarctoolsMeta,
+                                                    GzipWarctoolsMeta,
+                                                    WarcWarctoolsMeta)
 
 
 class GzipWarctoolsScraper(BaseScraper):
@@ -85,10 +90,10 @@ class WarcWarctoolsScraper(BaseScraper):
             # Filter some trash printed by warcvalid.
             filtered_errors = [line for line in shell.stderr.split(b"\n")
                                if b"ignored line" not in line]
-            self._errors.append(ensure_str(b"\n".join(filtered_errors)))
+            self._errors.append(ensure_text(b"\n".join(filtered_errors)))
             return
 
-        self._messages.append(ensure_str(shell.stdout))
+        self._messages.append(ensure_text(shell.stdout))
 
         warc_fd = gzip.open(self.filename)
         try:
@@ -101,7 +106,7 @@ class WarcWarctoolsScraper(BaseScraper):
                 line = warc_fd.readline()
         except Exception as exception:  # pylint: disable=broad-except
             # Compressed but corrupted gzip file
-            self._errors.append(str(exception))
+            self._errors.append(six.text_type(exception))
             warc_fd.close()
             return
 
@@ -133,7 +138,8 @@ class ArcWarctoolsScraper(BaseScraper):
             return
         with tempfile.NamedTemporaryFile(prefix="scraper-warctools.") \
                 as warcfile:
-            shell = ProcessRunner(command=["arc2warc", self.filename],
+            shell = ProcessRunner(command=["arc2warc",
+                                           encode_path(self.filename)],
                                   output_file=warcfile)
             if shell.returncode != 0:
                 self._errors.append("Failed: returncode %s" %
@@ -144,10 +150,10 @@ class ArcWarctoolsScraper(BaseScraper):
                 sanitized_string = sanitize_string(utf8string)
                 # encode string to utf8 before adding to errors
                 self._errors.append(
-                    ensure_str(sanitized_string.encode("utf-8")))
+                    ensure_text(sanitized_string.encode("utf-8")))
                 return
             self._messages.append("File was analyzed successfully.")
-            self._messages.append(ensure_str(shell.stdout))
+            self._messages.append(ensure_text(shell.stdout))
 
         for md_class in self._supported_metadata:
             self.streams.append(md_class())

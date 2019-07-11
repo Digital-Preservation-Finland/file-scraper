@@ -1,4 +1,5 @@
 """Metadata model for Ghostscript."""
+from __future__ import unicode_literals
 
 from file_scraper.base import BaseMeta
 from file_scraper.utils import metadata

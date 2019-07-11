@@ -31,10 +31,13 @@ This module tests that:
     - A made up MIME type is not supported.
     - Without well-formedness check, none of these MIME types are supported.
 """
+from __future__ import unicode_literals
 
 import os
 from multiprocessing import Pool
+
 import pytest
+
 from file_scraper.office.office_scraper import OfficeScraper
 from tests.common import parse_results
 

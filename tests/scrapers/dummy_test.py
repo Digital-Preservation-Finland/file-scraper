@@ -18,10 +18,12 @@ This module tests the following scraper classes:
         - Streams contain only one dict with version and stream_type as None
           and MIME type as what was given to the scraper.
 """
+from __future__ import unicode_literals
 
 import pytest
+import six
 
-from file_scraper.dummy.dummy_scraper import ScraperNotFound, FileExists
+from file_scraper.dummy.dummy_scraper import FileExists, ScraperNotFound
 
 DEFAULTSTREAMS = {0: {"index": 0, "version": "(:unav)",
                       "stream_type": "(:unav)", "mimetype": "(:unav)"}}
@@ -48,9 +50,9 @@ def test_existing_files(filepath):
     assert not scraper.errors()
     assert "was found" in scraper.messages()
     assert scraper.info()["class"] == "FileExists"
-    for stream_index, stream_metadata in streams.iteritems():
+    for stream_index, stream_metadata in six.iteritems(streams):
         scraped_metadata = scraper.streams[stream_index]
-        for key, value in stream_metadata.iteritems():
+        for key, value in six.iteritems(stream_metadata):
             assert getattr(scraped_metadata, key)() == value
 
 
@@ -92,7 +94,7 @@ def test_scraper_not_found(filepath):
     streams = DEFAULTSTREAMS.copy()
 
     assert scraper.well_formed is None
-    for stream_index, stream_metadata in streams.iteritems():
+    for stream_index, stream_metadata in six.iteritems(streams):
         scraped_metadata = scraper.streams[stream_index]
-        for key, value in stream_metadata.iteritems():
+        for key, value in six.iteritems(stream_metadata):
             assert getattr(scraped_metadata, key)() == value

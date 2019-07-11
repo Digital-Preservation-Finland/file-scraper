@@ -1,4 +1,5 @@
 """Metadata models for JHove"""
+from __future__ import unicode_literals
 
 try:
     import mimeparse

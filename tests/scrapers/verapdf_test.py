@@ -26,9 +26,12 @@ This module tests that:
       contain "Success", but when scraper errors contain "Error", the dict is
       empty.
 """
+from __future__ import unicode_literals
+
 import pytest
-from tests.common import parse_results
+
 from file_scraper.verapdf.verapdf_scraper import VerapdfScraper
+from tests.common import parse_results
 
 MIMETYPE = "application/pdf"
 

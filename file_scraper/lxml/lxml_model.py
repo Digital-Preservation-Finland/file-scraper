@@ -1,4 +1,6 @@
 """Metadata model for XML and HTML5 header encoding check with lxml. """
+from __future__ import unicode_literals
+
 from file_scraper.base import BaseMeta
 from file_scraper.utils import metadata
 

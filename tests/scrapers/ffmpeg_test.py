@@ -43,10 +43,12 @@ This module tests that:
     - If scraping is done without well-formedness check, an error is recorded
       and no metadata is scraped.
 """
+from __future__ import unicode_literals
+
 import pytest
+
 from file_scraper.ffmpeg.ffmpeg_scraper import FFMpegScraper
 from tests.common import parse_results
-
 
 NO_METADATA = {0: {'mimetype': '(:unav)', 'index': 0, 'version': '(:unav)',
                    'stream_type': '(:unav)'}}

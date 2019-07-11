@@ -1,4 +1,6 @@
 """Schematron metadata model."""
+from __future__ import unicode_literals
+
 from file_scraper.utils import metadata
 from file_scraper.base import BaseMeta
 

@@ -9,6 +9,8 @@ This module tests:
     - That scraper attributes and well_formed property are set and retrieved
       correctly
 """
+from __future__ import unicode_literals
+
 import subprocess
 import pytest
 

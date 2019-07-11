@@ -14,9 +14,12 @@ This module tests that:
     - When well-formedness is not checked, image/png 1.2 is not supported.
     - A made up MIME type is not supported.
 """
+from __future__ import unicode_literals
+
 import pytest
-from tests.common import parse_results
+
 from file_scraper.pngcheck.pngcheck_scraper import PngcheckScraper
+from tests.common import parse_results
 
 MIMETYPE = "image/png"
 

@@ -16,11 +16,14 @@ This module tests that:
       text/xml files but not for text/html files.
     - A made up MIME type with correct version is reported as not supported.
 """
+from __future__ import unicode_literals
 
 import os
 import tempfile
 from io import open
+
 import pytest
+
 from file_scraper.lxml.lxml_scraper import LxmlScraper
 
 
@@ -33,9 +36,9 @@ from file_scraper.lxml.lxml_scraper import LxmlScraper
 def test_xml_encoding(testpath, file_encoding):
     """Test that encoding check from XML header works."""
     enc_match = {"latin_1": u"ISO-8859-15",
-                 "utf_8": u"UTF-8",
-                 "utf_16": u"UTF-16"}
-    xml = u"""<?xml version="1.0" encoding="{}" ?>
+                 "utf_8": "UTF-8",
+                 "utf_16": "UTF-16"}
+    xml = """<?xml version="1.0" encoding="{}" ?>
               <a>åäö</a>""".format(enc_match[file_encoding])
     tmppath = os.path.join(testpath, "valid__.csv")
     with open(tmppath, "wb") as file_:
@@ -50,10 +53,10 @@ def test_xml_encoding(testpath, file_encoding):
 def test_no_wellformed(testpath):
     """Test scraper without well-formed check."""
     (_, tmppath) = tempfile.mkstemp()
-    xml = u"""<?xml version="1.0" encoding="UTF-8" ?>
-              <a>åäö</a>"""
+    xml = """<?xml version="1.0" encoding="UTF-8" ?>
+              <a>åäö</a>""".encode("utf-8")
     tmppath = os.path.join(testpath, "valid__.csv")
-    with open(tmppath, "w", encoding="utf-8") as file_:
+    with open(tmppath, "wb") as file_:
         file_.write(xml)
     scraper = LxmlScraper(tmppath, False)
     scraper.scrape_file()

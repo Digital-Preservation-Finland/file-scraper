@@ -1,6 +1,10 @@
 """Dummy scrapers."""
+from __future__ import unicode_literals
+
 import os.path
+
 from file_scraper.base import BaseScraper
+from file_scraper.utils import decode_path
 from file_scraper.dummy.dummy_model import DummyMeta
 
 
@@ -31,9 +35,13 @@ class FileExists(BaseScraper):
         if not self.filename:
             self._errors.append("No filename given.")
         elif os.path.isfile(self.filename):
-            self._messages.append("File %s was found." % self.filename)
+            self._messages.append(
+                "File {} was found.".format(decode_path(self.filename))
+            )
         else:
-            self._errors.append("File %s does not exist." % self.filename)
+            self._errors.append(
+                "File {} does not exist.".format(decode_path(self.filename))
+            )
         self.streams.append(DummyMeta(self._errors))
 
     @property

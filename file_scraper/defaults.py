@@ -1,4 +1,5 @@
 """Common constants and dictionaries"""
+from __future__ import unicode_literals
 
 MAGIC_LIBRARY = "/opt/file-5.30/lib64/libmagic.so.1"
 

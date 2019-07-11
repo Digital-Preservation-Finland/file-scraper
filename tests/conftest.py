@@ -1,4 +1,5 @@
 """Configure py.test default values and functionality."""
+from __future__ import unicode_literals
 
 import tempfile
 import shutil
@@ -41,7 +42,11 @@ def evaluate_scraper():
         for stream_index, stream_metadata in correct.streams.items():
             scraped_metadata = scraper.streams[stream_index]
             for key, value in stream_metadata.items():
-                assert getattr(scraped_metadata, key)() == value
+                assert getattr(scraped_metadata, key)() == value, (
+                    "Expected {} to have value '{}', got '{}' instead".format(
+                        key, value, getattr(scraped_metadata, key)()
+                    )
+                )
 
         assert scraper.info()["class"] == exp_scraper_cls
         assert scraper.well_formed == correct.well_formed

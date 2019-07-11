@@ -11,14 +11,18 @@ file. More complete well-formedness test is required by specific validator
 tool.
 
 """
+from __future__ import unicode_literals
+
+import six
+
+from file_scraper.base import BaseScraper
+from file_scraper.wand.wand_model import WandImageMeta, WandTiffMeta
 
 try:
     import wand.image
 except ImportError:
     pass
 
-from file_scraper.base import BaseScraper
-from file_scraper.wand.wand_model import WandTiffMeta, WandImageMeta
 
 
 class WandScraper(BaseScraper):
@@ -41,7 +45,7 @@ class WandScraper(BaseScraper):
             wandresults = wand.image.Image(filename=self.filename)
         except Exception as e:  # pylint: disable=broad-except, invalid-name
             self._errors.append("Error in analyzing file")
-            self._errors.append(e)
+            self._errors.append(six.text_type(e))
         else:
             for md_class in self._supported_metadata:
                 for image in wandresults.sequence:

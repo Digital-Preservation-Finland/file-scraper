@@ -1,17 +1,21 @@
 """Class for XML file well-formed check with Xmllint."""
+from __future__ import unicode_literals
 
 import os
 import tempfile
+from io import open as io_open
+
+import six
+
+from file_scraper.base import BaseScraper, ProcessRunner
+from file_scraper.utils import ensure_text, decode_path, encode_path
+from file_scraper.xmllint.xmllint_model import XmllintMeta
 
 try:
     from lxml import etree
 except ImportError:
     pass
 
-from io import open as io_open
-from file_scraper.base import BaseScraper, ProcessRunner
-from file_scraper.utils import ensure_str
-from file_scraper.xmllint.xmllint_model import XmllintMeta
 
 XSI = "http://www.w3.org/2001/XMLSchema-instance"
 XS = "{http://www.w3.org/2001/XMLSchema}"
@@ -113,11 +117,11 @@ class XmllintScraper(BaseScraper):
             file_.close()
         except etree.XMLSyntaxError as exception:
             self._errors.append("Failed: document is not well-formed.")
-            self._errors.append(str(exception))
+            self._errors.append(six.text_type(exception))
             return
         except IOError as exception:
             self._errors.append("Failed: missing file.")
-            self._errors.append(str(exception))
+            self._errors.append(six.text_type(exception))
             return
 
         # Try check against DTD
@@ -140,9 +144,12 @@ class XmllintScraper(BaseScraper):
             (exitcode, stdout, stderr) = self.exec_xmllint(schema=self._schema)
         if exitcode == 0:
             self._messages.append(
-                "%s Success\n%s" % (self.filename, ensure_str(stdout)))
+                "%s Success\n%s" % (
+                    decode_path(self.filename), ensure_text(stdout)
+                )
+            )
         else:
-            self._errors.append(ensure_str(stderr))
+            self._errors.append(ensure_text(stderr))
             return
 
         # Clean up constructed schemas
@@ -183,13 +190,15 @@ class XmllintScraper(BaseScraper):
             xsd_exists = True
 
             # Check if XSD file is included in SIP
-            local_schema_location = os.path.dirname(
-                self.filename) + "/" + schema_location
+            local_schema_location = os.path.join(
+                os.path.dirname(self.filename),
+                encode_path(schema_location)
+            )
             if os.path.isfile(local_schema_location):
                 schema_location = local_schema_location
 
             xs_import = etree.Element(XS + "import")
-            xs_import.attrib["schemaLocation"] = schema_location
+            xs_import.attrib["schemaLocation"] = decode_path(schema_location)
             schema_tree.append(xs_import)
         if xsd_exists:
             # Contstruct the schema
@@ -218,7 +227,7 @@ class XmllintScraper(BaseScraper):
         command += ["--nonet"] if self._no_network else []
         command += ["--catalogs"] if self._catalogs else []
         command += ["--schema", schema] if schema else []
-        command += [self.filename]
+        command += [encode_path(self.filename)]
 
         if self._catalog_path is not None:
             environment = {
@@ -242,7 +251,7 @@ class XmllintScraper(BaseScraper):
         errors_to_remove = []
         errors_to_add = []
         for error in self._errors:
-            line = ensure_str(error)
+            line = ensure_text(error)
             if "this namespace was already imported" in line:
                 errors_to_remove.append(error)
             if "I/O error : Attempt to load network entity" in line:

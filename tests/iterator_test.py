@@ -5,6 +5,7 @@ This module tests that:
     - iter_scrapers(mimetype, version) returns the correct scrapers.
     - iter_detectors() returns the correct detectors.
 """
+from __future__ import unicode_literals
 
 import pytest
 

@@ -1,8 +1,9 @@
 """A HTML5 scraper module using The Nu Html Checker."""
+from __future__ import unicode_literals
 
 from file_scraper.base import BaseScraper, ProcessRunner
 from file_scraper.vnu.vnu_model import VnuMeta
-from file_scraper.utils import ensure_str
+from file_scraper.utils import ensure_text
 
 VNU_PATH = "/usr/share/java/vnu/vnu.jar"
 
@@ -24,8 +25,8 @@ class VnuScraper(BaseScraper):
             self.filename])
 
         if shell.stderr:
-            self._errors.append(ensure_str(shell.stderr))
-        self._messages.append(ensure_str(shell.stdout))
+            self._errors.append(ensure_text(shell.stderr))
+        self._messages.append(ensure_text(shell.stdout))
 
         if self.well_formed:
             for md_class in self._supported_metadata:

@@ -1,16 +1,19 @@
 """"Scraper for video and audio files scraped using MediaInfo."""
+from __future__ import unicode_literals
+
+import six
+
+from file_scraper.base import BaseScraper
+from file_scraper.mediainfo.mediainfo_model import (MkvMediainfoMeta,
+                                                    MovMediainfoMeta,
+                                                    MpegMediainfoMeta,
+                                                    WavMediainfoMeta)
+from file_scraper.utils import decode_path
 
 try:
     from pymediainfo import MediaInfo
 except ImportError:
     pass
-
-from file_scraper.mediainfo.mediainfo_model import (MovMediainfoMeta,
-                                                    MkvMediainfoMeta,
-                                                    WavMediainfoMeta,
-                                                    MpegMediainfoMeta)
-from file_scraper.base import BaseScraper
-from file_scraper.utils import decode
 
 
 class MediainfoScraper(BaseScraper):
@@ -35,10 +38,10 @@ class MediainfoScraper(BaseScraper):
                                  "dict containing mimetype of the file")
 
         try:
-            mediainfo = MediaInfo.parse(decode(self.filename))
+            mediainfo = MediaInfo.parse(decode_path(self.filename))
         except Exception as e:  # pylint: disable=invalid-name, broad-except
             self._errors.append("Error in analyzing file.")
-            self._errors.append(str(e))
+            self._errors.append(six.text_type(e))
             self._check_supported()
             return
 

@@ -1,4 +1,5 @@
 """Stream dicts"""
+from __future__ import unicode_literals
 
 MOV_CONTAINER = {
     "codec_creator_app": "Lavf56.40.101",

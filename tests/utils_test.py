@@ -98,16 +98,20 @@ requirements:
           a single string containing each of the items prefixed with the
           prefix, and the two separated by a newline.
 """
+from __future__ import unicode_literals
 
 import os
 from tempfile import TemporaryFile
+
 import pytest
+import six
 
 from file_scraper.base import BaseMeta
-from file_scraper.utils import hexdigest, sanitize_string,\
-    iso8601_duration, strip_zeros, run_command, concat,\
-    metadata, _merge_to_stream, generate_metadata_dict,\
-    OverlappingLoseAndImportantException
+from file_scraper.utils import (OverlappingLoseAndImportantException,
+                                _merge_to_stream, concat,
+                                generate_metadata_dict, hexdigest,
+                                iso8601_duration, metadata, run_command,
+                                sanitize_string, strip_zeros)
 
 
 @pytest.mark.parametrize(
@@ -135,11 +139,11 @@ def test_hexdigest(filepath, extra_hash, algorithm, expected_hash):
 @pytest.mark.parametrize(
     ["original_string", "sanitized_string"],
     [
-        (u"already sanitized", "already sanitized"),
-        (u"containsescape", "containsescape"),
-        (u"containsmultiple", "containsmultiple"),
-        (u"", ""),  # bell character
-        (u"", "")  # multiple control characters
+        ("already sanitized", "already sanitized"),
+        ("containsescape", "containsescape"),
+        ("containsmultiple", "containsmultiple"),
+        ("", ""),  # bell character
+        ("", "")  # multiple control characters
     ]
 )
 def test_sanitize_string(original_string, sanitized_string):
@@ -309,7 +313,7 @@ def test_merge_normal_conflict():
                          getattr(testclass, "key_notimportant"),
                          [], {})
     assert ("Conflict with existing value 'oldvalue' and new value 'newvalue'"
-            in str(error.value))
+            in six.text_type(error.value))
 
 
 def test_merge_important_conflict():
@@ -319,7 +323,10 @@ def test_merge_important_conflict():
         _merge_to_stream({"key_important": "oldvalue"},
                          getattr(testclass, "key_important"),
                          [], {"key_important": "oldvalue"})
-    assert "Conflict with values 'oldvalue' and 'newvalue'" in str(error.value)
+    assert (
+        "Conflict with values 'oldvalue' and 'newvalue'"
+        in six.text_type(error.value)
+    )
 
 
 class Meta1(BaseMeta):
@@ -492,7 +499,7 @@ def test_overlapping_error():
     with pytest.raises(OverlappingLoseAndImportantException) as e_info:
         generate_metadata_dict(results, lose)
     assert ("The given lose dict contains values that are marked as important"
-            in str(e_info.value))
+            in six.text_type(e_info.value))
 
 
 @pytest.mark.parametrize(
@@ -529,7 +536,7 @@ def test_run_command_to_file():
         outfile.seek(0)
         expected_number = 1
         for line in outfile:
-            assert line == str(expected_number) + "\n"
+            assert line == six.text_type(expected_number) + "\n"
             expected_number += 1
 
 

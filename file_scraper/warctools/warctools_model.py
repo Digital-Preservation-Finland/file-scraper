@@ -1,5 +1,7 @@
 """Metadata models for Warcs and Arcs."""
-from file_scraper.utils import metadata, ensure_str
+from __future__ import unicode_literals
+
+from file_scraper.utils import metadata, ensure_text
 from file_scraper.base import BaseMeta
 
 
@@ -65,7 +67,7 @@ class WarcWarctoolsMeta(BaseWarctoolsMeta):
     def version(self):
         """Return the version."""
         if len(self._line.split(b"WARC/", 1)) > 1:
-            return ensure_str(
+            return ensure_text(
                 self._line.split(b"WARC/", 1)[1].split(b" ")[0].strip())
         return "(:unav)"
 

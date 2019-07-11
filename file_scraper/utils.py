@@ -1,12 +1,16 @@
 """Utilities for scrapers."""
-import sys
+from __future__ import unicode_literals
+
+import hashlib
 import os
-import unicodedata
 import string
 import subprocess
-import hashlib
+import sys
+import unicodedata
 from itertools import chain
+
 import six
+
 import file_scraper.base
 
 
@@ -24,12 +28,17 @@ def is_metadata(func):
     return callable(func) and getattr(func, "is_metadata", False)
 
 
-def encode(filename):
+def encode_path(filename):
     """Encode Unicode filenames."""
-    return ensure_str(filename, encoding=sys.getfilesystemencoding())
+    if isinstance(filename, six.text_type):
+        return filename.encode(encoding=sys.getfilesystemencoding())
+    elif isinstance(filename, six.binary_type):
+        return filename
+
+    raise TypeError("Value is not a (byte) string")
 
 
-def decode(filename):
+def decode_path(filename):
     """Decode Unicode filenames."""
     return ensure_text(filename, encoding=sys.getfilesystemencoding())
 
@@ -47,7 +56,7 @@ def hexdigest(filename, algorithm="sha1", extra_hash=None):
         for chunk in iter(lambda: input_file.read(1024 * 1024), b""):
             checksum.update(chunk)
         if extra_hash:
-            if isinstance(extra_hash, str):
+            if isinstance(extra_hash, six.text_type):
                 extra_hash = extra_hash.encode("utf-8")
             checksum.update(extra_hash)
     return checksum.hexdigest()
@@ -216,31 +225,6 @@ def run_command(cmd, stdout=subprocess.PIPE, env=None):
         stderr_result = ""
     statuscode = proc.returncode
     return statuscode, stdout_result, stderr_result
-
-
-# pylint: disable=invalid-name
-def ensure_str(s, encoding="utf-8", errors="strict"):
-    """Coerce *s* to `str`.
-
-    For Python 2:
-      - `unicode` -> encoded to `str`
-      - `str` -> `str`
-
-    For Python 3:
-      - `str` -> `str`
-      - `bytes` -> decoded to `str`
-
-    Direct copy from release 1.12::
-
-        https://github.com/benjaminp/six/blob/master/six.py#L872
-    """
-    if not isinstance(s, (six.text_type, six.binary_type)):
-        raise TypeError("not expecting type '{}'".format(type(s)))
-    if six.PY2 and isinstance(s, six.text_type):
-        s = s.encode(encoding, errors)
-    elif six.PY3 and isinstance(s, six.binary_type):
-        s = s.decode(encoding, errors)
-    return s
 
 
 def ensure_text(s, encoding="utf-8", errors="strict"):

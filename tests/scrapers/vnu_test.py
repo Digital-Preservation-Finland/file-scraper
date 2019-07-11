@@ -18,7 +18,10 @@ This module tests that:
       is not supported.
     - A made up MIME type or version is not supported.
 """
+from __future__ import unicode_literals
+
 import pytest
+
 from file_scraper.vnu.vnu_scraper import VnuScraper
 from tests.common import parse_results
 

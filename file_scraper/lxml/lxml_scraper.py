@@ -1,4 +1,5 @@
 """Class for XML and HTML5 header encoding check with lxml. """
+from __future__ import unicode_literals
 
 try:
     from lxml import etree

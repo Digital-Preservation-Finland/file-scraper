@@ -83,10 +83,14 @@ This module tests that:
       given MIME type does not match either of the types, an error is recorded,
       no metadata is scraped and the file is reported as not well-formed.
 """
+from __future__ import unicode_literals
+
 import pytest
+import six
+
+from file_scraper.magic_scraper.magic_model import (HtmlFileMagicMeta,
+                                                    OfficeFileMagicMeta)
 from file_scraper.magic_scraper.magic_scraper import MagicScraper
-from file_scraper.magic_scraper.magic_model import (OfficeFileMagicMeta,
-                                                    HtmlFileMagicMeta)
 from tests.common import parse_results
 
 
@@ -345,7 +349,10 @@ def test_no__mime_given():
     scraper = MagicScraper("tests/data/text_plain/valid__utf8.txt", True, {})
     with pytest.raises(AttributeError) as error:
         scraper.scrape_file()
-    assert "not given a parameter dict containing mimetype" in str(error.value)
+    assert (
+        "not given a parameter dict containing mimetype"
+        in six.text_type(error.value)
+    )
     assert not scraper.well_formed
     assert not scraper.streams
 

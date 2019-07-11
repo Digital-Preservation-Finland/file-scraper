@@ -1,7 +1,9 @@
 """Module for checking if the file is uitable as text file or not."""
+from __future__ import unicode_literals
+
 from file_scraper.base import BaseScraper, ProcessRunner
 from file_scraper.textfile.textfile_model import TextFileMeta
-from file_scraper.utils import ensure_str
+from file_scraper.utils import encode_path, ensure_text
 
 FILECMD_PATH = "/opt/file-5.30/bin/file"
 ENV = {"LD_LIBRARY_PATH": "/opt/file-5.30/lib64"}
@@ -25,11 +27,11 @@ class TextfileScraper(BaseScraper):
         """
         shell = ProcessRunner([
             FILECMD_PATH, "-be", "soft", "--mime-type",
-            self.filename], env=ENV)
+            encode_path(self.filename)], env=ENV)
         if shell.stderr:
-            self._errors.append(ensure_str(shell.stderr))
+            self._errors.append(ensure_text(shell.stderr))
 
-        return ensure_str(shell.stdout).strip()
+        return ensure_text(shell.stdout).strip()
 
     def scrape_file(self):
         """Check MIME type determined by libmagic."""

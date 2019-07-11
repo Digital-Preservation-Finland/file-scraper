@@ -32,10 +32,13 @@ This module tests that:
     - Without well-formedness check, these MIME types are not supported.
     - None of these scrapers supports a made up MIME type.
 """
+from __future__ import unicode_literals
+
 import pytest
-from file_scraper.warctools.warctools_scraper import (GzipWarctoolsScraper,
-                                                      WarcWarctoolsScraper,
-                                                      ArcWarctoolsScraper)
+
+from file_scraper.warctools.warctools_scraper import (ArcWarctoolsScraper,
+                                                      GzipWarctoolsScraper,
+                                                      WarcWarctoolsScraper)
 from tests.common import parse_results
 
 

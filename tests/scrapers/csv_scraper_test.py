@@ -21,6 +21,7 @@ This module tests that:
       version.
     - MIME type other than 'text/csv' is not supported
 """
+from __future__ import unicode_literals
 
 import os
 import pytest

@@ -1,14 +1,19 @@
 """Scraper iterator."""
 # flake8: noqa
+from __future__ import unicode_literals
+
 from file_scraper.csv.csv_scraper import CsvScraper
 from file_scraper.detectors import FidoDetector, MagicDetector
 from file_scraper.dpx.dpx_scraper import DpxScraper
 from file_scraper.dummy.dummy_scraper import ScraperNotFound
 from file_scraper.ffmpeg.ffmpeg_scraper import FFMpegScraper
 from file_scraper.ghostscript.ghostscript_scraper import GhostscriptScraper
-from file_scraper.jhove.jhove_scraper import (JHoveGifScraper, JHoveHtmlScraper,
-                                              JHoveJpegScraper, JHoveTiffScraper,
-                                              JHovePdfScraper, JHoveWavScraper)
+from file_scraper.jhove.jhove_scraper import (JHoveGifScraper,
+                                              JHoveHtmlScraper,
+                                              JHoveJpegScraper,
+                                              JHovePdfScraper,
+                                              JHoveTiffScraper,
+                                              JHoveWavScraper)
 from file_scraper.lxml.lxml_scraper import LxmlScraper
 from file_scraper.magic_scraper.magic_scraper import MagicScraper
 from file_scraper.mediainfo.mediainfo_scraper import MediainfoScraper
@@ -20,10 +25,11 @@ from file_scraper.schematron.schematron_scraper import SchematronScraper
 from file_scraper.verapdf.verapdf_scraper import VerapdfScraper
 from file_scraper.vnu.vnu_scraper import VnuScraper
 from file_scraper.wand.wand_scraper import WandScraper
-from file_scraper.warctools.warctools_scraper import (GzipWarctoolsScraper,
-                                                      WarcWarctoolsScraper,
-                                                      ArcWarctoolsScraper)
+from file_scraper.warctools.warctools_scraper import (ArcWarctoolsScraper,
+                                                      GzipWarctoolsScraper,
+                                                      WarcWarctoolsScraper)
 from file_scraper.xmllint.xmllint_scraper import XmllintScraper
+
 
 def iter_detectors():
     """

@@ -20,7 +20,10 @@ This module tests that:
     - These MIME types are also supported with None or a made up version.
     - A made up MIME type with any of these versions is not supported.
 """
+from __future__ import unicode_literals
+
 import pytest
+
 from file_scraper.pil.pil_scraper import PilScraper
 from tests.common import parse_results
 

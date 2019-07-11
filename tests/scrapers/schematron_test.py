@@ -33,13 +33,15 @@ This module tests that:
     - Schematron removes extra copies of identical elements, but not if their
       attributes differ.
 """
+from __future__ import unicode_literals
+
 import os
 import pytest
 from file_scraper.schematron.schematron_scraper import SchematronScraper
 from tests.common import parse_results
 
 ROOTPATH = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), "../../"))
+    os.path.dirname(__file__), "..", ".."))
 
 
 @pytest.mark.parametrize(

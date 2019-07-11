@@ -23,9 +23,12 @@ This module tests that:
     - Supported MIME type with made up version is reported as not supported
     - Made up MIME type with supported version is reported as not supported
 """
+from __future__ import unicode_literals
+
 import pytest
-from tests.common import parse_results
+
 from file_scraper.ghostscript.ghostscript_scraper import GhostscriptScraper
+from tests.common import parse_results
 
 
 @pytest.mark.parametrize(

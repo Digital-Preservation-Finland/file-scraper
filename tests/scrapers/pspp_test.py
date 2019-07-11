@@ -18,9 +18,12 @@ This module tests that:
       supported.
     - When well-formedness is checked, a made up MIME type is not supported.
 """
+from __future__ import unicode_literals
+
 import pytest
-from tests.common import parse_results
+
 from file_scraper.pspp.pspp_scraper import PsppScraper
+from tests.common import parse_results
 
 MIMETYPE = "application/x-spss-por"
 

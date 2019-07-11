@@ -1,4 +1,5 @@
 """PDF/A scraper."""
+from __future__ import unicode_literals
 
 try:
     import lxml.etree as ET
@@ -7,7 +8,7 @@ except ImportError:
 
 from file_scraper.base import BaseScraper, ProcessRunner
 from file_scraper.verapdf.verapdf_model import VerapdfMeta
-from file_scraper.utils import ensure_str
+from file_scraper.utils import ensure_text, encode_path
 
 VERAPDF_PATH = "/usr/share/java/verapdf/verapdf"
 
@@ -29,12 +30,12 @@ class VerapdfScraper(BaseScraper):
             self._messages.append("Skipping scraper: Well-formed check not "
                                   "used.")
             return
-        cmd = [VERAPDF_PATH, self.filename]
+        cmd = [VERAPDF_PATH, encode_path(self.filename)]
 
         shell = ProcessRunner(cmd)
         if shell.returncode != 0:
-            raise VeraPDFError(ensure_str(shell.stderr))
-        self._messages.append(ensure_str(shell.stdout))
+            raise VeraPDFError(ensure_text(shell.stderr))
+        self._messages.append(ensure_text(shell.stdout))
 
         try:
             report = ET.fromstring(shell.stdout)
@@ -42,13 +43,13 @@ class VerapdfScraper(BaseScraper):
                 compliant = report.xpath(
                     "//validationReport")[0].get("isCompliant")
                 if compliant == "false":
-                    self._errors.append(ensure_str(shell.stdout))
+                    self._errors.append(ensure_text(shell.stdout))
                 profile = \
                     report.xpath("//validationReport")[0].get("profileName")
             else:
-                self._errors.append(ensure_str(shell.stdout))
+                self._errors.append(ensure_text(shell.stdout))
         except ET.XMLSyntaxError:
-            self._errors.append(ensure_str(shell.stderr))
+            self._errors.append(ensure_text(shell.stderr))
 
         if self.well_formed:
             for md_class in self._supported_metadata:

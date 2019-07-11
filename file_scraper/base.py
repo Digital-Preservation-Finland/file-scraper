@@ -1,4 +1,6 @@
 """Base module for scrapers."""
+from __future__ import unicode_literals
+
 import abc
 import subprocess
 from file_scraper.utils import run_command, metadata, is_metadata, concat

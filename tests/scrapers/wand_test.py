@@ -52,10 +52,14 @@ This module tests that:
       is given as the version.
     - A made up MIME type is not supported.
 """
+from __future__ import unicode_literals
+
 import os
+
 import pytest
-from file_scraper.wand.wand_scraper import WandScraper
+
 from file_scraper.wand.wand_model import WandImageMeta, WandTiffMeta
+from file_scraper.wand.wand_scraper import WandScraper
 from tests.common import parse_results
 
 STREAM_VALID = {

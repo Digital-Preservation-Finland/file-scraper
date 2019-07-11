@@ -1,11 +1,16 @@
 """Metadata model for image file formats scraped using PIL."""
+from __future__ import unicode_literals
+
+import six
+
+from file_scraper.base import BaseMeta
+from file_scraper.utils import metadata
+
 try:
     import PIL.Image
 except ImportError:
     pass
 
-from file_scraper.base import BaseMeta
-from file_scraper.utils import metadata
 
 SAMPLES_PER_PIXEL = {"1": "1", "L": "1", "P": "1", "RGB": "3", "YCbCr": "3",
                      "LAB": "3", "HSV": "3", "RGBA": "4", "CMYK": "4",
@@ -56,7 +61,7 @@ class BasePilMeta(BaseMeta):
     def width(self):
         """Return image width."""
         if self._pil.width is not None:
-            return str(self._pil.width)
+            return six.text_type(self._pil.width)
         return None
 
     @metadata()
@@ -64,7 +69,7 @@ class BasePilMeta(BaseMeta):
         """Return image height."""
         if self._pil is not None and \
                 self._pil.height is not None:
-            return str(self._pil.height)
+            return six.text_type(self._pil.height)
         return None
 
     @metadata()
@@ -121,7 +126,7 @@ class TiffPilMeta(BasePilMeta):
             return None
         tag_info = self._pil.tag_v2
         if tag_info and SAMPLES_PER_PIXEL_TAG in tag_info.keys():
-            return str(tag_info[SAMPLES_PER_PIXEL_TAG])
+            return six.text_type(tag_info[SAMPLES_PER_PIXEL_TAG])
         return super(TiffPilMeta, self).samples_per_pixel()
 
 
@@ -184,5 +189,5 @@ class JpegPilMeta(BasePilMeta):
         """Return samples per pixel."""
         exif_info = self._pil._getexif()  # pylint: disable=protected-access
         if exif_info and SAMPLES_PER_PIXEL_TAG in exif_info.keys():
-            return str(exif_info[SAMPLES_PER_PIXEL_TAG])
+            return six.text_type(exif_info[SAMPLES_PER_PIXEL_TAG])
         return super(JpegPilMeta, self).samples_per_pixel()

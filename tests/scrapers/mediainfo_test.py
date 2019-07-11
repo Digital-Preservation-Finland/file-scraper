@@ -25,14 +25,20 @@ This module tests that:
     - These MIME types are also supported with a made up version.
     - Made up MIME types are not supported.
 """
+from __future__ import unicode_literals
+
 import pytest
+
 from file_scraper.mediainfo.mediainfo_scraper import MediainfoScraper
 from tests.common import parse_results
-from tests.scrapers.stream_dicts import (
-    MPEG1_VIDEO, MPEG2_VIDEO, MPEG4_CONTAINER, MPEG4_VIDEO, MPEG4_AUDIO,
-    MPEG1_AUDIO, MPEGTS_CONTAINER, MPEGTS_VIDEO, MPEGTS_AUDIO, MPEGTS_OTHER,
-    WAV_AUDIO, MKV_CONTAINER, FFV_VIDEO, FFV_VIDEO_TRUNCATED, MOV_CONTAINER,
-    DV_VIDEO, MOV_TC, MOV_DV_VIDEO)
+from tests.scrapers.stream_dicts import (DV_VIDEO, FFV_VIDEO,
+                                         FFV_VIDEO_TRUNCATED, MKV_CONTAINER,
+                                         MOV_CONTAINER, MOV_DV_VIDEO, MOV_TC,
+                                         MPEG1_AUDIO, MPEG1_VIDEO, MPEG2_VIDEO,
+                                         MPEG4_AUDIO, MPEG4_CONTAINER,
+                                         MPEG4_VIDEO, MPEGTS_AUDIO,
+                                         MPEGTS_CONTAINER, MPEGTS_OTHER,
+                                         MPEGTS_VIDEO, WAV_AUDIO)
 
 
 @pytest.mark.parametrize(

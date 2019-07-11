@@ -1,12 +1,14 @@
 """PSPP scraper."""
+from __future__ import unicode_literals
 
 import os
 import shutil
 import tempfile
 from io import open as io_open
+
 from file_scraper.base import BaseScraper, ProcessRunner
 from file_scraper.pspp.pspp_model import PsppMeta
-from file_scraper.utils import ensure_str
+from file_scraper.utils import ensure_text
 
 PSPP_PATH = "/usr/bin/pspp-convert"
 SPSS_PORTABLE_HEADER = b"SPSS PORT FILE"
@@ -43,8 +45,8 @@ class PsppScraper(BaseScraper):
                 temp_file
             ])
             if shell.stderr:
-                self._errors.append(ensure_str(shell.stderr))
-            self._messages.append(ensure_str(shell.stdout))
+                self._errors.append(ensure_text(shell.stderr))
+            self._messages.append(ensure_text(shell.stdout))
             if os.path.isfile(temp_file):
                 self._messages.append("File conversion was succesful.")
             else:

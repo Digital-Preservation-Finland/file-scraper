@@ -1,11 +1,14 @@
 """File metadata scraper."""
-from file_scraper.iterator import iter_scrapers, iter_detectors
+from __future__ import unicode_literals
+
+from file_scraper.dummy.dummy_scraper import FileExists
+from file_scraper.iterator import iter_detectors, iter_scrapers
 from file_scraper.jhove.jhove_scraper import JHoveUtf8Scraper
 from file_scraper.textfile.textfile_scraper import TextfileScraper
-from file_scraper.dummy.dummy_scraper import FileExists
-from file_scraper.utils import (hexdigest, ensure_text, generate_metadata_dict)
+from file_scraper.utils import (encode_path, ensure_text,
+                                generate_metadata_dict, hexdigest)
 
-LOSE = [None, "(:unav)"]
+LOSE = (None, "(:unav)")
 
 
 class Scraper(object):
@@ -19,7 +22,7 @@ class Scraper(object):
         :kwargs: Extra arguments for certain scrapers
         """
         if filename is not None:
-            filename = ensure_text(filename)
+            filename = encode_path(filename)
         self.filename = filename
         self.mimetype = None
         self.version = None

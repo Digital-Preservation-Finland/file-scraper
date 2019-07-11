@@ -29,13 +29,17 @@ This module tests that:
 
     - Schema, catalogs and network-usage can be defined as parameters.
 """
+from __future__ import unicode_literals
+
 import os
+
 import pytest
+
 from file_scraper.xmllint.xmllint_scraper import XmllintScraper
 from tests.common import parse_results
 
 ROOTPATH = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), "../../"))
+    os.path.dirname(__file__), "..", ".."))
 
 
 @pytest.mark.parametrize(

@@ -89,16 +89,19 @@ This module tests that:
     - Utf8JHove reports MIME type text/plain with "", None or a made up version
       as not supported, as well as a made up MIME type.
 """
+from __future__ import unicode_literals
+
 import os
+
 import pytest
 
 from file_scraper.jhove.jhove_scraper import (JHoveGifScraper,
                                               JHoveHtmlScraper,
                                               JHoveJpegScraper,
-                                              JHoveTiffScraper,
                                               JHovePdfScraper,
-                                              JHoveWavScraper,
-                                              JHoveUtf8Scraper)
+                                              JHoveTiffScraper,
+                                              JHoveUtf8Scraper,
+                                              JHoveWavScraper)
 from tests.common import parse_results
 
 

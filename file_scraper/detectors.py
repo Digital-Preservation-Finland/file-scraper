@@ -1,23 +1,30 @@
 """File format detectors."""
 # pylint: disable=ungrouped-imports
+from __future__ import unicode_literals
 
 import ctypes
+
+import six
+
+from fido.fido import Fido, defaults
+from fido.pronomutils import get_local_pronom_versions
+from file_scraper.base import BaseDetector
+from file_scraper.defaults import (MIMETYPE_DICT, PRIORITY_PRONOM, PRONOM_DICT,
+                                   VERSION_DICT)
+from file_scraper.utils import encode_path, decode_path
 
 try:
     from file_scraper.defaults import MAGIC_LIBRARY
 
+    # Monkeypatch magic to load a newer version of the 'magic' shared library
     ctypes.cdll.LoadLibrary(MAGIC_LIBRARY)
 except OSError:
     print("%s not found, MS Office detection may not work properly if "
           "file command library is older." % MAGIC_LIBRARY)
 
-import magic
-from fido.fido import Fido, defaults
-from fido.pronomutils import get_local_pronom_versions
-from file_scraper.base import BaseDetector
-from file_scraper.defaults import PRONOM_DICT, MIMETYPE_DICT, VERSION_DICT, \
-    PRIORITY_PRONOM
-from file_scraper.utils import encode
+# Must be imported *after* the DLL import above
+import magic  # isort:skip
+
 
 
 class _FidoReader(Fido):
@@ -54,7 +61,11 @@ class _FidoReader(Fido):
         defaults["format_files"] = [defaults["xml_pronomSignature"]]
         defaults["format_files"].append(
             defaults["xml_fidoExtensionSignature"])
-        self.identify_file(filename=self.filename, extension=False)
+        self.identify_file(
+            # Python's zipfile module used internally by FIDO doesn't support
+            # paths that are provided as byte strings
+            filename=decode_path(self.filename), extension=False
+        )
 
     def print_matches(self, fullname, matches, delta_t, matchtype=""):
         """
@@ -149,12 +160,12 @@ class MagicDetector(BaseDetector):
         """Detect mimetype."""
         magic_ = magic.open(magic.MAGIC_MIME_TYPE)
         magic_.load()
-        mimetype = magic_.file(encode(self.filename))
+        mimetype = magic_.file(encode_path(self.filename))
         magic_.close()
         if mimetype in MIMETYPE_DICT:
             self.mimetype = MIMETYPE_DICT[mimetype]
         else:
-            self.mimetype = mimetype
+            self.mimetype = six.text_type(mimetype)
         self.info = {"class": self.__class__.__name__,
                      "messages": "",
                      "errors": ""}

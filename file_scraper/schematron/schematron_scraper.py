@@ -1,11 +1,14 @@
 """Schematron scraper."""
+from __future__ import unicode_literals
+
 import os
 import shutil
 import tempfile
+
 import lxml.etree as etree
 from file_scraper.base import BaseScraper, ProcessRunner
 from file_scraper.schematron.schematron_model import SchematronMeta
-from file_scraper.utils import hexdigest, ensure_str
+from file_scraper.utils import encode_path, ensure_text, hexdigest
 
 
 class SchematronScraper(BaseScraper):
@@ -89,13 +92,13 @@ class SchematronScraper(BaseScraper):
 
         self._returncode = shell.returncode
         if shell.stderr:
-            self._errors.append(ensure_str(shell.stderr))
+            self._errors.append(ensure_text(shell.stderr))
 
         if not self._verbose and shell.returncode == 0:
             self._messages.append(
-                ensure_str(self._filter_duplicate_elements(shell.stdout)))
+                ensure_text(self._filter_duplicate_elements(shell.stdout)))
         else:
-            self._messages.append(ensure_str(shell.stdout))
+            self._messages.append(ensure_text(shell.stdout))
 
         for md_class in self._supported_metadata:
             self.streams.append(md_class())
@@ -147,13 +150,14 @@ class SchematronScraper(BaseScraper):
         if outputfilter and not self._verbose:
             cmd = cmd + ["--stringparam", "outputfilter", "only_messages"]
         cmd = cmd + [os.path.join(self._schematron_dirname, stylesheet),
-                     inputfile]
+                     encode_path(inputfile)]
         shell = ProcessRunner(cmd)
         if shell.returncode not in allowed_codes:
             raise SchematronValidatorError(
-                "Error %s\nstdout:\n%s\nstderr:\n%s" % (
-                    shell.returncode, ensure_str(shell.stdout),
-                    ensure_str(shell.stderr)))
+                "Error {}\nstdout:\n{}\nstderr:\n{}".format(
+                    shell.returncode, ensure_text(shell.stdout),
+                    ensure_text(shell.stderr))
+            )
         return shell
 
     def _compile_schematron(self):

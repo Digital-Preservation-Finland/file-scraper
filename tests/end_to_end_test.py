@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """Integration test for scrapers."""
+from __future__ import unicode_literals
+
 import os
 import shutil
 
@@ -207,7 +209,7 @@ def test_coded_filename(testpath, fullname, mimetype):
     if fullname in IGNORE_VALID + ["tests/data/text_xml/valid_1.0_dtd.xml"]:
         pytest.skip("[%s] in ignore" % fullname)
     ext = fullname.rsplit(".", 1)[-1]
-    unicode_name = os.path.join(testpath, u"äöå.%s" % ext)
+    unicode_name = os.path.join(testpath, "äöå.%s" % ext)
     shutil.copy(fullname, unicode_name)
     scraper = Scraper(unicode_name)
     scraper.scrape()

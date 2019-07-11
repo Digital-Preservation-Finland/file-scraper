@@ -6,7 +6,10 @@ This module tests that:
     - FidoDetector returns an empty dict from get_important() with
       certain mimetypes and MagicDetector returns certain mimetypes.
 """
+from __future__ import unicode_literals
+
 import pytest
+
 from file_scraper.detectors import FidoDetector, MagicDetector
 from tests.common import get_files
 

@@ -1,6 +1,11 @@
 """Metadata model for FFMpeg scraper."""
+from __future__ import unicode_literals
+
 import re
 from fractions import Fraction
+
+import six
+
 from file_scraper.base import BaseMeta, SkipElementException
 from file_scraper.utils import metadata, strip_zeros
 
@@ -165,7 +170,7 @@ class FFMpegMeta(BaseMeta):
         if self.stream_type() not in ["video"]:
             raise SkipElementException()
         if "width" in self._ffmpeg_stream:
-            return str(self._ffmpeg_stream["width"])
+            return six.text_type(self._ffmpeg_stream["width"])
         return "(:unav)"
 
     @metadata()
@@ -174,7 +179,7 @@ class FFMpegMeta(BaseMeta):
         if self.stream_type() not in ["video"]:
             raise SkipElementException()
         if "height" in self._ffmpeg_stream:
-            return str(self._ffmpeg_stream["height"])
+            return six.text_type(self._ffmpeg_stream["height"])
         return "(:unav)"
 
     @metadata()
@@ -209,7 +214,7 @@ class FFMpegMeta(BaseMeta):
         if "bit_rate" in self._ffmpeg_stream:
             if self._ffmpeg_stream["codec_type"] == "video":
                 return "(:unav)"
-            return strip_zeros(str(float(
+            return strip_zeros(six.text_type(float(
                 self._ffmpeg_stream["bit_rate"]) / 1000))
         return "(:unav)"
 
@@ -264,7 +269,7 @@ class FFMpegMeta(BaseMeta):
         if self._ffmpeg_stream == self.container_stream:
             raise SkipElementException()
         if "sample_rate" in self._ffmpeg_stream:
-            return strip_zeros(str(float(
+            return strip_zeros(six.text_type(float(
                 self._ffmpeg_stream["sample_rate"])/1000))
         return "(:unav)"
 
@@ -274,7 +279,7 @@ class FFMpegMeta(BaseMeta):
         if self.stream_type() not in ["audio"]:
             raise SkipElementException()
         if "channels" in self._ffmpeg_stream:
-            return str(self._ffmpeg_stream["channels"])
+            return six.text_type(self._ffmpeg_stream["channels"])
         return "(:unav)"
 
     @metadata()
@@ -316,5 +321,5 @@ class FFMpegMeta(BaseMeta):
         if self.stream_type() not in ["audio", "video"]:
             raise SkipElementException()
         if "bits_per_raw_sample" in self._ffmpeg_stream is not None:
-            return str(self._ffmpeg_stream["bits_per_raw_sample"])
+            return six.text_type(self._ffmpeg_stream["bits_per_raw_sample"])
         return "(:unav)"

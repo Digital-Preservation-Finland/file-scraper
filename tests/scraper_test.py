@@ -14,10 +14,13 @@ This module tests that:
     - giving None instead of a file name to the scraper results in successful
       scraping with a result of not well-formed.
 """
+from __future__ import unicode_literals
+
 import pytest
+
 import file_scraper.scraper
-from file_scraper.scraper import Scraper
 from file_scraper.base import BaseScraper
+from file_scraper.scraper import Scraper
 
 
 class _TestScraper(BaseScraper):
@@ -29,7 +32,7 @@ class _TestScraper(BaseScraper):
 
     @property
     def well_formed(self):
-        return self.filename == "textfile"
+        return self.filename == b"textfile"
 
 
 def test_is_textfile(monkeypatch):

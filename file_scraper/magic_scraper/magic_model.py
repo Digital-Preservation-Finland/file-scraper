@@ -1,9 +1,13 @@
 """Metadata models for files scraped using magic."""
+from __future__ import unicode_literals
+
 import ctypes
+
+import six
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import MIMETYPE_DICT
-from file_scraper.utils import encode, metadata
+from file_scraper.utils import encode_path, metadata
 
 try:
     from file_scraper.defaults import MAGIC_LIBRARY
@@ -35,10 +39,10 @@ class BaseMagicMeta(BaseMeta):
         try:
             magic_ = magic.open(magic.MAGIC_MIME_TYPE)
             magic_.load()
-            mimetype = magic_.file(encode(self._filename))
+            mimetype = magic_.file(encode_path(self._filename))
         except Exception as exception:  # pylint: disable=broad-except
             self._errors.append("Error in analysing file")
-            self._errors.append(str(exception))
+            self._errors.append(six.text_type(exception))
             return None
         finally:
             magic_.close()
@@ -53,10 +57,11 @@ class BaseMagicMeta(BaseMeta):
             magic_ = magic.open(magic.MAGIC_NONE)
             magic_.load()
             magic_version = magic_.file(
-                encode(self._filename)).split(self._starttag)[-1]
+                encode_path(self._filename)).split(self._starttag)[-1]
+            magic_version = six.text_type(magic_version)
         except Exception as exception:  # pylint: disable=broad-except
             self._errors.append("Error in analysing file")
-            self._errors.append(str(exception))
+            self._errors.append(six.text_type(exception))
             return None
         finally:
             magic_.close()
@@ -101,10 +106,10 @@ class TextMagicBaseMeta(BaseMagicMeta):
         try:
             magic_ = magic.open(magic.MAGIC_MIME_ENCODING)
             magic_.load()
-            magic_charset = magic_.file(encode(self._filename))
+            magic_charset = magic_.file(encode_path(self._filename))
         except Exception as exception:  # pylint: disable=broad-except
             self._errors.append("Error in analyzing file")
-            self._errors.append(str(exception))
+            self._errors.append(six.text_type(exception))
             return None
         finally:
             magic_.close()

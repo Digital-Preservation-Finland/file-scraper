@@ -7,6 +7,7 @@ from version import get_version
 setup(
     name='file_scraper',
     packages=find_packages(exclude=['tests', 'tests.*']),
+    include_package_data=True,
     version=get_version(),
     entry_points={'console_scripts': [
         'scraper=file_scraper.cmdline:main']},

@@ -1,4 +1,5 @@
 """Scraper for gif, html, jpeg, tif, pdf and wav files using JHove."""
+from __future__ import unicode_literals
 
 try:
     import lxml.etree
@@ -10,7 +11,7 @@ from file_scraper.jhove.jhove_model import (JHoveGifMeta, JHoveHtmlMeta,
                                             JHoveJpegMeta, JHoveTiffMeta,
                                             JHovePdfMeta, JHoveWavMeta,
                                             JHoveUtf8Meta, get_field)
-from file_scraper.utils import ensure_str
+from file_scraper.utils import ensure_text
 
 
 class JHoveScraperBase(BaseScraper):
@@ -48,7 +49,7 @@ class JHoveScraperBase(BaseScraper):
 
         if self._shell.returncode != 0:
             self._errors.append("JHove returned error: %s\n%s" % (
-                self._shell.returncode, ensure_str(self._shell.stderr)))
+                self._shell.returncode, ensure_text(self._shell.stderr)))
 
         self._report = lxml.etree.fromstring(self._shell.stdout)
 
@@ -56,8 +57,8 @@ class JHoveScraperBase(BaseScraper):
         self._messages.append(status)
         if "Well-Formed and valid" not in status:
             self._errors.append("Validator returned error: %s\n%s" % (
-                ensure_str(self._shell.stdout),
-                ensure_str(self._shell.stderr)
+                ensure_text(self._shell.stdout),
+                ensure_text(self._shell.stderr)
             ))
 
         mimetype = get_field(self._report, "mimeType")

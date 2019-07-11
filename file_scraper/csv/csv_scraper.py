@@ -1,7 +1,10 @@
 """Scraper for CSV file formats."""
+from __future__ import unicode_literals
 
 import csv
 from io import open as io_open
+
+import six
 
 from file_scraper.base import BaseScraper
 from file_scraper.csv.csv_model import CsvMeta
@@ -46,11 +49,14 @@ class CsvScraper(BaseScraper):
                         delimiter = dialect.delimiter
                     if not separator:
                         separator = dialect.lineterminator
-                    csv.register_dialect("new_dialect",
-                                         delimiter=str(delimiter),
-                                         lineterminator=separator,
-                                         strict=True,
-                                         doublequote=True)
+                    csv.register_dialect(
+                        "new_dialect",
+                        # 'delimiter' accepts only byte strings on Python 2 and
+                        # only Unicode strings on Python 3
+                        delimiter=str(delimiter),
+                        lineterminator=separator,
+                        strict=True,
+                        doublequote=True)
 
                     csvfile.seek(0)
                     reader = csv.reader(csvfile, dialect="new_dialect")
@@ -84,6 +90,6 @@ class CsvScraper(BaseScraper):
                                                   "first_line": first_line}))
         except IOError as err:
             self._errors.append("Error when reading the file: " +
-                                str(err))
+                                six.text_type(err))
 
         self._check_supported(allow_unap_version=True)

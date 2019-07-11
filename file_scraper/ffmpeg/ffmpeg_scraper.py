@@ -1,7 +1,9 @@
 """FFMpeg wellformed scraper."""
+from __future__ import unicode_literals
+
 from file_scraper.base import BaseScraper, ProcessRunner
 from file_scraper.ffmpeg.ffmpeg_model import FFMpegSimpleMeta
-from file_scraper.utils import ensure_str
+from file_scraper.utils import ensure_text, encode_path
 
 try:
     import ffmpeg
@@ -29,7 +31,7 @@ class FFMpegScraper(BaseScraper):
             return
 
         try:
-            probe_results = ffmpeg.probe(self.filename)
+            probe_results = ffmpeg.probe(encode_path(self.filename))
             streams = [probe_results["format"]] + probe_results["streams"]
             for stream in streams:
                 if "index" not in stream:
@@ -38,14 +40,14 @@ class FFMpegScraper(BaseScraper):
                     stream["index"] = stream["index"] + 1
         except ffmpeg.Error as err:
             self._errors.append("Error in analyzing file.")
-            self._errors.append(ensure_str(err.stderr))
+            self._errors.append(ensure_text(err.stderr))
 
-        shell = ProcessRunner(["ffmpeg", "-v", "error", "-i", self.filename,
-                               "-f", "null", "-"])
+        shell = ProcessRunner(["ffmpeg", "-v", "error", "-i",
+                               encode_path(self.filename), "-f", "null", "-"])
         if shell.returncode == 0:
             self._messages.append("The file was analyzed successfully.")
         if shell.stderr:
-            self._errors.append(ensure_str(shell.stderr))
+            self._errors.append(ensure_text(shell.stderr))
             return
 
         for md_class in self._supported_metadata:
