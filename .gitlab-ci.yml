@@ -109,3 +109,6 @@ rpm-stable:
     - 'rpm-stable.sh'
   only:
     - tags
+
+variables:
+  ANSIBLE_REPOSITORY: 'ansible-preservation-system'
