@@ -294,14 +294,35 @@ class BaseDetector(object):
 
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, filename):
-        """Initialize detector."""
+    def __init__(self, filename, mimetype=None, version=None):
+        """
+        Initialize detector.
+
+        :filename: Path to the identified file
+        :mimetype: The MIME type of the file from another source, e.g. METS.
+        :version: Version of the file from another source, e.g. METS.
+        """
         self.filename = filename  # File path
         self.mimetype = None  # Identified mimetype
         self.version = None  # Identified file version
         self.info = None  # Class name, messages, errors
 
+        # Detectors can use the user-supplied MIME types and versions to refine
+        # or even fully determine the file format.
+        self._given_mimetype = mimetype
+        self._given_version = version
+
     @abc.abstractmethod
     def detect(self):
         """Detect file. Must be implemented in detectors."""
         pass
+
+    def get_important(self):
+        # pylint: disable=no-self-use
+        """
+        Return dict of important values determined by the detector.
+
+        By default this is an empty dict, but subclasses can override this
+        method to add "mimetype" and/or "version" keys to the dict.
+        """
+        return {}

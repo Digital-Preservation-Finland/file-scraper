@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 from file_scraper.csv.csv_scraper import CsvScraper
-from file_scraper.detectors import FidoDetector, MagicDetector
+from file_scraper.detectors import FidoDetector, MagicDetector, PredefinedDetector
 from file_scraper.dpx.dpx_scraper import DpxScraper
 from file_scraper.dummy.dummy_scraper import ScraperNotFound
 from file_scraper.ffmpeg.ffmpeg_scraper import FFMpegScraper
@@ -38,7 +38,7 @@ def iter_detectors():
     We want to keep the detectors in ordered list.
     :returns: detector class
     """
-    for cls in [FidoDetector, MagicDetector]:
+    for cls in [FidoDetector, MagicDetector, PredefinedDetector]:
         yield cls
 
 

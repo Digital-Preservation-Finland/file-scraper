@@ -30,12 +30,15 @@ class Scraper(object):
         self.info = None
         self._params = kwargs
         self._scraper_results = []
+        self._given_mimetype = self._params.get("mimetype", None)
+        self._given_version = self._params.get("version", None)
 
     def _identify(self):
         """Identify file format and version."""
         self.info = {}
         for detector in iter_detectors():
-            tool = detector(self.filename)
+            tool = detector(self.filename, self._given_mimetype,
+                            self._given_version)
             tool.detect()
             self.info[len(self.info)] = tool.info
             important = tool.get_important()
@@ -49,7 +52,7 @@ class Scraper(object):
                 self.mimetype = important["mimetype"]
             if "version" in important and \
                     important["version"] is not None:
-                self.mimetype = important["version"][self.mimetype]
+                self.version = important["version"]
 
     def _scrape_file(self, scraper):
         """Scrape with the given scraper.

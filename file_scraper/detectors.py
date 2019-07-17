@@ -115,10 +115,11 @@ class _FidoReader(Fido):
 class FidoDetector(BaseDetector):
     """Fido detector."""
 
-    def __init__(self, filename):
+    def __init__(self, filename, mimetype=None, version=None):
         """Initialize detector."""
         self._puid = None
-        super(FidoDetector, self).__init__(filename)
+        super(FidoDetector, self).__init__(filename, mimetype=mimetype,
+                                           version=version)
 
     def detect(self):
         """Detect file format and version."""
@@ -139,17 +140,19 @@ class FidoDetector(BaseDetector):
             - text/html when it is not HTML5 or HTML4.01.
               HTML variant is recognized with pronom code.
             - application/zip
+            - user has given a MIME type
 
         Fido recognizes ARC files as text/html and OpenOffice Formula files
         as application/zip, therefore these are given to other detectors.
 
-        :returns: Mime type
+        :returns: A dict possibly containing key "mimetype"
         """
         important = {}
-        if self._puid in ["fmt/471", "fmt/100"]:
-            important["mimetype"] = self.mimetype
-        elif self.mimetype not in [None, "text/html", "application/zip"]:
-            important["mimetype"] = self.mimetype
+        if not self._given_mimetype:
+            if self._puid in ["fmt/471", "fmt/100"]:
+                important["mimetype"] = self.mimetype
+            elif self.mimetype not in [None, "text/html", "application/zip"]:
+                important["mimetype"] = self.mimetype
         return important
 
 
@@ -174,14 +177,50 @@ class MagicDetector(BaseDetector):
         """
         Important mime types.
 
-        We will prefer file detector with the following mimetypes:
+        If user has not given a MIME type, we will prefer file detector with
+        the following mimetypes:
             - application/x-internet-archive
             - application/vnd.oasis.opendocument.formula
 
-        :returns: Mime type
+        :returns: A dict possibly containing key "mimetype"
         """
         important = {}
-        if self.mimetype in ["application/x-internet-archive",
-                             "application/vnd.oasis.opendocument.formula"]:
+        if (not self._given_mimetype and self.mimetype in
+                ["application/x-internet-archive",
+                 "application/vnd.oasis.opendocument.formula"]):
             important["mimetype"] = self.mimetype
         return important
+
+
+class PredefinedDetector(BaseDetector):
+    """A detector for handling user-supplied MIME types and versions."""
+
+    def detect(self):
+        """
+        No actual detection needed, just use the given values and log messages.
+
+        If the user supplied a MIME type and/or version, it has already been
+        recorded during initialization. Giving only the version is not
+        possible: if the initilizer is not given a MIME type, the possible
+        version information is ignored.
+        """
+        self.mimetype = self._given_mimetype
+        if self._given_mimetype:
+            self.version = self._given_version
+
+        if self._given_mimetype:
+            message = "User-supplied file format used"
+        else:
+            message = ""
+        self.info = {"class": self.__class__.__name__,
+                     "messages": message,
+                     "errors": ""}
+
+    def get_important(self):
+        """
+        The results from this detector are always important.
+
+        If the scraper does not know MIME type or version, the values will be
+        None and thus ignored by the scraper.
+        """
+        return {"mimetype": self.mimetype, "version": self.version}
