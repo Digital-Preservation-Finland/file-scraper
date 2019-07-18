@@ -60,11 +60,19 @@ class MediainfoScraper(BaseScraper):
         elif not truncated:
             self._messages.append("The file was analyzed successfully.")
 
-        mime_guess = self._params["mimetype_guess"]
+        # If the MIME type is forced to a certain value by mimetype parameter,
+        # use that value, otherwise use the given mimetype_guess
+        if self._given_mimetype:
+            mime_guess = self._given_mimetype
+        else:
+            mime_guess = self._params["mimetype_guess"]
+
         for index in range(len(mediainfo.tracks)):
             for md_class in self._supported_metadata:
                 if md_class.is_supported(mime_guess):
-                    md_object = md_class(mediainfo.tracks, index, mime_guess)
+                    md_object = md_class(mediainfo.tracks, index, mime_guess,
+                                         self._given_mimetype,
+                                         self._given_version)
                     if not md_object.hascontainer() and index == 0:
                         continue
                     self.streams.append(md_object)

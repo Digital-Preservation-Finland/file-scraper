@@ -29,7 +29,8 @@ class GhostscriptScraper(BaseScraper):
             encode_path(self.filename)])
 
         for model in self._supported_metadata:
-            self.streams.append(model())
+            self.streams.append(model(self._given_mimetype,
+                                      self._given_version))
 
         stdout_message = ensure_text(shell.stdout)
         stderr_message = ensure_text(shell.stderr)

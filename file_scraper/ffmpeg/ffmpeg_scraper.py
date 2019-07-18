@@ -51,7 +51,7 @@ class FFMpegScraper(BaseScraper):
             return
 
         for md_class in self._supported_metadata:
-            stream = md_class()
+            stream = md_class(self._given_mimetype, self._given_version)
             self.streams.append(stream)
 
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)

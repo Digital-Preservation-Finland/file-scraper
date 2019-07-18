@@ -22,7 +22,7 @@ class GzipWarctoolsMeta(BaseWarctoolsMeta):
     _supported = {"application/gzip": []}  # Supported mimetype
     _allow_versions = True  # Allow any version
 
-    def __init__(self, metadata_model):
+    def __init__(self, metadata_model, mimetype=None, version=None):
         """
         Initialize the metadata model
 
@@ -30,15 +30,23 @@ class GzipWarctoolsMeta(BaseWarctoolsMeta):
                          representing the extracted warc or arc.
         """
         self._metadata_model = metadata_model
+        super(GzipWarctoolsMeta, self).__init__(mimetype=mimetype,
+                                                version=version)
 
     @metadata()
     def mimetype(self):
         """Return MIME type."""
+        if self._given_mimetype:
+            return self._given_mimetype
+
         return self._metadata_model[0].mimetype()
 
     @metadata()
     def version(self):
         """Return the version."""
+        if self._given_mimetype and self._given_version:
+            return self._given_version
+
         return self._metadata_model[0].version()
 
 
@@ -49,14 +57,15 @@ class WarcWarctoolsMeta(BaseWarctoolsMeta):
     _supported = {"application/warc": ["0.17", "0.18", "1.0"]}
     _allow_versions = True  # Allow any version
 
-    def __init__(self, line):
+    def __init__(self, line, mimetype=None, version=None):
         """
         Initialize the metadata model.
 
         :line: The first line of the warc archive.
         """
         self._line = line
-        super(WarcWarctoolsMeta, self).__init__()
+        super(WarcWarctoolsMeta, self).__init__(mimetype=mimetype,
+                                                version=version)
 
     @metadata()
     def mimetype(self):

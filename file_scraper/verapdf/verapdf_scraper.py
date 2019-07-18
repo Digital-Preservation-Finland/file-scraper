@@ -53,7 +53,8 @@ class VerapdfScraper(BaseScraper):
 
         if self.well_formed:
             for md_class in self._supported_metadata:
-                self.streams.append(md_class(profile))
+                self.streams.append(md_class(profile, self._given_mimetype,
+                                             self._given_version))
                 self._check_supported()
 
 

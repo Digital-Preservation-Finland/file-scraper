@@ -16,7 +16,8 @@ class BaseMediainfoMeta(BaseMeta):
     _containers = []
     container_stream = None
 
-    def __init__(self, tracks, index, mimetype_guess):
+    def __init__(self, tracks, index, mimetype_guess, mimetype=None,
+                 version=None):
         """
         Initialize the metadata model.
 
@@ -34,7 +35,8 @@ class BaseMediainfoMeta(BaseMeta):
             self.container_stream = tracks[0]
         else:
             self._index = index - 1
-        super(BaseMediainfoMeta, self).__init__()
+        super(BaseMediainfoMeta, self).__init__(mimetype=mimetype,
+                                                version=version)
 
     def hascontainer(self):
         """Find out if file is a video container."""
@@ -48,6 +50,9 @@ class BaseMediainfoMeta(BaseMeta):
     @metadata()
     def version(self):
         """Return version of stream."""
+        if self._given_mimetype and self._given_version:
+            return self._given_version
+
         if self._stream.format_version is not None:
             return self._stream.format_version.replace("Version ", "")
         if self.stream_type() in ["videocontainer", "video", "audio"]:
@@ -296,6 +301,10 @@ class MovMediainfoMeta(BaseMediainfoMeta):
         mime_dict = {"QuickTime": "video/quicktime",
                      "PCM": "audio/x-wav",
                      "DV": "video/dv"}
+
+        if self._given_mimetype:
+            return self._given_mimetype
+
         try:
             return mime_dict[self.codec_name()]
         except (SkipElementException, KeyError):
@@ -305,6 +314,9 @@ class MovMediainfoMeta(BaseMediainfoMeta):
     @metadata()
     def version(self):
         """Return version of stream."""
+        if self._given_mimetype and self._given_version:
+            return self._given_version
+
         return "(:unav)"
 
     # pylint: disable=inconsistent-return-statements, bad-option-value
@@ -332,6 +344,10 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
         mime_dict = {"Matroska": "video/x-matroska",
                      "PCM": "audio/x-wav",
                      "FFV1": "video/x-ffv"}
+
+        if self._given_mimetype:
+            return self._given_mimetype
+
         try:
             return mime_dict[self.codec_name()]
         except (SkipElementException, KeyError):
@@ -341,6 +357,9 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
     @metadata()
     def version(self):
         """Return version of stream."""
+        if self._given_mimetype and self._given_version:
+            return self._given_version
+
         version = super(MkvMediainfoMeta, self).version()
         if isinstance(version, six.text_type):
             return version.split(".")[0]
@@ -374,11 +393,18 @@ class WavMediainfoMeta(BaseMediainfoMeta):
     @metadata()
     def mimetype(self):
         """Returns mimetype for stream."""
+
+        if self._given_mimetype:
+            return self._given_mimetype
+
         return self._mimetype_guess
 
     @metadata()
     def version(self):
         """Returns version."""
+        if self._given_mimetype and self._given_version:
+            return self._given_version
+
         if self._tracks[0].bext_present is not None \
                 and self._tracks[0].bext_present == "Yes":
             return "2"
@@ -437,6 +463,9 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
                      "MPEG Video": "video/mpeg",
                      "MPEG Audio": "audio/mpeg"}
 
+        if self._given_mimetype:
+            return self._given_mimetype
+
         try:
             return mime_dict[self.codec_name()]
         except (SkipElementException, KeyError):
@@ -446,6 +475,9 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
     @metadata()
     def version(self):
         """Return version of stream."""
+        if self._given_mimetype and self._given_version:
+            return self._given_version
+
         # mp3 "container" does not know the version, so it has to be checked
         # from the first stream
         if (self.mimetype() == "audio/mpeg" and

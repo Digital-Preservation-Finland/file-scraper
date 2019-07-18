@@ -181,6 +181,8 @@ class BaseMeta(object):
 
         :returns: "(:unav)"
         """
+        if self._given_mimetype:
+            return self._given_mimetype
         return "(:unav)"
 
     @metadata()
@@ -190,6 +192,8 @@ class BaseMeta(object):
 
         :returns: "(:unav)"
         """
+        if self._given_mimetype and self._given_version:
+            return self._given_version
         return "(:unav)"
 
     @metadata()

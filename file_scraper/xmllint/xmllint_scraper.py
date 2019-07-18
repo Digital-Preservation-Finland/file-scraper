@@ -273,4 +273,5 @@ class XmllintScraper(BaseScraper):
         :tree: XML element tree for the scraped file
         """
         for md_class in self._supported_metadata:
-            self.streams.append(md_class(tree))
+            self.streams.append(md_class(tree, self._given_mimetype,
+                                         self._given_version))

@@ -52,7 +52,8 @@ class LxmlScraper(BaseScraper):
         with open(self.filename, "rb") as file_:
             tree = etree.parse(file_, parser)
         for md_class in self._supported_metadata:
-            self.streams.append(md_class(tree))
+            self.streams.append(md_class(tree, self._given_mimetype,
+                                         self._given_version))
         self._messages.append("Encoding metadata found.")
 
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)

@@ -66,7 +66,7 @@ class FFMpegMeta(BaseMeta):
                     "PCM unsigned 8-bit": "PCM"}
     container_stream = None
 
-    def __init__(self, probe_results, index):
+    def __init__(self, probe_results, index, mimetype=None, version=None):
         """
         Initialize the metadata model.
 
@@ -81,16 +81,13 @@ class FFMpegMeta(BaseMeta):
         if self.hascontainer():
             self.container_stream = self._probe_results["format"]
 
+        super(FFMpegMeta, self).__init__(mimetype=mimetype, version=version)
+
     def hascontainer(self):
         """Check if file has a video container."""
         return ("codec_type" not in self._probe_results["format"]
                 and self._probe_results["format"]["format_name"] not in
                 ["mp3", "mpegvideo"])
-
-    @metadata()
-    def version(self):
-        """Return version of stream."""
-        return "(:unav)"
 
     @metadata()
     def codec_quality(self):

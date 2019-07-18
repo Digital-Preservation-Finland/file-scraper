@@ -21,7 +21,7 @@ SAMPLES_PER_PIXEL_TAG = 277
 class BasePilMeta(BaseMeta):
     """Metadata model for image metadata."""
 
-    def __init__(self, pil, index):
+    def __init__(self, pil, index, mimetype=None, version=None):
         """
         Initialize scraper.
 
@@ -30,16 +30,20 @@ class BasePilMeta(BaseMeta):
         """
         self._pil = pil
         self._pil_index = index
-        super(BasePilMeta, self).__init__()
+        super(BasePilMeta, self).__init__(mimetype, version)
 
     @metadata()
     def mimetype(self):
+        if self._given_mimetype:
+            return self._given_mimetype
         return PIL.Image.MIME[self._pil.format]
 
     # pylint: disable=no-self-use
     @metadata()
     def version(self):
         """PIL does not know the version, return (:unav)."""
+        if self._given_mimetype and self._given_version:
+            return self._given_version
         return "(:unav)"
 
     @metadata()
@@ -141,6 +145,9 @@ class ImagePilMeta(BasePilMeta):
 
     @metadata()
     def mimetype(self):
+        if self._given_mimetype:
+            return self._given_mimetype
+
         mime = super(ImagePilMeta, self).mimetype()
         # Pillow 5.0.0 misidentifies JPEG2000
         if mime == "image/jpx":

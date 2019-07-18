@@ -61,7 +61,12 @@ class JHoveScraperBase(BaseScraper):
                 ensure_text(self._shell.stderr)
             ))
 
-        mimetype = get_field(self._report, "mimeType")
+        # If the MIME type is forced, use that, otherwise scrape the MIME type
+        if self._given_mimetype:
+            mimetype = self._given_mimetype
+        else:
+            mimetype = get_field(self._report, "mimeType")
+
         if mimetype == "text/xml":  # XML MIME type has to be set manually
             mimetype = "application/xhtml+xml"
         elif mimetype is not None and "audio/vnd.wave" in mimetype:  # wav also
@@ -69,7 +74,9 @@ class JHoveScraperBase(BaseScraper):
 
         for md_class in self._supported_metadata:
             if md_class.is_supported(mimetype) or self._force_metadata_use:
-                self.streams.append(md_class(self._report, self._errors))
+                self.streams.append(md_class(self._report, self._errors,
+                                             self._given_mimetype,
+                                             self._given_version))
 
         self._check_supported(allow_unav_version=True)
 
