@@ -77,7 +77,8 @@ This module tests that:
     - Made up MIME type with any version is not supported
     - When full scraping is not done, none of these combinations are supported.
 
-    - The scraper requires the parameter dict to contain "mimetype" entry.
+    - The scraper requires the parameter dict to contain "mimetype_guess"
+      entry.
     - If the scraper determines the file to be either XML or XHTML file and
       would thus need to use the supplied MIME type from the dict, but the
       given MIME type does not match either of the types, an error is recorded,
@@ -143,7 +144,7 @@ def test_scraper_valid(filename, mimetype, evaluate_scraper):
     correct = parse_results(filename, mimetype,
                             result_dict, True)
     params = correct.params
-    params["mimetype"] = correct.mimetype
+    params["mimetype_guess"] = correct.mimetype
     scraper = MagicScraper(correct.filename, True, params)
     scraper.scrape_file()
 
@@ -199,7 +200,7 @@ def test_invalid_office(filename, mimetype):
     correct = parse_results(filename, mimetype,
                             result_dict, True)
     params = correct.params
-    params["mimetype"] = correct.mimetype
+    params["mimetype_guess"] = correct.mimetype
     scraper = MagicScraper(correct.filename, True, params)
     scraper.scrape_file()
 
@@ -237,7 +238,7 @@ def test_invalid_markdown_pdf_arc(filename, mimetype, evaluate_scraper):
         "stderr_part": ""}
     correct = parse_results(filename, mimetype, result_dict, True)
     params = correct.params
-    params["mimetype"] = correct.mimetype
+    params["mimetype_guess"] = correct.mimetype
     scraper = MagicScraper(correct.filename, True, params)
     scraper.scrape_file()
 
@@ -270,7 +271,7 @@ def test_invalid_images(filename, mimetype):
         "stderr_part": "Unsupported MIME type"}
     correct = parse_results(filename, mimetype, result_dict, True)
     params = correct.params
-    params["mimetype"] = correct.mimetype
+    params["mimetype_guess"] = correct.mimetype
     scraper = MagicScraper(correct.filename, True, params)
     scraper.scrape_file()
 
@@ -305,7 +306,7 @@ def test_invalid_text(filename, mimetype):
     correct = parse_results(filename, mimetype,
                             result_dict, True)
     params = correct.params
-    params["mimetype"] = correct.mimetype
+    params["mimetype_guess"] = correct.mimetype
     scraper = MagicScraper(correct.filename, True, params)
     scraper.scrape_file()
 
@@ -337,7 +338,7 @@ def test_wrong_mime_with_xml(filepath):
     This should cause an error to be recorded by the scraper, as those scrapers
     need the MIME type information from outside.
     """
-    scraper = MagicScraper(filepath, True, {"mimetype": "wrong/mime"})
+    scraper = MagicScraper(filepath, True, {"mimetype_guess": "wrong/mime"})
     scraper.scrape_file()
     assert not scraper.well_formed
     assert not scraper.streams
@@ -350,9 +351,11 @@ def test_no__mime_given():
     with pytest.raises(AttributeError) as error:
         scraper.scrape_file()
     assert (
-        "not given a parameter dict containing mimetype"
+        "not given a parameter dict containing key 'mimetype_guess'"
         in six.text_type(error.value)
     )
+    assert ("not given a parameter dict containing key 'mimetype_guess'" in
+            str(error.value))
     assert not scraper.well_formed
     assert not scraper.streams
 
@@ -360,7 +363,7 @@ def test_no__mime_given():
 def test_no_wellformed():
     """Test scraper without well-formed check."""
     scraper = MagicScraper("tests/data/image_jpeg/valid_1.01.jpg", False,
-                           {"mimetype": "image/jpeg"})
+                           {"mimetype_guess": "image/jpeg"})
     scraper.scrape_file()
     assert "Skipping scraper" not in scraper.messages()
     assert scraper.well_formed is None

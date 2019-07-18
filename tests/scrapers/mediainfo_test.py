@@ -69,7 +69,7 @@ def test_mediainfo_scraper_mov(filename, result_dict, mimetype,
     """Test Quicktime and DV scraping with Mediainfo."""
     correct = parse_results(filename, mimetype, result_dict, True)
     scraper = MediainfoScraper(correct.filename, True,
-                               params={"mimetype": mimetype})
+                               params={"mimetype_guess": mimetype})
     scraper.scrape_file()
 
     for stream in correct.streams.values():
@@ -110,7 +110,7 @@ def test_mediainfo_scraper_mkv(filename, result_dict, evaluate_scraper):
     mimetype = "video/x-matroska"
     correct = parse_results(filename, mimetype, result_dict, True)
     scraper = MediainfoScraper(correct.filename, True,
-                               params={"mimetype": mimetype})
+                               params={"mimetype_guess": mimetype})
     scraper.scrape_file()
     if "empty" in filename:
         correct.version = None
@@ -148,7 +148,7 @@ def test_mediainfo_scraper_wav(filename, result_dict, evaluate_scraper):
     mimetype = "audio/x-wav"
     correct = parse_results(filename, mimetype, result_dict, True)
     scraper = MediainfoScraper(correct.filename, True,
-                               params={"mimetype": mimetype})
+                               params={"mimetype_guess": mimetype})
     scraper.scrape_file()
 
     if "empty" in filename:
@@ -186,7 +186,7 @@ def test_mediainfo_scraper_mpeg(filename, result_dict, evaluate_scraper):
     mimetype = "video/mpeg"
     correct = parse_results(filename, mimetype, result_dict, True)
     scraper = MediainfoScraper(correct.filename, True,
-                               params={"mimetype": mimetype})
+                               params={"mimetype_guess": mimetype})
     scraper.scrape_file()
     del correct.streams[0]["stream_type"]
     if "empty" in filename:
@@ -217,7 +217,7 @@ def test_mediainfo_scraper_mp4(filename, result_dict, evaluate_scraper):
     mimetype = "video/mp4"
     correct = parse_results(filename, mimetype, result_dict, True)
     scraper = MediainfoScraper(correct.filename, True,
-                               params={"mimetype": mimetype})
+                               params={"mimetype_guess": mimetype})
     scraper.scrape_file()
 
     for stream in correct.streams.values():
@@ -248,7 +248,7 @@ def test_mediainfo_scraper_mp3(filename, result_dict, evaluate_scraper):
     mimetype = "audio/mpeg"
     correct = parse_results(filename, mimetype, result_dict, True)
     scraper = MediainfoScraper(correct.filename, True,
-                               params={"mimetype": mimetype})
+                               params={"mimetype_guess": mimetype})
     scraper.scrape_file()
 
     if "empty" in filename:
@@ -281,7 +281,7 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
     mimetype = "video/MP2T"
     correct = parse_results(filename, mimetype, result_dict, True)
     scraper = MediainfoScraper(correct.filename, True,
-                               params={"mimetype": mimetype})
+                               params={"mimetype_guess": mimetype})
     scraper.scrape_file()
     for stream in correct.streams.values():
         if stream["mimetype"] == "video/MP2T":
@@ -297,7 +297,7 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
 def test_no_wellformed():
     """Test scraper without well-formed check."""
     scraper = MediainfoScraper("tests/data/audio_x-wav/valid__wav.wav",
-                               False, params={"mimetype": "audio/x-wav"})
+                               False, params={"mimetype_guess": "audio/x-wav"})
     scraper.scrape_file()
     assert "Skipping scraper" not in scraper.messages()
     assert scraper.well_formed is None

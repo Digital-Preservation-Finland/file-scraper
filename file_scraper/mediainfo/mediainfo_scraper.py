@@ -33,9 +33,9 @@ class MediainfoScraper(BaseScraper):
             self._messages.append("Skipping scraper: Well-formed check not"
                                   "used.")
             return
-        if "mimetype" not in self._params:
+        if "mimetype_guess" not in self._params:
             raise AttributeError("MediainfoScraper was not given a parameter "
-                                 "dict containing mimetype of the file")
+                                 "dict containing key 'mimetype_guess'.")
 
         try:
             mediainfo = MediaInfo.parse(decode_path(self.filename))
@@ -60,7 +60,7 @@ class MediainfoScraper(BaseScraper):
         elif not truncated:
             self._messages.append("The file was analyzed successfully.")
 
-        mime_guess = self._params["mimetype"]
+        mime_guess = self._params["mimetype_guess"]
         for index in range(len(mediainfo.tracks)):
             for md_class in self._supported_metadata:
                 if md_class.is_supported(mime_guess):

@@ -35,9 +35,9 @@ class MagicScraper(BaseScraper):
                                   "used.")
             return
 
-        if "mimetype" not in self._params:
+        if "mimetype_guess" not in self._params:
             raise AttributeError("MagicScraper was not given a parameter "
-                                 "dict containing mimetype of the file.")
+                                 "dict containing key 'mimetype_guess'.")
 
         if not os.path.exists(self.filename):
             self._errors.append("File not found.")
@@ -45,7 +45,7 @@ class MagicScraper(BaseScraper):
 
         mimefinder = BaseMagicMeta(self.filename, self._errors)
         mimetype = mimefinder.mimetype()
-        mimetype_guess = self._params["mimetype"]
+        mimetype_guess = self._params["mimetype_guess"]
 
         if not self.is_supported(mimetype):
             self._errors.append("Unsupported MIME type %s" % mimetype)

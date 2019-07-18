@@ -33,7 +33,7 @@ def test_scrape_valid_file(filename, mimetype):
     for class_ in iter_scrapers(mimetype, None):
         scraper = class_(
             os.path.join(BASEPATH, mimetype.replace('/', '_'), filename),
-            params={"mimetype": mimetype})
+            params={"mimetype_guess": mimetype})
         scraper.scrape_file()
         assert scraper.well_formed
 
