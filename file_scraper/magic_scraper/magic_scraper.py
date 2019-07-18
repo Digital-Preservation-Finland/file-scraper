@@ -43,7 +43,9 @@ class MagicScraper(BaseScraper):
             self._errors.append("File not found.")
             return
 
-        mimefinder = BaseMagicMeta(self.filename, self._errors)
+        mimefinder = BaseMagicMeta(self.filename, self._errors,
+                                   mimetype=self._given_mimetype,
+                                   version=self._given_version)
         mimetype = mimefinder.mimetype()
         mimetype_guess = self._params["mimetype_guess"]
 
@@ -67,7 +69,9 @@ class MagicScraper(BaseScraper):
             for md_class in self._supported_metadata:
                 if not md_class.is_supported(mimetype):
                     continue
-                self.streams.append(md_class(self.filename, self._errors))
+                self.streams.append(md_class(self.filename, self._errors,
+                                             self._given_mimetype,
+                                             self._given_version))
 
         self._check_supported(allow_unav_version=True, allow_unap_version=True)
         self._messages.append("The file was analyzed successfully.")

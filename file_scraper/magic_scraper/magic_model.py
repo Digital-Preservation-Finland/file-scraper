@@ -27,15 +27,18 @@ class BaseMagicMeta(BaseMeta):
     _starttag = "version "  # Text before file format version in magic result.
     _endtag = None  # Text after file format version in magic result.
 
-    def __init__(self, filename, errors):
+    def __init__(self, filename, errors, mimetype=None, version=None):
         """Imitialize the metadata model."""
         self._filename = filename
         self._errors = errors
-        super(BaseMagicMeta, self).__init__()
+        super(BaseMagicMeta, self).__init__(mimetype=mimetype, version=version)
 
     @metadata()
     def mimetype(self):
         """Return MIME type."""
+        if self._given_mimetype:
+            return self._given_mimetype
+
         try:
             magic_ = magic.open(magic.MAGIC_MIME_TYPE)
             magic_.load()
@@ -53,6 +56,9 @@ class BaseMagicMeta(BaseMeta):
 
     @metadata()
     def version(self):
+        if self._given_mimetype and self._given_version:
+            return self._given_version
+
         try:
             magic_ = magic.open(magic.MAGIC_NONE)
             magic_.load()

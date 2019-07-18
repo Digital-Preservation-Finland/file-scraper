@@ -31,6 +31,16 @@ class BaseScraper(object):
         self._check_wellformed = check_wellformed
         self._params = params if params is not None else {}
 
+        self._given_mimetype = self._params.get("mimetype", None)
+        self._given_version = self._params.get("versioN", None)
+        if self._given_mimetype:
+            if self._given_version:
+                self._messages.append("MIME type and version not scraped, "
+                                      "using user-supplied values.")
+            else:
+                self._messages.append("MIME type not scraped, using user-"
+                                      "supplied value.")
+
     @property
     def well_formed(self):
         """
@@ -151,6 +161,18 @@ class BaseMeta(object):
 
     _supported = {}
     _allow_versions = False
+
+    def __init__(self, mimetype=None, version=None):
+        """
+        Initialize the metadata model.
+
+        Metadata models can be given a mimetype and/or version obtained from
+        another source such as METS. Metadata models must be implemented so
+        that if supplied, these values are used instead of values determined
+        based on the file.
+        """
+        self._given_mimetype = mimetype
+        self._given_version = version
 
     @metadata()
     def mimetype(self):
