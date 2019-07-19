@@ -51,7 +51,8 @@ class BaseMediainfoMeta(BaseMeta):
     def version(self):
         """Return version of stream."""
         if self._given_mimetype and self._given_version:
-            return self._given_version
+            if self._index == 0:
+                return self._given_version
 
         if self._stream.format_version is not None:
             return self._stream.format_version.replace("Version ", "")
@@ -303,7 +304,8 @@ class MovMediainfoMeta(BaseMediainfoMeta):
                      "DV": "video/dv"}
 
         if self._given_mimetype:
-            return self._given_mimetype
+            if self._index == 0:
+                return self._given_mimetype
 
         try:
             return mime_dict[self.codec_name()]
@@ -315,7 +317,8 @@ class MovMediainfoMeta(BaseMediainfoMeta):
     def version(self):
         """Return version of stream."""
         if self._given_mimetype and self._given_version:
-            return self._given_version
+            if self._index == 0:
+                return self._given_version
 
         return "(:unav)"
 
@@ -346,7 +349,8 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
                      "FFV1": "video/x-ffv"}
 
         if self._given_mimetype:
-            return self._given_mimetype
+            if self._index == 0:
+                return self._given_mimetype
 
         try:
             return mime_dict[self.codec_name()]
@@ -358,7 +362,8 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
     def version(self):
         """Return version of stream."""
         if self._given_mimetype and self._given_version:
-            return self._given_version
+            if self._index == 0:
+                return self._given_version
 
         version = super(MkvMediainfoMeta, self).version()
         if isinstance(version, six.text_type):
@@ -395,7 +400,8 @@ class WavMediainfoMeta(BaseMediainfoMeta):
         """Returns mimetype for stream."""
 
         if self._given_mimetype:
-            return self._given_mimetype
+            if self._index == 0:
+                return self._given_mimetype
 
         return self._mimetype_guess
 
@@ -403,7 +409,8 @@ class WavMediainfoMeta(BaseMediainfoMeta):
     def version(self):
         """Returns version."""
         if self._given_mimetype and self._given_version:
-            return self._given_version
+            if self._index == 0:
+                return self._given_version
 
         if self._tracks[0].bext_present is not None \
                 and self._tracks[0].bext_present == "Yes":
@@ -464,7 +471,8 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
                      "MPEG Audio": "audio/mpeg"}
 
         if self._given_mimetype:
-            return self._given_mimetype
+            if self._index == 0:
+                return self._given_mimetype
 
         try:
             return mime_dict[self.codec_name()]
@@ -476,7 +484,8 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
     def version(self):
         """Return version of stream."""
         if self._given_mimetype and self._given_version:
-            return self._given_version
+            if self._index == 0:
+                return self._given_version
 
         # mp3 "container" does not know the version, so it has to be checked
         # from the first stream
