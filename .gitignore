@@ -28,3 +28,4 @@ rpmbuild
 .tox
 venv*/
 junit*.xml
+.coverage.*
