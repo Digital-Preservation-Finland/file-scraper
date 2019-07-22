@@ -87,7 +87,10 @@ class CsvScraper(BaseScraper):
                     self.streams.append(md_class({"delimiter": delimiter,
                                                   "separator": separator,
                                                   "fields": fields,
-                                                  "first_line": first_line}))
+                                                  "first_line": first_line},
+                                                 self._given_mimetype,
+                                                 self._given_version))
+
         except IOError as err:
             self._errors.append("Error when reading the file: " +
                                 six.text_type(err))
