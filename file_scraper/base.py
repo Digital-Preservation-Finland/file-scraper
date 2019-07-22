@@ -32,7 +32,7 @@ class BaseScraper(object):
         self._params = params if params is not None else {}
 
         self._given_mimetype = self._params.get("mimetype", None)
-        self._given_version = self._params.get("versioN", None)
+        self._given_version = self._params.get("version", None)
         if self._given_mimetype:
             if self._given_version:
                 self._messages.append("MIME type and version not scraped, "
@@ -102,16 +102,20 @@ class BaseScraper(object):
         if mimetype is None:
             self._errors.append("None is not a supported MIME type.")
 
-        if allow_unav_mime and mimetype == "(:unav)":
-            return
-        if allow_unav_version and version == "(:unav)":
-            return
-        if allow_unap_version and version == "(:unap)":
+        if mimetype == "(:unav)" and allow_unav_mime:
             return
 
         for md_class in self._supported_metadata:
             if mimetype in md_class.supported_mimetypes():
+                # version is in the list of supported versions
                 if version in md_class.supported_mimetypes()[mimetype]:
+                    return
+                # all versions are supported
+                if not md_class.supported_mimetypes()[mimetype]:
+                    return
+                # version is (:unav) or (:unap) but that is allowed
+                if ((allow_unav_version and version == "(:unav)") or
+                        (allow_unap_version and version == "(:unap)")):
                     return
 
         # No supporting metadata models found.
