@@ -8,6 +8,9 @@ This module tests:
     - That messages and errors are returned properly.
     - That scraper attributes and well_formed property are set and retrieved
       correctly
+    - That overriding MIME type and/or version scraping by giving them as
+      parameters is possible, but giving version without MIME type has no
+      effect.
 """
 from __future__ import unicode_literals
 
@@ -52,7 +55,8 @@ class BaseScraperBasic(BaseScraper):
 
     def scrape_file(self):
         """Do nothing, scraping not needed here."""
-        pass
+        self.streams.append(BaseMetaBasic(self._params.get("mimetype", None),
+                                          self._params.get("version", None)))
 
 
 class BaseMetaVersion(BaseMeta):
@@ -145,6 +149,35 @@ def test_scraper_properties():
     assert scraper.well_formed is None
     scraper._errors.append("error")
     assert scraper.well_formed is None
+
+
+@pytest.mark.parametrize(
+    ["given_mimetype", "given_version", "expected_mimetype",
+     "expected_version", "expected_message"],
+    [
+        (None, None, "(:unav)", "(:unav)", None),
+        ("test/override", "99.9", "test/override", "99.9",
+         "MIME type and version not scraped, using user-supplied"),
+        ("test/override", None, "test/override", "(:unav)",
+         "MIME type not scraped, using user-supplied value."),
+        (None, "99.9", "(:unav)", "(:unav)", None)
+    ]
+)
+def test_overriding_filetype(given_mimetype, given_version, expected_mimetype,
+                             expected_version, expected_message):
+    """
+    Test forcing the base scraper to use certain MIME type and/or version.
+    """
+    scraper = BaseScraperBasic("testfilename",
+                               params={"mimetype": given_mimetype,
+                                       "version": given_version})
+    scraper.scrape_file()
+    assert scraper.streams[0].mimetype() == expected_mimetype
+    assert scraper.streams[0].version() == expected_version
+    if expected_message:
+        assert expected_message in scraper.messages()
+    else:
+        assert not scraper.messages()
 
 
 class BaseMetaCustom(BaseMeta):
