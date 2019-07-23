@@ -17,7 +17,8 @@ class ScraperNotFound(BaseScraper):
         """No need to scrape anything, just collect."""
         self._messages.append("Proper scraper was not found. "
                               "The file was not analyzed.")
-        self.streams.append(DummyMeta(self._errors))
+        self.streams.append(DummyMeta(self._given_mimetype,
+                                      self._given_version))
 
     @property
     def well_formed(self):
@@ -42,7 +43,8 @@ class FileExists(BaseScraper):
             self._errors.append(
                 "File {} does not exist.".format(decode_path(self.filename))
             )
-        self.streams.append(DummyMeta(self._errors))
+        self.streams.append(DummyMeta(self._given_mimetype,
+                                      self._given_version))
 
     @property
     def well_formed(self):
