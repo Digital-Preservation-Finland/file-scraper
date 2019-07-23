@@ -1,13 +1,16 @@
 """Metadata model for FFMpeg scraper."""
 from __future__ import unicode_literals
 
-import re
-from fractions import Fraction
-
 import six
 
-from file_scraper.base import BaseMeta, SkipElementException
-from file_scraper.utils import metadata, strip_zeros
+from file_scraper.base import BaseMeta
+from file_scraper.utils import metadata
+
+# These would be needed if FFMpegMeta was used
+# import re
+# from fractions import Fraction
+# from file_scraper.base import SkipElementException
+# from file_scraper.utils import strip_zeros
 
 
 class FFMpegSimpleMeta(BaseMeta):
@@ -33,6 +36,8 @@ class FFMpegSimpleMeta(BaseMeta):
         return "(:unav)"
 
 
+# This metadata model is not currently used, but could be enabled later
+r'''
 class FFMpegMeta(BaseMeta):
     """
     Metadata model for a selection of video files.
@@ -320,3 +325,4 @@ class FFMpegMeta(BaseMeta):
         if "bits_per_raw_sample" in self._ffmpeg_stream is not None:
             return six.text_type(self._ffmpeg_stream["bits_per_raw_sample"])
         return "(:unav)"
+'''

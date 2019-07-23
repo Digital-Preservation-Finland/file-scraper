@@ -42,6 +42,7 @@ This module tests that:
       not checked.
     - If scraping is done without well-formedness check, an error is recorded
       and no metadata is scraped.
+    - Forcing MIME type and/or version works.
 """
 from __future__ import unicode_literals
 
@@ -220,3 +221,54 @@ def test_is_supported_mpeg(mime, ver):
     assert not FFMpegScraper.is_supported(mime, ver, False)
     assert FFMpegScraper.is_supported(mime, "foo", True)
     assert not FFMpegScraper.is_supported("foo", ver, True)
+
+
+@pytest.mark.parametrize(
+    ["filename", "result_dict", "mimetype", "filetype"],
+    [
+        ("valid_4_ffv1.mkv", {
+            "purpose": "Test not forcing either MIME type or version",
+            "stdout_part": "The file was analyzed successfully",
+            "stderr_part": ""}, "video/x-matroska",
+         {"given_mimetype": None, "given_version": None,
+          "expected_mimetype": "(:unav)", "expected_version": "(:unav)"}),
+        ("valid_4_ffv1.mkv", {
+            "purpose": "Test forcing MIME type",
+            "stdout_part": "MIME type not scraped",
+            "stderr_part": "is not supported"}, "video/x-matroska",
+         {"given_mimetype": "custom/mime", "given_version": None,
+          "expected_mimetype": "custom/mime", "expected_version": "(:unav)"}),
+        ("valid_4_ffv1.mkv", {
+            "purpose": "Test forcing MIME type and version",
+            "stdout_part": "MIME type and version not scraped",
+            "stderr_part": ""}, "video/x-matroska",
+         {"given_mimetype": "custom/mime", "given_version": "99.9",
+          "expected_mimetype": "custom/mime", "expected_version": "99.9"}),
+        ("valid_4_ffv1.mkv", {
+            "purpose": "Test forcing version (should have no effect)",
+            "stdout_part": "The file was analyzed successfully",
+            "stderr_part": ""}, "video/x-matroska",
+         {"given_mimetype": None, "given_version": "99.9",
+          "expected_mimetype": "(:unav)", "expected_version": "(:unav)"}),
+    ]
+)
+def test_forcing_filetype(filename, result_dict, mimetype, filetype,
+                          evaluate_scraper):
+    """Test forcing scraper to use a given MIME type and/or version."""
+    correct = parse_results(filename, mimetype, result_dict, True)
+    params = correct.params
+    params.update({"mimetype": filetype["given_mimetype"],
+                   "version": filetype["given_version"]})
+    scraper = FFMpegScraper(correct.filename, True, params)
+    scraper.scrape_file()
+
+    correct.mimetype = filetype["expected_mimetype"]
+    correct.version = filetype["expected_version"]
+    correct.streams[0]["mimetype"] = correct.mimetype
+    correct.streams[0]["version"] = correct.version
+    correct.streams[0]["stream_type"] = "(:unav)"
+
+    if correct.mimetype != "(:unav)":
+        correct.well_formed = False
+
+    evaluate_scraper(scraper, correct)
