@@ -13,11 +13,15 @@ class DpxMeta(BaseMeta):
     # pylint: disable=no-self-use
     @metadata()
     def mimetype(self):
+        if self._given_mimetype:
+            return self._given_mimetype
         return "image/x-dpx"
 
     @metadata()
     def version(self):
         """Return version."""
+        if self._given_mimetype and self._given_version:
+            return self._given_version
         return "2.0"
 
     @metadata()

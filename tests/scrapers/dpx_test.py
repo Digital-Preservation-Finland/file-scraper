@@ -11,6 +11,7 @@ This module tests that:
         - last byte of the file is missing
         - header reports little-endian order but contents of the file are
           big-endian
+    - forcing MIME type and/or version works.
     - when check_wellformed is set to False, well-formedness is reported as
       None and scraper messages report skipped scraping.
     - the scraper reports MIME type 'image/x-dpx' with version 2.0 as
@@ -60,6 +61,56 @@ def test_scraper(filename, result_dict, evaluate_scraper):
                             result_dict, True)
     scraper = DpxScraper(correct.filename, True, correct.params)
     scraper.scrape_file()
+
+    evaluate_scraper(scraper, correct)
+
+
+@pytest.mark.parametrize(
+    ["filename", "result_dict", "filetype"],
+    [
+        ("valid_2.0.dpx", {
+            "purpose": "Test not giving either MIME type or version.",
+            "stdout_part": "is valid",
+            "stderr_part": ""},
+         {"given_mimetype": None, "given_version": None,
+          "expected_mimetype": "image/x-dpx", "expected_version": "2.0"}),
+        ("valid_2.0.dpx", {
+            "purpose": "Test forcing MIME type.",
+            "stdout_part": "MIME type not scraped",
+            "stderr_part": "is not supported"},
+         {"given_mimetype": "forced/mimetype", "given_version": None,
+          "expected_mimetype": "forced/mimetype", "expected_version": "2.0"}),
+        ("valid_2.0.dpx", {
+            "purpose": "Test forcing MIME type and version.",
+            "stdout_part": "MIME type and version not scraped",
+            "stderr_part": "is not supported"},
+         {"given_mimetype": "forced/mimetype", "given_version": "99.9",
+          "expected_mimetype": "forced/mimetype", "expected_version": "99.9"}),
+        ("valid_2.0.dpx", {
+            "purpose": "Test forcing only version (no effect).",
+            "stdout_part": "is valid",
+            "stderr_part": ""},
+         {"given_mimetype": None, "given_version": "99.9",
+          "expected_mimetype": "image/x-dpx", "expected_version": "2.0"}),
+    ]
+)
+def test_forcing_filetype(filename, result_dict, filetype, evaluate_scraper):
+    """Test forcing scraper to use a given MIME type and/or version."""
+    correct = parse_results(filename, MIMETYPE,
+                            result_dict, True)
+    params = correct.params
+    params.update({"mimetype": filetype["given_mimetype"],
+                   "version": filetype["given_version"]})
+    scraper = DpxScraper(correct.filename, True, params)
+    scraper.scrape_file()
+
+    correct.mimetype = filetype["expected_mimetype"]
+    correct.version = filetype["expected_version"]
+    correct.streams[0]["mimetype"] = correct.mimetype
+    correct.streams[0]["version"] = correct.version
+
+    if correct.mimetype != "image/x-dpx":
+        correct.well_formed = False
 
     evaluate_scraper(scraper, correct)
 

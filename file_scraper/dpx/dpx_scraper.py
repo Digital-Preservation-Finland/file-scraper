@@ -29,7 +29,8 @@ class DpxScraper(BaseScraper):
             self._messages.append(ensure_text(shell.stdout))
 
         for md_class in self._supported_metadata:
-            self.streams.append(md_class())
+            self.streams.append(md_class(self._given_mimetype,
+                                         self._given_version))
 
         self._check_supported()
 
