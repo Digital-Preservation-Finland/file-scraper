@@ -275,10 +275,8 @@ def test_forcing_filetype(filename, result_dict, mimetype, filetype,
     scraper = FFMpegScraper(correct.filename, True, params)
     scraper.scrape_file()
 
-    correct.mimetype = filetype["expected_mimetype"]
-    correct.version = filetype["expected_version"]
-    correct.streams[0]["mimetype"] = correct.mimetype
-    correct.streams[0]["version"] = correct.version
+    correct.update_mimetype(filetype["expected_mimetype"])
+    correct.update_version(filetype["expected_version"])
     correct.streams[0]["stream_type"] = "(:unav)"
 
     if correct.mimetype not in ["(:unav)", "video/x-matroska"]:

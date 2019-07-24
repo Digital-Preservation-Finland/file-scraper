@@ -187,9 +187,8 @@ def test_scraper(testpath, csv_text, result_dict, prefix, header,
     words = outfile.name.rsplit('/', 1)
     correct = parse_results(words[1], '', result_dict,
                             True, basepath=words[0])
-    correct.mimetype = mimetype
-    correct.streams[0]['mimetype'] = mimetype
-    correct.streams[0]['version'] = version
+    correct.update_mimetype(mimetype)
+    correct.update_version(version)
     if mimetype != 'text/csv':
         correct.well_formed = False
 

@@ -116,10 +116,8 @@ def test_forcing_filetype(filename, result_dict, filetype, evaluate_scraper):
     scraper = DpxScraper(correct.filename, True, params)
     scraper.scrape_file()
 
-    correct.mimetype = filetype["expected_mimetype"]
-    correct.version = filetype["expected_version"]
-    correct.streams[0]["mimetype"] = correct.mimetype
-    correct.streams[0]["version"] = correct.version
+    correct.update_mimetype(filetype["expected_mimetype"])
+    correct.update_version(filetype["expected_version"])
 
     if correct.mimetype != "image/x-dpx":
         correct.well_formed = False
