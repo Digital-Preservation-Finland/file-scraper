@@ -171,6 +171,8 @@ class JHoveJpegMeta(JHoveBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
+        if self._given_mimetype and self._given_version:
+            return self._given_version
         return "(:unav)"
 
     @metadata()

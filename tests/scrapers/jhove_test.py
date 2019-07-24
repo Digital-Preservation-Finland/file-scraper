@@ -88,6 +88,8 @@ This module tests that:
         - application/xhtml+xml, 1.0
     - Utf8JHove reports MIME type text/plain with "", None or a made up version
       as not supported, as well as a made up MIME type.
+
+    - Forcing MIME types and/or versions works.
 """
 from __future__ import unicode_literals
 
@@ -279,7 +281,7 @@ def test_scraper_jpeg(filename, result_dict, evaluate_scraper):
                             result_dict, True)
     scraper = JHoveJpegScraper(correct.filename, True, correct.params)
     scraper.scrape_file()
-    correct.version = None
+    correct.version = "(:unav)"
     correct.streams[0]["version"] = "(:unav)"
 
     evaluate_scraper(scraper, correct)
@@ -483,3 +485,189 @@ def test_is_supported_utf8(mime, ver, class_):
     assert not class_.is_supported(mime, ver, False)
     assert not class_.is_supported(mime, "foo", True)
     assert not class_.is_supported("foo", ver, True)
+
+
+@pytest.mark.parametrize(
+    ["filename", "scraper_class", "result_dict", "filetype"],
+    [
+        ("valid_1987a.gif", JHoveGifScraper,
+         {"purpose": "Test forcing correct MIME type and version for gif",
+          "stdout_part": "MIME type and version not scraped, using",
+          "stderr_part": ""},
+         {"given_mimetype": "image/gif", "given_version": "1987a",
+          "expected_mimetype": "image/gif", "expected_version": "1987a",
+          "correct_mimetype": "image/gif"}),
+        ("valid_1987a.gif", JHoveGifScraper,
+         {"purpose": "Test forcing supported but erroneous file type",
+          "stdout_part": "Well-Formed and valid",
+          "stderr_part": ""},
+         {"given_mimetype": "image/gif", "given_version": "1989a",
+          "expected_mimetype": "image/gif", "expected_version": "1989a",
+          "correct_mimetype": "image/gif"}),
+        ("valid_1987a.gif", JHoveGifScraper,
+         {"purpose": "Test forcing wrong MIME type and version for gif",
+          "stdout_part": "MIME type and version not scraped, using",
+          "stderr_part": "not supported by this scraper"},
+         {"given_mimetype": "wrong/mime", "given_version": "0",
+          "expected_mimetype": "wrong/mime", "expected_version": "0",
+          "correct_mimetype": "image/gif"}),
+        ("valid_1987a.gif", JHoveGifScraper,
+         {"purpose": "Test forcing only version for gif",
+          "stdout_part": "Well-Formed and valid",
+          "stderr_part": ""},
+         {"given_mimetype": None, "given_version": "0",
+          "expected_mimetype": "image/gif", "expected_version": "1987a",
+          "correct_mimetype": "image/gif"}),
+        ("valid_6.0.tif", JHoveTiffScraper,
+         {"purpose": "Test forcing correct MIME type and version for tiff.",
+          "stdout_part": "MIME type and version not scraped, using",
+          "stderr_part": ""},
+         {"given_mimetype": "image/tiff", "given_version": "6.0",
+          "expected_mimetype": "image/tiff", "expected_version": "6.0",
+          "correct_mimetype": "image/tiff"}),
+        ("valid_6.0.tif", JHoveTiffScraper,
+         {"purpose": "Test forcing wrong MIME type for tiff.",
+          "stdout_part": "MIME type and version not scraped, using",
+          "stderr_part": "not supported by this scraper"},
+         {"given_mimetype": "wrong/mime", "given_version": "6.0",
+          "expected_mimetype": "wrong/mime", "expected_version": "6.0",
+          "correct_mimetype": "image/tiff"}),
+        ("valid_6.0.tif", JHoveTiffScraper,
+         {"purpose": "Test forcing only version for tiff.",
+          "stdout_part": "Well-Formed and valid",
+          "stderr_part": ""},
+         {"given_mimetype": None, "given_version": "99.9",
+          "expected_mimetype": "image/tiff", "expected_version": "6.0",
+          "correct_mimetype": "image/tiff"}),
+        ("valid_1.4.pdf", JHovePdfScraper,
+         {"purpose": "Test forcing the correct MIME type and version.",
+          "stdout_part": "MIME type and version not scraped, using",
+          "stderr_part": ""},
+         {"given_mimetype": "application/pdf", "given_version": "1.4",
+          "expected_mimetype": "application/pdf", "expected_version": "1.4",
+          "correct_mimetype": "application/pdf"}),
+        ("valid_1.4.pdf", JHovePdfScraper,
+         {"purpose": "Test forcing supported but wrong file type.",
+          "stdout_part": "MIME type and version not scraped, using",
+          "stderr_part": ""},
+         {"given_mimetype": "application/pdf", "given_version": "1.2",
+          "expected_mimetype": "application/pdf", "expected_version": "1.2",
+          "correct_mimetype": "application/pdf"}),
+        ("valid_1.4.pdf", JHovePdfScraper,
+         {"purpose": "Test forcing unsupported MIME type.",
+          "stdout_part": "MIME type not scraped, using",
+          "stderr_part": "not supported"},
+         {"given_mimetype": "wrong/mime", "given_version": None,
+          "expected_mimetype": "wrong/mime", "expected_version": "1.4",
+          "correct_mimetype": "application/pdf"}),
+        ("valid_1.4.pdf", JHovePdfScraper,
+         {"purpose": "Test forcing only version.",
+          "stdout_part": "Well-Formed and valid",
+          "stderr_part": ""},
+         {"given_mimetype": None, "given_version": "99.9",
+          "expected_mimetype": "application/pdf", "expected_version": "1.4",
+          "correct_mimetype": "application/pdf"}),
+        ("valid_1.01.jpg", JHoveJpegScraper,
+         {"purpose": "Forcing correct MIME type and version for jpeg files",
+          "stdout_part": "MIME type and version not scraped, using",
+          "stderr_part": ""},
+         {"given_mimetype": "image/jpeg", "given_version": "1.01",
+          "expected_mimetype": "image/jpeg", "expected_version": "1.01",
+          "correct_mimetype": "image/jpeg"}),
+        ("valid_1.01.jpg", JHoveJpegScraper,
+         {"purpose": "Forcing unsupported MIME type and version for jpg files",
+          "stdout_part": "MIME type and version not scraped, using",
+          "stderr_part": ""},
+         {"given_mimetype": "wrong/mime", "given_version": "99",
+          "expected_mimetype": "wrong/mime", "expected_version": "99",
+          "correct_mimetype": "image/jpeg"}),
+        ("valid_1.01.jpg", JHoveJpegScraper,
+         {"purpose": "Forcing only version for jpeg files",
+          "stdout_part": "Well-Formed and valid",
+          "stderr_part": ""},
+         {"given_mimetype": None, "given_version": "99",
+          "expected_mimetype": "image/jpeg", "expected_version": "(:unav)",
+          "correct_mimetype": "image/jpeg"}),
+        ("valid_1.01.jpg", JHoveJpegScraper,
+         {"purpose": "Forcing only MIME type for jpeg files",
+          "stdout_part": "MIME type not scraped",
+          "stderr_part": ""},
+         {"given_mimetype": "image/jpeg", "given_version": None,
+          "expected_mimetype": "image/jpeg", "expected_version": "(:unav)",
+          "correct_mimetype": "image/jpeg"}),
+        ("valid_4.01.html", JHoveHtmlScraper,
+         {"purpose": "Forcing correct MIME type and version for html file",
+          "stdout_part": "MIME type and version not scraped, using",
+          "stderr_part": ""},
+         {"given_mimetype": "text/html", "given_version": "4.01",
+          "expected_mimetype": "text/html", "expected_version": "4.01",
+          "correct_mimetype": "text/html"}),
+        ("valid_4.01.html", JHoveHtmlScraper,
+         {"purpose": "Forcing wrong but supported file type for html file",
+          "stdout_part": "MIME type and version not scraped, using",
+          "stderr_part": ""},
+         {"given_mimetype": "application/xhtml+xml", "given_version": "1.0",
+          "expected_mimetype": "application/xhtml+xml",
+          "expected_version": "1.0",
+          "correct_mimetype": "application/xhtml+xmp"}),
+        ("valid_4.01.html", JHoveHtmlScraper,
+         {"purpose": "Forcing unsupported MIME type for html file",
+          "stdout_part": "MIME type not scraped, using",
+          "stderr_part": ""},
+         {"given_mimetype": "text/plain", "given_version": None,
+          "expected_mimetype": "text/plain", "expected_version": "4.01",
+          "correct_mimetype": "text/html"}),
+        ("valid_4.01.html", JHoveHtmlScraper,
+         {"purpose": "Forcing only version for html file",
+          "stdout_part": "Well-Formed and valid",
+          "stderr_part": ""},
+         {"given_mimetype": None, "given_version": "99",
+          "expected_mimetype": "text/html", "expected_version": "4.01",
+          "correct_mimetype": "text/html"}),
+        ("valid__wav.wav", JHoveWavScraper,
+         {"purpose": "Forcing supported MIME type and version for wav files",
+          "stdout_part": "MIME type and version not scraped",
+          "stderr_part": ""},
+         {"given_mimetype": "audio/x-wav", "given_version": "2",
+          "expected_mimetype": "audio/x-wav", "expected_version": "2",
+          "correct_mimetype": "audio/x-wav"}),
+        ("valid__wav.wav", JHoveWavScraper,
+         {"purpose": "Forcing unsupported MIME type for wav files",
+          "stdout_part": "MIME type not scraped",
+          "stderr_part": ""},
+         {"given_mimetype": "wrong/mime", "given_version": None,
+          "expected_mimetype": "wrong/mime", "expected_version": "(:unav)",
+          "correct_mimetype": "audio/x-wav"}),
+        ("valid__wav.wav", JHoveWavScraper,
+         {"purpose": "Forcing only version for wav files",
+          "stdout_part": "Well-Formed and valid",
+          "stderr_part": ""},
+         {"given_mimetype": None, "given_version": "99",
+          "expected_mimetype": "audio/x-wav", "expected_version": "(:unav)",
+          "correct_mimetype": "audio/x-wav"}),
+    ]
+)
+def test_forced_filetype(filename, scraper_class, result_dict, filetype,
+                         evaluate_scraper):
+    """
+    Test all JHove scrapers with supported and unsupported forced filetypes.
+
+    At least forcing the corrext MIME type and version (well-formed),
+    usupported MIME type (not well-formed, the wrong MIME type reported) and
+    forcing only the version (no effect on scraping results) are tested.
+    """
+    correct = parse_results(filename, filetype["correct_mimetype"],
+                            result_dict, True)
+    params = {"mimetype": filetype["given_mimetype"],
+              "version": filetype["given_version"]}
+    scraper = scraper_class(correct.filename, True, params)
+    scraper.scrape_file()
+
+    correct.update_mimetype(filetype["expected_mimetype"])
+    correct.update_version(filetype["expected_version"])
+
+    if correct.mimetype != filetype["correct_mimetype"]:
+        correct.well_formed = False
+        correct.streams = {}
+
+    evaluate_scraper(scraper, correct)
