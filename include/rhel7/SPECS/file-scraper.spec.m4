@@ -9,7 +9,7 @@
 %define file_build_number M4_FILE_BUILD_NUMBER
 %define file_commit_ref M4_FILE_COMMIT_REF
 
-Name:           file-scraper
+Name:           file-scraper-core
 Version:        %{file_version}
 Release:        %{file_release_number}%{file_release_tag}.%{file_build_number}.git%{file_commit_ref}%{?dist}
 Summary:        File scraper analysis tool
@@ -20,30 +20,24 @@ Source0:        %{file_prefix}-v%{file_version}%{?file_release_tag}-%{file_build
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 BuildRequires:  python-setuptools
-
-%package light
-Summary: 	Light file scraper analysis tool
-Group:          Applications/Archiving
 Requires:	python python2-pymediainfo python-pillow python-magic python-opf-fido
 Requires:       python-wand >= 0.5.1
+Conflicts:      file-scraper-full < %{version}-%{release}, file-scraper-full > %{version}-%{release}
 
-%package full
-Summary: 	Full file scraper analysis tool
+%package -n file-scraper-full
+Summary: 	File scraper analysis tool - full installation
 Group:          Applications/Archiving
-Requires:       python python2-pymediainfo python-pillow python-magic python-opf-fido
-Requires:       python-wand >= 0.5.1
+Conflicts:      %{name} < %{version}-%{release}, %{name} > %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 Requires:       ffmpeg-python ffmpeg ghostscript jhove python-lxml veraPDF dpx-validator
 Requires:       warc-tools >= 4.8.3
 Requires:       pngcheck libreoffice pspp file-5.30 xhtml1-dtds vnu iso-schematron-xslt1
 
 %description
-File scraper analysis tool - light and full versions
+File scraper: Basic file detector and metadata collector tools
 
-%description light
-File scraper light: File detector and metadata collector
-
-%description full
-File scraper full: File detector, metadata collector and well-formed checker tool
+%description -n file-scraper-full
+File scraper full: File detector, metadata collector and well-formed checker tools
 
 %prep
 %setup -n %{file_prefix}-v%{file_version}%{?file_release_tag}-%{file_build_number}-g%{file_commit_ref}
@@ -57,11 +51,11 @@ make install PREFIX="%{_prefix}" ROOT="%{buildroot}"
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%files light -f INSTALLED_FILES
+%files -f INSTALLED_FILES
 %defattr(-,root,root,-)
 
-%files full -f INSTALLED_FILES
-%defattr(-,root,root,-)
+# 'full' only contains dependencies and is thus empty
+%files -n file-scraper-full
 
 # TODO: For now changelog must be last, because it is generated automatically
 # from git log command. Appending should be fixed to happen only after %changelog macro
