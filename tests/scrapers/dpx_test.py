@@ -75,7 +75,19 @@ def test_scraper(filename, result_dict, evaluate_scraper):
          {"given_mimetype": None, "given_version": None,
           "expected_mimetype": "image/x-dpx", "expected_version": "2.0"}),
         ("valid_2.0.dpx", {
-            "purpose": "Test forcing MIME type.",
+            "purpose": "Test forcing the correct MIME type.",
+            "stdout_part": "MIME type not scraped",
+            "stderr_part": ""},
+         {"given_mimetype": "image/x-dpx", "given_version": None,
+          "expected_mimetype": "image/x-dpx", "expected_version": "2.0"}),
+        ("valid_2.0.dpx", {
+            "purpose": "Test forcing supported MIME type and version.",
+            "stdout_part": "MIME type and version not scraped",
+            "stderr_part": ""},
+         {"given_mimetype": "image/x-dpx", "given_version": "2.0",
+          "expected_mimetype": "image/x-dpx", "expected_version": "2.0"}),
+        ("valid_2.0.dpx", {
+            "purpose": "Test forcing unsupported MIME type.",
             "stdout_part": "MIME type not scraped",
             "stderr_part": "is not supported"},
          {"given_mimetype": "forced/mimetype", "given_version": None,

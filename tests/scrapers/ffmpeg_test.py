@@ -233,7 +233,20 @@ def test_is_supported_mpeg(mime, ver):
          {"given_mimetype": None, "given_version": None,
           "expected_mimetype": "(:unav)", "expected_version": "(:unav)"}),
         ("valid_4_ffv1.mkv", {
-            "purpose": "Test forcing MIME type",
+            "purpose": "Test forcing a supported MIME type",
+            "stdout_part": "MIME type not scraped",
+            "stderr_part": ""}, "video/x-matroska",
+         {"given_mimetype": "video/x-matroska", "given_version": None,
+          "expected_mimetype": "video/x-matroska",
+          "expected_version": "(:unav)"}),
+        ("valid_4_ffv1.mkv", {
+            "purpose": "Test forcing a supported MIME type and version",
+            "stdout_part": "MIME type and version not scraped",
+            "stderr_part": ""}, "video/x-matroska",
+         {"given_mimetype": "video/x-matroska", "given_version": "4",
+          "expected_mimetype": "video/x-matroska", "expected_version": "4"}),
+        ("valid_4_ffv1.mkv", {
+            "purpose": "Test forcing unsupported MIME type",
             "stdout_part": "MIME type not scraped",
             "stderr_part": "is not supported"}, "video/x-matroska",
          {"given_mimetype": "custom/mime", "given_version": None,
@@ -268,7 +281,7 @@ def test_forcing_filetype(filename, result_dict, mimetype, filetype,
     correct.streams[0]["version"] = correct.version
     correct.streams[0]["stream_type"] = "(:unav)"
 
-    if correct.mimetype != "(:unav)":
+    if correct.mimetype not in ["(:unav)", "video/x-matroska"]:
         correct.well_formed = False
 
     evaluate_scraper(scraper, correct)
