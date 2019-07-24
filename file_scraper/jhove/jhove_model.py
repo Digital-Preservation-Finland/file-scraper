@@ -50,17 +50,6 @@ class JHoveBaseMeta(BaseMeta):
             return self._given_mimetype
         return get_field(self._report, "mimeType")
 
-    @metadata()
-    def version(self):
-        """Return version given by JHove."""
-        if self._given_mimetype and self._given_version:
-            return self._given_version
-
-        version = get_field(self._report, "version")
-        if version:
-            return version
-        return "(:unav)"
-
 
 class JHoveGifMeta(JHoveBaseMeta):
     """Metadata model for gif files scraped with JHove"""
