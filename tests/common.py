@@ -37,6 +37,30 @@ class Correct(object):
         self.well_formed = None
         self.params = {}
 
+    def update_mimetype(self, new_mimetype):
+        """
+        Changes the MIME type of the object.
+
+        This can be needed e.g. when forced file types are tested. If streams
+        were found, the mimetype in the first stream is also set in addition to
+        the mimetype variable.
+        """
+        self.mimetype = new_mimetype
+        if self.streams:
+            self.streams[0]["mimetype"] = new_mimetype
+
+    def update_version(self, new_version):
+        """
+        Changes the version of the object.
+
+        This can be needed e.g. when forced file types are tested. If streams
+        were found, the version in the first stream is also set in addition to
+        the version variable.
+        """
+        self.version = new_version
+        if self.streams:
+            self.streams[0]["version"] = new_version
+
 
 def parse_results(filename, mimetype, results, check_wellformed,
                   params=None, basepath="tests/data"):
