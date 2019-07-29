@@ -15,6 +15,7 @@ This module tests that:
     - A correct MIME type with made up version is reported as supported for
       text/xml files but not for text/html files.
     - A made up MIME type with correct version is reported as not supported.
+    - Forcing MIME type and/or version works.
 """
 from __future__ import unicode_literals
 
@@ -25,6 +26,7 @@ from io import open
 import pytest
 
 from file_scraper.lxml.lxml_scraper import LxmlScraper
+from tests.common import parse_results, force_correct_filetype
 
 
 @pytest.mark.parametrize(
@@ -88,3 +90,51 @@ def test_is_supported_deny():
     assert not LxmlScraper.is_supported(mime, ver, False)
     assert not LxmlScraper.is_supported(mime, "foo", True)
     assert not LxmlScraper.is_supported("foo", ver, True)
+
+
+@pytest.mark.parametrize(
+    ["filename", "result_dict", "filetype"],
+    [
+        ("valid_1.0_xsd.xml",
+         {"purpose": "Test forcing correct MIME type and version",
+          "stdout_part": "MIME type and version not scraped, using",
+          "stderr_part": ""},
+         {"given_mimetype": "text/xml", "given_version": "1.0",
+          "expected_mimetype": "text/xml", "expected_version": "1.0",
+          "correct_mimetype": "text/xml"}),
+        ("valid_1.0_xsd.xml",
+         {"purpose": "Test forcing correct MIME type",
+          "stdout_part": "MIME type not scraped, using",
+          "stderr_part": ""},
+         {"given_mimetype": "text/xml", "given_version": None,
+          "expected_mimetype": "text/xml", "expected_version": "(:unav)",
+          "correct_mimetype": "text/xml"}),
+        ("valid_1.0_xsd.xml",
+         {"purpose": "Test forcing version only (no effect)",
+          "stdout_part": "Encoding metadata found.",
+          "stderr_part": ""},
+         {"given_mimetype": None, "given_version": "1.0",
+          "expected_mimetype": "(:unav)", "expected_version": "(:unav)",
+          "correct_mimetype": "text/xml"}),
+        ("valid_1.0_xsd.xml",
+         {"purpose": "Test forcing wrong MIME type",
+          "stdout_part": "MIME type not scraped, using",
+          "stderr_part": "is not supported"},
+         {"given_mimetype": "unsupported/mime", "given_version": None,
+          "expected_mimetype": "unsupported/mime",
+          "expected_version": "(:unav)", "correct_mimetype": "text/xml"}),
+    ]
+)
+def test_forced_filetype(filename, result_dict, filetype, evaluate_scraper):
+    """
+    Test using user-supplied MIME-types and versions.
+    """
+    correct = force_correct_filetype(filename, result_dict,
+                                     filetype, ["(:unav)"])
+
+    params = {"mimetype": filetype["given_mimetype"],
+              "version": filetype["given_version"]}
+    scraper = LxmlScraper(correct.filename, True, params)
+    scraper.scrape_file()
+
+    evaluate_scraper(scraper, correct)
