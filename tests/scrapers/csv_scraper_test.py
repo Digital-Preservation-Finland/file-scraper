@@ -28,6 +28,7 @@ from __future__ import unicode_literals
 
 import os
 import pytest
+import six
 
 from file_scraper.csv.csv_model import CsvMeta
 from file_scraper.csv.csv_scraper import CsvScraper
@@ -249,7 +250,8 @@ def test_bad_parameters():
     with pytest.raises(ValueError) as err:
         # "separator" is missing from the keys
         CsvMeta({"delimiter": ",", "fields": [], "first_line": ""})
-    assert "CsvMeta must be given a dict containing keys" in err.value.message
+    assert ("CsvMeta must be given a dict containing keys" in
+            six.text_type(err.value))
 
 
 def test_nonexistent_file():
