@@ -29,7 +29,7 @@ from __future__ import unicode_literals
 import pytest
 
 from file_scraper.ghostscript.ghostscript_scraper import GhostscriptScraper
-from tests.common import parse_results
+from tests.common import parse_results, force_correct_filetype
 
 
 @pytest.mark.parametrize(
@@ -82,49 +82,47 @@ def test_scraper_pdf(filename, result_dict, evaluate_scraper):
             "stdout_part": "Well-Formed and valid",
             "stderr_part": ""},
          {"given_mimetype": None, "given_version": None,
-          "expected_mimetype": "(:unav)", "expected_version": "(:unav)"}),
+          "expected_mimetype": "(:unav)", "expected_version": "(:unav)",
+          "correct_mimetype": "application/pdf"}),
         ("valid_1.7.pdf", {
             "purpose": "Test forcing incompatible MIME type.",
             "stdout_part": "MIME type not scraped",
             "stderr_part": "is not supported"},
          {"given_mimetype": "custom/mime", "given_version": None,
-          "expected_mimetype": "custom/mime", "expected_version": "(:unav)"}),
+          "expected_mimetype": "custom/mime", "expected_version": "(:unav)",
+          "correct_mimetype": "application/pdf"}),
         ("valid_1.7.pdf", {
             "purpose": "Test forcing incompatible MIME type and version.",
             "stdout_part": "MIME type and version not scraped",
             "stderr_part": "is not supported"},
          {"given_mimetype": "custom/mime", "given_version": "99.9",
-          "expected_mimetype": "custom/mime", "expected_version": "99.9"}),
+          "expected_mimetype": "custom/mime", "expected_version": "99.9",
+          "correct_mimetype": "application/pdf"}),
         ("valid_1.7.pdf", {
             "purpose": "Test forcing only version (no effect).",
             "stdout_part": "Well-Formed and valid",
             "stderr_part": ""},
          {"given_mimetype": None, "given_version": "99.9",
-          "expected_mimetype": "(:unav)", "expected_version": "(:unav)"}),
+          "expected_mimetype": "(:unav)", "expected_version": "(:unav)",
+          "correct_mimetype": "application/pdf"}),
         ("valid_1.7.pdf", {
             "purpose": "Test forcing correct MIME type and version",
             "stdout_part": "Well-Formed and valid",
             "stderr_part": ""},
          {"given_mimetype": "application/pdf", "given_version": "1.7",
-          "expected_mimetype": "application/pdf", "expected_version": "1.7"}),
+          "expected_mimetype": "application/pdf", "expected_version": "1.7",
+          "correct_mimetype": "application/pdf"}),
     ]
 )
 def test_forcing_filetype(filename, result_dict, filetype, evaluate_scraper):
     """Test forcing scraper to use a given MIME type and/or version."""
-    correct = parse_results(filename, "application/pdf", result_dict, True)
-    params = correct.params
-    params.update({"mimetype": filetype["given_mimetype"],
-                   "version": filetype["given_version"]})
+    correct = force_correct_filetype(filename, result_dict,
+                                     filetype, "(:unav)")
+
+    params = {"mimetype": filetype["given_mimetype"],
+              "version": filetype["given_version"]}
     scraper = GhostscriptScraper(correct.filename, True, params)
     scraper.scrape_file()
-
-    correct.mimetype = filetype["expected_mimetype"]
-    correct.version = filetype["expected_version"]
-    correct.streams[0]["mimetype"] = correct.mimetype
-    correct.streams[0]["version"] = correct.version
-
-    if correct.mimetype not in ["(:unav)", "application/pdf"]:
-        correct.well_formed = False
 
     evaluate_scraper(scraper, correct)
 

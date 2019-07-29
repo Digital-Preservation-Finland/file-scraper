@@ -104,7 +104,7 @@ from file_scraper.jhove.jhove_scraper import (JHoveGifScraper,
                                               JHoveTiffScraper,
                                               JHoveUtf8Scraper,
                                               JHoveWavScraper)
-from tests.common import parse_results
+from tests.common import parse_results, force_correct_filetype
 
 
 @pytest.mark.parametrize(
@@ -656,18 +656,11 @@ def test_forced_filetype(filename, scraper_class, result_dict, filetype,
     usupported MIME type (not well-formed, the wrong MIME type reported) and
     forcing only the version (no effect on scraping results) are tested.
     """
-    correct = parse_results(filename, filetype["correct_mimetype"],
-                            result_dict, True)
+    correct = force_correct_filetype(filename, result_dict,
+                                     filetype)
     params = {"mimetype": filetype["given_mimetype"],
               "version": filetype["given_version"]}
     scraper = scraper_class(correct.filename, True, params)
     scraper.scrape_file()
-
-    correct.update_mimetype(filetype["expected_mimetype"])
-    correct.update_version(filetype["expected_version"])
-
-    if correct.mimetype != filetype["correct_mimetype"]:
-        correct.well_formed = False
-        correct.streams = {}
 
     evaluate_scraper(scraper, correct)

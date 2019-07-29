@@ -127,3 +127,43 @@ def parse_results(filename, mimetype, results, check_wellformed,
         correct.params = params
 
     return correct
+
+
+def force_correct_filetype(filename, result_dict, filetype,
+                           allowed_mimetypes=[]):
+    """
+    Create a Correct object for comparing to a scraper with forced file type.
+
+    Initialization is done normally, but the MIME type and version are then
+    updated to the expected values read from the filetype dict.
+
+    If the MIME type was forced to a value that does not correspond to the real
+    MIME type of the file and is not whitelisted by including in the
+    allowed_mimetypes list, correct.well_formed is set to False. This
+    corresponds to a scraper having scraped an unsupported MIME type. In this
+    case, correct.streams is also set to an empty dict, meaning that if the
+    object is used with evaluate_scraper() function from tests/conftest.py,
+    the possibly scraped streams are not checked. If stream comparison is
+    desired, either this function should not be used or the checking be done
+    manually.
+
+    :filename: Name of the file, not including the 'tests/data/mime_type/' part
+    :result_dict: Result dict to be given to Correct
+    :filetype: A dict containing the forced, expected and real file types under
+               the following keys:
+                * expected_mimetype: the expected resulting MIME type
+                * expected_version: the expected resulting version
+                * correct_mimetype: the real MIME type of the file
+    """
+    correct = parse_results(filename, filetype["correct_mimetype"],
+                            result_dict, True)
+
+    correct.update_mimetype(filetype["expected_mimetype"])
+    correct.update_version(filetype["expected_version"])
+
+    if (correct.mimetype != filetype["correct_mimetype"] and
+            correct.mimetype not in allowed_mimetypes):
+        correct.well_formed = False
+        correct.streams = {}
+
+    return correct
