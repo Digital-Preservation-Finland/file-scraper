@@ -83,6 +83,14 @@ This module tests that:
       would thus need to use the supplied MIME type from the dict, but the
       given MIME type does not match either of the types, an error is recorded,
       no metadata is scraped and the file is reported as not well-formed.
+    - Forcing MIME type and/or version works:
+        - messages are recorded
+        - forcing an unsupported MIME type causes an error
+        - only forcing version has no effect
+        - MIME type can be forced alone
+        - for metadata models that support multiple MIME types, using another
+          supported MIME type does not cause an error (see docstring of
+          test_mixed_filetype for details).
 """
 from __future__ import unicode_literals
 
@@ -92,7 +100,7 @@ import six
 from file_scraper.magic_scraper.magic_model import (HtmlFileMagicMeta,
                                                     OfficeFileMagicMeta)
 from file_scraper.magic_scraper.magic_scraper import MagicScraper
-from tests.common import parse_results
+from tests.common import parse_results, force_correct_filetype
 
 
 @pytest.mark.parametrize(
@@ -419,3 +427,181 @@ def test_is_supported_deny(mime, ver):
     assert MagicScraper.is_supported(mime, ver, False)
     assert not MagicScraper.is_supported(mime, "foo", True)
     assert not MagicScraper.is_supported("foo", ver, True)
+
+
+def run_filetype_test(filename, result_dict, filetype, evaluate_scraper):
+    """
+    Runs scraper result evaluation for a scraper with forced MIME type/version
+
+    :filename: Name of the file, not containing the tests/data/mime_type/ part
+    :result_dict: Result dict to be given to Correct
+    :filetype: A dict containing the forced, expected and real file types under
+               the following keys:
+                * given_mimetype: the forced MIME type
+                * given_version: the forced version
+                * expected_mimetype: the expected resulting MIME type
+                * expected_version: the expected resulting version
+                * correct_mimetype: the real MIME type of the file
+    """
+    correct = force_correct_filetype(filename, result_dict,
+                                     filetype)
+    if correct.mimetype == "application/xhtml+xml":
+        correct.streams[0]["stream_type"] = "text"
+
+    if filetype["given_mimetype"]:
+        mimetype_guess = filetype["given_mimetype"]
+    else:
+        mimetype_guess = filetype["correct_mimetype"]
+    params = {"mimetype": filetype["given_mimetype"],
+              "version": filetype["given_version"],
+              "mimetype_guess": mimetype_guess}
+    scraper = MagicScraper(correct.filename, True, params)
+    scraper.scrape_file()
+
+    evaluate_scraper(scraper, correct)
+
+
+@pytest.mark.parametrize(
+    ["filename", "mimetype", "version", "version_result"],
+    [
+        ("valid__utf8.txt", "text/plain", "(:unap)", "(:unap)"),
+        ("valid_1.0_well_formed.xml", "text/xml", "1.0", "1.0"),
+        ("valid_1.0.xhtml", "application/xhtml+xml", "1.0", "1.0"),
+        ("valid_4.01.html", "text/html", "4.01", "(:unav)"),
+        ("valid_1.7.pdf", "application/pdf", "1.7", "1.7"),
+        ("valid_1.1.odt", "application/vnd.oasis.opendocument.text", "1.1",
+         "(:unav)"),
+        ("valid_1.0.arc", "application/x-internet-archive", "1.0", "1.0"),
+        ("valid_1.2.png", "image/png", "1.2", "1.2"),
+        ("valid_1.01.jpg", "image/jpeg", "1.01", "1.01"),
+        ("valid.jp2", "image/jp2", "", ""),
+        ("valid_6.0_multiple_tiffs.tif", "image/tiff", "6.0", "6.0")
+    ]
+)
+def test_forced_filetype(filename, mimetype, version, version_result,
+                         evaluate_scraper):
+    """
+    Tests the simple cases of file type forcing.
+
+    Here, the following cases are tested for one file type scraped using each
+    metadata model class supported by MagicScraper:
+        - Force the scraper to use the correct MIME type and version, which
+          should always result in the given MIME type and version and the file
+          should be well-formed.
+        - Force the scraper to use the correct MIME type, which should always
+          result in the given MIME type and the version the metadata model
+          would normally return.
+        - Give forced version without MIME type, which should result in the
+          scraper running normally and not affect its results or messages.
+        - Force the scraper to use an unsupported MIME type, which should
+          result in an error message being logged and the scraper reporting
+          the file as not well-formed.
+    """
+    result_dict = {"purpose": "Test forcing correct MIME type and version",
+                   "stdout_part": "MIME type and version not scraped, using",
+                   "stderr_part": ""}
+    filetype_dict = {"given_mimetype": mimetype,
+                     "given_version": version,
+                     "expected_mimetype": mimetype,
+                     "expected_version": version,
+                     "correct_mimetype": mimetype}
+    # Forcing both MIME type and version can be tested only if version is
+    # not empty
+    if version:
+        run_filetype_test(filename, result_dict, filetype_dict,
+                          evaluate_scraper)
+
+    result_dict = {"purpose": "Test forcing correct MIME type without version",
+                   "stdout_part": "MIME type not scraped, using",
+                   "stderr_part": ""}
+    filetype_dict = {"given_mimetype": mimetype,
+                     "given_version": None,
+                     "expected_mimetype": mimetype,
+                     "expected_version": version_result,
+                     "correct_mimetype": mimetype}
+    run_filetype_test(filename, result_dict, filetype_dict, evaluate_scraper)
+
+    result_dict = {"purpose": "Test forcing version only (no effect)",
+                   "stdout_part": "The file was analyzed successfully",
+                   "stderr_part": ""}
+    filetype_dict = {"given_mimetype": None,
+                     "given_version": "99.9",
+                     "expected_mimetype": mimetype,
+                     "expected_version": version_result,
+                     "correct_mimetype": mimetype}
+    run_filetype_test(filename, result_dict, filetype_dict, evaluate_scraper)
+
+    result_dict = {"purpose": "Test forcing wrong MIME type",
+                   "stdout_part": "MIME type not scraped, using",
+                   "stderr_part": "Unsupported MIME type"}
+    filetype_dict = {"given_mimetype": "unsupported/mime",
+                     "given_version": None,
+                     "expected_mimetype": "unsupported/mime",
+                     "expected_version": version_result,
+                     "correct_mimetype": mimetype}
+    run_filetype_test(filename, result_dict, filetype_dict, evaluate_scraper)
+
+
+@pytest.mark.parametrize(
+    ["filename", "result_dict", "filetype"],
+    [
+        ("valid__utf8.txt",
+         {"purpose": "Test forcing text file to CSV file",
+          "stdout_part": "MIME type not scraped, using",
+          "stderr_part": ""},
+         {"given_mimetype": "text/csv", "given_version": None,
+          "expected_mimetype": "text/csv", "expected_version": "(:unap)",
+          "correct_mimetype": "text/plain"}),
+        ("valid_1.7.pdf",
+         {"purpose": "Test forcing wrong but supported version for pdf file",
+          "stdout_part": "MIME type and version not scraped, using",
+          "stderr_part": ""},
+         {"given_mimetype": "application/pdf", "given_version": "1.2",
+          "expected_mimetype": "application/pdf", "expected_version": "1.2",
+          "correct_mimetype": "application/pdf"}),
+        ("valid_1.1.ods",
+         {"purpose": "Test scraping and office file as another office type",
+          "stdout_part": "MIME type not scraped, using",
+          "stderr_part": ""},
+         {"given_mimetype": "application/vnd.oasis.opendocument.graphics",
+          "given_version": None,
+          "expected_mimetype":
+              "application/vnd.oasis.opendocument.graphics",
+          "expected_version": "(:unav)",
+          "correct_mimetype":
+              "application/vnd.oasis.opendocument.spreadsheet"}),
+    ]
+)
+def test_mixed_filetype(filename, result_dict, filetype, evaluate_scraper):
+    """
+    Test scraping files as wrong but supported file type.
+
+    Some metadata models support many file types. For example, OfficeMagicMeta
+    supports text, spreadsheet and presentation in both MS and open formats,
+    among other file types. A side effect of this is that it is entirely
+    possible to scrape e.g. an ods file as a doc (or xls) file by just forcing
+    the file type the scraper uses, and this does not produce errors and the
+    file is reported as well-formed.
+
+    Currently this does not cause problems if the user is aware of this
+    functionality, as no metadata scraping results are affected by it. This
+    test can hopefully catch if problematic metadata functions are
+    introduced in the future.
+    """
+    correct = parse_results(filename, filetype["correct_mimetype"],
+                            result_dict, True)
+    correct.update_mimetype(filetype["expected_mimetype"])
+    correct.update_version(filetype["expected_version"])
+
+    if filetype["given_mimetype"]:
+        mimetype_guess = filetype["given_mimetype"]
+    else:
+        mimetype_guess = filetype["correct_mimetype"]
+
+    params = {"mimetype": filetype["given_mimetype"],
+              "version": filetype["given_version"],
+              "mimetype_guess": mimetype_guess}
+    scraper = MagicScraper(correct.filename, True, params)
+    scraper.scrape_file()
+
+    evaluate_scraper(scraper, correct)
