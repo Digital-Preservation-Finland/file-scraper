@@ -89,6 +89,9 @@ class BinaryMagicBaseMeta(BaseMagicMeta):
     @metadata()
     def version(self):
         """Return version."""
+        if self._given_mimetype and self._given_version:
+            return self._given_version
+
         magic_version = super(BinaryMagicBaseMeta, self).version()
         if magic_version == "data":
             return None
@@ -101,6 +104,9 @@ class TextMagicBaseMeta(BaseMagicMeta):
     @metadata()
     def version(self):
         """Return version."""
+        if self._given_mimetype and self._given_version:
+            return self._given_version
+
         version = super(TextMagicBaseMeta, self).version()
         if version == "data":
             return None
@@ -148,6 +154,9 @@ class TextFileMagicMeta(TextMagicBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
+        if self._given_mimetype and self._given_version:
+            return self._given_version
+
         return "(:unap)"
 
 
@@ -209,6 +218,9 @@ class HtmlFileMagicMeta(TextMagicBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
+        if self._given_mimetype and self._given_version:
+            return self._given_version
+
         return "(:unav)"
 
 
@@ -248,6 +260,9 @@ class OfficeFileMagicMeta(BinaryMagicBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
+        if self._given_mimetype and self._given_version:
+            return self._given_version
+
         return "(:unav)"
 
 
@@ -261,6 +276,9 @@ class ArcFileMagicMeta(BinaryMagicBaseMeta):
     @metadata()
     def mimetype(self):
         """Return mimetype."""
+        if self._given_mimetype:
+            return self._given_mimetype
+
         magic_mimetype = super(ArcFileMagicMeta, self).mimetype()
         if magic_mimetype == "application/x-ia-arc":
             return "application/x-internet-archive"
@@ -269,11 +287,14 @@ class ArcFileMagicMeta(BinaryMagicBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
+        if self._given_mimetype and self._given_version:
+            return self._given_version
+
         if self.mimetype() not in self._supported:
             return None
         version = super(ArcFileMagicMeta, self).version()
         if version == "1":
-            return "1.0"
+            version = "1.0"
         return version
 
 
@@ -286,6 +307,9 @@ class PngFileMagicMeta(BinaryMagicBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
+        if self._given_mimetype and self._given_version:
+            return self._given_version
+
         if self.mimetype() not in self._supported:
             return None
         return "1.2"
@@ -320,6 +344,9 @@ class Jp2FileMagicMeta(BinaryMagicBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
+        if self._given_mimetype and self._given_version:
+            return self._given_version
+
         if self.mimetype() not in self._supported:
             return None
         return ""
@@ -339,6 +366,9 @@ class TiffFileMagicMeta(BinaryMagicBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
+        if self._given_mimetype and self._given_version:
+            return self._given_version
+
         if self.mimetype() not in self._supported:
             return None
         return "6.0"
