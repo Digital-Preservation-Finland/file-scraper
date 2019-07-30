@@ -149,11 +149,13 @@ def force_correct_filetype(filename, result_dict, filetype,
 
     :filename: Name of the file, not including the 'tests/data/mime_type/' part
     :result_dict: Result dict to be given to Correct
-    :filetype: A dict containing the forced, expected and real file types under
+    :filetype: A dict containing the expected and real file types under
                the following keys:
                 * expected_mimetype: the expected resulting MIME type
                 * expected_version: the expected resulting version
                 * correct_mimetype: the real MIME type of the file
+    :allowed_mimetypes: A list of extra MIME types besides the correct_mimetype
+                        that should be considered well-formed.
     """
     correct = parse_results(filename, filetype["correct_mimetype"],
                             result_dict, True)
