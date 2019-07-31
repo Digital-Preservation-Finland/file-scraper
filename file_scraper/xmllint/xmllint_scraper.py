@@ -256,8 +256,7 @@ class XmllintScraper(BaseScraper):
                 errors_to_remove.append(error)
             if "I/O error : Attempt to load network entity" in line:
                 errors_to_add.append(
-                    "ERROR: Schema definition propably missing "
-                    "from XML catalog")
+                    "Schema definition probably missing from XML catalog")
                 errors_to_remove.append(error)
         for error in errors_to_remove:
             self._errors.remove(error)
