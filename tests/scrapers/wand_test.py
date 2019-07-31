@@ -158,7 +158,6 @@ def test_scraper_jp2(filename, result_dict, evaluate_scraper):
     if correct.well_formed:
         correct.streams[0]["compression"] = "jpeg2000"
         correct.streams[0]["colorspace"] = "rgb"
-    correct.streams[0]["version"] = "(:unav)"
     correct.version = None
 
     scraper = WandScraper(correct.filename)

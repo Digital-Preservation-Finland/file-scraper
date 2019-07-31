@@ -57,7 +57,6 @@ def test_scraper(filename, result_dict, evaluate_scraper):
     scraper.scrape_file()
 
     correct.streams[0]["mimetype"] = "(:unav)"
-    correct.streams[0]["version"] = "(:unav)"
 
     evaluate_scraper(scraper, correct)
 

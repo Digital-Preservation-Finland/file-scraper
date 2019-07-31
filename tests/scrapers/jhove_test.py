@@ -203,7 +203,6 @@ def test_scraper_utf8(filename, result_dict, evaluate_scraper):
     correct.mimetype = None
     correct.version = None
     correct.streams[0]["mimetype"] = "(:unav)"
-    correct.streams[0]["version"] = "(:unav)"
     correct.streams[0]["charset"] = "UTF-8"
 
     evaluate_scraper(scraper, correct)

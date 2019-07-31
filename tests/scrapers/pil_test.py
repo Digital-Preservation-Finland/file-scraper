@@ -48,7 +48,7 @@ GIF_APPEND = {
     "mimetype": "image/gif",
     "samples_per_pixel": "1",
     "stream_type": "image",
-    "version": None,
+    "version": "(:unav)",
     "width": "(:unav)"}
 
 STREAM_INVALID = {}
@@ -80,8 +80,6 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
     """Test scraper with tiff files."""
     correct = parse_results(filename, "image/tiff",
                             result_dict, True)
-    correct.version = None
-    correct.streams[0]["version"] = None
     if correct.well_formed:
         correct.stdout_part = VALID_MSG
         correct.stderr_part = ""
@@ -93,10 +91,6 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
 
     if correct.well_formed:
         for index in range(0, len(correct.streams)):
-            correct.streams[index]["mimetype"] = \
-                correct.streams[0]["mimetype"]
-            correct.streams[index]["stream_type"] = \
-                correct.streams[0]["stream_type"]
             correct.streams[index]["version"] = "(:unav)"
         evaluate_scraper(scraper, correct)
     else:
@@ -166,7 +160,6 @@ def test_scraper_jp2(filename, result_dict, evaluate_scraper):
     """Test scraper with jp2 files."""
     correct = parse_results(filename, "image/jp2",
                             result_dict, True)
-    correct.streams[0]["version"] = "(:unav)"
     if correct.well_formed:
         correct.stdout_part = VALID_MSG
         correct.stderr_part = ""
