@@ -72,8 +72,6 @@ def test_mediainfo_scraper_mov(filename, result_dict, mimetype,
                                params={"mimetype_guess": mimetype})
     scraper.scrape_file()
 
-    for stream in correct.streams.values():
-        stream["version"] = "(:unav)"
     if ".dv" in filename:
         correct.streams[0].pop("stream_type", None)
 

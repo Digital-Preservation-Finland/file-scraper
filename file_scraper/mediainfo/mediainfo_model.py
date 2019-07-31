@@ -398,7 +398,6 @@ class WavMediainfoMeta(BaseMediainfoMeta):
     @metadata()
     def mimetype(self):
         """Returns mimetype for stream."""
-
         if self._given_mimetype:
             if self._index == 0:
                 return self._given_mimetype
@@ -415,7 +414,7 @@ class WavMediainfoMeta(BaseMediainfoMeta):
         if self._tracks[0].bext_present is not None \
                 and self._tracks[0].bext_present == "Yes":
             return "2"
-        return ""
+        return "(:unav)"
 
     @metadata()
     def codec_quality(self):

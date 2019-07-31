@@ -48,7 +48,8 @@ UNAV_ELEMENTS = {
     "tests/data/video_mpeg/valid_1.m1v": ["codec_creator_app_version",
                                           "codec_creator_app"],
     "tests/data/video_mpeg/valid_2.m2v": ["codec_creator_app_version",
-                                          "codec_creator_app"]}
+                                          "codec_creator_app"],
+    "tests/data/audio_x-wav/valid__wav.wav": ["version"]}
 
 # These are actually valid with another mimetype or version
 # or due to special parameters or missing scraper

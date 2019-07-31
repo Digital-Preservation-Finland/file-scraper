@@ -169,6 +169,8 @@ def test_scraper_valid(filename, mimetype, evaluate_scraper):
         correct.streams[0]["charset"] = "ISO-8859-15"
     if mimetype == "text/html" or "vnd." in mimetype or "msword" in mimetype:
         correct.streams[0]["version"] = "(:unav)"
+    if mimetype == "image/jp2":
+        correct.streams[0]["version"] = "(:unap)"
 
     evaluate_scraper(scraper, correct)
 
@@ -396,7 +398,7 @@ def test_no_wellformed():
         ("application/vnd.oasis.opendocument.formula", "1.0"),
         ("image/png", "1.2"),
         ("image/jpeg", "1.01"),
-        ("image/jp2", ""),
+        ("image/jp2", "(:unap)"),
         ("image/tiff", "6.0"),
         ("text/plain", ""),
         ("text/xml", "1.0"),
@@ -474,7 +476,7 @@ def run_filetype_test(filename, result_dict, filetype, evaluate_scraper):
         ("valid_1.0.arc", "application/x-internet-archive", "1.0", "1.0"),
         ("valid_1.2.png", "image/png", "1.2", "1.2"),
         ("valid_1.01.jpg", "image/jpeg", "1.01", "1.01"),
-        ("valid.jp2", "image/jp2", "", ""),
+        ("valid.jp2", "image/jp2", "(:unap)", "(:unap)"),
         ("valid_6.0_multiple_tiffs.tif", "image/tiff", "6.0", "6.0")
     ]
 )
@@ -505,11 +507,7 @@ def test_forced_filetype(filename, mimetype, version, version_result,
                      "expected_mimetype": mimetype,
                      "expected_version": version,
                      "correct_mimetype": mimetype}
-    # Forcing both MIME type and version can be tested only if version is
-    # not empty
-    if version:
-        run_filetype_test(filename, result_dict, filetype_dict,
-                          evaluate_scraper)
+    run_filetype_test(filename, result_dict, filetype_dict, evaluate_scraper)
 
     result_dict = {"purpose": "Test forcing correct MIME type without version",
                    "stdout_part": "MIME type not scraped, using",

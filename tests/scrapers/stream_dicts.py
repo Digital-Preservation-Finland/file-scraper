@@ -5,7 +5,7 @@ MOV_CONTAINER = {
     "codec_creator_app": "Lavf56.40.101",
     "codec_creator_app_version": "56.40.101",
     "codec_name": "MPEG-4", "index": 0, "mimetype": "video/quicktime",
-    "stream_type": "videocontainer", "version": ""}
+    "stream_type": "videocontainer", "version": "(:unav)"}
 
 DV_VIDEO = {
     "bits_per_sample": "8", "codec_creator_app": "(:unav)",
@@ -14,7 +14,8 @@ DV_VIDEO = {
     "data_rate": "24.4416", "data_rate_mode": "Fixed", "duration": "PT0.08S",
     "frame_rate": "25", "height": "576", "index": 0, "mimetype": "video/dv",
     "par": "1.422", "sampling": "4:2:0", "signal_format": "PAL",
-    "sound": "No", "stream_type": "video", "version": "", "width": "720"}
+    "sound": "No", "stream_type": "video", "version": "(:unav)",
+    "width": "720"}
 
 MOV_DV_VIDEO = dict(DV_VIDEO, **{
     "codec_creator_app": "Lavf56.40.101",
@@ -22,7 +23,7 @@ MOV_DV_VIDEO = dict(DV_VIDEO, **{
 
 MOV_TC = {
     "index": 3, "mimetype": "video/quicktime", "stream_type": "other",
-    "version": None}
+    "version": "(:unav)"}
 
 
 MKV_CONTAINER = {
@@ -52,7 +53,7 @@ WAV_AUDIO = {
     "codec_name": "PCM", "codec_quality": "lossless",
     "data_rate": "705.6", "data_rate_mode": "Fixed", "duration": "PT0.86S",
     "index": 0, "mimetype": "audio/x-wav", "num_channels": "2",
-    "sampling_frequency": "44.1", "stream_type": "audio", "version": ""}
+    "sampling_frequency": "44.1", "stream_type": "audio", "version": "(:unav)"}
 
 MPEG1_VIDEO = {
     "mimetype": "video/mpeg", "index": 0, "par": "1", "frame_rate": "30",
@@ -70,7 +71,7 @@ MPEG2_VIDEO = dict(MPEG1_VIDEO, **{
 
 MPEG4_VIDEO = dict(MPEG1_VIDEO, **{
     "mimetype": "video/mp4", "index": 1, "data_rate": "0.048704",
-    "sound": "Yes", "version": "", "codec_name": "AVC",
+    "sound": "Yes", "version": "(:unav)", "codec_name": "AVC",
     "codec_creator_app_version": "56.40.101",
     "codec_creator_app": "Lavf56.40.101"})
 
@@ -88,7 +89,7 @@ MPEG1_AUDIO = {
 
 MPEG4_AUDIO = dict(MPEG1_AUDIO, **{
     "mimetype": "audio/mp4", "index": 2, "audio_data_encoding": "AAC",
-    "data_rate_mode": "Fixed", "version": "", "codec_name": "AAC",
+    "data_rate_mode": "Fixed", "version": "(:unav)", "codec_name": "AAC",
     "codec_creator_app_version": "56.40.101",
     "duration": "PT0.86S", "data_rate": "135.233",
     "codec_creator_app": "Lavf56.40.101"})
@@ -99,7 +100,7 @@ MPEGTS_AUDIO = dict(MPEG1_AUDIO, **{
 
 MPEG4_CONTAINER = {
     "mimetype": "video/mp4", "index": 0, "stream_type": "videocontainer",
-    "version": "", "codec_name": "MPEG-4",
+    "version": "(:unav)", "codec_name": "MPEG-4",
     "codec_creator_app_version": "56.40.101",
     "codec_creator_app": "Lavf56.40.101"}
 
@@ -107,8 +108,8 @@ MPEGTS_CONTAINER = {
     "codec_creator_app": "(:unav)",
     "codec_creator_app_version": "(:unav)",
     "codec_name": "MPEG-TS", "index": 0, "mimetype": "video/MP2T",
-    "stream_type": "videocontainer", "version": ""}
+    "stream_type": "videocontainer", "version": "(:unav)"}
 
 MPEGTS_OTHER = {
     "index": 3, "mimetype": "video/MP2T", "stream_type": "menu",
-    "version": None}
+    "version": "(:unav)"}
