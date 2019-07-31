@@ -313,15 +313,6 @@ class MovMediainfoMeta(BaseMediainfoMeta):
             pass
         return self._mimetype_guess
 
-    @metadata()
-    def version(self):
-        """Return version of stream."""
-        if self._given_mimetype and self._given_version:
-            if self._index == 0:
-                return self._given_version
-
-        return "(:unav)"
-
     # pylint: disable=inconsistent-return-statements, bad-option-value
     @metadata()
     def codec_quality(self):
@@ -367,7 +358,7 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
 
         version = super(MkvMediainfoMeta, self).version()
         if isinstance(version, six.text_type):
-            return version.split(".")[0]
+            version = version.split(".")[0]
         return version
 
     @metadata()
