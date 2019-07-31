@@ -355,7 +355,7 @@ def test_wrong_mime_with_xml(filepath):
     assert "does not match" in scraper.errors()
 
 
-def test_no__mime_given():
+def test_no_mime_given():
     """Test that an error is recorded when no MIME type is given."""
     scraper = MagicScraper("tests/data/text_plain/valid__utf8.txt", True, {})
     with pytest.raises(AttributeError) as error:
