@@ -32,13 +32,17 @@ This module tests that:
 
     - Schematron removes extra copies of identical elements, but not if their
       attributes differ.
+
+    - MIME type and/or version forcing works.
 """
 from __future__ import unicode_literals
 
 import os
 import pytest
+import six
+
 from file_scraper.schematron.schematron_scraper import SchematronScraper
-from tests.common import parse_results
+from tests.common import parse_results, force_correct_filetype
 
 ROOTPATH = os.path.abspath(os.path.join(
     os.path.dirname(__file__), "..", ".."))
@@ -170,3 +174,51 @@ def test_filter_duplicate_elements():
     assert result.count(b"<svrl:active-pattern") == 1
     assert result.count(b"<svrl:fired-rule") == 1
     assert result.count(b"<svrl:failed-assert") == 2
+
+
+@pytest.mark.parametrize(
+    ["result_dict", "filetype"],
+    [
+        ({"purpose": "Test forcing correct MIME type and version",
+          "stdout_part": "MIME type and version not scraped, using",
+          "stderr_part": ""},
+         {"given_mimetype": "text/xml",
+          "given_version": "1.0",
+          "expected_mimetype": "text/xml",
+          "expected_version": "1.0"}),
+        ({"purpose": "Test forcing correct MIME type",
+          "stdout_part": "MIME type not scraped, using",
+          "stderr_part": ""},
+         {"given_mimetype": "text/xml",
+          "given_version": None,
+          "expected_mimetype": "text/xml",
+          "expected_version": "(:unav)"}),
+        ({"purpose": "Test forcing version only (no effect)",
+          "stdout_part": "",
+          "stderr_part": ""},
+         {"given_mimetype": None, "given_version": "1.0",
+          "expected_mimetype": "(:unav)", "expected_version": "(:unav)"}),
+        ({"purpose": "Test forcing wrong MIME type",
+          "stdout_part": "MIME type not scraped, using",
+          "stderr_part": "is not supported"},
+         {"given_mimetype": "unsupported/mime", "given_version": None,
+          "expected_mimetype": "unsupported/mime",
+          "expected_version": "(:unav)"})
+    ]
+)
+def test_forced_filetype(result_dict, filetype, evaluate_scraper):
+    """
+    Test using user-supplied MIME-types and versions.
+    """
+    filetype[six.text_type("correct_mimetype")] = "text/xml"
+    correct = force_correct_filetype("valid_1.0_well_formed.xml", result_dict,
+                                     filetype, ["(:unav)"])
+
+    params = {"mimetype": filetype["given_mimetype"],
+              "version": filetype["given_version"],
+              "schematron": os.path.join(
+                  ROOTPATH, "tests/data/text_xml/local.sch")}
+    scraper = SchematronScraper(correct.filename, True, params)
+    scraper.scrape_file()
+
+    evaluate_scraper(scraper, correct)
