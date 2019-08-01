@@ -9,7 +9,7 @@ from file_scraper.utils import metadata
 # These would be needed if FFMpegMeta was used
 # import re
 # from fractions import Fraction
-# from file_scraper.base import SkipElementException
+# from file_scraper.exceptions import SkipElementException
 # from file_scraper.utils import strip_zeros
 
 

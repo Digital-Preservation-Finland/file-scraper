@@ -5,7 +5,7 @@ import six
 import re
 
 from file_scraper.base import BaseMeta
-from file_scraper.base import SkipElementException
+from file_scraper.exceptions import SkipElementException
 from file_scraper.utils import iso8601_duration, strip_zeros, metadata
 
 

@@ -11,7 +11,7 @@ from itertools import chain
 
 import six
 
-import file_scraper.base
+from file_scraper.exceptions import SkipElementException
 
 
 def metadata(important=False):
@@ -371,7 +371,7 @@ def generate_metadata_dict(scraper_results, lose):
         for method in model.iterate_metadata_methods():
             try:
                 _merge_to_stream(current_stream, method, lose, importants)
-            except file_scraper.base.SkipElementException:
+            except SkipElementException:
                 # happens when the method is not to be indexed
                 continue
 
