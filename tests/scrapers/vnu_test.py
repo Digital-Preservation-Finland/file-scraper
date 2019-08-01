@@ -17,13 +17,15 @@ This module tests that:
       None are supported. When well-formedness is not checked, this combination
       is not supported.
     - A made up MIME type or version is not supported.
+    - MIME type and/or version forcing works.
 """
 from __future__ import unicode_literals
 
 import pytest
+import six
 
 from file_scraper.vnu.vnu_scraper import VnuScraper
-from tests.common import parse_results
+from tests.common import parse_results, force_correct_filetype
 
 MIMETYPE = "text/html"
 
@@ -84,3 +86,49 @@ def test_is_supported():
     assert not VnuScraper.is_supported(mime, ver, False)
     assert not VnuScraper.is_supported(mime, "foo", True)
     assert not VnuScraper.is_supported("foo", ver, True)
+
+
+@pytest.mark.parametrize(
+    ["result_dict", "filetype"],
+    [
+        ({"purpose": "Test forcing correct MIME type and version",
+          "stdout_part": "MIME type and version not scraped, using",
+          "stderr_part": ""},
+         {"given_mimetype": "text/html",
+          "given_version": "5.0",
+          "expected_mimetype": "text/html",
+          "expected_version": "5.0"}),
+        ({"purpose": "Test forcing correct MIME type",
+          "stdout_part": "MIME type not scraped, using",
+          "stderr_part": ""},
+         {"given_mimetype": "text/html",
+          "given_version": None,
+          "expected_mimetype": "text/html",
+          "expected_version": "5.0"}),
+        ({"purpose": "Test forcing version only (no effect)",
+          "stdout_part": "",
+          "stderr_part": ""},
+         {"given_mimetype": None, "given_version": "99.9",
+          "expected_mimetype": "text/html", "expected_version": "5.0"}),
+        ({"purpose": "Test forcing wrong MIME type",
+          "stdout_part": "MIME type not scraped, using",
+          "stderr_part": "is not supported"},
+         {"given_mimetype": "unsupported/mime", "given_version": None,
+          "expected_mimetype": "unsupported/mime",
+          "expected_version": "5.0"})
+    ]
+)
+def test_forced_filetype(result_dict, filetype, evaluate_scraper):
+    """
+    Test using user-supplied MIME-types and versions.
+    """
+    filetype[six.text_type("correct_mimetype")] = "text/html"
+    correct = force_correct_filetype("valid_5.0.html", result_dict,
+                                     filetype)
+
+    params = {"mimetype": filetype["given_mimetype"],
+              "version": filetype["given_version"]}
+    scraper = VnuScraper(correct.filename, True, params)
+    scraper.scrape_file()
+
+    evaluate_scraper(scraper, correct)

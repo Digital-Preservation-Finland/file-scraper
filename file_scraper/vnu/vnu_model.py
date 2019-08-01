@@ -14,6 +14,8 @@ class VnuMeta(BaseMeta):
     @metadata()
     def mimetype(self):
         """Return MIME type."""
+        if self._given_mimetype:
+            return self._given_mimetype
         return "text/html"
 
     @metadata()
