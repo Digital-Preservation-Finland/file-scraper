@@ -309,7 +309,8 @@ def test_is_supported(mime, ver, class_):
     assert not class_.is_supported("foo", ver, True)
 
 
-def run_filetype_test(filename, result_dict, filetype, evaluate_scraper):
+def run_filetype_test(filename, result_dict, filetype, evaluate_scraper,
+                      allowed_mimetypes=[]):
     """
     Runs scraper result evaluation for a scraper with forced MIME type/version
 
@@ -324,7 +325,7 @@ def run_filetype_test(filename, result_dict, filetype, evaluate_scraper):
                 * correct_mimetype: the real MIME type of the file
     """
     correct = force_correct_filetype(filename, result_dict,
-                                     filetype)
+                                     filetype, allowed_mimetypes)
     if correct.mimetype == "application/xhtml+xml":
         correct.streams[0]["stream_type"] = "text"
 
@@ -343,7 +344,7 @@ def run_filetype_test(filename, result_dict, filetype, evaluate_scraper):
 
 @pytest.mark.parametrize(
     ["filename", "mimetype", "version", "version_result",
-        "extra_valid_mimetypes"],
+     "extra_valid_mimetypes"],
     [
         ("valid_6.0_multiple_tiffs.tif", "image/tiff", "6.0", "(:unav)", []),
         ("valid_1.2.png", "image/png", "1.2", "(:unav)", ["image/jp2",
@@ -372,6 +373,7 @@ def test_forced_filetype(filename, mimetype, version, version_result,
           result in an error message being logged and the scraper reporting
           the file as not well-formed.
     """
+    # pylint: disable=too-many-arguments
     result_dict = {"purpose": "Test forcing correct MIME type and version",
                    "stdout_part": "MIME type and version not scraped, using",
                    "stderr_part": ""}
@@ -388,13 +390,13 @@ def test_forced_filetype(filename, mimetype, version, version_result,
                                   "({})".format(other_mimetype),
                        "stdout_part": "MIME type not scraped, using",
                        "stderr_part": ""}
-        filetype_dict = {"given_mimetype": mimetype,
+        filetype_dict = {"given_mimetype": other_mimetype,
                          "given_version": None,
-                         "expected_mimetype": mimetype,
+                         "expected_mimetype": other_mimetype,
                          "expected_version": version_result,
                          "correct_mimetype": mimetype}
         run_filetype_test(filename, result_dict, filetype_dict,
-                          evaluate_scraper)
+                          evaluate_scraper, [other_mimetype])
 
     result_dict = {"purpose": "Test forcing correct MIME type without version",
                    "stdout_part": "MIME type not scraped, using",
