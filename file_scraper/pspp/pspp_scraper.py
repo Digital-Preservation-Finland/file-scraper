@@ -54,6 +54,7 @@ class PsppScraper(BaseScraper):
         finally:
             shutil.rmtree(temp_dir)
             for md_class in self._supported_metadata:
-                self.streams.append(md_class())
+                self.streams.append(md_class(self._given_mimetype,
+                                             self._given_version))
             self._check_supported(allow_unav_mime=True,
                                   allow_unav_version=True)

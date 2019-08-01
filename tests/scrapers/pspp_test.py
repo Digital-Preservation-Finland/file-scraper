@@ -17,13 +17,15 @@ This module tests that:
     - When well-formedness is not checked, application/x-spss-por is not
       supported.
     - When well-formedness is checked, a made up MIME type is not supported.
+    - MIME type and/or version forcing works.
 """
 from __future__ import unicode_literals
 
 import pytest
+import six
 
 from file_scraper.pspp.pspp_scraper import PsppScraper
-from tests.common import parse_results
+from tests.common import parse_results, force_correct_filetype
 
 MIMETYPE = "application/x-spss-por"
 
@@ -78,3 +80,49 @@ def test_is_supported():
     assert not PsppScraper.is_supported(mime, ver, False)
     assert PsppScraper.is_supported(mime, "foo", True)
     assert not PsppScraper.is_supported("foo", ver, True)
+
+
+@pytest.mark.parametrize(
+    ["result_dict", "filetype"],
+    [
+        ({"purpose": "Test forcing correct MIME type and version",
+          "stdout_part": "MIME type and version not scraped, using",
+          "stderr_part": ""},
+         {"given_mimetype": "application/x-spss-por",
+          "given_version": "(:unav)",
+          "expected_mimetype": "application/x-spss-por",
+          "expected_version": "(:unav)"}),
+        ({"purpose": "Test forcing correct MIME type",
+          "stdout_part": "MIME type not scraped, using",
+          "stderr_part": ""},
+         {"given_mimetype": "application/x-spss-por",
+          "given_version": None,
+          "expected_mimetype": "application/x-spss-por",
+          "expected_version": "(:unav)"}),
+        ({"purpose": "Test forcing version only (no effect)",
+          "stdout_part": "",
+          "stderr_part": ""},
+         {"given_mimetype": None, "given_version": "(:unav)",
+          "expected_mimetype": "(:unav)", "expected_version": "(:unav)"}),
+        ({"purpose": "Test forcing wrong MIME type",
+          "stdout_part": "MIME type not scraped, using",
+          "stderr_part": "is not supported"},
+         {"given_mimetype": "unsupported/mime", "given_version": None,
+          "expected_mimetype": "unsupported/mime",
+          "expected_version": "(:unav)"})
+    ]
+)
+def test_forced_filetype(result_dict, filetype, evaluate_scraper):
+    """
+    Test using user-supplied MIME-types and versions.
+    """
+    filetype[six.text_type("correct_mimetype")] = "application/x-spss-por"
+    correct = force_correct_filetype("valid.por", result_dict,
+                                     filetype, ["(:unav)"])
+
+    params = {"mimetype": filetype["given_mimetype"],
+              "version": filetype["given_version"]}
+    scraper = PsppScraper(correct.filename, True, params)
+    scraper.scrape_file()
+
+    evaluate_scraper(scraper, correct)
