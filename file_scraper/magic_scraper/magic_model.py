@@ -349,7 +349,7 @@ class Jp2FileMagicMeta(BinaryMagicBaseMeta):
 
         if self.mimetype() not in self._supported:
             return None
-        return "(:unap)"
+        return ""
 
     @metadata()
     def stream_type(self):

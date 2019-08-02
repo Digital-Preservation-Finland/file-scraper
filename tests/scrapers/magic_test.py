@@ -170,7 +170,7 @@ def test_scraper_valid(filename, mimetype, evaluate_scraper):
     if mimetype == "text/html" or "vnd." in mimetype or "msword" in mimetype:
         correct.streams[0]["version"] = "(:unav)"
     if mimetype == "image/jp2":
-        correct.streams[0]["version"] = "(:unap)"
+        correct.streams[0]["version"] = ""
 
     evaluate_scraper(scraper, correct)
 
@@ -476,7 +476,7 @@ def run_filetype_test(filename, result_dict, filetype, evaluate_scraper):
         ("valid_1.0.arc", "application/x-internet-archive", "1.0", "1.0"),
         ("valid_1.2.png", "image/png", "1.2", "1.2"),
         ("valid_1.01.jpg", "image/jpeg", "1.01", "1.01"),
-        ("valid.jp2", "image/jp2", "(:unap)", "(:unap)"),
+        ("valid.jp2", "image/jp2", "", ""),
         ("valid_6.0_multiple_tiffs.tif", "image/tiff", "6.0", "6.0")
     ]
 )
@@ -499,15 +499,18 @@ def test_forced_filetype(filename, mimetype, version, version_result,
           result in an error message being logged and the scraper reporting
           the file as not well-formed.
     """
-    result_dict = {"purpose": "Test forcing correct MIME type and version",
-                   "stdout_part": "MIME type and version not scraped, using",
-                   "stderr_part": ""}
-    filetype_dict = {"given_mimetype": mimetype,
-                     "given_version": version,
-                     "expected_mimetype": mimetype,
-                     "expected_version": version,
-                     "correct_mimetype": mimetype}
-    run_filetype_test(filename, result_dict, filetype_dict, evaluate_scraper)
+    # Correct version forcing can only be done if there is a version to use
+    if version:
+        result_dict = {"purpose": "Test forcing correct MIME type and version",
+                       "stdout_part": "MIME type and version not scraped",
+                       "stderr_part": ""}
+        filetype_dict = {"given_mimetype": mimetype,
+                         "given_version": version,
+                         "expected_mimetype": mimetype,
+                         "expected_version": version,
+                         "correct_mimetype": mimetype}
+        run_filetype_test(filename, result_dict, filetype_dict,
+                          evaluate_scraper)
 
     result_dict = {"purpose": "Test forcing correct MIME type without version",
                    "stdout_part": "MIME type not scraped, using",

@@ -152,6 +152,8 @@ def test_mediainfo_scraper_wav(filename, result_dict, evaluate_scraper):
                                params={"mimetype_guess": mimetype})
     scraper.scrape_file()
 
+    if filename == "valid__wav.wav":
+        correct.streams[0]["version"] = ""
     if "empty" in filename:
         assert correct.stdout_part in scraper.messages()
         assert correct.stderr_part in scraper.errors()
