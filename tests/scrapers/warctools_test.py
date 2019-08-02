@@ -31,6 +31,7 @@ This module tests that:
           None or a made up string as a version
     - Without well-formedness check, these MIME types are not supported.
     - None of these scrapers supports a made up MIME type.
+    - MIME type and/or version forcing works.
 """
 from __future__ import unicode_literals
 
@@ -39,7 +40,7 @@ import pytest
 from file_scraper.warctools.warctools_scraper import (ArcWarctoolsScraper,
                                                       GzipWarctoolsScraper,
                                                       WarcWarctoolsScraper)
-from tests.common import parse_results
+from tests.common import parse_results, force_correct_filetype
 
 
 @pytest.mark.parametrize(
@@ -260,3 +261,116 @@ def test_arc_is_supported():
     assert not ArcWarctoolsScraper.is_supported(mime, ver, False)
     assert ArcWarctoolsScraper.is_supported(mime, "foo", True)
     assert not ArcWarctoolsScraper.is_supported("foo", ver, True)
+
+
+def run_filetype_test(filename, result_dict, filetype, scraper_class,
+                      evaluate_scraper):
+    """
+    Runs scraper result evaluation for a scraper with forced MIME type/version
+
+    :filename: Name of the file, not containing the tests/data/mime_type/ part
+    :result_dict: Result dict to be given to Correct
+    :filetype: A dict containing the forced, expected and real file types under
+               the following keys:
+                * given_mimetype: the forced MIME type
+                * given_version: the forced version
+                * expected_mimetype: the expected resulting MIME type
+                * expected_version: the expected resulting version
+                * correct_mimetype: the real MIME type of the file
+    """
+    correct = force_correct_filetype(filename, result_dict,
+                                     filetype)
+
+    if filetype["given_mimetype"]:
+        mimetype_guess = filetype["given_mimetype"]
+    else:
+        mimetype_guess = filetype["correct_mimetype"]
+    params = {"mimetype": filetype["given_mimetype"],
+              "version": filetype["given_version"],
+              "mimetype_guess": mimetype_guess}
+    scraper = scraper_class(correct.filename, True, params)
+    scraper.scrape_file()
+
+    if "warc" in filename:
+        classname = "WarcWarctoolsScraper"
+    else:
+        classname = "ArcWarctoolsScraper"
+    evaluate_scraper(scraper, correct, exp_scraper_cls=classname)
+
+
+@pytest.mark.parametrize(
+    ["filename", "mimetype", "version", "version_result", "scraper_class"],
+    [
+        ("valid_1.0.warc", "application/warc", "1.0", "1.0",
+         WarcWarctoolsScraper),
+        ("valid_1.0_.warc.gz", "application/warc", "1.0", "1.0",
+         GzipWarctoolsScraper),
+        ("valid_1.0.arc", "application/x-internet-archive", "1.0", "(:unav)",
+         ArcWarctoolsScraper),
+        ("valid_1.0_.arc.gz", "application/x-internet-archive", "1.0",
+         "(:unav)", GzipWarctoolsScraper),
+    ]
+)
+def test_forced_filetype(filename, mimetype, version, version_result,
+                         scraper_class, evaluate_scraper):
+    """
+    Tests the simple cases of file type forcing.
+
+    Here, the following cases are tested for one file type scraped using each
+    metadata model class supported by MagicScraper:
+        - Force the scraper to use the correct MIME type and version, which
+          should always result in the given MIME type and version and the file
+          should be well-formed.
+        - Force the scraper to use the correct MIME type, which should always
+          result in the given MIME type and the version the metadata model
+          would normally return.
+        - Give forced version without MIME type, which should result in the
+          scraper running normally and not affect its results or messages.
+        - Force the scraper to use an unsupported MIME type, which should
+          result in an error message being logged and the scraper reporting
+          the file as not well-formed.
+    """
+    # pylint: disable=too-many-arguments
+    result_dict = {"purpose": "Test forcing correct MIME type and version",
+                   "stdout_part": "MIME type and version not scraped, using",
+                   "stderr_part": ""}
+    filetype_dict = {"given_mimetype": mimetype,
+                     "given_version": version,
+                     "expected_mimetype": mimetype,
+                     "expected_version": version,
+                     "correct_mimetype": mimetype}
+    run_filetype_test(filename, result_dict, filetype_dict, scraper_class,
+                      evaluate_scraper)
+
+    result_dict = {"purpose": "Test forcing correct MIME type without version",
+                   "stdout_part": "MIME type not scraped, using",
+                   "stderr_part": ""}
+    filetype_dict = {"given_mimetype": mimetype,
+                     "given_version": None,
+                     "expected_mimetype": mimetype,
+                     "expected_version": version_result,
+                     "correct_mimetype": mimetype}
+    run_filetype_test(filename, result_dict, filetype_dict, scraper_class,
+                      evaluate_scraper)
+
+    result_dict = {"purpose": "Test forcing version only (no effect)",
+                   "stdout_part": "File was analyzed successfully",
+                   "stderr_part": ""}
+    filetype_dict = {"given_mimetype": None,
+                     "given_version": "99.9",
+                     "expected_mimetype": mimetype,
+                     "expected_version": version_result,
+                     "correct_mimetype": mimetype}
+    run_filetype_test(filename, result_dict, filetype_dict, scraper_class,
+                      evaluate_scraper)
+
+    result_dict = {"purpose": "Test forcing wrong MIME type",
+                   "stdout_part": "MIME type not scraped, using",
+                   "stderr_part": "is not supported"}
+    filetype_dict = {"given_mimetype": "unsupported/mime",
+                     "given_version": None,
+                     "expected_mimetype": "unsupported/mime",
+                     "expected_version": version_result,
+                     "correct_mimetype": mimetype}
+    run_filetype_test(filename, result_dict, filetype_dict, scraper_class,
+                      evaluate_scraper)

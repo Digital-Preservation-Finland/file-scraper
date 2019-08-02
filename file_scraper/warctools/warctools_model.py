@@ -70,11 +70,16 @@ class WarcWarctoolsMeta(BaseWarctoolsMeta):
     @metadata()
     def mimetype(self):
         """Return MIME type."""
+        if self._given_mimetype:
+            return self._given_mimetype
         return "application/warc"
 
     @metadata()
     def version(self):
         """Return the version."""
+        if self._given_mimetype and self._given_version:
+            return self._given_version
+
         if len(self._line.split(b"WARC/", 1)) > 1:
             return ensure_text(
                 self._line.split(b"WARC/", 1)[1].split(b" ")[0].strip())
@@ -91,4 +96,6 @@ class ArcWarctoolsMeta(BaseWarctoolsMeta):
     @metadata()
     def mimetype(self):
         """Return MIME type."""
+        if self._given_mimetype:
+            return self._given_mimetype
         return "application/x-internet-archive"

@@ -15,54 +15,6 @@ from file_scraper.warctools.warctools_model import (ArcWarctoolsMeta,
                                                     WarcWarctoolsMeta)
 
 
-class GzipWarctoolsScraper(BaseScraper):
-    """Scraper for compressed Warcs and Arcs."""
-
-    _supported_metadata = [GzipWarctoolsMeta]
-    _only_wellformed = True  # Only well-formed check
-    _scraper = None
-
-    def scrape_file(self):
-        """Scrape file. If Warc fails, try Arc."""
-        if not self._check_wellformed and self._only_wellformed:
-            self._messages.append("Skipping scraper: Well-formed check not "
-                                  "used.")
-            return
-        for class_ in [WarcWarctoolsScraper, ArcWarctoolsScraper]:
-            self._scraper = class_(self.filename, True)
-            self._scraper.scrape_file()
-
-            # pylint: disable=protected-access
-            if self._messages and not self._scraper.well_formed:
-                self._messages = self._messages + self._scraper._messages
-            else:
-                self._messages = self._scraper._messages
-            if self._errors and not self._scraper.well_formed:
-                self._errors = self._errors + self._scraper._errors
-            else:
-                self._errors = self._scraper._errors
-
-            if self._scraper.well_formed:
-                for md_model in self._supported_metadata:
-                    self.streams.append(md_model(self._scraper.streams,
-                                                 self._given_mimetype,
-                                                 self._given_version))
-                break
-
-    def info(self):
-        """
-        Return scraper info.
-
-        If either WarcWarctoolsScraper or ArcWarctoolsScraper could scrape the
-        gzip file, that class is reported as the scraper class. For failures,
-        the class is GzipWarctoolsScraper.
-        """
-        info = super(GzipWarctoolsScraper, self).info()
-        if self.streams:
-            info["class"] = self._scraper.__class__.__name__
-        return info
-
-
 class WarcWarctoolsScraper(BaseScraper):
     """
     Implements WARC file format scraper.
@@ -161,3 +113,82 @@ class ArcWarctoolsScraper(BaseScraper):
         for md_class in self._supported_metadata:
             self.streams.append(md_class(self._given_mimetype,
                                          self._given_version))
+        self._check_supported(allow_unav_version=True)
+
+
+class GzipWarctoolsScraper(BaseScraper):
+    """Scraper for compressed Warcs and Arcs."""
+
+    _supported_metadata = [GzipWarctoolsMeta]
+    _only_wellformed = True  # Only well-formed check
+    _scraper = None
+
+    _supported_scrapers = [WarcWarctoolsScraper, ArcWarctoolsScraper]
+
+    def scrape_file(self):
+        """Scrape file. If Warc fails, try Arc."""
+        if not self._check_wellformed and self._only_wellformed:
+            self._messages.append("Skipping scraper: Well-formed check not "
+                                  "used.")
+            return
+
+        original_messages = self._messages
+        for class_ in self._supported_scrapers:
+            self._scraper = class_(self.filename, True)
+            self._scraper.scrape_file()
+
+            # pylint: disable=protected-access
+            if self._messages and not self._scraper.well_formed:
+                self._messages = self._messages + self._scraper._messages
+            else:
+                self._messages = original_messages + self._scraper._messages
+            if self._errors and not self._scraper.well_formed:
+                self._errors = self._errors + self._scraper._errors
+            else:
+                self._errors = self._scraper._errors
+
+            if self._scraper.well_formed:
+                for md_model in self._supported_metadata:
+                    self.streams.append(md_model(self._scraper.streams,
+                                                 self._given_mimetype,
+                                                 self._given_version))
+                self._check_supported()
+                break
+
+    def info(self):
+        """
+        Return scraper info.
+
+        If either WarcWarctoolsScraper or ArcWarctoolsScraper could scrape the
+        gzip file, that class is reported as the scraper class. For failures,
+        the class is GzipWarctoolsScraper.
+        """
+        info = super(GzipWarctoolsScraper, self).info()
+        if self.streams:
+            info["class"] = self._scraper.__class__.__name__
+        return info
+
+    def _check_supported(self, allow_unav_mime=False, allow_unav_version=False,
+                         allow_unap_version=False):
+        """
+        Check that the scraped MIME type and version are supported.
+
+        This scraper uses the two other scrapers to check the file and get the
+        metadata, so what is actually checked is that at least one of the tried
+        scrapers supports the MIME type and version combination.
+        """
+        if not self.streams:
+            self._errors.append("MIME type not supported by this scraper.")
+
+        mimetype = self.streams[0].mimetype()
+        version = self.streams[0].version()
+        if version == "(:unav)":
+            version = None
+        supported = False
+
+        for scraper_class in self._supported_scrapers:
+            if scraper_class.is_supported(mimetype, version):
+                supported = True
+        if not supported:
+            self._errors.append("MIME type {} with version {} is not "
+                                "supported.".format(mimetype, version))
