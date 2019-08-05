@@ -51,9 +51,22 @@ class LxmlScraper(BaseScraper):
                                  recover=True)
         with open(self.filename, "rb") as file_:
             tree = etree.parse(file_, parser)
-        for md_class in self._supported_metadata:
-            self.streams.append(md_class(tree, self._given_mimetype,
-                                         self._given_version))
-        self._messages.append("Encoding metadata found.")
+
+        # find out if parsing yielded results that are needed by the metadata
+        # model
+        try:
+            tree.docinfo
+            tree_ok = True
+        except AssertionError:
+            tree_ok = False
+
+        if tree_ok:
+            for md_class in self._supported_metadata:
+                self.streams.append(md_class(tree, self._given_mimetype,
+                                             self._given_version))
+            self._messages.append("Encoding metadata found.")
+        else:
+            self._errors.append("XML parsing failed: document information "
+                                "could not be gathered.")
 
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)
