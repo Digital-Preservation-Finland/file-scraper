@@ -174,8 +174,9 @@ class GzipWarctoolsScraper(BaseScraper):
         Check that the scraped MIME type and version are supported.
 
         This scraper uses the two other scrapers to check the file and get the
-        metadata, so what is actually checked is that at least one of the tried
-        scrapers supports the MIME type and version combination.
+        metadata, so in addition to the normal metadata model check, it is also
+        sufficient if that at least one of the tried scrapers supports the MIME
+        type and version combination.
         """
         if not self.streams:
             self._errors.append("MIME type not supported by this scraper.")
@@ -184,11 +185,18 @@ class GzipWarctoolsScraper(BaseScraper):
         version = self.streams[0].version()
         if version == "(:unav)":
             version = None
-        supported = False
 
+        # Check own metadata models for support: if supporting model is found,
+        # no further checking is needed.
+        for md_class in self._supported_metadata:
+            if mimetype in md_class.supported_mimetypes():
+                return
+
+        # also check the used scraper classes: final result of arc or warc,
+        # corresponding to the compressed file, is also ok
         for scraper_class in self._supported_scrapers:
             if scraper_class.is_supported(mimetype, version):
-                supported = True
-        if not supported:
-            self._errors.append("MIME type {} with version {} is not "
-                                "supported.".format(mimetype, version))
+                return
+
+        self._errors.append("MIME type {} with version {} is not "
+                            "supported.".format(mimetype, version))
