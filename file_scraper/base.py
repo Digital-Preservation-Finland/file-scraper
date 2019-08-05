@@ -8,6 +8,7 @@ from file_scraper.utils import run_command, metadata, is_metadata, concat
 
 class BaseScraper(object):
     """Base scraper implements common methods for all scrapers."""
+    # pylint: disable=too-many-instance-attributes
 
     _supported_metadata = []
     _only_wellformed = False

@@ -24,7 +24,6 @@ except ImportError:
     pass
 
 
-
 class WandScraper(BaseScraper):
     """Scraper for the Wand/ImageMagick library."""
 

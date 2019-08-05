@@ -1,8 +1,8 @@
 """Metadata scraper for AV files."""
 from __future__ import unicode_literals
 
-import six
 import re
+import six
 
 from file_scraper.base import BaseMeta
 from file_scraper.exceptions import SkipElementException
@@ -27,6 +27,7 @@ class BaseMediainfoMeta(BaseMeta):
                          scraper cannot determine the mimetype and this
                          value is used instead.
         """
+        # pylint: disable=too-many-arguments
         self._stream = tracks[index]
         self._tracks = tracks
         self._mimetype_guess = mimetype_guess

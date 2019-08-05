@@ -1,13 +1,12 @@
 """Metadata model for FFMpeg scraper."""
 from __future__ import unicode_literals
 
-import six
-
 from file_scraper.base import BaseMeta
 from file_scraper.utils import metadata
 
 # These would be needed if FFMpegMeta was used
 # import re
+# import six
 # from fractions import Fraction
 # from file_scraper.exceptions import SkipElementException
 # from file_scraper.utils import strip_zeros
@@ -33,9 +32,11 @@ class FFMpegSimpleMeta(BaseMeta):
         """
         This metadata model scrapes nothing, return (:unav).
         """
+        # pylint: disable=no-self-use
         return "(:unav)"
 
 
+# pylint: disable=pointless-string-statement
 # This metadata model is not currently used, but could be enabled later
 r'''
 class FFMpegMeta(BaseMeta):

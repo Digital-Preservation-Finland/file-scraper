@@ -14,4 +14,5 @@ class PsppMeta(BaseMeta):
     @metadata()
     def stream_type(self):
         """Return file type."""
+        # pylint: disable=no-self-use
         return "binary"

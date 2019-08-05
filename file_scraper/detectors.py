@@ -26,7 +26,6 @@ except OSError:
 import magic  # isort:skip
 
 
-
 class _FidoReader(Fido):
     """Fido wrapper to get pronom code, mimetype and version."""
 

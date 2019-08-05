@@ -55,7 +55,7 @@ class LxmlScraper(BaseScraper):
         # find out if parsing yielded results that are needed by the metadata
         # model
         try:
-            tree.docinfo
+            tree.docinfo  # pylint: disable=pointless-statement
             tree_ok = True
         except AssertionError:
             tree_ok = False

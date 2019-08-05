@@ -227,6 +227,7 @@ def run_command(cmd, stdout=subprocess.PIPE, env=None):
     return statuscode, stdout_result, stderr_result
 
 
+# pylint: disable=invalid-name
 def ensure_text(s, encoding="utf-8", errors="strict"):
     """Coerce *s* to six.text_type.
 
