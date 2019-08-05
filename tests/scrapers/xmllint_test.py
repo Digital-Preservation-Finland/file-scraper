@@ -28,15 +28,17 @@ This module tests that:
     - A made up MIME type is not supported, but version is.
 
     - Schema, catalogs and network-usage can be defined as parameters.
+
+    - MIME type and/or version forcing works.
 """
 from __future__ import unicode_literals
 
 import os
-
 import pytest
+import six
 
 from file_scraper.xmllint.xmllint_scraper import XmllintScraper
-from tests.common import parse_results
+from tests.common import parse_results, force_correct_filetype
 
 ROOTPATH = os.path.abspath(os.path.join(
     os.path.dirname(__file__), "..", ".."))
@@ -184,3 +186,49 @@ def test_parameters():
     scraper = XmllintScraper("testsfile", params={"catalog_path": "catpath"})
     assert scraper._catalogs
     assert scraper._catalog_path == "catpath"
+
+
+@pytest.mark.parametrize(
+    ["result_dict", "filetype"],
+    [
+        ({"purpose": "Test forcing correct MIME type and version",
+          "stdout_part": "MIME type and version not scraped, using",
+          "stderr_part": ""},
+         {"given_mimetype": "text/xml",
+          "given_version": "1.0",
+          "expected_mimetype": "text/xml",
+          "expected_version": "1.0"}),
+        ({"purpose": "Test forcing correct MIME type",
+          "stdout_part": "MIME type not scraped, using",
+          "stderr_part": ""},
+         {"given_mimetype": "text/xml",
+          "given_version": None,
+          "expected_mimetype": "text/xml",
+          "expected_version": "1.0"}),
+        ({"purpose": "Test forcing version only (no effect)",
+          "stdout_part": "",
+          "stderr_part": ""},
+         {"given_mimetype": None, "given_version": "99.9",
+          "expected_mimetype": "text/xml", "expected_version": "1.0"}),
+        ({"purpose": "Test forcing wrong MIME type",
+          "stdout_part": "MIME type not scraped, using",
+          "stderr_part": "is not supported"},
+         {"given_mimetype": "unsupported/mime", "given_version": None,
+          "expected_mimetype": "unsupported/mime",
+          "expected_version": "1.0"})
+    ]
+)
+def test_forced_filetype(result_dict, filetype, evaluate_scraper):
+    """
+    Test using user-supplied MIME-types and versions.
+    """
+    filetype[six.text_type("correct_mimetype")] = "text/xml"
+    correct = force_correct_filetype("valid_1.0_well_formed.xml", result_dict,
+                                     filetype)
+
+    params = {"mimetype": filetype["given_mimetype"],
+              "version": filetype["given_version"]}
+    scraper = XmllintScraper(correct.filename, True, params)
+    scraper.scrape_file()
+
+    evaluate_scraper(scraper, correct)
