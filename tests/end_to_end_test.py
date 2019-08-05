@@ -123,6 +123,8 @@ def test_valid_combined(fullname, mimetype):
     - Test Find out all None elements.
     - Test that errors are not given.
     - Test that all files are well-formed.
+    - Test that forcing the scraper to use the MIME type and version the file
+      actually as does not affect scraping results.
     - Ignore few files because of required parameter or missing scraper.
     """
     if fullname in IGNORE_VALID:
@@ -135,6 +137,30 @@ def test_valid_combined(fullname, mimetype):
         assert not info["errors"]
 
     _assert_valid_scraper_result(scraper, fullname, mimetype, True)
+
+    # Test that output does not change if MIME type and version are forced
+    # to be the ones scraper would determine them to be in any case.
+
+    # This cannot be done with compressed arcs, as WarctoolsScraper reports
+    # the MIME type of the compressed archive instead of application/gzip,
+    # so for those types, all required testing is already done here.
+    if (scraper.mimetype in ["application/x-internet-archive"] and
+            fullname[-3:] == ".gz"):
+        return
+
+    # Forced version affects all frames within a gif or a tiff
+    if scraper.mimetype in ["image/gif", "image/tiff"]:
+        for _, stream in iteritems(scraper.streams):
+            if "version" in stream.keys():
+                stream["version"] = scraper.streams[0]["version"]
+
+    forced_scraper = Scraper(fullname, mimetype=scraper.mimetype,
+                             version=scraper.version)
+    forced_scraper.scrape()
+
+    assert forced_scraper.mimetype == scraper.mimetype
+    assert forced_scraper.version == scraper.version
+    assert forced_scraper.streams == scraper.streams
 
 
 @pytest.mark.parametrize(("fullname", "mimetype"),
@@ -217,3 +243,73 @@ def test_coded_filename(testpath, fullname, mimetype):
     scraper = Scraper(unicode_name.encode("utf-8"))
     scraper.scrape()
     assert scraper.well_formed
+
+
+@pytest.mark.parametrize(
+    ["filepath", "params", "well_formed", "expected_mimetype",
+     "expected_version"],
+    [
+        # Force the correct MIME type, let scrapers handle version
+        ("tests/data/image_tiff/valid_6.0.tif", {"mimetype": "image/tiff"},
+         True, "image/tiff", "6.0"),
+
+        # Force the correct MIME type with unsupported version, resulting
+        # in not well-formed file
+        ("tests/data/image_tiff/valid_6.0.tif",
+         {"mimetype": "image/tiff", "version": "99.9"},
+         False, "image/tiff", "99.9"),
+
+        # Force the correct MIME type with a supported but incorrect version:
+        # file is reported as well-formed with the forced version.
+        ("tests/data/image_gif/valid_1987a.gif",
+         {"mimetype": "image/gif", "version": "1989a"},
+         True, "image/gif", "1989a"),
+
+        # Force unsupported MIME type, resulting in not well-formed
+        ("tests/data/image_tiff/valid_6.0.tif", {"mimetype": "audio/mpeg"},
+         False, "audio/mpeg", "(:unav)"),
+
+        # Scrape invalid XML as plaintext, as which it is well-formed
+        ("tests/data/text_xml/invalid_1.0_no_closing_tag.xml",
+         {"mimetype": "text/plain"}, True, "text/plain", "(:unap)"),
+
+        # Scrape invalid HTML as plaintext, as which it is well-formed
+        ("tests/data/text_html/invalid_5.0_illegal_tags.html",
+         {"mimetype": "text/plain"}, True, "text/plain", "(:unap)"),
+
+        # Scrape a random text file as HTML, as which it is not well-formed
+        ("tests/data/text_plain/valid__utf8.txt",
+         {"mimetype": "text/html"}, False, "text/html", "(:unav)"),
+
+        # Scrape a file with MIME type that can produce "well-formed" result
+        # from some scrapers, but combining the results should reveal the file
+        # as not well-formed
+        ("tests/data/image_gif/valid_1987a.gif", {"mimetype": "image/png"},
+         False, "image/png", "1.2"),
+
+        # Scrape compressed arc as gzip, corresponding to the MIME type of the
+        # actual file instead of its compressed contents.
+        ("tests/data/application_x-internet-archive/valid_1.0_.arc.gz",
+         {"mimetype": "application/gzip"}, True,
+         "application/gzip", "(:unav)"),
+    ]
+)
+def test_forced_filetype(filepath, params, well_formed, expected_mimetype,
+                         expected_version):
+    """
+    Test forcing the scraping to be done as specific file type.
+
+    MIME type and version results are checked both directly from the scraper
+    and for well-formed files also from the first stream. In addition to this,
+    well-formedness status of the file should be as expected.
+    """
+    scraper = Scraper(filepath, **params)
+    scraper.scrape()
+
+    assert scraper.well_formed == well_formed
+    assert scraper.mimetype == expected_mimetype
+    assert scraper.version == expected_version
+
+    if well_formed:
+        assert scraper.streams[0]["mimetype"] == expected_mimetype
+        assert scraper.streams[0]["version"] == expected_version
