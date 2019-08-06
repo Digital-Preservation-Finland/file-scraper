@@ -214,7 +214,7 @@ _+supported_mimetypes()_
     <id>UMLClass</id>
     <coordinates>
       <x>0</x>
-      <y>420</y>
+      <y>380</y>
       <w>100</w>
       <h>30</h>
     </coordinates>
@@ -224,8 +224,8 @@ _+supported_mimetypes()_
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>140</x>
-      <y>420</y>
+      <x>160</x>
+      <y>380</y>
       <w>100</w>
       <h>30</h>
     </coordinates>
@@ -233,26 +233,48 @@ _+supported_mimetypes()_
     <additional_attributes/>
   </element>
   <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>65</x>
+      <y>420</y>
+      <w>130</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>PredefinedDetector</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
     <id>Relation</id>
     <coordinates>
-      <x>40</x>
-      <y>320</y>
+      <x>50</x>
+      <y>280</y>
       <w>110</w>
       <h>120</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>90.0;10.0;10.0;100.0</additional_attributes>
+    <additional_attributes>70.0;50.0;0.0;100</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>140</x>
+      <y>280</y>
+      <w>90</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>0;50;70;100</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
       <x>120</x>
       <y>320</y>
-      <w>90</w>
+      <w>30</w>
       <h>120</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;70.0;100.0</additional_attributes>
+    <additional_attributes>10;10;10;100</additional_attributes>
   </element>
   <element>
     <id>UMLGeneric</id>
