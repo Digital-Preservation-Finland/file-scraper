@@ -52,21 +52,26 @@ class LxmlScraper(BaseScraper):
         with open(self.filename, "rb") as file_:
             tree = etree.parse(file_, parser)
 
-        # find out if parsing yielded results that are needed by the metadata
-        # model
-        try:
-            tree.docinfo  # pylint: disable=pointless-statement
-            tree_ok = True
-        except AssertionError:
-            tree_ok = False
+        for md_class in self._supported_metadata:
+            md_model = md_class(tree, self._given_mimetype,
+                                self._given_version)
 
-        if tree_ok:
-            for md_class in self._supported_metadata:
-                self.streams.append(md_class(tree, self._given_mimetype,
-                                             self._given_version))
+            # It is possible that for files that are not well-formed, trying
+            # to use tree.docinfo causes an AssertionError. In that case we
+            # shouldn't add a stream at all, but instead log an error. Only if
+            # all metadata methods work normally, should the stream be added.
+            try:
+                for method in md_model.iterate_metadata_methods():
+                    method()
+            except AssertionError:
+                self._errors.append("XML parsing failed: document "
+                                    "information could not be gathered.")
+            else:
+                self.streams.append(md_model)
+
+        # Only log success message if at least one metadata model was added to
+        # streams
+        if self.streams:
             self._messages.append("Encoding metadata found.")
-        else:
-            self._errors.append("XML parsing failed: document information "
-                                "could not be gathered.")
 
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)
