@@ -60,10 +60,14 @@ class LxmlScraper(BaseScraper):
             # to use tree.docinfo causes an AssertionError. In that case we
             # shouldn't add a stream at all, but instead log an error. Only if
             # all metadata methods work normally, should the stream be added.
+            #
+            # The except catches all exceptions, because AssertionError from
+            # the compiled cython module is otherwise not caught by all python
+            # versions.
             try:
                 for method in md_model.iterate_metadata_methods():
                     method()
-            except AssertionError:
+            except Exception:  # pylint: disable=broad-except
                 self._errors.append("XML parsing failed: document "
                                     "information could not be gathered.")
             else:
