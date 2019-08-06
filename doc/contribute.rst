@@ -7,7 +7,7 @@ Detectors
 ---------
 
 The detectors are used for detecting the file mimetype and, if possible, format version. These values are used for selecting the correct scraper tools
-for collecting metadata and checking well-formedness of the file. For now, there exists just two detectors, and both are located in ``./file_scraper/detectors.py``
+for collecting metadata and checking well-formedness of the file. For now, there are just three detectors, all of which are located in ``./file_scraper/detectors.py``
 
 The detectors inherit ``BaseDetector`` class, which contains an abstract method ``detect()``. A detector class:
 
@@ -37,7 +37,7 @@ A usable scraper tool class:
     * MUST call ``super()`` during initialization, if separate initialization method is created.
     * MUST implement ``scrape_file()`` for file scraping, if not implemented in the already existing base class. This method:
 
-        * MUST add metadata objects of all metadata models to ``streams`` list for each stream in the file.
+        * MUST add metadata objects of all metadata models to ``streams`` list for each stream in the file. The MIME type and version given in params MUST be passed to the metadata object.
         * SHOULD call ``_check_supported()`` when the metadata has been collected. This checks that the final mimetype and version are supported ones, in case those have changed.
         * MUST log all errors (e.g. ""The file is truncated" or ""File not found.") to ``_errors`` list and messages (e.g. "File was analyzed successfully" or "Skipping scraper") to ``_messages`` list.
     * The ``info()`` method of a scraper MUST return a dict of class name, and messages and errors occured during scraping. See ``<scraper info X>`` from `README.rst <../README.rst>`_ for the content of the info attribute.
@@ -60,6 +60,8 @@ The metadata is represented by metadata model objects, e.g. ``GhostscriptMeta`` 
     * MUST implement metadata method ``stream_type()``, returning e.g. "text", "image", "audio", "video", "videocontainer", "binary", if not implemented in the already existing base class.
     * MUST crash or log an error in unexpected event, such as due to missing 3rd party tool.
     * Metadata keys that are needed to win in the combination phase are flagged by ``important`` as part of metadata-decorator.
+    * If custom MIME type scraping is implemented, user-supplied MIME type given to the initializer MUST be returned by ``mimetype()`` function if given.
+    * If custom version scraping is implemented, user-supplied version must be returned by ``version()`` if both MIME type and version were given to the initializer. If MIME type or version was not given, the same version MUST be returned as would have been if neither had been given.
 
 Should you create a new scraper tool for some file format, it probably already has a proper base class, for example:
 
