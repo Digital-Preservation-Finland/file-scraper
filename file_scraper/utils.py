@@ -227,7 +227,6 @@ def run_command(cmd, stdout=subprocess.PIPE, env=None):
     return statuscode, stdout_result, stderr_result
 
 
-# pylint: disable=invalid-name
 def ensure_text(s, encoding="utf-8", errors="strict"):
     """Coerce *s* to six.text_type.
 
@@ -243,13 +242,13 @@ def ensure_text(s, encoding="utf-8", errors="strict"):
 
         https://github.com/benjaminp/six/blob/master/six.py#L892
     """
+    # pylint: disable=invalid-name
     if isinstance(s, six.binary_type):
         return s.decode(encoding, errors)
     elif isinstance(s, six.text_type):
         return s
     else:
         raise TypeError("not expecting type '{}'".format(type(s)))
-# pylint: enable=invalid-name
 
 
 def common_elements(list1, list2):
