@@ -360,7 +360,7 @@ def test_forced_filetype(filename, mimetype, version, version_result,
     Tests the simple cases of file type forcing.
 
     Here, the following cases are tested for one file type scraped using each
-    metadata model class supported by MagicScraper:
+    metadata model class supported by PilScraper:
         - Force the scraper to use the correct MIME type and version, which
           should always result in the given MIME type and version and the file
           should be well-formed.

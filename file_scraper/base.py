@@ -174,7 +174,12 @@ class BaseMeta(object):
         Metadata models can be given a mimetype and/or version obtained from
         another source such as METS. Metadata models must be implemented so
         that if supplied, these values are used instead of values determined
-        based on the file.
+        based on the file. None means that the values should be scraped from
+        the file normally.
+
+        :mimetype: MIME type as which the file is scraped. Default None.
+        :version: Version as which the file is scraped. Default None, only
+                  affects the returned version if MIME type is also given.
         """
         self._given_mimetype = mimetype
         self._given_version = version
@@ -184,7 +189,7 @@ class BaseMeta(object):
         """
         BaseMeta does no real scraping. Should be implemented in subclasses.
 
-        :returns: "(:unav)"
+        :returns: "(:unav)" or the user-supplied MIME type if given.
         """
         if self._given_mimetype:
             return self._given_mimetype
@@ -195,7 +200,8 @@ class BaseMeta(object):
         """
         BaseMeta does no real scraping. Should be implemented in subclasses.
 
-        :returns: "(:unav)"
+        :returns: "(:unav)" or the user-supplied version if that and MIME type
+                  are both given.
         """
         if self._given_mimetype and self._given_version:
             return self._given_version
@@ -210,7 +216,6 @@ class BaseMeta(object):
         """
         return 0
 
-    # pylint: disable=unused-argument
     @classmethod
     def is_supported(cls, mimetype, version=None, params=None):
         """
@@ -224,12 +229,12 @@ class BaseMeta(object):
         :returns: True if MIME type is supported and all versions are allowed
                   or the version is supported too.
         """
+        # pylint: disable=unused-argument
         if mimetype not in cls._supported:
             return False
         if version in cls._supported[mimetype] + [None] or cls._allow_versions:
             return True
         return False
-    # pylint: enable=unused-argument
 
     def iterate_metadata_methods(self):
         """Iterate through all metadata methods."""
