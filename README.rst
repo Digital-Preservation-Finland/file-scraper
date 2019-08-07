@@ -120,6 +120,22 @@ The following returns a checksum of the file with given algorithm (MD5 or SHA va
 
     scraper.checksum(algorithm=<algorithm>)
 
+
+File type detection without full scraping
+-----------------------------------------
+
+In some cases the full metadata information may not be of interest, and only a quick guess about the MIME type and version of the file is needed. For this, it is possible to use the ``detect_filetype()`` function in the following manner::
+
+    from file_scraper.scraper import Scraper
+    scraper = Scraper(filename)
+    scraper.detect_filetype()
+after which the type of the file can be addressed via ``scraper.mimetype`` and ``scraper.version``.
+
+If full scraping has been run previously, its results are erased. ``detect_filetype`` always leaves ``scraper.streams`` as ``None`` and ``scraper.well_formed`` either as ``False`` (file could not be found or read) or ``None``. Detector information is logged in ``scraper.info`` as with normal scraping.
+
+It should be noted that results obtained using only detectors are less accurate than ones from the full scraping, as detectors use a narrower selection of tools.
+
+
 Contributing
 ------------
 
