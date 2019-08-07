@@ -109,7 +109,7 @@ The following additional arguments for the Scraper are also possible:
           
     * For forcing scraping a file as a specific type:
     
-        * MIME type: ``mimetype=<mimetype>``. If MIME type is given, the file is scraped as this MIME type and the normal MIME type detection result is ignored. This makes it possible to e.g. scrape a file containing HTML as a plaintext file and thus not producing errors for problems like invalid HTML tags, which one might want to preserve as-is.
+        * MIME type: ``mimetype=<mimetype>``. If MIME type is given, the file is scraped as this MIME type and the normal MIME type detection result is ignored. This makes it possible to e.g. scrape a file containing HTML as a plaintext file and thus not produce errors for problems like invalid HTML tags, which one might want to preserve as-is.
         * Version: ``version=<version>``. If both MIME type and version are given, the normal version detection results are also ignored, and the user-supplied version is used and reported instead. Providing a version without MIME type has no effect.
 
 Additionally, the following returns a boolean value True, if the file is a text file, and False otherwise::
