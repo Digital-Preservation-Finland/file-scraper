@@ -32,8 +32,9 @@ class GhostscriptScraper(BaseScraper):
             self.streams.append(model(self._given_mimetype,
                                       self._given_version))
 
-        stdout_message = ensure_text(shell.stdout)
-        stderr_message = ensure_text(shell.stderr)
+        # Ghostscript may print characters which cannot be converted to UTF-8
+        stdout_message = ensure_text(shell.stdout, errors='replace')
+        stderr_message = ensure_text(shell.stderr, errors='replace')
         self._messages.append(stdout_message)
 
         # Ghostscript will result 0 if it can repair errors.
