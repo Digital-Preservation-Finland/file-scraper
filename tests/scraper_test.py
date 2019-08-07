@@ -13,6 +13,8 @@ This module tests that:
     - non-existent files are not well-formed according to the scraper.
     - giving None instead of a file name to the scraper results in successful
       scraping with a result of not well-formed.
+    - file type detection without scraping works and respects the forced file
+      type if provided.
 """
 from __future__ import unicode_literals
 
@@ -73,3 +75,46 @@ def test_missing_file():
     scraper = Scraper(None)
     scraper.scrape()
     assert not scraper.well_formed
+
+
+@pytest.mark.parametrize(
+    ["filename", "params", "expected_results"],
+    [
+        ("tests/data/image_png/valid_1.2.png", {},
+         {"mimetype": "image/png", "version": "1.0", "well_formed": None}),
+        ("nonexistent_file", {},
+         {"mimetype": None, "version": None, "well_formed": False}),
+        ("tests/data/image_png/invalid_1.2_wrong_CRC.png", {},
+         {"mimetype": "image/png", "version": "1.0", "well_formed": None}),
+        ("tests/data/video_mp4/valid__h264_aac.mp4", {"mimetype": "video/mpeg"},
+         {"mimetype": "video/mpeg", "version": None, "well_formed": None}),
+    ]
+)
+def test_detect_filetype(filename, params, expected_results):
+    """
+    Test running only the filetype detection.
+
+    This test ensures that the filetype detection fills in mimetype and version
+    (if available from detectors) for the file, leaving well_formed and
+    streams as None. Info should also contain some entries, but their contents
+    are not checked.
+
+    Then it is tested that the same results are also returned if full scraping
+    is run before filetype detection.
+    """
+    # Filetype detection should work without scraping
+    scraper = Scraper(filename, **params)
+    scraper.detect_filetype()
+    for field, value in expected_results.items():
+        assert getattr(scraper, field) == value
+    assert scraper.streams is None
+    assert scraper.info
+
+    # Even if scraping has been done previously, detection should erase all
+    # streams and other information
+    scraper.scrape()
+    scraper.detect_filetype()
+    for field, value in expected_results.items():
+        assert getattr(scraper, field) == value
+    assert scraper.streams is None
+    assert scraper.info

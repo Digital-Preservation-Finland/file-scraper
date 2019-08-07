@@ -120,6 +120,32 @@ class Scraper(object):
         self._check_utf8(check_wellformed)
         self._check_mimetype_version()
 
+    def detect_filetype(self):
+        """
+        Find out the MIME type and version of the file without metadata scrape.
+
+        All stream and file type information gathered during possible previous
+        scraping or filetype detection calls is erased when this function is
+        called.
+
+        Please note that using only detectors can result in a file type result
+        that differs from the one obtained by the full scraper due to full
+        scraping using a more comprehensive set of tools.
+        """
+        self.mimetype = None
+        self.version = None
+        self.streams = None
+        self.info = {}
+        self.well_formed = None
+
+        file_exists = FileExists(self.filename, None)
+        self._scrape_file(file_exists)
+
+        if file_exists.well_formed is False:
+            return
+
+        self._identify()
+
     def is_textfile(self):
         """Find out if file is a text file.
         :returns: True, if file is a text file, false otherwise
