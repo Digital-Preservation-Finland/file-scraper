@@ -142,6 +142,7 @@ class XmllintScraper(BaseScraper):
                     return
 
             (exitcode, stdout, stderr) = self.exec_xmllint(schema=self._schema)
+
         if exitcode == 0:
             self._messages.append(
                 "%s Success\n%s" % (
@@ -149,7 +150,8 @@ class XmllintScraper(BaseScraper):
                 )
             )
         else:
-            self._errors.append(ensure_text(stderr))
+            stderr_messages = ensure_text(stderr).splitlines()
+            self._errors = self._errors + stderr_messages
             return
 
         # Clean up constructed schemas
