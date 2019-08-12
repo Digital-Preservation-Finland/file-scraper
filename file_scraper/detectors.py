@@ -279,7 +279,8 @@ class VerapdfDetector(BaseDetector):
                       set as 'errors' in the info.
         """
         self.info = {"class": self.__class__.__name__,
-                     "messages": "File is not PDF/A, veraPDF detection not needed",
+                     "messages": "File is not PDF/A, veraPDF detection not "
+                                 "needed",
                      "errors": ""}
         if error_shell:
             self.info["errors"] = error_shell.stderr
