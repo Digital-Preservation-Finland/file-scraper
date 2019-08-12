@@ -25,8 +25,8 @@ from io import open
 
 import pytest
 
-from file_scraper.lxml.lxml_scraper import LxmlScraper
-from tests.common import parse_results, force_correct_filetype
+from file_scraper.lxml_scraper.lxml_scraper import LxmlScraper
+from tests.common import force_correct_filetype
 
 
 @pytest.mark.parametrize(

@@ -7,7 +7,7 @@ except ImportError:
     pass
 
 from file_scraper.base import BaseScraper
-from file_scraper.lxml.lxml_model import LxmlMeta
+from file_scraper.lxml_scraper.lxml_model import LxmlMeta
 
 
 class LxmlScraper(BaseScraper):

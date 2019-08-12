@@ -14,7 +14,7 @@ from file_scraper.jhove.jhove_scraper import (JHoveGifScraper,
                                               JHovePdfScraper,
                                               JHoveTiffScraper,
                                               JHoveWavScraper)
-from file_scraper.lxml.lxml_scraper import LxmlScraper
+from file_scraper.lxml_scraper.lxml_scraper import LxmlScraper
 from file_scraper.magic_scraper.magic_scraper import MagicScraper
 from file_scraper.mediainfo.mediainfo_scraper import MediainfoScraper
 from file_scraper.office.office_scraper import OfficeScraper
