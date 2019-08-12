@@ -1,6 +1,7 @@
 """File metadata scraper."""
 from __future__ import unicode_literals
 
+from file_scraper.detectors import VerapdfDetector
 from file_scraper.dummy.dummy_scraper import FileExists
 from file_scraper.iterator import iter_detectors, iter_scrapers
 from file_scraper.jhove.jhove_scraper import JHoveUtf8Scraper
@@ -39,20 +40,36 @@ class Scraper(object):
         for detector in iter_detectors():
             tool = detector(self.filename, self._given_mimetype,
                             self._given_version)
-            tool.detect()
-            self.info[len(self.info)] = tool.info
-            important = tool.get_important()
-            if self.mimetype in LOSE:
-                self.mimetype = tool.mimetype
-            if self.mimetype == tool.mimetype and \
-                    self.version in LOSE:
-                self.version = tool.version
-            if "mimetype" in important and \
-                    important["mimetype"] is not None:
-                self.mimetype = important["mimetype"]
-            if "version" in important and \
-                    important["version"] is not None:
-                self.version = important["version"]
+            self._update_filetype(tool)
+
+        # PDF files should be scrutinized further to determine if they are PDF/A
+        if (self.mimetype == "application/pdf" and not self._given_mimetype and
+                not self._given_version):
+            vera_detector = VerapdfDetector(self.filename)
+            self._update_filetype(vera_detector)
+
+    def _update_filetype(self, tool):
+        """
+        Runs the detector and updates the file type based on its results.
+
+        The MIME type or version is only changed if the old one is either
+        present in the LOSE list or the new one is marked important by the
+        detector.
+        """
+        tool.detect()
+        self.info[len(self.info)] = tool.info
+        important = tool.get_important()
+        if self.mimetype in LOSE:
+            self.mimetype = tool.mimetype
+        if self.mimetype == tool.mimetype and \
+                self.version in LOSE:
+            self.version = tool.version
+        if "mimetype" in important and \
+                important["mimetype"] is not None:
+            self.mimetype = important["mimetype"]
+        if "version" in important and \
+                important["version"] is not None:
+            self.version = important["version"]
 
     def _scrape_file(self, scraper):
         """Scrape with the given scraper.

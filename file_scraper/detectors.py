@@ -4,14 +4,16 @@ from __future__ import unicode_literals
 
 import ctypes
 
+import lxml.etree as ET
 import six
 
 from fido.fido import Fido, defaults
 from fido.pronomutils import get_local_pronom_versions
-from file_scraper.base import BaseDetector
+from file_scraper.base import BaseDetector, ProcessRunner
 from file_scraper.defaults import (MIMETYPE_DICT, PRIORITY_PRONOM, PRONOM_DICT,
                                    VERSION_DICT)
 from file_scraper.utils import encode_path, decode_path
+from file_scraper.verapdf.verapdf_scraper import VERAPDF_PATH
 
 try:
     from file_scraper.defaults import MAGIC_LIBRARY
@@ -223,3 +225,73 @@ class PredefinedDetector(BaseDetector):
         None and thus ignored by the scraper.
         """
         return {"mimetype": self.mimetype, "version": self.version}
+
+
+class VerapdfDetector(BaseDetector):
+    """
+    Detector for finding the version of PDF/A files.
+    """
+
+    def detect(self):
+        """
+        Run veraPDF to find out if the file is PDF/A and possibly its version.
+
+        If the file is not a PDF/A, the MIME type and version are left as None.
+        """
+        cmd = [VERAPDF_PATH, encode_path(self.filename)]
+        shell = ProcessRunner(cmd)
+
+        # Test if the file is a PDF/A
+        if shell.returncode != 0:
+            self._set_info_not_pdf_a(shell)
+            return
+        try:
+            report = ET.fromstring(shell.stdout)
+            if report.xpath("//batchSummary")[0].get("failedToParse") == "0":
+                compliant = report.xpath(
+                    "//validationReport")[0].get("isCompliant")
+                if compliant == "false":
+                    self._set_info_not_pdf_a()
+                    return
+                profile = \
+                    report.xpath("//validationReport")[0].get("profileName")
+            else:
+                self._set_info_not_pdf_a(shell)
+                return
+        except ET.XMLSyntaxError:
+            self._set_info_not_pdf_a(shell)
+            return
+
+        # If we have not encountered problems, the file is PDF/A and its
+        # version can be read from the profile.
+        version = profile.split("PDF/A")[1].split(" validation profile")[0]
+        self.version = "A{}".format(version.lower())
+        self.mimetype = "application/pdf"
+        self.info = {"class": self.__class__.__name__,
+                     "messages": "PDF/A version detected by veraPDF.",
+                     "errors": ""}
+
+    def _set_info_not_pdf_a(self, error_shell=None):
+        """
+        Set info to reflect the fact that the file was not a PDF/A.
+
+        :error_shell: If a ProcessRunner instance is given, its stderr is
+                      set as 'errors' in the info.
+        """
+        self.info = {"class": self.__class__.__name__,
+                     "messages": "File is not PDF/A, veraPDF detection not needed",
+                     "errors": ""}
+        if error_shell:
+            self.info["errors"] = error_shell.stderr
+
+    def get_important(self):
+        """
+        If and only if this detector determined a file type, it is important.
+
+        This is to make sure that the PDF/A detection result overrides the
+        non-archival result obtained by other detectors.
+        """
+        if self.mimetype and self.version:
+            return {"mimetype": self.mimetype, "version": self.version}
+        else:
+            return {}
