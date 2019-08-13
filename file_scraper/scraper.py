@@ -42,10 +42,10 @@ class Scraper(object):
                             self._given_version)
             self._update_filetype(tool)
 
-        # PDF files should be scrutinized further to determine if they are
-        # PDF/A
-        if (self.mimetype == "application/pdf" and not self._given_mimetype and
-                not self._given_version):
+        # Unless version is given by the user, PDF files should be scrutinized
+        # further to determine if they are PDF/A
+        if (self.mimetype == "application/pdf" and
+                not (self._given_mimetype and self._given_version)):
             vera_detector = VerapdfDetector(self.filename)
             self._update_filetype(vera_detector)
 
