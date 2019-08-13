@@ -5,12 +5,14 @@ This module tests that:
     - FidoDetector and MagicDetector detect MIME types correctly.
     - FidoDetector returns an empty dict from get_important() with
       certain mimetypes and MagicDetector returns certain mimetypes.
+    - VerapdfDetector detects PDF/A MIME types and versions but no others.
+    - VerapdfDetector results are important for PDF/A files.
 """
 from __future__ import unicode_literals
 
 import pytest
 
-from file_scraper.detectors import FidoDetector, MagicDetector
+from file_scraper.detectors import FidoDetector, MagicDetector, VerapdfDetector
 from tests.common import get_files
 
 CHANGE_FIDO = {
@@ -40,6 +42,32 @@ CHANGE_MAGIC = {
 
 
 @pytest.mark.parametrize(
+    ["filepath", "mimetype", "version"],
+    [
+        ("tests/data/application_pdf/valid_1.4.pdf", None, None),
+        ("tests/data/application_pdf/valid_A-1a.pdf", "application/pdf",
+         "A-1a"),
+        ("tests/data/application_pdf/valid_A-2b.pdf", "application/pdf",
+         "A-2b"),
+        ("tests/data/application_pdf/valid_A-3b.pdf", "application/pdf",
+         "A-3b"),
+        ("tests/data/image_png/valid_1.2.png", None, None)
+    ]
+)
+def test_pdf_detector(filepath, mimetype, version):
+    """
+    Test that VerapdfDetector works.
+
+    The detector should detect the file types of PDF/A files, but return None
+    for other files, including PDF files that are not PDF/A.
+    """
+    detector = VerapdfDetector(filepath)
+    detector.detect()
+    assert detector.mimetype == mimetype
+    assert detector.version == version
+
+
+@pytest.mark.parametrize(
     ["detector_class", "change_dict"],
     [
         (FidoDetector, CHANGE_FIDO),
@@ -59,6 +87,27 @@ def test_detectors(detector_class, change_dict):
 
 
 @pytest.mark.parametrize(
+    ["filepath", "important"],
+    [
+        ("tests/data/application_pdf/valid_A-1a.pdf", True),
+        ("tests/data/application_pdf/valid_1.4.pdf", False),
+        ("tests/data/image_gif/valid_1987a.gif", False)
+    ]
+)
+def test_important_pdf(filepath, important):
+    """
+    Test that VerapdfDetector results are important for PDF/A files only.
+    """
+    detector = VerapdfDetector(filepath)
+    detector.detect()
+    if important:
+        assert "mimetype" in detector.get_important()
+        assert "version" in detector.get_important()
+    else:
+        assert detector.get_important() == {}
+
+
+@pytest.mark.parametrize(
     ["detector_class", "mimetype"],
     [
         (FidoDetector, "text/html"),
@@ -67,8 +116,8 @@ def test_detectors(detector_class, change_dict):
         (MagicDetector, "application/x-internet-archive")
     ]
 )
-def test_important(detector_class, mimetype):
-    """Test important with cruical mimetypes."""
+def test_important_other(detector_class, mimetype):
+    """Test important with cruical mimetypes using other detectors."""
     detector = detector_class("testfilename")
     detector.mimetype = mimetype
     if detector_class == FidoDetector:
