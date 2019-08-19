@@ -107,7 +107,7 @@ The following additional arguments for the Scraper are also possible:
           but if there exist abstract Schematron patterns in separate files, the hash of those files must be calculated and given
           to make sure that the cache is updated properly. If ``None`` then it is assumed that abstract patterns do not exists or those are up to date.
           
-    * For forcing scraping a file as a specific type:
+    * Force the scraping of a file as a specific type:
     
         * MIME type: ``mimetype=<mimetype>``. If MIME type is given, the file is scraped as this MIME type and the normal MIME type detection result is ignored. This makes it possible to e.g. scrape a file containing HTML as a plaintext file and thus not produce errors for problems like invalid HTML tags, which one might want to preserve as-is.
         * Version: ``version=<version>``. If both MIME type and version are given, the normal version detection results are also ignored, and the user-supplied version is used and reported instead. Providing a version without MIME type has no effect.
