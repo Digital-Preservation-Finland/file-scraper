@@ -20,30 +20,23 @@ from __future__ import unicode_literals
 
 import pytest
 
-import file_scraper.scraper
-from file_scraper.base import BaseScraper
 from file_scraper.scraper import Scraper
 
 
-class _TestScraper(BaseScraper):
-    """Monkey patch for CheckTextFile class."""
-
-    def scrape_file(self):
-        """Do nothing."""
-        pass
-
-    @property
-    def well_formed(self):
-        return self.filename == b"textfile"
-
-
-def test_is_textfile(monkeypatch):
-    """Test that CheckTextFile well-formed value is returned."""
-    monkeypatch.setattr(file_scraper.scraper, "TextfileScraper", _TestScraper)
-    scraper = Scraper("textfile")
-    assert scraper.is_textfile()
-    scraper = Scraper("binaryfile")
-    assert not scraper.is_textfile()
+def test_is_textfile():
+    """Test that text files (and only text files) are identified as such."""
+    textfiles = ["tests/data/text_plain/valid__ascii.txt",
+                 "tests/data/text_plain/valid__iso8859.txt",
+                 "tests/data/text_plain/valid__utf8.txt"]
+    binaryfiles = ["tests/data/text_plain/invalid__binary_data.txt",
+                   "tests/data/image_png/valid_1.2.png",
+                   "tests/data/application_pdf/valid_1.2.pdf"]
+    for filename in textfiles:
+        scraper = Scraper(filename)
+        assert scraper.is_textfile()
+    for filename in binaryfiles:
+        scraper = Scraper(filename)
+        assert scraper.is_textfile() is False
 
 
 def test_checksum():
