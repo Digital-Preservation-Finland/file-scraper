@@ -168,7 +168,7 @@ class Scraper(object):
         """Find out if file is a text file.
         :returns: True, if file is a text file, false otherwise
         """
-        scraper = TextfileScraper(self.filename, self.mimetype)
+        scraper = TextfileScraper(self.filename)
         scraper.scrape_file()
         return scraper.well_formed
 
