@@ -115,18 +115,13 @@ class Scraper(object):
         """Scrape file and collect metadata.
         :check_wellformed: True, full scraping; False, skip well-formed check.
         """
-        self.streams = None
-        self.info = {}
-        self.well_formed = None
+        self.detect_filetype()
 
-        file_exists = FileExists(self.filename, None)
-        self._scrape_file(file_exists)
-
-        if file_exists.well_formed is False:
+        # File not found or MIME type could not be determined
+        if not self.mimetype:
             self.streams = {}
             return
 
-        self._identify()
         self._params["mimetype_guess"] = self.mimetype
         for scraper_class in iter_scrapers(
                 mimetype=self.mimetype, version=self.version,
