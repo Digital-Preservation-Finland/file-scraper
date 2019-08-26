@@ -107,6 +107,7 @@ import pytest
 import six
 
 from file_scraper.base import BaseMeta
+from file_scraper.scraper import LOSE
 from file_scraper.utils import (OverlappingLoseAndImportantException,
                                 _merge_to_stream, concat,
                                 generate_metadata_dict, hexdigest,
@@ -293,6 +294,23 @@ class MetaTest(object):
          "value1", [], {"key_important": "value1"},
          {"key_important": "value1", "key2": "value2"},
          {"key_important": "value1"}),
+
+        # Add key with None value
+        ({}, "key_notimportant", None, LOSE, {},
+         {"key_notimportant": None}, {}),
+
+        # Add key with empty value
+        ({}, "key_notimportant", "", LOSE, {},
+         {"key_notimportant": ""}, {}),
+
+        # Try to replace value with None when using LOSE list from scraper.
+        ({"key_notimportant": "value"}, "key_notimportant", None, LOSE, {},
+         {"key_notimportant": "value"}, {}),
+
+        # Try to replace value with empty string when using LOSE list from
+        # scraper.
+        ({"key_notimportant": "value"}, "key_notimportant", "", LOSE, {},
+         {"key_notimportant": "value"}, {}),
     ]
 )
 def test_merge_to_stream(dict1, method, value, lose, importants, result_dict,

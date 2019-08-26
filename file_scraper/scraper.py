@@ -8,7 +8,7 @@ from file_scraper.jhove.jhove_scraper import JHoveUtf8Scraper
 from file_scraper.textfile.textfile_scraper import TextfileScraper
 from file_scraper.utils import encode_path, generate_metadata_dict, hexdigest
 
-LOSE = (None, "(:unav)")
+LOSE = (None, "(:unav)", "")
 
 
 class Scraper(object):
