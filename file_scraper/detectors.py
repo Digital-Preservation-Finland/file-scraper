@@ -10,13 +10,13 @@ import six
 from fido.fido import Fido, defaults
 from fido.pronomutils import get_local_pronom_versions
 from file_scraper.base import BaseDetector, ProcessRunner
+from file_scraper.config import VERAPDF_PATH
 from file_scraper.defaults import (MIMETYPE_DICT, PRIORITY_PRONOM, PRONOM_DICT,
                                    VERSION_DICT)
 from file_scraper.utils import encode_path, decode_path
-from file_scraper.verapdf.verapdf_scraper import VERAPDF_PATH
 
 try:
-    from file_scraper.defaults import MAGIC_LIBRARY
+    from file_scraper.config import MAGIC_LIBRARY
 
     # Monkeypatch magic to load a newer version of the 'magic' shared library
     ctypes.cdll.LoadLibrary(MAGIC_LIBRARY)

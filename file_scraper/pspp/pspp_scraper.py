@@ -7,10 +7,10 @@ import tempfile
 from io import open as io_open
 
 from file_scraper.base import BaseScraper, ProcessRunner
+from file_scraper.config import PSPP_PATH
 from file_scraper.pspp.pspp_model import PsppMeta
 from file_scraper.utils import ensure_text
 
-PSPP_PATH = "/usr/bin/pspp-convert"
 SPSS_PORTABLE_HEADER = b"SPSS PORT FILE"
 
 

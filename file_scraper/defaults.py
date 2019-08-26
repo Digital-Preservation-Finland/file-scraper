@@ -1,8 +1,6 @@
 """Common constants and dictionaries"""
 from __future__ import unicode_literals
 
-MAGIC_LIBRARY = "/opt/file-5.30/lib64/libmagic.so.1"
-
 # Prioritize these pronom codes in identification
 PRIORITY_PRONOM = [
     "x-fmt/18", "fmt/483", "fmt/102", "fmt/103", "fmt/101", "fmt/100",

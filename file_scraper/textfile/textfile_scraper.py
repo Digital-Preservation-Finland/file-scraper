@@ -2,11 +2,11 @@
 from __future__ import unicode_literals
 
 from file_scraper.base import BaseScraper, ProcessRunner
+from file_scraper.config import FILECMD_PATH, LD_LIBRARY_PATH
 from file_scraper.textfile.textfile_model import TextFileMeta
 from file_scraper.utils import encode_path, ensure_text
 
-FILECMD_PATH = "/opt/file-5.30/bin/file"
-ENV = {"LD_LIBRARY_PATH": "/opt/file-5.30/lib64"}
+ENV = {"LD_LIBRARY_PATH": LD_LIBRARY_PATH}
 
 
 class TextfileScraper(BaseScraper):

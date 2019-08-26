@@ -10,7 +10,7 @@ from file_scraper.defaults import MIMETYPE_DICT
 from file_scraper.utils import encode_path, metadata
 
 try:
-    from file_scraper.defaults import MAGIC_LIBRARY
+    from file_scraper.config import MAGIC_LIBRARY
 
     ctypes.cdll.LoadLibrary(MAGIC_LIBRARY)
 except OSError:

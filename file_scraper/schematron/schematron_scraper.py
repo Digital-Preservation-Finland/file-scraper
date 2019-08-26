@@ -7,6 +7,7 @@ import tempfile
 
 import lxml.etree as etree
 from file_scraper.base import BaseScraper, ProcessRunner
+from file_scraper.config import SCHEMATRON_DIRNAME
 from file_scraper.schematron.schematron_model import SchematronMeta
 from file_scraper.utils import encode_path, ensure_text, hexdigest
 
@@ -33,7 +34,6 @@ class SchematronScraper(BaseScraper):
         self._cache = params.get("cache", True)
         self._cachepath = os.path.expanduser(
             "~/.file-scraper/schematron-cache")
-        self._schematron_dirname = "/usr/share/iso_schematron_xslt1"
         self._returncode = None
         self._schematron_file = params.get("schematron", None)
         self._extra_hash = params.get("extra_hash", None)
@@ -150,7 +150,7 @@ class SchematronScraper(BaseScraper):
             cmd = cmd + ["-o", outputfile]
         if outputfilter and not self._verbose:
             cmd = cmd + ["--stringparam", "outputfilter", "only_messages"]
-        cmd = cmd + [os.path.join(self._schematron_dirname, stylesheet),
+        cmd = cmd + [os.path.join(SCHEMATRON_DIRNAME, stylesheet),
                      encode_path(inputfile)]
         shell = ProcessRunner(cmd)
         if shell.returncode not in allowed_codes:

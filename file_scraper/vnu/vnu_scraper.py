@@ -2,10 +2,9 @@
 from __future__ import unicode_literals
 
 from file_scraper.base import BaseScraper, ProcessRunner
+from file_scraper.config import VNU_PATH
 from file_scraper.vnu.vnu_model import VnuMeta
 from file_scraper.utils import ensure_text
-
-VNU_PATH = "/usr/share/java/vnu/vnu.jar"
 
 
 class VnuScraper(BaseScraper):

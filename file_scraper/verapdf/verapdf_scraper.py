@@ -7,10 +7,9 @@ except ImportError:
     pass
 
 from file_scraper.base import BaseScraper, ProcessRunner
+from file_scraper.config import VERAPDF_PATH
 from file_scraper.verapdf.verapdf_model import VerapdfMeta
 from file_scraper.utils import ensure_text, encode_path
-
-VERAPDF_PATH = "/usr/share/java/verapdf/verapdf"
 
 
 class VerapdfScraper(BaseScraper):
