@@ -41,7 +41,8 @@ import pytest
 import six
 
 from file_scraper.office.office_scraper import OfficeScraper
-from tests.common import parse_results, force_correct_filetype
+from tests.common import (parse_results, force_correct_filetype,
+                          partial_message_included)
 
 BASEPATH = "tests/data"
 
@@ -156,7 +157,7 @@ def test_no_wellformed():
     scraper = OfficeScraper("tests/data/application_msword/valid_11.0.doc",
                             False)
     scraper.scrape_file()
-    assert "Skipping scraper" in scraper.messages()
+    assert partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
 
 

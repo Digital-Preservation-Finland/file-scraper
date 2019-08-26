@@ -26,7 +26,7 @@ from io import open
 import pytest
 
 from file_scraper.lxml_scraper.lxml_scraper import LxmlScraper
-from tests.common import force_correct_filetype
+from tests.common import force_correct_filetype, partial_message_included
 
 
 @pytest.mark.parametrize(
@@ -62,7 +62,7 @@ def test_no_wellformed(testpath):
         file_.write(xml)
     scraper = LxmlScraper(tmppath, False)
     scraper.scrape_file()
-    assert "Skipping scraper" in scraper.messages()
+    assert partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
 
 

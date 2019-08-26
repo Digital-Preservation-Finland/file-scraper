@@ -21,6 +21,7 @@ import file_scraper.base
 from file_scraper.base import (ProcessRunner, BaseScraper, BaseMeta,
                                BaseDetector)
 from file_scraper.utils import metadata
+from tests.common import partial_message_included
 
 
 def test_shell(monkeypatch):
@@ -126,8 +127,8 @@ def test_messages_errors():
     scraper._messages.append("test message 2")
     scraper._errors.append("test error")
     scraper._errors.append("test error 2")
-    assert scraper.messages() == "test message\ntest message 2"
-    assert scraper.errors() == "ERROR: test error\nERROR: test error 2"
+    assert scraper.messages() == ["test message", "test message 2"]
+    assert scraper.errors() == ["ERROR: test error", "ERROR: test error 2"]
 
 
 def test_scraper_properties():
@@ -175,7 +176,7 @@ def test_overriding_filetype(given_mimetype, given_version, expected_mimetype,
     assert scraper.streams[0].mimetype() == expected_mimetype
     assert scraper.streams[0].version() == expected_version
     if expected_message:
-        assert expected_message in scraper.messages()
+        assert partial_message_included(expected_message, scraper.messages())
     else:
         assert not scraper.messages()
 
@@ -225,9 +226,9 @@ def test_check_supported(scraper_class, mimetype, version, errors):
     scraper.streams.append(BaseMetaCustom(mimetype, version))
     scraper._check_supported()
     if not errors:
-        assert scraper.errors() == ""
+        assert not scraper.errors()
     else:
-        assert errors in scraper.errors()
+        assert partial_message_included(errors, scraper.errors())
 
 
 def test_base_detector():

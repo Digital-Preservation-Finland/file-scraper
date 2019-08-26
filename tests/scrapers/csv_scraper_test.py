@@ -32,7 +32,7 @@ import six
 
 from file_scraper.csv.csv_model import CsvMeta
 from file_scraper.csv.csv_scraper import CsvScraper
-from tests.common import parse_results
+from tests.common import parse_results, partial_message_included
 
 MIMETYPE = "text/csv"
 
@@ -212,7 +212,7 @@ def test_pdf_as_csv():
     scraper.scrape_file()
 
     assert not scraper.well_formed, scraper.messages() + scraper.errors()
-    assert 'successfully' not in scraper.messages()
+    assert not partial_message_included('successfully', scraper.messages())
     assert scraper.errors()
 
 
@@ -260,7 +260,8 @@ def test_nonexistent_file():
     """
     scraper = CsvScraper("nonexistent/file.csv")
     scraper.scrape_file()
-    assert "Error when reading the file: " in scraper.errors()
+    assert partial_message_included("Error when reading the file: ",
+                                    scraper.errors())
     assert not scraper.well_formed
 
 
@@ -272,7 +273,7 @@ def test_no_wellformed(testpath):
     scraper = CsvScraper(outfile.name, False)
     scraper.scrape_file()
 
-    assert 'Skipping scraper' in scraper.messages()
+    assert partial_message_included('Skipping scraper', scraper.messages())
     assert scraper.well_formed is None
 
 

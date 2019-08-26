@@ -169,3 +169,15 @@ def force_correct_filetype(filename, result_dict, filetype,
         correct.streams = {}
 
     return correct
+
+
+def partial_message_included(part, messages):
+    """
+    Check if partial message is found as a substring in one of the strings in
+    messages. If the partial message is empty, it is interpreted to be found
+    in any collection of messages, even if the collection is empty.
+
+    :part: The substring to find in messages.
+    :messages: An iterable of strings.
+    """
+    return part == "" or any(part in message for message in messages)

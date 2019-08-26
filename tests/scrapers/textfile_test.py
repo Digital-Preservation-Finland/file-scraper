@@ -14,7 +14,7 @@ from __future__ import unicode_literals
 import pytest
 
 from file_scraper.textfile.textfile_scraper import TextfileScraper
-from tests.common import parse_results
+from tests.common import parse_results, partial_message_included
 
 VALID_MSG = "is a text file"
 INVALID_MSG = "is not a text file"
@@ -51,6 +51,6 @@ def test_existing_files(filename, mimetype, is_textfile, evaluate_scraper):
         correct.stderr_part = ""
         evaluate_scraper(scraper, correct)
     else:
-        assert INVALID_MSG in scraper.errors()
+        assert partial_message_included(INVALID_MSG, scraper.errors())
         assert scraper.errors()
         assert not scraper.well_formed

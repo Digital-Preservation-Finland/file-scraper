@@ -33,7 +33,8 @@ import pytest
 import six
 
 from file_scraper.mediainfo.mediainfo_scraper import MediainfoScraper
-from tests.common import parse_results, force_correct_filetype
+from tests.common import (parse_results, force_correct_filetype,
+                          partial_message_included)
 from tests.scrapers.stream_dicts import (DV_VIDEO, FFV_VIDEO,
                                          FFV_VIDEO_TRUNCATED, MKV_CONTAINER,
                                          MOV_CONTAINER, MOV_DV_VIDEO, MOV_TC,
@@ -79,8 +80,8 @@ def test_mediainfo_scraper_mov(filename, result_dict, mimetype,
         correct.streams[0].pop("stream_type", None)
 
     if "empty" in filename:
-        assert correct.stdout_part in scraper.messages()
-        assert correct.stderr_part in scraper.errors()
+        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stderr_part, scraper.errors())
         assert not scraper.streams
     else:
         evaluate_scraper(scraper, correct)
@@ -119,8 +120,8 @@ def test_mediainfo_scraper_mkv(filename, result_dict, evaluate_scraper):
         correct.streams[0]["stream_type"] = None
 
     if "empty" in filename:
-        assert correct.stdout_part in scraper.messages()
-        assert correct.stderr_part in scraper.errors()
+        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stderr_part, scraper.errors())
         assert not scraper.streams
     else:
         evaluate_scraper(scraper, correct)
@@ -153,8 +154,8 @@ def test_mediainfo_scraper_wav(filename, result_dict, evaluate_scraper):
     scraper.scrape_file()
 
     if "empty" in filename:
-        assert correct.stdout_part in scraper.messages()
-        assert correct.stderr_part in scraper.errors()
+        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stderr_part, scraper.errors())
         assert not scraper.streams
     else:
         evaluate_scraper(scraper, correct)
@@ -191,8 +192,8 @@ def test_mediainfo_scraper_mpeg(filename, result_dict, evaluate_scraper):
     scraper.scrape_file()
     del correct.streams[0]["stream_type"]
     if "empty" in filename:
-        assert correct.stdout_part in scraper.messages()
-        assert correct.stderr_part in scraper.errors()
+        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stderr_part, scraper.errors())
         assert not scraper.streams
     else:
         evaluate_scraper(scraper, correct)
@@ -224,8 +225,8 @@ def test_mediainfo_scraper_mp4(filename, result_dict, evaluate_scraper):
     for stream in correct.streams.values():
         stream["version"] = "(:unav)"
     if "empty" in filename:
-        assert correct.stdout_part in scraper.messages()
-        assert correct.stderr_part in scraper.errors()
+        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stderr_part, scraper.errors())
         assert not scraper.streams
     else:
         evaluate_scraper(scraper, correct)
@@ -253,8 +254,8 @@ def test_mediainfo_scraper_mp3(filename, result_dict, evaluate_scraper):
     scraper.scrape_file()
 
     if "empty" in filename:
-        assert correct.stdout_part in scraper.messages()
-        assert correct.stderr_part in scraper.errors()
+        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stderr_part, scraper.errors())
         assert not scraper.streams
     else:
         correct.streams[0].pop("stream_type", None)
@@ -288,8 +289,8 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
         if stream["mimetype"] == "video/MP2T":
             stream["version"] = "(:unav)"
     if "empty" in filename:
-        assert correct.stdout_part in scraper.messages()
-        assert correct.stderr_part in scraper.errors()
+        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stderr_part, scraper.errors())
         assert not scraper.streams
     else:
         evaluate_scraper(scraper, correct)
@@ -300,7 +301,7 @@ def test_no_wellformed():
     scraper = MediainfoScraper("tests/data/audio_x-wav/valid__wav.wav",
                                False, params={"mimetype_guess": "audio/x-wav"})
     scraper.scrape_file()
-    assert "Skipping scraper" not in scraper.messages()
+    assert not partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
 
 

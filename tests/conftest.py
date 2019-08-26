@@ -5,6 +5,7 @@ import tempfile
 import shutil
 
 import pytest
+from tests.common import partial_message_included
 
 
 @pytest.yield_fixture(scope="function")
@@ -52,7 +53,9 @@ def evaluate_scraper():
         assert scraper.well_formed == correct.well_formed
 
         if eval_output:
-            assert correct.stdout_part in scraper.messages()
-            assert correct.stderr_part in scraper.errors()
+            assert partial_message_included(correct.stdout_part,
+                                           scraper.messages())
+            assert partial_message_included(correct.stderr_part,
+                                           scraper.errors())
 
     return _func

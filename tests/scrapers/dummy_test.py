@@ -24,6 +24,7 @@ import pytest
 import six
 
 from file_scraper.dummy.dummy_scraper import FileExists, ScraperNotFound
+from tests.common import partial_message_included
 
 DEFAULTSTREAMS = {0: {"index": 0, "version": "(:unav)",
                       "stream_type": "(:unav)", "mimetype": "(:unav)"}}
@@ -48,7 +49,7 @@ def test_existing_files(filepath):
 
     assert scraper.well_formed is None
     assert not scraper.errors()
-    assert "was found" in scraper.messages()
+    assert partial_message_included("was found", scraper.messages())
     assert scraper.info()["class"] == "FileExists"
     for stream_index, stream_metadata in six.iteritems(streams):
         scraped_metadata = scraper.streams[stream_index]
@@ -65,7 +66,7 @@ def test_nonexistent_files(filepath):
     scraper.scrape_file()
 
     assert not scraper.well_formed
-    assert "does not exist" in scraper.errors()
+    assert partial_message_included("does not exist", scraper.errors())
 
 
 def test_none_filename():
@@ -74,7 +75,7 @@ def test_none_filename():
     scraper.scrape_file()
 
     assert not scraper.well_formed
-    assert "No filename given." in scraper.errors()
+    assert partial_message_included("No filename given.", scraper.errors())
 
 
 @pytest.mark.parametrize(

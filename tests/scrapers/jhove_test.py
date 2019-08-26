@@ -104,7 +104,8 @@ from file_scraper.jhove.jhove_scraper import (JHoveGifScraper,
                                               JHoveTiffScraper,
                                               JHoveUtf8Scraper,
                                               JHoveWavScraper)
-from tests.common import parse_results, force_correct_filetype
+from tests.common import (parse_results, force_correct_filetype,
+                          partial_message_included)
 
 
 @pytest.mark.parametrize(
@@ -248,8 +249,9 @@ def test_scraper_invalid_pdfversion():
                                                                         ver),
                                   True)
     scraper.scrape_file()
-    assert ("MIME type application/pdf with version 1.0 is not supported."
-            in scraper.errors())
+    assert partial_message_included(
+        "MIME type application/pdf with version 1.0 is not supported.",
+        scraper.errors())
     assert not scraper.well_formed
 
 
@@ -432,7 +434,7 @@ def test_no_wellformed(scraper_class, filename, mime):
                                          filename),
                             False)
     scraper.scrape_file()
-    assert "Skipping scraper" in scraper.messages()
+    assert partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
 
 

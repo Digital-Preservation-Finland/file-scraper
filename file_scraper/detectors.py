@@ -130,8 +130,8 @@ class FidoDetector(BaseDetector):
         self.version = fido.version
         self._puid = fido.puid
         self.info = {"class": self.__class__.__name__,
-                     "messages": "",
-                     "errors": ""}
+                     "messages": [],
+                     "errors": []}
 
     def get_important(self):
         """
@@ -171,8 +171,8 @@ class MagicDetector(BaseDetector):
         else:
             self.mimetype = six.text_type(mimetype)
         self.info = {"class": self.__class__.__name__,
-                     "messages": "",
-                     "errors": ""}
+                     "messages": [],
+                     "errors": []}
 
     def get_important(self):
         """
@@ -210,12 +210,12 @@ class PredefinedDetector(BaseDetector):
             self.version = self._given_version
 
         if self._given_mimetype:
-            message = "User-supplied file format used"
+            messages = ["User-supplied file format used"]
         else:
-            message = ""
+            messages = []
         self.info = {"class": self.__class__.__name__,
-                     "messages": message,
-                     "errors": ""}
+                     "messages": messages,
+                     "errors": []}
 
     def get_important(self):
         """
@@ -268,8 +268,8 @@ class VerapdfDetector(BaseDetector):
         self.version = "A{}".format(version.lower())
         self.mimetype = "application/pdf"
         self.info = {"class": self.__class__.__name__,
-                     "messages": "PDF/A version detected by veraPDF.",
-                     "errors": ""}
+                     "messages": ["PDF/A version detected by veraPDF."],
+                     "errors": []}
 
     def _set_info_not_pdf_a(self, error_shell=None):
         """
@@ -279,9 +279,9 @@ class VerapdfDetector(BaseDetector):
                       set as 'errors' in the info.
         """
         self.info = {"class": self.__class__.__name__,
-                     "messages": "File is not PDF/A, veraPDF detection not "
-                                 "needed",
-                     "errors": ""}
+                     "messages": ["File is not PDF/A, veraPDF detection not "
+                                  "needed"],
+                     "errors": []}
         if error_shell:
             self.info["errors"] = error_shell.stderr
 

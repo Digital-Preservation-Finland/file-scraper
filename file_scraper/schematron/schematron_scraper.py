@@ -68,7 +68,8 @@ class SchematronScraper(BaseScraper):
         if not self._check_wellformed:
             return None
         if not self.errors() and self.messages():
-            if self.messages().find("<svrl:failed-assert ") < 0 \
+            if not any("<svrl:failed-assert " in message
+                       for message in self.messages()) \
                     and self._returncode == 0:
                 return True
         return False

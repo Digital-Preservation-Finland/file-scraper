@@ -25,7 +25,8 @@ import pytest
 import six
 
 from file_scraper.vnu.vnu_scraper import VnuScraper
-from tests.common import parse_results, force_correct_filetype
+from tests.common import (parse_results, force_correct_filetype,
+                          partial_message_included)
 
 MIMETYPE = "text/html"
 
@@ -63,8 +64,8 @@ def test_scraper(filename, result_dict, evaluate_scraper):
     if not correct.well_formed:
         assert not scraper.well_formed
         assert not scraper.streams
-        assert correct.stdout_part in scraper.messages()
-        assert correct.stderr_part in scraper.errors()
+        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stderr_part, scraper.errors())
     else:
         evaluate_scraper(scraper, correct)
 
@@ -73,7 +74,7 @@ def test_no_wellformed():
     """Test scraper without well-formed check."""
     scraper = VnuScraper("tests/data/text_html/valid_5.0.html", False)
     scraper.scrape_file()
-    assert "Skipping scraper" in scraper.messages()
+    assert partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
 
 

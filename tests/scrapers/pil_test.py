@@ -26,7 +26,8 @@ from __future__ import unicode_literals
 import pytest
 
 from file_scraper.pil.pil_scraper import PilScraper
-from tests.common import parse_results, force_correct_filetype
+from tests.common import (parse_results, force_correct_filetype,
+                          partial_message_included)
 
 VALID_MSG = "successfully"
 INVALID_MSG = "Error in analyzing file."
@@ -96,8 +97,8 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
         evaluate_scraper(scraper, correct)
     else:
         assert not scraper.well_formed
-        assert correct.stdout_part in scraper.messages()
-        assert correct.stderr_part in scraper.errors()
+        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stderr_part, scraper.errors())
         assert not scraper.streams
 
 
@@ -138,8 +139,8 @@ def test_scraper_jpg(filename, result_dict, evaluate_scraper):
         evaluate_scraper(scraper, correct)
     else:
         assert not scraper.well_formed
-        assert correct.stdout_part in scraper.messages()
-        assert correct.stderr_part in scraper.errors()
+        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stderr_part, scraper.errors())
         assert not scraper.streams
 
 
@@ -174,8 +175,8 @@ def test_scraper_jp2(filename, result_dict, evaluate_scraper):
         evaluate_scraper(scraper, correct)
     else:
         assert not scraper.well_formed
-        assert correct.stdout_part in scraper.messages()
-        assert correct.stderr_part in scraper.errors()
+        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stderr_part, scraper.errors())
         assert not scraper.streams
 
 
@@ -221,8 +222,8 @@ def test_scraper_png(filename, result_dict, evaluate_scraper):
         evaluate_scraper(scraper, correct)
     else:
         assert not scraper.well_formed
-        assert correct.stdout_part in scraper.messages()
-        assert correct.stderr_part in scraper.errors()
+        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stderr_part, scraper.errors())
         assert not scraper.streams
 
 
@@ -277,8 +278,8 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
         evaluate_scraper(scraper, correct)
     else:
         assert not scraper.well_formed
-        assert correct.stdout_part in scraper.messages()
-        assert correct.stderr_part in scraper.errors()
+        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stderr_part, scraper.errors())
         assert not scraper.streams
 
 
@@ -286,7 +287,7 @@ def test_no_wellformed():
     """Test scraper without well-formed check."""
     scraper = PilScraper("tests/data/image_gif/valid_1987a.gif", False)
     scraper.scrape_file()
-    assert "Skipping scraper" not in scraper.messages()
+    assert not partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
 
 

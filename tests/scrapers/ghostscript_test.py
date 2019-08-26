@@ -29,7 +29,8 @@ from __future__ import unicode_literals
 import pytest
 
 from file_scraper.ghostscript.ghostscript_scraper import GhostscriptScraper
-from tests.common import parse_results, force_correct_filetype
+from tests.common import (parse_results, force_correct_filetype,
+                          partial_message_included)
 
 
 @pytest.mark.parametrize(
@@ -67,11 +68,13 @@ def test_scraper_pdf(filename, result_dict, evaluate_scraper):
         evaluate_scraper(scraper, correct, eval_output=False)
 
         if scraper.well_formed:
-            assert "Error" not in scraper.messages()
+            assert not partial_message_included("Error", scraper.messages())
             assert not scraper.errors()
         else:
-            assert correct.stderr_part in scraper.errors()
-            assert correct.stdout_part in scraper.messages()
+            assert partial_message_included(correct.stderr_part,
+                                            scraper.errors())
+            assert partial_message_included(correct.stdout_part,
+                                            scraper.messages())
 
 
 @pytest.mark.parametrize(
@@ -159,7 +162,7 @@ def test_no_wellformed():
     scraper = GhostscriptScraper("tests/data/application_pdf/valid_1.4.pdf",
                                  False)
     scraper.scrape_file()
-    assert "Skipping scraper" in scraper.messages()
+    assert partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
 
 

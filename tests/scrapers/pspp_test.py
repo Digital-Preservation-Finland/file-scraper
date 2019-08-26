@@ -25,7 +25,8 @@ import pytest
 import six
 
 from file_scraper.pspp.pspp_scraper import PsppScraper
-from tests.common import parse_results, force_correct_filetype
+from tests.common import (parse_results, force_correct_filetype,
+                          partial_message_included)
 
 MIMETYPE = "application/x-spss-por"
 
@@ -67,7 +68,7 @@ def test_no_wellformed():
     """Test scraper without well-formed check."""
     scraper = PsppScraper("tests/data/application_x-spss-por/valid.por", False)
     scraper.scrape_file()
-    assert "Skipping scraper" in scraper.messages()
+    assert partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
 
 

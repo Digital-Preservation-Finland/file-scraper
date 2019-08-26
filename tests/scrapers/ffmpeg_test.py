@@ -49,7 +49,8 @@ from __future__ import unicode_literals
 import pytest
 
 from file_scraper.ffmpeg.ffmpeg_scraper import FFMpegScraper
-from tests.common import parse_results, force_correct_filetype
+from tests.common import (parse_results, force_correct_filetype,
+                          partial_message_included)
 
 NO_METADATA = {0: {'mimetype': '(:unav)', 'index': 0, 'version': '(:unav)',
                    'stream_type': '(:unav)'}}
@@ -117,7 +118,7 @@ def test_no_wellformed():
     """
     scraper = FFMpegScraper("tests/data/audio_mpeg/valid_1.mp3", False)
     scraper.scrape_file()
-    assert "Skipping scraper" in scraper.messages()
+    assert partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
 
 

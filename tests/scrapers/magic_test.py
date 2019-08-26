@@ -100,7 +100,8 @@ import six
 from file_scraper.magic_scraper.magic_model import (HtmlFileMagicMeta,
                                                     OfficeFileMagicMeta)
 from file_scraper.magic_scraper.magic_scraper import MagicScraper
-from tests.common import parse_results, force_correct_filetype
+from tests.common import (parse_results, force_correct_filetype,
+                          partial_message_included)
 
 
 @pytest.mark.parametrize(
@@ -226,8 +227,8 @@ def test_invalid_office(filename, mimetype):
 
     assert not scraper.well_formed
     assert not scraper.streams
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
+    assert partial_message_included(correct.stdout_part, scraper.messages())
+    assert partial_message_included(correct.stderr_part, scraper.errors())
 
 
 @pytest.mark.parametrize(
@@ -297,8 +298,8 @@ def test_invalid_images(filename, mimetype):
 
     assert not scraper.well_formed
     assert not scraper.streams
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
+    assert partial_message_included(correct.stdout_part, scraper.messages())
+    assert partial_message_included(correct.stderr_part, scraper.errors())
 
 
 @pytest.mark.parametrize(
@@ -333,8 +334,8 @@ def test_invalid_text(filename, mimetype):
 
     assert not scraper.well_formed
     assert not scraper.streams
-    assert correct.stdout_part in scraper.messages()
-    assert correct.stderr_part in scraper.errors()
+    assert partial_message_included(correct.stdout_part, scraper.messages())
+    assert partial_message_included(correct.stderr_part, scraper.errors())
 
 
 @pytest.mark.parametrize(
@@ -352,7 +353,7 @@ def test_wrong_mime_with_xml(filepath):
     scraper.scrape_file()
     assert not scraper.well_formed
     assert not scraper.streams
-    assert "does not match" in scraper.errors()
+    assert partial_message_included("does not match", scraper.errors())
 
 
 def test_no_mime_given():
@@ -375,7 +376,7 @@ def test_no_wellformed():
     scraper = MagicScraper("tests/data/image_jpeg/valid_1.01.jpg", False,
                            {"mimetype_guess": "image/jpeg"})
     scraper.scrape_file()
-    assert "Skipping scraper" not in scraper.messages()
+    assert not partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
 
 

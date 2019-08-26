@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 import abc
 import subprocess
-from file_scraper.utils import run_command, metadata, is_metadata, concat
+from file_scraper.utils import run_command, metadata, is_metadata
 
 
 class BaseScraper(object):
@@ -125,21 +125,22 @@ class BaseScraper(object):
 
     def errors(self):
         """
-        Return the logged errors.
+        Return the logged errors in a list.
 
-        Each error is on its own line, preceded py "ERROR: ".
+        Each error is prefixed with "ERROR: ".
 
-        :returns: string containing the logged errors
+        :returns: list containing the logged errors
         """
-        return concat(self._errors, "ERROR: ")
+        errors = ["ERROR: " + err for err in self._errors]
+        return errors
 
     def messages(self):
         """
-        Return logged messages as a single string, one message per line.
+        Return logged non-empty messages in a list.
 
-        :returns: string containing the logged messages
+        :returns: list containing the logged messages
         """
-        return concat(self._messages)
+        return [message for message in self._messages if message]
 
     def info(self):
         """

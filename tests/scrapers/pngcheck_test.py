@@ -21,7 +21,8 @@ import pytest
 import six
 
 from file_scraper.pngcheck.pngcheck_scraper import PngcheckScraper
-from tests.common import parse_results, force_correct_filetype
+from tests.common import (parse_results, force_correct_filetype,
+                          partial_message_included)
 
 MIMETYPE = "image/png"
 
@@ -66,7 +67,7 @@ def test_no_wellformed():
     """Test scraper without well-formed check."""
     scraper = PngcheckScraper("tests/data/image_png/valid_1.2.png", False)
     scraper.scrape_file()
-    assert "Skipping scraper" in scraper.messages()
+    assert partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
 
 

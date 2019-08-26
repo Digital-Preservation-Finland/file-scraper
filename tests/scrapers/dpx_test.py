@@ -24,7 +24,8 @@ This module tests that:
 from __future__ import unicode_literals
 
 import pytest
-from tests.common import parse_results, force_correct_filetype
+from tests.common import (parse_results, force_correct_filetype,
+                          partial_message_included)
 from file_scraper.dpx.dpx_scraper import DpxScraper
 
 MIMETYPE = "image/x-dpx"
@@ -128,7 +129,7 @@ def test_no_wellformed():
     """Test scraper without well-formed check."""
     scraper = DpxScraper("tests/data/image_x-dpx/valid_2.0.dpx", False)
     scraper.scrape_file()
-    assert "Skipping scraper" in scraper.messages()
+    assert partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
 
 

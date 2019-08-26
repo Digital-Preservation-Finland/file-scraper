@@ -42,7 +42,8 @@ import pytest
 import six
 
 from file_scraper.schematron.schematron_scraper import SchematronScraper
-from tests.common import parse_results, force_correct_filetype
+from tests.common import (parse_results, force_correct_filetype,
+                          partial_message_included)
 
 ROOTPATH = os.path.abspath(os.path.join(
     os.path.dirname(__file__), "..", ".."))
@@ -85,9 +86,11 @@ def test_scraper(filename, result_dict, params, evaluate_scraper):
     evaluate_scraper(scraper, correct)
 
     if "verbose" in correct.params and correct.params["verbose"]:
-        assert "have been suppressed" not in scraper.messages()
+        assert not partial_message_included("have been suppressed",
+                                            scraper.messages())
     elif scraper.messages():
-        assert "have been suppressed" in scraper.messages()
+        assert partial_message_included("have been suppressed",
+                                        scraper.messages())
 
 
 def test_no_wellformed():
@@ -95,7 +98,7 @@ def test_no_wellformed():
     scraper = SchematronScraper("tests/data/text_xml/valid_1.0_wellformed.xml",
                                 False)
     scraper.scrape_file()
-    assert "Skipping scraper" in scraper.messages()
+    assert partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
 
 

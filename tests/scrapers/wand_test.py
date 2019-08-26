@@ -61,7 +61,8 @@ import six
 
 from file_scraper.wand.wand_model import WandImageMeta, WandTiffMeta
 from file_scraper.wand.wand_scraper import WandScraper
-from tests.common import parse_results, force_correct_filetype
+from tests.common import (parse_results, force_correct_filetype,
+                          partial_message_included)
 
 STREAM_VALID = {
     "bps_unit": None,
@@ -272,7 +273,7 @@ def test_scraper_invalid(filename, mimetype, stderr_part):
     assert not scraper.streams
     assert scraper.info()["class"] == "WandScraper"
     assert not scraper.messages()
-    assert stderr_part in scraper.errors()
+    assert partial_message_included(stderr_part, scraper.errors())
     assert not scraper.well_formed
 
 
@@ -281,7 +282,7 @@ def test_no_wellformed():
     scraper = WandScraper("tests/data/image_tiff/valid_6.0.tif",
                           False)
     scraper.scrape_file()
-    assert "Skipping scraper" not in scraper.messages()
+    assert not partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
 
 

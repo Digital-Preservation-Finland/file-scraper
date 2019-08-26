@@ -38,7 +38,8 @@ import pytest
 import six
 
 from file_scraper.xmllint.xmllint_scraper import XmllintScraper
-from tests.common import parse_results, force_correct_filetype
+from tests.common import (parse_results, force_correct_filetype,
+                          partial_message_included)
 
 ROOTPATH = os.path.abspath(os.path.join(
     os.path.dirname(__file__), "..", ".."))
@@ -82,11 +83,11 @@ def test_scraper_valid(filename, result_dict, params, evaluate_scraper):
     if not correct.well_formed:
         assert not scraper.well_formed
         assert not scraper.streams
-        assert correct.stdout_part in scraper.messages()
-        assert correct.stderr_part in scraper.errors()
+        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stderr_part, scraper.errors())
     else:
         evaluate_scraper(scraper, correct)
-    assert "<note>" not in scraper.messages()
+    assert not partial_message_included("<note>", scraper.messages())
 
 
 @pytest.mark.parametrize(
@@ -140,11 +141,11 @@ def test_scraper_invalid(filename, result_dict, params, evaluate_scraper):
     if not correct.well_formed:
         assert not scraper.well_formed
         assert not scraper.streams
-        assert correct.stdout_part in scraper.messages()
-        assert correct.stderr_part in scraper.errors()
+        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stderr_part, scraper.errors())
     else:
         evaluate_scraper(scraper, correct)
-    assert "<note>" not in scraper.messages()
+    assert not partial_message_included("<note>", scraper.messages())
 
 
 def test_no_wellformed():
@@ -152,7 +153,7 @@ def test_no_wellformed():
     scraper = XmllintScraper("tests/data/text_xml/valid_1.0_wellformed.xml",
                              False)
     scraper.scrape_file()
-    assert "Skipping scraper" in scraper.messages()
+    assert partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
 
 
