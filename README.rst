@@ -25,18 +25,29 @@ The following software is required for minimal usage without file format well-fo
     * Additionally, for image files: Pillow, python-wand, **ImageMagick**
     * Additionally, for audio/video files: pymediainfo, **MediaInfo**
 
-Additionally, the following software is required for complete well-formed check. The bolded software are NOT included in the pip installation script:
+Additionally, the following software is required for complete well-formed check. The bolded software are NOT included in the pip installation script. Where the version supplied by the CentOS repositories differs from the one file-scraper uses, the version has been marked after the software name. It is possible that other versions work too, but file-scraper has only been tested using the marked versions.
 
-    * For text and xml files: python-lxml, python-mimeparse, **JHove**, **v.Nu**, **iso-schematron-xslt1**
-    * For WAVE audio files: **JHove**
-    * For image files: **JHove**, **dpx-validator**, **pngcheck**
-    * For audio/video files (excluding WAVE audio): ffmpeg-python, **FFMpeg**
-    * For other files: **JHove**, **LibreOffice**, **veraPDF**, **GhostScript**, **warc-tools >= 4.8.3**, **pspp**
+    * For text and xml files: python-lxml, python-mimeparse, **JHove 1.20.1**, **v.Nu 17.7**, **iso-schematron-xslt1**
+    * For WAVE audio files: **JHove 1.20.1**
+    * For image files: **JHove 1.20.1**, **dpx-validator**, **pngcheck 2.3**
+    * For audio/video files (excluding WAVE audio): ffmpeg-python, **FFMpeg 2.8.15**
+    * For other files: **JHove 1.20.1**, **LibreOffice**, **veraPDF**, **GhostScript 9.20**, **warc-tools >= 4.8.3**, **pspp 1.0.1**
 
 See also:
 
     * https://github.com/Digital-Preservation-Finland/dpx-validator
     * https://github.com/Digital-Preservation-Finland/iso-schematron-xslt1
+
+JHove Installation Notes
+------------------------
+
+By default, the JHove is installed to the home directory of the current user, and thus the executable is not found by the default executable search of Unix-like systems. In order for JHove to be usable by file-scraper, one of the following must be done:
+
+* choose install the software in a directory included in ``$PATH`` when the installer prompts for installation location,
+* add the installation location to ``$PATH``,
+or
+
+* create a symbolic link between a directory listed in ``$PATH`` and the executable, e.g. ``ln -s /home/username/jhove/jhove /usr/bin/jhove``.
 
 Developer Usage
 ---------------
