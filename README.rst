@@ -37,6 +37,8 @@ See also:
 
     * https://github.com/Digital-Preservation-Finland/dpx-validator
     * https://github.com/Digital-Preservation-Finland/iso-schematron-xslt1
+    
+Where file-scraper needs to know a path to an executable or other resource, it is specified in ``file_scraper/config.py``. They correspond to the paths used by CSC, but they can be edited to match the installation locations on another system.
 
 JHove Installation Notes
 ------------------------
