@@ -283,7 +283,7 @@ class VerapdfDetector(BaseDetector):
                                   "needed"],
                      "errors": []}
         if error_shell:
-            self.info["errors"] = error_shell.stderr
+            self.info["errors"] = [error_shell.stderr]
 
     def get_important(self):
         """
