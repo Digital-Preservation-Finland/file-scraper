@@ -58,7 +58,7 @@ def test_scraper(filename, result_dict, evaluate_scraper):
         correct.stderr_part = ""
     else:
         correct.stdout_part = ""
-        correct.stderr_part = "ERROR"
+        correct.stderr_part = "Failed:"
 
     evaluate_scraper(scraper, correct)
 

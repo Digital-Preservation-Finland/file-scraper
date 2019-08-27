@@ -127,12 +127,9 @@ class BaseScraper(object):
         """
         Return the logged errors in a list.
 
-        Each error is prefixed with "ERROR: ".
-
-        :returns: list containing the logged errors
+        :returns: copied list containing the logged errors
         """
-        errors = ["ERROR: " + err for err in self._errors]
-        return errors
+        return self._errors[:]
 
     def messages(self):
         """

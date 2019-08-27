@@ -125,10 +125,11 @@ def test_messages_errors():
     # pylint: disable=protected-access
     scraper._messages.append("test message")
     scraper._messages.append("test message 2")
+    scraper._messages.append("")
     scraper._errors.append("test error")
     scraper._errors.append("test error 2")
     assert scraper.messages() == ["test message", "test message 2"]
-    assert scraper.errors() == ["ERROR: test error", "ERROR: test error 2"]
+    assert scraper.errors() == ["test error", "test error 2"]
 
 
 def test_scraper_properties():
