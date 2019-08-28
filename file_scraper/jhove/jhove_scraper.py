@@ -56,10 +56,9 @@ class JHoveScraperBase(BaseScraper):
         status = get_field(self._report, "status")
         self._messages.append(status)
         if "Well-Formed and valid" not in status:
-            self._errors.append("Validator returned error: %s\n%s" % (
-                ensure_text(self._shell.stdout),
-                ensure_text(self._shell.stderr)
-            ))
+            self._errors.append("Validator returned error.")
+            self._errors.append(ensure_text(self._shell.stdout))
+            self._errors.append(ensure_text(self._shell.stderr))
 
         # If the MIME type is forced, use that, otherwise scrape the MIME type
         if self._given_mimetype:
