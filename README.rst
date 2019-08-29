@@ -39,14 +39,14 @@ See also:
     * https://github.com/Digital-Preservation-Finland/dpx-validator
     * https://github.com/Digital-Preservation-Finland/iso-schematron-xslt1
     
-Where file-scraper needs to know a path to an executable or other resource, it is specified in ``file_scraper/config.py``. They correspond to the paths used by CSC, but they can be edited to match the installation locations on another system.
+Where file-scraper needs to know a path to an executable or other resource, it is specified in ``file_scraper/config.py``. They correspond to the paths used by the Finnish national Digital Preservation Services, but they can be edited to match the installation locations on another system.
 
 JHove Installation Notes
 ------------------------
 
 By default, the JHove is installed to the home directory of the current user, and thus the executable is not found by the default executable search of Unix-like systems. In order for JHove to be usable by file-scraper, one of the following must be done:
 
-* choose install the software in a directory included in ``$PATH`` when the installer prompts for installation location,
+* install the software in a directory included in ``$PATH`` when the installer prompts for installation location,
 * add the installation location to ``$PATH``,
 or
 

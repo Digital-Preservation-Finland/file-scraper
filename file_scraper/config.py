@@ -1,8 +1,9 @@
 """
 This file contains a centralized collection of configuration settings.
 
-The default values correspond to the installation paths used by CSC, but
-installing the tools to other locations is possible by editing this file.
+The default values correspond to the installation paths used by the Finnish
+national Digital Preservation Services, but installing the tools to other
+locations is possible by editing this file.
 """
 
 FILECMD_PATH = "/opt/file-5.30/bin/file"
