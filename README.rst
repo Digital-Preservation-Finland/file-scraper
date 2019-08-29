@@ -94,7 +94,7 @@ where ``<scraper info X>`` contains name of the scraper, the resulted info messa
      'messages': <messages from scraper>,
      'errors': <errors from scraper>}
 
-The type of elements in the previous dictionaries is string, in exception of the ``index`` element, which is integer.
+The type of elements in the previous dictionaries is string, in exception of the ``index`` element (which is integer), and the ``messages`` and ``errors`` elements (which are lists of strings).
 
 The following additional arguments for the Scraper are also possible:
 
