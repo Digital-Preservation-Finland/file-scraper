@@ -38,7 +38,7 @@ MIMETYPE = "image/x-dpx"
             "purpose": "Test valid file.",
             "stdout_part": "is valid",
             "stderr_part": ""}),
-        ("invalid_2.0_empty_file.dpx", {
+        ("invalid__empty_file.dpx", {
             "purpose": "Test empty file.",
             "stdout_part": "",
             "stderr_part": "Truncated file"}),
@@ -139,6 +139,7 @@ def test_is_supported():
     ver = "2.0"
     assert DpxScraper.is_supported(mime, ver, True)
     assert DpxScraper.is_supported(mime, None, True)
-    assert not DpxScraper.is_supported(mime, ver, False)
+    assert DpxScraper.is_supported(mime, "1.0", True)
+    assert not DpxScraper.is_supported(mime, "3.0", False)
     assert not DpxScraper.is_supported(mime, "foo", True)
     assert not DpxScraper.is_supported("foo", ver, True)
