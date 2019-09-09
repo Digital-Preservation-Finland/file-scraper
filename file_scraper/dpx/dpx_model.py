@@ -14,8 +14,8 @@ class DpxMeta(BaseMeta):
     def __init__(self, **kwargs):
 
         super(DpxMeta, self).__init__(kwargs["mimetype"], kwargs["version"])
-        self.messages = kwargs["info"]["messages"]
-        self.filename = ensure_text(kwargs["filename"])
+        self._messages = kwargs["info"]["messages"]
+        self._filename = ensure_text(kwargs["filename"])
 
     # pylint: disable=no-self-use
     @metadata()
@@ -30,9 +30,9 @@ class DpxMeta(BaseMeta):
         if self._given_mimetype and self._given_version:
             return self._given_version
 
-        for _version in self._supported["image/x-dpx"]:
-            if self.version_string(_version) in self.messages:
-                return _version
+        for supported_version in self._supported["image/x-dpx"]:
+            if self._version_string(supported_version) in self._messages:
+                return supported_version
 
         return super(DpxMeta, self).version()
 
@@ -41,7 +41,7 @@ class DpxMeta(BaseMeta):
         """Return file type."""
         return "image"
 
-    def version_string(self, version):
+    def _version_string(self, version):
         """Validator output line about DPX version."""
 
-        return "File {} validated as V{}".format(self.filename, version)
+        return "File {} validated as V{}".format(self._filename, version)
