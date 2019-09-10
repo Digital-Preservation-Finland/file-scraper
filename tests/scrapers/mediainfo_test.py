@@ -38,6 +38,7 @@ from tests.common import (parse_results, force_correct_filetype,
 from tests.scrapers.stream_dicts import (DV_VIDEO, FFV_VIDEO,
                                          FFV_VIDEO_TRUNCATED, MKV_CONTAINER,
                                          MOV_CONTAINER, MOV_DV_VIDEO, MOV_TC,
+                                         MOV_MPEG4_VIDEO, MOV_MPEG4_AUDIO,
                                          MPEG1_AUDIO, MPEG1_VIDEO, MPEG2_VIDEO,
                                          MPEG4_AUDIO, MPEG4_CONTAINER,
                                          MPEG4_VIDEO, MPEGTS_AUDIO,
@@ -56,6 +57,14 @@ from tests.scrapers.stream_dicts import (DV_VIDEO, FFV_VIDEO,
                         1: MOV_DV_VIDEO.copy(),
                         2: WAV_AUDIO.copy(),
                         3: MOV_TC.copy()}}, "video/quicktime"),
+        ("valid__h264_aac.mov", {
+            "purpose": "Test valid MOV with AVC and AAC.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": "",
+            "streams": {0: MOV_CONTAINER.copy(),
+                        1: MOV_MPEG4_VIDEO.copy(),
+                        2: MOV_MPEG4_AUDIO.copy()}},
+         "video/quicktime"),
         ("valid.dv", {
             "purpose": "Test valid DV.",
             "stdout_part": "file was analyzed successfully",
@@ -76,11 +85,17 @@ def test_mediainfo_scraper_mov(filename, result_dict, mimetype,
                                params={"mimetype_guess": mimetype})
     scraper.scrape_file()
 
+    if filename == "valid__h264_aac.mov":  # TODO temporary !!!
+        correct.streams[1].pop("data_rate_mode")
+        correct.streams[1].pop("signal_format")
+        correct.streams[1].pop("codec_quality")
+
     if ".dv" in filename:
         correct.streams[0].pop("stream_type", None)
 
     if "empty" in filename:
-        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stdout_part,
+                                        scraper.messages())
         assert partial_message_included(correct.stderr_part, scraper.errors())
         assert not scraper.streams
     else:

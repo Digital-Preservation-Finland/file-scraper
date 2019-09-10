@@ -75,6 +75,10 @@ MPEG4_VIDEO = dict(MPEG1_VIDEO, **{
     "codec_creator_app_version": "56.40.101",
     "codec_creator_app": "Lavf56.40.101"})
 
+MOV_MPEG4_VIDEO = dict(MPEG4_VIDEO, **{
+    "frame_rate": "25", "height": "576", "duration": "PT0.08S",
+    "data_rate": "0.5793", "par": "1.422", "width": "720"
+    })
 MPEGTS_VIDEO = dict(MPEG1_VIDEO, **{
     "data_rate": "(:unav)", "index": 1, "sound": "Yes", "version": "2"})
 
@@ -93,6 +97,10 @@ MPEG4_AUDIO = dict(MPEG1_AUDIO, **{
     "codec_creator_app_version": "56.40.101",
     "duration": "PT0.86S", "data_rate": "135.233",
     "codec_creator_app": "Lavf56.40.101"})
+
+MOV_MPEG4_AUDIO = dict(MPEG4_AUDIO, **{
+    "duration": "PT0.91S", "data_rate": "128.298"
+    })
 
 MPEGTS_AUDIO = dict(MPEG1_AUDIO, **{
     "data_rate": "128", "data_rate_mode": "Fixed", "duration": "PT0.89S",

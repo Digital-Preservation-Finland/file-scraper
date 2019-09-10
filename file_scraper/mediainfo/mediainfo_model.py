@@ -302,7 +302,9 @@ class MovMediainfoMeta(BaseMediainfoMeta):
         """Returns mimetype for stream."""
         mime_dict = {"QuickTime": "video/quicktime",
                      "PCM": "audio/x-wav",
-                     "DV": "video/dv"}
+                     "DV": "video/dv",
+                     "AVC": "video/mp4",
+                     "AAC": "audio/mp4"}
 
         if self._given_mimetype:
             if self._index == 0:
