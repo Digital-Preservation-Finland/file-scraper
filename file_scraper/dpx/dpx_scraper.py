@@ -1,4 +1,5 @@
-"""DPX V2.0 scraper."""
+"""DPX scraper"""
+
 from __future__ import unicode_literals
 
 from file_scraper.base import BaseScraper, ProcessRunner
@@ -41,11 +42,6 @@ class DpxScraper(BaseScraper):
                     filename=self.filename))
 
         self._check_supported()
-
-        if not self._check_wellformed:
-            skipping = "Skipping scraper: Did collect metadata."
-            self._messages.append(skipping)
-
 
 
 class DPXvError(Exception):

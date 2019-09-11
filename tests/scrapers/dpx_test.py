@@ -129,17 +129,18 @@ def test_no_wellformed():
     """Test scraper without well-formed check."""
     scraper = DpxScraper("tests/data/image_x-dpx/valid_2.0.dpx", False)
     scraper.scrape_file()
-    assert partial_message_included("Skipping scraper", scraper.messages())
+    for stream in scraper.streams:
+        assert stream.version() == "2.0"
     assert scraper.well_formed is None
 
 
 def test_is_supported():
     """Test is_supported method."""
     mime = MIMETYPE
-    ver = "2.0"
-    assert DpxScraper.is_supported(mime, ver, True)
+    assert DpxScraper.is_supported(mime, "2.0", True)
     assert DpxScraper.is_supported(mime, None, True)
     assert DpxScraper.is_supported(mime, "1.0", True)
+    assert DpxScraper.is_supported(mime, "2.0", False)
     assert not DpxScraper.is_supported(mime, "3.0", False)
     assert not DpxScraper.is_supported(mime, "foo", True)
-    assert not DpxScraper.is_supported("foo", ver, True)
+    assert not DpxScraper.is_supported("foo", "2.0", True)

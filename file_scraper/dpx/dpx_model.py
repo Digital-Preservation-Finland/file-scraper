@@ -1,4 +1,4 @@
-"""DPX V2.0 scraper."""
+"""DPX scraper"""
 from __future__ import unicode_literals
 
 from file_scraper.base import BaseMeta
@@ -31,17 +31,16 @@ class DpxMeta(BaseMeta):
             return self._given_version
 
         for supported_version in self._supported["image/x-dpx"]:
-            if self._version_string(supported_version) in self._messages:
+
+            version_string = "File {} validated as V{}".format(
+                self._filename, supported_version)
+
+            if version_string in self._messages:
                 return supported_version
 
-        return super(DpxMeta, self).version()
+        return '(:unav)'
 
     @metadata()
     def stream_type(self):
         """Return file type."""
         return "image"
-
-    def _version_string(self, version):
-        """Validator output line about DPX version."""
-
-        return "File {} validated as V{}".format(self._filename, version)
