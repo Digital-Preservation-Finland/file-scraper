@@ -316,7 +316,6 @@ class MovMediainfoMeta(BaseMediainfoMeta):
             pass
         return self._mimetype_guess
 
-    # pylint: disable=inconsistent-return-statements, bad-option-value
     @metadata()
     def codec_quality(self):
         """Returns codec quality."""
@@ -326,6 +325,9 @@ class MovMediainfoMeta(BaseMediainfoMeta):
             return self._stream.compression_mode.lower()
         if self.stream_type() == "audio":
             return "lossless"
+        if self.mimetype() == "video/mp4":
+            return "lossy"
+        return "(:unav)"
 
 
 class MkvMediainfoMeta(BaseMediainfoMeta):

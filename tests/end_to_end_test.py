@@ -42,7 +42,7 @@ UNAV_ELEMENTS = {
                                                      "version", "version"],
     "tests/data/video_quicktime/valid__h264_aac.mov": ["version", "version",
                                                        "version", "version",
-                                                       "bits_per_sample"],  # TODO
+                                                       "bits_per_sample"],
     "tests/data/audio_mpeg/valid_1.mp3": ["bits_per_sample",
                                           "codec_creator_app_version",
                                           "codec_creator_app"],
