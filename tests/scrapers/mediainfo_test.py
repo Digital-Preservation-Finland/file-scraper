@@ -87,7 +87,6 @@ def test_mediainfo_scraper_mov(filename, result_dict, mimetype,
 
     if filename == "valid__h264_aac.mov":  # TODO temporary !!!
         correct.streams[1].pop("data_rate_mode")
-        correct.streams[1].pop("signal_format")
 
     if ".dv" in filename:
         correct.streams[0].pop("stream_type", None)

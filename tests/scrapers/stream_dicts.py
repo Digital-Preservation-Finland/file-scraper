@@ -77,7 +77,8 @@ MPEG4_VIDEO = dict(MPEG1_VIDEO, **{
 
 MOV_MPEG4_VIDEO = dict(MPEG4_VIDEO, **{
     "frame_rate": "25", "height": "576", "duration": "PT0.08S",
-    "data_rate": "0.5793", "par": "1.422", "width": "720"
+    "data_rate": "0.5793", "par": "1.422", "width": "720",
+    "signal_format": "PAL"
     })
 MPEGTS_VIDEO = dict(MPEG1_VIDEO, **{
     "data_rate": "(:unav)", "index": 1, "sound": "Yes", "version": "2"})

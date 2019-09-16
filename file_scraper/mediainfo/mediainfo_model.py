@@ -329,6 +329,15 @@ class MovMediainfoMeta(BaseMediainfoMeta):
             return "lossy"
         return "(:unav)"
 
+    @metadata()
+    def signal_format(self):
+        """Returns signal format (usually PAL of NTSC)."""
+        if self.stream_type() not in ["video"]:
+            raise SkipElementException()
+        if self._stream.standard is not None:
+            return self._stream.standard
+        return super(MovMediainfoMeta, self).signal_format()
+
 
 class MkvMediainfoMeta(BaseMediainfoMeta):
     """Scraper for Matroska AV container with selected streams."""
