@@ -338,6 +338,14 @@ class MovMediainfoMeta(BaseMediainfoMeta):
             return self._stream.standard
         return super(MovMediainfoMeta, self).signal_format()
 
+    @metadata()
+    def data_rate_mode(self):
+        """Returns data rate mode (fixed or variable) if available."""
+        mode = super(MovMediainfoMeta, self).data_rate_mode()
+        if mode:
+            return mode
+        return "(:unav)"
+
 
 class MkvMediainfoMeta(BaseMediainfoMeta):
     """Scraper for Matroska AV container with selected streams."""
