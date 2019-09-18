@@ -5,7 +5,7 @@ MOV_CONTAINER = {
     "codec_creator_app": "Lavf56.40.101",
     "codec_creator_app_version": "56.40.101",
     "codec_name": "MPEG-4", "index": 0, "mimetype": "video/quicktime",
-    "stream_type": "videocontainer", "version": "(:unav)"}
+    "stream_type": "videocontainer", "version": "(:unap)"}
 
 DV_VIDEO = {
     "bits_per_sample": "8", "codec_creator_app": "(:unav)",
@@ -23,7 +23,7 @@ MOV_DV_VIDEO = dict(DV_VIDEO, **{
 
 MOV_TC = {
     "index": 3, "mimetype": "video/quicktime", "stream_type": "other",
-    "version": "(:unav)"}
+    "version": "(:unap)"}
 
 
 MKV_CONTAINER = {

@@ -317,6 +317,14 @@ class MovMediainfoMeta(BaseMediainfoMeta):
         return self._mimetype_guess
 
     @metadata()
+    def version(self):
+        """Return version."""
+        # Quicktime container does not have different versions.
+        if self.mimetype() == "video/quicktime":
+            return "(:unap)"
+        return super(MovMediainfoMeta, self).version()
+
+    @metadata()
     def codec_quality(self):
         """Returns codec quality."""
         if self.stream_type() not in ["video", "audio"]:

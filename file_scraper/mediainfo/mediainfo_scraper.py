@@ -76,4 +76,4 @@ class MediainfoScraper(BaseScraper):
                     if not md_object.hascontainer() and index == 0:
                         continue
                     self.streams.append(md_object)
-        self._check_supported(allow_unav_version=True)
+        self._check_supported(allow_unav_version=True, allow_unap_version=True)

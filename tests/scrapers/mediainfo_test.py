@@ -159,6 +159,9 @@ def test_mediainfo_scraper_wav(filename, result_dict, evaluate_scraper):
     """Test WAV scraping with Mediainfo."""
     mimetype = "audio/x-wav"
     correct = parse_results(filename, mimetype, result_dict, True)
+    if "2" in filename:
+        correct.streams[0]["version"] = "2"
+
     scraper = MediainfoScraper(correct.filename, True,
                                params={"mimetype_guess": mimetype})
     scraper.scrape_file()
@@ -393,7 +396,7 @@ def run_filetype_test(filename, result_dict, filetype, evaluate_scraper):
 @pytest.mark.parametrize(
     ["filename", "mimetype", "version", "version_result", "streams"],
     [
-        ("valid__dv_wav.mov", "video/quicktime", "(:unav)", "(:unav)",
+        ("valid__dv_wav.mov", "video/quicktime", "(:unap)", "(:unap)",
          {0: MOV_CONTAINER.copy(), 1: MOV_DV_VIDEO.copy(), 2: WAV_AUDIO.copy(),
           3: MOV_TC.copy()}),
         ("valid_4_ffv1.mkv", "video/x-matroska", "4", "4",
