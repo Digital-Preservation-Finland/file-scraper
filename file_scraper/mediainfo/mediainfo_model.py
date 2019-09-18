@@ -352,7 +352,29 @@ class MovMediainfoMeta(BaseMediainfoMeta):
         mode = super(MovMediainfoMeta, self).data_rate_mode()
         if mode:
             return mode
+        if (self.mimetype() == "video/mp4" and
+                self._get_encoding_setting("qcomp")):
+            if float(self._get_encoding_setting("qcomp")) == 0.0:
+                return "Fixed"
+            else:
+                return "Variable"
         return "(:unav)"
+
+    def _get_encoding_setting(self, key):
+        """
+        Return the value of the given entry in the encoding settings.
+
+        If the key is not present in encoding settings, returns None.
+        """
+        # separate individual key-value pairs
+        settings = self._stream.encoding_settings.split(" / ")
+
+        for pair in settings:
+            [option, value] = pair.split("=")
+            if option == key:
+                return value
+
+        return None
 
 
 class MkvMediainfoMeta(BaseMediainfoMeta):
