@@ -32,7 +32,7 @@ class DpxMeta(BaseMeta):
 
         for supported_version in self._supported["image/x-dpx"]:
 
-            version_string = "File {} validated as V{}".format(
+            version_string = "File {}: Validated as V{}".format(
                 self._filename, supported_version)
 
             if version_string in self._messages:
