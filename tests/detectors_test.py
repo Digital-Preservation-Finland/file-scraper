@@ -31,7 +31,9 @@ CHANGE_FIDO = {
         "application/gzip",
     "tests/data/application_warc/valid_1.0_.warc.gz": "application/gzip",
     "tests/data/application_x-internet-archive/valid_1.0.arc": "text/html",
-    "tests/data/video_x-matroska/valid_4_ffv1.mkv": None}
+    "tests/data/video_x-matroska/valid_4_ffv1.mkv": None,
+    "tests/data/application_mxf/valid__jpeg2000.mxf": None,
+}
 
 CHANGE_MAGIC = {
     "tests/data/video_MP2T/valid_.ts": "application/octet-stream",
@@ -83,7 +85,12 @@ def test_detectors(detector_class, change_dict):
         if filename in change_dict:
             assert detector.mimetype == change_dict[filename]
         else:
-            assert detector.mimetype == mimetype
+            assert detector.mimetype == mimetype, ("File {} identified as {} "
+                                                   "when {} was expected."
+                                                   "".format(filename,
+                                                             detector.mimetype,
+                                                             mimetype)
+                                                   )
 
 
 @pytest.mark.parametrize(

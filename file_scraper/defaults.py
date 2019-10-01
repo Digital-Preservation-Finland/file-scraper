@@ -23,8 +23,8 @@ MIMETYPE_DICT = {
     "application/xml": "text/xml",
     "application/mp4": None,
     "application/vnd.ms-asf": "video/x-ms-asf",
+    "application/x-ia-arc": "application/x-internet-archive",
     "video/x-msvideo": "video/avi",
-    "application/x-ia-arc": "application/x-internet-archive"
 }
 
 # Dict between detectors' results and known file format versions.
