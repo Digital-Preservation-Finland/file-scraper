@@ -99,6 +99,11 @@ NO_METADATA = {0: {'mimetype': '(:unav)', 'index': 0, 'version': '(:unav)',
             "stdout_part": "file was analyzed successfully",
             "stderr_part": ""},
          "video/MP2T"),
+        ("valid__JPEG2000.avi", {
+            "purpose": "Test valid AVI.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": ""},
+         "video/avi"),
     ])
 def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
                               evaluate_scraper):

@@ -1,6 +1,8 @@
 """FFMpeg wellformed scraper."""
 from __future__ import unicode_literals
 
+import re
+
 from file_scraper.base import BaseScraper, ProcessRunner
 from file_scraper.ffmpeg.ffmpeg_model import FFMpegSimpleMeta
 from file_scraper.utils import ensure_text, encode_path
@@ -46,7 +48,7 @@ class FFMpegScraper(BaseScraper):
                                encode_path(self.filename), "-f", "null", "-"])
         if shell.returncode == 0:
             self._messages.append("The file was analyzed successfully.")
-        if shell.stderr:
+        if self._filter_stderr(shell.stderr):
             self._errors.append(ensure_text(shell.stderr))
             return
 
@@ -55,3 +57,24 @@ class FFMpegScraper(BaseScraper):
             self.streams.append(stream)
 
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)
+
+    def _filter_stderr(self, errors):
+        """
+        Filter out "bpno became negative" and "Last message repeated".
+
+        Returns a new string, containing all lines in errors except those that
+        contain either "Last message repeated [number] times" or both
+        "jpeg2000" and "bpno became negative".
+        """
+        # pylint: disable=no-self-use
+        constructed_string = ""
+        repeat = re.compile("Last message repeated [0-9]+ times")
+        for line in errors.split("\n"):
+            if not line:
+                continue
+            if "jpeg2000" in line and "bpno became negative" in line:
+                continue
+            if repeat.match(line.strip()):
+                continue
+            constructed_string = constructed_string + line + "\n"
+        return constructed_string

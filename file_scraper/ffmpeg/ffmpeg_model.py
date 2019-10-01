@@ -17,7 +17,8 @@ class FFMpegSimpleMeta(BaseMeta):
                   "audio/mpeg": [], "audio/mp4": [],
                   "video/MP1S": [], "video/MP2P": [],
                   "video/MP2T": [], "video/x-matroska": [],
-                  "video/quicktime": [], "video/dv": []}
+                  "video/quicktime": [], "video/dv": [],
+                  "video/avi": []}
     _allow_versions = True   # Allow any version
 
     @metadata()
