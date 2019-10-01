@@ -23,8 +23,8 @@ MIMETYPE_DICT = {
     "application/xml": "text/xml",
     "application/mp4": None,
     "application/vnd.ms-asf": "video/x-ms-asf",
-    "application/x-ia-arc": "application/x-internet-archive",
     "video/x-msvideo": "video/avi",
+    "application/x-ia-arc": "application/x-internet-archive"
 }
 
 # Dict between detectors' results and known file format versions.
@@ -57,5 +57,6 @@ PRONOM_DICT = {
     "fmt/640": ("video/mpeg", "2"),
     "x-fmt/385": ("video/MP1S", ""),
     "x-fmt/386": ("video/MP2P", ""),
-    "fmt/585": ("video/MP2T", "")
+    "fmt/585": ("video/MP2T", ""),
+    "fmt/5": ("video/avi", ""),
 }
