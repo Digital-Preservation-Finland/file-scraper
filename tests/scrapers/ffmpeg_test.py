@@ -29,6 +29,7 @@ This module tests that:
         - video/mp4 containing h264 video and aac audio streams
         - video/MP2T file
         - audio/mpeg version 1 file
+        - video/avi
     - Whether well-formed check is performed or not, the scraper reports the
       following combinations of mimetypes and versions as supported:
         - video/mpeg, "1" or None
@@ -218,6 +219,7 @@ def test_ffmpeg_scraper_invalid(filename, result_dict, mimetype,
         ("video/MP1S", ""),
         ("video/MP2P", ""),
         ("video/MP2T", ""),
+        ("video/avi", "")
     ]
 )
 def test_is_supported_mpeg(mime, ver):
@@ -230,19 +232,19 @@ def test_is_supported_mpeg(mime, ver):
 
 
 @pytest.mark.parametrize(
-    ["filename", "result_dict", "mimetype", "filetype"],
+    ["filename", "result_dict", "filetype"],
     [
         ("valid_4_ffv1.mkv", {
             "purpose": "Test not forcing either MIME type or version",
             "stdout_part": "The file was analyzed successfully",
-            "stderr_part": ""}, "video/x-matroska",
+            "stderr_part": ""},
          {"given_mimetype": None, "given_version": None,
           "expected_mimetype": "(:unav)", "expected_version": "(:unav)",
           "correct_mimetype": "video/x-matroska"}),
         ("valid_4_ffv1.mkv", {
             "purpose": "Test forcing a supported MIME type",
             "stdout_part": "MIME type not scraped",
-            "stderr_part": ""}, "video/x-matroska",
+            "stderr_part": ""},
          {"given_mimetype": "video/x-matroska", "given_version": None,
           "expected_mimetype": "video/x-matroska",
           "expected_version": "(:unav)",
@@ -250,35 +252,34 @@ def test_is_supported_mpeg(mime, ver):
         ("valid_4_ffv1.mkv", {
             "purpose": "Test forcing a supported MIME type and version",
             "stdout_part": "MIME type and version not scraped",
-            "stderr_part": ""}, "video/x-matroska",
+            "stderr_part": ""},
          {"given_mimetype": "video/x-matroska", "given_version": "4",
           "expected_mimetype": "video/x-matroska", "expected_version": "4",
           "correct_mimetype": "video/x-matroska"}),
         ("valid_4_ffv1.mkv", {
             "purpose": "Test forcing unsupported MIME type",
             "stdout_part": "MIME type not scraped",
-            "stderr_part": "is not supported"}, "video/x-matroska",
+            "stderr_part": "is not supported"},
          {"given_mimetype": "custom/mime", "given_version": None,
           "expected_mimetype": "custom/mime", "expected_version": "(:unav)",
           "correct_mimetype": "video/x-matroska"}),
         ("valid_4_ffv1.mkv", {
             "purpose": "Test forcing MIME type and version",
             "stdout_part": "MIME type and version not scraped",
-            "stderr_part": ""}, "video/x-matroska",
+            "stderr_part": ""},
          {"given_mimetype": "custom/mime", "given_version": "99.9",
           "expected_mimetype": "custom/mime", "expected_version": "99.9",
           "correct_mimetype": "video/x-matroska"}),
         ("valid_4_ffv1.mkv", {
             "purpose": "Test forcing version (should have no effect)",
             "stdout_part": "The file was analyzed successfully",
-            "stderr_part": ""}, "video/x-matroska",
+            "stderr_part": ""},
          {"given_mimetype": None, "given_version": "99.9",
           "expected_mimetype": "(:unav)", "expected_version": "(:unav)",
           "correct_mimetype": "video/x-matroska"}),
     ]
 )
-def test_forcing_filetype(filename, result_dict, mimetype, filetype,
-                          evaluate_scraper):
+def test_forcing_filetype(filename, result_dict, filetype, evaluate_scraper):
     """Test forcing scraper to use a given MIME type and/or version."""
     correct = force_correct_filetype(filename, result_dict, filetype,
                                      ["(:unav)"])
