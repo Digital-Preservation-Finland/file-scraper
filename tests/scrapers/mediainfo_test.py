@@ -35,15 +35,28 @@ import six
 from file_scraper.mediainfo.mediainfo_scraper import MediainfoScraper
 from tests.common import (parse_results, force_correct_filetype,
                           partial_message_included)
-from tests.scrapers.stream_dicts import (DV_VIDEO, FFV_VIDEO,
-                                         FFV_VIDEO_TRUNCATED, MKV_CONTAINER,
-                                         MOV_CONTAINER, MOV_DV_VIDEO, MOV_TC,
-                                         MOV_MPEG4_VIDEO, MOV_MPEG4_AUDIO,
-                                         MPEG1_AUDIO, MPEG1_VIDEO, MPEG2_VIDEO,
-                                         MPEG4_AUDIO, MPEG4_CONTAINER,
-                                         MPEG4_VIDEO, MPEGTS_AUDIO,
-                                         MPEGTS_CONTAINER, MPEGTS_OTHER,
-                                         MPEGTS_VIDEO, WAV_AUDIO)
+from tests.scrapers.stream_dicts import (AVI_CONTAINER,
+                                         DV_VIDEO,
+                                         FFV_VIDEO,
+                                         FFV_VIDEO_TRUNCATED,
+                                         JPEG2000_VIDEO,
+                                         MKV_CONTAINER,
+                                         MOV_CONTAINER,
+                                         MOV_DV_VIDEO,
+                                         MOV_MPEG4_VIDEO,
+                                         MOV_MPEG4_AUDIO,
+                                         MOV_TC,
+                                         MPEG1_AUDIO,
+                                         MPEG1_VIDEO,
+                                         MPEG2_VIDEO,
+                                         MPEG4_AUDIO,
+                                         MPEG4_CONTAINER,
+                                         MPEG4_VIDEO,
+                                         MPEGTS_AUDIO,
+                                         MPEGTS_CONTAINER,
+                                         MPEGTS_OTHER,
+                                         MPEGTS_VIDEO,
+                                         WAV_AUDIO)
 
 
 @pytest.mark.parametrize(
@@ -309,6 +322,31 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
         evaluate_scraper(scraper, correct)
 
 
+@pytest.mark.parametrize(
+    ["filename", "result_dict", "mimetype"],
+    [
+        ("valid__JPEG2000.avi", {
+            "purpose": "Test valid AVI with JPEG2000.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": "",
+            "streams": {0: AVI_CONTAINER.copy(),
+                        1: JPEG2000_VIDEO.copy()}},
+         "video/avi"),
+    ])
+def test_mediainfo_scraper_avi(filename, result_dict, mimetype,
+                               evaluate_scraper):
+    """Test AVI scraping with Mediainfo."""
+    correct = parse_results(filename, mimetype, result_dict, True)
+    for index in correct.streams:
+        correct.streams[index]["version"] = "(:unap)"
+
+    scraper = MediainfoScraper(correct.filename, True,
+                               params={"mimetype_guess": mimetype})
+    scraper.scrape_file()
+
+    evaluate_scraper(scraper, correct)
+
+
 def test_no_wellformed():
     """Test scraper without well-formed check."""
     scraper = MediainfoScraper("tests/data/audio_x-wav/valid__wav.wav",
@@ -341,6 +379,17 @@ def test_is_supported_wav():
 )
 def test_is_supported_mpeg(mime, ver):
     """Test is_supported method."""
+    assert MediainfoScraper.is_supported(mime, ver, True)
+    assert MediainfoScraper.is_supported(mime, None, True)
+    assert MediainfoScraper.is_supported(mime, ver, False)
+    assert MediainfoScraper.is_supported(mime, "foo", True)
+    assert not MediainfoScraper.is_supported("foo", ver, True)
+
+
+def test_is_supported_avi():
+    """Test is_filetype support of AviMediainfoModel."""
+    mime = "video/avi"
+    ver = ""
     assert MediainfoScraper.is_supported(mime, ver, True)
     assert MediainfoScraper.is_supported(mime, None, True)
     assert MediainfoScraper.is_supported(mime, ver, False)

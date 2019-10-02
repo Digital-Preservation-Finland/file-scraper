@@ -528,3 +528,50 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
         if self.stream_type() in ["videocontainer", "video", "audio"]:
             return "(:unav)"
         return "(:unav)"
+
+
+class AviMediainfoMeta(BaseMediainfoMeta):
+    """Metadata model for AVI containers."""
+
+    _containers = ["AVI"]
+    _supported = {"video/avi": []}
+    _allow_versions = True
+
+    @metadata()
+    def mimetype(self):
+        """Returns mimetype for stream."""
+        mime_dict = {"AVI": "video/avi",
+                     "JPEG 2000": "video/jpeg2000"}
+
+        if self._given_mimetype:
+            if self._index == 0:
+                return self._given_mimetype
+
+        try:
+            return mime_dict[self.codec_name()]
+        except (SkipElementException, KeyError):
+            pass
+        return self._mimetype_guess
+
+    @metadata()
+    def version(self):
+        """Neither AVI nor JPEG2000 have versions: return (:unap)."""
+        return "(:unap)"
+
+    @metadata()
+    def data_rate_mode(self):
+        """Return data rate mode (allowed values are "Fixed" or "Variable")."""
+        if self.stream_type() not in ["video", "audio"]:
+            raise SkipElementException()
+
+        if self.mimetype() == "video/jpeg2000":
+            return "Variable"  # TODO is this ok?
+
+        return "(:unav)"
+
+    @metadata()
+    def signal_format(self):
+        """Return signal format."""
+        if self.stream_type() not in ["video"]:
+            raise SkipElementException()
+        return "(:unap)"  # TODO ok?

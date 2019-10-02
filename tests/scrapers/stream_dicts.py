@@ -122,3 +122,21 @@ MPEGTS_CONTAINER = {
 MPEGTS_OTHER = {
     "index": 3, "mimetype": "video/MP2T", "stream_type": "menu",
     "version": "(:unav)"}
+
+AVI_CONTAINER = {
+    "index": 0, "mimetype": "video/avi", "version": "(:unap)",
+    "stream_type": "videocontainer", "codec_name": "AVI",
+    "codec_creator_app_version": "56.40.101",
+    "codec_creator_app": "Lavf56.40.101"
+}
+
+JPEG2000_VIDEO = {  # TODO: color, codec_quality, data_rate_mode, signal_format
+    "index": 1, "mimetype": "video/jpeg2000", "version": "(:unap)",
+    "par": "1", "frame_rate": "30", "data_rate": "1.641677",
+    "bits_per_sample": "(:unav)", "data_rate_mode": "Variable",
+    "signal_format": "(:unap)", "dar": "1.778",
+    "height": "180", "sound": "No", "codec_name": "JPEG 2000",
+    "codec_creator_app_version": "56.40.101", "duration": "PT1.03S",
+    "sampling": "(:unav)", "stream_type": "video", "width": "320",
+    "codec_creator_app": "Lavf56.40.101"
+}

@@ -4,7 +4,8 @@ from __future__ import unicode_literals
 import six
 
 from file_scraper.base import BaseScraper
-from file_scraper.mediainfo.mediainfo_model import (MkvMediainfoMeta,
+from file_scraper.mediainfo.mediainfo_model import (AviMediainfoMeta,
+                                                    MkvMediainfoMeta,
                                                     MovMediainfoMeta,
                                                     MpegMediainfoMeta,
                                                     WavMediainfoMeta)
@@ -25,7 +26,8 @@ class MediainfoScraper(BaseScraper):
     """
 
     _supported_metadata = [MovMediainfoMeta, MkvMediainfoMeta,
-                           WavMediainfoMeta, MpegMediainfoMeta]
+                           WavMediainfoMeta, MpegMediainfoMeta,
+                           AviMediainfoMeta]
 
     def scrape_file(self):
         """Populate streams with supported metadata objects."""
