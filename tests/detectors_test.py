@@ -32,7 +32,7 @@ CHANGE_FIDO = {
     "tests/data/application_warc/valid_1.0_.warc.gz": "application/gzip",
     "tests/data/application_x-internet-archive/valid_1.0.arc": "text/html",
     "tests/data/video_x-matroska/valid_4_ffv1.mkv": None,
-    "tests/data/application_mxf/valid__jpeg2000.mxf": None,
+    "tests/data/application_mxf/valid_1.2_jpeg2000.mxf": None,
 }
 
 CHANGE_MAGIC = {

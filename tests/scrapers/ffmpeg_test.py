@@ -106,7 +106,7 @@ NO_METADATA = {0: {'mimetype': '(:unav)', 'index': 0, 'version': '(:unav)',
             "stdout_part": "file was analyzed successfully",
             "stderr_part": ""},
          "video/avi"),
-        ("valid__jpeg2000.mxf", {
+        ("valid_1.2_jpeg2000.mxf", {
             "purpose": "Test valid MXF.",
             "stdout_part": "file was analyzed successfully",
             "stderr_part": ""},
