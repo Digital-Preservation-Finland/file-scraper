@@ -130,13 +130,35 @@ AVI_CONTAINER = {
     "codec_creator_app": "Lavf56.40.101"
 }
 
-JPEG2000_VIDEO = {  # TODO: color, codec_quality, data_rate_mode, signal_format
+BASE_JPEG2000_VIDEO = {  # TODO: color, codec_quality, data_rate_mode, signal_format
     "index": 1, "mimetype": "video/jpeg2000", "version": "(:unap)",
-    "par": "1", "frame_rate": "30", "data_rate": "1.641677",
-    "bits_per_sample": "(:unav)", "data_rate_mode": "Variable",
-    "signal_format": "(:unap)", "dar": "1.778",
+    "par": "1",
+    "data_rate_mode": "Variable",
+    "dar": "1.778",
     "height": "180", "sound": "No", "codec_name": "JPEG 2000",
     "codec_creator_app_version": "56.40.101", "duration": "PT1.03S",
     "sampling": "(:unav)", "stream_type": "video", "width": "320",
     "codec_creator_app": "Lavf56.40.101"
 }
+
+AVI_JPEG2000_VIDEO = dict(BASE_JPEG2000_VIDEO,
+                          **{"data_rate": "1.641677",
+                             "bits_per_sample": "(:unav)",
+                             "frame_rate": "30",
+                             "codec_creator_app": "Lavf56.40.101"})
+
+MXF_CONTAINER = {
+    "index": 0, "mimetype": "video/avi", "version": "1.2",
+    "stream_type": "videocontainer", "codec_name": "MXF",
+    "codec_creator_app_version": "56.40.101",
+    "codec_creator_app": "FFmpeg OP1a Muxer 56.40.101"
+}
+
+# pylint: disable=bad-continuation
+MXF_JPEG2000_VIDEO = dict(BASE_JPEG2000_VIDEO,
+                          **{
+                             "data_rate": "1.927602",
+                             "bits_per_sample": "8",
+                             "frame_rate": "29.97",
+                             "codec_creator_app": "FFmpeg OP1a Muxer 56.40.101"
+                              })

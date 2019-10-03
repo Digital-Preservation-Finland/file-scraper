@@ -36,16 +36,18 @@ from file_scraper.mediainfo.mediainfo_scraper import MediainfoScraper
 from tests.common import (parse_results, force_correct_filetype,
                           partial_message_included)
 from tests.scrapers.stream_dicts import (AVI_CONTAINER,
+                                         AVI_JPEG2000_VIDEO,
                                          DV_VIDEO,
                                          FFV_VIDEO,
                                          FFV_VIDEO_TRUNCATED,
-                                         JPEG2000_VIDEO,
                                          MKV_CONTAINER,
                                          MOV_CONTAINER,
                                          MOV_DV_VIDEO,
                                          MOV_MPEG4_VIDEO,
                                          MOV_MPEG4_AUDIO,
                                          MOV_TC,
+                                         MXF_CONTAINER,
+                                         MXF_JPEG2000_VIDEO,
                                          MPEG1_AUDIO,
                                          MPEG1_VIDEO,
                                          MPEG2_VIDEO,
@@ -330,7 +332,7 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
             "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
             "streams": {0: AVI_CONTAINER.copy(),
-                        1: JPEG2000_VIDEO.copy()}},
+                        1: AVI_JPEG2000_VIDEO.copy()}},
          "video/avi"),
     ])
 def test_mediainfo_scraper_avi(filename, result_dict, mimetype,
@@ -339,6 +341,30 @@ def test_mediainfo_scraper_avi(filename, result_dict, mimetype,
     correct = parse_results(filename, mimetype, result_dict, True)
     for index in correct.streams:
         correct.streams[index]["version"] = "(:unap)"
+
+    scraper = MediainfoScraper(correct.filename, True,
+                               params={"mimetype_guess": mimetype})
+    scraper.scrape_file()
+
+    evaluate_scraper(scraper, correct)
+
+
+@pytest.mark.parametrize(
+    ["filename", "result_dict", "mimetype"],
+    [
+        ("valid_1.2_jpeg2000.mxf", {
+            "purpose": "Test valid MXF with JPEG2000.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": "",
+            "streams": {0: MXF_CONTAINER.copy(),
+                        1: MXF_JPEG2000_VIDEO.copy()}},
+         "application/mxf"),
+    ])
+def test_mediainfo_scraper_mxf(filename, result_dict, mimetype,
+                               evaluate_scraper):
+    """Test AVI scraping with Mediainfo."""
+    correct = parse_results(filename, mimetype, result_dict, True)
+    correct.streams[1]["version"] = "(:unap)"
 
     scraper = MediainfoScraper(correct.filename, True,
                                params={"mimetype_guess": mimetype})
