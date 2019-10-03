@@ -30,6 +30,7 @@ This module tests that:
         - video/MP2T file
         - audio/mpeg version 1 file
         - video/avi
+        - video/mxf
     - Whether well-formed check is performed or not, the scraper reports the
       following combinations of mimetypes and versions as supported:
         - video/mpeg, "1" or None
@@ -105,6 +106,11 @@ NO_METADATA = {0: {'mimetype': '(:unav)', 'index': 0, 'version': '(:unav)',
             "stdout_part": "file was analyzed successfully",
             "stderr_part": ""},
          "video/avi"),
+        ("valid__jpeg2000.mxf", {
+            "purpose": "Test valid MXF.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": ""},
+         "application/mxf"),
     ])
 def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
                               evaluate_scraper):
