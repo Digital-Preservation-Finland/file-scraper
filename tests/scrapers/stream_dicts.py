@@ -162,3 +162,6 @@ MXF_JPEG2000_VIDEO = dict(BASE_JPEG2000_VIDEO,
                              "frame_rate": "29.97",
                              "codec_creator_app": "FFmpeg OP1a Muxer 56.40.101"
                               })
+
+MXF_TC = {"mimetype": u"application/mxf", "index": 4, "version": u"(:unav)",
+          "stream_type": "other"}
