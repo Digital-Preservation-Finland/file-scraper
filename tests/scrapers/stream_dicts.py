@@ -154,13 +154,13 @@ MXF_CONTAINER = {
     "codec_creator_app": "FFmpeg OP1a Muxer 56.40.101"
 }
 
-# pylint: disable=bad-continuation
 MXF_JPEG2000_VIDEO = dict(BASE_JPEG2000_VIDEO,
                           **{
-                             "data_rate": "1.927602",
-                             "bits_per_sample": "8",
-                             "frame_rate": "29.97",
-                             "codec_creator_app": "FFmpeg OP1a Muxer 56.40.101"
+                              "data_rate": "1.927602",
+                              "bits_per_sample": "8",
+                              "frame_rate": "29.97",
+                              "codec_creator_app": ("FFmpeg OP1a Muxer "
+                                                    "56.40.101")
                               })
 
 MXF_TC = {"mimetype": u"application/mxf", "index": 4, "version": u"(:unav)",
