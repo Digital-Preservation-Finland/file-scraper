@@ -1,6 +1,7 @@
 """FFMpeg wellformed scraper."""
 from __future__ import unicode_literals
 
+import six
 import re
 
 from file_scraper.base import BaseScraper, ProcessRunner
@@ -69,7 +70,7 @@ class FFMpegScraper(BaseScraper):
         # pylint: disable=no-self-use
         constructed_string = ""
         repeat = re.compile("Last message repeated [0-9]+ times")
-        for line in errors.split("\n"):
+        for line in six.text_type(errors).split("\n"):
             if not line:
                 continue
             if "jpeg2000" in line and "bpno became negative" in line:
