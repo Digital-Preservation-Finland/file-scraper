@@ -348,16 +348,19 @@ class MovMediainfoMeta(BaseMediainfoMeta):
 
     @metadata()
     def data_rate_mode(self):
-        """Returns data rate mode (fixed or variable) if available."""
+        """
+        Return data rate mode if available.
+
+        MP4 is assumed to always have variable bit rate, based on e.g.
+        https://slhck.info/video/2017/03/01/rate-control.html claiming that MP4
+        does not support NAL stuffing and thus it cannot be forced to have
+        constant bit rate.
+        """
         mode = super(MovMediainfoMeta, self).data_rate_mode()
         if mode:
             return mode
-        if (self.mimetype() == "video/mp4" and
-                self._get_encoding_setting("qcomp")):
-            if float(self._get_encoding_setting("qcomp")) == 0.0:
-                return "Fixed"
-            else:
-                return "Variable"
+        if self.mimetype() == "video/mp4":
+            return "Variable"
         return "(:unav)"
 
     def _get_encoding_setting(self, key):
