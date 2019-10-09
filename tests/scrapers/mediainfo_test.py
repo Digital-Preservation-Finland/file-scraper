@@ -146,7 +146,8 @@ def test_mediainfo_scraper_mkv(filename, result_dict, evaluate_scraper):
         correct.streams[0]["stream_type"] = None
 
     if "empty" in filename:
-        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stdout_part,
+                                        scraper.messages())
         assert partial_message_included(correct.stderr_part, scraper.errors())
         assert not scraper.streams
     else:
@@ -183,7 +184,8 @@ def test_mediainfo_scraper_wav(filename, result_dict, evaluate_scraper):
     scraper.scrape_file()
 
     if "empty" in filename:
-        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stdout_part,
+                                        scraper.messages())
         assert partial_message_included(correct.stderr_part, scraper.errors())
         assert not scraper.streams
     else:
@@ -221,7 +223,8 @@ def test_mediainfo_scraper_mpeg(filename, result_dict, evaluate_scraper):
     scraper.scrape_file()
     del correct.streams[0]["stream_type"]
     if "empty" in filename:
-        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stdout_part,
+                                        scraper.messages())
         assert partial_message_included(correct.stderr_part, scraper.errors())
         assert not scraper.streams
     else:
@@ -254,7 +257,8 @@ def test_mediainfo_scraper_mp4(filename, result_dict, evaluate_scraper):
     for stream in correct.streams.values():
         stream["version"] = "(:unav)"
     if "empty" in filename:
-        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stdout_part,
+                                        scraper.messages())
         assert partial_message_included(correct.stderr_part, scraper.errors())
         assert not scraper.streams
     else:
@@ -283,7 +287,8 @@ def test_mediainfo_scraper_mp3(filename, result_dict, evaluate_scraper):
     scraper.scrape_file()
 
     if "empty" in filename:
-        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stdout_part,
+                                        scraper.messages())
         assert partial_message_included(correct.stderr_part, scraper.errors())
         assert not scraper.streams
     else:
@@ -318,7 +323,8 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
         if stream["mimetype"] == "video/MP2T":
             stream["version"] = "(:unav)"
     if "empty" in filename:
-        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stdout_part,
+                                        scraper.messages())
         assert partial_message_included(correct.stderr_part, scraper.errors())
         assert not scraper.streams
     else:
@@ -326,19 +332,30 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
 
 
 @pytest.mark.parametrize(
-    ["filename", "result_dict", "mimetype"],
+    ["filename", "result_dict"],
     [
         ("valid__JPEG2000.avi", {
             "purpose": "Test valid AVI with JPEG2000.",
             "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
             "streams": {0: AVI_CONTAINER.copy(),
-                        1: AVI_JPEG2000_VIDEO.copy()}},
-         "video/avi"),
+                        1: AVI_JPEG2000_VIDEO.copy()}}),
+        ("invalid__JPEG2000_missing_data.avi", {
+            "purpose": "Test truncated file.",
+            "stdout_part": "",
+            "stderr_part": "The file is truncated.",
+            "streams": {0: AVI_CONTAINER.copy(),
+                        # data rate changes when data is removed
+                        1: dict(AVI_JPEG2000_VIDEO.copy(),
+                                **{"data_rate": "1.64036"})}}),
+        ("invalid__JPEG2000_no_avi_signature.avi", {
+            "purpose": "Test file with modified header.",
+            "stdout_part": "",
+            "stderr_part": "No audio or video tracks found"}),
     ])
-def test_mediainfo_scraper_avi(filename, result_dict, mimetype,
-                               evaluate_scraper):
+def test_mediainfo_scraper_avi(filename, result_dict, evaluate_scraper):
     """Test AVI scraping with Mediainfo."""
+    mimetype = "video/avi"
     correct = parse_results(filename, mimetype, result_dict, True)
     for index in correct.streams:
         correct.streams[index]["version"] = "(:unap)"
@@ -347,7 +364,13 @@ def test_mediainfo_scraper_avi(filename, result_dict, mimetype,
                                params={"mimetype_guess": mimetype})
     scraper.scrape_file()
 
-    evaluate_scraper(scraper, correct)
+    if "no_avi_signature" in filename:
+        assert partial_message_included(correct.stdout_part,
+                                        scraper.messages())
+        assert partial_message_included(correct.stderr_part, scraper.errors())
+        assert not scraper.streams
+    else:
+        evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
