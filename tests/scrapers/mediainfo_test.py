@@ -374,7 +374,7 @@ def test_mediainfo_scraper_avi(filename, result_dict, evaluate_scraper):
 
 
 @pytest.mark.parametrize(
-    ["filename", "result_dict", "mimetype"],
+    ["filename", "result_dict"],
     [
         ("valid_1.2_jpeg2000.mxf", {
             "purpose": "Test valid MXF with JPEG2000.",
@@ -384,14 +384,37 @@ def test_mediainfo_scraper_avi(filename, result_dict, evaluate_scraper):
                         1: MXF_JPEG2000_VIDEO.copy(),
                         2: MXF_TC.copy(),
                         3: MXF_TC.copy(),
-                        4: MXF_TC.copy()}},
-         "application/mxf"),
+                        4: MXF_TC.copy()}}),
+        ("invalid_1.2_jpeg2000_truncated.mxf", {
+            "purpose": "Test truncated file.",
+            "stdout_part": "",
+            "stderr_part": "The file is truncated.",
+            "streams": {0: MXF_CONTAINER.copy(),
+                        # data rate changes when data is removed
+                        1: dict(MXF_JPEG2000_VIDEO.copy(),
+                                **{"data_rate": "1.923362"}),
+                        2: MXF_TC.copy(),
+                        3: MXF_TC.copy(),
+                        4: MXF_TC.copy()}}),
+        ("invalid_1.2_jpeg2000_wrong_signature.mxf", {
+            "purpose": ("Test file with invalid header. Mediainfo doesn't "
+                        "notice this: another scraper is needed."),
+            "stdout_part": "The file was analyzed successfully.",
+            "stderr_part": "",
+            "streams": {0: MXF_CONTAINER.copy(),
+                        1: MXF_JPEG2000_VIDEO.copy(),
+                        2: MXF_TC.copy(),
+                        3: MXF_TC.copy(),
+                        4: MXF_TC.copy()}}),
     ])
-def test_mediainfo_scraper_mxf(filename, result_dict, mimetype,
-                               evaluate_scraper):
-    """Test AVI scraping with Mediainfo."""
+def test_mediainfo_scraper_mxf(filename, result_dict, evaluate_scraper):
+    """Test MXF scraping with Mediainfo."""
+    mimetype = "application/mxf"
     correct = parse_results(filename, mimetype, result_dict, True)
-    correct.streams[1]["version"] = "(:unap)"
+    if "invalid" not in filename:
+        correct.streams[1]["version"] = "(:unap)"
+    if "wrong_signature" in filename:
+        correct.well_formed = True
 
     scraper = MediainfoScraper(correct.filename, True,
                                params={"mimetype_guess": mimetype})

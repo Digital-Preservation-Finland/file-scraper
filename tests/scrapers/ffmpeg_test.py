@@ -203,7 +203,12 @@ def test_no_wellformed():
             "purpose": "Test empty MPEG-TS.",
             "stdout_part": "",
             "stderr_part": "Invalid data found when processing input"},
-         "video/MP2T")
+         "video/MP2T"),
+        ("invalid_1.2_jpeg2000_wrong_signature.mxf", {
+            "purpose": "Test MXF with invalid header.",
+            "stdout_part": "",
+            "stderr_part": "Invalid data found when processing input"},
+         "application/mxf"),
     ])
 def test_ffmpeg_scraper_invalid(filename, result_dict, mimetype,
                                 evaluate_scraper):
