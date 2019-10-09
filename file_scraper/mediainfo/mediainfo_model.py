@@ -565,15 +565,14 @@ class AviMediainfoMeta(BaseMediainfoMeta):
             raise SkipElementException()
 
         if self.mimetype() == "video/jpeg2000":
-            return "Variable"  # TODO is this ok?
+            return "Variable"
 
         return "(:unav)"
 
     @metadata()
     def signal_format(self):
-        """Not defined?"""
-        # TODO ok?
-        raise SkipElementException()
+        """Return "(:unap)": signal format not relevant."""
+        return "(:unap)"
 
 
 class MxfMediainfoMeta(BaseMediainfoMeta):
