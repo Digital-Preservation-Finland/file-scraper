@@ -1,11 +1,11 @@
 """FFMpeg wellformed scraper."""
 from __future__ import unicode_literals
 
-import six
 import re
+import six
 
 from file_scraper.base import BaseScraper, ProcessRunner
-from file_scraper.ffmpeg.ffmpeg_model import FFMpegSimpleMeta
+from file_scraper.ffmpeg.ffmpeg_model import FFMpegSimpleMeta, FFMpegMeta
 from file_scraper.utils import ensure_text, encode_path
 
 try:
@@ -15,16 +15,35 @@ except ImportError:
 
 
 class FFMpegScraper(BaseScraper):
-    """FFMpeg Wellformed scraper."""
+    """
+    Scraper using FFMpeg to gather metadata.
+    """
 
     # Supported mimetypes
-    _supported_metadata = [FFMpegSimpleMeta]
+    _supported_metadata = [FFMpegSimpleMeta, FFMpegMeta]
 
     # If stream order problems are solved, this metadata model can be used to
     # collect more information about the file.
     # _supported_metadata = [FFMpegMeta]
 
     _only_wellformed = True
+
+    def __init__(self, filename, check_wellformed=True, params=None):
+        """
+        Store mimetype_guess in addition to the normal init process.
+
+        If MIME type is forced ("mimetype" in params), it is used over
+        "mimetype_guess" possibly present in the parameters. At least one of
+        the two must be given or a KeyError is raised.
+        """
+        if "mimetype" in params:
+            self._mimetype_guess = params["mimetype"]
+        elif "mimetype_guess" in params:
+            self._mimetype_guess = params["mimetype_guess"]
+        else:
+            raise KeyError("FFMpegScraper must be given 'mimetype_guess' or"
+                           "'mimetype' in params")
+        super(FFMpegScraper, self).__init__(filename, check_wellformed, params)
 
     def scrape_file(self):
         """Scrape A/V files."""
@@ -53,9 +72,13 @@ class FFMpegScraper(BaseScraper):
             self._errors.append(ensure_text(shell.stderr))
             return
 
-        for md_class in self._supported_metadata:
-            stream = md_class(self._given_mimetype, self._given_version)
-            self.streams.append(stream)
+        for index in range(len(probe_results)):
+            for md_class in self._supported_metadata:
+                if md_class.is_supported(self._mimetype_guess):
+                    stream = md_class(probe_results, index,
+                                      self._given_mimetype,
+                                      self._given_version)
+                    self.streams.append(stream)
 
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)
 

@@ -28,7 +28,8 @@ class MediainfoScraper(BaseScraper):
 
     _supported_metadata = [MovMediainfoMeta, MkvMediainfoMeta,
                            WavMediainfoMeta, MpegMediainfoMeta,
-                           AviMediainfoMeta, MxfMediainfoMeta]
+                           #AviMediainfoMeta,
+                           MxfMediainfoMeta]
 
     def scrape_file(self):
         """Populate streams with supported metadata objects."""
