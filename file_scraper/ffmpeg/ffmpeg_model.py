@@ -8,7 +8,7 @@ from fractions import Fraction
 from file_scraper.base import BaseMeta
 from file_scraper.exceptions import SkipElementException
 from file_scraper.utils import metadata
-from file_scraper.utils import strip_zeros
+from file_scraper.utils import strip_zeros, iso8601_duration
 
 
 class FFMpegSimpleMeta(BaseMeta):
@@ -62,16 +62,19 @@ class FFMpegMeta(BaseMeta):
     # Supported mimetypes
     _supported = {"video/avi": []}
     _allow_versions = True   # Allow any version
+
     # Codec names returned by ffmpeg do not always correspond to ones from
     # different scraper tools. This dict is used to unify the results.
-    _codec_names = {"MP3 (MPEG audio layer 3)": "MPEG Audio",
-                    "MPEG-1 video": "MPEG Video",
-                    "MPEG-2 video": "MPEG Video",
-                    "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10": "(:unav)",
-                    "AAC (Advanced Audio Coding)": "AAC",
-                    "FFmpeg video codec #1": "FFV1",
-                    "DV (Digital Video)": "DV",
-                    "PCM unsigned 8-bit": "PCM"}
+    _codec_names = {
+        "AVI (Audio Video Interleaved)": "AVI",
+        }
+
+    # MIME types need to be decided based on format name
+    _mimetype_dict = {
+        "AVI (Audio Video Interleaved)": "video/avi",
+        "JPEG 2000": "video/jpeg2000",
+        }
+
     container_stream = None
 
     def __init__(self, probe_results, index, mimetype=None, version=None):
@@ -82,12 +85,14 @@ class FFMpegMeta(BaseMeta):
         :index:  Index of the current stream.
         """
         self._probe_results = probe_results
-        if index == 0 and self.hascontainer():
-            self._ffmpeg_stream = probe_results["format"]
-        else:
-            self._ffmpeg_stream = probe_results["streams"][index-1]
         if self.hascontainer():
             self.container_stream = self._probe_results["format"]
+            if index == 0:
+                self._ffmpeg_stream = probe_results["format"]
+            else:
+                self._ffmpeg_stream = probe_results["streams"][index-1]
+        else:
+            self._ffmpeg_stream = probe_results["streams"][index]
 
         super(FFMpegMeta, self).__init__(mimetype=mimetype, version=version)
 
@@ -96,6 +101,20 @@ class FFMpegMeta(BaseMeta):
         return ("codec_type" not in self._probe_results["format"]
                 and self._probe_results["format"]["format_name"] not in
                 ["mp3", "mpegvideo"])
+
+    @metadata()
+    def mimetype(self):
+        """Return MIME type based on format name."""
+        if self._given_mimetype:
+            return self._given_mimetype
+        mime = "(:unav)"
+        if "format_long_name" in self._ffmpeg_stream:
+            mime = self._ffmpeg_stream["format_long_name"]
+        elif "codec_long_name" in self._ffmpeg_stream:
+            mime = self._ffmpeg_stream["codec_long_name"]
+        if mime in self._mimetype_dict:
+            mime = self._mimetype_dict[mime]
+        return mime
 
     @metadata()
     def codec_quality(self):
@@ -121,7 +140,9 @@ class FFMpegMeta(BaseMeta):
             raise SkipElementException()
         if self.container_stream == self._ffmpeg_stream:
             raise SkipElementException()
-        return None
+        if self.mimetype() in ["video/avi", "video/jpeg2000"]:
+            return "Variable"
+        return "(:unav)"
 
     @metadata()
     def signal_format(self):
@@ -214,14 +235,24 @@ class FFMpegMeta(BaseMeta):
         """Return data rate (bit rate)."""
         if self.stream_type() not in ["video", "audio"]:
             raise SkipElementException()
-        if self._ffmpeg_stream == self.container_stream:
-            raise SkipElementException()
+        # TODO: Do we want to skip the container? Mediainfo didn't
+#        if self._ffmpeg_stream == self.container_stream:
+#            raise SkipElementException()
         if "bit_rate" in self._ffmpeg_stream:
-            if self._ffmpeg_stream["codec_type"] == "video":
-                return "(:unav)"
+            # TODO why this?
+#            if self._ffmpeg_stream["codec_type"] == "video":
+#                return "(:unav)"
+            # TODO this is different from what we get from mediainfo
             return strip_zeros(six.text_type(float(
-                self._ffmpeg_stream["bit_rate"]) / 1000))
+                self._ffmpeg_stream["bit_rate"]) / 10**6))
         return "(:unav)"
+
+    @metadata()
+    def duration(self):
+        """Return duration."""
+        if self.stream_type() not in ["video", "audio", "videocontainer"]:
+            raise SkipElementException()
+        return iso8601_duration(float(self._ffmpeg_stream["duration"]))
 
     @metadata()
     def frame_rate(self):
@@ -292,8 +323,8 @@ class FFMpegMeta(BaseMeta):
         """Returns creator application."""
         if self.stream_type() not in ["audio", "video", "videocontainer"]:
             raise SkipElementException()
-        if "encoder" in self._probe_results["format"]:
-            return self._probe_results["format"]["encoder"]
+        if "encoder" in self._probe_results["format"]["tags"]:
+            return self._probe_results["format"]["tags"]["encoder"]
         return "(:unav)"
 
     @metadata()
@@ -301,11 +332,11 @@ class FFMpegMeta(BaseMeta):
         """Returns creator application version."""
         if self.stream_type() not in ["audio", "video", "videocontainer"]:
             raise SkipElementException()
-        if "encoder" in self._probe_results["format"]:
+        if "encoder" in self._probe_results["format"]["tags"]:
             reg = re.search(r"([\d.]+)$",
-                            self._probe_results["format"]["encoder"])
+                            self._probe_results["format"]["tags"]["encoder"])
             if reg is not None:
-                return reg.group(1)
+                return reg.group()  # TODO this used to be reg.group(1), why?
         return "(:unav)"
 
     @metadata()
@@ -313,12 +344,16 @@ class FFMpegMeta(BaseMeta):
         """Returns codec name."""
         if self.stream_type() not in ["audio", "video", "videocontainer"]:
             raise SkipElementException()
+
+        codec = "(:unav)"
         if "codec_long_name" in self._ffmpeg_stream:
             codec = self._ffmpeg_stream["codec_long_name"]
-            if codec in self._codec_names:
-                return self._codec_names[codec]
-            return codec
-        return "(:unav)"
+        if "format_long_name" in self._ffmpeg_stream:
+            codec = self._ffmpeg_stream["format_long_name"]
+
+        if codec in self._codec_names:
+            return self._codec_names[codec]
+        return codec
 
     @metadata()
     def bits_per_sample(self):

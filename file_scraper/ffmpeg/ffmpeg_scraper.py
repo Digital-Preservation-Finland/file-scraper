@@ -36,7 +36,9 @@ class FFMpegScraper(BaseScraper):
         "mimetype_guess" possibly present in the parameters. At least one of
         the two must be given or a KeyError is raised.
         """
-        if "mimetype" in params:
+        # TODO: Do we really need the mimtype_guess, or could MIME type be
+        #       determined from the file as with other scrapers
+        if "mimetype" in params and params["mimetype"]:
             self._mimetype_guess = params["mimetype"]
         elif "mimetype_guess" in params:
             self._mimetype_guess = params["mimetype_guess"]

@@ -131,19 +131,19 @@ AVI_CONTAINER = {
 }
 
 BASE_JPEG2000_VIDEO = {  # TODO: color, codec_quality, data_rate_mode, signal_format
-    "index": 1, "mimetype": "video/jpeg2000", "version": "(:unap)",
+    "index": 1, "mimetype": "video/jpeg2000", "version": "(:unav)",
     "par": "1",
     "data_rate_mode": "Variable",
     "dar": "1.778",
     "height": "180", "sound": "No", "codec_name": "JPEG 2000",
     "codec_creator_app_version": "56.40.101", "duration": "PT1.03S",
-    "sampling": "(:unav)", "stream_type": "video", "width": "320",
+    "sampling": "4:2:0", "stream_type": "video", "width": "320",
     "codec_creator_app": "Lavf56.40.101"
 }
 
 AVI_JPEG2000_VIDEO = dict(BASE_JPEG2000_VIDEO,
-                          **{"data_rate": "1.641677",
-                             "bits_per_sample": "(:unav)",
+                          **{"data_rate": "1.6964",
+                             "bits_per_sample": "8",
                              "frame_rate": "30",
                              "codec_creator_app": "Lavf56.40.101"})
 
