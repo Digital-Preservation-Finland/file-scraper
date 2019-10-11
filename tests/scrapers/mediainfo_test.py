@@ -337,7 +337,7 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
         ("valid__JPEG2000.avi", {
             "purpose": "Test valid AVI with JPEG2000.",
             "stdout_part": "file was analyzed successfully",
-            "stderr_part": "",
+            "stderr_part": "MIME type not supported by this scraper.",
             "streams": {0: AVI_CONTAINER.copy(),
                         1: AVI_JPEG2000_VIDEO.copy()}}),
         ("invalid__JPEG2000_missing_data.avi", {
@@ -355,22 +355,22 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
     ])
 def test_mediainfo_scraper_avi(filename, result_dict, evaluate_scraper):
     """Test AVI scraping with Mediainfo."""
+    # TODO: do we want to have MediaInfo metadata model similar to
+    #       FFMpegSimpleMeta for validating the file using both tools without
+    #       using both for real metadata collection? If we do, then that needs
+    #       to be tested. If we don't, then this test still has some extra in
+    #       it.
     mimetype = "video/avi"
     correct = parse_results(filename, mimetype, result_dict, True)
-    for index in correct.streams:
-        correct.streams[index]["version"] = "(:unap)"
 
     scraper = MediainfoScraper(correct.filename, True,
                                params={"mimetype_guess": mimetype})
     scraper.scrape_file()
 
-    if "no_avi_signature" in filename:
-        assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
-        assert partial_message_included(correct.stderr_part, scraper.errors())
-        assert not scraper.streams
-    else:
-        evaluate_scraper(scraper, correct)
+    assert partial_message_included(correct.stdout_part,
+                                    scraper.messages())
+    assert partial_message_included(correct.stderr_part, scraper.errors())
+    assert not scraper.streams
 
 
 @pytest.mark.parametrize(
@@ -463,13 +463,18 @@ def test_is_supported_mpeg(mime, ver):
 
 
 def test_is_supported_avi():
-    """Test is_filetype support of AviMediainfoModel."""
+    """
+    Test is_filetype support of AviMediainfoModel.
+
+    AVI files are scraped using FFMpeg for easy colour information collection,
+    so video/avi should not be supported.
+    """
     mime = "video/avi"
     ver = ""
-    assert MediainfoScraper.is_supported(mime, ver, True)
-    assert MediainfoScraper.is_supported(mime, None, True)
-    assert MediainfoScraper.is_supported(mime, ver, False)
-    assert MediainfoScraper.is_supported(mime, "foo", True)
+    assert not MediainfoScraper.is_supported(mime, ver, True)
+    assert not MediainfoScraper.is_supported(mime, None, True)
+    assert not MediainfoScraper.is_supported(mime, ver, False)
+    assert not MediainfoScraper.is_supported(mime, "foo", True)
     assert not MediainfoScraper.is_supported("foo", ver, True)
 
 
