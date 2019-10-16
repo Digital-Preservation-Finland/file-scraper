@@ -530,51 +530,6 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
         return "(:unav)"
 
 
-class AviMediainfoMeta(BaseMediainfoMeta):
-    """Metadata model for AVI containers with JPEG2000 data."""
-
-    _containers = ["AVI"]
-    _supported = {"video/avi": []}
-    _allow_versions = True
-
-    @metadata()
-    def mimetype(self):
-        """Returns mimetype for stream."""
-        mime_dict = {"AVI": "video/avi",
-                     "JPEG 2000": "video/jpeg2000"}
-
-        if self._given_mimetype:
-            if self._index == 0:
-                return self._given_mimetype
-
-        try:
-            return mime_dict[self.codec_name()]
-        except (SkipElementException, KeyError):
-            pass
-        return self._mimetype_guess
-
-    @metadata()
-    def version(self):
-        """Neither AVI nor JPEG2000 have versions: return (:unap)."""
-        return "(:unap)"
-
-    @metadata()
-    def data_rate_mode(self):
-        """Return data rate mode (allowed values are "Fixed" or "Variable")."""
-        if self.stream_type() not in ["video", "audio"]:
-            raise SkipElementException()
-
-        if self.mimetype() == "video/jpeg2000":
-            return "Variable"
-
-        return "(:unav)"
-
-    @metadata()
-    def signal_format(self):
-        """Return "(:unap)": signal format not relevant."""
-        return "(:unap)"
-
-
 class MxfMediainfoMeta(BaseMediainfoMeta):
     """Metadata model for MXF containers with JPEG2000 data."""
 
@@ -623,3 +578,33 @@ class MxfMediainfoMeta(BaseMediainfoMeta):
             return "Variable"  # TODO is this ok?
 
         return "(:unav)"
+
+
+class SimpleMediainfoMeta(BaseMeta):
+    """
+    Metadata model for checking well-formedness without metadata scraping.
+
+    This class is used for file types for which the metadata collection is done
+    using FFMpeg. Both tools cannot currently be used simultaneously, as we do
+    not have a reliable way of sorting the streams so that outputs from both
+    tools could be reliably combined.
+    """
+    _supported = {"video/avi": []}
+    _allow_versions = True  # Allow any version
+    _containers = ["video/avi"]
+
+    def __init__(self, tracks, index, mimetype_guess, mimetype=None,
+                 version=None):
+        """
+        Initialize the metadata model. No extra functionality over BaseMeta.
+        """
+        # pylint: disable=too-many-arguments, unused-argument
+        super(SimpleMediainfoMeta, self).__init__(mimetype=mimetype,
+                                                  version=version)
+
+    def hascontainer(self):
+        """
+        No metadata is scraped, so container data is irrelevant: returns False.
+        """
+        # pylint: disable=no-self-use
+        return False

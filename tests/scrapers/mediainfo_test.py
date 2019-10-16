@@ -145,7 +145,7 @@ def test_mediainfo_scraper_mkv(filename, result_dict, evaluate_scraper):
         correct.streams[0]["version"] = None
         correct.streams[0]["stream_type"] = None
 
-    if "empty" in filename:
+    if "invalid" in filename:
         assert partial_message_included(correct.stdout_part,
                                         scraper.messages())
         assert partial_message_included(correct.stderr_part, scraper.errors())
@@ -337,7 +337,7 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
         ("valid__JPEG2000.avi", {
             "purpose": "Test valid AVI with JPEG2000.",
             "stdout_part": "file was analyzed successfully",
-            "stderr_part": "MIME type not supported by this scraper.",
+            "stderr_part": "",
             "streams": {0: AVI_CONTAINER.copy(),
                         1: AVI_JPEG2000_VIDEO.copy()}}),
         ("invalid__JPEG2000_missing_data.avi", {
@@ -353,13 +353,14 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
             "stdout_part": "",
             "stderr_part": "No audio or video tracks found"}),
     ])
-def test_mediainfo_scraper_avi(filename, result_dict, evaluate_scraper):
-    """Test AVI scraping with Mediainfo."""
-    # TODO: do we want to have MediaInfo metadata model similar to
-    #       FFMpegSimpleMeta for validating the file using both tools without
-    #       using both for real metadata collection? If we do, then that needs
-    #       to be tested. If we don't, then this test still has some extra in
-    #       it.
+def test_mediainfo_scraper_avi(filename, result_dict):
+    """
+    Test AVI scraping with Mediainfo.
+
+    Both Mediainfo and FFMpeg cannot be used for metadata scraping, and FFMpeg
+    meets our needs better with AVI, so MediainfoScraper should just return one
+    stream full of unavs to be overwritten by results from FFMpeg.
+    """
     mimetype = "video/avi"
     correct = parse_results(filename, mimetype, result_dict, True)
 
@@ -370,57 +371,67 @@ def test_mediainfo_scraper_avi(filename, result_dict, evaluate_scraper):
     assert partial_message_included(correct.stdout_part,
                                     scraper.messages())
     assert partial_message_included(correct.stderr_part, scraper.errors())
-    assert not scraper.streams
+    if "invalid" in filename:
+        assert not scraper.streams
+    else:
+        assert len(scraper.streams) == 1
+        for method in scraper.streams[0].iterate_metadata_methods():
+            if method.__name__ == "index":
+                assert method() == 0
+            else:
+                assert method() == "(:unav)"
 
 
-@pytest.mark.parametrize(
-    ["filename", "result_dict"],
-    [
-        ("valid_1.2_jpeg2000.mxf", {
-            "purpose": "Test valid MXF with JPEG2000.",
-            "stdout_part": "file was analyzed successfully",
-            "stderr_part": "",
-            "streams": {0: MXF_CONTAINER.copy(),
-                        1: MXF_JPEG2000_VIDEO.copy(),
-                        2: MXF_TC.copy(),
-                        3: MXF_TC.copy(),
-                        4: MXF_TC.copy()}}),
-        ("invalid_1.2_jpeg2000_truncated.mxf", {
-            "purpose": "Test truncated file.",
-            "stdout_part": "",
-            "stderr_part": "The file is truncated.",
-            "streams": {0: MXF_CONTAINER.copy(),
-                        # data rate changes when data is removed
-                        1: dict(MXF_JPEG2000_VIDEO.copy(),
-                                **{"data_rate": "1.923362"}),
-                        2: MXF_TC.copy(),
-                        3: MXF_TC.copy(),
-                        4: MXF_TC.copy()}}),
-        ("invalid_1.2_jpeg2000_wrong_signature.mxf", {
-            "purpose": ("Test file with invalid header. Mediainfo doesn't "
-                        "notice this: another scraper is needed."),
-            "stdout_part": "The file was analyzed successfully.",
-            "stderr_part": "",
-            "streams": {0: MXF_CONTAINER.copy(),
-                        1: MXF_JPEG2000_VIDEO.copy(),
-                        2: MXF_TC.copy(),
-                        3: MXF_TC.copy(),
-                        4: MXF_TC.copy()}}),
-    ])
-def test_mediainfo_scraper_mxf(filename, result_dict, evaluate_scraper):
-    """Test MXF scraping with Mediainfo."""
-    mimetype = "application/mxf"
-    correct = parse_results(filename, mimetype, result_dict, True)
-    if "invalid" not in filename:
-        correct.streams[1]["version"] = "(:unap)"
-    if "wrong_signature" in filename:
-        correct.well_formed = True
-
-    scraper = MediainfoScraper(correct.filename, True,
-                               params={"mimetype_guess": mimetype})
-    scraper.scrape_file()
-
-    evaluate_scraper(scraper, correct)
+# TODO temporarily disabled all MXF testing: these will also be scraped using
+# FFMpeg
+#@pytest.mark.parametrize(
+#    ["filename", "result_dict"],
+#    [
+#        ("valid_1.2_jpeg2000.mxf", {
+#            "purpose": "Test valid MXF with JPEG2000.",
+#            "stdout_part": "file was analyzed successfully",
+#            "stderr_part": "",
+#            "streams": {0: MXF_CONTAINER.copy(),
+#                        1: MXF_JPEG2000_VIDEO.copy(),
+#                        2: MXF_TC.copy(),
+#                        3: MXF_TC.copy(),
+#                        4: MXF_TC.copy()}}),
+#        ("invalid_1.2_jpeg2000_truncated.mxf", {
+#            "purpose": "Test truncated file.",
+#            "stdout_part": "",
+#            "stderr_part": "The file is truncated.",
+#            "streams": {0: MXF_CONTAINER.copy(),
+#                        # data rate changes when data is removed
+#                        1: dict(MXF_JPEG2000_VIDEO.copy(),
+#                                **{"data_rate": "1.923362"}),
+#                        2: MXF_TC.copy(),
+#                        3: MXF_TC.copy(),
+#                        4: MXF_TC.copy()}}),
+#        ("invalid_1.2_jpeg2000_wrong_signature.mxf", {
+#            "purpose": ("Test file with invalid header. Mediainfo doesn't "
+#                        "notice this: another scraper is needed."),
+#            "stdout_part": "The file was analyzed successfully.",
+#            "stderr_part": "",
+#            "streams": {0: MXF_CONTAINER.copy(),
+#                        1: MXF_JPEG2000_VIDEO.copy(),
+#                        2: MXF_TC.copy(),
+#                        3: MXF_TC.copy(),
+#                        4: MXF_TC.copy()}}),
+#    ])
+#def test_mediainfo_scraper_mxf(filename, result_dict, evaluate_scraper):
+#    """Test MXF scraping with Mediainfo."""
+#    mimetype = "application/mxf"
+#    correct = parse_results(filename, mimetype, result_dict, True)
+#    if "invalid" not in filename:
+#        correct.streams[1]["version"] = "(:unap)"
+#    if "wrong_signature" in filename:
+#        correct.well_formed = True
+#
+#    scraper = MediainfoScraper(correct.filename, True,
+#                               params={"mimetype_guess": mimetype})
+#    scraper.scrape_file()
+#
+#    evaluate_scraper(scraper, correct)
 
 
 def test_no_wellformed():
@@ -467,14 +478,15 @@ def test_is_supported_avi():
     Test is_filetype support of AviMediainfoModel.
 
     AVI files are scraped using FFMpeg for easy colour information collection,
-    so video/avi should not be supported.
+    but Mediainfo is also needed for checking well-formedness, so AVI should be
+    supported.
     """
     mime = "video/avi"
     ver = ""
-    assert not MediainfoScraper.is_supported(mime, ver, True)
-    assert not MediainfoScraper.is_supported(mime, None, True)
-    assert not MediainfoScraper.is_supported(mime, ver, False)
-    assert not MediainfoScraper.is_supported(mime, "foo", True)
+    assert MediainfoScraper.is_supported(mime, ver, True)
+    assert MediainfoScraper.is_supported(mime, None, True)
+    assert MediainfoScraper.is_supported(mime, ver, False)
+    assert MediainfoScraper.is_supported(mime, "foo", True)
     assert not MediainfoScraper.is_supported("foo", ver, True)
 
 

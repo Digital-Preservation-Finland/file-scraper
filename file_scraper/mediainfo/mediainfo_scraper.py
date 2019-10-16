@@ -4,12 +4,14 @@ from __future__ import unicode_literals
 import six
 
 from file_scraper.base import BaseScraper
-from file_scraper.mediainfo.mediainfo_model import (AviMediainfoMeta,
-                                                    MkvMediainfoMeta,
-                                                    MovMediainfoMeta,
-                                                    MpegMediainfoMeta,
-                                                    MxfMediainfoMeta,
-                                                    WavMediainfoMeta)
+from file_scraper.mediainfo.mediainfo_model import (
+    MkvMediainfoMeta,
+    MovMediainfoMeta,
+    MpegMediainfoMeta,
+    MxfMediainfoMeta,
+    SimpleMediainfoMeta,
+    WavMediainfoMeta,
+    )
 from file_scraper.utils import decode_path
 
 try:
@@ -26,10 +28,14 @@ class MediainfoScraper(BaseScraper):
     scraper in the params dict under the key "mimetype".
     """
 
-    _supported_metadata = [MovMediainfoMeta, MkvMediainfoMeta,
-                           WavMediainfoMeta, MpegMediainfoMeta,
-                           #AviMediainfoMeta,
-                           MxfMediainfoMeta]
+    _supported_metadata = [
+        MkvMediainfoMeta,
+        MovMediainfoMeta,
+        MpegMediainfoMeta,
+        MxfMediainfoMeta,
+        SimpleMediainfoMeta,
+        WavMediainfoMeta,
+    ]
 
     def scrape_file(self):
         """Populate streams with supported metadata objects."""
@@ -49,27 +55,12 @@ class MediainfoScraper(BaseScraper):
             self._check_supported()
             return
 
-        # check that the file is whole and contains audio and/or video tracks
-        truncated = False
-        track_found = False
-        for track in mediainfo.tracks:
-            if track.istruncated == "Yes":
-                truncated = True
-                self._errors.append("The file is truncated.")
-            if track.track_type.lower() in ["audio", "video"]:
-                track_found = True
-        if not track_found:
-            self._errors.append("No audio or video tracks found.")
+        if not self._tracks_ok(mediainfo):
             return
-        elif not truncated:
+        else:
             self._messages.append("The file was analyzed successfully.")
 
-        # If the MIME type is forced to a certain value by mimetype parameter,
-        # use that value, otherwise use the given mimetype_guess
-        if self._given_mimetype:
-            mime_guess = self._given_mimetype
-        else:
-            mime_guess = self._params["mimetype_guess"]
+        mime_guess = self._choose_mimetype_guess()
 
         for index in range(len(mediainfo.tracks)):
             for md_class in self._supported_metadata:
@@ -80,4 +71,51 @@ class MediainfoScraper(BaseScraper):
                     if not md_object.hascontainer() and index == 0:
                         continue
                     self.streams.append(md_object)
+
+        # Files scraped with SimpleMediainfoMeta will have (:unav) MIME type,
+        # but for other scrapes the tests need to be performed without allowing
+        # unavs MIME types.
+        if self.streams and isinstance(self.streams[0], SimpleMediainfoMeta):
+            self._check_supported(allow_unav_mime=True,
+                                  allow_unav_version=True)
+            return
         self._check_supported(allow_unav_version=True, allow_unap_version=True)
+
+    def _tracks_ok(self, mediainfo):
+        """
+        Check that the file is whole and contains audio and/or video tracks.
+
+        Returns True if the file is not truncated and contains at least one
+        track. Otherwise returns False.
+
+        If problems are encountered, they are recorded in self.errors.
+        Otherwise a success message is recorded in self.messages.
+
+        :mediainfo: Output from MediaInfo.parse
+        """
+        truncated = False
+        track_found = False
+        for track in mediainfo.tracks:
+            if track.istruncated == "Yes":
+                truncated = True
+                self._errors.append("The file is truncated.")
+            if track.track_type.lower() in ["audio", "video"]:
+                track_found = True
+        if not track_found:
+            self._errors.append("No audio or video tracks found.")
+        if truncated:
+            self._errors.append("File contains a truncated track.")
+
+        return not truncated and track_found
+
+    def _choose_mimetype_guess(self):
+        """
+        Choose a value from the parameters to be used as the container type.
+
+        If MIME type is forced, the forced value is used. If MIME type is not
+        forced, the mimetype_guess from params is used.
+        """
+        if self._given_mimetype:
+            return self._given_mimetype
+        else:
+            return self._params["mimetype_guess"]

@@ -16,17 +16,19 @@ except ImportError:
 
 class FFMpegScraper(BaseScraper):
     """
-    Scraper using FFMpeg to gather metadata.
+    Scraper using FFMpeg to check well-formedness / gather metadata.
+
+    For most file types, no metadata is scraped: for those files
+    FFMpegSimpleMeta metadata model is used. This is done as both Mediainfo and
+    FFMpeg cannot be used simultaneously to scrape the metadata as reliable
+    matching of streams from two scrapers is not currently possible. For AVI
+    files, Mediainfo is not able to report all required metadata, so for those
+    files all metadata collection is done with FFMpegScraper, using FFMpegMeta
+    as the metadata model.
     """
 
     # Supported mimetypes
     _supported_metadata = [FFMpegSimpleMeta, FFMpegMeta]
-
-    # If stream order problems are solved, this metadata model can be used to
-    # collect more information about the file.
-    # _supported_metadata = [FFMpegMeta]
-
-    _only_wellformed = True
 
     def __init__(self, filename, check_wellformed=True, params=None):
         """

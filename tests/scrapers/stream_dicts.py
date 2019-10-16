@@ -53,7 +53,7 @@ WAV_AUDIO = {
     "codec_name": "PCM", "codec_quality": "lossless",
     "data_rate": "705.6", "data_rate_mode": "Fixed", "duration": "PT0.86S",
     "index": 0, "mimetype": "audio/x-wav", "num_channels": "2",
-    "sampling_frequency": "44.1", "stream_type": "audio", "version": "(:unav)"}
+    "sampling_frequency": "44.1", "stream_type": "audio"}
 
 MPEG1_VIDEO = {
     "mimetype": "video/mpeg", "index": 0, "par": "1", "frame_rate": "30",
@@ -131,7 +131,7 @@ AVI_CONTAINER = {
 }
 
 BASE_JPEG2000_VIDEO = {  # TODO: color, codec_quality, data_rate_mode, signal_format
-    "index": 1, "mimetype": "video/jpeg2000", "version": "(:unav)",
+    "index": 1, "mimetype": "video/jpeg2000", "version": "(:unap)",
     "par": "1",
     "data_rate_mode": "Variable",
     "dar": "1.778",

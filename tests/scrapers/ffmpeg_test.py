@@ -106,8 +106,8 @@ NO_METADATA = {0: {'mimetype': '(:unav)', 'index': 0, 'version': '(:unav)',
             "stderr_part": ""},
          "video/MP2T"),
     ])
-def test_ffmpeg_scraper_valid_simple(filename, result_dict, mimetype,
-                                     evaluate_scraper):
+def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
+                             evaluate_scraper):
     """Test FFMpegScraper with valid files when no metadata is scraped."""
     correct = parse_results(filename, mimetype, result_dict, True)
     correct.streams = NO_METADATA
@@ -129,6 +129,7 @@ def test_ffmpeg_scraper_valid_simple(filename, result_dict, mimetype,
             "streams": {0: AVI_CONTAINER.copy(),
                         1: AVI_JPEG2000_VIDEO.copy()}},
          "video/avi"),
+# TODO enable this
 #        ("valid_1.2_jpeg2000.mxf", {
 #            "purpose": "Test valid MXF.",
 #            "stdout_part": "file was analyzed successfully",
@@ -143,6 +144,7 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
     scraper = FFMpegScraper(correct.filename, True,
                             params={"mimetype_guess": mimetype})
     scraper.scrape_file()
+    # TODO remove these when mxf testing is added and made functional
 #    from file_scraper.utils import generate_metadata_dict
 #    print generate_metadata_dict([scraper.streams], [])
 #    for stream in range(len(scraper.streams)):
@@ -154,12 +156,13 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
 
 def test_no_wellformed():
     """
-    Test that scraping is not done without well-formedness check.
+    Test that scraping is also done without well-formedness check.
     """
-    scraper = FFMpegScraper("tests/data/audio_mpeg/valid_1.mp3", False,
-                            {"mimetype_guess": "audio/mpeg"})
+    scraper = FFMpegScraper("tests/data/video_avi/valid__JPEG2000.avi", False,
+                            {"mimetype_guess": "video/avi"})
     scraper.scrape_file()
-    assert partial_message_included("Skipping scraper", scraper.messages())
+    assert partial_message_included("The file was analyzed successfully.",
+                                    scraper.messages())
     assert scraper.well_formed is None
 
 
@@ -267,7 +270,7 @@ def test_is_supported_mpeg(mime, ver):
     """Test is_supported method."""
     assert FFMpegScraper.is_supported(mime, ver, True)
     assert FFMpegScraper.is_supported(mime, None, True)
-    assert not FFMpegScraper.is_supported(mime, ver, False)
+    assert FFMpegScraper.is_supported(mime, ver, False)
     assert FFMpegScraper.is_supported(mime, "foo", True)
     assert not FFMpegScraper.is_supported("foo", ver, True)
 

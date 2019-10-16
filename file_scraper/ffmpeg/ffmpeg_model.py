@@ -85,6 +85,7 @@ class FFMpegMeta(BaseMeta):
         :index:  Index of the current stream.
         """
         self._probe_results = probe_results
+        self._index = index
         if self.hascontainer():
             self.container_stream = self._probe_results["format"]
             if index == 0:
@@ -106,7 +107,8 @@ class FFMpegMeta(BaseMeta):
     def mimetype(self):
         """Return MIME type based on format name."""
         if self._given_mimetype:
-            return self._given_mimetype
+            if self._index == 0:
+                return self._given_mimetype
         mime = "(:unav)"
         if "format_long_name" in self._ffmpeg_stream:
             mime = self._ffmpeg_stream["format_long_name"]
@@ -115,6 +117,11 @@ class FFMpegMeta(BaseMeta):
         if mime in self._mimetype_dict:
             mime = self._mimetype_dict[mime]
         return mime
+
+    @metadata()
+    def version(self):
+        """Return (:unap) as supported types do not have different versions."""
+        return "(:unap)"
 
     @metadata()
     def codec_quality(self):
@@ -149,6 +156,9 @@ class FFMpegMeta(BaseMeta):
         """Return signal format."""
         if self.stream_type() not in ["video"]:
             raise SkipElementException()
+        if self.mimetype() in ["video/jpeg2000"]:
+            # signal format not relevant for JPEG2000 streams
+            return "(:unap)"
         return "(:unav)"
 
     @metadata()
