@@ -2,8 +2,8 @@
 from __future__ import unicode_literals
 
 import re
-import six
 from fractions import Fraction
+import six
 
 from file_scraper.base import BaseMeta
 from file_scraper.exceptions import SkipElementException
@@ -27,12 +27,59 @@ class FFMpegSimpleMeta(BaseMeta):
                   "application/mxf": []}
     _allow_versions = True   # Allow any version
 
+    # MIME types need to be decided based on format name
+    _mimetype_dict = {
+        "DV (Digital Video)": "video/dv",
+        "Matroska / WebM": "video/x-matroska",
+        "raw MPEG video": "video/mpeg",
+        "MPEG-TS (MPEG-2 Transport Stream)": "video/MP2T",
+        "MXF (Material eXchange Format)": "application/mxf",
+        "AVI (Audio Video Interleaved)": "video/avi",
+        "JPEG 2000": "video/jpeg2000",
+        # These two do not always neatly correspond to one MIME type, so they
+        # should be left for other scrapers such as Mediainfo.
+        "QuickTime / MOV": "(:unav)",
+        "MP2/3 (MPEG audio layer 2/3)": "(:unav)",
+        }
+
+    container_stream = None
+
     def __init__(self, probe_results, index, mimetype=None, version=None):
-        """Do nothing special: this is a very simple metadata model."""
-        # pylint: disable=unused-argument
-        # The extra arguments are included to keep this metadata model
-        # compatible with FFMpegMeta
-        super(FFMpegSimpleMeta, self).__init__(mimetype, version)
+        """
+        Initialize the metadata model.
+
+        :probe_results: List of streams returned by ffmpeg.probe.
+        :index:  Index of the current stream.
+        """
+        self._probe_results = probe_results
+        self._index = index
+
+        if self.hascontainer():
+            self.container_stream = self._probe_results["format"]
+            if index == 0:
+                self._ffmpeg_stream = probe_results["format"]
+            else:
+                self._ffmpeg_stream = probe_results["streams"][index-1]
+        else:
+            self._ffmpeg_stream = probe_results["streams"][index]
+
+        super(FFMpegSimpleMeta, self).__init__(mimetype=mimetype,
+                                               version=version)
+
+    @metadata()
+    def mimetype(self):
+        """Return MIME type based on format name."""
+        if self._given_mimetype:
+            if self._index == 0:
+                return self._given_mimetype
+
+        mime = "(:unav)"
+        if "format_long_name" in self._ffmpeg_stream:
+            mime = self._ffmpeg_stream["format_long_name"]
+        if mime in self._mimetype_dict:
+            mime = self._mimetype_dict[mime]
+
+        return mime
 
     @metadata()
     def stream_type(self):
@@ -42,8 +89,14 @@ class FFMpegSimpleMeta(BaseMeta):
         # pylint: disable=no-self-use
         return "(:unav)"
 
+    def hascontainer(self):
+        """Check if file has a video container."""
+        return ("codec_type" not in self._probe_results["format"]
+                and self._probe_results["format"]["format_name"] not in
+                ["mp3", "mpegvideo"])
 
-class FFMpegMeta(BaseMeta):
+
+class FFMpegMeta(FFMpegSimpleMeta):
     """
     Metadata model for video/avi.
 
@@ -69,53 +122,30 @@ class FFMpegMeta(BaseMeta):
         "AVI (Audio Video Interleaved)": "AVI",
         }
 
-    # MIME types need to be decided based on format name
-    _mimetype_dict = {
+    # Some MIME types need to be decided based on codec name
+    _codec_mimetype_dict = {
         "AVI (Audio Video Interleaved)": "video/avi",
         "JPEG 2000": "video/jpeg2000",
         }
 
-    container_stream = None
-
-    def __init__(self, probe_results, index, mimetype=None, version=None):
-        """
-        Initialize the metadata model.
-
-        :probe_results: List of streams returned by ffmpeg.probe.
-        :index:  Index of the current stream.
-        """
-        self._probe_results = probe_results
-        self._index = index
-        if self.hascontainer():
-            self.container_stream = self._probe_results["format"]
-            if index == 0:
-                self._ffmpeg_stream = probe_results["format"]
-            else:
-                self._ffmpeg_stream = probe_results["streams"][index-1]
-        else:
-            self._ffmpeg_stream = probe_results["streams"][index]
-
-        super(FFMpegMeta, self).__init__(mimetype=mimetype, version=version)
-
-    def hascontainer(self):
-        """Check if file has a video container."""
-        return ("codec_type" not in self._probe_results["format"]
-                and self._probe_results["format"]["format_name"] not in
-                ["mp3", "mpegvideo"])
-
     @metadata()
     def mimetype(self):
-        """Return MIME type based on format name."""
-        if self._given_mimetype:
-            if self._index == 0:
-                return self._given_mimetype
-        mime = "(:unav)"
-        if "format_long_name" in self._ffmpeg_stream:
-            mime = self._ffmpeg_stream["format_long_name"]
-        elif "codec_long_name" in self._ffmpeg_stream:
+        """
+        Return MIME type.
+
+        If the MIME type can be determined based on format name as is done in
+        the superclass, that result is returned. Otherwise, determining the
+        MIME type based on codec name is attempted. This is relevant for
+        JPEG2000 streams.
+        """
+        mime = super(FFMpegMeta, self).mimetype()
+        if mime not in ["(:unav)", None]:
+            return mime
+
+        if "codec_long_name" in self._ffmpeg_stream:
             mime = self._ffmpeg_stream["codec_long_name"]
-        if mime in self._mimetype_dict:
-            mime = self._mimetype_dict[mime]
+        if mime in self._codec_mimetype_dict:
+            mime = self._codec_mimetype_dict[mime]
         return mime
 
     @metadata()
