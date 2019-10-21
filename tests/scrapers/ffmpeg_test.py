@@ -122,12 +122,21 @@ def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
 @pytest.mark.parametrize(
     ["filename", "result_dict", "mimetype"],
     [
+        # TODO codec_quality testing for both avi files
         ("valid__JPEG2000.avi", {
             "purpose": "Test valid AVI.",
             "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
             "streams": {0: AVI_CONTAINER.copy(),
                         1: AVI_JPEG2000_VIDEO.copy()}},
+         "video/avi"),
+        ("valid__JPEG2000_lossless.avi", {
+            "purpose": "Test valid AVI with lossless JPEG2000.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": "",
+            "streams": {0: AVI_CONTAINER.copy(),
+                        1: dict(AVI_JPEG2000_VIDEO.copy(),
+                                **{"data_rate": "3.559952"})}},
          "video/avi"),
 # TODO enable this
 #        ("valid_1.2_jpeg2000.mxf", {
