@@ -75,14 +75,14 @@ class FFMpegScraper(BaseScraper):
             return
 
         container = False
-        for index in range(len(probe_results["streams"]) + 1):
+        for index in range(len(streams)):
             # FFMpeg has separate "format" (relevant for containers) and
             # "streams" (relevant for all files) elements in its output. We
             # know whether we'll have streams + container or just streams only
             # after scraping the first stream, so there's a risk of trying to
             # add one too many streams. This check prevents constructing more
             # metadata models than there are streams.
-            if not container and index >= len(probe_results["streams"]):
+            if not container and index == len(streams) - 1:
                 break
 
             for md_class in self._supported_metadata:
