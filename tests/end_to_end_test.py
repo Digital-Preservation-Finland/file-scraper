@@ -51,10 +51,6 @@ UNAV_ELEMENTS = {
     "tests/data/video_mpeg/valid_2.m2v": ["codec_creator_app_version",
                                           "codec_creator_app"],
     "tests/data/audio_x-wav/valid__wav.wav": ["version"],
-    "tests/data/application_mxf/valid_1.2_jpeg2000.mxf": ["sampling",
-                                                          "version",
-                                                          "version",
-                                                          "version"],  # TODO
 }
 
 # These are actually valid with another mimetype or version

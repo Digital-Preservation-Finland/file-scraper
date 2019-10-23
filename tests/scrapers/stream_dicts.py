@@ -152,16 +152,17 @@ MXF_CONTAINER = {
     "index": 0, "mimetype": "video/avi", "version": "1.2",
     "stream_type": "videocontainer", "codec_name": "MXF",
     "codec_creator_app_version": "56.40.101",
-    "codec_creator_app": "FFmpeg OP1a Muxer 56.40.101"
+    "codec_creator_app": "FFmpeg OP1a Muxer",
 }
 
 MXF_JPEG2000_VIDEO = dict(BASE_JPEG2000_VIDEO,
                           **{
-                              "data_rate": "1.927602",
+                              "data_rate": "1.928916",
                               "bits_per_sample": "8",
                               "frame_rate": "29.97",
-                              "codec_creator_app": ("FFmpeg OP1a Muxer "
-                                                    "56.40.101")
+                              "codec_creator_app": "FFmpeg OP1a Muxer",
+                              "dar": "0",
+                              "par": "0",
                               })
 
 MXF_TC = {"mimetype": u"application/mxf", "index": 4, "version": u"(:unav)",

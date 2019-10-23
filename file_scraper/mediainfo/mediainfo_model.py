@@ -534,7 +534,7 @@ class MxfMediainfoMeta(BaseMediainfoMeta):
     """Metadata model for MXF containers with JPEG2000 data."""
 
     _containers = ["MXF"]
-    _supported = {"application/mxf": []}
+#    _supported = {"application/mxf": []}
     _allow_versions = True
 
     @metadata()
@@ -579,6 +579,12 @@ class MxfMediainfoMeta(BaseMediainfoMeta):
 
         return "(:unav)"
 
+    @metadata()
+    def dar(self):
+        return "(:unav)"
+
+    def frame_rate(self):
+        return "(:unav)"
 
 class SimpleMediainfoMeta(BaseMeta):
     """

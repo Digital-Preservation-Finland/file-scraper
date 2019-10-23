@@ -24,7 +24,7 @@ class FFMpegSimpleMeta(BaseMeta):
                   "video/MP1S": [], "video/MP2P": [],
                   "video/MP2T": [], "video/x-matroska": [],
                   "video/quicktime": [], "video/dv": [],
-                  "application/mxf": []}
+                  }
     _allow_versions = True   # Allow any version
 
     # MIME types need to be decided based on format name
@@ -113,18 +113,23 @@ class FFMpegMeta(FFMpegSimpleMeta):
     # pylint: disable=too-many-public-methods
 
     # Supported mimetypes
-    _supported = {"video/avi": []}
+    _supported = {
+        "video/avi": [],
+        "application/mxf": [],
+        }
     _allow_versions = True   # Allow any version
 
     # Codec names returned by ffmpeg do not always correspond to ones from
     # different scraper tools. This dict is used to unify the results.
     _codec_names = {
         "AVI (Audio Video Interleaved)": "AVI",
+        "MXF (Material eXchange Format)": "MXF",
         }
 
     # Some MIME types need to be decided based on codec name
     _codec_mimetype_dict = {
         "AVI (Audio Video Interleaved)": "video/avi",
+        "MXF (Material eXchange Format)": "application/mxf",
         "JPEG 2000": "video/jpeg2000",
         }
 
@@ -272,7 +277,13 @@ class FFMpegMeta(FFMpegSimpleMeta):
 
     @metadata()
     def data_rate(self):
-        """Return data rate (bit rate)."""
+        """
+        Return data rate (bit rate).
+
+        If data rate information is not available, 0 is returned as per
+        "A value 0 can be  allowed as an unknown value if the information can
+        not be easily found out." in specifications
+        """
         if self.stream_type() not in ["video", "audio"]:
             raise SkipElementException()
         # TODO: Do we want to skip the container? Mediainfo didn't
@@ -285,7 +296,14 @@ class FFMpegMeta(FFMpegSimpleMeta):
             # TODO this is different from what we get from mediainfo
             return strip_zeros(six.text_type(float(
                 self._ffmpeg_stream["bit_rate"]) / 10**6))
-        return "(:unav)"
+
+        # TODO for MXT/JPEG2000 ffmpeg only reports bit rate in format? usable?
+        # usable only for single-stream files?
+        if "bit_rate" in self._probe_results["format"]:
+            return strip_zeros(six.text_type(float(
+                self._probe_results["format"]["bit_rate"]) / 10**6))
+
+        return "0"
 
     @metadata()
     def duration(self):
@@ -300,7 +318,11 @@ class FFMpegMeta(FFMpegSimpleMeta):
         if self.stream_type() not in ["video"]:
             raise SkipElementException()
         if "r_frame_rate" in self._ffmpeg_stream:
-            return self._ffmpeg_stream["r_frame_rate"].split("/")[0]
+#            return self._ffmpeg_stream["r_frame_rate"].split("/")[0]
+            # TODO is this ok? The old one above does not work for e.g.
+            # 30000/1001
+            return strip_zeros("%.2f" % float(Fraction(
+                self._ffmpeg_stream["r_frame_rate"])))
         return "(:unav)"
 
     @metadata()
@@ -361,10 +383,18 @@ class FFMpegMeta(FFMpegSimpleMeta):
     @metadata()
     def codec_creator_app(self):
         """Returns creator application."""
+        format_info = self._probe_results["format"]["tags"]
         if self.stream_type() not in ["audio", "video", "videocontainer"]:
             raise SkipElementException()
-        if "encoder" in self._probe_results["format"]["tags"]:
-            return self._probe_results["format"]["tags"]["encoder"]
+        if "encoder" in format_info:
+            return format_info["encoder"]
+        if ("product_name" in format_info or
+                "company_name" in format_info):
+            parts = []
+            parts.append(format_info.get("company_name", None))
+            parts.append(format_info.get("product_name", None))
+            return " ".join(filter(None, parts))  # TODO is this ok? Mediainfo
+                                                  #      also had version here
         return "(:unav)"
 
     @metadata()
@@ -377,6 +407,8 @@ class FFMpegMeta(FFMpegSimpleMeta):
                             self._probe_results["format"]["tags"]["encoder"])
             if reg is not None:
                 return reg.group()  # TODO this used to be reg.group(1), why?
+        if "product_version" in self._probe_results["format"]["tags"]:
+            return self._probe_results["format"]["tags"]["product_version"]
         return "(:unav)"
 
     @metadata()
