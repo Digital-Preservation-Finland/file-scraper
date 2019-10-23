@@ -530,62 +530,6 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
         return "(:unav)"
 
 
-class MxfMediainfoMeta(BaseMediainfoMeta):
-    """Metadata model for MXF containers with JPEG2000 data."""
-
-    _containers = ["MXF"]
-#    _supported = {"application/mxf": []}
-    _allow_versions = True
-
-    @metadata()
-    def mimetype(self):
-        """Returns mimetype for stream."""
-        mime_dict = {"MXF": "application/mxf",
-                     "JPEG 2000": "video/jpeg2000"}
-
-        if self._given_mimetype:
-            if self._index == 0:
-                return self._given_mimetype
-
-        try:
-            return mime_dict[self.codec_name()]
-        except (SkipElementException, KeyError):
-            pass
-        return self._mimetype_guess
-
-    @metadata()
-    def version(self):
-        """
-        Return version normally for other streams but (:unap) for JPEG2000.
-        """
-        if self.mimetype() == "video/jpeg2000":
-            return "(:unap)"
-        return super(MxfMediainfoMeta, self).version()
-
-    @metadata()
-    def signal_format(self):
-        """Not defined?"""
-        # TODO ok?
-        raise SkipElementException()
-
-    @metadata()
-    def data_rate_mode(self):
-        """Return data rate mode (allowed values are "Fixed" or "Variable")."""
-        if self.stream_type() not in ["video", "audio"]:
-            raise SkipElementException()
-
-        if self.mimetype() == "video/jpeg2000":
-            return "Variable"  # TODO is this ok?
-
-        return "(:unav)"
-
-    @metadata()
-    def dar(self):
-        return "(:unav)"
-
-    def frame_rate(self):
-        return "(:unav)"
-
 class SimpleMediainfoMeta(BaseMeta):
     """
     Metadata model for checking well-formedness without metadata scraping.

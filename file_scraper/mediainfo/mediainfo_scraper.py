@@ -8,7 +8,6 @@ from file_scraper.mediainfo.mediainfo_model import (
     MkvMediainfoMeta,
     MovMediainfoMeta,
     MpegMediainfoMeta,
-    MxfMediainfoMeta,
     SimpleMediainfoMeta,
     WavMediainfoMeta,
     )
@@ -32,7 +31,6 @@ class MediainfoScraper(BaseScraper):
         MkvMediainfoMeta,
         MovMediainfoMeta,
         MpegMediainfoMeta,
-        MxfMediainfoMeta,
         SimpleMediainfoMeta,
         WavMediainfoMeta,
     ]
