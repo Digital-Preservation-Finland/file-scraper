@@ -140,7 +140,7 @@ def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
                         1: dict(AVI_JPEG2000_VIDEO.copy(),
                                 **{"data_rate": "3.559952"})}},
          "video/avi"),
-        ("valid_1.2_jpeg2000.mxf", {
+        ("valid__jpeg2000.mxf", {
             "purpose": "Test valid MXF.",
             "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
@@ -152,8 +152,6 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
                               evaluate_scraper):
     """Test FFMpegScraper with valid files when metadata is scraped."""
     correct = parse_results(filename, mimetype, result_dict, True)
-    for stream in correct.streams:  # TODO temporary until version is sorted out
-        correct.streams[stream]["version"] = "(:unap)"
 
     scraper = FFMpegScraper(correct.filename, True,
                             params={"mimetype_guess": mimetype})
