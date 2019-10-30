@@ -253,6 +253,21 @@ def test_no_wellformed():
             "stdout_part": "",
             "stderr_part": "Invalid data found when processing input"},
          "application/mxf"),
+        ("invalid_1.2_jpeg2000_truncated.mxf", {
+            "purpose": "Test truncated MXF.",
+            "stdout_part": "",
+            "stderr_part": "IndexSID 0 segment at 0 missing"},
+         "application/mxf"),
+        ("invalid__JPEG2000_no_avi_signature.avi", {
+            "purpose": "Test AVI with invalid header.",
+            "stdout_part": "",
+            "stderr_part": "Error in analyzing file."},
+         "video/avi"),
+        ("invalid__JPEG2000_missing_data.avi", {
+            "purpose": "Test truncated AVI.",
+            "stdout_part": "",
+            "stderr_part": "Invalid data found when processing input"},
+         "video/avi"),
     ])
 def test_ffmpeg_scraper_invalid(filename, result_dict, mimetype,
                                 evaluate_scraper):
