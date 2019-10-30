@@ -180,8 +180,6 @@ class FFMpegMeta(FFMpegSimpleMeta):
         """
         if self.stream_type() not in ["video", "audio"]:
             raise SkipElementException()
-        if self.container_stream == self._ffmpeg_stream:
-            raise SkipElementException()
         if self.mimetype() in ["video/avi", "video/jpeg2000"]:
             return "Variable"
         return "(:unav)"
@@ -363,8 +361,6 @@ class FFMpegMeta(FFMpegSimpleMeta):
     def sampling_frequency(self):
         """Return sampling frequency."""
         if self.stream_type() not in ["audio"]:
-            raise SkipElementException()
-        if self._ffmpeg_stream == self.container_stream:
             raise SkipElementException()
         if "sample_rate" in self._ffmpeg_stream:
             return strip_zeros(six.text_type(float(
