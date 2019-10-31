@@ -330,6 +330,8 @@ class FFMpegMeta(FFMpegSimpleMeta):
             raise SkipElementException()
         sampling = "(:unav)"
         if "pix_fmt" in self._ffmpeg_stream:
+            if self._ffmpeg_stream["pix_fmt"] in ["gray", "monob", "monow"]:
+                return "(:unap)"  # TODO makes sense, right?
             for sampling_code in ["444", "422", "420", "440", "411", "410"]:
                 if sampling_code in self._ffmpeg_stream["pix_fmt"]:
                     sampling = ":".join(sampling_code)

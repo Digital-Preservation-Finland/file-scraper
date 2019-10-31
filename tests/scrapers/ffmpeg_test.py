@@ -147,6 +147,16 @@ def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
             "streams": {0: MXF_CONTAINER.copy(),
                         1: MXF_JPEG2000_VIDEO.copy()}},
          "application/mxf"),
+        ("valid__jpeg2000_grayscale.mxf", {
+            "purpose": "Test valid MXF.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": "",
+            "streams": {0: MXF_CONTAINER.copy(),
+                        1: dict(MXF_JPEG2000_VIDEO.copy(),
+                                **{"data_rate": "2.21007",
+                                   "color": "Grayscale",
+                                   "sampling": "(:unap)"})}},
+         "application/mxf"),
     ])
 def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
                               evaluate_scraper):
