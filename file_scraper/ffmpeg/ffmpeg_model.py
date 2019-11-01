@@ -19,12 +19,18 @@ class FFMpegSimpleMeta(BaseMeta):
     """
 
     # Supported mimetypes
-    _supported = {"video/mpeg": [], "video/mp4": [],
-                  "audio/mpeg": [], "audio/mp4": [],
-                  "video/MP1S": [], "video/MP2P": [],
-                  "video/MP2T": [], "video/x-matroska": [],
-                  "video/quicktime": [], "video/dv": [],
-                  }
+    _supported = {
+        "video/mpeg": [],
+        "video/mp4": [],
+        "audio/mpeg": [],
+        "audio/mp4": [],
+        "video/MP1S": [],
+        "video/MP2P": [],
+        "video/MP2T": [],
+        "video/x-matroska": [],
+        "video/quicktime": [],
+        "video/dv": [],
+        }
     _allow_versions = True   # Allow any version
 
     # MIME types need to be decided based on format name
