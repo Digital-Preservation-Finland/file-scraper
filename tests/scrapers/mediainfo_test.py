@@ -440,17 +440,6 @@ def test_no_wellformed():
     assert scraper.well_formed is None
 
 
-def test_is_supported_wav():
-    """Test is_supported method."""
-    mime = "audio/x-wav"
-    ver = "2"
-    assert MediainfoScraper.is_supported(mime, ver, True)
-    assert MediainfoScraper.is_supported(mime, None, True)
-    assert MediainfoScraper.is_supported(mime, ver, False)
-    assert MediainfoScraper.is_supported(mime, "foo", True)
-    assert not MediainfoScraper.is_supported("foo", ver, True)
-
-
 @pytest.mark.parametrize(
     ["mime", "ver"],
     [
@@ -459,27 +448,18 @@ def test_is_supported_wav():
         ("video/MP1S", ""),
         ("video/MP2P", ""),
         ("video/MP2T", ""),
+        ("video/avi", ""),
+        ("audio/x-wav", ""),
     ]
 )
-def test_is_supported_mpeg(mime, ver):
-    """Test is_supported method."""
-    assert MediainfoScraper.is_supported(mime, ver, True)
-    assert MediainfoScraper.is_supported(mime, None, True)
-    assert MediainfoScraper.is_supported(mime, ver, False)
-    assert MediainfoScraper.is_supported(mime, "foo", True)
-    assert not MediainfoScraper.is_supported("foo", ver, True)
-
-
-def test_is_supported_avi():
+def test_is_supported(mime, ver):
     """
-    Test is_filetype support of AviMediainfoModel.
+    Test is_supported method for different file types.
 
     AVI files are scraped using FFMpeg for easy colour information collection,
     but Mediainfo is also needed for checking well-formedness, so AVI should be
     supported.
     """
-    mime = "video/avi"
-    ver = ""
     assert MediainfoScraper.is_supported(mime, ver, True)
     assert MediainfoScraper.is_supported(mime, None, True)
     assert MediainfoScraper.is_supported(mime, ver, False)
