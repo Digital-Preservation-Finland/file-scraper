@@ -81,7 +81,7 @@ class MediainfoScraper(BaseScraper):
 
     def _tracks_ok(self, mediainfo):
         """
-        Check that the file is whole and contains audio and/or video tracks.
+        Check that the file is complete and contains audio and/or video tracks.
 
         Returns True if the file is not truncated and contains at least one
         track. Otherwise returns False.
