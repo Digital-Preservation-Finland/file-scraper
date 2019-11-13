@@ -174,6 +174,9 @@ class FFMpegMeta(FFMpegSimpleMeta):
         """
         if self.stream_type() not in ["video", "audio"]:
             raise SkipElementException()
+        if self.mimetype() == "jpeg2000":
+            return (self._ffmpeg_stream["lossless_wavelet_transform"]
+                    and self._pixel_format_is_lossless())
         return None
 
     @metadata()
@@ -334,15 +337,17 @@ class FFMpegMeta(FFMpegSimpleMeta):
         """Return chroma subsampling method."""
         if self.stream_type() not in ["video"]:
             raise SkipElementException()
-        sampling = "(:unav)"
         if "pix_fmt" in self._ffmpeg_stream:
             if self._ffmpeg_stream["pix_fmt"] in ["gray", "monob", "monow"]:
                 return "(:unap)"  # TODO makes sense, right?
             for sampling_code in ["444", "422", "420", "440", "411", "410"]:
                 if sampling_code in self._ffmpeg_stream["pix_fmt"]:
-                    sampling = ":".join(sampling_code)
-                    break
-        return sampling
+                    return ":".join(sampling_code)
+            # If pix_fmt is defined but none of the checks above apply, then
+            # chroma subsampling is not possible for this format.
+            return "(:unap)"
+                    
+        return "(:unav)"
 
     @metadata()
     def sound(self):
@@ -439,3 +444,9 @@ class FFMpegMeta(FFMpegSimpleMeta):
         if "bits_per_raw_sample" in self._ffmpeg_stream is not None:
             return six.text_type(self._ffmpeg_stream["bits_per_raw_sample"])
         return "(:unav)"
+
+    def _pixel_format_is_lossless(self):
+        """
+        TODO
+        """  # TODO
+        return False 

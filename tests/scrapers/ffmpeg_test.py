@@ -132,13 +132,24 @@ def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
             "streams": {0: AVI_CONTAINER.copy(),
                         1: AVI_JPEG2000_VIDEO.copy()}},
          "video/avi"),
-        ("valid__JPEG2000_lossless.avi", {
-            "purpose": "Test valid AVI with lossless JPEG2000.",
+        ("valid__JPEG2000_lossless-wavelet_lossy-subsampling.avi", {
+            "purpose": ("Test valid AVI/JPEG2000 with lossless wavelet "
+                        "transform and chroma subsampling."),
             "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
             "streams": {0: AVI_CONTAINER.copy(),
                         1: dict(AVI_JPEG2000_VIDEO.copy(),
                                 **{"data_rate": "3.559952"})}},
+         "video/avi"),
+        ("valid__JPEG2000_lossless.avi", {
+            "purpose": ("Test valid AVI/JPEG2000 with lossless wavelet "
+                        "transform and no chroma subsampling."),
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": "",
+            "streams": {0: AVI_CONTAINER.copy(),
+                        1: dict(AVI_JPEG2000_VIDEO.copy(),
+                                **{"data_rate": "10.11328",
+                                   "sampling": "(:unap)"})}},
          "video/avi"),
         ("valid__jpeg2000.mxf", {
             "purpose": "Test valid MXF.",
