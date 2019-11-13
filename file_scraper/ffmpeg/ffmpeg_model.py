@@ -174,9 +174,12 @@ class FFMpegMeta(FFMpegSimpleMeta):
         """
         if self.stream_type() not in ["video", "audio"]:
             raise SkipElementException()
-        if self.mimetype() == "jpeg2000":
-            return (self._ffmpeg_stream["lossless_wavelet_transform"]
-                    and self._pixel_format_is_lossless())
+        if self.mimetype() == "video/jpeg2000":
+            if (self._ffmpeg_stream["lossless_wavelet_transform"]
+                and self._pixel_format_is_lossless()):
+                return "lossless"
+            else:
+                return "lossy"
         return None
 
     @metadata()
@@ -448,5 +451,5 @@ class FFMpegMeta(FFMpegSimpleMeta):
     def _pixel_format_is_lossless(self):
         """
         TODO
-        """  # TODO
-        return False 
+        """  # TODO docstring
+        return False  # TODO implement me
