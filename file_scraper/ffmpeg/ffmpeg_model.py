@@ -169,18 +169,17 @@ class FFMpegMeta(FFMpegSimpleMeta):
         """
         Return codec quality.
 
-        Must be resolved, if returns None. Only values "lossy" and "lossless"
-        are allowed.
+        Must be resolved, if returns None or "(:unav)". Only values "lossy"
+        and "lossless" are allowed.
         """
         if self.stream_type() not in ["video", "audio"]:
             raise SkipElementException()
         if self.mimetype() == "video/jpeg2000":
-            if (self._ffmpeg_stream["lossless_wavelet_transform"]
-                and self._pixel_format_is_lossless()):
+            if self._ffmpeg_stream["lossless_wavelet_transform"]:
                 return "lossless"
             else:
                 return "lossy"
-        return None
+        return "(:unav)"
 
     @metadata()
     def data_rate_mode(self):
@@ -447,9 +446,3 @@ class FFMpegMeta(FFMpegSimpleMeta):
         if "bits_per_raw_sample" in self._ffmpeg_stream is not None:
             return six.text_type(self._ffmpeg_stream["bits_per_raw_sample"])
         return "(:unav)"
-
-    def _pixel_format_is_lossless(self):
-        """
-        TODO
-        """  # TODO docstring
-        return False  # TODO implement me
