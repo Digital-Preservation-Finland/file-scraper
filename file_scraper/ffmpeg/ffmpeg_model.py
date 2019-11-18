@@ -169,6 +169,8 @@ class FFMpegMeta(FFMpegSimpleMeta):
         """
         Return codec quality.
 
+        This is based solely on the wavelet transform of JPEG2000 images.
+
         Must be resolved, if returns None or "(:unav)". Only values "lossy"
         and "lossless" are allowed.
         """
@@ -177,8 +179,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
         if self.mimetype() == "video/jpeg2000":
             if self._ffmpeg_stream["lossless_wavelet_transform"]:
                 return "lossless"
-            else:
-                return "lossy"
+            return "lossy"
         return "(:unav)"
 
     @metadata()
@@ -348,7 +349,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             # If pix_fmt is defined but none of the checks above apply, then
             # chroma subsampling is not possible for this format.
             return "(:unap)"
-                    
+
         return "(:unav)"
 
     @metadata()

@@ -25,7 +25,7 @@ except OSError:
           "file command library is older." % MAGIC_LIBRARY)
 
 # Must be imported *after* the DLL import above
-import magic  # isort:skip
+import magic  # isort:skip pylint: disable=wrong-import-order
 
 
 class _FidoReader(Fido):
@@ -294,5 +294,4 @@ class VerapdfDetector(BaseDetector):
         """
         if self.mimetype and self.version:
             return {"mimetype": self.mimetype, "version": self.version}
-        else:
-            return {}
+        return {}

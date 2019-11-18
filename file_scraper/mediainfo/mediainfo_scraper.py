@@ -115,5 +115,4 @@ class MediainfoScraper(BaseScraper):
         """
         if self._given_mimetype:
             return self._given_mimetype
-        else:
-            return self._params["mimetype_guess"]
+        return self._params["mimetype_guess"]
