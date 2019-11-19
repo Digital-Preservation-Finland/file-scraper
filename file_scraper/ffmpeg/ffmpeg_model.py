@@ -287,11 +287,14 @@ class FFMpegMeta(FFMpegSimpleMeta):
     @metadata()
     def data_rate(self):
         """
-        Return data rate (bit rate).
+        Return data rate (bit rate) in mbps.
 
         If data rate information is not available, 0 is returned as per
         "A value 0 can be  allowed as an unknown value if the information can
-        not be easily found out." in specifications
+        not be easily found out." in specifications. VideoMD defines dataRate
+        as "data rate of the audio", but dpres File format specification lists
+        dataRate as mandatory element, so it is also returned for video
+        streams.
         """
         if self.stream_type() not in ["video", "audio"]:
             raise SkipElementException()
@@ -299,6 +302,8 @@ class FFMpegMeta(FFMpegSimpleMeta):
             raise SkipElementException()
         if "bit_rate" in self._ffmpeg_stream:
             # TODO this is different from what we get from mediainfo
+            # N.B. this is only ok for video streams: audio streams should
+            # return kbps
             return strip_zeros(six.text_type(float(
                 self._ffmpeg_stream["bit_rate"]) / 10**6))
 
