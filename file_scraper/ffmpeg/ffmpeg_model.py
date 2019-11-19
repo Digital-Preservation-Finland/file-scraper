@@ -170,13 +170,12 @@ class FFMpegMeta(FFMpegSimpleMeta):
         Return codec quality.
 
         This is based solely on the wavelet transform of JPEG2000 images.
-
-        Must be resolved, if returns None or "(:unav)". Only values "lossy"
-        and "lossless" are allowed.
         """
         if self.stream_type() not in ["video", "audio"]:
             raise SkipElementException()
         if self.mimetype() == "video/jpeg2000":
+            # The key is only present when using the patched version of
+            # ffmpeg-python. See README.rst for more information.
             if self._ffmpeg_stream["lossless_wavelet_transform"]:
                 return "lossless"
             return "lossy"
