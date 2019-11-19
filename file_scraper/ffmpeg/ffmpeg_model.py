@@ -295,9 +295,8 @@ class FFMpegMeta(FFMpegSimpleMeta):
         """
         if self.stream_type() not in ["video", "audio"]:
             raise SkipElementException()
-        # TODO: Do we want to skip the container? Mediainfo didn't
-#        if self._ffmpeg_stream == self.container_stream:
-#            raise SkipElementException()
+        if self._ffmpeg_stream == self.container_stream:
+            raise SkipElementException()
         if "bit_rate" in self._ffmpeg_stream:
             # TODO why this?
 #            if self._ffmpeg_stream["codec_type"] == "video":
