@@ -298,9 +298,6 @@ class FFMpegMeta(FFMpegSimpleMeta):
         if self._ffmpeg_stream == self.container_stream:
             raise SkipElementException()
         if "bit_rate" in self._ffmpeg_stream:
-            # TODO why this?
-#            if self._ffmpeg_stream["codec_type"] == "video":
-#                return "(:unav)"
             # TODO this is different from what we get from mediainfo
             return strip_zeros(six.text_type(float(
                 self._ffmpeg_stream["bit_rate"]) / 10**6))
