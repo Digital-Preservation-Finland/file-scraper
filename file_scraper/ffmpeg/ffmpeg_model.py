@@ -191,7 +191,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
         """
         if self.stream_type() not in ["video", "audio"]:
             raise SkipElementException()
-        if self.mimetype() in ["video/avi", "video/jpeg2000"]:
+        if self.mimetype() in ["video/jpeg2000"]:
             return "Variable"
         return "(:unav)"
 
