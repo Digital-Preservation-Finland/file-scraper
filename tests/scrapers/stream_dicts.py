@@ -127,7 +127,8 @@ AVI_CONTAINER = {
     "index": 0, "mimetype": "video/avi", "version": "(:unap)",
     "stream_type": "videocontainer", "codec_name": "AVI",
     "codec_creator_app_version": "56.40.101",
-    "codec_creator_app": "Lavf56.40.101"
+    "codec_creator_app": "Lavf56.40.101",
+    "duration": "PT1.03S"
 }
 
 BASE_JPEG2000_VIDEO = {
@@ -141,6 +142,7 @@ BASE_JPEG2000_VIDEO = {
     "codec_creator_app": "Lavf56.40.101", "color": "Color",
     "signal_format": "(:unap)",
     "codec_quality": "lossy",
+    "bits_per_sample": "8",
 }
 
 AVI_JPEG2000_VIDEO = dict(BASE_JPEG2000_VIDEO,
@@ -154,6 +156,7 @@ MXF_CONTAINER = {
     "stream_type": "videocontainer", "codec_name": "MXF",
     "codec_creator_app_version": "56.40.101",
     "codec_creator_app": "FFmpeg OP1a Muxer",
+    "duration": u"PT1.03S",
 }
 
 MXF_JPEG2000_VIDEO = dict(BASE_JPEG2000_VIDEO,
