@@ -32,7 +32,11 @@ class FFMpegSimpleMeta(BaseMeta):
         }
     _allow_versions = True   # Allow any version
 
-    # MIME types need to be decided based on format name
+    # MIME types need to be decided based on format name. Some types, such as
+    # video/mp4, don't have format_long_name in ffprobe output, so they are not
+    # present in this dict. Their MIME type will be reported as (:unav), but
+    # this doesn't matter as all metadata for them will be scraped using
+    # MediaInfo anyway.
     _mimetype_dict = {
         "DV (Digital Video)": "video/dv",
         "Matroska / WebM": "video/x-matroska",
@@ -73,7 +77,6 @@ class FFMpegSimpleMeta(BaseMeta):
             mime = self._ffmpeg_stream["format_long_name"]
         if mime in self._mimetype_dict:
             mime = self._mimetype_dict[mime]
-
         return mime
 
     @metadata()
