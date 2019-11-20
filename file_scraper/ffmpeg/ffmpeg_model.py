@@ -7,8 +7,7 @@ import six
 
 from file_scraper.base import BaseMeta
 from file_scraper.exceptions import SkipElementException
-from file_scraper.utils import metadata
-from file_scraper.utils import strip_zeros, iso8601_duration
+from file_scraper.utils import metadata, strip_zeros, iso8601_duration
 
 
 class FFMpegSimpleMeta(BaseMeta):
@@ -48,8 +47,6 @@ class FFMpegSimpleMeta(BaseMeta):
         "MP2/3 (MPEG audio layer 2/3)": "(:unav)",
         }
 
-    container_stream = None
-
     def __init__(self, probe_results, index, mimetype=None, version=None):
         """
         Initialize the metadata model.
@@ -59,9 +56,10 @@ class FFMpegSimpleMeta(BaseMeta):
         """
         self._probe_results = probe_results
         self._index = index
+        self._container_stream = None
 
         if self.hascontainer():
-            self.container_stream = self._probe_results["format"]
+            self._container_stream = self._probe_results["format"]
             if index == 0:
                 self._ffmpeg_stream = probe_results["format"]
             else:
@@ -298,7 +296,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
         """
         if self.stream_type() not in ["video", "audio"]:
             raise SkipElementException()
-        if self._ffmpeg_stream == self.container_stream:
+        if self._ffmpeg_stream == self._container_stream:
             raise SkipElementException()
         if "bit_rate" in self._ffmpeg_stream:
             # TODO this is different from what we get from mediainfo
