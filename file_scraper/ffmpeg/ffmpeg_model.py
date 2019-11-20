@@ -74,9 +74,9 @@ class FFMpegSimpleMeta(BaseMeta):
 
         mime = "(:unav)"
         if "format_long_name" in self._ffmpeg_stream:
-            mime = self._ffmpeg_stream["format_long_name"]
-        if mime in self._mimetype_dict:
-            mime = self._mimetype_dict[mime]
+            if self._ffmpeg_stream["format_long_name"] in self._mimetype_dict:
+                mime = self._mimetype_dict[self._ffmpeg_stream[
+                    "format_long_name"]]
         return mime
 
     @metadata()
