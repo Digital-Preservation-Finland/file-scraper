@@ -56,16 +56,7 @@ class FFMpegSimpleMeta(BaseMeta):
         """
         self._probe_results = probe_results
         self._index = index
-        self._container_stream = None
-
-        if self.hascontainer():
-            self._container_stream = self._probe_results["format"]
-            if index == 0:
-                self._ffmpeg_stream = probe_results["format"]
-            else:
-                self._ffmpeg_stream = probe_results["streams"][index-1]
-        else:
-            self._ffmpeg_stream = probe_results["streams"][index]
+        self._ffmpeg_stream = self._current_stream()
 
         super(FFMpegSimpleMeta, self).__init__(mimetype=mimetype,
                                                version=version)
@@ -98,6 +89,35 @@ class FFMpegSimpleMeta(BaseMeta):
         return ("codec_type" not in self._probe_results["format"]
                 and self._probe_results["format"]["format_name"] not in
                 ["mp3", "mpegvideo"])
+
+    @property
+    def _container_stream(self):
+        """
+        Return the container stream from the ffprobe results.
+
+        The stream is returned as a dict, in the format used by ffprobe. If the
+        file is not a container type, None is returned instead.
+        """
+        if self.hascontainer():
+            return self._probe_results["format"]
+        return None
+
+    def _current_stream(self):
+        """
+        Return the stream dict handled by this instance.
+
+        The constructor is given the full ffprobe output dict, but one metadata
+        model instance only handles a single stream. This method extracts the
+        relevant part of the dictionary and returns it. For non-container
+        formats the n'th stream is simply the n'th dict in the stream list, but
+        for containers the first stream is the format stream and then the
+        following streams are found at the (n-1)'th indices of the stream list.
+        """
+        if self.hascontainer():
+            if self._index == 0:
+                return self._probe_results["format"]
+            return self._probe_results["streams"][self._index-1]
+        return self._probe_results["streams"][self._index]
 
 
 class FFMpegMeta(FFMpegSimpleMeta):
