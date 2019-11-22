@@ -21,7 +21,7 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 Requires:       python python2-pymediainfo python-pillow python-magic python-opf-fido
 Requires:       python-wand >= 0.5.1
-BuildRequires:  python-setuptools ImageMagick
+BuildRequires:  python-setuptools ImageMagick libmediainfo
 Conflicts:      file-scraper-full < %{version}-%{release}, file-scraper-full > %{version}-%{release}
 
 %package -n file-scraper-full
