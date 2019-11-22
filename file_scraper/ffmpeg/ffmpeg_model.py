@@ -319,14 +319,9 @@ class FFMpegMeta(FFMpegSimpleMeta):
         if self._ffmpeg_stream == self._container_stream:
             raise SkipElementException()
         if "bit_rate" in self._ffmpeg_stream:
-            # TODO this is different from what we get from mediainfo
-            # N.B. this is only ok for video streams: audio streams should
-            # return kbps
             return strip_zeros(six.text_type(float(
                 self._ffmpeg_stream["bit_rate"]) / 10**6))
 
-        # TODO for MXT/JPEG2000 ffmpeg only reports bit rate in format? usable?
-        # usable only for single-stream files?
         if "bit_rate" in self._probe_results["format"]:
             return strip_zeros(six.text_type(float(
                 self._probe_results["format"]["bit_rate"]) / 10**6))
@@ -346,9 +341,6 @@ class FFMpegMeta(FFMpegSimpleMeta):
         if self.stream_type() not in ["video"]:
             raise SkipElementException()
         if "r_frame_rate" in self._ffmpeg_stream:
-#            return self._ffmpeg_stream["r_frame_rate"].split("/")[0]
-            # TODO is this ok? The old one above does not work for e.g.
-            # 30000/1001
             return strip_zeros("%.2f" % float(Fraction(
                 self._ffmpeg_stream["r_frame_rate"])))
         return "(:unav)"
@@ -360,7 +352,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             raise SkipElementException()
         if "pix_fmt" in self._ffmpeg_stream:
             if self._ffmpeg_stream["pix_fmt"] in ["gray", "monob", "monow"]:
-                return "(:unap)"  # TODO makes sense, right?
+                return "(:unap)"
             for sampling_code in ["444", "422", "420", "440", "411", "410"]:
                 if sampling_code in self._ffmpeg_stream["pix_fmt"]:
                     return ":".join(sampling_code)
@@ -423,8 +415,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             parts = []
             parts.append(format_info.get("company_name", None))
             parts.append(format_info.get("product_name", None))
-            return " ".join(filter(None, parts))  # TODO is this ok? Mediainfo
-                                                  #      also had version here
+            return " ".join(filter(None, parts))
         return "(:unav)"
 
     @metadata()
@@ -436,7 +427,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             reg = re.search(r"([\d.]+)$",
                             self._probe_results["format"]["tags"]["encoder"])
             if reg is not None:
-                return reg.group()  # TODO this used to be reg.group(1), why?
+                return reg.group()
         if "product_version" in self._probe_results["format"]["tags"]:
             return self._probe_results["format"]["tags"]["product_version"]
         return "(:unav)"
