@@ -5,6 +5,7 @@ from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.config import FILECMD_PATH, LD_LIBRARY_PATH
 from file_scraper.textfile.textfile_model import TextFileMeta
+from file_scraper.utils import encode_path
 
 ENV = {"LD_LIBRARY_PATH": LD_LIBRARY_PATH}
 
