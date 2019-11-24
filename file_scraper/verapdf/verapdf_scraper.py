@@ -6,10 +6,11 @@ try:
 except ImportError:
     pass
 
-from file_scraper.base import BaseScraper, ProcessRunner
+from file_scraper.base import BaseScraper
+from file_scraper.shell import Shell
 from file_scraper.config import VERAPDF_PATH
 from file_scraper.verapdf.verapdf_model import VerapdfMeta
-from file_scraper.utils import ensure_text, encode_path
+from file_scraper.utils import encode_path
 
 
 class VerapdfScraper(BaseScraper):
@@ -31,24 +32,24 @@ class VerapdfScraper(BaseScraper):
             return
         cmd = [VERAPDF_PATH, encode_path(self.filename)]
 
-        shell = ProcessRunner(cmd)
+        shell = Shell(cmd)
         if shell.returncode != 0:
-            raise VeraPDFError(ensure_text(shell.stderr))
-        self._messages.append(ensure_text(shell.stdout))
+            raise VeraPDFError(shell.stderr)
+        self._messages.append(shell.stdout)
 
         try:
-            report = ET.fromstring(shell.stdout)
+            report = ET.fromstring(shell.stdout_raw)
             if report.xpath("//batchSummary")[0].get("failedToParse") == "0":
                 compliant = report.xpath(
                     "//validationReport")[0].get("isCompliant")
                 if compliant == "false":
-                    self._errors.append(ensure_text(shell.stdout))
+                    self._errors.append(shell.stdout)
                 profile = \
                     report.xpath("//validationReport")[0].get("profileName")
             else:
-                self._errors.append(ensure_text(shell.stdout))
+                self._errors.append(shell.stdout)
         except ET.XMLSyntaxError:
-            self._errors.append(ensure_text(shell.stderr))
+            self._errors.append(shell.stderr)
 
         if self.well_formed:
             for md_class in self._supported_metadata:

@@ -2,8 +2,7 @@
 from __future__ import unicode_literals
 
 import abc
-import subprocess
-from file_scraper.utils import run_command, metadata, is_metadata
+from file_scraper.utils import metadata, is_metadata
 
 
 class BaseScraper(object):
@@ -244,70 +243,6 @@ class BaseMeta(object):
     def supported_mimetypes(cls):
         """Return the dict containing supported mimetypes and versions."""
         return cls._supported
-
-
-class ProcessRunner(object):
-    """Shell command handler for non-Python 3rd party software."""
-
-    def __init__(self, command, output_file=subprocess.PIPE, env=None):
-        """
-        Initialize instance.
-
-        :command: Command to execute as list
-        :output_file: Output file handle
-        :env: Environment variables
-        """
-        self.command = command
-
-        self._stdout = None
-        self._stderr = None
-        self._returncode = None
-        self.output_file = output_file
-        self.env = env
-
-    @property
-    def returncode(self):
-        """
-        Returncode from the command.
-
-        :returns: Returncode
-        """
-        return self.run()["returncode"]
-
-    @property
-    def stderr(self):
-        """
-        Standard error output from the command.
-
-        :returns: Stderr as string
-        """
-        return self.run()["stderr"]
-
-    @property
-    def stdout(self):
-        """
-        Command standard error output.
-
-        :returns: Stdout as string
-        """
-        return self.run()["stdout"]
-
-    def run(self):
-        """
-        Run the command and store results to class attributes for caching.
-
-        :returns: Returncode, stdout, stderr as dictionary
-        """
-        if self._returncode is None:
-            (self._returncode, self._stdout,
-             self._stderr) = run_command(cmd=self.command,
-                                         stdout=self.output_file,
-                                         env=self.env)
-        return {
-            "returncode": self._returncode,
-            "stderr": self._stderr,
-            "stdout": self._stdout
-            }
 
 
 class BaseDetector(object):

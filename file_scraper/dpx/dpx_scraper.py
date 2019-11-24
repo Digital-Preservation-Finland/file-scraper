@@ -2,9 +2,10 @@
 
 from __future__ import unicode_literals
 
-from file_scraper.base import BaseScraper, ProcessRunner
+from file_scraper.base import BaseScraper
+from file_scraper.shell import Shell
 from file_scraper.dpx.dpx_model import DpxMeta
-from file_scraper.utils import ensure_text, encode_path
+from file_scraper.utils import encode_path
 
 
 class DpxScraper(BaseScraper):
@@ -20,18 +21,16 @@ class DpxScraper(BaseScraper):
                                   "Well-formed check not used.")
             return
 
-        shell = ProcessRunner(["dpxv", encode_path(self.filename)])
+        shell = Shell(["dpxv", encode_path(self.filename)])
 
         if shell.returncode != 0:
-            raise DPXvError(ensure_text(shell.stderr))
+            raise DPXvError(shell.stderr)
 
         if shell.stderr:
-            for err in ensure_text(shell.stderr).splitlines():
-                self._errors.append(err)
+            self._errors += list(shell.stderr.splitlines())
 
         if shell.stdout:
-            for out in ensure_text(shell.stdout).splitlines():
-                self._messages.append(out)
+            self._messages += list(shell.stdout.splitlines())
 
         for md_class in self._supported_metadata:
             self.streams.append(

@@ -7,7 +7,8 @@ from io import open as io_open
 
 import six
 
-from file_scraper.base import BaseScraper, ProcessRunner
+from file_scraper.base import BaseScraper
+from file_scraper.shell import Shell
 from file_scraper.utils import ensure_text, decode_path, encode_path
 from file_scraper.xmllint.xmllint_model import XmllintMeta
 
@@ -145,13 +146,10 @@ class XmllintScraper(BaseScraper):
 
         if exitcode == 0:
             self._messages.append(
-                "%s Success\n%s" % (
-                    decode_path(self.filename), ensure_text(stdout)
-                )
+                "%s Success\n%s" % (decode_path(self.filename), stdout)
             )
         else:
-            stderr_messages = ensure_text(stderr).splitlines()
-            self._errors = self._errors + stderr_messages
+            self._errors += stderr.splitlines()
             return
 
         # Clean up constructed schemas
@@ -238,7 +236,7 @@ class XmllintScraper(BaseScraper):
         else:
             environment = None
 
-        shell = ProcessRunner(command, env=environment)
+        shell = Shell(command, env=environment)
 
         return (shell.returncode, shell.stdout, shell.stderr)
 

@@ -6,10 +6,10 @@ import shutil
 import tempfile
 from io import open as io_open
 
-from file_scraper.base import BaseScraper, ProcessRunner
+from file_scraper.base import BaseScraper
+from file_scraper.shell import Shell
 from file_scraper.config import PSPP_PATH
 from file_scraper.pspp.pspp_model import PsppMeta
-from file_scraper.utils import ensure_text
 
 SPSS_PORTABLE_HEADER = b"SPSS PORT FILE"
 
@@ -39,14 +39,14 @@ class PsppScraper(BaseScraper):
         temp_file = os.path.join(temp_dir, "converted.por")
 
         try:
-            shell = ProcessRunner([
+            shell = Shell([
                 PSPP_PATH,
                 self.filename,
                 temp_file
             ])
             if shell.stderr:
-                self._errors.append(ensure_text(shell.stderr))
-            self._messages.append(ensure_text(shell.stdout))
+                self._errors.append(shell.stderr)
+            self._messages.append(shell.stdout)
             if os.path.isfile(temp_file):
                 self._messages.append("File conversion was succesful.")
             else:

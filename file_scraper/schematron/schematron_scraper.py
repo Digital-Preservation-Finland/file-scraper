@@ -6,10 +6,11 @@ import shutil
 import tempfile
 
 import lxml.etree as etree
-from file_scraper.base import BaseScraper, ProcessRunner
+from file_scraper.base import BaseScraper
+from file_scraper.shell import Shell
 from file_scraper.config import SCHEMATRON_DIRNAME
 from file_scraper.schematron.schematron_model import SchematronMeta
-from file_scraper.utils import encode_path, ensure_text, hexdigest
+from file_scraper.utils import encode_path, hexdigest
 
 
 class SchematronScraper(BaseScraper):
@@ -93,13 +94,13 @@ class SchematronScraper(BaseScraper):
 
         self._returncode = shell.returncode
         if shell.stderr:
-            self._errors.append(ensure_text(shell.stderr))
+            self._errors.append(shell.stderr)
 
         if not self._verbose and shell.returncode == 0:
             self._messages.append(
-                ensure_text(self._filter_duplicate_elements(shell.stdout)))
+                self._filter_duplicate_elements(shell.stdout))
         else:
-            self._messages.append(ensure_text(shell.stdout))
+            self._messages.append(shell.stdout)
 
         for md_class in self._supported_metadata:
             self.streams.append(md_class(self._given_mimetype,
@@ -144,7 +145,7 @@ class SchematronScraper(BaseScraper):
         :inputfile: Input document filename
         :outputfile: Filename of the resulted document, stdout if None
         :outputfilter: Use outputfilter parameter with value only_messages
-        :return: ProcessRunner instance
+        :return: Shell instance
         """
         cmd = ["xsltproc"]
         if outputfile:
@@ -153,12 +154,12 @@ class SchematronScraper(BaseScraper):
             cmd = cmd + ["--stringparam", "outputfilter", "only_messages"]
         cmd = cmd + [os.path.join(SCHEMATRON_DIRNAME, stylesheet),
                      encode_path(inputfile)]
-        shell = ProcessRunner(cmd)
+        shell = Shell(cmd)
         if shell.returncode not in allowed_codes:
             raise SchematronValidatorError(
                 "Error {}\nstdout:\n{}\nstderr:\n{}".format(
-                    shell.returncode, ensure_text(shell.stdout),
-                    ensure_text(shell.stderr))
+                    shell.returncode, shell.stdout,
+                    shell.stderr)
             )
         return shell
 

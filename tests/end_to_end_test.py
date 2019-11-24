@@ -87,9 +87,9 @@ IGNORE_FOR_METADATA = IGNORE_VALID + [
 # These invalid files are recognized as application/gzip
 DIFFERENT_MIMETYPE_INVALID = {
     "tests/data/application_warc/invalid__missing_data.warc.gz":
-        "application/gzip",
+    "application/gzip",
     "tests/data/application_x-internet-archive/invalid__missing_data.arc.gz":
-        "application/gzip"}
+    "application/gzip"}
 
 
 def _assert_valid_scraper_result(scraper, fullname, mimetype, well_formed):
@@ -219,7 +219,7 @@ def test_without_wellformed(fullname, mimetype):
                  "videocontainer": "codec_name",
                  "text": "charset", "audio": "num_channels"}
 
-    for index, stream in iteritems(scraper.streams):
+    for stream in scraper.streams.values():
         assert stream["stream_type"] is not None
         if stream["stream_type"] in elem_dict:
             assert elem_dict[stream["stream_type"]] in stream
@@ -228,13 +228,13 @@ def test_without_wellformed(fullname, mimetype):
         assert "delimiter" in scraper.streams[0]
 
 
+# pylint: disable=unused-argument
 @pytest.mark.parametrize(("fullname", "mimetype"), get_files(well_formed=True))
 def test_coded_filename(testpath, fullname, mimetype):
     """Integration test with unicode and utf-8 filename and with all scrapers.
     - Test that unicode filenames work with all mimetypes
     - Test that utf-8 encoded filenames work with all mimetypes
     """
-    _ = mimetype
     if fullname in IGNORE_VALID + ["tests/data/text_xml/valid_1.0_dtd.xml"]:
         pytest.skip("[%s] in ignore" % fullname)
     ext = fullname.rsplit(".", 1)[-1]

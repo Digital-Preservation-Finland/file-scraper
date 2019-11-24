@@ -9,7 +9,8 @@ import six
 
 from fido.fido import Fido, defaults
 from fido.pronomutils import get_local_pronom_versions
-from file_scraper.base import BaseDetector, ProcessRunner
+from file_scraper.base import BaseDetector
+from file_scraper.shell import Shell
 from file_scraper.config import VERAPDF_PATH
 from file_scraper.defaults import (MIMETYPE_DICT, PRIORITY_PRONOM, PRONOM_DICT,
                                    VERSION_DICT)
@@ -239,14 +240,14 @@ class VerapdfDetector(BaseDetector):
         If the file is not a PDF/A, the MIME type and version are left as None.
         """
         cmd = [VERAPDF_PATH, encode_path(self.filename)]
-        shell = ProcessRunner(cmd)
+        shell = Shell(cmd)
 
         # Test if the file is a PDF/A
         if shell.returncode != 0:
             self._set_info_not_pdf_a(shell)
             return
         try:
-            report = ET.fromstring(shell.stdout)
+            report = ET.fromstring(shell.stdout_raw)
             if report.xpath("//batchSummary")[0].get("failedToParse") == "0":
                 compliant = report.xpath(
                     "//validationReport")[0].get("isCompliant")
@@ -275,7 +276,7 @@ class VerapdfDetector(BaseDetector):
         """
         Set info to reflect the fact that the file was not a PDF/A.
 
-        :error_shell: If a ProcessRunner instance is given, its stderr is
+        :error_shell: If a Shell instance is given, its stderr is
                       set as 'errors' in the info.
         """
         self.info = {"class": self.__class__.__name__,

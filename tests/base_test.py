@@ -14,28 +14,11 @@ This module tests:
 """
 from __future__ import unicode_literals
 
-import subprocess
 import pytest
 
-import file_scraper.base
-from file_scraper.base import (ProcessRunner, BaseScraper, BaseMeta,
-                               BaseDetector)
+from file_scraper.base import BaseScraper, BaseMeta, BaseDetector
 from file_scraper.utils import metadata
 from tests.common import partial_message_included
-
-
-def test_shell(monkeypatch):
-    """Test ProcessRunner class."""
-
-    # pylint: disable=unused-argument
-    def _run_command(cmd, stdout=subprocess.PIPE, env=None):
-        return (42, b"output message", b"error message")
-
-    monkeypatch.setattr(file_scraper.base, "run_command", _run_command)
-    shell = ProcessRunner("testcommand")
-    assert shell.returncode == 42
-    assert shell.stdout == b"output message"
-    assert shell.stderr == b"error message"
 
 
 class BaseMetaBasic(BaseMeta):
@@ -188,6 +171,7 @@ class BaseMetaCustom(BaseMeta):
     _supported = {"test/mimetype": ["0.1"]}
 
     def __init__(self, mimetype, version):
+        super(BaseMetaCustom, self).__init__(mimetype, version)
         self._mimetype = mimetype
         self._version = version
 

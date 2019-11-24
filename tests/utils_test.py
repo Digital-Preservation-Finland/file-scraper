@@ -75,17 +75,6 @@ requirements:
           in the outer dict.
         - If the lose list contains a value some method marks as important, an
           OverlappingLoseAndImportantException is raised.
-    - run_command
-        - Given command is run and its statuscode is returned as the first
-          member of the returned tuple.
-        - If no stdout file is given, the output of the command is returned
-          as the second member of the returned tuple.
-        - The stderr output of t he command is returned as the third member
-          of the returned tuple.
-        - If a stdout file is given, the stdout output of the command is
-          recorded in that file.
-        - If custom environment variables are supplied, they are used when
-          running the command.
     - concat
         - Concatenation of empty list with or without a prefix produces an
           empty string.
@@ -100,18 +89,15 @@ requirements:
 """
 from __future__ import unicode_literals
 
-import os
-from tempfile import TemporaryFile
-
-import pytest
 import six
+import pytest
 
 from file_scraper.base import BaseMeta
 from file_scraper.scraper import LOSE
 from file_scraper.utils import (OverlappingLoseAndImportantException,
                                 _merge_to_stream, concat,
                                 generate_metadata_dict, hexdigest,
-                                iso8601_duration, metadata, run_command,
+                                iso8601_duration, metadata,
                                 sanitize_string, strip_zeros)
 
 
@@ -518,56 +504,6 @@ def test_overlapping_error():
         generate_metadata_dict(results, lose)
     assert ("The given lose dict contains values that are marked as important"
             in six.text_type(e_info.value))
-
-
-@pytest.mark.parametrize(
-    ["command", "expected_statuscode", "expected_stdout", "expected_stderr"],
-    [
-        (["echo", "testing"], 0, b"testing\n", ""),
-        (["seq", "5"], 0, b"1\n2\n3\n4\n5\n", ""),
-        (["cd", "nonexistentdir"], 1, "",
-         b"/usr/bin/cd: line 2: cd: nonexistentdir: No such file or directory\n"
-         )
-    ]
-)
-def test_run_command(command, expected_statuscode, expected_stdout,
-                     expected_stderr):
-    """Test running commands normally."""
-    (statuscode, stdout, stderr) = run_command(command)
-    assert statuscode == expected_statuscode
-    assert stderr == expected_stderr
-
-    for line_number, line in enumerate(stdout):
-        assert line == expected_stdout[line_number]
-
-
-def test_run_command_to_file():
-    """Test having output of a shell command directed to a file"""
-    with TemporaryFile("w+") as outfile:
-        (statuscode, stdout, stderr) = run_command(
-            ["seq", "5"], stdout=outfile)
-
-        assert statuscode == 0
-        assert not stdout
-        assert not stderr
-
-        outfile.seek(0)
-        expected_number = 1
-        for line in outfile:
-            assert line == six.text_type(expected_number) + "\n"
-            expected_number += 1
-
-
-def test_run_command_with_env():
-    """Test running commands using custom environment variables."""
-    custom_env = os.environ.copy()
-    custom_env["TEST_VARIABLE"] = "testing"
-    (statuscode, stdout, stderr) = run_command(["printenv", "TEST_VARIABLE"],
-                                               env=custom_env)
-
-    assert stdout == b"testing\n"
-    assert statuscode == 0
-    assert not stderr
 
 
 def test_concat():

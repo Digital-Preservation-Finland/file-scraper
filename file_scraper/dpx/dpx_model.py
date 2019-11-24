@@ -15,7 +15,7 @@ class DpxMeta(BaseMeta):
 
         super(DpxMeta, self).__init__(kwargs["mimetype"], kwargs["version"])
         self._messages = kwargs["info"]["messages"]
-        self._filename = ensure_text(kwargs["filename"])
+        self._filename = kwargs["filename"]
 
     # pylint: disable=no-self-use
     @metadata()
@@ -33,7 +33,7 @@ class DpxMeta(BaseMeta):
         for supported_version in self._supported["image/x-dpx"]:
 
             version_string = "File {}: Validated as V{}".format(
-                self._filename, supported_version)
+                ensure_text(self._filename), supported_version)
 
             if version_string in self._messages:
                 return supported_version

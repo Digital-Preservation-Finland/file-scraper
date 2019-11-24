@@ -4,7 +4,8 @@ from __future__ import unicode_literals
 import re
 import six
 
-from file_scraper.base import BaseScraper, ProcessRunner
+from file_scraper.base import BaseScraper
+from file_scraper.shell import Shell
 from file_scraper.ffmpeg.ffmpeg_model import FFMpegSimpleMeta, FFMpegMeta
 from file_scraper.utils import ensure_text, encode_path
 
@@ -66,12 +67,16 @@ class FFMpegScraper(BaseScraper):
             self._errors.append("Error in analyzing file.")
             self._errors.append(ensure_text(err.stderr))
 
-        shell = ProcessRunner(["ffmpeg", "-v", "error", "-i",
+        shell = Shell(["ffmpeg", "-v", "error", "-i",
                                encode_path(self.filename), "-f", "null", "-"])
+
         if shell.returncode == 0:
             self._messages.append("The file was analyzed successfully.")
+        # if "truncated" in self.filename:
+        #     __import__('pdb').set_trace()
+
         if self._filter_stderr(shell.stderr):
-            self._errors.append(ensure_text(shell.stderr))
+            self._errors.append(shell.stderr)
             return
 
         container = False

@@ -4,9 +4,10 @@ from __future__ import unicode_literals
 import shutil
 import tempfile
 
-from file_scraper.base import BaseScraper, ProcessRunner
+from file_scraper.base import BaseScraper
+from file_scraper.shell import Shell
 from file_scraper.office.office_model import OfficeMeta
-from file_scraper.utils import ensure_text, encode_path
+from file_scraper.utils import encode_path
 
 
 class OfficeScraper(BaseScraper):
@@ -24,12 +25,12 @@ class OfficeScraper(BaseScraper):
         temp_dir = tempfile.mkdtemp()
         try:
             env = {"HOME": temp_dir}
-            shell = ProcessRunner([
+            shell = Shell([
                 "soffice", "--convert-to", "pdf", "--outdir", temp_dir,
                 encode_path(self.filename)], env=env)
             if shell.stderr:
-                self._errors.append(ensure_text(shell.stderr))
-            self._messages.append(ensure_text(shell.stdout))
+                self._errors.append(shell.stderr)
+            self._messages.append(shell.stdout)
         except OSError as error:
             self._errors.append("Error handling file: {}".format(error))
         finally:

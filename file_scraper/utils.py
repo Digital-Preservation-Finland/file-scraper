@@ -2,9 +2,7 @@
 from __future__ import unicode_literals
 
 import hashlib
-import os
 import string
-import subprocess
 import sys
 import unicodedata
 from itertools import chain
@@ -196,37 +194,6 @@ def combine_metadata(stream, indexed_metadata, lose=None, important=None):
     return stream
 
 
-def run_command(cmd, stdout=subprocess.PIPE, env=None):
-    """Execute command.
-
-    Scraper specific error handling is supported by forwarding exceptions.
-
-    :param cmd: commandline command.
-    :param stdout: a file handle can be given, for directing stdout to file.
-    :param env: Override process environment variables
-    :returns: Tuple (statuscode, stdout, stderr)
-    """
-    _env = os.environ.copy()
-
-    if env:
-        for key, value in six.iteritems(env):
-            _env[key] = value
-
-    proc = subprocess.Popen(cmd,
-                            stdout=stdout,
-                            stderr=subprocess.PIPE,
-                            shell=False,
-                            env=_env)
-
-    (stdout_result, stderr_result) = proc.communicate()
-    if not stdout_result:
-        stdout_result = ""
-    if not stderr_result:
-        stderr_result = ""
-    statuscode = proc.returncode
-    return statuscode, stdout_result, stderr_result
-
-
 def ensure_text(s, encoding="utf-8", errors="strict"):
     """Coerce *s* to six.text_type.
 
@@ -392,3 +359,24 @@ def concat(lines, prefix=""):
     :returns: Joined lines as string
     """
     return "\n".join(["%s%s" % (prefix, line) for line in lines])
+
+
+def sanitize_bytestring(input_bytes):
+    """Sanitize unknown byte string as unicode string.
+
+    Function will take a byte string with unknown charset as input and
+    and convert it safely to unicode string, removing any non-printable
+    characters.
+
+    - decode as utf8 byte string
+    - replace non-utf8 characters
+    - remove non-printable characters
+    - encode string to utf8 before adding to errors
+
+    :input_bytes: Input as byte string
+    :returns: Sanitized string as unicode string
+
+    """
+    utf8string = input_bytes.decode("utf8", errors="replace")
+    sanitized_string = sanitize_string(utf8string)
+    return ensure_text(sanitized_string.encode("utf-8"))

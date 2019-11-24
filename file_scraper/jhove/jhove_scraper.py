@@ -6,12 +6,12 @@ try:
 except ImportError:
     pass
 
-from file_scraper.base import BaseScraper, ProcessRunner
+from file_scraper.base import BaseScraper
+from file_scraper.shell import Shell
 from file_scraper.jhove.jhove_model import (JHoveGifMeta, JHoveHtmlMeta,
                                             JHoveJpegMeta, JHoveTiffMeta,
                                             JHovePdfMeta, JHoveWavMeta,
                                             JHoveUtf8Meta, get_field)
-from file_scraper.utils import ensure_text
 
 
 class JHoveScraperBase(BaseScraper):
@@ -32,7 +32,6 @@ class JHoveScraperBase(BaseScraper):
         :params: Extra parameters needed for the scraper
         """
         self._report = None  # JHove report
-        self._shell = None  # ProcessRunner object
         super(JHoveScraperBase, self).__init__(filename, check_wellformed,
                                                params)
 
@@ -45,20 +44,20 @@ class JHoveScraperBase(BaseScraper):
 
         exec_cmd = ["jhove", "-h", "XML", "-m",
                     self._jhove_module, self.filename]
-        self._shell = ProcessRunner(exec_cmd)
+        shell = Shell(exec_cmd)
 
-        if self._shell.returncode != 0:
+        if shell.returncode != 0:
             self._errors.append("JHove returned error: %s\n%s" % (
-                self._shell.returncode, ensure_text(self._shell.stderr)))
+                shell.returncode, shell.stderr))
 
-        self._report = lxml.etree.fromstring(self._shell.stdout)
+        self._report = lxml.etree.fromstring(shell.stdout_raw)
 
         status = get_field(self._report, "status")
         self._messages.append(status)
         if "Well-Formed and valid" not in status:
             self._errors.append("Validator returned error.")
-            self._errors.append(ensure_text(self._shell.stdout))
-            self._errors.append(ensure_text(self._shell.stderr))
+            self._errors.append(shell.stdout)
+            self._errors.append(shell.stderr)
 
         # If the MIME type is forced, use that, otherwise scrape the MIME type
         if self._given_mimetype:

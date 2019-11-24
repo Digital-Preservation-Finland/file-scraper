@@ -6,7 +6,8 @@ versions 1.7, A-2a, A-2b, A-2u, A-3a, A-3b and A-3u.
 """
 from __future__ import unicode_literals
 
-from file_scraper.base import BaseScraper, ProcessRunner
+from file_scraper.base import BaseScraper
+from file_scraper.shell import Shell
 from file_scraper.ghostscript.ghostscript_model import GhostscriptMeta
 from file_scraper.utils import ensure_text, encode_path
 
@@ -24,7 +25,7 @@ class GhostscriptScraper(BaseScraper):
             self._messages.append("Skipping scraper: Well-formed check not"
                                   "used.")
             return
-        shell = ProcessRunner([
+        shell = Shell([
             "gs", "-o", "/dev/null", "-sDEVICE=nullpage",
             encode_path(self.filename)])
 
@@ -33,8 +34,8 @@ class GhostscriptScraper(BaseScraper):
                                       self._given_version))
 
         # Ghostscript may print characters which cannot be converted to UTF-8
-        stdout_message = ensure_text(shell.stdout, errors='replace')
-        stderr_message = ensure_text(shell.stderr, errors='replace')
+        stdout_message = ensure_text(shell.stdout_raw, errors='replace')
+        stderr_message = ensure_text(shell.stderr_raw, errors='replace')
         self._messages.append(stdout_message)
 
         # Ghostscript will result 0 if it can repair errors.

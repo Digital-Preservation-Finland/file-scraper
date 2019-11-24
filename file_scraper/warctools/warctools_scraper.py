@@ -8,8 +8,9 @@ from io import open as io_open
 
 import six
 
-from file_scraper.base import BaseScraper, ProcessRunner
-from file_scraper.utils import ensure_text, sanitize_string, encode_path
+from file_scraper.base import BaseScraper
+from file_scraper.shell import Shell
+from file_scraper.utils import sanitize_bytestring, encode_path
 from file_scraper.warctools.warctools_model import (ArcWarctoolsMeta,
                                                     GzipWarctoolsMeta,
                                                     WarcWarctoolsMeta)
@@ -37,31 +38,29 @@ class WarcWarctoolsScraper(BaseScraper):
         if size == 0:
             self._errors.append("Empty file.")
             return
-        shell = ProcessRunner(["warcvalid", self.filename])
+        shell = Shell(["warcvalid", self.filename])
 
         if shell.returncode != 0:
             self._errors.append("Failed: returncode %s" % shell.returncode)
             # Filter some trash printed by warcvalid.
-            filtered_errors = [line for line in shell.stderr.split(b"\n")
-                               if b"ignored line" not in line]
-            self._errors.append(ensure_text(b"\n".join(filtered_errors)))
+            filtered_errors = [line for line in shell.stderr.split("\n")
+                               if u"ignored line" not in line]
+            self._errors.append("\n".join(filtered_errors))
             return
 
-        self._messages.append(ensure_text(shell.stdout))
+        self._messages.append(shell.stdout)
 
-        warc_fd = gzip.open(self.filename)
         try:
             # First assume archive is compressed
-            line = warc_fd.readline()
+            with gzip.open(self.filename) as warc_fd:
+                line = warc_fd.readline()
         except IOError:
             # Not compressed archive
-            warc_fd.close()
             with io_open(self.filename, "rb") as warc_fd:
                 line = warc_fd.readline()
         except Exception as exception:  # pylint: disable=broad-except
             # Compressed but corrupted gzip file
             self._errors.append(six.text_type(exception))
-            warc_fd.close()
             return
 
         self._messages.append("File was analyzed successfully.")
@@ -93,22 +92,16 @@ class ArcWarctoolsScraper(BaseScraper):
             return
         with tempfile.NamedTemporaryFile(prefix="scraper-warctools.") \
                 as warcfile:
-            shell = ProcessRunner(command=["arc2warc",
-                                           encode_path(self.filename)],
-                                  output_file=warcfile)
+            shell = Shell(
+                command=["arc2warc", encode_path(self.filename)],
+                stdout=warcfile)
             if shell.returncode != 0:
-                self._errors.append("Failed: returncode %s" %
-                                    shell.returncode)
-                # replace non-utf8 characters
-                utf8string = shell.stderr.decode("utf8", errors="replace")
-                # remove non-printable characters
-                sanitized_string = sanitize_string(utf8string)
-                # encode string to utf8 before adding to errors
-                self._errors.append(
-                    ensure_text(sanitized_string.encode("utf-8")))
+                self._errors.append("Failed: returncode %s" % shell.returncode)
+                self._errors.append(sanitize_bytestring(shell.stderr_raw))
                 return
             self._messages.append("File was analyzed successfully.")
-            self._messages.append(ensure_text(shell.stdout))
+            if shell.stdout:
+                self._messages.append(shell.stdout)
 
         for md_class in self._supported_metadata:
             self.streams.append(md_class(self._given_mimetype,

@@ -1,10 +1,10 @@
 """Module for checking if the file is uitable as text file or not."""
 from __future__ import unicode_literals
 
-from file_scraper.base import BaseScraper, ProcessRunner
+from file_scraper.base import BaseScraper
+from file_scraper.shell import Shell
 from file_scraper.config import FILECMD_PATH, LD_LIBRARY_PATH
 from file_scraper.textfile.textfile_model import TextFileMeta
-from file_scraper.utils import encode_path, ensure_text
 
 ENV = {"LD_LIBRARY_PATH": LD_LIBRARY_PATH}
 
@@ -25,13 +25,13 @@ class TextfileScraper(BaseScraper):
 
         :returns: file mimetype
         """
-        shell = ProcessRunner([
+        shell = Shell([
             FILECMD_PATH, "-be", "soft", "--mime-type",
             encode_path(self.filename)], env=ENV)
         if shell.stderr:
-            self._errors.append(ensure_text(shell.stderr))
+            self._errors.append(shell.stderr)
 
-        return ensure_text(shell.stdout).strip()
+        return shell.stdout.strip()
 
     def scrape_file(self):
         """Check MIME type determined by libmagic."""
