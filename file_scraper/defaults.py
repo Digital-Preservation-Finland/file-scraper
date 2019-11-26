@@ -59,4 +59,5 @@ PRONOM_DICT = {
     "x-fmt/386": ("video/MP2P", ""),
     "fmt/585": ("video/MP2T", ""),
     "fmt/5": ("video/avi", ""),
+    "fmt/569": ("video/x-matroska", "4")
 }

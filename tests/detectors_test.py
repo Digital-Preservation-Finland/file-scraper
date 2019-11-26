@@ -31,7 +31,6 @@ CHANGE_FIDO = {
         "application/gzip",
     "tests/data/application_warc/valid_1.0_.warc.gz": "application/gzip",
     "tests/data/application_x-internet-archive/valid_1.0.arc": "text/html",
-    "tests/data/video_x-matroska/valid_4_ffv1.mkv": None,
     "tests/data/application_mxf/valid__jpeg2000.mxf": None,
     "tests/data/application_mxf/valid__jpeg2000_grayscale.mxf": None,
 }
@@ -78,9 +77,15 @@ def test_pdf_detector(filepath, mimetype, version):
     ]
 )
 def test_detectors(detector_class, change_dict):
-    """Test Fido and Magic detectors."""
+    """Test Fido and Magic detectors.
+    
+    The test compares detected mimetype to expected mimetype.
+    Runs all well-formed files in the test data set.
+
+    :detector_class: Detector class to test
+    :change_dict: Known exceptions to expected mimetypes
+    """
     for filename, mimetype in get_files(well_formed=True):
-        mimetype = mimetype
         detector = detector_class(filename)
         detector.detect()
         if filename in change_dict:
