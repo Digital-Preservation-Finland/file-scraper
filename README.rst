@@ -32,7 +32,7 @@ Additionally, the following software is required for complete well-formed check.
     * For WAVE audio files: **JHove 1.20.1**
     * For image files: **JHove 1.20.1**, **dpx-validator**, **pngcheck 2.3**
     * For audio/video files (excluding WAVE audio): ffmpeg-python, **FFMpeg 2.8.15**
-    * For other files: **JHove 1.20.1**, **LibreOffice**,  **GhostScript 9.20**, **warc-tools >= 4.8.3**, **pspp 1.0.1**
+    * For other files: **JHove 1.20.1**, **LibreOffice**,  **GhostScript 9.20**, **warc-tools >= 4.8.3**, **pspp 1.2.0**
 
 See also:
 
