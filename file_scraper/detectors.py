@@ -2,8 +2,6 @@
 # pylint: disable=ungrouped-imports
 from __future__ import unicode_literals
 
-import ctypes
-
 import lxml.etree as ET
 import six
 
@@ -15,18 +13,9 @@ from file_scraper.config import VERAPDF_PATH
 from file_scraper.defaults import (MIMETYPE_DICT, PRIORITY_PRONOM, PRONOM_DICT,
                                    VERSION_DICT)
 from file_scraper.utils import encode_path, decode_path
+from file_scraper.magiclib import magiclib
 
-try:
-    from file_scraper.config import MAGIC_LIBRARY
-
-    # Monkeypatch magic to load a newer version of the 'magic' shared library
-    ctypes.cdll.LoadLibrary(MAGIC_LIBRARY)
-except OSError:
-    print("%s not found, MS Office detection may not work properly if "
-          "file command library is older." % MAGIC_LIBRARY)
-
-# Must be imported *after* the DLL import above
-import magic  # isort:skip pylint: disable=wrong-import-order
+MAGIC_LIB = magiclib()
 
 
 class _FidoReader(Fido):
@@ -163,7 +152,7 @@ class MagicDetector(BaseDetector):
 
     def detect(self):
         """Detect mimetype."""
-        magic_ = magic.open(magic.MAGIC_MIME_TYPE)
+        magic_ = MAGIC_LIB.open(MAGIC_LIB.MAGIC_MIME_TYPE)
         magic_.load()
         mimetype = magic_.file(encode_path(self.filename))
         magic_.close()

@@ -1,25 +1,14 @@
 """Metadata models for files scraped using magic."""
 from __future__ import unicode_literals
 
-import ctypes
-
 import six
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import MIMETYPE_DICT
 from file_scraper.utils import encode_path, metadata
+from file_scraper.magiclib import magiclib
 
-try:
-    from file_scraper.config import MAGIC_LIBRARY
-
-    ctypes.cdll.LoadLibrary(MAGIC_LIBRARY)
-except OSError:
-    print("%s not found, MS Office detection may not work properly if "
-          "file command library is older." % MAGIC_LIBRARY)
-try:
-    import magic as magic
-except ImportError:
-    pass
+MAGIC_LIB = magiclib()
 
 
 class BaseMagicMeta(BaseMeta):
@@ -40,7 +29,7 @@ class BaseMagicMeta(BaseMeta):
             return self._given_mimetype
 
         try:
-            magic_ = magic.open(magic.MAGIC_MIME_TYPE)
+            magic_ = MAGIC_LIB.open(MAGIC_LIB.MAGIC_MIME_TYPE)
             magic_.load()
             mimetype = magic_.file(encode_path(self._filename))
         except Exception as exception:  # pylint: disable=broad-except
@@ -60,7 +49,7 @@ class BaseMagicMeta(BaseMeta):
             return self._given_version
 
         try:
-            magic_ = magic.open(magic.MAGIC_NONE)
+            magic_ = MAGIC_LIB.open(MAGIC_LIB.MAGIC_NONE)
             magic_.load()
             magic_version = magic_.file(
                 encode_path(self._filename)).split(self._starttag)[-1]
@@ -116,7 +105,7 @@ class TextMagicBaseMeta(BaseMagicMeta):
     def charset(self):
         """Return charset."""
         try:
-            magic_ = magic.open(magic.MAGIC_MIME_ENCODING)
+            magic_ = MAGIC_LIB.open(MAGIC_LIB.MAGIC_MIME_ENCODING)
             magic_.load()
             magic_charset = magic_.file(encode_path(self._filename))
         except Exception as exception:  # pylint: disable=broad-except
