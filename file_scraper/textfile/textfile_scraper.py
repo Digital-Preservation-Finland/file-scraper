@@ -2,10 +2,8 @@
 from __future__ import unicode_literals
 
 from file_scraper.base import BaseScraper
-from file_scraper.shell import Shell
-from file_scraper.magiclib import file_command, file_environment
+from file_scraper.magiclib import file_command
 from file_scraper.textfile.textfile_model import TextFileMeta
-from file_scraper.utils import encode_path
 
 
 class TextfileScraper(BaseScraper):
@@ -24,9 +22,8 @@ class TextfileScraper(BaseScraper):
 
         :returns: file mimetype
         """
-        shell = Shell([
-            file_command(), "-be", "soft", "--mime-type",
-            encode_path(self.filename)], env=file_environment())
+        params = ["-be", "soft", "--mime-type"]
+        shell = file_command(self.filename, params)
         if shell.stderr:
             self._errors.append(shell.stderr)
 

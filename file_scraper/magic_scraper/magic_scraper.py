@@ -2,7 +2,10 @@
 from __future__ import unicode_literals
 
 import os
+import six
 
+from file_scraper.utils import encode_path
+from file_scraper.magiclib import magiclib
 from file_scraper.base import BaseScraper
 from file_scraper.magic_scraper.magic_model import (BaseMagicMeta,
                                                     TextFileMagicMeta,
@@ -17,6 +20,8 @@ from file_scraper.magic_scraper.magic_model import (BaseMagicMeta,
                                                     Jp2FileMagicMeta,
                                                     TiffFileMagicMeta)
 
+MAGIC_LIB = magiclib()
+
 
 class MagicScraper(BaseScraper):
     """Scraper for scraping files using magic."""
@@ -27,6 +32,33 @@ class MagicScraper(BaseScraper):
                            ArcFileMagicMeta, PngFileMagicMeta,
                            JpegFileMagicMeta, Jp2FileMagicMeta,
                            TiffFileMagicMeta]
+
+    def _magic_call(self):
+        """Fetch three values from file with using magic.
+        These are: mimetype, info line (for version) and encoding.
+
+        :returns: dict of the three fetched values 
+        """
+        magicdict = {
+            "magic_mime_type": MAGIC_LIB.MAGIC_MIME_TYPE,
+            "magic_none": MAGIC_LIB.MAGIC_NONE,
+            "magic_mime_encoding": MAGIC_LIB.MAGIC_MIME_ENCODING
+        }
+
+        magic_values = {}
+        for key in magicdict:
+            try:
+                magic_ = MAGIC_LIB.open(magicdict[key])
+                magic_.load()
+                magic_values[key] = magic_.file(encode_path(self.filename))
+            except Exception as exception:  # pylint: disable=broad-except
+                self._errors.append("Error in analysing file")
+                self._errors.append(six.text_type(exception))
+                magic_values[key] = None
+            finally:
+                magic_.close()
+
+        return magic_values
 
     def scrape_file(self):
         """Populate streams with supported metadata objects."""
@@ -43,7 +75,8 @@ class MagicScraper(BaseScraper):
             self._errors.append("File not found.")
             return
 
-        mimefinder = BaseMagicMeta(self.filename, self._errors,
+        magic_values = self._magic_call()
+        mimefinder = BaseMagicMeta(magic_values=magic_values,
                                    mimetype=self._given_mimetype,
                                    version=self._given_version)
         mimetype = mimefinder.mimetype()
@@ -55,15 +88,9 @@ class MagicScraper(BaseScraper):
 
         if mimetype == "text/xml":
             if mimetype_guess == "text/xml":
-                self.streams.append(XmlFileMagicMeta(self.filename,
-                                                     self._errors,
-                                                     self._given_mimetype,
-                                                     self._given_version))
+                self.streams.append(XmlFileMagicMeta(magic_values))
             elif mimetype_guess == "application/xhtml+xml":
-                self.streams.append(XhtmlFileMagicMeta(self.filename,
-                                                       self._errors,
-                                                       self._given_mimetype,
-                                                       self._given_version))
+                self.streams.append(XhtmlFileMagicMeta(magic_values))
             else:
                 self._errors.append("MIME type %s given to MagicScraper does "
                                     "not match %s obtained by the scraper." % (
@@ -73,9 +100,9 @@ class MagicScraper(BaseScraper):
             for md_class in self._supported_metadata:
                 if not md_class.is_supported(mimetype):
                     continue
-                self.streams.append(md_class(self.filename, self._errors,
-                                             self._given_mimetype,
-                                             self._given_version))
+                self.streams.append(md_class(magic_values=magic_values,
+                                             mimetype=self._given_mimetype,
+                                             version=self._given_version))
 
         self._check_supported(allow_unav_version=True, allow_unap_version=True)
         self._messages.append("The file was analyzed successfully.")

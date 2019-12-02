@@ -1,14 +1,9 @@
 """Metadata models for files scraped using magic."""
 from __future__ import unicode_literals
 
-import six
-
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import MIMETYPE_DICT
-from file_scraper.utils import encode_path, metadata
-from file_scraper.magiclib import magiclib
-
-MAGIC_LIB = magiclib()
+from file_scraper.utils import metadata
 
 
 class BaseMagicMeta(BaseMeta):
@@ -16,10 +11,9 @@ class BaseMagicMeta(BaseMeta):
     _starttag = "version "  # Text before file format version in magic result.
     _endtag = None  # Text after file format version in magic result.
 
-    def __init__(self, filename, errors, mimetype=None, version=None):
+    def __init__(self, magic_values, mimetype=None, version=None):
         """Imitialize the metadata model."""
-        self._filename = filename
-        self._errors = errors
+        self._magic_values = magic_values
         super(BaseMagicMeta, self).__init__(mimetype=mimetype, version=version)
 
     @metadata()
@@ -28,17 +22,7 @@ class BaseMagicMeta(BaseMeta):
         if self._given_mimetype:
             return self._given_mimetype
 
-        try:
-            magic_ = MAGIC_LIB.open(MAGIC_LIB.MAGIC_MIME_TYPE)
-            magic_.load()
-            mimetype = magic_.file(encode_path(self._filename))
-        except Exception as exception:  # pylint: disable=broad-except
-            self._errors.append("Error in analysing file")
-            self._errors.append(six.text_type(exception))
-            return None
-        finally:
-            magic_.close()
-
+        mimetype = self._magic_values['magic_mime_type']
         if mimetype in MIMETYPE_DICT:
             mimetype = MIMETYPE_DICT[mimetype]
         return mimetype
@@ -48,21 +32,11 @@ class BaseMagicMeta(BaseMeta):
         if self._given_mimetype and self._given_version:
             return self._given_version
 
-        try:
-            magic_ = MAGIC_LIB.open(MAGIC_LIB.MAGIC_NONE)
-            magic_.load()
-            magic_version = magic_.file(
-                encode_path(self._filename)).split(self._starttag)[-1]
-            magic_version = six.text_type(magic_version)
-        except Exception as exception:  # pylint: disable=broad-except
-            self._errors.append("Error in analysing file")
-            self._errors.append(six.text_type(exception))
-            return None
-        finally:
-            magic_.close()
-
+        magic_version = self._magic_values['magic_none']
+        if magic_version is not None:
+            magic_version = magic_version.split(self._starttag)[-1]
         if self._endtag:
-            return magic_version.split(self._endtag)[0]
+            magic_version = magic_version.split(self._endtag)[0]
         return magic_version
 
 
@@ -104,16 +78,7 @@ class TextMagicBaseMeta(BaseMagicMeta):
     @metadata()
     def charset(self):
         """Return charset."""
-        try:
-            magic_ = MAGIC_LIB.open(MAGIC_LIB.MAGIC_MIME_ENCODING)
-            magic_.load()
-            magic_charset = magic_.file(encode_path(self._filename))
-        except Exception as exception:  # pylint: disable=broad-except
-            self._errors.append("Error in analyzing file")
-            self._errors.append(six.text_type(exception))
-            return None
-        finally:
-            magic_.close()
+        magic_charset = self._magic_values['magic_mime_encoding']
 
         if magic_charset is None or magic_charset.upper() == "BINARY":
             return None
@@ -158,14 +123,14 @@ class XmlFileMagicMeta(TextMagicBaseMeta):
     _allow_versions = True         # Allow any version
 
     @classmethod
-    def is_supported(cls, mimetype, version=None,
+    def is_supported(cls, magic_values, version=None,
                      params=None):
         """
         Return True if given MIME type and version are supported.
 
         This is not a Schematron scraper, skip this in such case.
 
-        :mimetype: Identified mimetype
+        :magic_values: Values resulted from magic module
         :version: Identified version (if needed)
         :check_wellformed: True for the full well-formed check, False for just
                            detection and metadata scraping
@@ -176,7 +141,7 @@ class XmlFileMagicMeta(TextMagicBaseMeta):
             params = {}
         if "schematron" in params:
             return False
-        return super(XmlFileMagicMeta, cls).is_supported(mimetype, version,
+        return super(XmlFileMagicMeta, cls).is_supported(magic_values, version,
                                                          params)
 
 

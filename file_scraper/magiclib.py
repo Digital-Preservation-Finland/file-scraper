@@ -8,35 +8,44 @@ from __future__ import print_function
 import sys
 import os.path
 import ctypes
+from file_scraper.shell import Shell
+from file_scraper.utils import encode_path
 from file_scraper.config import FILECMD_PATH, LD_LIBRARY_PATH, MAGIC_LIBRARY
 
 
 def _is_file_path():
     """Checks if file command configuration paths exist.
+
+    :returns: True, if configuration paths exist; False otherwise.
     """
     if os.path.isfile(FILECMD_PATH) and os.path.isdir(LD_LIBRARY_PATH):
         return True
     return False
 
 
-def file_command():
-    """Returns file command.
-    """
-    if _is_file_path():
-        return FILECMD_PATH
-    return "file"
+def file_command(filename, parameters=None):
+    """Uses file command in shell.
 
-
-def file_environment():
-    """Returns the environment dict for the file command.
+    :filename: Filename for the file command.
+    :parameters: Parameter list for the file command.
+    :returns: Shell class
     """
+    cmd = "file"
+    env = {}
     if _is_file_path():
-        return {"LD_LIBRARY_PATH": LD_LIBRARY_PATH}
-    return {}
+        cmd = FILECMD_PATH
+        env = {"LD_LIBRARY_PATH": LD_LIBRARY_PATH}
+
+    if parameters is None:
+        parameters = []
+    return Shell([cmd] + parameters + [encode_path(filename)], env=env)
 
 
 def magiclib():
-    """Returns magic library.
+    """Resolves magic library from the configuration path, and if missing,
+    from the system path.
+
+    :returns: magic library.
     """
     try:
         ctypes.cdll.LoadLibrary(MAGIC_LIBRARY)
