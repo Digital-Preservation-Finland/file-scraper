@@ -56,10 +56,14 @@ class MagicScraper(BaseScraper):
         if mimetype == "text/xml":
             if mimetype_guess == "text/xml":
                 self.streams.append(XmlFileMagicMeta(self.filename,
-                                                     self._errors))
+                                                     self._errors,
+                                                     self._given_mimetype,
+                                                     self._given_version))
             elif mimetype_guess == "application/xhtml+xml":
                 self.streams.append(XhtmlFileMagicMeta(self.filename,
-                                                       self._errors))
+                                                       self._errors,
+                                                       self._given_mimetype,
+                                                       self._given_version))
             else:
                 self._errors.append("MIME type %s given to MagicScraper does "
                                     "not match %s obtained by the scraper." % (
