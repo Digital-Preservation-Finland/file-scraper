@@ -13,7 +13,7 @@ from file_scraper.config import VERAPDF_PATH
 from file_scraper.defaults import (MIMETYPE_DICT, PRIORITY_PRONOM, PRONOM_DICT,
                                    VERSION_DICT)
 from file_scraper.utils import encode_path, decode_path
-from file_scraper.magiclib import magiclib
+from file_scraper.magiclib import magiclib, magic_analyze
 
 MAGIC_LIB = magiclib()
 
@@ -152,10 +152,8 @@ class MagicDetector(BaseDetector):
 
     def detect(self):
         """Detect mimetype."""
-        magic_ = MAGIC_LIB.open(MAGIC_LIB.MAGIC_MIME_TYPE)
-        magic_.load()
-        mimetype = magic_.file(encode_path(self.filename))
-        magic_.close()
+        mimetype = magic_analyze(MAGIC_LIB, MAGIC_LIB.MAGIC_MIME_TYPE,
+                                 self.filename)
         if mimetype in MIMETYPE_DICT:
             self.mimetype = MIMETYPE_DICT[mimetype]
         else:

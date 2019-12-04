@@ -13,18 +13,8 @@ from file_scraper.utils import encode_path
 from file_scraper.config import FILECMD_PATH, LD_LIBRARY_PATH, MAGIC_LIBRARY
 
 
-def _is_file_path():
-    """Checks if file command configuration paths exist.
-
-    :returns: True, if configuration paths exist; False otherwise.
-    """
-    if os.path.isfile(FILECMD_PATH) and os.path.isdir(LD_LIBRARY_PATH):
-        return True
-    return False
-
-
 def file_command(filename, parameters=None):
-    """Uses file command in shell.
+    """Use file command in shell.
 
     :filename: Filename for the file command.
     :parameters: Parameter list for the file command.
@@ -32,7 +22,7 @@ def file_command(filename, parameters=None):
     """
     cmd = "file"
     env = {}
-    if _is_file_path():
+    if os.path.isfile(FILECMD_PATH) and os.path.isdir(LD_LIBRARY_PATH):
         cmd = FILECMD_PATH
         env = {"LD_LIBRARY_PATH": LD_LIBRARY_PATH}
 
@@ -41,11 +31,26 @@ def file_command(filename, parameters=None):
     return Shell([cmd] + parameters + [encode_path(filename)], env=env)
 
 
+def magic_analyze(magic_lib, magic_type, path):
+    """Analyze file with given magic module.
+
+    :magic_lib: Magic module
+    :magic_type: Magic type to open magic library
+    :path: File path to analyze
+    :returns: Result from the magic module
+    """
+    magic_ = magic_lib.open(magic_type)
+    magic_.load()
+    magic_result = magic_.file(encode_path(path))
+    magic_.close()
+    return magic_result
+
+
 def magiclib():
-    """Resolves magic library from the configuration path, and if missing,
+    """Resolve magic library from the configuration path, and if missing,
     from the system path.
 
-    :returns: magic library.
+    :returns: Magic module
     """
     try:
         ctypes.cdll.LoadLibrary(MAGIC_LIBRARY)

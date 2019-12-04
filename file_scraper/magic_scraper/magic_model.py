@@ -11,9 +11,14 @@ class BaseMagicMeta(BaseMeta):
     _starttag = "version "  # Text before file format version in magic result.
     _endtag = None  # Text after file format version in magic result.
 
-    def __init__(self, magic_values, mimetype=None, version=None):
-        """Imitialize the metadata model."""
-        self._magic_values = magic_values
+    def __init__(self, magic_result, mimetype=None, version=None):
+        """Initialize the metadata model.
+
+        :magic_result: Values resulted from magic module as Python dict
+        :mimetype: Given mimetype
+        :version: Given version
+        """
+        self._magic_result = magic_result
         super(BaseMagicMeta, self).__init__(mimetype=mimetype, version=version)
 
     @metadata()
@@ -22,7 +27,7 @@ class BaseMagicMeta(BaseMeta):
         if self._given_mimetype:
             return self._given_mimetype
 
-        mimetype = self._magic_values['magic_mime_type']
+        mimetype = self._magic_result['magic_mime_type']
         if mimetype in MIMETYPE_DICT:
             mimetype = MIMETYPE_DICT[mimetype]
         return mimetype
@@ -32,7 +37,7 @@ class BaseMagicMeta(BaseMeta):
         if self._given_mimetype and self._given_version:
             return self._given_version
 
-        magic_version = self._magic_values['magic_none']
+        magic_version = self._magic_result['magic_none']
         if magic_version is not None:
             magic_version = magic_version.split(self._starttag)[-1]
         if self._endtag:
@@ -78,7 +83,7 @@ class TextMagicBaseMeta(BaseMagicMeta):
     @metadata()
     def charset(self):
         """Return charset."""
-        magic_charset = self._magic_values['magic_mime_encoding']
+        magic_charset = self._magic_result['magic_mime_encoding']
 
         if magic_charset is None or magic_charset.upper() == "BINARY":
             return None
@@ -123,14 +128,14 @@ class XmlFileMagicMeta(TextMagicBaseMeta):
     _allow_versions = True         # Allow any version
 
     @classmethod
-    def is_supported(cls, magic_values, version=None,
+    def is_supported(cls, magic_result, version=None,
                      params=None):
         """
         Return True if given MIME type and version are supported.
 
         This is not a Schematron scraper, skip this in such case.
 
-        :magic_values: Values resulted from magic module
+        :magic_result: Values resulted from magic module as dict
         :version: Identified version (if needed)
         :check_wellformed: True for the full well-formed check, False for just
                            detection and metadata scraping
@@ -141,7 +146,7 @@ class XmlFileMagicMeta(TextMagicBaseMeta):
             params = {}
         if "schematron" in params:
             return False
-        return super(XmlFileMagicMeta, cls).is_supported(magic_values, version,
+        return super(XmlFileMagicMeta, cls).is_supported(magic_result, version,
                                                          params)
 
 

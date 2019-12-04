@@ -2,10 +2,8 @@
 from __future__ import unicode_literals
 
 import os
-import six
 
-from file_scraper.utils import encode_path
-from file_scraper.magiclib import magiclib
+from file_scraper.magiclib import magiclib, magic_analyze
 from file_scraper.base import BaseScraper
 from file_scraper.magic_scraper.magic_model import (BaseMagicMeta,
                                                     TextFileMagicMeta,
@@ -37,7 +35,7 @@ class MagicScraper(BaseScraper):
         """Fetch three values from file with using magic.
         These are: mimetype, info line (for version) and encoding.
 
-        :returns: dict of the three fetched values 
+        :returns: Python dict of the three fetched values from magic
         """
         magicdict = {
             "magic_mime_type": MAGIC_LIB.MAGIC_MIME_TYPE,
@@ -45,20 +43,11 @@ class MagicScraper(BaseScraper):
             "magic_mime_encoding": MAGIC_LIB.MAGIC_MIME_ENCODING
         }
 
-        magic_values = {}
+        magic_result = {}
         for key in magicdict:
-            try:
-                magic_ = MAGIC_LIB.open(magicdict[key])
-                magic_.load()
-                magic_values[key] = magic_.file(encode_path(self.filename))
-            except Exception as exception:  # pylint: disable=broad-except
-                self._errors.append("Error in analysing file")
-                self._errors.append(six.text_type(exception))
-                magic_values[key] = None
-            finally:
-                magic_.close()
-
-        return magic_values
+            magic_result[key] = magic_analyze(MAGIC_LIB, magicdict[key],
+                                              self.filename)
+        return magic_result
 
     def scrape_file(self):
         """Populate streams with supported metadata objects."""
@@ -75,8 +64,8 @@ class MagicScraper(BaseScraper):
             self._errors.append("File not found.")
             return
 
-        magic_values = self._magic_call()
-        mimefinder = BaseMagicMeta(magic_values=magic_values,
+        magic_result = self._magic_call()
+        mimefinder = BaseMagicMeta(magic_result=magic_result,
                                    mimetype=self._given_mimetype,
                                    version=self._given_version)
         mimetype = mimefinder.mimetype()
@@ -88,9 +77,9 @@ class MagicScraper(BaseScraper):
 
         if mimetype == "text/xml":
             if mimetype_guess == "text/xml":
-                self.streams.append(XmlFileMagicMeta(magic_values))
+                self.streams.append(XmlFileMagicMeta(magic_result))
             elif mimetype_guess == "application/xhtml+xml":
-                self.streams.append(XhtmlFileMagicMeta(magic_values))
+                self.streams.append(XhtmlFileMagicMeta(magic_result))
             else:
                 self._errors.append("MIME type %s given to MagicScraper does "
                                     "not match %s obtained by the scraper." % (
@@ -100,7 +89,7 @@ class MagicScraper(BaseScraper):
             for md_class in self._supported_metadata:
                 if not md_class.is_supported(mimetype):
                     continue
-                self.streams.append(md_class(magic_values=magic_values,
+                self.streams.append(md_class(magic_result=magic_result,
                                              mimetype=self._given_mimetype,
                                              version=self._given_version))
 
