@@ -54,11 +54,23 @@ MIMETYPE = "application/x-spss-por"
         ("invalid__truncated.por", {
             "purpose": "Test truncated file.",
             "stdout_part": "",
-            "stderr_part": "unexpected end of file"})
+            "stderr_part": "unexpected end of file"}),
+        ("invalid__dates.por", {
+            "purpose": "Test invalid file with bad portable date type.",
+            "stdout_part": "",
+            "stderr_part": "invalid__dates.por at offset 0x253: DATE: Bad "
+                           "format specifier byte (103).  Variable"}),
+        ("invalid__dates.por", {
+            "purpose": "Test invalid file with bad portable datetime type.",
+            "stdout_part": "",
+            "stderr_part": "invalid__dates.por at offset 0x26e: DATETIME: Bad "
+                           "format specifier byte (105).  Variable"})
+
     ]
 )
 def test_scraper(filename, result_dict, evaluate_scraper):
     """Test scraper."""
+    print filename
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
     scraper = PsppScraper(correct.filename, True, correct.params)
