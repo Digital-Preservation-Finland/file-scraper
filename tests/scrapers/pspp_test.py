@@ -43,6 +43,10 @@ MIMETYPE = "application/x-spss-por"
                        "e.g. SPSS 24) for DOT data type..",
             "stdout_part": "File conversion was succesful.",
             "stderr_part": ""}),
+        ("valid__spss24-dates.por", {
+            "purpose": "Test valid file with portable date formats.",
+            "stdout_part": "File conversion was succesful.",
+            "stderr_part": ""}),
         ("invalid__wrong_spss_format.sav", {
             "purpose": "Test wrong format.",
             "stdout_part": "",
@@ -55,22 +59,16 @@ MIMETYPE = "application/x-spss-por"
             "purpose": "Test truncated file.",
             "stdout_part": "",
             "stderr_part": "unexpected end of file"}),
-        ("invalid__dates.por", {
+        ("invalid__variable_types.por", {
             "purpose": "Test invalid file with bad portable date type.",
             "stdout_part": "",
-            "stderr_part": "invalid__dates.por at offset 0x253: DATE: Bad "
-                           "format specifier byte (103).  Variable"}),
-        ("invalid__dates.por", {
-            "purpose": "Test invalid file with bad portable datetime type.",
-            "stdout_part": "",
-            "stderr_part": "invalid__dates.por at offset 0x26e: DATETIME: Bad "
-                           "format specifier byte (105).  Variable"})
-
+            "stderr_part": "invalid__variable_types.por at offset 0x253: DATE:"
+                           " Bad format specifier byte (282).  Variable "})
     ]
 )
 def test_scraper(filename, result_dict, evaluate_scraper):
     """Test scraper."""
-    print filename
+
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
     scraper = PsppScraper(correct.filename, True, correct.params)
