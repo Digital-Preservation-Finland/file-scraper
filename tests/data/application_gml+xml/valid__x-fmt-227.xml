@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<gml:FeatureCollection
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:gml="http://www.opengis.net/gml/1.0"
+        gml:id="gml-with-any-version"
+	version="1.1">
+<!-- This file should be detected as application/gml+xml with PRONOM code x-fmt/227.
+     https://www.nationalarchives.gov.uk/PRONOM/Format/proFormatSearch.aspx?status=detailReport&id=319 -->
+</gml:FeatureCollection>
