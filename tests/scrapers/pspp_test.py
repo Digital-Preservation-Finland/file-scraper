@@ -34,15 +34,15 @@ MIMETYPE = "application/x-spss-por"
 @pytest.mark.parametrize(
     ["filename", "result_dict"],
     [
-        ("valid.por", {
-            "purpose": "Test valid file.",
-            "stdout_part": "File conversion was succesful.",
-            "stderr_part": ""}),
         ("valid__spss24-dot.por", {
             "purpose": "Test valid file that uses the newer standard (used by "
                        "e.g. SPSS 24) for DOT data type..",
             "stdout_part": "File conversion was succesful.",
             "stderr_part": ""}),
+        ("invalid__pspp_header.por", {
+            "purpose": "Test invalid file with PSPP header.",
+            "stdout_part": "",
+            "stderr_part": "File is not SPSS Portable format."}),
         ("valid__spss24-dates.por", {
             "purpose": "Test valid file with portable date formats.",
             "stdout_part": "File conversion was succesful.",
@@ -81,7 +81,7 @@ def test_scraper(filename, result_dict, evaluate_scraper):
 
 def test_no_wellformed():
     """Test scraper without well-formed check."""
-    scraper = PsppScraper("tests/data/application_x-spss-por/valid.por", False)
+    scraper = PsppScraper("tests/data/application_x-spss-por/valid__spss24-dates.por", False)
     scraper.scrape_file()
     assert partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
@@ -133,7 +133,7 @@ def test_forced_filetype(result_dict, filetype, evaluate_scraper):
     Test using user-supplied MIME-types and versions.
     """
     filetype[six.text_type("correct_mimetype")] = "application/x-spss-por"
-    correct = force_correct_filetype("valid.por", result_dict,
+    correct = force_correct_filetype("valid__spss24-dates.por", result_dict,
                                      filetype, ["(:unav)"])
 
     params = {"mimetype": filetype["given_mimetype"],

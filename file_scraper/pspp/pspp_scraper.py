@@ -30,7 +30,7 @@ class PsppScraper(BaseScraper):
         # Check file header
         with io_open(self.filename, "rb") as input_file:
             first_line = input_file.readline()
-        if SPSS_PORTABLE_HEADER not in first_line:
+        if first_line.count(SPSS_PORTABLE_HEADER) != 1:
             self._errors.append("File is not SPSS Portable format.")
 
         # Try to convert file with pspp-convert. If conversion is succesful
