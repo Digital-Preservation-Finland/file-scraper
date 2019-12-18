@@ -16,8 +16,6 @@ from file_scraper.detectors import (FidoDetector, MagicDetector,
                                     VerapdfDetector, MagicCharset)
 from tests.common import get_files, partial_message_included
 
-TESTPATH = 'tests/data'
-
 CHANGE_FIDO = {
     "text_plain/valid__ascii.txt": None,
     "text_plain/valid__iso8859.txt": None,
@@ -86,19 +84,22 @@ CHANGE_MAGIC = {
     "text_csv/valid__iso8859-15.csv": "text/plain",
     "text_csv/valid__utf8.csv": "text/plain",
     "text_xml/valid_1.0_mets_noheader.xml": "text/plain",
+    "application_gml+xml/valid__x-fmt-227.xml": "text/xml",
+    "application_gml+xml/valid_3.2_fmt-1047.xml": "text/xml",
 }
+
 
 @pytest.mark.parametrize(
     ["filepath", "mimetype", "version"],
     [
-        ("tests/data/application_pdf/valid_1.4.pdf", None, None),
-        ("tests/data/application_pdf/valid_A-1a.pdf", "application/pdf",
+        ("application_pdf/valid_1.4.pdf", None, None),
+        ("application_pdf/valid_A-1a.pdf", "application/pdf",
          "A-1a"),
-        ("tests/data/application_pdf/valid_A-2b.pdf", "application/pdf",
+        ("application_pdf/valid_A-2b.pdf", "application/pdf",
          "A-2b"),
-        ("tests/data/application_pdf/valid_A-3b.pdf", "application/pdf",
+        ("application_pdf/valid_A-3b.pdf", "application/pdf",
          "A-3b"),
-        ("tests/data/image_png/valid_1.2.png", None, None)
+        ("image_png/valid_1.2.png", None, None)
     ]
 )
 def test_pdf_detector(filepath, mimetype, version):
@@ -108,7 +109,7 @@ def test_pdf_detector(filepath, mimetype, version):
     The detector should detect the file types of PDF/A files, but return None
     for other files, including PDF files that are not PDF/A.
     """
-    detector = VerapdfDetector(filepath)
+    detector = VerapdfDetector('tests/data/' + filepath)
     detector.detect()
     assert detector.mimetype == mimetype
     assert detector.version == version
@@ -130,16 +131,18 @@ def test_detectors(detector_class, change_dict):
     :detector_class: Detector class to test
     :change_dict: Known exceptions to expected mimetypes
     """
-    for filename, mimetype in get_files(well_formed=True):
+    for filename, expected_mimetype in get_files(well_formed=True):
+
         detector = detector_class(filename)
         detector.detect()
-        format_name = filename.strip(TESTPATH)
+
+        format_name = filename.replace('tests/data/', '')
         if format_name in change_dict:
-            assert detector.mimetype == change_dict[format_name]
-        else:
-            assert detector.mimetype == mimetype, (
-                "File {} identified as {} " "when {} was expected."
-                "".format(filename, detector.mimetype, mimetype))
+            expected_mimetype = change_dict[format_name]
+
+        assert detector.mimetype == expected_mimetype, (
+            "Detected mimetype did not match expected: "
+            "{}: {}".format(detector_class.__name__, format_name))
 
 
 @pytest.mark.parametrize(
