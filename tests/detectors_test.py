@@ -16,76 +16,77 @@ from file_scraper.detectors import (FidoDetector, MagicDetector,
                                     VerapdfDetector, MagicCharset)
 from tests.common import get_files, partial_message_included
 
+TESTPATH = 'tests/data'
+
 CHANGE_FIDO = {
-    "tests/data/text_plain/valid__ascii.txt": None,
-    "tests/data/text_plain/valid__iso8859.txt": None,
-    "tests/data/text_plain/valid__utf8_bom.txt": None,
-    "tests/data/text_plain/valid__utf8_without_bom.txt": None,
-    "tests/data/text_plain/valid__utf16le_bom.txt": None,
-    "tests/data/text_plain/valid__utf16le_without_bom.txt": None,
-    "tests/data/text_plain/valid__utf16be_bom.txt": None,
-    "tests/data/text_plain/valid__utf16be_without_bom.txt": None,
-    "tests/data/text_plain/valid__utf32le_bom.txt": None,
-    "tests/data/text_plain/valid__utf32le_without_bom.txt": None,
-    "tests/data/text_plain/valid__utf32be_bom.txt": None,
-    "tests/data/text_plain/valid__utf32be_without_bom.txt": None,
-    "tests/data/text_plain/valid__utf16le_multibyte.txt": None,
-    "tests/data/text_plain/valid__utf16be_multibyte.txt": None,
-    "tests/data/text_plain/valid__utf8_multibyte.txt": None,
-    "tests/data/video_mp4/valid__h264_aac.mp4": None,
-    "tests/data/application_msword/valid_11.0.doc": None,
-    "tests/data/application_vnd.openxmlformats-officedocument.spreadsheetml"
+    "text_plain/valid__ascii.txt": None,
+    "text_plain/valid__iso8859.txt": None,
+    "text_plain/valid__utf8_bom.txt": None,
+    "text_plain/valid__utf8_without_bom.txt": None,
+    "text_plain/valid__utf16le_bom.txt": None,
+    "text_plain/valid__utf16le_without_bom.txt": None,
+    "text_plain/valid__utf16be_bom.txt": None,
+    "text_plain/valid__utf16be_without_bom.txt": None,
+    "text_plain/valid__utf32le_bom.txt": None,
+    "text_plain/valid__utf32le_without_bom.txt": None,
+    "text_plain/valid__utf32be_bom.txt": None,
+    "text_plain/valid__utf32be_without_bom.txt": None,
+    "text_plain/valid__utf16le_multibyte.txt": None,
+    "text_plain/valid__utf16be_multibyte.txt": None,
+    "text_plain/valid__utf8_multibyte.txt": None,
+    "video_mp4/valid__h264_aac.mp4": None,
+    "application_msword/valid_11.0.doc": None,
+    "application_vnd.openxmlformats-officedocument.spreadsheetml"
     ".sheet/valid_15.0.xlsx": None,
-    "tests/data/application_vnd.openxmlformats-officedocument.presentationml"
+    "application_vnd.openxmlformats-officedocument.presentationml"
     ".presentation/valid_15.0.pptx": None,
-    "tests/data/application_vnd.oasis.opendocument.formula/valid_1.0.odf":
+    "application_vnd.oasis.opendocument.formula/valid_1.0.odf":
         "application/zip",
-    "tests/data/application_x-internet-archive/valid_1.0_.arc.gz":
+    "application_x-internet-archive/valid_1.0_.arc.gz":
         "application/gzip",
-    "tests/data/application_warc/valid_1.0_.warc.gz": "application/gzip",
-    "tests/data/application_x-internet-archive/valid_1.0.arc": "text/html",
-    "tests/data/application_mxf/valid__jpeg2000.mxf": None,
-    "tests/data/application_mxf/valid__jpeg2000_grayscale.mxf": None,
-    "tests/data/text_csv/valid__ascii.csv": None,
-    "tests/data/text_csv/valid__ascii_header.csv": None,
-    "tests/data/text_csv/valid__header_only.csv": None,
-    "tests/data/text_csv/valid__iso8859-15.csv": None,
-    "tests/data/text_csv/valid__utf8.csv": None,
-    "tests/data/text_xml/valid_1.0_mets_noheader.xml": None,
+    "application_warc/valid_1.0_.warc.gz": "application/gzip",
+    "application_x-internet-archive/valid_1.0.arc": "text/html",
+    "application_mxf/valid__jpeg2000.mxf": None,
+    "application_mxf/valid__jpeg2000_grayscale.mxf": None,
+    "text_csv/valid__ascii.csv": None,
+    "text_csv/valid__ascii_header.csv": None,
+    "text_csv/valid__header_only.csv": None,
+    "text_csv/valid__iso8859-15.csv": None,
+    "text_csv/valid__utf8.csv": None,
+    "text_xml/valid_1.0_mets_noheader.xml": None,
 }
 
 CHANGE_MAGIC = {
-    "tests/data/text_plain/valid__utf16le_without_bom.txt":
+    "text_plain/valid__utf16le_without_bom.txt":
         "application/octet-stream",
-    "tests/data/text_plain/valid__utf16be_without_bom.txt":
+    "text_plain/valid__utf16be_without_bom.txt":
         "application/octet-stream",
-    "tests/data/text_plain/valid__utf16le_multibyte.txt":
+    "text_plain/valid__utf16le_multibyte.txt":
         "application/octet-stream",
-    "tests/data/text_plain/valid__utf16be_multibyte.txt":
+    "text_plain/valid__utf16be_multibyte.txt":
         "application/octet-stream",
-    "tests/data/text_plain/valid__utf32le_bom.txt":
+    "text_plain/valid__utf32le_bom.txt":
         "application/octet-stream",
-    "tests/data/text_plain/valid__utf32le_without_bom.txt":
+    "text_plain/valid__utf32le_without_bom.txt":
         "application/octet-stream",
-    "tests/data/text_plain/valid__utf32be_bom.txt":
+    "text_plain/valid__utf32be_bom.txt":
         "application/octet-stream",
-    "tests/data/text_plain/valid__utf32be_without_bom.txt":
+    "text_plain/valid__utf32be_without_bom.txt":
         "application/octet-stream",
-    "tests/data/video_MP2T/valid_.ts": "application/octet-stream",
-    "tests/data/application_x-internet-archive/valid_1.0_.arc.gz":
+    "video_MP2T/valid_.ts": "application/octet-stream",
+    "application_x-internet-archive/valid_1.0_.arc.gz":
         "application/x-gzip",
-    "tests/data/application_xhtml+xml/valid_1.0.xhtml": "text/xml",
-    "tests/data/application_warc/valid_1.0_.warc.gz": "application/x-gzip",
-    "tests/data/application_x-spss-por/valid__spss24-dot.por": "text/plain",
-    "tests/data/application_x-spss-por/valid__spss24-dates.por": "text/plain",
-    "tests/data/text_csv/valid__ascii.csv": "text/plain",
-    "tests/data/text_csv/valid__ascii_header.csv": "text/plain",
-    "tests/data/text_csv/valid__header_only.csv": "text/plain",
-    "tests/data/text_csv/valid__iso8859-15.csv": "text/plain",
-    "tests/data/text_csv/valid__utf8.csv": "text/plain",
-    "tests/data/text_xml/valid_1.0_mets_noheader.xml": "text/plain",
+    "application_xhtml+xml/valid_1.0.xhtml": "text/xml",
+    "application_warc/valid_1.0_.warc.gz": "application/x-gzip",
+    "application_x-spss-por/valid__spss24-dot.por": "text/plain",
+    "application_x-spss-por/valid__spss24-dates.por": "text/plain",
+    "text_csv/valid__ascii.csv": "text/plain",
+    "text_csv/valid__ascii_header.csv": "text/plain",
+    "text_csv/valid__header_only.csv": "text/plain",
+    "text_csv/valid__iso8859-15.csv": "text/plain",
+    "text_csv/valid__utf8.csv": "text/plain",
+    "text_xml/valid_1.0_mets_noheader.xml": "text/plain",
 }
-
 
 @pytest.mark.parametrize(
     ["filepath", "mimetype", "version"],
@@ -132,15 +133,13 @@ def test_detectors(detector_class, change_dict):
     for filename, mimetype in get_files(well_formed=True):
         detector = detector_class(filename)
         detector.detect()
-        if filename in change_dict:
-            assert detector.mimetype == change_dict[filename]
+        format_name = filename.strip(TESTPATH)
+        if format_name in change_dict:
+            assert detector.mimetype == change_dict[format_name]
         else:
-            assert detector.mimetype == mimetype, ("File {} identified as {} "
-                                                   "when {} was expected."
-                                                   "".format(filename,
-                                                             detector.mimetype,
-                                                             mimetype)
-                                                   )
+            assert detector.mimetype == mimetype, (
+                "File {} identified as {} " "when {} was expected."
+                "".format(filename, detector.mimetype, mimetype))
 
 
 @pytest.mark.parametrize(
