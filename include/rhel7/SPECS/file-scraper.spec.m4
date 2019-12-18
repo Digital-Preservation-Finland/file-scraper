@@ -19,7 +19,7 @@ URL:            http://www.csc.fi
 Source0:        %{file_prefix}-v%{file_version}%{?file_release_tag}-%{file_build_number}-g%{file_commit_ref}.%{file_ext}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
-Requires:       python python2-pymediainfo python-pillow python-magic python-opf-fido
+Requires:       python python2-pymediainfo python-pillow python-magic python-opf-fido veraPDF
 Requires:       python-wand >= 0.5.1
 BuildRequires:  python-setuptools ImageMagick libmediainfo
 Conflicts:      file-scraper-full < %{version}-%{release}, file-scraper-full > %{version}-%{release}
