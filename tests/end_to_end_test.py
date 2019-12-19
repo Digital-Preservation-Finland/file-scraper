@@ -51,6 +51,8 @@ UNAV_ELEMENTS = {
     "tests/data/video_mpeg/valid_2.m2v": ["codec_creator_app_version",
                                           "codec_creator_app"],
     "tests/data/audio_x-wav/valid__wav.wav": ["version"],
+    "tests/data/application_x-spss-por/valid__spss24-dot.por": ["version"],
+    "tests/data/application_x-spss-por/valid.por": ["version"],
 }
 
 # These are actually valid with another mimetype or version
@@ -73,7 +75,7 @@ IGNORE_VALID = ["tests/data/text_xml/valid_1.0_xsd.xml",
                 "tests/data/text_xml/valid_1.0_local_xsd.xml",
                 "tests/data/text_xml/valid_1.0_catalog.xml"]
 
-# Ignore these we know that warc, arc and dpx files are not currently
+# Ignore these we know that warc, arc, por and dpx files are not currently
 # supported for full metadata scraping
 IGNORE_FOR_METADATA = IGNORE_VALID + [
     "tests/data/application_warc/valid_0.17.warc",
@@ -82,7 +84,10 @@ IGNORE_FOR_METADATA = IGNORE_VALID + [
     "tests/data/application_warc/valid_1.0_.warc.gz",
     "tests/data/application_x-internet-archive/valid_1.0.arc",
     "tests/data/application_x-internet-archive/valid_1.0_.arc.gz",
-    "tests/data/image_x-dpx/valid_2.0.dpx"]
+    "tests/data/image_x-dpx/valid_2.0.dpx",
+    "tests/data/application_x-spss-por/valid__spss24-dot.por",
+    "tests/data/application_x-spss-por/valid.por",
+]
 
 # These invalid files are recognized as application/gzip
 DIFFERENT_MIMETYPE_INVALID = {
