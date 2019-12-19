@@ -40,7 +40,10 @@ CHANGE_MAGIC = {
     "tests/data/application_x-internet-archive/valid_1.0_.arc.gz":
         "application/x-gzip",
     "tests/data/application_xhtml+xml/valid_1.0.xhtml": "text/xml",
-    "tests/data/application_warc/valid_1.0_.warc.gz": "application/x-gzip"}
+    "tests/data/application_warc/valid_1.0_.warc.gz": "application/x-gzip",
+    "tests/data/application_x-spss-por/valid__spss24-dot.por": "text/plain",
+    "tests/data/application_x-spss-por/valid.por": "text/plain",
+}
 
 
 @pytest.mark.parametrize(
