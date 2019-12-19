@@ -38,6 +38,11 @@ MIMETYPE = "application/x-spss-por"
             "purpose": "Test valid file.",
             "stdout_part": "File conversion was succesful.",
             "stderr_part": ""}),
+        ("valid__spss24-dot.por", {
+            "purpose": "Test valid file that uses the newer standard (used by "
+                       "e.g. SPSS 24) for DOT data type..",
+            "stdout_part": "File conversion was succesful.",
+            "stderr_part": ""}),
         ("invalid__wrong_spss_format.sav", {
             "purpose": "Test wrong format.",
             "stdout_part": "",
