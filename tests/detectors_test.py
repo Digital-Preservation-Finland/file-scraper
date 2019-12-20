@@ -48,7 +48,7 @@ CHANGE_MAGIC = {
     "tests/data/application_xhtml+xml/valid_1.0.xhtml": "text/xml",
     "tests/data/application_warc/valid_1.0_.warc.gz": "application/x-gzip",
     "tests/data/application_x-spss-por/valid__spss24-dot.por": "text/plain",
-    "tests/data/application_x-spss-por/valid.por": "text/plain",
+    "tests/data/application_x-spss-por/valid__spss24-dates.por": "text/plain",
     "tests/data/text_csv/valid__ascii.csv": "text/plain",
     "tests/data/text_csv/valid__ascii_header.csv": "text/plain",
     "tests/data/text_csv/valid__header_only.csv": "text/plain",
