@@ -9,6 +9,8 @@ import six
 from file_scraper.base import BaseScraper
 from file_scraper.csv.csv_model import CsvMeta
 
+MODE = 't' if six.PY3 else 'b'
+
 
 class CsvScraper(BaseScraper):
     """Scraper for CSV files."""
@@ -40,7 +42,7 @@ class CsvScraper(BaseScraper):
         fields = self._params.get("fields", [])
         first_line = None
         try:
-            with io_open(self.filename, "rt") as csvfile:
+            with io_open(self.filename, "r"+MODE) as csvfile:
                 try:
                     reader = csv.reader(csvfile)
                     csvfile.seek(0)

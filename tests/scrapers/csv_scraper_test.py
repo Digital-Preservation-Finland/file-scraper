@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 """
 Tests for Csv scraper
 
@@ -40,18 +42,21 @@ PDF_PATH = os.path.join(
     'tests/data/application_pdf/valid_1.4.pdf')
 
 VALID_CSV = (
-    b'''1997,Ford,E350,"ac, abs, moon",3000.00\n'''
-    b'''1999,Chevy,"Venture ""Extended Edition""","",4900.00\n'''
-    b'''1999,Chevy,"Venture ""Extended Edition, Very Large""",,5000.00\n'''
-    b'''1996,Jeep,Grand Cherokee,"MUST SELL!\n'''
-    b'''air, moon roof, loaded",4799.00\n''')
+    '''1997,Ford,E350,"ac, abs, moon",3000.00\n'''
+    '''1999,Chevy,"Venture ""Extended Edition""","",4900.00\n'''
+    '''1999,Chevy,"Venture ""Extended Edition, Very Large""",,5000.00\n'''
+    '''1996,Jeep,Grand Cherokee,"MUST SELL!\n'''
+    '''air, moon roof, loaded",4799.00\n''')
 
-HEADER = b'year,brand,model,detail,other\n'
+HEADER = 'year,brand,model,detail,other\n'
 
 VALID_WITH_HEADER = HEADER + VALID_CSV
 
 MISSING_END_QUOTE = VALID_CSV + \
-                    b'1999,Chevy,"Venture ""Extended Edition"","",4900.00\n'
+    '1999,Chevy,"Venture ""Extended Edition"","",4900.00\n'
+
+NON_ASCII_CHARS = HEADER + \
+    'air, möon roof, loadëd",4799.00\n'
 
 
 # pylint: disable=too-many-arguments
@@ -166,7 +171,19 @@ MISSING_END_QUOTE = VALID_CSV + \
                             'delimiter': ';',
                             'separator': '\n',
                             'first_line': ['year,brand,model,detail,other']}}},
-         'invalid__', ['year', 'brand', 'model', 'detail', 'other'], {})
+         'invalid__', ['year', 'brand', 'model', 'detail', 'other'], {}),
+        (NON_ASCII_CHARS, {
+            'purpose': 'Non-ASCII characters',
+            'stdout_part': 'successfully',
+            'stderr_part': '',
+            'streams': {0: {'stream_type': 'text',
+                            'index': 0,
+                            'mimetype': MIMETYPE,
+                            'version': '(:unap)',
+                            'delimiter': ';',
+                            'separator': '\n',
+                            'first_line': ['year,brand,model,detail,other']}}},
+         'valid__', ['year,brand,model,detail,other'], {})
     ]
 )
 def test_scraper(testpath, csv_text, result_dict, prefix, header,
@@ -180,7 +197,7 @@ def test_scraper(testpath, csv_text, result_dict, prefix, header,
     """
 
     with open(os.path.join(testpath, '%s.csv' % prefix), 'wb') as outfile:
-        outfile.write(csv_text)
+        outfile.write(csv_text.encode(encoding='utf-8'))
 
     mimetype = result_dict['streams'][0]['mimetype']
     version = result_dict['streams'][0]['version']
@@ -202,7 +219,6 @@ def test_scraper(testpath, csv_text, result_dict, prefix, header,
     scraper.scrape_file()
 
     evaluate_scraper(scraper, correct)
-# pylint: enable=too-many-arguments
 
 
 def test_pdf_as_csv():
@@ -218,7 +234,7 @@ def test_pdf_as_csv():
 
 def test_no_parameters(testpath, evaluate_scraper):
     """Test scraper without separate parameters."""
-    with open(os.path.join(testpath, 'valid__.csv'), 'wb') as outfile:
+    with open(os.path.join(testpath, 'valid__.csv'), 'wt') as outfile:
         outfile.write(VALID_CSV)
 
     scraper = CsvScraper(outfile.name)
@@ -267,7 +283,7 @@ def test_nonexistent_file():
 
 def test_no_wellformed(testpath):
     """Test scraper without well-formed check."""
-    with open(os.path.join(testpath, 'valid__.csv'), 'wb') as outfile:
+    with open(os.path.join(testpath, 'valid__.csv'), 'wt') as outfile:
         outfile.write(VALID_CSV)
 
     scraper = CsvScraper(outfile.name, False)
