@@ -31,21 +31,22 @@ class Scraper(object):
         self.info = None
         self._params = kwargs
         self._scraper_results = []
-        self._given_mimetype = self._params.get("mimetype", None)
-        self._given_version = self._params.get("version", None)
+        self._predefined_mimetype = self._params.get("mimetype", None)
+        self._predefined_version = self._params.get("version", None)
 
     def _identify(self):
         """Identify file format and version."""
         self.info = {}
+        _mime = self._predefined_mimetype
+        _version = self._predefined_version
         for detector in iter_detectors():
-            tool = detector(self.filename, self._given_mimetype,
-                            self._given_version)
+            tool = detector(self.filename, _mime, _version)
             self._update_filetype(tool)
 
         # Unless version is given by the user, PDF files should be scrutinized
         # further to determine if they are PDF/A
-        if (self.mimetype == "application/pdf" and
-                not (self._given_mimetype and self._given_version)):
+        if (self._predefined_mimetype == "application/pdf" and
+                not (self._predefined_version)):
             vera_detector = VerapdfDetector(self.filename)
             self._update_filetype(vera_detector)
 
@@ -66,17 +67,17 @@ class Scraper(object):
         tool.detect()
         self.info[len(self.info)] = tool.info
         important = tool.get_important()
-        if self.mimetype in LOSE:
-            self.mimetype = tool.mimetype
-        if self.mimetype == tool.mimetype and \
-                self.version in LOSE:
-            self.version = tool.version
+        if self._predefined_mimetype in LOSE:
+            self._predefined_mimetype = tool.mimetype
+        if self._predefined_mimetype == tool.mimetype and \
+                self._predefined_version in LOSE:
+            self._predefined_version = tool.version
         if "mimetype" in important and \
                 important["mimetype"] is not None:
-            self.mimetype = important["mimetype"]
+            self._predefined_mimetype = important["mimetype"]
         if "version" in important and \
                 important["version"] is not None:
-            self.version = important["version"]
+            self._predefined_version = important["version"]
 
     def _scrape_file(self, scraper):
         """Scrape with the given scraper.
@@ -108,14 +109,16 @@ class Scraper(object):
         Ideally the MIME type and version from the scraper are used, but if
         they are not available, values supplied by the detector are used.
         """
-        if self.streams[0]["mimetype"] not in LOSE or not self.mimetype:
+        if self.streams[0]["mimetype"] not in LOSE or not self._predefined_mimetype:
             self.mimetype = self.streams[0]["mimetype"]
         else:
-            self.streams[0]["mimetype"] = self.mimetype
-        if self.streams[0]["version"] not in LOSE or not self.version:
+            self.streams[0]["mimetype"] = self._predefined_mimetype
+            self.mimetype = self._predefined_mimetype
+        if self.streams[0]["version"] not in LOSE or not self._predefined_version:
             self.version = self.streams[0]["version"]
-        elif self.version:
-            self.streams[0]["version"] = self.version
+        elif self._predefined_version:
+            self.streams[0]["version"] = self._predefined_version
+            self.version = self._predefined_version
 
     def scrape(self, check_wellformed=True):
         """Scrape file and collect metadata.
@@ -124,15 +127,14 @@ class Scraper(object):
         self.detect_filetype()
 
         # File not found or MIME type could not be determined
-        if not self.mimetype:
+        if not self._predefined_mimetype:
             self.streams = {}
             return
 
-        self._params["mimetype_guess"] = self.mimetype
         for scraper_class in iter_scrapers(
-                mimetype=self.mimetype, version=self.version,
+                mimetype=self._predefined_mimetype, version=self._predefined_version,
                 check_wellformed=check_wellformed, params=self._params):
-            scraper = scraper_class(self.filename, check_wellformed,
+            scraper = scraper_class(self.filename, self._predefined_mimetype, check_wellformed,
                                     self._params)
             self._scrape_file(scraper)
         self.streams = generate_metadata_dict(self._scraper_results, LOSE)
@@ -156,8 +158,10 @@ class Scraper(object):
         self.streams = None
         self.info = {}
         self.well_formed = None
+        self._predefined_mimetype = self._params.get("mimetype", None)
+        self._predefined_version = self._params.get("version", None)
 
-        file_exists = FileExists(self.filename, None)
+        file_exists = FileExists(self.filename, None, None)
         self._scrape_file(file_exists)
 
         if file_exists.well_formed is False:

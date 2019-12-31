@@ -44,7 +44,7 @@ class XmllintScraper(BaseScraper):
     _supported_metadata = [XmllintMeta]
     _only_wellformed = True  # Only well-formed check
 
-    def __init__(self, filename, check_wellformed=True, params=None):
+    def __init__(self, filename, mimetype, check_wellformed=True, params=None):
         """
         Initialize scraper.
 
@@ -60,7 +60,7 @@ class XmllintScraper(BaseScraper):
         self._catalogs = params.get("catalogs", True)
         self._no_network = params.get("no_network", True)
         self._catalog_path = params.get("catalog_path", None)
-        super(XmllintScraper, self).__init__(filename, check_wellformed,
+        super(XmllintScraper, self).__init__(filename, mimetype, check_wellformed,
                                              params)
 
     @classmethod
@@ -272,5 +272,5 @@ class XmllintScraper(BaseScraper):
         :tree: XML element tree for the scraped file
         """
         for md_class in self._supported_metadata:
-            self.streams.append(md_class(tree, self._given_mimetype,
-                                         self._given_version))
+            if md_class.is_supported(self._mimetype):
+                self.streams.append(md_class(tree))

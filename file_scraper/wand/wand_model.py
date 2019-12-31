@@ -17,14 +17,14 @@ class WandImageMeta(BaseMeta):
                   "image/gif": []}
     _allow_versions = True
 
-    def __init__(self, image, mimetype=None, version=None):
+    def __init__(self, image):
         """
         Initialize the metadata model.
 
         :image: Wand SingleImage object for which the metadata is collected
         """
         self._image = image
-        super(WandImageMeta, self).__init__(mimetype, version)
+        super(WandImageMeta, self).__init__()
 
     @metadata()
     def index(self):
@@ -34,8 +34,6 @@ class WandImageMeta(BaseMeta):
     @metadata()
     def mimetype(self):
         """Return the MIME type of the image."""
-        if self._given_mimetype:
-            return self._given_mimetype
         return self._image.container.mimetype
 
     @metadata()

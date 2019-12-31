@@ -19,7 +19,7 @@ class SchematronScraper(BaseScraper):
     _supported_metadata = [SchematronMeta]
     _only_wellformed = True
 
-    def __init__(self, filename, check_wellformed=True, params=None):
+    def __init__(self, filename, mimetype, check_wellformed=True, params=None):
         """
         Initialize instance.
 
@@ -38,7 +38,7 @@ class SchematronScraper(BaseScraper):
         self._returncode = None
         self._schematron_file = params.get("schematron", None)
         self._extra_hash = params.get("extra_hash", None)
-        super(SchematronScraper, self).__init__(filename, check_wellformed,
+        super(SchematronScraper, self).__init__(filename, mimetype, check_wellformed,
                                                 params)
 
     @classmethod
@@ -103,8 +103,8 @@ class SchematronScraper(BaseScraper):
             self._messages.append(shell.stdout)
 
         for md_class in self._supported_metadata:
-            self.streams.append(md_class(self._given_mimetype,
-                                         self._given_version))
+            if md_class.is_supported(self._mimetype):
+                self.streams.append(md_class())
 
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)
 

@@ -11,14 +11,11 @@ from file_scraper.dummy.dummy_model import DummyMeta
 class ScraperNotFound(BaseScraper):
     """Scraper for the case where scraper was not found."""
 
-    _supported_metadata = [DummyMeta]
-
     def scrape_file(self):
         """No need to scrape anything, just collect."""
         self._messages.append("Proper scraper was not found. "
                               "The file was not analyzed.")
-        self.streams.append(DummyMeta(self._given_mimetype,
-                                      self._given_version))
+        self.streams.append(DummyMeta(errors=self._errors))
 
     @property
     def well_formed(self):
@@ -28,8 +25,6 @@ class ScraperNotFound(BaseScraper):
 
 class FileExists(BaseScraper):
     """Scraper for the case where file was not found."""
-
-    _supported_metadata = [DummyMeta]
 
     def scrape_file(self):
         """Check if file exists."""
@@ -43,8 +38,7 @@ class FileExists(BaseScraper):
             self._errors.append(
                 "File {} does not exist.".format(decode_path(self.filename))
             )
-        self.streams.append(DummyMeta(self._given_mimetype,
-                                      self._given_version))
+        self.streams.append(DummyMeta(errors=self._errors))
 
     @property
     def well_formed(self):

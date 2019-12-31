@@ -29,10 +29,6 @@ class GhostscriptScraper(BaseScraper):
             "gs", "-o", "/dev/null", "-sDEVICE=nullpage",
             encode_path(self.filename)])
 
-        for model in self._supported_metadata:
-            self.streams.append(model(self._given_mimetype,
-                                      self._given_version))
-
         # Ghostscript may print characters which cannot be converted to UTF-8
         stdout_message = ensure_text(shell.stdout_raw, errors='replace')
         stderr_message = ensure_text(shell.stderr_raw, errors='replace')
@@ -51,6 +47,7 @@ class GhostscriptScraper(BaseScraper):
         else:
             self._messages.append("Well-Formed and valid")
 
+        self.iterate_models(errors=self._errors)
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)
 
     @property

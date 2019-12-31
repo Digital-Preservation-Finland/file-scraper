@@ -22,9 +22,6 @@ except ImportError:
 class MediainfoScraper(BaseScraper):
     """
     Scraper for scraping audio and video files using Mediainfo.
-
-    A guess of the MIME type of the scraped file must be supplied to the
-    scraper in the params dict under the key "mimetype".
     """
 
     _supported_metadata = [
@@ -41,9 +38,6 @@ class MediainfoScraper(BaseScraper):
             self._messages.append("Skipping scraper: Well-formed check not "
                                   "used.")
             return
-        if "mimetype_guess" not in self._params:
-            raise AttributeError("MediainfoScraper was not given a parameter "
-                                 "dict containing key 'mimetype_guess'.")
 
         try:
             mediainfo = MediaInfo.parse(decode_path(self.filename))
@@ -58,17 +52,12 @@ class MediainfoScraper(BaseScraper):
         else:
             self._messages.append("The file was analyzed successfully.")
 
-        mime_guess = self._choose_mimetype_guess()
-
         for index in range(len(mediainfo.tracks)):
             for md_class in self._supported_metadata:
-                if md_class.is_supported(mime_guess):
-                    md_object = md_class(mediainfo.tracks, index, mime_guess,
-                                         self._given_mimetype,
-                                         self._given_version)
-                    if not md_object.hascontainer() and index == 0:
-                        continue
-                    self.streams.append(md_object)
+                if md_class.is_supported(self._mimetype):
+                    md_object = md_class(mediainfo.tracks, index)
+                    if md_object.hascontainer() or index > 0:
+                        self.streams.append(md_object)
 
         # Files scraped with SimpleMediainfoMeta will have (:unav) MIME type,
         # but for other scrapes the tests need to be performed without allowing
@@ -105,14 +94,3 @@ class MediainfoScraper(BaseScraper):
             self._errors.append("File contains a truncated track.")
 
         return not truncated and track_found
-
-    def _choose_mimetype_guess(self):
-        """
-        Choose a value from the parameters to be used as the container type.
-
-        If MIME type is forced, the forced value is used. If MIME type is not
-        forced, the mimetype_guess from params is used.
-        """
-        if self._given_mimetype:
-            return self._given_mimetype
-        return self._params["mimetype_guess"]

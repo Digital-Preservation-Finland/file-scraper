@@ -11,22 +11,17 @@ class BaseMagicMeta(BaseMeta):
     _starttag = "version "  # Text before file format version in magic result.
     _endtag = None  # Text after file format version in magic result.
 
-    def __init__(self, magic_result, mimetype=None, version=None):
+    def __init__(self, errors, magic_result):
         """Initialize the metadata model.
 
         :magic_result: Values resulted from magic module as Python dict
-        :mimetype: Given mimetype
-        :version: Given version
         """
         self._magic_result = magic_result
-        super(BaseMagicMeta, self).__init__(mimetype=mimetype, version=version)
+        super(BaseMagicMeta, self).__init__(errors)
 
     @metadata()
     def mimetype(self):
         """Return MIME type."""
-        if self._given_mimetype:
-            return self._given_mimetype
-
         mimetype = self._magic_result['magic_mime_type']
         if mimetype in MIMETYPE_DICT:
             mimetype = MIMETYPE_DICT[mimetype]
@@ -34,9 +29,6 @@ class BaseMagicMeta(BaseMeta):
 
     @metadata()
     def version(self):
-        if self._given_mimetype and self._given_version:
-            return self._given_version
-
         magic_version = self._magic_result['magic_none']
         if magic_version is not None:
             magic_version = magic_version.split(self._starttag)[-1]
@@ -66,7 +58,7 @@ class TextMagicBaseMeta(BaseMagicMeta):
         magic_charset = self._magic_result['magic_mime_encoding']
 
         if magic_charset is None or magic_charset.upper() == "BINARY":
-            return None
+            return "(:unav)"
         if magic_charset.upper() == "US-ASCII":
             return "UTF-8"
         if magic_charset.upper() == "ISO-8859-1":
@@ -93,9 +85,6 @@ class TextFileMagicMeta(TextMagicBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        if self._given_mimetype and self._given_version:
-            return self._given_version
-
         return "(:unap)"
 
 
@@ -178,9 +167,6 @@ class HtmlFileMagicMeta(TextMagicBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        if self._given_mimetype and self._given_version:
-            return self._given_version
-
         return "(:unav)"
 
 
@@ -220,9 +206,6 @@ class OfficeFileMagicMeta(BinaryMagicBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        if self._given_mimetype and self._given_version:
-            return self._given_version
-
         return "(:unav)"
 
 
@@ -236,9 +219,6 @@ class ArcFileMagicMeta(BinaryMagicBaseMeta):
     @metadata()
     def mimetype(self):
         """Return mimetype."""
-        if self._given_mimetype:
-            return self._given_mimetype
-
         magic_mimetype = super(ArcFileMagicMeta, self).mimetype()
         if magic_mimetype == "application/x-ia-arc":
             return "application/x-internet-archive"
@@ -247,11 +227,8 @@ class ArcFileMagicMeta(BinaryMagicBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        if self._given_mimetype and self._given_version:
-            return self._given_version
-
         if self.mimetype() not in self._supported:
-            return None
+            return "(:unav)"
         version = super(ArcFileMagicMeta, self).version()
         if version == "1":
             version = "1.0"
@@ -267,11 +244,8 @@ class PngFileMagicMeta(BinaryMagicBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        if self._given_mimetype and self._given_version:
-            return self._given_version
-
         if self.mimetype() not in self._supported:
-            return None
+            return "(:unav)"
         return "1.2"
 
     @metadata()
@@ -304,12 +278,9 @@ class Jp2FileMagicMeta(BinaryMagicBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        if self._given_mimetype and self._given_version:
-            return self._given_version
-
         if self.mimetype() not in self._supported:
-            return None
-        return ""
+            return "(:unav)"
+        return "(:unap)"
 
     @metadata()
     def stream_type(self):
@@ -326,11 +297,8 @@ class TiffFileMagicMeta(BinaryMagicBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        if self._given_mimetype and self._given_version:
-            return self._given_version
-
         if self.mimetype() not in self._supported:
-            return None
+            return "(:unav)"
         return "6.0"
 
     @metadata()

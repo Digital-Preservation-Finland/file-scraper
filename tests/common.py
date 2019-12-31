@@ -29,8 +29,6 @@ class Correct(object):
     def __init__(self):
         self.filename = None
         self.purpose = None
-        self.mimetype = None
-        self.version = None
         self.streams = None
         self.stdout_part = None
         self.stderr_part = None
@@ -45,7 +43,6 @@ class Correct(object):
         were found, the mimetype in the first stream is also set in addition to
         the mimetype variable.
         """
-        self.mimetype = new_mimetype
         if self.streams:
             self.streams[0]["mimetype"] = new_mimetype
 
@@ -57,7 +54,6 @@ class Correct(object):
         were found, the version in the first stream is also set in addition to
         the version variable.
         """
-        self.version = new_version
         if self.streams:
             self.streams[0]["version"] = new_version
 
@@ -84,16 +80,13 @@ def parse_results(filename, mimetype, results, check_wellformed,
     if "streams" in results and "version" in results["streams"][0]:
         version = results["streams"][0]["version"]
     else:
-        version = words[1] if len(words) > 1 and words[1] else "(:unav)"
+        version = words[1] if len(words) > 1 and words[1] else "(:unap)"
     testfile = os.path.join(path, filename)
 
     correct = Correct()
     correct.filename = testfile
     if "purpose" in results:
         correct.purpose = results["purpose"]
-
-    correct.mimetype = mimetype
-    correct.version = version
 
     if "stdout_part" in results:
         correct.stdout_part = results["stdout_part"]
@@ -104,18 +97,25 @@ def parse_results(filename, mimetype, results, check_wellformed,
     if stream_type == "application":
         stream_type = "binary"
 
+    if "invalid" in filename:
+        correct_mime = "(:unav)"
+        correct_ver = "(:unav)"
+    else:
+        correct_mime = mimetype
+        correct_ver = version
+
     if "streams" in results:
         correct.streams = results["streams"]
-        correct.streams[0]["mimetype"] = mimetype
-        correct.streams[0]["version"] = version
+        correct.streams[0]["mimetype"] = correct_mime
+        correct.streams[0]["version"] = correct_ver
         for index, _ in enumerate(correct.streams):
             correct.streams[index]["index"] = index
         if "stream_type" not in correct.streams[0]:
             correct.streams[0]["stream_type"] = stream_type
     else:
         correct.streams = {0: {
-            "mimetype": mimetype,
-            "version": version,
+            "mimetype": correct_mime,
+            "version": correct_ver,
             "index": 0,
             "stream_type": stream_type
         }}
@@ -128,48 +128,6 @@ def parse_results(filename, mimetype, results, check_wellformed,
 
     if params is not None:
         correct.params = params
-
-    return correct
-
-
-def force_correct_filetype(filename, result_dict, filetype,
-                           allowed_mimetypes=[]):
-    """
-    Create a Correct object for comparing to a scraper with forced file type.
-
-    Initialization is done normally, but the MIME type and version are then
-    updated to the expected values read from the filetype dict.
-
-    If the MIME type was forced to a value that does not correspond to the real
-    MIME type of the file and is not whitelisted by including in the
-    allowed_mimetypes list, correct.well_formed is set to False. This
-    corresponds to a scraper having scraped an unsupported MIME type. In this
-    case, correct.streams is also set to an empty dict, meaning that if the
-    object is used with evaluate_scraper() function from tests/conftest.py,
-    the possibly scraped streams are not checked. If stream comparison is
-    desired, either this function should not be used or the checking be done
-    manually.
-
-    :filename: Name of the file, not including the 'tests/data/mime_type/' part
-    :result_dict: Result dict to be given to Correct
-    :filetype: A dict containing the expected and real file types under
-               the following keys:
-                * expected_mimetype: the expected resulting MIME type
-                * expected_version: the expected resulting version
-                * correct_mimetype: the real MIME type of the file
-    :allowed_mimetypes: A list of extra MIME types besides the correct_mimetype
-                        that should be considered well-formed.
-    """
-    correct = parse_results(filename, filetype["correct_mimetype"],
-                            result_dict, True)
-
-    correct.update_mimetype(filetype["expected_mimetype"])
-    correct.update_version(filetype["expected_version"])
-
-    if (correct.mimetype != filetype["correct_mimetype"] and
-            correct.mimetype not in allowed_mimetypes):
-        correct.well_formed = False
-        correct.streams = {}
 
     return correct
 

@@ -20,9 +20,8 @@ class JHoveScraperBase(BaseScraper):
     _supported_metadata = []
     _jhove_module = None
     _only_wellformed = True
-    _force_metadata_use = False  # Skip checking if metadata model is supported
 
-    def __init__(self, filename, check_wellformed=True, params=None):
+    def __init__(self, filename, mimetype, check_wellformed=True, params=None):
         """
         Initialize JHove base scarper.
 
@@ -32,8 +31,9 @@ class JHoveScraperBase(BaseScraper):
         :params: Extra parameters needed for the scraper
         """
         self._report = None  # JHove report
-        super(JHoveScraperBase, self).__init__(filename, check_wellformed,
-                                               params)
+        super(JHoveScraperBase, self).__init__(filename=filename, mimetype=mimetype,
+                                               check_wellformed=check_wellformed,
+                                               params=params)
 
     def scrape_file(self):
         """Run JHove command and store XML output to self.report."""
@@ -59,22 +59,7 @@ class JHoveScraperBase(BaseScraper):
             self._errors.append(shell.stdout)
             self._errors.append(shell.stderr)
 
-        # If the MIME type is forced, use that, otherwise scrape the MIME type
-        if self._given_mimetype:
-            mimetype = self._given_mimetype
-        else:
-            mimetype = get_field(self._report, "mimeType")
-
-        if mimetype == "text/xml":  # XML MIME type has to be set manually
-            mimetype = "application/xhtml+xml"
-        elif mimetype is not None and "audio/vnd.wave" in mimetype:  # wav also
-            mimetype = "audio/x-wav"
-
-        for md_class in self._supported_metadata:
-            if md_class.is_supported(mimetype) or self._force_metadata_use:
-                self.streams.append(md_class(self._report, self._errors,
-                                             self._given_mimetype,
-                                             self._given_version))
+        self.iterate_models(errors=self._errors, report=self._report)
 
         self._check_supported(allow_unav_version=True)
 
@@ -158,10 +143,19 @@ class JHoveUtf8Scraper(JHoveScraperBase):
     """
     _jhove_module = "UTF8-hul"
     _supported_metadata = [JHoveUtf8Meta]
-    _force_metadata_use = True
 
     def _check_supported(self, allow_unav_mime=False,
                          allow_unav_version=False,
                          allow_unap_version=False):
         """Do nothing: we dont care about the mimetype or version."""
         pass
+
+    def iterate_models(self, **kwargs):
+        """
+        Iterate Scraper models and create streams
+
+        We need to override this since _supported attribute is empty and
+        the scraper is run differenty.
+        """
+        for md_class in self._supported_metadata:
+            self.streams.append(md_class(**kwargs))

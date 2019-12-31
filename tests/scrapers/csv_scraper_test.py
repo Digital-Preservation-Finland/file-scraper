@@ -62,50 +62,6 @@ TEST_DATA_PATH = "tests/data/text_csv"
                                            "ac, abs, moon",
                                            "3000.00"]}}},
          None, {}),
-        ("valid__ascii.csv", {
-            "purpose": "Test forcing the correct MIME type.",
-            "stdout_part": "successfully",
-            "stderr_part": "",
-            "streams": {0: {"stream_type": "text",
-                            "index": 0,
-                            "mimetype": MIMETYPE,
-                            "version": "(:unap)",
-                            "delimiter": ",",
-                            "separator": "\n",
-                            "first_line": ["1997", "Ford", "E350",
-                                           "ac, abs, moon",
-                                           "3000.00"]}}},
-         None, {"mimetype": MIMETYPE}),
-        ("valid__ascii.csv", {
-            "purpose": "Test forcing other MIME type.",
-            "stdout_part": "successfully",
-            "stderr_part": "MIME type unsupported/mime with version (:unap) "
-                           "is not supported",
-            "streams": {0: {"stream_type": "text",
-                            "index": 0,
-                            "mimetype": "unsupported/mime",
-                            "version": "(:unap)",
-                            "delimiter": ",",
-                            "separator": "\n",
-                            "first_line": ["1997", "Ford", "E350",
-                                           "ac, abs, moon",
-                                           "3000.00"]}}},
-         None, {"mimetype": "unsupported/mime"}),
-        ("valid__ascii.csv", {
-            "purpose": "Test forcing MIME type and version.",
-            "stdout_part": "successfully",
-            "stderr_part": "MIME type unsupported/mime with version 99.9 is "
-                           "not supported",
-            "streams": {0: {"stream_type": "text",
-                            "index": 0,
-                            "mimetype": "unsupported/mime",
-                            "version": "99.9",
-                            "delimiter": ",",
-                            "separator": "\n",
-                            "first_line": ["1997", "Ford", "E350",
-                                           "ac, abs, moon",
-                                           "3000.00"]}}},
-         None, {"mimetype": "unsupported/mime", "version": "99.9"}),
         ("valid__ascii_header.csv", {
             "purpose": "Test valid file with header.",
             "stdout_part": "successfully",
@@ -125,8 +81,8 @@ TEST_DATA_PATH = "tests/data/text_csv"
             "stderr_part": "unexpected end of data",
             "streams": {0: {"stream_type": "text",
                             "index": 0,
-                            "mimetype": MIMETYPE,
-                            "version": "(:unap)",
+                            "mimetype": "(:unav)",
+                            "version": "(:unav)",
                             "delimiter": ",",
                             "separator": "\n",
                             "first_line": ["1997", "Ford", "E350",
@@ -152,8 +108,8 @@ TEST_DATA_PATH = "tests/data/text_csv"
             "stderr_part": "CSV not well-formed: field counts",
             "streams": {0: {"stream_type": "text",
                             "index": 0,
-                            "mimetype": MIMETYPE,
-                            "version": "(:unap)",
+                            "mimetype": "(:unav)",
+                            "version": "(:unav)",
                             "delimiter": ";",
                             "separator": "\n",
                             "first_line": ["year,brand,model,detail,other"]}}},
@@ -210,7 +166,7 @@ def test_scraper(filename, result_dict, header,
         "fields": header,
         "mimetype": "text/csv"}
     params.update(extra_params)
-    scraper = CsvScraper(correct.filename, True, params=params)
+    scraper = CsvScraper(filename=correct.filename, mimetype=MIMETYPE, params=params)
     scraper.scrape_file()
 
     evaluate_scraper(scraper, correct)
@@ -235,7 +191,7 @@ def test_first_line_charset(filename, charset):
 def test_pdf_as_csv():
     """Test CSV scraper with PDF files."""
 
-    scraper = CsvScraper(PDF_PATH)
+    scraper = CsvScraper(filename=PDF_PATH, mimetype="text/csv")
     scraper.scrape_file()
 
     assert not scraper.well_formed, scraper.messages() + scraper.errors()
@@ -267,7 +223,7 @@ def test_no_parameters(filename, evaluate_scraper):
                                                  "detail", "other"]}}},
                             True)
     correct.streams[0]["version"] = "(:unap)"
-    scraper = CsvScraper(correct.filename)
+    scraper = CsvScraper(correct.filename, mimetype="text/csv")
     scraper.scrape_file()
     evaluate_scraper(scraper, correct)
 
@@ -278,7 +234,8 @@ def test_bad_parameters():
     """
     with pytest.raises(ValueError) as err:
         # "separator" is missing from the keys
-        CsvMeta({"delimiter": ",", "fields": [], "first_line": ""})
+        CsvMeta(errors=[], params={"delimiter": ",", "fields": [],
+                                   "first_line": ""})
     assert ("CsvMeta must be given a dict containing keys" in
             six.text_type(err.value))
 
@@ -292,13 +249,15 @@ def test_empty_file():
     parameters are not given. Secondly, sniffer is skipped when parameters
     are given, but the then scraper raises exception elsewhere.
     """
-    scraper = CsvScraper("tests/data/text_csv/invalid__empty.csv")
+    scraper = CsvScraper("tests/data/text_csv/invalid__empty.csv",
+                         mimetype=MIMETYPE)
     scraper.scrape_file()
     assert partial_message_included("Could not determine delimiter",
                                     scraper.errors())
     assert not scraper.well_formed
 
     scraper = CsvScraper("tests/data/text_csv/invalid__empty.csv",
+                         mimetype=MIMETYPE,
                          params={"delimiter": ";", "separator": "CRLF"})
     scraper.scrape_file()
     assert partial_message_included("Error reading file as CSV",
@@ -310,7 +269,7 @@ def test_nonexistent_file():
     """
     Test that CsvScraper logs an error when file is not found.
     """
-    scraper = CsvScraper("nonexistent/file.csv")
+    scraper = CsvScraper(filename="nonexistent/file.csv", mimetype="text/csv")
     scraper.scrape_file()
     assert partial_message_included("Error when reading the file: ",
                                     scraper.errors())
@@ -321,8 +280,8 @@ def test_no_wellformed():
     """Test scraper without well-formed check."""
 
     test_file = os.path.join(TEST_DATA_PATH, "valid__ascii.csv")
-
-    scraper = CsvScraper(test_file, False)
+    scraper = CsvScraper(test_file, mimetype="text/csv",
+                         check_wellformed=False)
     scraper.scrape_file()
 
     assert partial_message_included("Skipping scraper", scraper.messages())

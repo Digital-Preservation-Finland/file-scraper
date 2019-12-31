@@ -34,7 +34,7 @@ class PngcheckScraper(BaseScraper):
         # This scraper does not know anything about the MIME type, so checking
         # is not useful. Just add metadata models.
         for md_class in self._supported_metadata:
-            self.streams.append(md_class(self._given_mimetype,
-                                         self._given_version))
+            if md_class.is_supported(self._mimetype):
+                self.streams.append(md_class())
 
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)

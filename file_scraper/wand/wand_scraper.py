@@ -62,11 +62,8 @@ class WandScraper(BaseScraper):
         else:
             for md_class in self._supported_metadata:
                 for image in self._wandresults.sequence:
-                    if not md_class.is_supported(image.container.mimetype):
-                        continue
-                    self.streams.append(md_class(image, self._given_mimetype,
-                                                 self._given_version))
-
+                    if md_class.is_supported(image.container.mimetype):
+                        self.streams.append(md_class(image))
             self._check_supported(allow_unav_version=True)
             self._messages.append("The file was analyzed successfully.")
 

@@ -41,6 +41,8 @@ def evaluate_scraper():
             exp_scraper_cls = type(scraper).__name__
 
         for stream_index, stream_metadata in correct.streams.items():
+            assert scraper.streams, ("Empty stream list resulted, "
+                                     "possibly unexpected predefined mimetype.")
             scraped_metadata = scraper.streams[stream_index]
             for key, value in stream_metadata.items():
                 assert getattr(scraped_metadata, key)() == value, (

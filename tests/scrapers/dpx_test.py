@@ -24,8 +24,7 @@ This module tests that:
 from __future__ import unicode_literals
 
 import pytest
-from tests.common import (parse_results, force_correct_filetype,
-                          partial_message_included)
+from tests.common import (parse_results, partial_message_included)
 from file_scraper.dpx.dpx_scraper import DpxScraper
 
 MIMETYPE = "image/x-dpx"
@@ -60,66 +59,8 @@ def test_scraper(filename, result_dict, evaluate_scraper):
     """Test scraper."""
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
-    scraper = DpxScraper(correct.filename, True, correct.params)
-    scraper.scrape_file()
-
-    evaluate_scraper(scraper, correct)
-
-
-@pytest.mark.parametrize(
-    ["filename", "result_dict", "filetype"],
-    [
-        ("valid_2.0.dpx", {
-            "purpose": "Test not giving either MIME type or version.",
-            "stdout_part": "is valid",
-            "stderr_part": ""},
-         {"given_mimetype": None, "given_version": None,
-          "expected_mimetype": "image/x-dpx", "expected_version": "2.0",
-          "correct_mimetype": "image/x-dpx"}),
-        ("valid_2.0.dpx", {
-            "purpose": "Test forcing the correct MIME type.",
-            "stdout_part": "MIME type not scraped",
-            "stderr_part": ""},
-         {"given_mimetype": "image/x-dpx", "given_version": None,
-          "expected_mimetype": "image/x-dpx", "expected_version": "2.0",
-          "correct_mimetype": "image/x-dpx"}),
-        ("valid_2.0.dpx", {
-            "purpose": "Test forcing supported MIME type and version.",
-            "stdout_part": "MIME type and version not scraped",
-            "stderr_part": ""},
-         {"given_mimetype": "image/x-dpx", "given_version": "2.0",
-          "expected_mimetype": "image/x-dpx", "expected_version": "2.0",
-          "correct_mimetype": "image/x-dpx"}),
-        ("valid_2.0.dpx", {
-            "purpose": "Test forcing unsupported MIME type.",
-            "stdout_part": "MIME type not scraped",
-            "stderr_part": "is not supported"},
-         {"given_mimetype": "forced/mimetype", "given_version": None,
-          "expected_mimetype": "forced/mimetype", "expected_version": "2.0",
-          "correct_mimetype": "image/x-dpx"}),
-        ("valid_2.0.dpx", {
-            "purpose": "Test forcing MIME type and version.",
-            "stdout_part": "MIME type and version not scraped",
-            "stderr_part": "is not supported"},
-         {"given_mimetype": "forced/mimetype", "given_version": "99.9",
-          "expected_mimetype": "forced/mimetype", "expected_version": "99.9",
-          "correct_mimetype": "image/x-dpx"}),
-        ("valid_2.0.dpx", {
-            "purpose": "Test forcing only version (no effect).",
-            "stdout_part": "is valid",
-            "stderr_part": ""},
-         {"given_mimetype": None, "given_version": "99.9",
-          "expected_mimetype": "image/x-dpx", "expected_version": "2.0",
-          "correct_mimetype": "image/x-dpx"}),
-    ]
-)
-def test_forcing_filetype(filename, result_dict, filetype, evaluate_scraper):
-    """Test forcing scraper to use a given MIME type and/or version."""
-    correct = force_correct_filetype(filename, result_dict, filetype)
-
-    params = {"mimetype": filetype["given_mimetype"],
-              "version": filetype["given_version"]}
-    scraper = DpxScraper(correct.filename, True, params)
+    scraper = DpxScraper(filename=correct.filename, mimetype=MIMETYPE,
+                         params=correct.params)
     scraper.scrape_file()
 
     evaluate_scraper(scraper, correct)
@@ -127,7 +68,8 @@ def test_forcing_filetype(filename, result_dict, filetype, evaluate_scraper):
 
 def test_no_wellformed():
     """Test scraper without well-formed check."""
-    scraper = DpxScraper("tests/data/image_x-dpx/valid_2.0.dpx", False)
+    scraper = DpxScraper(filename="tests/data/image_x-dpx/valid_2.0.dpx",
+                         mimetype=MIMETYPE, check_wellformed=False)
     scraper.scrape_file()
     for stream in scraper.streams:
         assert stream.version() == "2.0"

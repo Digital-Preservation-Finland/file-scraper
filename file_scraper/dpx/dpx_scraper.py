@@ -32,13 +32,8 @@ class DpxScraper(BaseScraper):
         if shell.stdout:
             self._messages += list(shell.stdout.splitlines())
 
-        for md_class in self._supported_metadata:
-            self.streams.append(
-                md_class(
-                    mimetype=self._given_mimetype,
-                    version=self._given_version,
-                    info=self.info(),
-                    filename=self.filename))
+        self.iterate_models(errors=self._errors, messages=self._messages,
+                            filename=self.filename)
 
         self._check_supported()
 

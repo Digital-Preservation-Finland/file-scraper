@@ -31,23 +31,6 @@ class FFMpegScraper(BaseScraper):
     # Supported mimetypes
     _supported_metadata = [FFMpegSimpleMeta, FFMpegMeta]
 
-    def __init__(self, filename, check_wellformed=True, params=None):
-        """
-        Store mimetype_guess in addition to the normal init process.
-
-        If MIME type is forced ("mimetype" in params), it is used over
-        "mimetype_guess" possibly present in the parameters. At least one of
-        the two must be given or a KeyError is raised.
-        """
-        if "mimetype" in params and params["mimetype"]:
-            self._mimetype_guess = params["mimetype"]
-        elif "mimetype_guess" in params:
-            self._mimetype_guess = params["mimetype_guess"]
-        else:
-            raise KeyError("FFMpegScraper must be given 'mimetype_guess' or"
-                           "'mimetype' in params")
-        super(FFMpegScraper, self).__init__(filename, check_wellformed, params)
-
     def scrape_file(self):
         """Scrape A/V files."""
         if not self._check_wellformed and self._only_wellformed:
@@ -90,14 +73,12 @@ class FFMpegScraper(BaseScraper):
             if not container and index == len(streams) - 1:
                 break
 
-            for md_class in self._supported_metadata:
-                if md_class.is_supported(self._mimetype_guess):
-                    stream = md_class(probe_results, index,
-                                      self._given_mimetype,
-                                      self._given_version)
-                    self.streams.append(stream)
-                    if stream.hascontainer():
-                        container = True
+            self.iterate_models(errors=self._errors, probe_results=probe_results,
+                                index=index)
+
+            for stream in self.streams:
+                if stream.hascontainer():
+                    container = True
 
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)
 

@@ -51,8 +51,7 @@ from __future__ import unicode_literals
 import pytest
 
 from file_scraper.ffmpeg.ffmpeg_scraper import FFMpegScraper
-from tests.common import (parse_results, force_correct_filetype,
-                          partial_message_included)
+from tests.common import (parse_results, partial_message_included)
 from tests.scrapers.stream_dicts import (
     AVI_CONTAINER,
     AVI_JPEG2000_VIDEO,
@@ -114,8 +113,7 @@ def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
     correct = parse_results(filename, mimetype, result_dict, True)
     correct.streams.update(NO_METADATA)
 
-    scraper = FFMpegScraper(correct.filename, True,
-                            params={"mimetype_guess": mimetype})
+    scraper = FFMpegScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
 
     evaluate_scraper(scraper, correct)
@@ -176,8 +174,7 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
     """Test FFMpegScraper with valid files when metadata is scraped."""
     correct = parse_results(filename, mimetype, result_dict, True)
 
-    scraper = FFMpegScraper(correct.filename, True,
-                            params={"mimetype_guess": mimetype})
+    scraper = FFMpegScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
     # TODO remove these when mxf testing is added and made functional
 #    from file_scraper.utils import generate_metadata_dict
@@ -193,8 +190,8 @@ def test_no_wellformed():
     """
     Test that scraping is also done without well-formedness check.
     """
-    scraper = FFMpegScraper("tests/data/video_avi/valid__JPEG2000.avi", False,
-                            {"mimetype_guess": "video/avi"})
+    scraper = FFMpegScraper(filename="tests/data/video_avi/valid__JPEG2000.avi",
+                            mimetype="video/avi", check_wellformed=False)
     scraper.scrape_file()
     assert partial_message_included("The file was analyzed successfully.",
                                     scraper.messages())
@@ -298,8 +295,8 @@ def test_ffmpeg_scraper_invalid(filename, result_dict, mimetype,
     correct = parse_results(filename, mimetype, result_dict, True)
     correct.streams = {}
 
-    scraper = FFMpegScraper(correct.filename, True,
-                            {"mimetype_guess": "audio/mpeg"})
+    scraper = FFMpegScraper(filename=correct.filename,
+                            mimetype="audio/mpeg")
     scraper.scrape_file()
 
     evaluate_scraper(scraper, correct)
@@ -323,69 +320,3 @@ def test_is_supported_mpeg(mime, ver):
     assert FFMpegScraper.is_supported(mime, ver, False)
     assert FFMpegScraper.is_supported(mime, "foo", True)
     assert not FFMpegScraper.is_supported("foo", ver, True)
-
-
-@pytest.mark.parametrize(
-    ["filename", "result_dict", "filetype"],
-    [
-        ("valid_4_ffv1.mkv", {
-            "purpose": "Test not forcing either MIME type or version",
-            "stdout_part": "The file was analyzed successfully",
-            "stderr_part": ""},
-         {"given_mimetype": None, "given_version": None,
-          "expected_mimetype": "video/x-matroska",
-          "expected_version": "(:unav)",
-          "correct_mimetype": "video/x-matroska"}),
-        ("valid_4_ffv1.mkv", {
-            "purpose": "Test forcing a supported MIME type",
-            "stdout_part": "MIME type not scraped",
-            "stderr_part": ""},
-         {"given_mimetype": "other/mimetype", "given_version": None,
-          "expected_mimetype": "other/mimetype",
-          "expected_version": "(:unav)",
-          "correct_mimetype": "video/x-matroska"}),
-        ("valid_4_ffv1.mkv", {
-            "purpose": "Test forcing a supported MIME type and version",
-            "stdout_part": "MIME type and version not scraped",
-            "stderr_part": ""},
-         {"given_mimetype": "video/x-matroska", "given_version": "4",
-          "expected_mimetype": "video/x-matroska", "expected_version": "4",
-          "correct_mimetype": "video/x-matroska"}),
-         # TODO enable test when there's support
-#        ("valid_4_ffv1.mkv", {
-#            "purpose": "Test forcing unsupported MIME type",
-#            "stdout_part": "MIME type not scraped",
-#            "stderr_part": "is not supported"},
-#         {"given_mimetype": "custom/mime", "given_version": None,
-#          "expected_mimetype": "custom/mime", "expected_version": "(:unav)",
-#          "correct_mimetype": "video/x-matroska"}),
-        ("valid_4_ffv1.mkv", {
-            "purpose": "Test forcing MIME type and version",
-            "stdout_part": "MIME type and version not scraped",
-            "stderr_part": ""},
-         {"given_mimetype": "custom/mime", "given_version": "99.9",
-          "expected_mimetype": "custom/mime", "expected_version": "99.9",
-          "correct_mimetype": "video/x-matroska"}),
-        ("valid_4_ffv1.mkv", {
-            "purpose": "Test forcing version (should have no effect)",
-            "stdout_part": "The file was analyzed successfully",
-            "stderr_part": ""},
-         {"given_mimetype": None, "given_version": "99.9",
-          "expected_mimetype": "video/x-matroska",
-          "expected_version": "(:unav)",
-          "correct_mimetype": "video/x-matroska"}),
-    ]
-)
-def test_forcing_filetype(filename, result_dict, filetype, evaluate_scraper):
-    """Test forcing scraper to use a given MIME type and/or version."""
-    correct = force_correct_filetype(filename, result_dict, filetype)
-    if correct.streams:
-        correct.streams[0]["stream_type"] = "(:unav)"
-
-    params = {"mimetype": filetype["given_mimetype"],
-              "version": filetype["given_version"],
-              "mimetype_guess": filetype["correct_mimetype"]}
-    scraper = FFMpegScraper(correct.filename, True, params)
-    scraper.scrape_file()
-
-    evaluate_scraper(scraper, correct)

@@ -22,7 +22,7 @@ class GzipWarctoolsMeta(BaseWarctoolsMeta):
     _supported = {"application/gzip": []}  # Supported mimetype
     _allow_versions = True  # Allow any version
 
-    def __init__(self, metadata_model, mimetype=None, version=None):
+    def __init__(self, metadata_model):
         """
         Initialize the metadata model
 
@@ -30,23 +30,16 @@ class GzipWarctoolsMeta(BaseWarctoolsMeta):
                          representing the extracted warc or arc.
         """
         self._metadata_model = metadata_model
-        super(GzipWarctoolsMeta, self).__init__(mimetype=mimetype,
-                                                version=version)
+        super(GzipWarctoolsMeta, self).__init__()
 
     @metadata()
     def mimetype(self):
         """Return MIME type."""
-        if self._given_mimetype:
-            return self._given_mimetype
-
         return self._metadata_model[0].mimetype()
 
     @metadata()
     def version(self):
         """Return the version."""
-        if self._given_mimetype and self._given_version:
-            return self._given_version
-
         return self._metadata_model[0].version()
 
 
@@ -57,29 +50,18 @@ class WarcWarctoolsMeta(BaseWarctoolsMeta):
     _supported = {"application/warc": ["0.17", "0.18", "1.0"]}
     _allow_versions = True  # Allow any version
 
-    def __init__(self, line, mimetype=None, version=None):
+    def __init__(self, line):
         """
         Initialize the metadata model.
 
         :line: The first line of the warc archive.
         """
         self._line = line
-        super(WarcWarctoolsMeta, self).__init__(mimetype=mimetype,
-                                                version=version)
-
-    @metadata()
-    def mimetype(self):
-        """Return MIME type."""
-        if self._given_mimetype:
-            return self._given_mimetype
-        return "application/warc"
+        super(WarcWarctoolsMeta, self).__init__()
 
     @metadata()
     def version(self):
         """Return the version."""
-        if self._given_mimetype and self._given_version:
-            return self._given_version
-
         if len(self._line.split(b"WARC/", 1)) > 1:
             return ensure_text(
                 self._line.split(b"WARC/", 1)[1].split(b" ")[0].strip())
@@ -92,10 +74,3 @@ class ArcWarctoolsMeta(BaseWarctoolsMeta):
     # Supported mimetype and varsions
     _supported = {"application/x-internet-archive": ["1.0", "1.1"]}
     _allow_versions = True  # Allow any version
-
-    @metadata()
-    def mimetype(self):
-        """Return MIME type."""
-        if self._given_mimetype:
-            return self._given_mimetype
-        return "application/x-internet-archive"

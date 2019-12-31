@@ -53,8 +53,13 @@ class LxmlScraper(BaseScraper):
             tree = etree.parse(file_, parser)
 
         for md_class in self._supported_metadata:
-            md_model = md_class(tree, self._given_mimetype,
-                                self._given_version)
+
+            if not md_class.is_supported(self._predefined_mimetype,
+                                         self._predefined_version,
+                                         self._params):
+                continue
+
+            md_model = md_class(errors=self._errors, tree=tree)
 
             # It is possible that for files that are not well-formed, trying
             # to use tree.docinfo causes an AssertionError. In that case we

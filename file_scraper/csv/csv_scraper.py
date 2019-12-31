@@ -98,15 +98,12 @@ class CsvScraper(BaseScraper):
             if csvfile:
                 csvfile.close()
 
-        # add metadata
-        for md_class in self._supported_metadata:
-            self.streams.append(md_class({"delimiter": delimiter,
-                                          "separator": separator,
-                                          "fields": fields,
-                                          "first_line": first_line},
-                                         self._given_mimetype,
-                                         self._given_version))
-
+        self.iterate_models(errors=self._errors,
+                            params={"delimiter": delimiter,
+                                    "separator": separator,
+                                    "fields": fields,
+                                    "first_line": first_line})
+        
         self._check_supported(allow_unap_version=True)
 
     def _open_csv_file(self, charset):

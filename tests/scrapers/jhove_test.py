@@ -104,42 +104,40 @@ from file_scraper.jhove.jhove_scraper import (JHoveGifScraper,
                                               JHoveTiffScraper,
                                               JHoveUtf8Scraper,
                                               JHoveWavScraper)
-from tests.common import (parse_results, force_correct_filetype,
-                          partial_message_included)
+from tests.common import (parse_results, partial_message_included)
 
 
 @pytest.mark.parametrize(
-    ["filename", "result_dict", "get_ver"],
+    ["filename", "result_dict"],
     [
         ("valid_XXXXa.gif", {
             "purpose": "Test valid file.",
             "stdout_part": "Well-Formed and valid",
-            "stderr_part": ""}, True),
+            "stderr_part": ""}),
         ("invalid_XXXXa_broken_header.gif", {
             "purpose": "Test invalid header.",
             "stdout_part": "",
-            "stderr_part": "Invalid GIF header"}, False),
+            "stderr_part": "Invalid GIF header"}),
         ("invalid_XXXXa_truncated.gif", {
             "purpose": "Test truncated file.",
             "stdout_part": "",
-            "stderr_part": "Unknown data block type"}, True),
+            "stderr_part": "Unknown data block type"}),
         ("invalid__empty.gif", {
             "purpose": "Test empty file.",
             "stdout_part": "",
-            "stderr_part": "Invalid GIF header"}, False)
+            "stderr_part": "Invalid GIF header"})
     ]
 )
-def test_scraper_gif(filename, result_dict, get_ver, evaluate_scraper):
+def test_scraper_gif(filename, result_dict, evaluate_scraper):
     """Test gif scraping."""
     for version in ["1987", "1989"]:
         filename = filename.replace("XXXX", version)
         correct = parse_results(filename, "image/gif",
                                 result_dict, True)
-        scraper = JHoveGifScraper(correct.filename, True, correct.params)
+        correct.update_mimetype("image/gif")
+        scraper = JHoveGifScraper(filename=correct.filename,
+                                  mimetype="image/gif")
         scraper.scrape_file()
-        if not get_ver:
-            correct.version = None
-            correct.streams[0]["version"] = "(:unav)"
 
         evaluate_scraper(scraper, correct)
 
@@ -169,10 +167,10 @@ def test_scraper_tiff(filename, result_dict, evaluate_scraper):
     """Test tiff scraping."""
     correct = parse_results(filename, "image/tiff",
                             result_dict, True)
-    scraper = JHoveTiffScraper(correct.filename, True, correct.params)
+    correct.update_mimetype("image/tiff")
+    scraper = JHoveTiffScraper(filename=correct.filename,
+                               mimetype="image/tiff")
     scraper.scrape_file()
-    correct.version = "6.0"
-    correct.streams[0]["version"] = "6.0"
 
     evaluate_scraper(scraper, correct)
 
@@ -197,45 +195,49 @@ def test_scraper_tiff(filename, result_dict, evaluate_scraper):
 )
 def test_scraper_utf8(filename, result_dict, evaluate_scraper):
     """Test utf8 text file scraping."""
+<<<<<<< HEAD
     correct = parse_results(filename, "text/plain", result_dict, True,
                             {"charset": "UTF-8"})
     scraper = JHoveUtf8Scraper(correct.filename, True, correct.params)
+=======
+    correct = parse_results(filename, "text/plain",
+                            result_dict, True)
+    scraper = JHoveUtf8Scraper(filename=correct.filename,
+                               mimetype="text/plain")
+>>>>>>> KDKPAS-2113 Change mimetype forcing so that predefined mimetype is used only if scraper itself does not solve it. Some scrapers changed to meet this.
     scraper.scrape_file()
-    correct.mimetype = None
-    correct.version = None
     correct.streams[0]["mimetype"] = "(:unav)"
 
     evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
-    ["filename", "result_dict", "version"],
+    ["filename", "result_dict"],
     [
         ("valid_X.pdf", {
             "purpose": "Test valid file.",
             "stdout_part": "Well-Formed and valid",
-            "stderr_part": ""}, "X"),
+            "stderr_part": ""}),
         ("invalid_X_payload_altered.pdf", {
             "purpose": "Test payload altered file.",
             "stdout_part": "",
-            "stderr_part": "Invalid object definition"}, None),
+            "stderr_part": "Invalid object definition"}),
         ("invalid_X_removed_xref.pdf", {
             "purpose": "Test xref change.",
             "stdout_part": "",
-            "stderr_part": "Improperly nested dictionary delimiters"}, None),
+            "stderr_part": "Improperly nested dictionary delimiters"}),
     ]
 )
-def test_scraper_pdf(filename, result_dict, version, evaluate_scraper):
+def test_scraper_pdf(filename, result_dict, evaluate_scraper):
     """Test pdf scraping."""
     for ver in ["1.2", "1.3", "1.4", "1.5", "1.6", "A-1a"]:
         filename = filename.replace("X", ver)
         correct = parse_results(filename, "application/pdf",
                                 result_dict, True)
-        scraper = JHovePdfScraper(correct.filename, True, correct.params)
+        correct.update_mimetype("application/pdf")
+        scraper = JHovePdfScraper(filename=correct.filename,
+                                  mimetype="application/pdf")
         scraper.scrape_file()
-        if version in [None, "1.0"]:
-            correct.version = version
-            correct.streams[0]["version"] = version
 
         evaluate_scraper(scraper, correct)
 
@@ -243,15 +245,17 @@ def test_scraper_pdf(filename, result_dict, version, evaluate_scraper):
 def test_scraper_invalid_pdfversion():
     """Test that wrong version is detected."""
     for ver in ["1.2", "1.3", "1.4", "1.5", "1.6", "A-1a"]:
-        scraper = JHovePdfScraper("tests/data/application_pdf/"
-                                  "invalid_X_wrong_version.pdf".replace("X",
-                                                                        ver),
-                                  True)
-    scraper.scrape_file()
-    assert partial_message_included(
-        "MIME type application/pdf with version 1.0 is not supported.",
-        scraper.errors())
-    assert not scraper.well_formed
+        scraper = JHovePdfScraper(filename="tests/data/application_pdf/"
+                                           "invalid_X_wrong_version.pdf" \
+                                               .replace("X", ver),
+                                  mimetype="application/pdf")
+        scraper.scrape_file()
+        found_ver = {"1.2": "1.0", "1.3": "1.0", "1.4": "1.7", "1.5": "1.1",
+                     "1.6": "1.1", "A-1a": "1.0"}
+        assert partial_message_included(
+            "MIME type application/pdf with version {} is not supported." \
+                .format(found_ver[ver]), scraper.errors())
+        assert not scraper.well_formed
 
 
 @pytest.mark.parametrize(
@@ -279,9 +283,10 @@ def test_scraper_jpeg(filename, result_dict, evaluate_scraper):
     """Test jpeg scraping."""
     correct = parse_results(filename, "image/jpeg",
                             result_dict, True)
-    scraper = JHoveJpegScraper(correct.filename, True, correct.params)
+    correct.update_mimetype("image/jpeg")
+    scraper = JHoveJpegScraper(filename=correct.filename,
+                               mimetype="image/jpeg")
     scraper.scrape_file()
-    correct.version = "(:unav)"
     correct.streams[0]["version"] = "(:unav)"
 
     evaluate_scraper(scraper, correct)
@@ -289,133 +294,126 @@ def test_scraper_jpeg(filename, result_dict, evaluate_scraper):
 
 # pylint: disable=too-many-arguments
 @pytest.mark.parametrize(
-    ["filename", "result_dict", "mimetype", "charset", "version"],
+    ["filename", "result_dict", "mimetype", "charset"],
     [
         ("valid_4.01.html", {
             "purpose": "Test valid file with correctly specified charset.",
             "stdout_part": "Well-Formed and valid",
             "stderr_part": ""},
-         "text/html", "UTF-8", "4.01"),
+         "text/html", "UTF-8"),
         ("valid_4.01.html", {
             "purpose": "Test valid file with incorrectly specified charset.",
             "stdout_part": "",
             "inverse": True,
             "stderr_part": "Found encoding declaration UTF-8"},
-         "text/html", "ISO-8859-15", "4.01"),
+         "text/html", "ISO-8859-15"),
         ("valid_1.0.xhtml", {
             "purpose": "Test valid file.",
             "stdout_part": "Well-Formed and valid",
             "stderr_part": ""},
-         "application/xhtml+xml", "UTF-8", "1.0"),
+         "application/xhtml+xml", "UTF-8"),
         ("valid_5.0.html", {
             "purpose": "Test valid file, which is invalid for this scraper.",
             "inverse": True,
             "stdout_part": "",
             "stderr_part": "Unrecognized or missing DOCTYPE declaration"},
-         "text/html", None, None),
+         "text/html", None),
         ("invalid_4.01_illegal_tags.html", {
             "purpose": "Test illegal tag.",
             "stdout_part": "",
             "stderr_part": "Unknown tag"},
-         "text/html", None, "4.01"),
+         "text/html", None),
         ("invalid_4.01_nodoctype.html", {
             "purpose": "Test without doctype.",
             "stdout_part": "",
             "stderr_part": "Unrecognized or missing DOCTYPE declaration"},
-         "text/html", None, None),
+         "text/html", None),
         ("invalid__empty.html", {
             "purpose": "Test empty file.",
             "stdout_part": "",
             "stderr_part": "Document is empty"},
-         "text/html", None, None),
+         "text/html", None),
         ("invalid_1.0_illegal_tags.xhtml", {
             "purpose": "Test illegal tag.",
             "stdout_part": "",
             "stderr_part": "must be declared."},
-         "application/xhtml+xml", "UTF-8", "1.0"),
+         "application/xhtml+xml", "UTF-8"),
         ("invalid_1.0_missing_closing_tag.xhtml", {
             "purpose": "Test missing closing tag.",
             "stdout_part": "",
             "stderr_part": "must be terminated by the matching end-tag"},
-         "application/xhtml+xml", None, None),
+         "application/xhtml+xml", None),
         ("invalid_1.0_no_doctype.xhtml", {
             "purpose": "Test without doctype.",
             "stdout_part": "",
             "stderr_part": "Cannot find the declaration of element"},
-         "application/xhtml+xml", "UTF-8", "1.0"),
+         "application/xhtml+xml", "UTF-8"),
         ("invalid__empty.xhtml", {
             "purpose": "Test empty file.",
             "stdout_part": "",
             "stderr_part": "Document is empty"},
-         "application/xhtml+xml", None, None)
+         "application/xhtml+xml", None)
     ]
 )
-def test_scraper_html(filename, result_dict, mimetype, charset, version,
+def test_scraper_html(filename, result_dict, mimetype, charset,
                       evaluate_scraper):
     """Test html and xhtml scraping."""
     params = {"charset": charset}
     correct = parse_results(filename, mimetype, result_dict, True,
                             params)
-    scraper = JHoveHtmlScraper(correct.filename, True, correct.params)
-    scraper.scrape_file()
     correct.streams[0]["stream_type"] = "text"
-    correct.version = version
-    correct.streams[0]["version"] = version
+    if "inverse" in result_dict:
+        if result_dict["inverse"]:
+            correct.update_version("(:unav)")
     if "invalid__empty.xhtml" in filename:
-        correct.mimetype = "text/html"
         correct.streams[0]["mimetype"] = "text/html"
 
+    scraper = JHoveHtmlScraper(filename=correct.filename,
+                               mimetype=mimetype,
+                               params=correct.params)
+    scraper.scrape_file()
+    correct.streams[0]["charset"] = charset
+
     evaluate_scraper(scraper, correct)
-# pylint: enable=too-many-arguments
 
 
 @pytest.mark.parametrize(
-    ["filename", "result_dict", "version"],
+    ["filename", "result_dict"],
     [
         ("valid__wav.wav", {
             "purpose": "Test valid file.",
             "stdout_part": "Well-Formed and valid",
-            "stderr_part": ""},
-         None),
+            "stderr_part": ""}),
         ("valid_2_bwf.wav", {
             "purpose": "Test valid file.",
             "stdout_part": "Well-Formed and valid",
-            "stderr_part": ""},
-         "2"),
+            "stderr_part": ""}),
         ("invalid_2_bwf_data_bytes_missing.wav", {
             "purpose": "Test data bytes missing.",
             "stdout_part": "",
-            "stderr_part": "Invalid character in Chunk ID"},
-         None),
+            "stderr_part": "Invalid character in Chunk ID"}),
         ("invalid_2_bwf_RIFF_edited.wav", {
             "purpose": "Test edited RIFF.",
             "stdout_part": "",
-            "stderr_part": "Invalid chunk size"},
-         None),
+            "stderr_part": "Invalid chunk size"}),
         ("invalid__data_bytes_missing.wav", {
             "purpose": "Test data bytes missing.",
             "stdout_part": "",
-            "stderr_part": "Bytes missing"},
-         None),
+            "stderr_part": "Bytes missing"}),
         ("invalid__RIFF_edited.wav", {
             "purpose": "Test edited RIFF.",
             "stdout_part": "",
-            "stderr_part": "Invalid chunk size"},
-         None)
+            "stderr_part": "Invalid chunk size"})
     ]
 )
-def test_scraper_wav(filename, result_dict, version, evaluate_scraper):
+def test_scraper_wav(filename, result_dict, evaluate_scraper):
     """Test wav and bwf scraping."""
     correct = parse_results(filename, "audio/x-wav",
                             result_dict, True)
-    scraper = JHoveWavScraper(correct.filename, True, correct.params)
+    correct.update_mimetype("audio/x-wav")
+    scraper = JHoveWavScraper(filename=correct.filename,
+                              mimetype="audio/x-wav")
     scraper.scrape_file()
-    if "empty" in filename:
-        correct.mimetype = None
-        correct.streams[0]["mimetype"] = None
-    correct.version = version
-    if "invalid" in filename or "2" not in filename:
-        correct.streams[0]["version"] = "(:unav)"
 
     evaluate_scraper(scraper, correct)
 
@@ -434,10 +432,11 @@ def test_scraper_wav(filename, result_dict, version, evaluate_scraper):
 )
 def test_no_wellformed(scraper_class, filename, mime):
     """Test scrapers without well-formed check."""
-    scraper = scraper_class(os.path.join("tests/data/",
-                                         mime.replace("/", "_"),
-                                         filename),
-                            False)
+    scraper = scraper_class(filename=os.path.join("tests/data/",
+                                                  mime.replace("/", "_"),
+                                                  filename),
+                            mimetype=mime,
+                            check_wellformed=False)
     scraper.scrape_file()
     assert partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
@@ -494,201 +493,24 @@ def test_is_supported_utf8(mime, ver, class_):
 
 
 @pytest.mark.parametrize(
-    ["filename", "scraper_class", "result_dict", "filetype"],
-    [
-        ("valid_1987a.gif", JHoveGifScraper,
-         {"purpose": "Test forcing correct MIME type and version for gif",
-          "stdout_part": "MIME type and version not scraped, using",
-          "stderr_part": ""},
-         {"given_mimetype": "image/gif", "given_version": "1987a",
-          "expected_mimetype": "image/gif", "expected_version": "1987a",
-          "correct_mimetype": "image/gif"}),
-        ("valid_1987a.gif", JHoveGifScraper,
-         {"purpose": "Test forcing supported but erroneous file type",
-          "stdout_part": "Well-Formed and valid",
-          "stderr_part": ""},
-         {"given_mimetype": "image/gif", "given_version": "1989a",
-          "expected_mimetype": "image/gif", "expected_version": "1989a",
-          "correct_mimetype": "image/gif"}),
-        ("valid_1987a.gif", JHoveGifScraper,
-         {"purpose": "Test forcing wrong MIME type and version for gif",
-          "stdout_part": "MIME type and version not scraped, using",
-          "stderr_part": "not supported by this scraper"},
-         {"given_mimetype": "wrong/mime", "given_version": "0",
-          "expected_mimetype": "wrong/mime", "expected_version": "0",
-          "correct_mimetype": "image/gif"}),
-        ("valid_1987a.gif", JHoveGifScraper,
-         {"purpose": "Test forcing only version for gif",
-          "stdout_part": "Well-Formed and valid",
-          "stderr_part": ""},
-         {"given_mimetype": None, "given_version": "0",
-          "expected_mimetype": "image/gif", "expected_version": "1987a",
-          "correct_mimetype": "image/gif"}),
-        ("valid_6.0.tif", JHoveTiffScraper,
-         {"purpose": "Test forcing correct MIME type and version for tiff.",
-          "stdout_part": "MIME type and version not scraped, using",
-          "stderr_part": ""},
-         {"given_mimetype": "image/tiff", "given_version": "6.0",
-          "expected_mimetype": "image/tiff", "expected_version": "6.0",
-          "correct_mimetype": "image/tiff"}),
-        ("valid_6.0.tif", JHoveTiffScraper,
-         {"purpose": "Test forcing wrong MIME type for tiff.",
-          "stdout_part": "MIME type and version not scraped, using",
-          "stderr_part": "not supported by this scraper"},
-         {"given_mimetype": "wrong/mime", "given_version": "6.0",
-          "expected_mimetype": "wrong/mime", "expected_version": "6.0",
-          "correct_mimetype": "image/tiff"}),
-        ("valid_6.0.tif", JHoveTiffScraper,
-         {"purpose": "Test forcing only version for tiff.",
-          "stdout_part": "Well-Formed and valid",
-          "stderr_part": ""},
-         {"given_mimetype": None, "given_version": "99.9",
-          "expected_mimetype": "image/tiff", "expected_version": "6.0",
-          "correct_mimetype": "image/tiff"}),
-        ("valid_1.4.pdf", JHovePdfScraper,
-         {"purpose": "Test forcing the correct MIME type and version.",
-          "stdout_part": "MIME type and version not scraped, using",
-          "stderr_part": ""},
-         {"given_mimetype": "application/pdf", "given_version": "1.4",
-          "expected_mimetype": "application/pdf", "expected_version": "1.4",
-          "correct_mimetype": "application/pdf"}),
-        ("valid_1.4.pdf", JHovePdfScraper,
-         {"purpose": "Test forcing supported but wrong file type.",
-          "stdout_part": "MIME type and version not scraped, using",
-          "stderr_part": ""},
-         {"given_mimetype": "application/pdf", "given_version": "1.2",
-          "expected_mimetype": "application/pdf", "expected_version": "1.2",
-          "correct_mimetype": "application/pdf"}),
-        ("valid_1.4.pdf", JHovePdfScraper,
-         {"purpose": "Test forcing unsupported MIME type.",
-          "stdout_part": "MIME type not scraped, using",
-          "stderr_part": "not supported"},
-         {"given_mimetype": "wrong/mime", "given_version": None,
-          "expected_mimetype": "wrong/mime", "expected_version": "1.4",
-          "correct_mimetype": "application/pdf"}),
-        ("valid_1.4.pdf", JHovePdfScraper,
-         {"purpose": "Test forcing only version.",
-          "stdout_part": "Well-Formed and valid",
-          "stderr_part": ""},
-         {"given_mimetype": None, "given_version": "99.9",
-          "expected_mimetype": "application/pdf", "expected_version": "1.4",
-          "correct_mimetype": "application/pdf"}),
-        ("valid_1.01.jpg", JHoveJpegScraper,
-         {"purpose": "Forcing correct MIME type and version for jpeg files",
-          "stdout_part": "MIME type and version not scraped, using",
-          "stderr_part": ""},
-         {"given_mimetype": "image/jpeg", "given_version": "1.01",
-          "expected_mimetype": "image/jpeg", "expected_version": "1.01",
-          "correct_mimetype": "image/jpeg"}),
-        ("valid_1.01.jpg", JHoveJpegScraper,
-         {"purpose": "Forcing unsupported MIME type and version for jpg files",
-          "stdout_part": "MIME type and version not scraped, using",
-          "stderr_part": ""},
-         {"given_mimetype": "wrong/mime", "given_version": "99",
-          "expected_mimetype": "wrong/mime", "expected_version": "99",
-          "correct_mimetype": "image/jpeg"}),
-        ("valid_1.01.jpg", JHoveJpegScraper,
-         {"purpose": "Forcing only version for jpeg files",
-          "stdout_part": "Well-Formed and valid",
-          "stderr_part": ""},
-         {"given_mimetype": None, "given_version": "99",
-          "expected_mimetype": "image/jpeg", "expected_version": "(:unav)",
-          "correct_mimetype": "image/jpeg"}),
-        ("valid_1.01.jpg", JHoveJpegScraper,
-         {"purpose": "Forcing only MIME type for jpeg files",
-          "stdout_part": "MIME type not scraped",
-          "stderr_part": ""},
-         {"given_mimetype": "image/jpeg", "given_version": None,
-          "expected_mimetype": "image/jpeg", "expected_version": "(:unav)",
-          "correct_mimetype": "image/jpeg"}),
-        ("valid_4.01.html", JHoveHtmlScraper,
-         {"purpose": "Forcing correct MIME type and version for html file",
-          "stdout_part": "MIME type and version not scraped, using",
-          "stderr_part": ""},
-         {"given_mimetype": "text/html", "given_version": "4.01",
-          "expected_mimetype": "text/html", "expected_version": "4.01",
-          "correct_mimetype": "text/html", "charset": "UTF-8"}),
-        ("valid_4.01.html", JHoveHtmlScraper,
-         {"purpose": "Forcing wrong but supported file type for html file",
-          "stdout_part": "MIME type and version not scraped, using",
-          "stderr_part": ""},
-         {"given_mimetype": "application/xhtml+xml", "given_version": "1.0",
-          "expected_mimetype": "application/xhtml+xml",
-          "expected_version": "1.0",
-          "correct_mimetype": "application/xhtml+xmp", "charset": "UTF-8"}),
-        ("valid_4.01.html", JHoveHtmlScraper,
-         {"purpose": "Forcing unsupported MIME type for html file",
-          "stdout_part": "MIME type not scraped, using",
-          "stderr_part": ""},
-         {"given_mimetype": "text/plain", "given_version": None,
-          "expected_mimetype": "text/plain", "expected_version": "4.01",
-          "correct_mimetype": "text/html", "charset": "UTF-8"}),
-        ("valid_4.01.html", JHoveHtmlScraper,
-         {"purpose": "Forcing only version for html file",
-          "stdout_part": "Well-Formed and valid",
-          "stderr_part": ""},
-         {"given_mimetype": None, "given_version": "99",
-          "expected_mimetype": "text/html", "expected_version": "4.01",
-          "correct_mimetype": "text/html", "charset": "UTF-8"}),
-        ("valid__wav.wav", JHoveWavScraper,
-         {"purpose": "Forcing supported MIME type and version for wav files",
-          "stdout_part": "MIME type and version not scraped",
-          "stderr_part": ""},
-         {"given_mimetype": "audio/x-wav", "given_version": "2",
-          "expected_mimetype": "audio/x-wav", "expected_version": "2",
-          "correct_mimetype": "audio/x-wav"}),
-        ("valid__wav.wav", JHoveWavScraper,
-         {"purpose": "Forcing unsupported MIME type for wav files",
-          "stdout_part": "MIME type not scraped",
-          "stderr_part": ""},
-         {"given_mimetype": "wrong/mime", "given_version": None,
-          "expected_mimetype": "wrong/mime", "expected_version": "(:unav)",
-          "correct_mimetype": "audio/x-wav"}),
-        ("valid__wav.wav", JHoveWavScraper,
-         {"purpose": "Forcing only version for wav files",
-          "stdout_part": "Well-Formed and valid",
-          "stderr_part": ""},
-         {"given_mimetype": None, "given_version": "99",
-          "expected_mimetype": "audio/x-wav", "expected_version": "(:unav)",
-          "correct_mimetype": "audio/x-wav"}),
-    ]
-)
-def test_forced_filetype(filename, scraper_class, result_dict, filetype,
-                         evaluate_scraper):
-    """
-    Test all JHove scrapers with supported and unsupported forced filetypes.
-
-    At least forcing the corrext MIME type and version (well-formed),
-    usupported MIME type (not well-formed, the wrong MIME type reported) and
-    forcing only the version (no effect on scraping results) are tested.
-    """
-    correct = force_correct_filetype(filename, result_dict,
-                                     filetype)
-    params = {"mimetype": filetype["given_mimetype"],
-              "version": filetype["given_version"]}
-    params["charset"] = filetype.get("charset", None)
-    scraper = scraper_class(correct.filename, True, params)
-    scraper.scrape_file()
-
-    evaluate_scraper(scraper, correct)
-
-
-@pytest.mark.parametrize(
-    ["filename", "charset", "well_formed"],
-    [("tests/data/application_xhtml+xml/valid_1.0.xhtml", "UTF-8", True),
-     ("tests/data/application_xhtml+xml/valid_1.0.xhtml", "ISO-8859-15",
+    ["filename", "mimetype", "charset", "well_formed"],
+    [("tests/data/application_xhtml+xml/valid_1.0.xhtml",
+      "application/xhtml+xml", "UTF-8", True),
+     ("tests/data/application_xhtml+xml/valid_1.0.xhtml",
+      "application/xhtml+xml", "ISO-8859-15", False),
+     ("tests/data/text_html/valid_4.01.html", "text/html", "UTF-8", True),
+     ("tests/data/text_html/valid_4.01.html", "text/html", "ISO-8859-15",
       False),
-     ("tests/data/text_html/valid_4.01.html", "UTF-8", True),
-     ("tests/data/text_html/valid_4.01.html", "ISO-8859-15", False),
-     ("tests/data/text_html/valid_4.01.html", None, False)
+     ("tests/data/text_html/valid_4.01.html", "text/html", None, False)
     ]
 )
-def test_charset(filename, charset, well_formed):
+def test_charset(filename, mimetype, charset, well_formed):
     """
     Test charset parameter.
     """
     params = {"charset": charset}
-    scraper = JHoveHtmlScraper(filename, True, params)
+    scraper = JHoveHtmlScraper(filename=filename, mimetype=mimetype,
+                               params=params)
     scraper.scrape_file()
     assert scraper.well_formed == well_formed
     if charset:

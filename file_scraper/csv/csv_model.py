@@ -12,7 +12,7 @@ class CsvMeta(BaseMeta):
     _supported = {"text/csv": []}  # Supported mimetype
     _allow_versions = True           # Allow any version
 
-    def __init__(self, params, mimetype=None, version=None):
+    def __init__(self, errors, params):
         """
         Initialize for delimiter and separator info.
 
@@ -33,20 +33,20 @@ class CsvMeta(BaseMeta):
         self._csv_separator = params["separator"]
         self._csv_fields = params["fields"]
         self._csv_first_line = params["first_line"]
-        super(CsvMeta, self).__init__(mimetype, version)
+        super(CsvMeta, self).__init__(errors)
 
-    # pylint: disable=no-self-use
     @metadata()
     def mimetype(self):
-        if self._given_mimetype:
-            return self._given_mimetype
+        """Return mimetype"""
+        if self._errors:
+            return "(:unav)"
         return "text/csv"
 
     @metadata()
     def version(self):
         """Return version."""
-        if self._given_mimetype and self._given_version:
-            return self._given_version
+        if self._errors:
+            return "(:unav)"
         return "(:unap)"
 
     @metadata()

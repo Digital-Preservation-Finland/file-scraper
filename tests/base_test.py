@@ -39,8 +39,7 @@ class BaseScraperBasic(BaseScraper):
 
     def scrape_file(self):
         """Do nothing, scraping not needed here."""
-        self.streams.append(BaseMetaBasic(self._params.get("mimetype", None),
-                                          self._params.get("version", None)))
+        self.streams.append(BaseMetaBasic())
 
 
 class BaseMetaVersion(BaseMeta):
@@ -153,7 +152,7 @@ def test_overriding_filetype(given_mimetype, given_version, expected_mimetype,
     """
     Test forcing the base scraper to use certain MIME type and/or version.
     """
-    scraper = BaseScraperBasic("testfilename",
+    scraper = BaseScraperBasic("testfilename", given_mimetype,
                                params={"mimetype": given_mimetype,
                                        "version": given_version})
     scraper.scrape_file()
@@ -171,7 +170,7 @@ class BaseMetaCustom(BaseMeta):
     _supported = {"test/mimetype": ["0.1"]}
 
     def __init__(self, mimetype, version):
-        super(BaseMetaCustom, self).__init__(mimetype, version)
+        super(BaseMetaCustom, self).__init__()
         self._mimetype = mimetype
         self._version = version
 

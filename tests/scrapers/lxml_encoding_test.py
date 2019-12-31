@@ -26,7 +26,7 @@ from io import open
 import pytest
 
 from file_scraper.lxml_scraper.lxml_scraper import LxmlScraper
-from tests.common import force_correct_filetype, partial_message_included
+from tests.common import partial_message_included
 
 
 @pytest.mark.parametrize(
@@ -46,8 +46,8 @@ def test_xml_encoding(testpath, file_encoding):
     with open(tmppath, "wb") as file_:
         file_.write(xml.encode(file_encoding))
 
-    scraper = LxmlScraper(tmppath, "text/xml",
-                          {"charset": enc_match[file_encoding]})
+    scraper = LxmlScraper(filename=tmppath, mimetype="text/xml",
+                          params={"charset": enc_match[file_encoding]})
     scraper.scrape_file()
 #    assert scraper.streams[0]["charset"] == enc_match[file_encoding]
     assert scraper.well_formed
@@ -61,7 +61,9 @@ def test_no_wellformed(testpath):
     tmppath = os.path.join(testpath, "valid__.csv")
     with open(tmppath, "wb") as file_:
         file_.write(xml)
-    scraper = LxmlScraper(tmppath, False, {"charset": "UTF-8"})
+    scraper = LxmlScraper(filename=tmppath, mimetype="text/csv",
+                          check_wellformed=False,
+                          params={"charset": "UTF-8"})
     scraper.scrape_file()
     assert partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
@@ -94,69 +96,22 @@ def test_is_supported_deny():
 
 
 @pytest.mark.parametrize(
-    ["filename", "result_dict", "filetype"],
-    [
-        ("valid_1.0_xsd.xml",
-         {"purpose": "Test forcing correct MIME type and version",
-          "stdout_part": "MIME type and version not scraped, using",
-          "stderr_part": ""},
-         {"given_mimetype": "text/xml", "given_version": "1.0",
-          "expected_mimetype": "text/xml", "expected_version": "1.0",
-          "correct_mimetype": "text/xml"}),
-        ("valid_1.0_xsd.xml",
-         {"purpose": "Test forcing correct MIME type",
-          "stdout_part": "MIME type not scraped, using",
-          "stderr_part": ""},
-         {"given_mimetype": "text/xml", "given_version": None,
-          "expected_mimetype": "text/xml", "expected_version": "(:unav)",
-          "correct_mimetype": "text/xml"}),
-        ("valid_1.0_xsd.xml",
-         {"purpose": "Test forcing version only (no effect)",
-          "stdout_part": "Encoding metadata found.",
-          "stderr_part": ""},
-         {"given_mimetype": None, "given_version": "1.0",
-          "expected_mimetype": "(:unav)", "expected_version": "(:unav)",
-          "correct_mimetype": "text/xml"}),
-        ("valid_1.0_xsd.xml",
-         {"purpose": "Test forcing wrong MIME type",
-          "stdout_part": "MIME type not scraped, using",
-          "stderr_part": "is not supported"},
-         {"given_mimetype": "unsupported/mime", "given_version": None,
-          "expected_mimetype": "unsupported/mime",
-          "expected_version": "(:unav)", "correct_mimetype": "text/xml"}),
+    ["filename", "mimetype", "charset", "well_formed"],
+    [("tests/data/text_xml/valid_1.0_xsd.xml", "text/xml", "UTF-8", True),
+     ("tests/data/text_xml/valid_1.0_xsd.xml", "text/xml", "ISO-8859-15",
+      False),
+     ("tests/data/text_html/valid_5.0.html", "text/html", "UTF-8", True),
+     ("tests/data/text_html/valid_5.0.html", "text/html", "ISO-8859-15",
+      False),
+     ("tests/data/text_xml/valid_1.0_xsd.xml", "text/xml", None, False)
     ]
 )
-def test_forced_filetype(filename, result_dict, filetype, evaluate_scraper):
-    """
-    Test using user-supplied MIME-types and versions.
-    """
-    correct = force_correct_filetype(filename, result_dict,
-                                     filetype, ["(:unav)"])
-
-    params = {"mimetype": filetype["given_mimetype"],
-              "version": filetype["given_version"],
-              "charset": "UTF-8"}
-    scraper = LxmlScraper(correct.filename, True, params)
-    scraper.scrape_file()
-
-    evaluate_scraper(scraper, correct)
-
-
-@pytest.mark.parametrize(
-    ["filename", "charset", "well_formed"],
-    [("tests/data/text_xml/valid_1.0_xsd.xml", "UTF-8", True),
-     ("tests/data/text_xml/valid_1.0_xsd.xml", "ISO-8859-15", False),
-     ("tests/data/text_html/valid_5.0.html", "UTF-8", True),
-     ("tests/data/text_html/valid_5.0.html", "ISO-8859-15", False),
-     ("tests/data/text_xml/valid_1.0_xsd.xml", None, False)
-    ]
-)
-def test_charset(filename, charset, well_formed):
+def test_charset(filename, mimetype, charset, well_formed):
     """
     Test charset parameter.
     """
     params = {"charset": charset}
-    scraper = LxmlScraper(filename, True, params)
+    scraper = LxmlScraper(filename=filename, mimetype=mimetype, params=params)
     scraper.scrape_file()
     assert scraper.well_formed == well_formed
     if charset:

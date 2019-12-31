@@ -39,21 +39,9 @@ class PilScraper(BaseScraper):
             # the tile tries to extend outside of image.
             n_frames = 1
 
-        # If the MIME type is forced, use that, otherwise scrape the MIME type
-        if self._given_mimetype:
-            mimetype = self._given_mimetype
-        else:
-            mimetype = PIL.Image.MIME[pil.format]
-
-        # Pillow 5.0.0 returns MIME type image/jpx for jp2 files
-        if mimetype == "image/jpx":
-            mimetype = "image/jp2"
-
         for pil_index in range(0, n_frames):
             for md_class in self._supported_metadata:
                 if md_class.is_supported(mimetype):
-                    self.streams.append(md_class(pil, pil_index,
-                                                 self._given_mimetype,
-                                                 self._given_version))
+                    self.streams.append(md_class(pil, pil_index))
 
         self._check_supported(allow_unav_version=True)

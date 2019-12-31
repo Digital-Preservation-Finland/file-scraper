@@ -10,19 +10,6 @@ class VnuMeta(BaseMeta):
 
     _supported = {"text/html": ["5.0"]}  # Supported mimetypes
 
-    # pylint: disable=no-self-use
-    @metadata()
-    def mimetype(self):
-        """Return MIME type."""
-        if self._given_mimetype:
-            return self._given_mimetype
-        return "text/html"
-
-    @metadata()
-    def version(self):
-        """Return version."""
-        return "5.0"
-
     @metadata()
     def stream_type(self):
         """Return file type."""

@@ -12,7 +12,8 @@ class BaseScraper(object):
     _supported_metadata = []
     _only_wellformed = False
 
-    def __init__(self, filename, check_wellformed=True, params=None):
+    def __init__(self, filename, mimetype, version=None, check_wellformed=True,
+                 params=None):
         """
         Initialize scraper.
 
@@ -20,26 +21,20 @@ class BaseScraper(object):
         data model.
 
         :filename: Path to the file that is to be scraped
+        :mimetype: Predefined mimetype
+        :version: Predefined file format version
         :check_wellformed: True for full scraping, False for skipping the well-
                            formedness check
         :params: Extra parameters that some scrapers can use.
         """
         self.streams = []
         self.filename = filename
+        self._predefined_mimetype = mimetype
+        self._predefined_version = version
         self._messages = []
         self._errors = []
         self._check_wellformed = check_wellformed
         self._params = params if params is not None else {}
-
-        self._given_mimetype = self._params.get("mimetype", None)
-        self._given_version = self._params.get("version", None)
-        if self._given_mimetype:
-            if self._given_version:
-                self._messages.append("MIME type and version not scraped, "
-                                      "using user-supplied values.")
-            else:
-                self._messages.append("MIME type not scraped, using user-"
-                                      "supplied value.")
 
     @property
     def well_formed(self):
@@ -122,6 +117,13 @@ class BaseScraper(object):
         self._errors.append("MIME type %s with version %s is not supported." %
                             (mimetype, version))
 
+    def iterate_models(self, **kwargs):
+        """Iterate Scraper models and create streams"""
+        for md_class in self._supported_metadata:
+            if md_class.is_supported(self._predefined_mimetype,
+                                     self._predefined_version, self._params):
+                self.streams.append(md_class(**kwargs))
+
     def errors(self):
         """
         Return the logged errors in a list.
@@ -164,32 +166,20 @@ class BaseMeta(object):
     _supported = {}
     _allow_versions = False
 
-    def __init__(self, mimetype=None, version=None):
+    def __init__(self, errors):
         """
-        Initialize the metadata model.
-
-        Metadata models can be given a mimetype and/or version obtained from
-        another source such as METS. Metadata models must be implemented so
-        that if supplied, these values are used instead of values determined
-        based on the file. None means that the values should be scraped from
-        the file normally.
-
-        :mimetype: MIME type as which the file is scraped. Default None.
-        :version: Version as which the file is scraped. Default None, only
-                  affects the returned version if MIME type is also given.
+        We usually don't know the mimetype and version if the file contains errors.
+        :errors: Errors from scraper
         """
-        self._given_mimetype = mimetype
-        self._given_version = version
+        self._errors = errors
 
     @metadata()
     def mimetype(self):
         """
         BaseMeta does no real scraping. Should be implemented in subclasses.
 
-        :returns: "(:unav)" or the user-supplied MIME type if given.
+        :returns: default mimetype (if only one supported) or "(:unav)"
         """
-        if self._given_mimetype:
-            return self._given_mimetype
         return "(:unav)"
 
     @metadata()
@@ -197,11 +187,8 @@ class BaseMeta(object):
         """
         BaseMeta does no real scraping. Should be implemented in subclasses.
 
-        :returns: "(:unav)" or the user-supplied version if that and MIME type
-                  are both given.
+        :returns: default version (if only one supported) or "(:unav)"
         """
-        if self._given_mimetype and self._given_version:
-            return self._given_version
         return "(:unav)"
 
     @metadata()

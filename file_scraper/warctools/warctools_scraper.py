@@ -65,8 +65,8 @@ class WarcWarctoolsScraper(BaseScraper):
 
         self._messages.append("File was analyzed successfully.")
         for md_class in self._supported_metadata:
-            self.streams.append(md_class(line, self._given_mimetype,
-                                         self._given_version))
+            if md_class.is_supported(self._mimetype):
+                self.streams.append(md_class(line))
         self._check_supported()
 
 
@@ -104,8 +104,8 @@ class ArcWarctoolsScraper(BaseScraper):
                 self._messages.append(shell.stdout)
 
         for md_class in self._supported_metadata:
-            self.streams.append(md_class(self._given_mimetype,
-                                         self._given_version))
+            if md_class.is_supported(self._mimetype):
+                self.streams.append(md_class())
         self._check_supported(allow_unav_version=True)
 
 
@@ -142,9 +142,8 @@ class GzipWarctoolsScraper(BaseScraper):
 
             if self._scraper.well_formed:
                 for md_model in self._supported_metadata:
-                    self.streams.append(md_model(self._scraper.streams,
-                                                 self._given_mimetype,
-                                                 self._given_version))
+                    if md_class.is_supported(self._mimetype):
+                        self.streams.append(md_model(self._scraper.streams))
                 self._check_supported()
                 break
 

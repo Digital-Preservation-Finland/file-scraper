@@ -11,24 +11,24 @@ class DpxMeta(BaseMeta):
     # Supported mimetype and version
     _supported = {"image/x-dpx": ["2.0", "1.0"]}
 
-    def __init__(self, **kwargs):
+    def __init__(self, errors, filename, messages):
 
-        super(DpxMeta, self).__init__(kwargs["mimetype"], kwargs["version"])
-        self._messages = kwargs["info"]["messages"]
-        self._filename = kwargs["filename"]
+        self._filename = filename
+        self._messages = messages
+        super(DpxMeta, self).__init__(errors)
 
-    # pylint: disable=no-self-use
     @metadata()
     def mimetype(self):
-        if self._given_mimetype:
-            return self._given_mimetype
+        """Return mimetype."""
+        if self._errors:
+            return "(:unav)"
         return "image/x-dpx"
 
     @metadata()
     def version(self):
         """Return version."""
-        if self._given_mimetype and self._given_version:
-            return self._given_version
+        if self._errors:
+            return "(:unav)"
 
         for supported_version in self._supported["image/x-dpx"]:
 
@@ -38,7 +38,7 @@ class DpxMeta(BaseMeta):
             if version_string in self._messages:
                 return supported_version
 
-        return '(:unav)'
+        return "(:unav)"
 
     @metadata()
     def stream_type(self):

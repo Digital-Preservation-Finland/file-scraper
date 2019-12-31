@@ -51,7 +51,7 @@ class FFMpegSimpleMeta(BaseMeta):
         "MP2/3 (MPEG audio layer 2/3)": "(:unav)",
         }
 
-    def __init__(self, probe_results, index, mimetype=None, version=None):
+    def __init__(self, errors, probe_results, index):
         """
         Initialize the metadata model.
 
@@ -62,22 +62,18 @@ class FFMpegSimpleMeta(BaseMeta):
         self._index = index
         self._ffmpeg_stream = self._current_stream()
 
-        super(FFMpegSimpleMeta, self).__init__(mimetype=mimetype,
-                                               version=version)
+        super(FFMpegSimpleMeta, self).__init__(errors)
 
     @metadata()
     def mimetype(self):
         """Return MIME type based on format name."""
-        if self._given_mimetype:
-            if self._index == 0:
-                return self._given_mimetype
-
-        mime = "(:unav)"
+        if self._errors:
+            return "(:unav)"
         if "format_long_name" in self._ffmpeg_stream:
             if self._ffmpeg_stream["format_long_name"] in self._mimetype_dict:
-                mime = self._mimetype_dict[self._ffmpeg_stream[
+                return self._mimetype_dict[self._ffmpeg_stream[
                     "format_long_name"]]
-        return mime
+        return "(:unav)"
 
     @metadata()
     def stream_type(self):
@@ -170,6 +166,9 @@ class FFMpegMeta(FFMpegSimpleMeta):
         MIME type based on codec name is attempted. This is relevant for
         JPEG2000 streams.
         """
+        if self._errors:
+            return "(:unav)"
+
         mime = super(FFMpegMeta, self).mimetype()
         if mime not in ["(:unav)", None]:
             return mime
@@ -183,6 +182,8 @@ class FFMpegMeta(FFMpegSimpleMeta):
     @metadata()
     def version(self):
         """Return (:unap) as supported types do not have different versions."""
+        if self._errors:
+            return "(:unav)"
         return "(:unap)"
 
     @metadata()

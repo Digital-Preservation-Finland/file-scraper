@@ -56,48 +56,13 @@ class MagicScraper(BaseScraper):
                                   "used.")
             return
 
-        if "mimetype_guess" not in self._params:
-            raise AttributeError("MagicScraper was not given a parameter "
-                                 "dict containing key 'mimetype_guess'.")
-
         if not os.path.exists(self.filename):
             self._errors.append("File not found.")
             return
 
         magic_result = self._magic_call()
-        mimefinder = BaseMagicMeta(magic_result=magic_result,
-                                   mimetype=self._given_mimetype,
-                                   version=self._given_version)
-        mimetype = mimefinder.mimetype()
-        mimetype_guess = self._params["mimetype_guess"]
 
-        if not self.is_supported(mimetype):
-            self._errors.append("Unsupported MIME type %s" % mimetype)
-            return
-
-        if mimetype == "text/xml":
-            if mimetype_guess == "text/xml":
-                self.streams.append(XmlFileMagicMeta(
-                    magic_result=magic_result,
-                    mimetype=self._given_mimetype,
-                    version=self._given_version))
-            elif mimetype_guess == "application/xhtml+xml":
-                self.streams.append(XhtmlFileMagicMeta(
-                    magic_result=magic_result,
-                    mimetype=self._given_mimetype,
-                    version=self._given_version))
-            else:
-                self._errors.append("MIME type %s given to MagicScraper does "
-                                    "not match %s obtained by the scraper." % (
-                                        mimetype_guess, mimetype))
-                return
-        else:
-            for md_class in self._supported_metadata:
-                if not md_class.is_supported(mimetype):
-                    continue
-                self.streams.append(md_class(magic_result=magic_result,
-                                             mimetype=self._given_mimetype,
-                                             version=self._given_version))
+        self.iterate_models(errors=self._errors, magic_result=magic_result)
 
         self._check_supported(allow_unav_version=True, allow_unap_version=True)
         self._messages.append("The file was analyzed successfully.")

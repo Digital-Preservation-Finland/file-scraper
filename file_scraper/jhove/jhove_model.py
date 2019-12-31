@@ -21,18 +21,18 @@ def get_field(report, field):
               or None if the report was None or field was not found in it.
     """
     if report is None:
-        return None
+        return "(:unav)"
     query = "//j:%s/text()" % field
     results = report.xpath(query, namespaces=NAMESPACES)
     if not results:
-        return None
+        return "(:unav)"
     return "\n".join(results)
 
 
 class JHoveBaseMeta(BaseMeta):
     """Metadata that is common for all files scraped using JHove"""
 
-    def __init__(self, report, errors, mimetype=None, version=None):
+    def __init__(self, errors, report): 
         """
         Initialize the metadata model.
 
@@ -40,14 +40,11 @@ class JHoveBaseMeta(BaseMeta):
         :errors: A list to which possible errors should be appended
         """
         self._report = report
-        self._errors = errors
-        super(JHoveBaseMeta, self).__init__(mimetype, version)
+        super(JHoveBaseMeta, self).__init__(errors)
 
     @metadata()
     def mimetype(self):
         """Return mimetype given by JHove."""
-        if self._given_mimetype:
-            return self._given_mimetype
         return get_field(self._report, "mimeType")
 
 
@@ -67,9 +64,8 @@ class JHoveGifMeta(JHoveBaseMeta):
         or "1989a" is used. Hence "19" is prepended to the version returned by
         Jhove
         """
-        if self._given_mimetype and self._given_version:
-            return self._given_version
-
+        if self._errors:
+            return "(:unav)"
         if get_field(self._report, "version"):
             return "19" + get_field(self._report, "version")
         return "(:unav)"
@@ -95,9 +91,8 @@ class JHoveHtmlMeta(JHoveBaseMeta):
         Jhove returns the version as "HTML 4.01" but only the "4.01" part is
         used. Hence we drop "HTML " prefix from the string returned by Jhove
         """
-        if self._given_mimetype and self._given_version:
-            return self._given_version
-
+        if self._errors:
+            return "(:unav)"
         version = get_field(self._report, "version")
         if version:
             version = version.split()[-1]
@@ -126,9 +121,6 @@ class JHoveHtmlMeta(JHoveBaseMeta):
     @metadata()
     def mimetype(self):
         """Return MIME type."""
-        if self._given_mimetype:
-            return self._given_mimetype
-
         mime = super(JHoveHtmlMeta, self).mimetype()
         if mime == "text/xml":
             return "application/xhtml+xml"
@@ -158,13 +150,6 @@ class JHoveJpegMeta(JHoveBaseMeta):
     _allow_versions = True
 
     @metadata()
-    def version(self):
-        """Return version."""
-        if self._given_mimetype and self._given_version:
-            return self._given_version
-        return "(:unav)"
-
-    @metadata()
     def stream_type(self):
         """Return file type."""
         return "image"
@@ -180,8 +165,8 @@ class JHoveTiffMeta(JHoveBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        if self._given_mimetype and self._given_version:
-            return self._given_version
+        if self._errors:
+            return "(:unav)"
         return "6.0"
 
     @metadata()
@@ -200,8 +185,8 @@ class JHovePdfMeta(JHoveBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        if self._given_mimetype and self._given_version:
-            return self._given_version
+        if self._errors:
+            return "(:unav)"
         return get_field(self._report, "version")
 
     @metadata()
@@ -225,9 +210,6 @@ class JHoveWavMeta(JHoveBaseMeta):
         If the MIME type is a WAV type, audio/vnd.wave is returned, otherwise
         the same method from the superclass is called.
         """
-        if self._given_mimetype:
-            return self._given_mimetype
-
         if get_field(self._report, "mimeType") is not None and \
                 (get_field(self._report, "mimeType").split(";")[0]
                  == "audio/vnd.wave"):
@@ -243,9 +225,8 @@ class JHoveWavMeta(JHoveBaseMeta):
         Set version as "2" if profile is BWF, otherwise we don"t know.
         For now, we don"t accept RF64.
         """
-        if self._given_mimetype and self._given_version:
-            return self._given_version
-
+        if self._errors:
+            return "(:unav)"
         if get_field(self._report, "profile") is None:
             return "(:unav)"
         if "RF64" in get_field(self._report, "profile"):
@@ -275,6 +256,16 @@ class JHoveUtf8Meta(JHoveBaseMeta):
     _jhove_module = "UTF8-hul"  # JHove module
 
     @metadata()
+    def mimetype(self):
+        """We don't know the mimetype."""
+        return "(:unav)"
+
+    @metadata()
+    def version(self):
+        """We don't know the version."""
+        return "(:unav)"
+
+    @metadata()
     def charset(self):
         """Return charset from JHOVE."""
         if "Well-formed and valid" in get_field(self._report, "status"):
@@ -286,11 +277,3 @@ class JHoveUtf8Meta(JHoveBaseMeta):
     def stream_type(self):
         """Return file type."""
         return "text"
-
-    @metadata()
-    def mimetype(self):
-        return "(:unav)"
-
-    @metadata()
-    def version(self):
-        return "(:unav)"

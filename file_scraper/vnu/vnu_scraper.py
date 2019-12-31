@@ -29,6 +29,6 @@ class VnuScraper(BaseScraper):
 
         if self.well_formed:
             for md_class in self._supported_metadata:
-                self.streams.append(md_class(self._given_mimetype,
-                                             self._given_version))
+                if md_class.is_supported(self._mimetype):
+                    self.streams.append(md_class())
             self._check_supported()
