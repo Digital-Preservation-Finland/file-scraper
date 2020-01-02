@@ -26,8 +26,7 @@ from __future__ import unicode_literals
 import pytest
 
 from file_scraper.pil.pil_scraper import PilScraper
-from tests.common import (parse_results, force_correct_filetype,
-                          partial_message_included)
+from tests.common import (parse_results, partial_message_included)
 
 VALID_MSG = "successfully"
 INVALID_MSG = "Error in analyzing file."
@@ -88,7 +87,7 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
     else:
         correct.stdout_part = ""
         correct.stderr_part = INVALID_MSG
-    scraper = PilScraper(correct.filename, True, correct.params)
+    scraper = PilScraper(filename=correct.filename, mimetype="image/tiff")
     scraper.scrape_file()
 
     if correct.well_formed:
@@ -125,6 +124,7 @@ def test_scraper_jpg(filename, result_dict, evaluate_scraper):
     """Test scraper with jpeg files."""
     correct = parse_results(filename, "image/jpeg",
                             result_dict, True)
+    correct.streams[0]["mimetype"] = "image/jpeg"
     correct.streams[0]["version"] = "(:unav)"
     if correct.well_formed:
         correct.stdout_part = VALID_MSG
@@ -132,7 +132,7 @@ def test_scraper_jpg(filename, result_dict, evaluate_scraper):
     else:
         correct.stdout_part = ""
         correct.stderr_part = INVALID_MSG
-    scraper = PilScraper(correct.filename, True, correct.params)
+    scraper = PilScraper(filename=correct.filename, mimetype="image/jpeg")
     scraper.scrape_file()
 
     if correct.well_formed:
@@ -168,7 +168,7 @@ def test_scraper_jp2(filename, result_dict, evaluate_scraper):
     else:
         correct.stdout_part = ""
         correct.stderr_part = INVALID_MSG
-    scraper = PilScraper(correct.filename, True, correct.params)
+    scraper = PilScraper(filename=correct.filename, mimetype="image/jp2")
     scraper.scrape_file()
 
     if correct.well_formed:
@@ -215,7 +215,7 @@ def test_scraper_png(filename, result_dict, evaluate_scraper):
     else:
         correct.stdout_part = ""
         correct.stderr_part = INVALID_MSG
-    scraper = PilScraper(correct.filename, True, correct.params)
+    scraper = PilScraper(filename=correct.filename, mimetype="image/png")
     scraper.scrape_file()
 
     if correct.well_formed:
@@ -271,7 +271,7 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
     else:
         correct.stdout_part = ""
         correct.stderr_part = INVALID_MSG
-    scraper = PilScraper(correct.filename, True, correct.params)
+    scraper = PilScraper(filename=correct.filename, mimetype="image/gif")
     scraper.scrape_file()
 
     if correct.well_formed:
@@ -285,7 +285,9 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
 
 def test_no_wellformed():
     """Test scraper without well-formed check."""
-    scraper = PilScraper("tests/data/image_gif/valid_1987a.gif", False)
+    scraper = PilScraper(filename="tests/data/image_gif/valid_1987a.gif",
+                         mimetype="image/gif",
+                         check_wellformed=False)
     scraper.scrape_file()
     assert not partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
@@ -308,123 +310,3 @@ def test_is_supported(mime, ver, class_):
     assert class_.is_supported(mime, ver, False)
     assert class_.is_supported(mime, "foo", True)
     assert not class_.is_supported("foo", ver, True)
-
-
-def run_filetype_test(filename, result_dict, filetype, evaluate_scraper,
-                      allowed_mimetypes=[]):
-    """
-    Runs scraper result evaluation for a scraper with forced MIME type/version
-
-    :filename: Name of the file, not containing the tests/data/mime_type/ part
-    :result_dict: Result dict to be given to Correct
-    :filetype: A dict containing the forced, expected and real file types under
-               the following keys:
-                * given_mimetype: the forced MIME type
-                * given_version: the forced version
-                * expected_mimetype: the expected resulting MIME type
-                * expected_version: the expected resulting version
-                * correct_mimetype: the real MIME type of the file
-    """
-    correct = force_correct_filetype(filename, result_dict,
-                                     filetype, allowed_mimetypes)
-    if correct.mimetype == "application/xhtml+xml":
-        correct.streams[0]["stream_type"] = "text"
-
-    if filetype["given_mimetype"]:
-        mimetype_guess = filetype["given_mimetype"]
-    else:
-        mimetype_guess = filetype["correct_mimetype"]
-    params = {"mimetype": filetype["given_mimetype"],
-              "version": filetype["given_version"],
-              "mimetype_guess": mimetype_guess}
-    scraper = PilScraper(correct.filename, True, params)
-    scraper.scrape_file()
-
-    evaluate_scraper(scraper, correct)
-
-
-@pytest.mark.parametrize(
-    ["filename", "mimetype", "version", "version_result",
-     "extra_valid_mimetypes"],
-    [
-        ("valid_6.0_multiple_tiffs.tif", "image/tiff", "6.0", "(:unav)", []),
-        ("valid_1.2.png", "image/png", "1.2", "(:unav)", ["image/jp2",
-                                                          "image/gif"]),
-        ("valid.jp2", "image/jp2", "(:unav)", "(:unav)", []),
-        ("valid_1989a.gif", "image/gif", "1989a", "(:unav)", []),
-        ("valid_1.01.jpg", "image/jpeg", "1.01", "(:unav)", []),
-    ]
-)
-def test_forced_filetype(filename, mimetype, version, version_result,
-                         extra_valid_mimetypes, evaluate_scraper):
-    """
-    Tests the simple cases of file type forcing.
-
-    Here, the following cases are tested for one file type scraped using each
-    metadata model class supported by PilScraper:
-        - Force the scraper to use the correct MIME type and version, which
-          should always result in the given MIME type and version and the file
-          should be well-formed.
-        - Force the scraper to use the correct MIME type, which should always
-          result in the given MIME type and the version the metadata model
-          would normally return.
-        - Give forced version without MIME type, which should result in the
-          scraper running normally and not affect its results or messages.
-        - Force the scraper to use an unsupported MIME type, which should
-          result in an error message being logged and the scraper reporting
-          the file as not well-formed.
-    """
-    # pylint: disable=too-many-arguments
-    result_dict = {"purpose": "Test forcing correct MIME type and version",
-                   "stdout_part": "MIME type and version not scraped, using",
-                   "stderr_part": ""}
-    filetype_dict = {"given_mimetype": mimetype,
-                     "given_version": version,
-                     "expected_mimetype": mimetype,
-                     "expected_version": version,
-                     "correct_mimetype": mimetype}
-    run_filetype_test(filename, result_dict, filetype_dict, evaluate_scraper)
-
-    for other_mimetype in extra_valid_mimetypes:
-        result_dict = {"purpose": "Test forcing other MIME type also scraped "
-                                  "by this scraper "
-                                  "({})".format(other_mimetype),
-                       "stdout_part": "MIME type not scraped, using",
-                       "stderr_part": ""}
-        filetype_dict = {"given_mimetype": other_mimetype,
-                         "given_version": None,
-                         "expected_mimetype": other_mimetype,
-                         "expected_version": version_result,
-                         "correct_mimetype": mimetype}
-        run_filetype_test(filename, result_dict, filetype_dict,
-                          evaluate_scraper, [other_mimetype])
-
-    result_dict = {"purpose": "Test forcing correct MIME type without version",
-                   "stdout_part": "MIME type not scraped, using",
-                   "stderr_part": ""}
-    filetype_dict = {"given_mimetype": mimetype,
-                     "given_version": None,
-                     "expected_mimetype": mimetype,
-                     "expected_version": version_result,
-                     "correct_mimetype": mimetype}
-    run_filetype_test(filename, result_dict, filetype_dict, evaluate_scraper)
-
-    result_dict = {"purpose": "Test forcing version only (no effect)",
-                   "stdout_part": "The file was analyzed successfully",
-                   "stderr_part": ""}
-    filetype_dict = {"given_mimetype": None,
-                     "given_version": "99.9",
-                     "expected_mimetype": mimetype,
-                     "expected_version": version_result,
-                     "correct_mimetype": mimetype}
-    run_filetype_test(filename, result_dict, filetype_dict, evaluate_scraper)
-
-    result_dict = {"purpose": "Test forcing wrong MIME type",
-                   "stdout_part": "MIME type not scraped, using",
-                   "stderr_part": "MIME type not supported by this scraper"}
-    filetype_dict = {"given_mimetype": "unsupported/mime",
-                     "given_version": None,
-                     "expected_mimetype": "unsupported/mime",
-                     "expected_version": version_result,
-                     "correct_mimetype": mimetype}
-    run_filetype_test(filename, result_dict, filetype_dict, evaluate_scraper)

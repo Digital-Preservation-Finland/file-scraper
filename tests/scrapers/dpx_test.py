@@ -59,8 +59,7 @@ def test_scraper(filename, result_dict, evaluate_scraper):
     """Test scraper."""
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
-    scraper = DpxScraper(filename=correct.filename, mimetype=MIMETYPE,
-                         params=correct.params)
+    scraper = DpxScraper(filename=correct.filename, mimetype=MIMETYPE)
     scraper.scrape_file()
 
     evaluate_scraper(scraper, correct)

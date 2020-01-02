@@ -21,8 +21,7 @@ import pytest
 import six
 
 from file_scraper.pngcheck.pngcheck_scraper import PngcheckScraper
-from tests.common import (parse_results, force_correct_filetype,
-                          partial_message_included)
+from tests.common import (parse_results, partial_message_included)
 
 MIMETYPE = "image/png"
 
@@ -48,7 +47,7 @@ def test_scraper(filename, result_dict, evaluate_scraper):
     """Test scraper."""
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
-    scraper = PngcheckScraper(correct.filename, True, correct.params)
+    scraper = PngcheckScraper(filename=correct.filename, mimetype="image/png")
     scraper.scrape_file()
     correct.version = None
     correct.streams[0]["version"] = "(:unav)"
@@ -65,7 +64,9 @@ def test_scraper(filename, result_dict, evaluate_scraper):
 
 def test_no_wellformed():
     """Test scraper without well-formed check."""
-    scraper = PngcheckScraper("tests/data/image_png/valid_1.2.png", False)
+    scraper = PngcheckScraper(filename="tests/data/image_png/valid_1.2.png",
+                              mimetype="image/png",
+                              check_wellformed=False)
     scraper.scrape_file()
     assert partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
@@ -80,49 +81,3 @@ def test_is_supported():
     assert not PngcheckScraper.is_supported(mime, ver, False)
     assert PngcheckScraper.is_supported(mime, "foo", True)
     assert not PngcheckScraper.is_supported("foo", ver, True)
-
-
-@pytest.mark.parametrize(
-    ["result_dict", "filetype"],
-    [
-        ({"purpose": "Test forcing correct MIME type and version",
-          "stdout_part": "MIME type and version not scraped, using",
-          "stderr_part": ""},
-         {"given_mimetype": "image/png",
-          "given_version": "1.2",
-          "expected_mimetype": "image/png",
-          "expected_version": "1.2"}),
-        ({"purpose": "Test forcing correct MIME type",
-          "stdout_part": "MIME type not scraped, using",
-          "stderr_part": ""},
-         {"given_mimetype": "image/png",
-          "given_version": None,
-          "expected_mimetype": "image/png",
-          "expected_version": "(:unav)"}),
-        ({"purpose": "Test forcing version only (no effect)",
-          "stdout_part": "",
-          "stderr_part": ""},
-         {"given_mimetype": None, "given_version": "1.2",
-          "expected_mimetype": "(:unav)", "expected_version": "(:unav)"}),
-        ({"purpose": "Test forcing wrong MIME type",
-          "stdout_part": "MIME type not scraped, using",
-          "stderr_part": "is not supported"},
-         {"given_mimetype": "unsupported/mime", "given_version": None,
-          "expected_mimetype": "unsupported/mime",
-          "expected_version": "(:unav)"})
-    ]
-)
-def test_forced_filetype(result_dict, filetype, evaluate_scraper):
-    """
-    Test using user-supplied MIME-types and versions.
-    """
-    filetype[six.text_type("correct_mimetype")] = "image/png"
-    correct = force_correct_filetype("valid_1.2.png", result_dict,
-                                     filetype, ["(:unav)"])
-
-    params = {"mimetype": filetype["given_mimetype"],
-              "version": filetype["given_version"]}
-    scraper = PngcheckScraper(correct.filename, True, params)
-    scraper.scrape_file()
-
-    evaluate_scraper(scraper, correct)

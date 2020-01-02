@@ -52,9 +52,7 @@ class VerapdfScraper(BaseScraper):
             self._errors.append(shell.stderr)
 
         if self.well_formed:
-            for md_class in self._supported_metadata:
-                if md_class.is_supported(self._mimetype):
-                    self.streams.append(md_class(profile))
+            self.iterate_models(profile=profile)
 
             self._check_supported()
 
@@ -65,5 +63,4 @@ class VeraPDFError(Exception):
 
     Raised if VeraPDF does not run successfully.
     """
-
     pass

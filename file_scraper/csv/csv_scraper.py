@@ -98,8 +98,7 @@ class CsvScraper(BaseScraper):
             if csvfile:
                 csvfile.close()
 
-        self.iterate_models(errors=self._errors,
-                            params={"delimiter": delimiter,
+        self.iterate_models(params={"delimiter": delimiter,
                                     "separator": separator,
                                     "fields": fields,
                                     "first_line": first_line})

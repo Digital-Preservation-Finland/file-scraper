@@ -39,8 +39,7 @@ import pytest
 import six
 
 from file_scraper.xmllint.xmllint_scraper import XmllintScraper
-from tests.common import (parse_results, force_correct_filetype,
-                          partial_message_included)
+from tests.common import (parse_results, partial_message_included)
 
 ROOTPATH = os.path.abspath(os.path.join(
     os.path.dirname(__file__), "..", ".."))
@@ -83,7 +82,9 @@ def test_scraper_valid(filename, result_dict, params, evaluate_scraper):
     """Test scraper."""
     correct = parse_results(filename, "text/xml",
                             result_dict, True, params)
-    scraper = XmllintScraper(correct.filename, True, correct.params)
+    scraper = XmllintScraper(filename=correct.filename,
+                             mimetype="text/xml",
+                             check_wellformed=True, params=correct.params)
     scraper.scrape_file()
 
     if not correct.well_formed:
@@ -139,7 +140,9 @@ def test_scraper_invalid(filename, result_dict, params, evaluate_scraper):
     """Test scraper."""
     correct = parse_results(filename, "text/xml",
                             result_dict, True, params)
-    scraper = XmllintScraper(correct.filename, True, correct.params)
+    scraper = XmllintScraper(filename=correct.filename,
+                             mimetype="text/xml",
+                             check_wellformed=True, params=correct.params)
     scraper.scrape_file()
     if "empty" in filename or "no_closing_tag" in filename:
         correct.version = None
@@ -157,8 +160,9 @@ def test_scraper_invalid(filename, result_dict, params, evaluate_scraper):
 
 def test_no_wellformed():
     """Test scraper without well-formed check."""
-    scraper = XmllintScraper("tests/data/text_xml/valid_1.0_wellformed.xml",
-                             False)
+    scraper = XmllintScraper(
+        filename="tests/data/text_xml/valid_1.0_wellformed.xml",
+        mimetype="text/xml", check_wellformed=False)
     scraper.scrape_file()
     assert partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
@@ -184,59 +188,16 @@ def test_parameters():
     assert scraper._no_network
     assert scraper._catalog_path is None
 
-    scraper = XmllintScraper("testsfile", params={"schema": "schemafile",
-                                                  "catalogs": False,
-                                                  "no_network": False})
+    scraper = XmllintScraper(
+        filename="testsfile", mimetype="text/xml",
+        params={"schema": "schemafile", "catalogs": False,
+                "no_network": False})
     assert scraper._schema == "schemafile"
     assert not scraper._catalogs
     assert not scraper._no_network
 
-    scraper = XmllintScraper("testsfile", params={"catalog_path": "catpath"})
+    scraper = XmllintScraper(filename="testsfile",
+                             mimetype="text/xml",
+                             params={"catalog_path": "catpath"})
     assert scraper._catalogs
     assert scraper._catalog_path == "catpath"
-
-
-@pytest.mark.parametrize(
-    ["result_dict", "filetype"],
-    [
-        ({"purpose": "Test forcing correct MIME type and version",
-          "stdout_part": "MIME type and version not scraped, using",
-          "stderr_part": ""},
-         {"given_mimetype": "text/xml",
-          "given_version": "1.0",
-          "expected_mimetype": "text/xml",
-          "expected_version": "1.0"}),
-        ({"purpose": "Test forcing correct MIME type",
-          "stdout_part": "MIME type not scraped, using",
-          "stderr_part": ""},
-         {"given_mimetype": "text/xml",
-          "given_version": None,
-          "expected_mimetype": "text/xml",
-          "expected_version": "1.0"}),
-        ({"purpose": "Test forcing version only (no effect)",
-          "stdout_part": "",
-          "stderr_part": ""},
-         {"given_mimetype": None, "given_version": "99.9",
-          "expected_mimetype": "text/xml", "expected_version": "1.0"}),
-        ({"purpose": "Test forcing wrong MIME type",
-          "stdout_part": "MIME type not scraped, using",
-          "stderr_part": "is not supported"},
-         {"given_mimetype": "unsupported/mime", "given_version": None,
-          "expected_mimetype": "unsupported/mime",
-          "expected_version": "1.0"})
-    ]
-)
-def test_forced_filetype(result_dict, filetype, evaluate_scraper):
-    """
-    Test using user-supplied MIME-types and versions.
-    """
-    filetype[six.text_type("correct_mimetype")] = "text/xml"
-    correct = force_correct_filetype("valid_1.0_well_formed.xml", result_dict,
-                                     filetype)
-
-    params = {"mimetype": filetype["given_mimetype"],
-              "version": filetype["given_version"]}
-    scraper = XmllintScraper(correct.filename, True, params)
-    scraper.scrape_file()
-
-    evaluate_scraper(scraper, correct)

@@ -16,7 +16,7 @@ class BaseMediainfoMeta(BaseMeta):
     _containers = []
     container_stream = None
 
-    def __init__(self, tracks, index):
+    def __init__(self, errors, tracks, index):
         """
         Initialize the metadata model.
 
@@ -34,7 +34,7 @@ class BaseMediainfoMeta(BaseMeta):
             self.container_stream = tracks[0]
         else:
             self._index = index - 1
-        super(BaseMediainfoMeta, self).__init__()
+        super(BaseMediainfoMeta, self).__init__(errors=errors)
 
     def hascontainer(self):
         """Find out if file is a video container."""
@@ -299,15 +299,21 @@ class MovMediainfoMeta(BaseMediainfoMeta):
 
         try:
             return mime_dict[self.codec_name()]
-        except (SkipElementException, KeyError):
+        except SkipElementException:
             pass
+        except KeyError:
+            try:
+                return mime_dict[self._stream.format_profile]
+            except KeyError:
+                pass
         return "(:unav)"
 
     @metadata()
     def version(self):
         """Return version."""
         # Quicktime container does not have different versions.
-        if self.mimetype() == "video/quicktime":
+        if self.mimetype() in ["video/quicktime", "video/dv", "video/mp4",
+                               "audio/mp4"]:
             return "(:unap)"
         return super(MovMediainfoMeta, self).version()
 
@@ -474,12 +480,27 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
         try:
             return mime_dict[self.codec_name()]
         except (SkipElementException, KeyError):
-            pass
-        return self._mimetype_guess
+            for track in self._tracks:
+                try:
+                    if track.track_type == "Video":
+                        if self.codec_name() == "MPEG-TS":
+                            if track.format_version == "Version 2":
+                                return "video/MP2T"
+                        if self.codec_name() == "MPEG-PS":
+                            if track.format_version == "Version 2":
+                                return "video/MP2P"
+                            if track.format_version == "Version 1":
+                                return "video/MP1S"
+                except SkipElementException:
+                    pass
+        return "(:unav)"
 
     @metadata()
     def version(self):
         """Return version of stream."""
+        if self.mimetype() in ["video/MP2T", "video/MP2P", "video/MP1S",
+                               "video/mp4", "audio/mp4"]:
+            return "(:unap)"
         # mp3 "container" does not know the version, so it has to be checked
         # from the first stream
         if (self.mimetype() == "audio/mpeg" and
@@ -489,8 +510,6 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
 
         if self._stream.format_version is not None:
             return six.text_type(self._stream.format_version)[-1]
-        if self.stream_type() in ["videocontainer", "video", "audio"]:
-            return "(:unav)"
         return "(:unav)"
 
 
@@ -505,6 +524,18 @@ class SimpleMediainfoMeta(BaseMeta):
     _supported = {"video/avi": []}
     _allow_versions = True  # Allow any version
     _containers = ["video/avi"]
+
+    def __init__(self, errors, tracks, index):
+        """
+        Initialize the metadata model.
+
+        :tracks: list of tracks containing all tracks in the file
+        :index: index of the track represented by this metadata model
+        :mimetype_guess: MIME type of the file. For some file types, the
+                         scraper cannot determine the mimetype and this
+                         value is used instead.
+        """
+        super(SimpleMediainfoMeta, self).__init__(errors=errors)
 
     def hascontainer(self):
         """

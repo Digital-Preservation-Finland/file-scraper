@@ -40,9 +40,7 @@ class TextfileScraper(BaseScraper):
         mimetype = self._file_mimetype()
         if mimetype == "text/plain":
             self._messages.append("File is a text file.")
-            for md_class in self._supported_metadata:
-                if md_class.is_supported(self.mimetype):
-                    self.streams.append(md_class())
+            self.iterate_models()
             self._check_supported(allow_unav_mime=True,
                                   allow_unav_version=True)
         else:

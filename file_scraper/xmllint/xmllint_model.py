@@ -13,14 +13,21 @@ class XmllintMeta(BaseMeta):
     _supported = {"text/xml": ["1.0"]}  # Supported mimetype
     _allow_versions = True
 
-    def __init__(self, tree):
+    def __init__(self, errors, tree):
         """
         Initialize the metadata model.
 
         :tree: XML element tree for the scraped file
         """
         self._tree = tree
-        super(XmllintMeta, self).__init__()
+        super(XmllintMeta, self).__init__(errors=errors)
+
+    @metadata()
+    def mimetype(self):
+        """Return mimetype."""
+        if not self._errors:
+            return "text/xml"
+        return "(:unav)"
 
     @metadata()
     def version(self):

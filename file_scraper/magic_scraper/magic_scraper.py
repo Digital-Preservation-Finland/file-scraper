@@ -62,7 +62,7 @@ class MagicScraper(BaseScraper):
 
         magic_result = self._magic_call()
 
-        self.iterate_models(errors=self._errors, magic_result=magic_result)
+        self.iterate_models(magic_result=magic_result)
 
         self._check_supported(allow_unav_version=True, allow_unap_version=True)
         self._messages.append("The file was analyzed successfully.")

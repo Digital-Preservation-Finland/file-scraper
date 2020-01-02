@@ -39,7 +39,7 @@ class BaseScraperBasic(BaseScraper):
 
     def scrape_file(self):
         """Do nothing, scraping not needed here."""
-        self.streams.append(BaseMetaBasic())
+        self.streams.append(BaseMetaBasic([]))
 
 
 class BaseMetaVersion(BaseMeta):
@@ -116,7 +116,9 @@ def test_messages_errors():
 
 def test_scraper_properties():
     """Test scraper's attributes and well_formed property."""
-    scraper = BaseScraperBasic("testfilename", True, {"test": "value"})
+    scraper = BaseScraperBasic(
+        filename="testfilename", mimetype="test/mime",
+        check_wellformed=True, params={"test": "value"})
     # pylint: disable=protected-access
     scraper._messages.append("success")
     assert scraper.well_formed
@@ -128,40 +130,12 @@ def test_scraper_properties():
     assert scraper._check_wellformed
     assert scraper._params == {"test": "value"}
 
-    scraper = BaseScraperBasic("testfilename", False)
+    scraper = BaseScraperBasic(
+        filename="testfilename", mimetype="test/mime", check_wellformed=False)
     scraper._messages.append("success")
     assert scraper.well_formed is None
     scraper._errors.append("error")
     assert scraper.well_formed is None
-
-
-@pytest.mark.parametrize(
-    ["given_mimetype", "given_version", "expected_mimetype",
-     "expected_version", "expected_message"],
-    [
-        (None, None, "(:unav)", "(:unav)", None),
-        ("test/override", "99.9", "test/override", "99.9",
-         "MIME type and version not scraped, using user-supplied"),
-        ("test/override", None, "test/override", "(:unav)",
-         "MIME type not scraped, using user-supplied value."),
-        (None, "99.9", "(:unav)", "(:unav)", None)
-    ]
-)
-def test_overriding_filetype(given_mimetype, given_version, expected_mimetype,
-                             expected_version, expected_message):
-    """
-    Test forcing the base scraper to use certain MIME type and/or version.
-    """
-    scraper = BaseScraperBasic("testfilename", given_mimetype,
-                               params={"mimetype": given_mimetype,
-                                       "version": given_version})
-    scraper.scrape_file()
-    assert scraper.streams[0].mimetype() == expected_mimetype
-    assert scraper.streams[0].version() == expected_version
-    if expected_message:
-        assert partial_message_included(expected_message, scraper.messages())
-    else:
-        assert not scraper.messages()
 
 
 class BaseMetaCustom(BaseMeta):
@@ -169,8 +143,8 @@ class BaseMetaCustom(BaseMeta):
 
     _supported = {"test/mimetype": ["0.1"]}
 
-    def __init__(self, mimetype, version):
-        super(BaseMetaCustom, self).__init__()
+    def __init__(self, errors, mimetype, version):
+        super(BaseMetaCustom, self).__init__(errors)
         self._mimetype = mimetype
         self._version = version
 
@@ -207,7 +181,9 @@ def test_check_supported(scraper_class, mimetype, version, errors):
     """Test scraper's _check_supported() method."""
     # pylint: disable=protected-access
     scraper = scraper_class("testfilename", mimetype)
-    scraper.streams.append(BaseMetaCustom(mimetype, version))
+    scraper.streams.append(BaseMetaCustom(errors=errors,
+                                          mimetype=mimetype,
+                                          version=version))
     scraper._check_supported()
     if not errors:
         assert not scraper.errors()

@@ -4,7 +4,8 @@ from __future__ import unicode_literals
 import six
 
 from file_scraper.base import BaseScraper
-from file_scraper.pil.pil_model import ImagePilMeta, JpegPilMeta, TiffPilMeta
+from file_scraper.pil.pil_model import ImagePilMeta, JpegPilMeta, \
+    TiffPilMeta, Jp2PilMeta
 
 try:
     import PIL.Image
@@ -15,7 +16,8 @@ except ImportError:
 class PilScraper(BaseScraper):
     """Scraper that uses PIL to scrape tiff, png, jpeg and gif images."""
 
-    _supported_metadata = [TiffPilMeta, ImagePilMeta, JpegPilMeta]
+    _supported_metadata = [TiffPilMeta, ImagePilMeta,
+                           JpegPilMeta, Jp2PilMeta]
 
     def scrape_file(self):
         """Scrape data from file."""
@@ -40,8 +42,6 @@ class PilScraper(BaseScraper):
             n_frames = 1
 
         for pil_index in range(0, n_frames):
-            for md_class in self._supported_metadata:
-                if md_class.is_supported(mimetype):
-                    self.streams.append(md_class(pil, pil_index))
+            self.iterate_models(pil=pil, index=pil_index)
 
         self._check_supported(allow_unav_version=True)

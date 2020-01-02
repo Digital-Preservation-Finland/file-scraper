@@ -14,7 +14,7 @@ DV_VIDEO = {
     "data_rate": "24.4416", "data_rate_mode": "Fixed", "duration": "PT0.08S",
     "frame_rate": "25", "height": "576", "index": 0, "mimetype": "video/dv",
     "par": "1.422", "sampling": "4:2:0", "signal_format": "PAL",
-    "sound": "No", "stream_type": "video", "version": "(:unav)",
+    "sound": "No", "stream_type": "video", "version": "(:unap)",
     "width": "720"}
 
 MOV_DV_VIDEO = dict(DV_VIDEO, **{
@@ -22,8 +22,8 @@ MOV_DV_VIDEO = dict(DV_VIDEO, **{
     "codec_creator_app_version": "56.40.101", "sound": "Yes"})
 
 MOV_TC = {
-    "index": 3, "mimetype": "video/quicktime", "stream_type": "other",
-    "version": "(:unap)"}
+        "index": 3, "mimetype": "(:unav)", "stream_type": "other",
+    "version": "(:unav)"}
 
 
 MKV_CONTAINER = {
@@ -71,7 +71,7 @@ MPEG2_VIDEO = dict(MPEG1_VIDEO, **{
 
 MPEG4_VIDEO = dict(MPEG1_VIDEO, **{
     "mimetype": "video/mp4", "index": 1, "data_rate": "0.048704",
-    "sound": "Yes", "version": "(:unav)", "codec_name": "AVC",
+    "sound": "Yes", "version": "(:unap)", "codec_name": "AVC",
     "codec_creator_app_version": "56.40.101",
     "codec_creator_app": "Lavf56.40.101"})
 
@@ -94,7 +94,7 @@ MPEG1_AUDIO = {
 
 MPEG4_AUDIO = dict(MPEG1_AUDIO, **{
     "mimetype": "audio/mp4", "index": 2, "audio_data_encoding": "AAC",
-    "data_rate_mode": "Fixed", "version": "(:unav)", "codec_name": "AAC",
+    "data_rate_mode": "Fixed", "version": "(:unap)", "codec_name": "AAC",
     "codec_creator_app_version": "56.40.101",
     "duration": "PT0.86S", "data_rate": "135.233",
     "codec_creator_app": "Lavf56.40.101"})
@@ -109,7 +109,7 @@ MPEGTS_AUDIO = dict(MPEG1_AUDIO, **{
 
 MPEG4_CONTAINER = {
     "mimetype": "video/mp4", "index": 0, "stream_type": "videocontainer",
-    "version": "(:unav)", "codec_name": "MPEG-4",
+    "version": "(:unap)", "codec_name": "MPEG-4",
     "codec_creator_app_version": "56.40.101",
     "codec_creator_app": "Lavf56.40.101"}
 
@@ -117,10 +117,10 @@ MPEGTS_CONTAINER = {
     "codec_creator_app": "(:unav)",
     "codec_creator_app_version": "(:unav)",
     "codec_name": "MPEG-TS", "index": 0, "mimetype": "video/MP2T",
-    "stream_type": "videocontainer", "version": "(:unav)"}
+    "stream_type": "videocontainer", "version": "(:unap)"}
 
 MPEGTS_OTHER = {
-    "index": 3, "mimetype": "video/MP2T", "stream_type": "menu",
+    "index": 3, "mimetype": "(:unav)", "stream_type": "menu",
     "version": "(:unav)"}
 
 AVI_CONTAINER = {
@@ -169,5 +169,5 @@ MXF_JPEG2000_VIDEO = dict(BASE_JPEG2000_VIDEO,
                               "par": "0",
                               })
 
-MXF_TC = {"mimetype": u"application/mxf", "index": 4, "version": u"(:unav)",
+MXF_TC = {"mimetype": "application/mxf", "index": 4, "version": "(:unav)",
           "stream_type": "other"}

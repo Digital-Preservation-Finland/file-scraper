@@ -35,8 +35,6 @@ class OfficeScraper(BaseScraper):
             self._errors.append("Error handling file: {}".format(error))
         finally:
             shutil.rmtree(temp_dir)
-            for md_class in self._supported_metadata:
-                if md_class.is_supported(self._mimetype):
-                    self.streams.append(md_class())
+            self.iterate_models()
             self._check_supported(allow_unav_mime=True,
                                   allow_unav_version=True)

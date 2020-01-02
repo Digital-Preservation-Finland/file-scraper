@@ -54,8 +54,10 @@ class MediainfoScraper(BaseScraper):
 
         for index in range(len(mediainfo.tracks)):
             for md_class in self._supported_metadata:
-                if md_class.is_supported(self._mimetype):
-                    md_object = md_class(mediainfo.tracks, index)
+                if md_class.is_supported(self._predefined_mimetype):
+                    md_object = md_class(errors=self._errors,
+                                         tracks=mediainfo.tracks,
+                                         index=index)
                     if md_object.hascontainer() or index > 0:
                         self.streams.append(md_object)
 

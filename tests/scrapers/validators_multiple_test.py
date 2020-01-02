@@ -32,8 +32,8 @@ def test_scrape_valid_file(filename, mimetype):
     """Test scraping for a well-formed odt file."""
     for class_ in iter_scrapers(mimetype, None):
         scraper = class_(
-            os.path.join(BASEPATH, mimetype.replace('/', '_'), filename),
-            params={"mimetype_guess": mimetype})
+            filename=os.path.join(BASEPATH, mimetype.replace('/', '_'), filename),
+            mimetype=mimetype)
         scraper.scrape_file()
         assert scraper.well_formed
 
@@ -54,9 +54,9 @@ def test_scrape_invalid_file(filename, mimetype):
     scraper_results = []
     for class_ in iter_scrapers(mimetype, None):
         scraper = class_(
-            os.path.join(BASEPATH, "application_vnd.oasis.opendocument.text",
-                         filename),
-            mimetype)
+            filename=os.path.join(
+                BASEPATH, "application_vnd.oasis.opendocument.text", filename),
+            mimetype=mimetype)
         scraper_results.append(scraper.well_formed)
 
     assert not all(scraper_results)

@@ -64,9 +64,7 @@ class WarcWarctoolsScraper(BaseScraper):
             return
 
         self._messages.append("File was analyzed successfully.")
-        for md_class in self._supported_metadata:
-            if md_class.is_supported(self._mimetype):
-                self.streams.append(md_class(line))
+        self.iterate_models(line=line)
         self._check_supported()
 
 
@@ -102,10 +100,7 @@ class ArcWarctoolsScraper(BaseScraper):
             self._messages.append("File was analyzed successfully.")
             if shell.stdout:
                 self._messages.append(shell.stdout)
-
-        for md_class in self._supported_metadata:
-            if md_class.is_supported(self._mimetype):
-                self.streams.append(md_class())
+        self.iterate_models()
         self._check_supported(allow_unav_version=True)
 
 
@@ -127,7 +122,11 @@ class GzipWarctoolsScraper(BaseScraper):
 
         original_messages = self._messages
         for class_ in self._supported_scrapers:
-            self._scraper = class_(self.filename, True)
+            if class_ == WarcWarctoolsScraper:
+                mime = "application/warc"
+            else:
+                mime = "application/x-internet-archive"
+            self._scraper = class_(filename=self.filename, mimetype=mime)
             self._scraper.scrape_file()
 
             # pylint: disable=protected-access
@@ -141,9 +140,7 @@ class GzipWarctoolsScraper(BaseScraper):
                 self._errors = self._scraper._errors
 
             if self._scraper.well_formed:
-                for md_model in self._supported_metadata:
-                    if md_class.is_supported(self._mimetype):
-                        self.streams.append(md_model(self._scraper.streams))
+                self.iterate_models(metadata_model=self._scraper.streams)
                 self._check_supported()
                 break
 

@@ -60,8 +60,9 @@ class XmllintScraper(BaseScraper):
         self._catalogs = params.get("catalogs", True)
         self._no_network = params.get("no_network", True)
         self._catalog_path = params.get("catalog_path", None)
-        super(XmllintScraper, self).__init__(filename, mimetype, check_wellformed,
-                                             params)
+        super(XmllintScraper, self).__init__(
+            filename=filename, mimetype=mimetype,
+            check_wellformed=check_wellformed, params=params)
 
     @classmethod
     def is_supported(cls, mimetype, version=None,
@@ -138,7 +139,7 @@ class XmllintScraper(BaseScraper):
                     # was well formed.
                     self._messages.append("Success: Document is well-formed "
                                           "but does not contain schema.")
-                    self._add_streams(tree)
+                    self.iterate_models(tree=tree)
                     self._check_supported()
                     return
 
@@ -156,7 +157,7 @@ class XmllintScraper(BaseScraper):
         if self._has_constructed_schema:
             os.remove(self._schema)
 
-        self._add_streams(tree)
+        self.iterate_models(tree=tree)
         self._check_supported()
 
     def construct_xsd(self, document_tree):
@@ -264,13 +265,3 @@ class XmllintScraper(BaseScraper):
             self._errors.append(error)
 
         return super(XmllintScraper, self).errors()
-
-    def _add_streams(self, tree):
-        """
-        Add metadata classes to the streams.
-
-        :tree: XML element tree for the scraped file
-        """
-        for md_class in self._supported_metadata:
-            if md_class.is_supported(self._mimetype):
-                self.streams.append(md_class(tree))

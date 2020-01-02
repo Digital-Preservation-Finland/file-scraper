@@ -12,14 +12,21 @@ class VerapdfMeta(BaseMeta):
     _supported = {"application/pdf": ["A-1a", "A-1b", "A-2a", "A-2b", "A-2u",
                                       "A-3a", "A-3b", "A-3u"]}
 
-    def __init__(self, profile):
+    def __init__(self, errors, profile):
         """
         Initialize the metadata model.
 
         :profile: profileName from verapdf report
         """
         self._profile = profile
-        super(VerapdfMeta, self).__init__()
+        super(VerapdfMeta, self).__init__(errors=errors)
+
+    @metadata()
+    def mimetype(self):
+        """Return mime type."""
+        if not self._errors:
+            return "application/pdf"
+        return "(:unav)"
 
     @metadata(important=True)
     def version(self):

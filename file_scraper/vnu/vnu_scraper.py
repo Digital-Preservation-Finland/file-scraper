@@ -28,7 +28,5 @@ class VnuScraper(BaseScraper):
         self._messages.append(shell.stdout)
 
         if self.well_formed:
-            for md_class in self._supported_metadata:
-                if md_class.is_supported(self._mimetype):
-                    self.streams.append(md_class())
+            self.iterate_models()
             self._check_supported()

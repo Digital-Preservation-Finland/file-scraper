@@ -17,14 +17,14 @@ class WandImageMeta(BaseMeta):
                   "image/gif": []}
     _allow_versions = True
 
-    def __init__(self, image):
+    def __init__(self, errors, image):
         """
         Initialize the metadata model.
 
         :image: Wand SingleImage object for which the metadata is collected
         """
         self._image = image
-        super(WandImageMeta, self).__init__()
+        super(WandImageMeta, self).__init__(errors=errors)
 
     @metadata()
     def index(self):

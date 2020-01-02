@@ -41,8 +41,7 @@ import pytest
 import six
 
 from file_scraper.office.office_scraper import OfficeScraper
-from tests.common import (parse_results, force_correct_filetype,
-                          partial_message_included)
+from tests.common import (parse_results, partial_message_included)
 
 BASEPATH = "tests/data"
 
@@ -76,7 +75,7 @@ def test_scraper_valid_file(filename, mimetype, evaluate_scraper):
         "stderr_part": ""}
     correct = parse_results(filename, mimetype,
                             result_dict, True)
-    scraper = OfficeScraper(correct.filename, True, correct.params)
+    scraper = OfficeScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
     correct.streams[0]["version"] = "(:unav)"
     correct.streams[0]["mimetype"] = "(:unav)"
@@ -114,7 +113,7 @@ def test_scraper_invalid_file(filename, mimetype, evaluate_scraper):
         "stdout_part": "",
         "stderr_part": "source file could not be loaded"}
     correct = parse_results(filename, mimetype, result_dict, True)
-    scraper = OfficeScraper(correct.filename, True, correct.params)
+    scraper = OfficeScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
     correct.streams[0]["version"] = "(:unav)"
     correct.streams[0]["mimetype"] = "(:unav)"
@@ -123,8 +122,9 @@ def test_scraper_invalid_file(filename, mimetype, evaluate_scraper):
 
 
 def _scrape(filename, mimetype):
-    scraper = OfficeScraper(os.path.join(BASEPATH, mimetype.replace("/", "_"),
-                                         filename))
+    scraper = OfficeScraper(
+        filename=os.path.join(BASEPATH, mimetype.replace("/", "_"),
+                              filename), mimetype=mimetype)
     scraper.scrape_file()
     return scraper.well_formed
 
@@ -154,8 +154,9 @@ def test_parallel_validation(filename, mimetype):
 
 def test_no_wellformed():
     """Test scraper without well-formed check."""
-    scraper = OfficeScraper("tests/data/application_msword/valid_11.0.doc",
-                            False)
+    scraper = OfficeScraper(filename="tests/data/application_msword/valid_11.0.doc",
+                            mimetype="application/msword",
+                            check_wellformed=False)
     scraper.scrape_file()
     assert partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
@@ -187,49 +188,3 @@ def test_is_supported(mime, ver):
     assert not OfficeScraper.is_supported(mime, ver, False)
     assert OfficeScraper.is_supported(mime, "foo", True)
     assert not OfficeScraper.is_supported("foo", ver, True)
-
-
-@pytest.mark.parametrize(
-    ["result_dict", "filetype"],
-    [
-        ({"purpose": "Test forcing correct MIME type and version",
-          "stdout_part": "MIME type and version not scraped, using",
-          "stderr_part": ""},
-         {"given_mimetype": "application/vnd.oasis.opendocument.spreadsheet",
-          "given_version": "1.1",
-          "expected_mimetype": "application/vnd.oasis.opendocument.spreadsheet",
-          "expected_version": "1.1"}),
-        ({"purpose": "Test forcing correct MIME type",
-          "stdout_part": "MIME type not scraped, using",
-          "stderr_part": ""},
-         {"given_mimetype": "application/vnd.oasis.opendocument.spreadsheet",
-          "given_version": None,
-          "expected_mimetype": "application/vnd.oasis.opendocument.spreadsheet",
-          "expected_version": "(:unav)"}),
-        ({"purpose": "Test forcing version only (no effect)",
-          "stdout_part": "",
-          "stderr_part": ""},
-         {"given_mimetype": None, "given_version": "1.1",
-          "expected_mimetype": "(:unav)", "expected_version": "(:unav)"}),
-        ({"purpose": "Test forcing wrong MIME type",
-          "stdout_part": "MIME type not scraped, using",
-          "stderr_part": "is not supported"},
-         {"given_mimetype": "unsupported/mime", "given_version": None,
-          "expected_mimetype": "unsupported/mime",
-          "expected_version": "(:unav)"})
-    ]
-)
-def test_forced_filetype(result_dict, filetype, evaluate_scraper):
-    """
-    Test using user-supplied MIME-types and versions.
-    """
-    filetype[six.text_type("correct_mimetype")] = "application/vnd.oasis.opendocument.spreadsheet"
-    correct = force_correct_filetype("valid_1.1.ods", result_dict,
-                                     filetype, ["(:unav)"])
-
-    params = {"mimetype": filetype["given_mimetype"],
-              "version": filetype["given_version"]}
-    scraper = OfficeScraper(correct.filename, True, params)
-    scraper.scrape_file()
-
-    evaluate_scraper(scraper, correct)

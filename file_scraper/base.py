@@ -122,7 +122,7 @@ class BaseScraper(object):
         for md_class in self._supported_metadata:
             if md_class.is_supported(self._predefined_mimetype,
                                      self._predefined_version, self._params):
-                self.streams.append(md_class(**kwargs))
+                self.streams.append(md_class(errors=self._errors, **kwargs))
 
     def errors(self):
         """

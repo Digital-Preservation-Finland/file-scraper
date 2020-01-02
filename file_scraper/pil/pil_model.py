@@ -21,7 +21,7 @@ SAMPLES_PER_PIXEL_TAG = 277
 class BasePilMeta(BaseMeta):
     """Metadata model for image metadata."""
 
-    def __init__(self, pil, index):
+    def __init__(self, errors, pil, index):
         """
         Initialize scraper.
 
@@ -30,7 +30,7 @@ class BasePilMeta(BaseMeta):
         """
         self._pil = pil
         self._pil_index = index
-        super(BasePilMeta, self).__init__()
+        super(BasePilMeta, self).__init__(errors=errors)
 
     @metadata()
     def mimetype(self):
@@ -135,17 +135,45 @@ class ImagePilMeta(BasePilMeta):
 
     # Supported mimetypes
     _supported = {"image/png": [],
-                  "image/jp2": [],
                   "image/gif": []}
     _allow_versions = True  # Allow any version
 
     @metadata()
+    def width(self):
+        """Return (:unav): we will get width from another scraper."""
+        return "(:unav)"
+
+    @metadata()
+    def height(self):
+        """Return (:unav): we will get height from another scraper."""
+        return "(:unav)"
+
+    @metadata()
+    def colorspace(self):
+        """Return (:unav): we will get colorspace from another scraper."""
+        return "(:unav)"
+
+
+class Jp2PilMeta(BasePilMeta):
+    """Collect JP" image metadata."""
+
+    # Supported mimetypes
+    _supported = {"image/jp2": []}
+    _allow_versions = True  # Allow any version
+
+    @metadata()
     def mimetype(self):
-        mime = super(ImagePilMeta, self).mimetype()
+        mime = super(Jp2PilMeta, self).mimetype()
         # Pillow 5.0.0 misidentifies JPEG2000
         if mime == "image/jpx":
             return "image/jp2"
         return mime
+
+    @metadata()
+    def version(self):
+        if self.mimetype() == "image/jp2":
+            return "(:unap)"
+        return "(:unav)"
 
     @metadata()
     def width(self):

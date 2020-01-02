@@ -195,16 +195,11 @@ def test_scraper_tiff(filename, result_dict, evaluate_scraper):
 )
 def test_scraper_utf8(filename, result_dict, evaluate_scraper):
     """Test utf8 text file scraping."""
-<<<<<<< HEAD
     correct = parse_results(filename, "text/plain", result_dict, True,
                             {"charset": "UTF-8"})
-    scraper = JHoveUtf8Scraper(correct.filename, True, correct.params)
-=======
-    correct = parse_results(filename, "text/plain",
-                            result_dict, True)
     scraper = JHoveUtf8Scraper(filename=correct.filename,
-                               mimetype="text/plain")
->>>>>>> KDKPAS-2113 Change mimetype forcing so that predefined mimetype is used only if scraper itself does not solve it. Some scrapers changed to meet this.
+                               mimetype="text/plain",
+                               params=correct.params)
     scraper.scrape_file()
     correct.streams[0]["mimetype"] = "(:unav)"
 
@@ -411,6 +406,8 @@ def test_scraper_wav(filename, result_dict, evaluate_scraper):
     correct = parse_results(filename, "audio/x-wav",
                             result_dict, True)
     correct.update_mimetype("audio/x-wav")
+    if correct.streams[0]["version"] == "(:unap)":
+        correct.update_version("(:unav)")
     scraper = JHoveWavScraper(filename=correct.filename,
                               mimetype="audio/x-wav")
     scraper.scrape_file()

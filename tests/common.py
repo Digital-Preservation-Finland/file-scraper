@@ -97,7 +97,8 @@ def parse_results(filename, mimetype, results, check_wellformed,
     if stream_type == "application":
         stream_type = "binary"
 
-    if "invalid" in filename:
+    if ("invalid" in filename) != ("inverse" in results and
+                                   results["inverse"]):
         correct_mime = "(:unav)"
         correct_ver = "(:unav)"
     else:

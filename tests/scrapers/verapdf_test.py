@@ -33,8 +33,7 @@ import pytest
 import six
 
 from file_scraper.verapdf.verapdf_scraper import VerapdfScraper
-from tests.common import (parse_results, force_correct_filetype,
-                          partial_message_included)
+from tests.common import (parse_results, partial_message_included)
 
 MIMETYPE = "application/pdf"
 
@@ -63,7 +62,8 @@ def test_scraper(filename, result_dict, evaluate_scraper):
         filename = filename.replace("X", ver)
         correct = parse_results(filename, MIMETYPE,
                                 result_dict, True)
-        scraper = VerapdfScraper(correct.filename, True, correct.params)
+        scraper = VerapdfScraper(filename=correct.filename,
+                                 mimetype=MIMETYPE)
         scraper.scrape_file()
 
         if not correct.well_formed:
@@ -96,7 +96,8 @@ def test_scraper_invalid_pdfa(filename, result_dict, evaluate_scraper):
     """Test scraper with files that are not valid PDF/A."""
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
-    scraper = VerapdfScraper(correct.filename, True, correct.params)
+    scraper = VerapdfScraper(filename=correct.filename,
+                             mimetype=MIMETYPE)
     scraper.scrape_file()
 
     if not correct.well_formed:
@@ -112,8 +113,9 @@ def test_scraper_invalid_pdfa(filename, result_dict, evaluate_scraper):
 
 def test_no_wellformed():
     """Test scraper without well-formed check."""
-    scraper = VerapdfScraper("tests/data/application_pdf/valid_A-1a.pdf",
-                             False)
+    scraper = VerapdfScraper(
+        filename="tests/data/application_pdf/valid_A-1a.pdf",
+        mimetype=MIMETYPE, check_wellformed=False)
     scraper.scrape_file()
     assert partial_message_included("Skipping scraper",
                                     scraper.messages())
@@ -129,57 +131,3 @@ def test_is_supported():
     assert not VerapdfScraper.is_supported(mime, ver, False)
     assert not VerapdfScraper.is_supported(mime, "foo", True)
     assert not VerapdfScraper.is_supported("foo", ver, True)
-
-
-@pytest.mark.parametrize(
-    ["result_dict", "filetype"],
-    [
-        ({"purpose": "Test forcing correct MIME type and version",
-          "stdout_part": "MIME type and version not scraped, using",
-          "stderr_part": ""},
-         {"given_mimetype": "application/pdf",
-          "given_version": "A-1a",
-          "expected_mimetype": "application/pdf",
-          "expected_version": "A-1a"}),
-        ({"purpose": "Test forcing correct MIME type",
-          "stdout_part": "MIME type not scraped, using",
-          "stderr_part": ""},
-         {"given_mimetype": "application/pdf",
-          "given_version": None,
-          "expected_mimetype": "application/pdf",
-          "expected_version": "A-1a"}),
-        ({"purpose": "Test forcing correct MIME type wiht supported but "
-                     "wrong version",
-          "stdout_part": "MIME type and version not scraped, using",
-          "stderr_part": ""},
-         {"given_mimetype": "application/pdf",
-          "given_version": "A-2a",
-          "expected_mimetype": "application/pdf",
-          "expected_version": "A-2a"}),
-        ({"purpose": "Test forcing version only (no effect)",
-          "stdout_part": "",
-          "stderr_part": ""},
-         {"given_mimetype": None, "given_version": "A-1a",
-          "expected_mimetype": "application/pdf", "expected_version": "A-1a"}),
-        ({"purpose": "Test forcing wrong MIME type",
-          "stdout_part": "MIME type not scraped, using",
-          "stderr_part": "is not supported"},
-         {"given_mimetype": "unsupported/mime", "given_version": None,
-          "expected_mimetype": "unsupported/mime",
-          "expected_version": "A-1a"})
-    ]
-)
-def test_forced_filetype(result_dict, filetype, evaluate_scraper):
-    """
-    Test using user-supplied MIME-types and versions.
-    """
-    filetype[six.text_type("correct_mimetype")] = "application/pdf"
-    correct = force_correct_filetype("valid_A-1a.pdf", result_dict,
-                                     filetype)
-
-    params = {"mimetype": filetype["given_mimetype"],
-              "version": filetype["given_version"]}
-    scraper = VerapdfScraper(correct.filename, True, params)
-    scraper.scrape_file()
-
-    evaluate_scraper(scraper, correct)
