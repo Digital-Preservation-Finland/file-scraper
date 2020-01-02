@@ -41,29 +41,14 @@ MIMETYPE = "text/csv"
 PDF_PATH = os.path.join(
     'tests/data/application_pdf/valid_1.4.pdf')
 
-VALID_CSV = (
-    '''1997,Ford,E350,"ac, abs, moon",3000.00\n'''
-    '''1999,Chevy,"Venture ""Extended Edition""","",4900.00\n'''
-    '''1999,Chevy,"Venture ""Extended Edition, Very Large""",,5000.00\n'''
-    '''1996,Jeep,Grand Cherokee,"MUST SELL!\n'''
-    '''air, moon roof, loaded",4799.00\n''')
-
-HEADER = 'year,brand,model,detail,other\n'
-
-VALID_WITH_HEADER = HEADER + VALID_CSV
-
-MISSING_END_QUOTE = VALID_CSV + \
-    '1999,Chevy,"Venture ""Extended Edition"","",4900.00\n'
-
-NON_ASCII_CHARS = HEADER + \
-    'air, möon roof, loadëd",4799.00\n'
+TEST_DATA_PATH = "tests/data/text_csv"
 
 
 # pylint: disable=too-many-arguments
 @pytest.mark.parametrize(
-    ['csv_text', 'result_dict', 'prefix', 'header', 'extra_params'],
+    ['csv_file', 'result_dict', 'prefix', 'header', 'extra_params'],
     [
-        (VALID_CSV, {
+        ('valid__ascii.csv', {
             'purpose': 'Test valid file.',
             'stdout_part': 'successfully',
             'stderr_part': '',
@@ -77,7 +62,7 @@ NON_ASCII_CHARS = HEADER + \
                                            'ac, abs, moon',
                                            '3000.00']}}},
          'valid__', None, {}),
-        (VALID_CSV, {
+        ('valid__ascii.csv', {
             'purpose': 'Test forcing the correct MIME type.',
             'stdout_part': 'successfully',
             'stderr_part': '',
@@ -91,7 +76,7 @@ NON_ASCII_CHARS = HEADER + \
                                            'ac, abs, moon',
                                            '3000.00']}}},
          'valid__', None, {'mimetype': MIMETYPE}),
-        (VALID_CSV, {
+        ('valid__ascii.csv', {
             'purpose': 'Test forcing other MIME type.',
             'stdout_part': 'successfully',
             'stderr_part': 'MIME type unsupported/mime with version (:unap) '
@@ -106,7 +91,7 @@ NON_ASCII_CHARS = HEADER + \
                                            'ac, abs, moon',
                                            '3000.00']}}},
          'valid__', None, {'mimetype': 'unsupported/mime'}),
-        (VALID_CSV, {
+        ('valid__ascii.csv', {
             'purpose': 'Test forcing MIME type and version.',
             'stdout_part': 'successfully',
             'stderr_part': 'MIME type unsupported/mime with version 99.9 is '
@@ -121,7 +106,7 @@ NON_ASCII_CHARS = HEADER + \
                                            'ac, abs, moon',
                                            '3000.00']}}},
          'valid__', None, {'mimetype': 'unsupported/mime', 'version': '99.9'}),
-        (VALID_WITH_HEADER, {
+        ('valid__ascii_header.csv', {
             'purpose': 'Test valid file with header.',
             'stdout_part': 'successfully',
             'stderr_part': '',
@@ -134,7 +119,7 @@ NON_ASCII_CHARS = HEADER + \
                             'first_line': ['year', 'brand', 'model', 'detail',
                                            'other']}}},
          'valid__', ['year', 'brand', 'model', 'detail', 'other'], {}),
-        (MISSING_END_QUOTE, {
+        ('invalid__missing_end_quote.csv', {
             'purpose': 'Test missing end quote',
             'stdout_part': '',
             'stderr_part': 'unexpected end of data',
@@ -148,7 +133,7 @@ NON_ASCII_CHARS = HEADER + \
                                            'ac, abs, moon',
                                            '3000.00']}}},
          'invalid__', None, {}),
-        (HEADER, {
+        ('valid__header.csv', {
             'purpose': 'Test single field',
             'stdout_part': 'successfully',
             'stderr_part': '',
@@ -160,7 +145,7 @@ NON_ASCII_CHARS = HEADER + \
                             'separator': '\n',
                             'first_line': ['year,brand,model,detail,other']}}},
          'valid__', ['year,brand,model,detail,other'], {}),
-        (VALID_WITH_HEADER, {
+        ('invalid__ascii_header.csv', {
             'purpose': 'Invalid delimiter',
             'stdout_part': '',
             'stderr_part': 'CSV not well-formed: field counts',
@@ -172,7 +157,19 @@ NON_ASCII_CHARS = HEADER + \
                             'separator': '\n',
                             'first_line': ['year,brand,model,detail,other']}}},
          'invalid__', ['year', 'brand', 'model', 'detail', 'other'], {}),
-        (NON_ASCII_CHARS, {
+        ('valid__iso8859-15.csv', {
+            'purpose': 'Non-ASCII characters',
+            'stdout_part': 'successfully',
+            'stderr_part': '',
+            'streams': {0: {'stream_type': 'text',
+                            'index': 0,
+                            'mimetype': MIMETYPE,
+                            'version': '(:unap)',
+                            'delimiter': ';',
+                            'separator': '\n',
+                            'first_line': ['year,brand,model,detail,other']}}},
+         'valid__', ['year,brand,model,detail,other'], {}),
+        ('valid__utf8.csv', {
             'purpose': 'Non-ASCII characters',
             'stdout_part': 'successfully',
             'stderr_part': '',
@@ -186,7 +183,7 @@ NON_ASCII_CHARS = HEADER + \
          'valid__', ['year,brand,model,detail,other'], {})
     ]
 )
-def test_scraper(testpath, csv_text, result_dict, prefix, header,
+def test_scraper(csv_file, result_dict, prefix, header,
                  evaluate_scraper, extra_params):
     """
     Write test data and run csv scraping for the file.
@@ -196,13 +193,12 @@ def test_scraper(testpath, csv_text, result_dict, prefix, header,
         contents.
     """
 
-    with open(os.path.join(testpath, '%s.csv' % prefix), 'wb') as outfile:
-        outfile.write(csv_text.encode(encoding='utf-8'))
+    test_file = os.path.join(TEST_DATA_PATH, csv_file)
 
     mimetype = result_dict['streams'][0]['mimetype']
     version = result_dict['streams'][0]['version']
 
-    words = outfile.name.rsplit('/', 1)
+    words = test_file.rsplit('/', 1)
     correct = parse_results(words[1], '', result_dict,
                             True, basepath=words[0])
     correct.update_mimetype(mimetype)
@@ -234,10 +230,10 @@ def test_pdf_as_csv():
 
 def test_no_parameters(testpath, evaluate_scraper):
     """Test scraper without separate parameters."""
-    with open(os.path.join(testpath, 'valid__.csv'), 'wt') as outfile:
-        outfile.write(VALID_CSV)
 
-    scraper = CsvScraper(outfile.name)
+    test_file = os.path.join(TEST_DATA_PATH, 'valid__ascii.csv')
+
+    scraper = CsvScraper(test_file)
     scraper.scrape_file()
 
     correct = parse_results('valid__.csv', MIMETYPE,
@@ -281,12 +277,12 @@ def test_nonexistent_file():
     assert not scraper.well_formed
 
 
-def test_no_wellformed(testpath):
+def test_no_wellformed():
     """Test scraper without well-formed check."""
-    with open(os.path.join(testpath, 'valid__.csv'), 'wt') as outfile:
-        outfile.write(VALID_CSV)
 
-    scraper = CsvScraper(outfile.name, False)
+    test_file = os.path.join(TEST_DATA_PATH, 'valid__ascii.csv')
+
+    scraper = CsvScraper(test_file, False)
     scraper.scrape_file()
 
     assert partial_message_included('Skipping scraper', scraper.messages())
