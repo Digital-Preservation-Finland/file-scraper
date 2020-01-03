@@ -21,11 +21,6 @@ MAGIC_LIB = magiclib()
 class _FidoReader(Fido):
     """Fido wrapper to get pronom code, mimetype and version."""
 
-    # Global variable in Fido
-    # pylint: disable=invalid-name, global-statement
-    # pylint: disable=global-variable-not-assigned
-    global defaults
-
     def __init__(self, filename):
         """
         Initialize the reader.
@@ -38,8 +33,7 @@ class _FidoReader(Fido):
         self.puid = None  # Identified pronom code
         self.mimetype = None  # Identified mime type
         self.version = None  # Identified file format version
-        Fido.__init__(self, quiet=True, format_files=[
-            "formats-v94.xml", "format_extensions.xml"])
+        Fido.__init__(self, quiet=True)
 
     def identify(self):
         """Identify file format with using pronom registry."""
