@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from file_scraper.detectors import VerapdfDetector, MagicCharset
-from file_scraper.dummy.dummy_scraper import FileExists
+from file_scraper.dummy.dummy_scraper import FileExists, MimeScraper
 from file_scraper.iterator import iter_detectors, iter_scrapers
 from file_scraper.jhove.jhove_scraper import JHoveUtf8Scraper
 from file_scraper.textfile.textfile_scraper import TextfileScraper
@@ -99,8 +99,23 @@ class Scraper(object):
         """
         if "charset" in self.streams[0] and \
                 self.streams[0]["charset"] == "UTF-8":
-            scraper = JHoveUtf8Scraper(self.filename, check_wellformed)
+            scraper = JHoveUtf8Scraper(filename=self.filename,
+                                       mimetype="(:unav)",
+                                       check_wellformed=check_wellformed)
             self._scrape_file(scraper)
+
+    def _check_mime(self, check_wellformed=True):
+        """
+        Check that predefined mimetype and resulted mimetype match.
+        """
+        scraper = MimeScraper(filename=self.filename,
+                              mimetype=self._predefined_mimetype,
+                              version=self._params.get("version", None),
+                              check_wellformed=check_wellformed,
+                              params={"mimetype": self.mimetype,
+                                      "version": self.version,
+                                      "well_formed": self.well_formed})
+        self._scrape_file(scraper)
 
     def _check_mimetype_version(self):
         """
@@ -109,11 +124,15 @@ class Scraper(object):
         Ideally the MIME type and version from the scraper are used, but if
         they are not available, values supplied by the detector are used.
         """
-        if self.streams[0]["mimetype"] not in LOSE or not self._predefined_mimetype:
-            self.mimetype = self.streams[0]["mimetype"]
+        if not self.well_formed:
+            if self.streams[0]["mimetype"] in LOSE and self._predefined_mimetype:
+                self.mimetype = self.streams[0]["mimetype"]
+            elif self._predefined_mimetype:
+                self.streams[0]["mimetype"] = self._predefined_mimetype
+                self.mimetype = self._predefined_mimetype
         else:
-            self.streams[0]["mimetype"] = self._predefined_mimetype
-            self.mimetype = self._predefined_mimetype
+            self.mimetype = self.streams[0]["mimetype"]
+
         if self.streams[0]["version"] not in LOSE or not self._predefined_version:
             self.version = self.streams[0]["version"]
         elif self._predefined_version:
@@ -143,6 +162,7 @@ class Scraper(object):
         self.streams = generate_metadata_dict(self._scraper_results, LOSE)
         self._check_utf8(check_wellformed)
         self._check_mimetype_version()
+        self._check_mime(check_wellformed)
 
     def detect_filetype(self):
         """

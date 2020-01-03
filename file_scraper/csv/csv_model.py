@@ -45,9 +45,9 @@ class CsvMeta(BaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        if self._errors:
-            return "(:unav)"
-        return "(:unap)"
+        if not self._errors:
+            return "(:unap)"
+        return "(:unav)"
 
     @metadata()
     def delimiter(self):

@@ -130,7 +130,7 @@ class JHoveHtmlMeta(JHoveBaseMeta):
     def charset(self):
         """Get the charset from HTML/XML files."""
         if self._report is None:
-            return None
+            return "(:unav)"
         if "xml" in self.mimetype():
             return self._get_charset_xml()
         return self._get_charset_html()
@@ -199,7 +199,7 @@ class JHoveWavMeta(JHoveBaseMeta):
     """Metadata model for wav files scraped with JHove"""
     # pylint: disable=no-self-use
 
-    _supported = {"audio/x-wav": ["2"]}
+    _supported = {"audio/x-wav": ["", "2"]}
     _allow_versions = True
 
     @metadata()
@@ -233,6 +233,8 @@ class JHoveWavMeta(JHoveBaseMeta):
             self._errors.append("RF64 is not a supported format")
         elif "BWF" in get_field(self._report, "profile"):
             return "2"
+        elif "PCMWAVEFORMAT" in get_field(self._report, "profile"):
+            return "(:unap)"
 
         return "(:unav)"
 

@@ -20,9 +20,9 @@ class DpxMeta(BaseMeta):
     @metadata()
     def mimetype(self):
         """Return mimetype."""
-        if self._errors:
-            return "(:unav)"
-        return "image/x-dpx"
+        if not self._errors:
+            return "image/x-dpx"
+        return "(:unav)"
 
     @metadata()
     def version(self):

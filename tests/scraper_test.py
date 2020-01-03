@@ -74,13 +74,17 @@ def test_missing_file():
     ["filename", "params", "expected_results"],
     [
         ("tests/data/image_png/valid_1.2.png", {},
-         {"mimetype": "image/png", "version": "1.0", "well_formed": None}),
+         {"_predefined_mimetype": "image/png", "_predefined_version": "1.0",
+          "well_formed": None}),
         ("nonexistent_file", {},
-         {"mimetype": None, "version": None, "well_formed": False}),
+         {"_predefined_mimetype": None, "_predefined_version": None,
+          "well_formed": False}),
         ("tests/data/image_png/invalid_1.2_wrong_CRC.png", {},
-         {"mimetype": "image/png", "version": "1.0", "well_formed": None}),
+         {"_predefined_mimetype": "image/png", "_predefined_version": "1.0",
+          "well_formed": None}),
         ("tests/data/video_mp4/valid__h264_aac.mp4", {"mimetype": "video/mpeg"},
-         {"mimetype": "video/mpeg", "version": None, "well_formed": None}),
+         {"_predefined_mimetype": "video/mpeg", "_predefined_version": None,
+          "well_formed": None}),
     ]
 )
 def test_detect_filetype(filename, params, expected_results):

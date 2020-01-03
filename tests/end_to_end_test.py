@@ -28,20 +28,18 @@ UNAV_ELEMENTS = {
     "tests/data/image_gif/valid_1989a.gif": ["version", "version"],
     "tests/data/image_tiff/valid_6.0_multiple_tiffs.tif": [
         "version", "version"],
-    "tests/data/video_MP2T/valid_.ts": ["version", "codec_creator_app_version",
+    "tests/data/video_MP2T/valid_.ts": ["codec_creator_app_version",
                                         "codec_creator_app", "data_rate",
                                         "codec_creator_app_version",
                                         "codec_creator_app", "bits_per_sample",
                                         "codec_creator_app_version",
-                                        "codec_creator_app", "version"],
-    "tests/data/video_quicktime/valid__dv_wav.mov": ["version", "version"],
-    "tests/data/video_quicktime/valid__h264_aac.mov": ["version", "version",
-                                                       "bits_per_sample"],
+                                        "codec_creator_app"],
+    "tests/data/video_quicktime/valid__dv_wav.mov": ["version"],
+    "tests/data/video_quicktime/valid__h264_aac.mov": ["bits_per_sample"],
     "tests/data/audio_mpeg/valid_1.mp3": ["bits_per_sample",
                                           "codec_creator_app_version",
                                           "codec_creator_app"],
-    "tests/data/video_mp4/valid__h264_aac.mp4": ["version", "version",
-                                                 "bits_per_sample", "version"],
+    "tests/data/video_mp4/valid__h264_aac.mp4": ["bits_per_sample"],
     "tests/data/video_mpeg/valid_1.m1v": ["codec_creator_app_version",
                                           "codec_creator_app"],
     "tests/data/video_mpeg/valid_2.m2v": ["codec_creator_app_version",
@@ -198,31 +196,6 @@ def test_valid_combined(fullname, mimetype):
 
     _assert_valid_scraper_result(scraper, fullname, mimetype, True)
 
-    # Test that output does not change if MIME type and version are forced
-    # to be the ones scraper would determine them to be in any case.
-
-    # This cannot be done with compressed arcs, as WarctoolsScraper reports
-    # the MIME type of the compressed archive instead of application/gzip,
-    # so for those types, all required testing is already done here.
-    if (scraper.mimetype in ["application/x-internet-archive"] and
-            fullname[-3:] == ".gz"):
-        return
-
-    # Forced version affects all frames within a gif or a tiff
-    if scraper.mimetype in ["image/gif", "image/tiff"]:
-        for _, stream in iteritems(scraper.streams):
-            if "version" in stream.keys():
-                stream["version"] = scraper.streams[0]["version"]
-
-    forced_scraper = Scraper(fullname, mimetype=scraper.mimetype,
-                             version=scraper.version,
-                             charset=scraper.streams[0].get("charset", None))
-    forced_scraper.scrape()
-
-    assert forced_scraper.mimetype == scraper.mimetype
-    assert forced_scraper.version == scraper.version
-    assert forced_scraper.streams == scraper.streams
-
 
 @pytest.mark.parametrize(("fullname", "mimetype"),
                          get_files(well_formed=False))
@@ -310,7 +283,6 @@ def test_coded_filename(testpath, fullname, mimetype):
     scraper.scrape()
     assert scraper.well_formed
 
-
 @pytest.mark.parametrize(
     ["filepath", "params", "well_formed", "expected_mimetype",
      "expected_version"],
@@ -323,17 +295,17 @@ def test_coded_filename(testpath, fullname, mimetype):
         # in not well-formed file
         ("tests/data/image_tiff/valid_6.0.tif",
          {"mimetype": "image/tiff", "version": "99.9"},
-         False, "image/tiff", "99.9"),
+         False, "image/tiff", "6.0"),
 
         # Force the correct MIME type with a supported but incorrect version:
-        # file is reported as well-formed with the forced version.
+        # file is reported as not well-formed.
         ("tests/data/image_gif/valid_1987a.gif",
          {"mimetype": "image/gif", "version": "1989a"},
-         True, "image/gif", "1989a"),
+         False, "image/gif", "1987a"),
 
         # Force unsupported MIME type, resulting in not well-formed
         ("tests/data/image_tiff/valid_6.0.tif", {"mimetype": "audio/mpeg"},
-         False, "audio/mpeg", "(:unav)"),
+         False, "(:unav)", "(:unav)"),
 
         # Scrape invalid XML as plaintext, as which it is well-formed
         ("tests/data/text_xml/invalid_1.0_no_closing_tag.xml",
@@ -351,13 +323,13 @@ def test_coded_filename(testpath, fullname, mimetype):
         # from some scrapers, but combining the results should reveal the file
         # as not well-formed
         ("tests/data/image_gif/valid_1987a.gif", {"mimetype": "image/png"},
-         False, "image/png", "1.2"),
+         False, "image/png", "(:unav)"),
 
         # Scrape compressed arc as gzip, corresponding to the MIME type of the
         # actual file instead of its compressed contents.
         ("tests/data/application_x-internet-archive/valid_1.0_.arc.gz",
          {"mimetype": "application/gzip"}, True,
-         "application/gzip", "(:unav)"),
+         "application/x-internet-archive", "(:unav)"),
     ]
 )
 def test_forced_filetype(filepath, params, well_formed, expected_mimetype,

@@ -406,8 +406,6 @@ def test_scraper_wav(filename, result_dict, evaluate_scraper):
     correct = parse_results(filename, "audio/x-wav",
                             result_dict, True)
     correct.update_mimetype("audio/x-wav")
-    if correct.streams[0]["version"] == "(:unap)":
-        correct.update_version("(:unav)")
     scraper = JHoveWavScraper(filename=correct.filename,
                               mimetype="audio/x-wav")
     scraper.scrape_file()

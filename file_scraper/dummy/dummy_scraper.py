@@ -50,3 +50,38 @@ class FileExists(BaseScraper):
         if self._errors:
             return False
         return None
+
+class MimeScraper(BaseScraper):
+    """Scraper for the case where scraper was not found."""
+
+    _only_wellformed = True
+    _MIME_DICT = {"application/gzip": ["application/warc",
+                                       "application/x-internet-archive"]}
+
+    def scrape_file(self):
+        """No need to scrape anything, just collect."""
+        error = False
+        if not self._check_wellformed and self._only_wellformed:
+            self._messages.append("Skipping scraper: Well-formed check not"
+                                  "used.")
+            return
+
+        self._messages.append("Mime type check")
+
+        mime = self._params.get("mimetype", "(:unav)")
+        ver = self._params.get("version", "(:unav)")
+        well = self._params.get("well_formed", False)
+        pre_list = self._MIME_DICT.get(self._predefined_mimetype, [])
+
+        if (mime == "(:unav)" and well) or \
+                (mime != self._predefined_mimetype and mime not in pre_list):
+            self._errors.append(
+                "Predefined mimetype '{}' and resulted mimetype '{}' "
+                "mismatch.".format(self._predefined_mimetype, mime))
+
+        if self._predefined_version not in [ver, None]:
+            self._errors.append(
+                "Predefined version '{}' and resulted version '{}' "
+                "mismatch.".format(self._predefined_version, ver))
+
+        self.streams.append(DummyMeta(errors=self._errors))

@@ -61,7 +61,8 @@ class JHoveScraperBase(BaseScraper):
 
         self.iterate_models(report=self._report)
 
-        self._check_supported(allow_unav_version=True)
+        self._check_supported(allow_unav_version=True,
+                              allow_unap_version=True)
 
 
 class JHoveGifScraper(JHoveScraperBase):
