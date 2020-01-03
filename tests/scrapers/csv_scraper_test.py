@@ -46,7 +46,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
 
 # pylint: disable=too-many-arguments
 @pytest.mark.parametrize(
-    ['csv_file', 'result_dict', 'prefix', 'header', 'extra_params'],
+    ['csv_file', 'result_dict', 'header', 'extra_params'],
     [
         ('valid__ascii.csv', {
             'purpose': 'Test valid file.',
@@ -61,7 +61,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
                             'first_line': ['1997', 'Ford', 'E350',
                                            'ac, abs, moon',
                                            '3000.00']}}},
-         'valid__', None, {}),
+         None, {}),
         ('valid__ascii.csv', {
             'purpose': 'Test forcing the correct MIME type.',
             'stdout_part': 'successfully',
@@ -75,7 +75,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
                             'first_line': ['1997', 'Ford', 'E350',
                                            'ac, abs, moon',
                                            '3000.00']}}},
-         'valid__', None, {'mimetype': MIMETYPE}),
+         None, {'mimetype': MIMETYPE}),
         ('valid__ascii.csv', {
             'purpose': 'Test forcing other MIME type.',
             'stdout_part': 'successfully',
@@ -90,7 +90,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
                             'first_line': ['1997', 'Ford', 'E350',
                                            'ac, abs, moon',
                                            '3000.00']}}},
-         'valid__', None, {'mimetype': 'unsupported/mime'}),
+         None, {'mimetype': 'unsupported/mime'}),
         ('valid__ascii.csv', {
             'purpose': 'Test forcing MIME type and version.',
             'stdout_part': 'successfully',
@@ -105,7 +105,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
                             'first_line': ['1997', 'Ford', 'E350',
                                            'ac, abs, moon',
                                            '3000.00']}}},
-         'valid__', None, {'mimetype': 'unsupported/mime', 'version': '99.9'}),
+         None, {'mimetype': 'unsupported/mime', 'version': '99.9'}),
         ('valid__ascii_header.csv', {
             'purpose': 'Test valid file with header.',
             'stdout_part': 'successfully',
@@ -118,7 +118,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
                             'separator': '\n',
                             'first_line': ['year', 'brand', 'model', 'detail',
                                            'other']}}},
-         'valid__', ['year', 'brand', 'model', 'detail', 'other'], {}),
+         ['year', 'brand', 'model', 'detail', 'other'], {}),
         ('invalid__missing_end_quote.csv', {
             'purpose': 'Test missing end quote',
             'stdout_part': '',
@@ -132,7 +132,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
                             'first_line': ['1997', 'Ford', 'E350',
                                            'ac, abs, moon',
                                            '3000.00']}}},
-         'invalid__', None, {}),
+         None, {}),
         ('valid__header.csv', {
             'purpose': 'Test single field',
             'stdout_part': 'successfully',
@@ -144,9 +144,10 @@ TEST_DATA_PATH = "tests/data/text_csv"
                             'delimiter': ';',
                             'separator': '\n',
                             'first_line': ['year,brand,model,detail,other']}}},
-         'valid__', ['year,brand,model,detail,other'], {}),
-        ('invalid__ascii_header.csv', {
+         ['year,brand,model,detail,other'], {}),
+        ('valid__ascii_header.csv', {
             'purpose': 'Invalid delimiter',
+            'inverse': True,
             'stdout_part': '',
             'stderr_part': 'CSV not well-formed: field counts',
             'streams': {0: {'stream_type': 'text',
@@ -156,7 +157,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
                             'delimiter': ';',
                             'separator': '\n',
                             'first_line': ['year,brand,model,detail,other']}}},
-         'invalid__', ['year', 'brand', 'model', 'detail', 'other'], {}),
+         ['year', 'brand', 'model', 'detail', 'other'], {}),
         ('valid__iso8859-15.csv', {
             'purpose': 'Non-ASCII characters',
             'stdout_part': 'successfully',
@@ -168,7 +169,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
                             'delimiter': ';',
                             'separator': '\n',
                             'first_line': ['year,brand,model,detail,other']}}},
-         'valid__', ['year,brand,model,detail,other'], {}),
+         ['year,brand,model,detail,other'], {}),
         ('valid__utf8.csv', {
             'purpose': 'Non-ASCII characters',
             'stdout_part': 'successfully',
@@ -180,10 +181,10 @@ TEST_DATA_PATH = "tests/data/text_csv"
                             'delimiter': ';',
                             'separator': '\n',
                             'first_line': ['year,brand,model,detail,other']}}},
-         'valid__', ['year,brand,model,detail,other'], {})
+         ['year,brand,model,detail,other'], {})
     ]
 )
-def test_scraper(csv_file, result_dict, prefix, header,
+def test_scraper(csv_file, result_dict, header,
                  evaluate_scraper, extra_params):
     """
     Write test data and run csv scraping for the file.

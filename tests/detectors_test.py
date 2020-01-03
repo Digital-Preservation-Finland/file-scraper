@@ -33,6 +33,11 @@ CHANGE_FIDO = {
     "tests/data/application_x-internet-archive/valid_1.0.arc": "text/html",
     "tests/data/application_mxf/valid__jpeg2000.mxf": None,
     "tests/data/application_mxf/valid__jpeg2000_grayscale.mxf": None,
+    "tests/data/text_csv/valid__ascii.csv": None,
+    "tests/data/text_csv/valid__ascii_header.csv": None,
+    "tests/data/text_csv/valid__header.csv": None,
+    "tests/data/text_csv/valid__iso8859-15.csv": None,
+    "tests/data/text_csv/valid__utf8.csv": None,
 }
 
 CHANGE_MAGIC = {
@@ -43,6 +48,11 @@ CHANGE_MAGIC = {
     "tests/data/application_warc/valid_1.0_.warc.gz": "application/x-gzip",
     "tests/data/application_x-spss-por/valid__spss24-dot.por": "text/plain",
     "tests/data/application_x-spss-por/valid.por": "text/plain",
+    "tests/data/text_csv/valid__ascii.csv": "text/plain",
+    "tests/data/text_csv/valid__ascii_header.csv": "text/plain",
+    "tests/data/text_csv/valid__header.csv": "text/plain",
+    "tests/data/text_csv/valid__iso8859-15.csv": "text/plain",
+    "tests/data/text_csv/valid__utf8.csv": "text/plain",
 }
 
 

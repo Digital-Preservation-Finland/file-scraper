@@ -67,13 +67,22 @@ IGNORE_INVALID = [
     "tests/data/application_pdf/invalid_1.4_wrong_version.pdf",
     "tests/data/application_x-spss-por/invalid__header_corrupted.por",
     "tests/data/application_x-spss-por/invalid__truncated.por",
-    "tests/data/application_xhtml+xml/invalid_1.0_no_doctype.xhtml"]
+    "tests/data/application_xhtml+xml/invalid_1.0_no_doctype.xhtml",
+    "tests/data/text_csv/invalid__ascii_header.csv",
+    "tests/data/text_csv/invalid__missing_end_quote.csv",
+]
+
 # XML schema definitions should not be tested.
 # The pef with JPEG2000 image is only used for testing that the ghostscript
 # version is recent enough to handle it.
 IGNORE_VALID = ["tests/data/text_xml/valid_1.0_xsd.xml",
                 "tests/data/text_xml/valid_1.0_local_xsd.xml",
-                "tests/data/text_xml/valid_1.0_catalog.xml"]
+                "tests/data/text_xml/valid_1.0_catalog.xml",
+                "tests/data/text_csv/valid__ascii.csv",
+                "tests/data/text_csv/valid__ascii_header.csv",
+                "tests/data/text_csv/valid__header.csv",
+                "tests/data/text_csv/valid__iso8859-15.csv",
+                "tests/data/text_csv/valid__utf8.csv"]
 
 # Ignore these we know that warc, arc, por and dpx files are not currently
 # supported for full metadata scraping
