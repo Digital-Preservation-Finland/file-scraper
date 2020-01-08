@@ -50,8 +50,6 @@ class CsvScraper(BaseScraper):
                 csvfile = io_open(self.filename, "rt", encoding='iso8859-15')
 
             reader = csv.reader(csvfile)
-            csvfile.seek(0)
-
             dialect = csv.Sniffer().sniff(csvfile.read(1024))
 
             if not delimiter:

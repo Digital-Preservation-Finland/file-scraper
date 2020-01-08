@@ -68,8 +68,6 @@ IGNORE_INVALID = [
     "tests/data/application_x-spss-por/invalid__header_corrupted.por",
     "tests/data/application_x-spss-por/invalid__truncated.por",
     "tests/data/application_xhtml+xml/invalid_1.0_no_doctype.xhtml",
-    "tests/data/text_csv/invalid__ascii_header.csv",
-    "tests/data/text_csv/invalid__missing_end_quote.csv",
 ]
 
 # XML schema definitions should not be tested.
@@ -77,12 +75,7 @@ IGNORE_INVALID = [
 # version is recent enough to handle it.
 IGNORE_VALID = ["tests/data/text_xml/valid_1.0_xsd.xml",
                 "tests/data/text_xml/valid_1.0_local_xsd.xml",
-                "tests/data/text_xml/valid_1.0_catalog.xml",
-                "tests/data/text_csv/valid__ascii.csv",
-                "tests/data/text_csv/valid__ascii_header.csv",
-                "tests/data/text_csv/valid__header.csv",
-                "tests/data/text_csv/valid__iso8859-15.csv",
-                "tests/data/text_csv/valid__utf8.csv"]
+                "tests/data/text_xml/valid_1.0_catalog.xml"]
 
 # Ignore these we know that warc, arc, por and dpx files are not currently
 # supported for full metadata scraping
@@ -133,6 +126,16 @@ def _assert_valid_scraper_result(scraper, fullname, mimetype, well_formed):
         assert not unavs
 
 
+def get_predefined_mimetype(fullname):
+    """Gets predefined mimetype to use in end to end test.
+
+    :fullname: Test file path with mime type folder
+    :returns: A predefined mimetype, or None"""
+
+    if 'text_csv' in fullname:
+        return 'text/csv'
+
+
 @pytest.mark.parametrize(("fullname", "mimetype"), get_files(well_formed=True))
 def test_valid_combined(fullname, mimetype):
     """Integration test for valid files.
@@ -147,7 +150,9 @@ def test_valid_combined(fullname, mimetype):
     if fullname in IGNORE_VALID:
         pytest.skip("[%s] in ignore" % fullname)
 
-    scraper = Scraper(fullname)
+    predefined_mimetype = get_predefined_mimetype(fullname)
+
+    scraper = Scraper(fullname, mimetype=predefined_mimetype)
     scraper.scrape()
 
     for _, info in iteritems(scraper.info):
@@ -195,7 +200,9 @@ def test_invalid_combined(fullname, mimetype):
     if "empty" in fullname or fullname in IGNORE_INVALID:
         pytest.skip("[%s] has empty or in invalid ignore" % fullname)
 
-    scraper = Scraper(fullname)
+    predefined_mimetype = get_predefined_mimetype(fullname)
+
+    scraper = Scraper(fullname, mimetype=predefined_mimetype)
     scraper.scrape()
 
     for _, info in iteritems(scraper.info):
@@ -220,7 +227,9 @@ def test_without_wellformed(fullname, mimetype):
     if fullname in IGNORE_FOR_METADATA:
         pytest.skip("[%s] in ignore" % fullname)
 
-    scraper = Scraper(fullname)
+    predefined_mimetype = get_predefined_mimetype(fullname)
+
+    scraper = Scraper(fullname, mimetype=predefined_mimetype)
     scraper.scrape(False)
 
     _assert_valid_scraper_result(scraper, fullname, mimetype, False)
@@ -237,9 +246,6 @@ def test_without_wellformed(fullname, mimetype):
         assert stream["stream_type"] is not None
         if stream["stream_type"] in elem_dict:
             assert elem_dict[stream["stream_type"]] in stream
-
-    if "text/csv" in mimetype:
-        assert "delimiter" in scraper.streams[0]
 
 
 # pylint: disable=unused-argument

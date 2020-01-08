@@ -210,7 +210,8 @@ def test_scraper(csv_file, result_dict, header,
     params = {
         'separator': correct.streams[0]['separator'],
         'delimiter': correct.streams[0]['delimiter'],
-        'fields': header}
+        'fields': header,
+        'mimetype': 'text/csv'}
     params.update(extra_params)
     scraper = CsvScraper(correct.filename, True, params=params)
     scraper.scrape_file()
