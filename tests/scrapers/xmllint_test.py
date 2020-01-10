@@ -18,6 +18,7 @@ This module tests that:
     - For invalid file with DTD, scraper errors contains "does not follow the
       DTD".
     - For empty file, scraper errors contains "Document is empty".
+    - XML files without the header can be reported as well-formed.
 
     - Without well-formedness check, scraper messages contains "Skipping
       scraper" and well_formed is None.
@@ -70,7 +71,12 @@ ROOTPATH = os.path.abspath(os.path.join(
             "purpose": "Test valid xml with dtd.",
             "stdout_part": "Success",
             "stderr_part": ""},
-         {"catalogs": False})
+         {"catalogs": False}),
+        ("valid__mets_noheader.xml", {
+            "purpose": "Test valid file without XML header.",
+            "stdout_part": "Success",
+            "stderr_part": ""},
+         {"catalogs": False}),
     ]
 )
 def test_scraper_valid(filename, result_dict, params, evaluate_scraper):
@@ -79,6 +85,12 @@ def test_scraper_valid(filename, result_dict, params, evaluate_scraper):
                             result_dict, True, params)
     scraper = XmllintScraper(correct.filename, True, correct.params)
     scraper.scrape_file()
+
+    # Version is not present in the file name as the file has no header that
+    # would define the version. Only allowed XML version for preservation is
+    # 1.0 though, so it is reported for all files.
+    if filename == "valid__mets_noheader.xml":
+        correct.update_version("1.0")
 
     if not correct.well_formed:
         assert not scraper.well_formed

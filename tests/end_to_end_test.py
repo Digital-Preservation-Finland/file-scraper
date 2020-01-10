@@ -71,11 +71,14 @@ IGNORE_INVALID = [
 ]
 
 # XML schema definitions should not be tested.
-# The pef with JPEG2000 image is only used for testing that the ghostscript
-# version is recent enough to handle it.
-IGNORE_VALID = ["tests/data/text_xml/valid_1.0_xsd.xml",
-                "tests/data/text_xml/valid_1.0_local_xsd.xml",
-                "tests/data/text_xml/valid_1.0_catalog.xml"]
+# Mets document without the xml header should also not be tested: it is known
+# that it cannot currently be detected as xml.
+IGNORE_VALID = [
+    "tests/data/text_xml/valid_1.0_xsd.xml",
+    "tests/data/text_xml/valid_1.0_local_xsd.xml",
+    "tests/data/text_xml/valid_1.0_catalog.xml",
+    "tests/data/text_xml/valid__mets_noheader.xml"
+    ]
 
 # Ignore these we know that warc, arc, por and dpx files are not currently
 # supported for full metadata scraping
@@ -314,6 +317,11 @@ def test_coded_filename(testpath, fullname, mimetype):
         ("tests/data/application_x-internet-archive/valid_1.0_.arc.gz",
          {"mimetype": "application/gzip"}, True,
          "application/gzip", "(:unav)"),
+
+        # Scrape xml file without the header as xml (otherwise it is currently
+        # detected as plaintext)
+        ("tests/data/text_xml/valid__mets_noheader.xml",
+         {"mimetype": "text/xml", "version": "1.0"}, True, "text/xml", "1.0"),
     ]
 )
 def test_forced_filetype(filepath, params, well_formed, expected_mimetype,
