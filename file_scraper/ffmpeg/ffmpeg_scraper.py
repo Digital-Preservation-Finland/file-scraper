@@ -68,7 +68,7 @@ class FFMpegScraper(BaseScraper):
             self._errors.append(ensure_text(err.stderr))
 
         shell = Shell(["ffmpeg", "-v", "error", "-i",
-                               encode_path(self.filename), "-f", "null", "-"])
+                       encode_path(self.filename), "-f", "null", "-"])
 
         if shell.returncode == 0:
             self._messages.append("The file was analyzed successfully.")
