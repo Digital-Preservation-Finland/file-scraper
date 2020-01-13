@@ -182,9 +182,9 @@ class FFMpegMeta(FFMpegSimpleMeta):
     @metadata()
     def version(self):
         """Return (:unap) as supported types do not have different versions."""
-        if self._errors:
-            return "(:unav)"
-        return "(:unap)"
+        if not self._errors:
+            return "(:unap)"
+        return "(:unav)"
 
     @metadata()
     def codec_quality(self):

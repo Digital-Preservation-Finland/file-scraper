@@ -16,14 +16,16 @@ from file_scraper.jhove.jhove_scraper import (JHoveGifScraper,
                                               JHoveTiffScraper,
                                               JHoveWavScraper)
 from file_scraper.lxml_scraper.lxml_scraper import LxmlScraper
-from file_scraper.magic_scraper.magic_scraper import MagicScraper
+from file_scraper.magic_scraper.magic_scraper import (MagicTextScraper,
+                                                      MagicBinaryScraper)
 from file_scraper.mediainfo.mediainfo_scraper import MediainfoScraper
 from file_scraper.office.office_scraper import OfficeScraper
 from file_scraper.pil.pil_scraper import PilScraper
 from file_scraper.pngcheck.pngcheck_scraper import PngcheckScraper
 from file_scraper.pspp.pspp_scraper import PsppScraper
 from file_scraper.schematron.schematron_scraper import SchematronScraper
-from file_scraper.textfile.textfile_scraper import TextEncodingScraper
+from file_scraper.textfile.textfile_scraper import (TextEncodingScraper,
+                                                    TextfileScraper)
 from file_scraper.verapdf.verapdf_scraper import VerapdfScraper
 from file_scraper.vnu.vnu_scraper import VnuScraper
 from file_scraper.wand.wand_scraper import WandScraper
@@ -61,10 +63,11 @@ def iter_scrapers(mimetype, version, check_wellformed=True, params=None):
         ArcWarctoolsScraper, GzipWarctoolsScraper, WarcWarctoolsScraper,
         CsvScraper, DpxScraper, FFMpegScraper, GhostscriptScraper,
         JHoveGifScraper, JHoveHtmlScraper, JHoveJpegScraper, JHovePdfScraper,
-        JHoveTiffScraper, JHoveWavScraper, LxmlScraper, MagicScraper,
-        MediainfoScraper, OfficeScraper, PilScraper, PngcheckScraper,
-        PsppScraper, SchematronScraper, TextEncodingScraper, VerapdfScraper,
-        VnuScraper, WandScraper, XmllintScraper]
+        JHoveTiffScraper, JHoveWavScraper, LxmlScraper, MagicTextScraper,
+        MagicBinaryScraper, MediainfoScraper, OfficeScraper, PilScraper,
+        PngcheckScraper, PsppScraper, SchematronScraper, TextfileScraper,
+        TextEncodingScraper, VerapdfScraper, VnuScraper, WandScraper,
+        XmllintScraper]
 
     for scraper in scrapers:
         if scraper.is_supported(mimetype, version, check_wellformed, params):

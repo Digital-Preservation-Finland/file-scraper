@@ -121,8 +121,11 @@ class JHoveHtmlMeta(JHoveBaseMeta):
     @metadata()
     def mimetype(self):
         """Return MIME type."""
+        if self._errors:
+            return "(:unav)"
         mime = super(JHoveHtmlMeta, self).mimetype()
-        if mime == "text/xml":
+        if mime == "text/xml" and \
+                get_field(self._report, "format") == "XHTML":
             return "application/xhtml+xml"
         return mime
 
@@ -165,9 +168,9 @@ class JHoveTiffMeta(JHoveBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        if self._errors:
-            return "(:unav)"
-        return "6.0"
+        if not self._errors:
+            return "6.0"
+        return "(:unav)"
 
     @metadata()
     def stream_type(self):
@@ -185,9 +188,9 @@ class JHovePdfMeta(JHoveBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        if self._errors:
-            return "(:unav)"
-        return get_field(self._report, "version")
+        if not self._errors:
+            return get_field(self._report, "version")
+        return "(:unav)"
 
     @metadata()
     def stream_type(self):

@@ -99,51 +99,57 @@ import six
 
 from file_scraper.magic_scraper.magic_model import (HtmlFileMagicMeta,
                                                     OfficeFileMagicMeta)
-from file_scraper.magic_scraper.magic_scraper import MagicScraper
+from file_scraper.magic_scraper.magic_scraper import (MagicTextScraper,
+                                                      MagicBinaryScraper)
 from tests.common import (parse_results, partial_message_included)
 
 
 @pytest.mark.parametrize(
-    ["filename", "mimetype"],
+    ["filename", "mimetype", "scraper_class"],
     [
         ("valid_1.1.odt",
-         "application/vnd.oasis.opendocument.text"),
+         "application/vnd.oasis.opendocument.text", MagicBinaryScraper),
         ("valid_11.0.doc",
-         "application/msword"),
+         "application/msword", MagicBinaryScraper),
         ("valid_15.0.docx",
          "application/vnd.openxmlformats-"
-         "officedocument.wordprocessingml.document"),
+         "officedocument.wordprocessingml.document", MagicBinaryScraper),
         ("valid_1.1.odp",
-         "application/vnd.oasis.opendocument.presentation"),
+         "application/vnd.oasis.opendocument.presentation",
+         MagicBinaryScraper),
         ("valid_11.0.ppt",
-         "application/vnd.ms-powerpoint"),
+         "application/vnd.ms-powerpoint", MagicBinaryScraper),
         ("valid_15.0.pptx",
          "application/vnd.openxml"
-         "formats-officedocument.presentationml.presentation"),
+         "formats-officedocument.presentationml.presentation",
+         MagicBinaryScraper),
         ("valid_1.1.ods",
-         "application/vnd.oasis.opendocument.spreadsheet"),
+         "application/vnd.oasis.opendocument.spreadsheet",
+         MagicBinaryScraper),
         ("valid_11.0.xls",
-         "application/vnd.ms-excel"),
+         "application/vnd.ms-excel", MagicBinaryScraper),
         ("valid_15.0.xlsx",
-         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
+         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+         MagicBinaryScraper),
         ("valid_1.1.odg",
-         "application/vnd.oasis.opendocument.graphics"),
+         "application/vnd.oasis.opendocument.graphics", MagicBinaryScraper),
         ("valid_1.0.odf",
-         "application/vnd.oasis.opendocument.formula"),
-        ("valid_1.2.png", "image/png"),
-        ("valid_1.01.jpg", "image/jpeg"),
-        ("valid.jp2", "image/jp2"),
-        ("valid_6.0.tif", "image/tiff"),
-        ("valid__iso8859.txt", "text/plain"),
-        ("valid__utf8_without_bom.txt", "text/plain"),
-        ("valid_1.0_well_formed.xml", "text/xml"),
-        ("valid_1.0.xhtml", "application/xhtml+xml"),
-        ("valid_4.01.html", "text/html"),
-        ("valid_5.0.html", "text/html"),
-        ("valid_1.4.pdf", "application/pdf"),
-        ("valid_1.0.arc", "application/x-internet-archive"),
+         "application/vnd.oasis.opendocument.formula", MagicBinaryScraper),
+        ("valid_1.2.png", "image/png", MagicBinaryScraper),
+        ("valid_1.01.jpg", "image/jpeg", MagicBinaryScraper),
+        ("valid.jp2", "image/jp2", MagicBinaryScraper),
+        ("valid_6.0.tif", "image/tiff", MagicBinaryScraper),
+        ("valid__iso8859.txt", "text/plain", MagicTextScraper),
+        ("valid__utf8_without_bom.txt", "text/plain", MagicTextScraper),
+        ("valid_1.0_well_formed.xml", "text/xml", MagicTextScraper),
+        ("valid_1.0.xhtml", "application/xhtml+xml", MagicTextScraper),
+        ("valid_4.01.html", "text/html", MagicTextScraper),
+        ("valid_5.0.html", "text/html", MagicTextScraper),
+        ("valid_1.4.pdf", "application/pdf", MagicBinaryScraper),
+        ("valid_1.0.arc", "application/x-internet-archive",
+         MagicBinaryScraper),
     ])
-def test_scraper_valid(filename, mimetype, evaluate_scraper):
+def test_scraper_valid(filename, mimetype, scraper_class, evaluate_scraper):
     """Test scraper."""
     result_dict = {
         "purpose": "Test valid file.",
@@ -151,7 +157,7 @@ def test_scraper_valid(filename, mimetype, evaluate_scraper):
         "stderr_part": ""}
     correct = parse_results(filename, mimetype,
                             result_dict, True)
-    scraper = MagicScraper(filename=correct.filename, mimetype=mimetype)
+    scraper = scraper_class(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
 
     if correct.streams[0]["mimetype"] == "application/xhtml+xml":
@@ -199,17 +205,14 @@ def test_invalid_office(filename, mimetype):
     result_dict = {
         "purpose": "Test invalid file.",
         "stdout_part": "",
-        "stderr_part": "MIME type application/octet-stream with version "
-                       "(:unav) is not supported."}
-    if "empty" in filename:
-        result_dict["stderr_part"] = "MIME type inode/x-empty with version " \
-            "(:unav) is not supported."
+        "stderr_part": "MIME type (:unav) with version (:unav) "
+                       "is not supported."}
 
     correct = parse_results(filename, mimetype,
                             result_dict, True)
     correct.update_mimetype(mimetype)
     correct.update_version(filename.split("_")[1])
-    scraper = MagicScraper(filename=correct.filename, mimetype=mimetype)
+    scraper = MagicBinaryScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
 
     assert not scraper.well_formed
@@ -218,16 +221,20 @@ def test_invalid_office(filename, mimetype):
 
 
 @pytest.mark.parametrize(
-    ["filename", "mimetype"],
+    ["filename", "mimetype", "scraper_class"],
     [
-        ("invalid_1.0_no_closing_tag.xml", "text/xml"),
-        ("invalid_1.0_no_doctype.xhtml", "application/xhtml+xml"),
-        ("invalid_4.01_nodoctype.html", "text/html"),
-        ("invalid_5.0_nodoctype.html", "text/html"),
-        ("invalid_1.4_removed_xref.pdf", "application/pdf"),
-        ("invalid_1.0_missing_field.arc", "application/x-internet-archive"),
+        ("invalid_1.0_no_closing_tag.xml", "text/xml", MagicTextScraper),
+        ("invalid_1.0_no_doctype.xhtml", "application/xhtml+xml",
+         MagicTextScraper),
+        ("invalid_4.01_nodoctype.html", "text/html", MagicTextScraper),
+        ("invalid_5.0_nodoctype.html", "text/html", MagicTextScraper),
+        ("invalid_1.4_removed_xref.pdf", "application/pdf",
+         MagicBinaryScraper),
+        ("invalid_1.0_missing_field.arc", "application/x-internet-archive",
+         MagicBinaryScraper),
     ])
-def test_invalid_markdown_pdf_arc(filename, mimetype, evaluate_scraper):
+def test_invalid_markdown_pdf_arc(filename, mimetype, scraper_class,
+                                  evaluate_scraper):
     """Test scrapers for invalid XML, XHTML, HTML, pdf and arc files."""
     result_dict = {
         "purpose": "Test invalid file.",
@@ -237,7 +244,7 @@ def test_invalid_markdown_pdf_arc(filename, mimetype, evaluate_scraper):
     correct.update_mimetype(mimetype)
     if mimetype != "text/html":
         correct.update_version(filename.split("_")[1])
-    scraper = MagicScraper(filename=correct.filename, mimetype=mimetype)
+    scraper = scraper_class(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
 
     correct.well_formed = True
@@ -261,42 +268,13 @@ def test_invalid_images(filename, mimetype):
     result_dict = {
         "purpose": "Test invalid file.",
         "stdout_part": "",
-        "stderr_part": "MIME type application/octet-stream with version (:unav) "
+        "stderr_part": "MIME type (:unav) with version (:unav) "
                        "is not supported."}
     correct = parse_results(filename, mimetype, result_dict, True)
     correct.update_mimetype(mimetype)
     correct.update_version(filename.split("_")[1])
-    scraper = MagicScraper(filename=correct.filename, mimetype=mimetype)
+    scraper = MagicBinaryScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
-
-    assert not scraper.well_formed
-    assert partial_message_included(correct.stdout_part, scraper.messages())
-    assert partial_message_included(correct.stderr_part, scraper.errors())
-
-
-@pytest.mark.parametrize(
-    ["filename", "mimetype", "error"],
-    [
-        ("invalid__binary_data.txt", "text/plain",
-         "MIME type application/octet-stream with version (:unap) is not "
-         "supported."),
-        ("invalid__empty.txt", "text/plain",
-         "MIME type inode/x-empty with version (:unap) is not supported."),
-    ])
-def test_invalid_text(filename, mimetype, error):
-    """Test TextFileMagic with invalid files."""
-    result_dict = {
-        "purpose": "Test invalid file.",
-        "stdout_part": "",
-        "stderr_part": error}
-    correct = parse_results(filename, mimetype,
-                            result_dict, True)
-    correct.update_mimetype(mimetype)
-    correct.update_version(filename.split("_")[1])
-    scraper = MagicScraper(filename=correct.filename, mimetype=mimetype)
-    scraper.scrape_file()
-
-    correct.streams[0]["charset"] = None
 
     assert not scraper.well_formed
     assert partial_message_included(correct.stdout_part, scraper.messages())
@@ -305,48 +283,54 @@ def test_invalid_text(filename, mimetype, error):
 
 def test_no_wellformed():
     """Test scraper without well-formed check."""
-    scraper = MagicScraper(filename="tests/data/image_jpeg/valid_1.01.jpg",
-                           mimetype="image/jpeg", check_wellformed=False)
+    scraper = MagicBinaryScraper(
+        filename="tests/data/image_jpeg/valid_1.01.jpg",
+        mimetype="image/jpeg", check_wellformed=False)
     scraper.scrape_file()
     assert not partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
 
 
 @pytest.mark.parametrize(
-    ["mime", "ver"],
+    ["mime", "ver", "scraper_class"],
     [
-        ("application/vnd.oasis.opendocument.text", "1.1"),
-        ("application/msword", "11.0"),
+        ("application/vnd.oasis.opendocument.text", "1.1",
+         MagicBinaryScraper),
+        ("application/msword", "11.0", MagicBinaryScraper),
         ("application/vnd.openxmlformats-officedocument.wordprocessingml"
-         ".document", "15.0"),
-        ("application/vnd.oasis.opendocument.presentation", "1.1"),
-        ("application/vnd.ms-powerpoint", "11.0"),
+         ".document", "15.0", MagicBinaryScraper),
+        ("application/vnd.oasis.opendocument.presentation", "1.1",
+         MagicBinaryScraper),
+        ("application/vnd.ms-powerpoint", "11.0", MagicBinaryScraper),
         ("application/vnd.openxmlformats-officedocument.presentationml"
-         ".presentation", "15.0"),
-        ("application/vnd.oasis.opendocument.spreadsheet", "1.1"),
-        ("application/vnd.ms-excel", "8.0"),
+         ".presentation", "15.0", MagicBinaryScraper),
+        ("application/vnd.oasis.opendocument.spreadsheet", "1.1",
+         MagicBinaryScraper),
+        ("application/vnd.ms-excel", "8.0", MagicBinaryScraper),
         ("application/vnd.openxmlformats-officedocument.spreadsheetml"
-         ".sheet", "15.0"),
-        ("application/vnd.oasis.opendocument.graphics", "1.1"),
-        ("application/vnd.oasis.opendocument.formula", "1.0"),
-        ("image/png", "1.2"),
-        ("image/jpeg", "1.01"),
-        ("image/jp2", "(:unap)"),
-        ("image/tiff", "6.0"),
-        ("text/plain", ""),
-        ("text/xml", "1.0"),
-        ("application/xhtml+xml", "1.0"),
-        ("application/pdf", "1.4"),
-        ("application/x-internet-archive", "1.0"),
+         ".sheet", "15.0", MagicBinaryScraper),
+        ("application/vnd.oasis.opendocument.graphics", "1.1",
+         MagicBinaryScraper),
+        ("application/vnd.oasis.opendocument.formula", "1.0",
+         MagicBinaryScraper),
+        ("image/png", "1.2", MagicBinaryScraper),
+        ("image/jpeg", "1.01", MagicBinaryScraper),
+        ("image/jp2", "", MagicBinaryScraper),
+        ("image/tiff", "6.0", MagicBinaryScraper),
+        ("text/plain", "", MagicTextScraper),
+        ("text/xml", "1.0", MagicTextScraper),
+        ("application/xhtml+xml", "1.0", MagicTextScraper),
+        ("application/pdf", "1.4", MagicBinaryScraper),
+        ("application/x-internet-archive", "1.0", MagicBinaryScraper),
     ]
 )
-def test_is_supported_allow(mime, ver):
+def test_is_supported_allow(mime, ver, scraper_class):
     """Test is_supported method."""
-    assert MagicScraper.is_supported(mime, ver, True)
-    assert MagicScraper.is_supported(mime, None, True)
-    assert MagicScraper.is_supported(mime, ver, False)
-    assert MagicScraper.is_supported(mime, "foo", True)
-    assert not MagicScraper.is_supported("foo", ver, True)
+    assert scraper_class.is_supported(mime, ver, True)
+    assert scraper_class.is_supported(mime, None, True)
+    assert scraper_class.is_supported(mime, ver, False)
+    assert scraper_class.is_supported(mime, "foo", True)
+    assert not scraper_class.is_supported("foo", ver, True)
 
 
 @pytest.mark.parametrize(
@@ -357,8 +341,8 @@ def test_is_supported_allow(mime, ver):
 )
 def test_is_supported_deny(mime, ver):
     """Test is_supported method."""
-    assert MagicScraper.is_supported(mime, ver, True)
-    assert MagicScraper.is_supported(mime, None, True)
-    assert MagicScraper.is_supported(mime, ver, False)
-    assert not MagicScraper.is_supported(mime, "foo", True)
-    assert not MagicScraper.is_supported("foo", ver, True)
+    assert MagicTextScraper.is_supported(mime, ver, True)
+    assert MagicTextScraper.is_supported(mime, None, True)
+    assert MagicTextScraper.is_supported(mime, ver, False)
+    assert not MagicTextScraper.is_supported(mime, "foo", True)
+    assert not MagicTextScraper.is_supported("foo", ver, True)

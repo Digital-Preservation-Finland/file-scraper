@@ -178,7 +178,7 @@ class BaseMeta(object):
         """
         BaseMeta does no real scraping. Should be implemented in subclasses.
 
-        :returns: default mimetype (if only one supported) or "(:unav)"
+        :returns: "(:unav)"
         """
         return "(:unav)"
 
@@ -187,7 +187,7 @@ class BaseMeta(object):
         """
         BaseMeta does no real scraping. Should be implemented in subclasses.
 
-        :returns: default version (if only one supported) or "(:unav)"
+        :returns: "(:unav)"
         """
         return "(:unav)"
 

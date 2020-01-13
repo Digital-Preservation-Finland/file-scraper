@@ -124,12 +124,9 @@ class Scraper(object):
         Ideally the MIME type and version from the scraper are used, but if
         they are not available, values supplied by the detector are used.
         """
-        if not self.well_formed:
-            if self.streams[0]["mimetype"] in LOSE and self._predefined_mimetype:
-                self.mimetype = self.streams[0]["mimetype"]
-            elif self._predefined_mimetype:
-                self.streams[0]["mimetype"] = self._predefined_mimetype
-                self.mimetype = self._predefined_mimetype
+        if not self.well_formed and self._predefined_mimetype:
+            self.streams[0]["mimetype"] = self._predefined_mimetype
+            self.mimetype = self._predefined_mimetype
         else:
             self.mimetype = self.streams[0]["mimetype"]
 

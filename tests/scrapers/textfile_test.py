@@ -41,10 +41,15 @@ def test_existing_files(filename, mimetype, is_textfile, evaluate_scraper):
     scraper = TextfileScraper(filename=correct.filename, mimetype="text/plain")
     scraper.scrape_file()
 
-    correct.version = None
-    correct.streams[0]["version"] = "(:unav)"
-    correct.streams[0]["mimetype"] = "(:unav)"
-    correct.streams[0]["stream_type"] = "(:unav)"
+    if is_textfile:
+        correct.streams[0]["stream_type"] = "text"
+        correct.update_mimetype("text/plain")
+        correct.streams[0]["version"] = "(:unap)"
+    else:
+        correct.streams[0]["stream_type"] = "(:unav)"
+        correct.update_mimetype("(:unav)")
+        correct.streams[0]["version"] = "(:unav)"
+
     correct.well_formed = is_textfile
     if correct.well_formed:
         correct.stdout_part = VALID_MSG

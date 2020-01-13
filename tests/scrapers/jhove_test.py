@@ -332,7 +332,7 @@ def test_scraper_jpeg(filename, result_dict, evaluate_scraper):
             "purpose": "Test illegal tag.",
             "stdout_part": "",
             "stderr_part": "must be declared."},
-         "application/xhtml+xml", "UTF-8"),
+         "application/xhtml+xml", None),
         ("invalid_1.0_missing_closing_tag.xhtml", {
             "purpose": "Test missing closing tag.",
             "stdout_part": "",
@@ -342,7 +342,7 @@ def test_scraper_jpeg(filename, result_dict, evaluate_scraper):
             "purpose": "Test without doctype.",
             "stdout_part": "",
             "stderr_part": "Cannot find the declaration of element"},
-         "application/xhtml+xml", "UTF-8"),
+         "application/xhtml+xml", None),
         ("invalid__empty.xhtml", {
             "purpose": "Test empty file.",
             "stdout_part": "",
@@ -356,12 +356,12 @@ def test_scraper_html(filename, result_dict, mimetype, charset,
     params = {"charset": charset}
     correct = parse_results(filename, mimetype, result_dict, True,
                             params)
+    if not correct.well_formed:
+        correct.update_mimetype("(:unav)")
     correct.streams[0]["stream_type"] = "text"
     if "inverse" in result_dict:
         if result_dict["inverse"]:
             correct.update_version("(:unav)")
-    if "invalid__empty.xhtml" in filename:
-        correct.streams[0]["mimetype"] = "text/html"
 
     scraper = JHoveHtmlScraper(filename=correct.filename,
                                mimetype=mimetype,

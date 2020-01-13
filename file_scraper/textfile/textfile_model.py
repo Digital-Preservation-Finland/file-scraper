@@ -11,10 +11,25 @@ class TextFileMeta(BaseMeta):
     _supported = {"text/plain": []}
     _allow_versions = True
 
-    # pylint: disable=no-self-use
+    @metadata()
+    def mimetype(self):
+        """Return mimetype."""
+        if not self._errors:
+            return "text/plain"
+        return "(:unav)"
+
+    @metadata()
+    def version(self):
+        """Return version."""
+        if not self._errors:
+            return "(:unap)"
+        return "(:unav)"
+
     @metadata()
     def stream_type(self):
         """Return stream type."""
+        if not self._errors:
+            return "text"
         return "(:unav)"
 
 

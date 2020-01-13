@@ -11,12 +11,13 @@ class BaseMagicMeta(BaseMeta):
     _starttag = "version "  # Text before file format version in magic result.
     _endtag = None  # Text after file format version in magic result.
 
-    def __init__(self, errors, magic_result):
+    def __init__(self, errors, magic_result, pre_mimetype):
         """Initialize the metadata model.
 
         :magic_result: Values resulted from magic module as Python dict
         """
         self._magic_result = magic_result
+        self._predefined_mimetype = pre_mimetype
         super(BaseMagicMeta, self).__init__(errors)
 
     @metadata()
@@ -25,7 +26,9 @@ class BaseMagicMeta(BaseMeta):
         mimetype = self._magic_result['magic_mime_type']
         if mimetype in MIMETYPE_DICT:
             mimetype = MIMETYPE_DICT[mimetype]
-        return mimetype
+        if mimetype == self._predefined_mimetype:
+            return mimetype
+        return "(:unav)"
 
     @metadata()
     def version(self):
@@ -85,7 +88,9 @@ class TextFileMagicMeta(TextMagicBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        return "(:unap)"
+        if self.mimetype() in self._supported:
+            return "(:unap)"
+        return "(:unav)"
 
 
 class XmlFileMagicMeta(TextMagicBaseMeta):
@@ -152,10 +157,11 @@ class XhtmlFileMagicMeta(TextMagicBaseMeta):
     @metadata()
     def mimetype(self):
         """Return MIME type."""
-        mime = super(XhtmlFileMagicMeta, self).mimetype()
-        if mime == "text/xml":
+        mime = self._magic_result['magic_mime_type']
+        if mime in ["application/xml", "text/xml", "text/html",
+                    "application/xhtml+xml"]:
             return "application/xhtml+xml"
-        return mime
+        return "(:unav)"
 
 
 class HtmlFileMagicMeta(TextMagicBaseMeta):
@@ -244,9 +250,9 @@ class PngFileMagicMeta(BinaryMagicBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        if self.mimetype() not in self._supported:
-            return "(:unav)"
-        return "1.2"
+        if self.mimetype() in self._supported:
+            return "1.2"
+        return "(:unav)"
 
     @metadata()
     def stream_type(self):
@@ -278,9 +284,9 @@ class Jp2FileMagicMeta(BinaryMagicBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        if self.mimetype() not in self._supported:
-            return "(:unav)"
-        return "(:unap)"
+        if self.mimetype() in self._supported:
+            return "(:unap)"
+        return "(:unav)"
 
     @metadata()
     def stream_type(self):
@@ -297,9 +303,9 @@ class TiffFileMagicMeta(BinaryMagicBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        if self.mimetype() not in self._supported:
-            return "(:unav)"
-        return "6.0"
+        if self.mimetype() in self._supported:
+            return "6.0"
+        return "(:unav)"
 
     @metadata()
     def stream_type(self):

@@ -38,9 +38,9 @@ class CsvMeta(BaseMeta):
     @metadata()
     def mimetype(self):
         """Return mimetype"""
-        if self._errors:
-            return "(:unav)"
-        return "text/csv"
+        if not self._errors:
+            return "text/csv"
+        return "(:unav)"
 
     @metadata()
     def version(self):

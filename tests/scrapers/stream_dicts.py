@@ -22,7 +22,7 @@ MOV_DV_VIDEO = dict(DV_VIDEO, **{
     "codec_creator_app_version": "56.40.101", "sound": "Yes"})
 
 MOV_TC = {
-        "index": 3, "mimetype": "(:unav)", "stream_type": "other",
+    "index": 3, "mimetype": "(:unav)", "stream_type": "other",
     "version": "(:unav)"}
 
 

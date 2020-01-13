@@ -33,9 +33,12 @@ UNAV_ELEMENTS = {
                                         "codec_creator_app_version",
                                         "codec_creator_app", "bits_per_sample",
                                         "codec_creator_app_version",
-                                        "codec_creator_app"],
-    "tests/data/video_quicktime/valid__dv_wav.mov": ["version"],
-    "tests/data/video_quicktime/valid__h264_aac.mov": ["bits_per_sample"],
+                                        "codec_creator_app",
+                                        "mimetype", "version"],
+    "tests/data/video_quicktime/valid__dv_wav.mov": ["mimetype", "version",
+                                                     "version"],
+    "tests/data/video_quicktime/valid__h264_aac.mov": ["bits_per_sample",
+                                                       "mimetype", "version"],
     "tests/data/audio_mpeg/valid_1.mp3": ["bits_per_sample",
                                           "codec_creator_app_version",
                                           "codec_creator_app"],
@@ -49,9 +52,12 @@ UNAV_ELEMENTS = {
     "tests/data/application_x-spss-por/valid__spss24-dates.por": ["version"]
 }
 
-# These test files are valid as another mimetype or version
-# or due to special parameters or missing scraper
+# Currently, only JHOVE returns WAV version, if not BWF
+UNAV_ELEMENTS_PLUS = dict(UNAV_ELEMENTS, **{
+    "tests/data/audio_x-wav/valid__wav.wav": ["version"]})
 
+# These are actually valid with another mimetype or version
+# or due to special parameters or missing scraper
 IGNORE_INVALID = [
 
     # invalid_1.4_wrong_version.pdf -- is valid PDF 1.7
@@ -165,8 +171,10 @@ def _assert_valid_scraper_result(scraper, fullname, mimetype, well_formed):
             if stream_value == "(:unav)":
                 unavs.append(key)
 
-    if fullname in UNAV_ELEMENTS:
-        assert sorted(unavs) == sorted(UNAV_ELEMENTS[fullname])
+    unav_expected = UNAV_ELEMENTS if well_formed else UNAV_ELEMENTS_PLUS
+
+    if fullname in unav_expected:
+        assert sorted(unavs) == sorted(unav_expected[fullname])
     else:
         assert not unavs
 
@@ -224,7 +232,7 @@ def test_invalid_combined(fullname, mimetype):
                          "and scraper not found") % fullname)
 
     assert scraper.well_formed is False  # Could be also None (wrong)
-    assert scraper.mimetype == mimetype or (
+    assert scraper.mimetype in [mimetype, "(:unav)"] or (
             fullname in DIFFERENT_MIMETYPE_INVALID)
 
 
@@ -305,7 +313,7 @@ def test_coded_filename(testpath, fullname, mimetype):
 
         # Force unsupported MIME type, resulting in not well-formed
         ("tests/data/image_tiff/valid_6.0.tif", {"mimetype": "audio/mpeg"},
-         False, "(:unav)", "(:unav)"),
+         False, "audio/mpeg", "(:unav)"),
 
         # Scrape invalid XML as plaintext, as which it is well-formed
         ("tests/data/text_xml/invalid_1.0_no_closing_tag.xml",

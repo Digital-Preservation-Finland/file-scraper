@@ -21,15 +21,11 @@ from file_scraper.magic_scraper.magic_model import (BaseMagicMeta,
 MAGIC_LIB = magiclib()
 
 
-class MagicScraper(BaseScraper):
+class MagicBaseScraper(BaseScraper):
     """Scraper for scraping files using magic."""
 
-    _supported_metadata = [TextFileMagicMeta, XmlFileMagicMeta,
-                           XhtmlFileMagicMeta, HtmlFileMagicMeta,
-                           PdfFileMagicMeta, OfficeFileMagicMeta,
-                           ArcFileMagicMeta, PngFileMagicMeta,
-                           JpegFileMagicMeta, Jp2FileMagicMeta,
-                           TiffFileMagicMeta]
+    _allow_unav_mime = False
+    _supported_metadata = []
 
     def _magic_call(self):
         """Fetch three values from file with using magic.
@@ -62,7 +58,25 @@ class MagicScraper(BaseScraper):
 
         magic_result = self._magic_call()
 
-        self.iterate_models(magic_result=magic_result)
+        self.iterate_models(magic_result=magic_result,
+                            pre_mimetype=self._predefined_mimetype)
 
-        self._check_supported(allow_unav_version=True, allow_unap_version=True)
+        self._check_supported(allow_unav_mime=self._allow_unav_mime,
+                              allow_unav_version=True,
+                              allow_unap_version=True)
         self._messages.append("The file was analyzed successfully.")
+
+
+class MagicTextScraper(MagicBaseScraper):
+    """Magic scraper for text files"""
+    _allow_unav_mime = True
+    _supported_metadata = [TextFileMagicMeta, XmlFileMagicMeta,
+                           XhtmlFileMagicMeta, HtmlFileMagicMeta]
+
+class MagicBinaryScraper(MagicBaseScraper):
+    """Magic scraper for binary files"""
+    _supported_metadata = [PdfFileMagicMeta, OfficeFileMagicMeta,
+                           ArcFileMagicMeta, PngFileMagicMeta,
+                           JpegFileMagicMeta, Jp2FileMagicMeta,
+                           TiffFileMagicMeta]
+
