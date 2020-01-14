@@ -47,7 +47,6 @@ UNAV_ELEMENTS = {
                                           "codec_creator_app"],
     "tests/data/video_mpeg/valid_2.m2v": ["codec_creator_app_version",
                                           "codec_creator_app"],
-    "tests/data/audio_x-wav/valid__wav.wav": ["version"],
     "tests/data/application_x-spss-por/valid__spss24-dot.por": ["version"],
     "tests/data/application_x-spss-por/valid__spss24-dates.por": ["version"]
 }
@@ -186,8 +185,6 @@ def test_valid_combined(fullname, mimetype):
     - Test Find out all None elements.
     - Test that errors are not given.
     - Test that all files are well-formed.
-    - Test that forcing the scraper to use the MIME type and version the file
-      actually as does not affect scraping results.
     - Ignore few files because of required parameter or missing scraper.
     """
     if fullname in IGNORE_VALID:

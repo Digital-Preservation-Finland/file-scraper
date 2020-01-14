@@ -11,7 +11,6 @@ This module tests that:
         - last byte of the file is missing
         - header reports little-endian order but contents of the file are
           big-endian
-    - forcing MIME type and/or version works.
     - when check_wellformed is set to False, well-formedness is reported as
       None and scraper messages report skipped scraping.
     - the scraper reports MIME type 'image/x-dpx' with version 2.0 as

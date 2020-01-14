@@ -51,7 +51,6 @@ This module tests that:
     - All these MIME types are also supported when None or a made up version
       is given as the version.
     - A made up MIME type is not supported.
-    - MIME type and/or version forcing works.
 """
 from __future__ import unicode_literals
 

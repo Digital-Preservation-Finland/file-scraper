@@ -30,7 +30,6 @@ This module tests that:
       the version.
     - A made up MIME type is not supported.
     - Without well-formedness check, none of these MIME types are supported.
-    - Forcing MIME type and/or version works.
 """
 from __future__ import unicode_literals
 

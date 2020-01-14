@@ -29,8 +29,6 @@ This module tests that:
     - A made up MIME type is not supported, but version is.
 
     - Schema, catalogs and network-usage can be defined as parameters.
-
-    - MIME type and/or version forcing works.
 """
 from __future__ import unicode_literals
 

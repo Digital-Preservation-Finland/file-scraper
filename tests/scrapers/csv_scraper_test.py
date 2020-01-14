@@ -145,9 +145,6 @@ def test_scraper(filename, result_dict, header,
     """
     Write test data and run csv scraping for the file.
 
-    NB: Forcing unsupported MIME type causes an error to be logged, resulting
-        in the file being reported as not well-formed regardless of its
-        contents.
     """
 
     mimetype = result_dict["streams"][0]["mimetype"]

@@ -32,8 +32,6 @@ This module tests that:
 
     - Schematron removes extra copies of identical elements, but not if their
       attributes differ.
-
-    - MIME type and/or version forcing works.
 """
 from __future__ import unicode_literals
 

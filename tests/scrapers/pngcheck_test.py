@@ -13,7 +13,6 @@ This module tests that:
       version when well-formedness is checked.
     - When well-formedness is not checked, image/png 1.2 is not supported.
     - A made up MIME type is not supported.
-    - MIME type and/or version forcing works.
 """
 from __future__ import unicode_literals
 

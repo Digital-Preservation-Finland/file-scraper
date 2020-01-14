@@ -83,14 +83,6 @@ This module tests that:
       would thus need to use the supplied MIME type from the dict, but the
       given MIME type does not match either of the types, an error is recorded,
       no metadata is scraped and the file is reported as not well-formed.
-    - Forcing MIME type and/or version works:
-        - messages are recorded
-        - forcing an unsupported MIME type causes an error
-        - only forcing version has no effect
-        - MIME type can be forced alone
-        - for metadata models that support multiple MIME types, using another
-          supported MIME type does not cause an error (see docstring of
-          test_mixed_filetype for details).
 """
 from __future__ import unicode_literals
 

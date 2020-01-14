@@ -25,7 +25,6 @@ This module tests that:
       in dict returned by get_important() function when scraper messages
       contain "Success", but when scraper errors contain "Error", the dict is
       empty.
-    - MIME type and/or version forcing works.
 """
 from __future__ import unicode_literals
 

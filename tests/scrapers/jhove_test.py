@@ -88,8 +88,6 @@ This module tests that:
         - application/xhtml+xml, 1.0
     - Utf8JHove reports MIME type text/plain with "", None or a made up version
       as not supported, as well as a made up MIME type.
-
-    - Forcing MIME types and/or versions works.
 """
 from __future__ import unicode_literals
 

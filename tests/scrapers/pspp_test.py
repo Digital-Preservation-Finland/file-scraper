@@ -17,7 +17,6 @@ This module tests that:
     - When well-formedness is not checked, application/x-spss-por is not
       supported.
     - When well-formedness is checked, a made up MIME type is not supported.
-    - MIME type and/or version forcing works.
 """
 from __future__ import unicode_literals
 

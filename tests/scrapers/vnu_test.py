@@ -17,7 +17,6 @@ This module tests that:
       None are supported. When well-formedness is not checked, this combination
       is not supported.
     - A made up MIME type or version is not supported.
-    - MIME type and/or version forcing works.
 """
 from __future__ import unicode_literals
 

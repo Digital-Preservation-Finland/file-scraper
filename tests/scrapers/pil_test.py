@@ -19,7 +19,6 @@ This module tests that:
         - image/gif, 1987a
     - These MIME types are also supported with None or a made up version.
     - A made up MIME type with any of these versions is not supported.
-    - Forcing MIME type and/or version works.
 """
 from __future__ import unicode_literals
 

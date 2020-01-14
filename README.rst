@@ -164,8 +164,7 @@ Misc notes
 ----------
 
     * Without the Warctools scraper tool, gzipped WARC and ARC files are identified as 'application/gzip'.
-    * With great power comes great responsibility: carelessly forcing the file type can produce unexpected results. Most files won't be reported as well-formed when the wrong MIME type is used, but in some cases where the same metadata models support both the real and the forced MIME type, the file can appear as well-formed specimen of the forced file type, possibly with wonky detected metadata. Similarly it is possible to scrape e.g. version 1987a gif as one with version 1989a, resulting in successful scraping with normal metadata apart from the forced version. Thus the results should not be blindly trusted when MIME type and/or version has been provided by the user.
-
+    * The software may result arbitrary metadata values, if incorrect MIME type or version is given as a parameter. However, the file is also the denoted as invalid.
 
 Copyright
 ---------

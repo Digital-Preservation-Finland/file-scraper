@@ -31,7 +31,6 @@ This module tests that:
           None or a made up string as a version
     - Without well-formedness check, these MIME types are not supported.
     - None of these scrapers supports a made up MIME type.
-    - MIME type and/or version forcing works.
 """
 from __future__ import unicode_literals
 

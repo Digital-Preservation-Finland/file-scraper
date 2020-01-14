@@ -15,7 +15,6 @@ This module tests that:
     - A correct MIME type with made up version is reported as supported for
       text/xml files but not for text/html files.
     - A made up MIME type with correct version is reported as not supported.
-    - Forcing MIME type and/or version works.
 """
 from __future__ import unicode_literals
 

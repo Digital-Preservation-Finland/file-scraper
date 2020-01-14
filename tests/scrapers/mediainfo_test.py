@@ -24,8 +24,6 @@ This module tests that:
         - video/MP2T, ''
     - These MIME types are also supported with a made up version.
     - Made up MIME types are not supported.
-    - Error is raised if mimetype_guess is not supplied.
-    - MIME type and/or version forcing works.
 """
 from __future__ import unicode_literals
 

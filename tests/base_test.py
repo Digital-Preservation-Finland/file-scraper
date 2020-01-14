@@ -8,9 +8,6 @@ This module tests:
     - That messages and errors are returned properly.
     - That scraper attributes and well_formed property are set and retrieved
       correctly
-    - That overriding MIME type and/or version scraping by giving them as
-      parameters is possible, but giving version without MIME type has no
-      effect.
 """
 from __future__ import unicode_literals
 
