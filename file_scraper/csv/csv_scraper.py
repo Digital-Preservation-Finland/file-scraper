@@ -42,12 +42,14 @@ class CsvScraper(BaseScraper):
         fields = self._params.get("fields", [])
         first_line = None
 
+        charset = self._params.get("charset", None)
+
         try:
             csvfile = None
             if six.PY2:
                 csvfile = io_open(self.filename, "rb")
             if six.PY3:
-                csvfile = io_open(self.filename, "rt", encoding='iso8859-15')
+                csvfile = io_open(self.filename, "rt", encoding=charset)
 
             reader = csv.reader(csvfile)
             dialect = csv.Sniffer().sniff(csvfile.read(1024))

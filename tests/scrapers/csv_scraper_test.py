@@ -169,7 +169,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
                             'delimiter': ';',
                             'separator': '\n',
                             'first_line': ['year,brand,model,detail,other']}}},
-         ['year,brand,model,detail,other'], {}),
+         ['year,brand,model,detail,other'], {'charset': 'iso8859-15'}),
         ('valid__utf8.csv', {
             'purpose': 'Non-ASCII characters',
             'stdout_part': 'successfully',
@@ -181,7 +181,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
                             'delimiter': ';',
                             'separator': '\n',
                             'first_line': ['year,brand,model,detail,other']}}},
-         ['year,brand,model,detail,other'], {})
+         ['year,brand,model,detail,other'], {'charset': 'utf-8'})
     ]
 )
 def test_scraper(csv_file, result_dict, header,

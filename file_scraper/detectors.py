@@ -278,3 +278,23 @@ class VerapdfDetector(BaseDetector):
         if self.mimetype and self.version:
             return {"mimetype": self.mimetype, "version": self.version}
         return {}
+
+
+class CharsetDetector(BaseDetector):
+    """Charset detector."""
+
+    def __init__(self, filename, mimetype=None, version=None):
+        """Initialize detector."""
+        self.charset = None
+        super(CharsetDetector, self).__init__(filename, mimetype=mimetype,
+                                              version=version)
+
+    def detect(self):
+        """Detect charset with MagicLib."""
+
+        self.charset = magic_analyze(MAGIC_LIB, MAGIC_LIB.MAGIC_MIME_ENCODING,
+                                     self.filename)
+
+        self.info = {"class": self.__class__.__name__,
+                     "messages": [],
+                     "errors": []}
