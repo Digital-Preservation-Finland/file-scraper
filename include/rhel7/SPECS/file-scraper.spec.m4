@@ -29,7 +29,7 @@ Summary: 	File scraper analysis tool - full installation
 Group:          Applications/Archiving
 Conflicts:      %{name} < %{version}-%{release}, %{name} > %{version}-%{release}
 Requires:       %{name} = %{version}-%{release}
-Requires:       ffmpeg-python ffmpeg ghostscript jhove python-lxml veraPDF dpx-validator
+Requires:       ffmpeg-python ffmpeg ghostscript jhove python-lxml veraPDF dpx-validator dpres-xml-schemas
 Requires:       warc-tools >= 4.8.3
 Requires:       pngcheck libreoffice pspp file-5.30 xhtml1-dtds vnu iso-schematron-xslt1
 
