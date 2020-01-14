@@ -25,6 +25,7 @@ class BasePilMeta(BaseMeta):
         """
         Initialize scraper.
 
+        :errors: Errors from scraper.
         :pil: PIL image
         :index: Index of the current frame
         """
@@ -155,7 +156,7 @@ class ImagePilMeta(BasePilMeta):
 
 
 class Jp2PilMeta(BasePilMeta):
-    """Collect JP" image metadata."""
+    """Collect JP2 image metadata."""
 
     # Supported mimetypes
     _supported = {"image/jp2": []}

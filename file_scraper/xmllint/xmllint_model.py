@@ -24,7 +24,7 @@ class XmllintMeta(BaseMeta):
 
     @metadata()
     def mimetype(self):
-        """Return mimetype."""
+        """Return mimetype. The file is XML, if no errors."""
         if not self._errors:
             return "text/xml"
         return "(:unav)"

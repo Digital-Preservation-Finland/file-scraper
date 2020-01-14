@@ -26,6 +26,7 @@ class GzipWarctoolsMeta(BaseWarctoolsMeta):
         """
         Initialize the metadata model
 
+        :errors: Errors from scraper
         :metadata_model: Either WarcWarctoolsMeta or ArcWarctoolsMeta object
                          representing the extracted warc or arc.
         """
@@ -54,6 +55,7 @@ class WarcWarctoolsMeta(BaseWarctoolsMeta):
         """
         Initialize the metadata model.
 
+        :errors: Errors from scraper
         :line: The first line of the warc archive.
         """
         self._line = line

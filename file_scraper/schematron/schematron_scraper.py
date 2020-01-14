@@ -19,12 +19,14 @@ class SchematronScraper(BaseScraper):
     _supported_metadata = [SchematronMeta]
     _only_wellformed = True
 
-    def __init__(self, filename, mimetype, check_wellformed=True, params=None):
+    def __init__(self, filename, mimetype, version=None,
+                 check_wellformed=True, params=None):
         """
         Initialize instance.
 
         :filename: File path
-        :mimetype: Predicted mimetype of the file
+        :mimetype: Predefined mimetype of the file
+        :version: Predefined file format version
         :check_wellformed: True for the full well-formed check, False for just
                            detection and metadata scraping
         :params: Extra parameters needed for the scraper
@@ -38,8 +40,9 @@ class SchematronScraper(BaseScraper):
         self._returncode = None
         self._schematron_file = params.get("schematron", None)
         self._extra_hash = params.get("extra_hash", None)
-        super(SchematronScraper, self).__init__(filename, mimetype, check_wellformed,
-                                                params)
+        super(SchematronScraper, self).__init__(
+            filename=filename, mimetype=mimetype, version=version,
+            check_wellformed=check_wellformed, params=params)
 
     @classmethod
     def is_supported(cls, mimetype, version=None,

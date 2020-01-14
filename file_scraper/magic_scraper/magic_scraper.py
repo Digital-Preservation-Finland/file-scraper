@@ -68,13 +68,24 @@ class MagicBaseScraper(BaseScraper):
 
 
 class MagicTextScraper(MagicBaseScraper):
-    """Magic scraper for text files"""
+    """
+    Magic scraper for text files.
+
+    We have to allow (:unav) mimetype for text files, since we are not quite
+    sure about the final mimetype. An XML file may also be plain text file.
+    """
     _allow_unav_mime = True
     _supported_metadata = [TextFileMagicMeta, XmlFileMagicMeta,
                            XhtmlFileMagicMeta, HtmlFileMagicMeta]
 
 class MagicBinaryScraper(MagicBaseScraper):
-    """Magic scraper for binary files"""
+    """
+    Magic scraper for binary files.
+    
+    Currently, these are all mime types which can not be anything else at the
+    same time. Therefore it is pretty safe to disallow (:unav) as a mimetype
+    result.
+    """
     _supported_metadata = [PdfFileMagicMeta, OfficeFileMagicMeta,
                            ArcFileMagicMeta, PngFileMagicMeta,
                            JpegFileMagicMeta, Jp2FileMagicMeta,

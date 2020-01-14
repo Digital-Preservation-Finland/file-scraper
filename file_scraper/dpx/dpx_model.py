@@ -19,7 +19,9 @@ class DpxMeta(BaseMeta):
 
     @metadata()
     def mimetype(self):
-        """Return mimetype."""
+        """
+        Return mimetype. The file is DPX xompliant if there are no errors.
+        """
         if not self._errors:
             return "image/x-dpx"
         return "(:unav)"

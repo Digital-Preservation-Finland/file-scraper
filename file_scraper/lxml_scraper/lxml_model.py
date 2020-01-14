@@ -16,6 +16,7 @@ class LxmlMeta(BaseMeta):
         """
         Initialize the metadata class.
 
+        :errors: Errors from scraper.
         :tree: etree parsed from the file that is being scraped
         """
         self._tree = tree

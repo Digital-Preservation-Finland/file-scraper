@@ -21,6 +21,7 @@ class WandImageMeta(BaseMeta):
         """
         Initialize the metadata model.
 
+        :errors: Errors from the scraper.
         :image: Wand SingleImage object for which the metadata is collected
         """
         self._image = image

@@ -16,6 +16,7 @@ class CsvMeta(BaseMeta):
         """
         Initialize for delimiter and separator info.
 
+        :errors: Errors from scraper
         :params: A dict containing the following keys:
                  delimiter:  the field delimiter used in the file
                  separator:  the line separator
@@ -37,7 +38,9 @@ class CsvMeta(BaseMeta):
 
     @metadata()
     def mimetype(self):
-        """Return mimetype"""
+        """
+        Return mimetype. The file is CSV compliant if there are no errors.
+        """
         if not self._errors:
             return "text/csv"
         return "(:unav)"

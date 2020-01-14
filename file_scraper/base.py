@@ -168,7 +168,41 @@ class BaseMeta(object):
 
     def __init__(self, errors):
         """
-        We usually don't know the mimetype and version if the file contains errors.
+        Initialize the metadata model.
+
+        The error messages given by the scraper usually affects to some of the
+        metadata fields of the model. For example, we should return "(:unav)"
+        as mimetype (and version), if the file contains errors. In such case,
+        some other scraper may be a better resolver for this. 
+
+        First example, if the validator supports only one particular file
+        format, then the scraper can result the mimetype as a string, if there
+        are no errors. Then it means that the file is compliant with the only
+        supported (and originally predefined) format. If there are errors, then
+        the validator does not really know the mimetype, and therefore "(:unav)"
+        should be returned.
+
+        Second example, if we give a PNG file predefined as GIF file, then
+        a GIF scraper produces errors and PNG+GIF scraper does not. The GIF
+        scraper can not give the mimetype, since it gives errors, and
+        therefore it does not know what the file is. The PNG+GIF scraper
+        can give the mimetype ONLY if it is able to resolve the mimetype and
+        errors are not found.
+        
+        Third example, if we give an XML file as a Plain text file, then
+        Plain text scrapers are run. These should result either text/plain
+        as mimetype, or "(:unav)" if they are not sure about it. For Plain
+        text files this is actually possible only if the scraper is a plain
+        text specific scraper and no errors are found.
+
+        If all the scrapers result "(:unav)" as mimetype, then the actual file
+        format is unknown. There must be at least one scraper which resolves
+        the mimetype and version.
+
+        If the predefined mimetype differs from the resulted one, then it is
+        the main scraper's responsibility to resolve this with an extra error
+        message.
+
         :errors: Errors from scraper
         """
         self._errors = errors
@@ -177,6 +211,7 @@ class BaseMeta(object):
     def mimetype(self):
         """
         BaseMeta does no real scraping. Should be implemented in subclasses.
+        Resolve only if unambiguous.
 
         :returns: "(:unav)"
         """
@@ -186,6 +221,7 @@ class BaseMeta(object):
     def version(self):
         """
         BaseMeta does no real scraping. Should be implemented in subclasses.
+        Resolve only if unambiguous.
 
         :returns: "(:unav)"
         """

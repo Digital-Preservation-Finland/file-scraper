@@ -21,17 +21,21 @@ class JHoveScraperBase(BaseScraper):
     _jhove_module = None
     _only_wellformed = True
 
-    def __init__(self, filename, mimetype, check_wellformed=True, params=None):
+    def __init__(self, filename, mimetype, version=None,
+                 check_wellformed=True, params=None):
         """
         Initialize JHove base scarper.
 
         :filename: File path
+        :mimetype: Predefined mimetype
+        :version: Predefined file format version
         :check_wellformed: True for the full well-formed check, False for just
                            detection and metadata scraping
         :params: Extra parameters needed for the scraper
         """
         self._report = None  # JHove report
         super(JHoveScraperBase, self).__init__(filename=filename, mimetype=mimetype,
+                                               version=version,
                                                check_wellformed=check_wellformed,
                                                params=params)
 
@@ -153,7 +157,7 @@ class JHoveUtf8Scraper(JHoveScraperBase):
 
     def iterate_models(self, **kwargs):
         """
-        Iterate Scraper models and create streams
+        Iterate Scraper models and create streams.
 
         We need to override this since _supported attribute is empty and
         the scraper is run differenty.

@@ -36,8 +36,8 @@ class JHoveBaseMeta(BaseMeta):
         """
         Initialize the metadata model.
 
+        :errors: Errors from scraper
         :report: JHove output as lxml.etree
-        :errors: A list to which possible errors should be appended
         """
         self._report = report
         super(JHoveBaseMeta, self).__init__(errors)
@@ -261,16 +261,6 @@ class JHoveUtf8Meta(JHoveBaseMeta):
     _jhove_module = "UTF8-hul"  # JHove module
 
     @metadata()
-    def mimetype(self):
-        """We don't know the mimetype."""
-        return "(:unav)"
-
-    @metadata()
-    def version(self):
-        """We don't know the version."""
-        return "(:unav)"
-
-    @metadata()
     def charset(self):
         """Return charset from JHOVE."""
         if "Well-formed and valid" in get_field(self._report, "status"):
@@ -282,3 +272,13 @@ class JHoveUtf8Meta(JHoveBaseMeta):
     def stream_type(self):
         """Return file type."""
         return "text"
+
+    @metadata()
+    def mimetype(self):
+        """We don't know the mimetype."""
+        return "(:unav)"
+
+    @metadata()
+    def version(self):
+        """We don't know the version."""
+        return "(:unav)"

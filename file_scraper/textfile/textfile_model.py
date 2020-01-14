@@ -13,7 +13,10 @@ class TextFileMeta(BaseMeta):
 
     @metadata()
     def mimetype(self):
-        """Return mimetype."""
+        """
+        Return mimetype. The file is text/plain compliant if there are no
+        errors.
+        """
         if not self._errors:
             return "text/plain"
         return "(:unav)"
@@ -27,7 +30,7 @@ class TextFileMeta(BaseMeta):
 
     @metadata()
     def stream_type(self):
-        """Return stream type."""
+        """Return stream type. It is text, if no errors."""
         if not self._errors:
             return "text"
         return "(:unav)"

@@ -44,7 +44,8 @@ class XmllintScraper(BaseScraper):
     _supported_metadata = [XmllintMeta]
     _only_wellformed = True  # Only well-formed check
 
-    def __init__(self, filename, mimetype, check_wellformed=True, params=None):
+    def __init__(self, filename, mimetype, version=None,
+                 check_wellformed=True, params=None):
         """
         Initialize scraper.
 
@@ -61,7 +62,7 @@ class XmllintScraper(BaseScraper):
         self._no_network = params.get("no_network", True)
         self._catalog_path = params.get("catalog_path", None)
         super(XmllintScraper, self).__init__(
-            filename=filename, mimetype=mimetype,
+            filename=filename, mimetype=mimetype, version=version,
             check_wellformed=check_wellformed, params=params)
 
     @classmethod

@@ -37,6 +37,10 @@ class FFMpegSimpleMeta(BaseMeta):
     # present in this dict. Their MIME type will be reported as (:unav), but
     # this doesn't matter as all metadata for them will be scraped using
     # MediaInfo anyway.
+    # The following do not always neatly correspond to one MIME type, so they
+    # should be left for other scrapers such as Mediainfo.
+    # - "QuickTime / MOV"
+    # - "MP2/3 (MPEG audio layer 2/3)"
     _mimetype_dict = {
         "DV (Digital Video)": "video/dv",
         "Matroska / WebM": "video/x-matroska",
@@ -45,10 +49,6 @@ class FFMpegSimpleMeta(BaseMeta):
         "MXF (Material eXchange Format)": "application/mxf",
         "AVI (Audio Video Interleaved)": "video/avi",
         "JPEG 2000": "video/jpeg2000",
-        # These two do not always neatly correspond to one MIME type, so they
-        # should be left for other scrapers such as Mediainfo.
-        "QuickTime / MOV": "(:unav)",
-        "MP2/3 (MPEG audio layer 2/3)": "(:unav)",
         }
 
     def __init__(self, errors, probe_results, index):

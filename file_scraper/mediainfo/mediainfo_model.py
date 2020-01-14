@@ -20,11 +20,9 @@ class BaseMediainfoMeta(BaseMeta):
         """
         Initialize the metadata model.
 
+        :errors: Error messages from scraper.
         :tracks: list of tracks containing all tracks in the file
         :index: index of the track represented by this metadata model
-        :mimetype_guess: MIME type of the file. For some file types, the
-                         scraper cannot determine the mimetype and this
-                         value is used instead.
         """
         # pylint: disable=too-many-arguments
         self._stream = tracks[index]
@@ -516,6 +514,7 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
 class SimpleMediainfoMeta(BaseMeta):
     """
     Metadata model for checking well-formedness without metadata scraping.
+
     This class is used for file types for which the metadata collection is done
     using FFMpeg. Both tools cannot currently be used simultaneously, as we do
     not have a reliable way of sorting the streams so that outputs from both
@@ -527,13 +526,11 @@ class SimpleMediainfoMeta(BaseMeta):
 
     def __init__(self, errors, tracks, index):
         """
-        Initialize the metadata model.
+        Initialize the metadata model. No extra functionality over BaseMeta.
 
+        :errors: Errors from scraper
         :tracks: list of tracks containing all tracks in the file
         :index: index of the track represented by this metadata model
-        :mimetype_guess: MIME type of the file. For some file types, the
-                         scraper cannot determine the mimetype and this
-                         value is used instead.
         """
         super(SimpleMediainfoMeta, self).__init__(errors=errors)
 

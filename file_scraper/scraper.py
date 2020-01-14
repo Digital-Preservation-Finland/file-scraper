@@ -58,7 +58,7 @@ class Scraper(object):
 
     def _update_filetype(self, tool):
         """
-        Runs the detector and updates the file type based on its results.
+        Run the detector and updates the file type based on its results.
 
         The MIME type or version is only changed if the old one is either
         present in the LOSE list or the new one is marked important by the
@@ -107,6 +107,8 @@ class Scraper(object):
     def _check_mime(self, check_wellformed=True):
         """
         Check that predefined mimetype and resulted mimetype match.
+
+        :check_wellformed: Whether full scraping is used or not.
         """
         scraper = MimeScraper(filename=self.filename,
                               mimetype=self._predefined_mimetype,

@@ -52,21 +52,26 @@ class FileExists(BaseScraper):
         return None
 
 class MimeScraper(BaseScraper):
-    """Scraper for the case where scraper was not found."""
+    """
+    Scraper to check if the predefined mimetype and version match with the
+    resulted ones. This is run if the predefined mimetype mismatches with the
+    resulted one, or if the version given by the user mismatches with the
+    resulted one.
+    """
 
     _only_wellformed = True
     _MIME_DICT = {"application/gzip": ["application/warc",
                                        "application/x-internet-archive"]}
 
     def scrape_file(self):
-        """No need to scrape anything, just collect."""
+        """No need to scrape anything, just compare data."""
         error = False
         if not self._check_wellformed and self._only_wellformed:
             self._messages.append("Skipping scraper: Well-formed check not"
                                   "used.")
             return
 
-        self._messages.append("Mime type check")
+        self._messages.append("MIME type check")
 
         mime = self._params.get("mimetype", "(:unav)")
         ver = self._params.get("version", "(:unav)")
