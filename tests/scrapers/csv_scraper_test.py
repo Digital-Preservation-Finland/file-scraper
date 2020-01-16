@@ -46,7 +46,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
 
 # pylint: disable=too-many-arguments
 @pytest.mark.parametrize(
-    ['csv_file', 'result_dict', 'header', 'extra_params'],
+    ['filename', 'result_dict', 'header', 'extra_params'],
     [
         ('valid__ascii.csv', {
             'purpose': 'Test valid file.',
@@ -184,7 +184,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
          ['year,brand,model,detail,other'], {'charset': 'utf-8'})
     ]
 )
-def test_scraper(csv_file, result_dict, header,
+def test_scraper(filename, result_dict, header,
                  evaluate_scraper, extra_params):
     """
     Write test data and run csv scraping for the file.
@@ -194,14 +194,11 @@ def test_scraper(csv_file, result_dict, header,
         contents.
     """
 
-    test_file = os.path.join(TEST_DATA_PATH, csv_file)
-
     mimetype = result_dict['streams'][0]['mimetype']
     version = result_dict['streams'][0]['version']
 
-    words = test_file.rsplit('/', 1)
-    correct = parse_results(words[1], '', result_dict,
-                            True, basepath=words[0])
+    correct = parse_results(filename, "text/csv", result_dict,
+                            True)
     correct.update_mimetype(mimetype)
     correct.update_version(version)
     if mimetype != 'text/csv':
@@ -230,15 +227,16 @@ def test_pdf_as_csv():
     assert scraper.errors()
 
 
-def test_no_parameters(testpath, evaluate_scraper):
+@pytest.mark.parametrize(
+    "filename",
+    [
+        ("valid__utf8.csv"),
+        ("valid__ascii_header.csv")
+    ]
+)
+def test_no_parameters(filename, evaluate_scraper):
     """Test scraper without separate parameters."""
-
-    test_file = os.path.join(TEST_DATA_PATH, 'valid__ascii.csv')
-
-    scraper = CsvScraper(test_file)
-    scraper.scrape_file()
-
-    correct = parse_results('valid__.csv', MIMETYPE,
+    correct = parse_results(filename, MIMETYPE,
                             {'purpose': 'Test valid file on default settings.',
                              'stdout_part': 'successfully',
                              'stderr_part': '',
@@ -249,11 +247,12 @@ def test_no_parameters(testpath, evaluate_scraper):
                                   'version': '',
                                   'delimiter': ',',
                                   'separator': '\r\n',
-                                  'first_line': ['1997', 'Ford', 'E350',
-                                                 'ac, abs, moon',
-                                                 '3000.00']}}},
+                                  'first_line': ['year', 'brand', 'model',
+                                                 'detail', 'other']}}},
                             True)
     correct.streams[0]['version'] = "(:unap)"
+    scraper = CsvScraper(correct.filename)
+    scraper.scrape_file()
     evaluate_scraper(scraper, correct)
 
 
