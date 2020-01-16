@@ -133,8 +133,8 @@ TEST_DATA_PATH = "tests/data/text_csv"
                                            'ac, abs, moon',
                                            '3000.00']}}},
          None, {}),
-        ('valid__header.csv', {
-            'purpose': 'Test single field',
+        ('valid__header_only.csv', {
+            'purpose': 'Test file containing only the header without any data',
             'stdout_part': 'successfully',
             'stderr_part': '',
             'streams': {0: {'stream_type': 'text',
