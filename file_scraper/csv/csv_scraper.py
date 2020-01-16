@@ -37,28 +37,22 @@ class CsvScraper(BaseScraper):
                                   "used.")
             return
 
-        delimiter = self._params.get("delimiter", None)
-        separator = self._params.get("separator", None)
         fields = self._params.get("fields", [])
-        first_line = None
-
         charset = self._params.get("charset", None)
 
-        try:
-            csvfile = None
-            if six.PY2:
-                csvfile = io_open(self.filename, "rb")
-            if six.PY3:
-                csvfile = io_open(self.filename, "rt", encoding=charset)
+        # These are read later if the scraping process is successful
+        csvfile = None
+        first_line = None
+        delimiter = None
+        separator = None
 
+        try:
+            csvfile = self._open_csv_file(charset)
             reader = csv.reader(csvfile)
             dialect = csv.Sniffer().sniff(csvfile.read(1024))
 
-            if not delimiter:
-                delimiter = dialect.delimiter
-
-            if not separator:
-                separator = dialect.lineterminator
+            delimiter = self._params.get("delimiter", dialect.delimiter)
+            separator = self._params.get("separator", dialect.lineterminator)
 
             csv.register_dialect(
                 "new_dialect",
@@ -110,3 +104,15 @@ class CsvScraper(BaseScraper):
                                          self._given_version))
 
         self._check_supported(allow_unap_version=True)
+
+    def _open_csv_file(self, charset):
+        """
+        Open the file in mode dependent on the python version.
+
+        :returns: handle to the newly-opened file
+        :raises: IOError if the file cannot be read
+        """
+        if six.PY2:
+            return io_open(self.filename, "rb")
+        if six.PY3:
+            return io_open(self.filename, "rt", encoding=charset)
