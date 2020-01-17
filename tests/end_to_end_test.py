@@ -98,6 +98,18 @@ DIFFERENT_MIMETYPE_INVALID = {
     "tests/data/application_x-internet-archive/invalid__missing_data.arc.gz":
     "application/gzip"}
 
+# To get some files validated against the strictest applicable criteria instead
+# of just checking that they are indeed text files, the MIME type has to be
+# forced.
+FORCED_MIMETYPES = {
+    "tests/data/text_csv/valid__ascii.csv": "text/csv",
+    "tests/data/text_csv/valid__ascii_header.csv": "text/csv",
+    "tests/data/text_csv/valid__header_only.csv": "text/csv",
+    "tests/data/text_csv/valid__iso8859-15.csv": "text/csv",
+    "tests/data/text_csv/valid__utf8.csv": "text/csv",
+    "tests/data/text_csv/invalid__missing_end_quote.csv": "text/csv",
+    }
+
 
 def _assert_valid_scraper_result(scraper, fullname, mimetype, well_formed):
     """Short hand function to assert the scrape result.
@@ -126,16 +138,6 @@ def _assert_valid_scraper_result(scraper, fullname, mimetype, well_formed):
         assert not unavs
 
 
-def get_predefined_mimetype(fullname):
-    """Gets predefined mimetype to use in end to end test.
-
-    :fullname: Test file path with mime type folder
-    :returns: A predefined mimetype, or None"""
-
-    if 'text_csv' in fullname:
-        return 'text/csv'
-
-
 @pytest.mark.parametrize(("fullname", "mimetype"), get_files(well_formed=True))
 def test_valid_combined(fullname, mimetype):
     """Integration test for valid files.
@@ -150,8 +152,7 @@ def test_valid_combined(fullname, mimetype):
     if fullname in IGNORE_VALID:
         pytest.skip("[%s] in ignore" % fullname)
 
-    predefined_mimetype = get_predefined_mimetype(fullname)
-
+    predefined_mimetype = FORCED_MIMETYPES.get(fullname, None)
     scraper = Scraper(fullname, mimetype=predefined_mimetype)
     scraper.scrape()
 
@@ -200,8 +201,7 @@ def test_invalid_combined(fullname, mimetype):
     if "empty" in fullname or fullname in IGNORE_INVALID:
         pytest.skip("[%s] has empty or in invalid ignore" % fullname)
 
-    predefined_mimetype = get_predefined_mimetype(fullname)
-
+    predefined_mimetype = FORCED_MIMETYPES.get(fullname, None)
     scraper = Scraper(fullname, mimetype=predefined_mimetype)
     scraper.scrape()
 
@@ -227,8 +227,7 @@ def test_without_wellformed(fullname, mimetype):
     if fullname in IGNORE_FOR_METADATA:
         pytest.skip("[%s] in ignore" % fullname)
 
-    predefined_mimetype = get_predefined_mimetype(fullname)
-
+    predefined_mimetype = FORCED_MIMETYPES.get(fullname, None)
     scraper = Scraper(fullname, mimetype=predefined_mimetype)
     scraper.scrape(False)
 
