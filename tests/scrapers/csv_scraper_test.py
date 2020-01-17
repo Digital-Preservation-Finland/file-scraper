@@ -39,149 +39,149 @@ from tests.common import parse_results, partial_message_included
 MIMETYPE = "text/csv"
 
 PDF_PATH = os.path.join(
-    'tests/data/application_pdf/valid_1.4.pdf')
+    "tests/data/application_pdf/valid_1.4.pdf")
 
 TEST_DATA_PATH = "tests/data/text_csv"
 
 
 # pylint: disable=too-many-arguments
 @pytest.mark.parametrize(
-    ['filename', 'result_dict', 'header', 'extra_params'],
+    ["filename", "result_dict", "header", "extra_params"],
     [
-        ('valid__ascii.csv', {
-            'purpose': 'Test valid file.',
-            'stdout_part': 'successfully',
-            'stderr_part': '',
-            'streams': {0: {'stream_type': 'text',
-                            'index': 0,
-                            'mimetype': MIMETYPE,
-                            'version': '(:unap)',
-                            'delimiter': ',',
-                            'separator': '\n',
-                            'first_line': ['1997', 'Ford', 'E350',
-                                           'ac, abs, moon',
-                                           '3000.00']}}},
+        ("valid__ascii.csv", {
+            "purpose": "Test valid file.",
+            "stdout_part": "successfully",
+            "stderr_part": "",
+            "streams": {0: {"stream_type": "text",
+                            "index": 0,
+                            "mimetype": MIMETYPE,
+                            "version": "(:unap)",
+                            "delimiter": ",",
+                            "separator": "\n",
+                            "first_line": ["1997", "Ford", "E350",
+                                           "ac, abs, moon",
+                                           "3000.00"]}}},
          None, {}),
-        ('valid__ascii.csv', {
-            'purpose': 'Test forcing the correct MIME type.',
-            'stdout_part': 'successfully',
-            'stderr_part': '',
-            'streams': {0: {'stream_type': 'text',
-                            'index': 0,
-                            'mimetype': MIMETYPE,
-                            'version': '(:unap)',
-                            'delimiter': ',',
-                            'separator': '\n',
-                            'first_line': ['1997', 'Ford', 'E350',
-                                           'ac, abs, moon',
-                                           '3000.00']}}},
-         None, {'mimetype': MIMETYPE}),
-        ('valid__ascii.csv', {
-            'purpose': 'Test forcing other MIME type.',
-            'stdout_part': 'successfully',
-            'stderr_part': 'MIME type unsupported/mime with version (:unap) '
-                           'is not supported',
-            'streams': {0: {'stream_type': 'text',
-                            'index': 0,
-                            'mimetype': 'unsupported/mime',
-                            'version': '(:unap)',
-                            'delimiter': ',',
-                            'separator': '\n',
-                            'first_line': ['1997', 'Ford', 'E350',
-                                           'ac, abs, moon',
-                                           '3000.00']}}},
-         None, {'mimetype': 'unsupported/mime'}),
-        ('valid__ascii.csv', {
-            'purpose': 'Test forcing MIME type and version.',
-            'stdout_part': 'successfully',
-            'stderr_part': 'MIME type unsupported/mime with version 99.9 is '
-                           'not supported',
-            'streams': {0: {'stream_type': 'text',
-                            'index': 0,
-                            'mimetype': 'unsupported/mime',
-                            'version': '99.9',
-                            'delimiter': ',',
-                            'separator': '\n',
-                            'first_line': ['1997', 'Ford', 'E350',
-                                           'ac, abs, moon',
-                                           '3000.00']}}},
-         None, {'mimetype': 'unsupported/mime', 'version': '99.9'}),
-        ('valid__ascii_header.csv', {
-            'purpose': 'Test valid file with header.',
-            'stdout_part': 'successfully',
-            'stderr_part': '',
-            'streams': {0: {'stream_type': 'text',
-                            'index': 0,
-                            'mimetype': MIMETYPE,
-                            'version': '(:unap)',
-                            'delimiter': ',',
-                            'separator': '\n',
-                            'first_line': ['year', 'brand', 'model', 'detail',
-                                           'other']}}},
-         ['year', 'brand', 'model', 'detail', 'other'], {}),
-        ('invalid__missing_end_quote.csv', {
-            'purpose': 'Test missing end quote',
-            'stdout_part': '',
-            'stderr_part': 'unexpected end of data',
-            'streams': {0: {'stream_type': 'text',
-                            'index': 0,
-                            'mimetype': MIMETYPE,
-                            'version': '(:unap)',
-                            'delimiter': ',',
-                            'separator': '\n',
-                            'first_line': ['1997', 'Ford', 'E350',
-                                           'ac, abs, moon',
-                                           '3000.00']}}},
+        ("valid__ascii.csv", {
+            "purpose": "Test forcing the correct MIME type.",
+            "stdout_part": "successfully",
+            "stderr_part": "",
+            "streams": {0: {"stream_type": "text",
+                            "index": 0,
+                            "mimetype": MIMETYPE,
+                            "version": "(:unap)",
+                            "delimiter": ",",
+                            "separator": "\n",
+                            "first_line": ["1997", "Ford", "E350",
+                                           "ac, abs, moon",
+                                           "3000.00"]}}},
+         None, {"mimetype": MIMETYPE}),
+        ("valid__ascii.csv", {
+            "purpose": "Test forcing other MIME type.",
+            "stdout_part": "successfully",
+            "stderr_part": "MIME type unsupported/mime with version (:unap) "
+                           "is not supported",
+            "streams": {0: {"stream_type": "text",
+                            "index": 0,
+                            "mimetype": "unsupported/mime",
+                            "version": "(:unap)",
+                            "delimiter": ",",
+                            "separator": "\n",
+                            "first_line": ["1997", "Ford", "E350",
+                                           "ac, abs, moon",
+                                           "3000.00"]}}},
+         None, {"mimetype": "unsupported/mime"}),
+        ("valid__ascii.csv", {
+            "purpose": "Test forcing MIME type and version.",
+            "stdout_part": "successfully",
+            "stderr_part": "MIME type unsupported/mime with version 99.9 is "
+                           "not supported",
+            "streams": {0: {"stream_type": "text",
+                            "index": 0,
+                            "mimetype": "unsupported/mime",
+                            "version": "99.9",
+                            "delimiter": ",",
+                            "separator": "\n",
+                            "first_line": ["1997", "Ford", "E350",
+                                           "ac, abs, moon",
+                                           "3000.00"]}}},
+         None, {"mimetype": "unsupported/mime", "version": "99.9"}),
+        ("valid__ascii_header.csv", {
+            "purpose": "Test valid file with header.",
+            "stdout_part": "successfully",
+            "stderr_part": "",
+            "streams": {0: {"stream_type": "text",
+                            "index": 0,
+                            "mimetype": MIMETYPE,
+                            "version": "(:unap)",
+                            "delimiter": ",",
+                            "separator": "\n",
+                            "first_line": ["year", "brand", "model", "detail",
+                                           "other"]}}},
+         ["year", "brand", "model", "detail", "other"], {}),
+        ("invalid__missing_end_quote.csv", {
+            "purpose": "Test missing end quote",
+            "stdout_part": "",
+            "stderr_part": "unexpected end of data",
+            "streams": {0: {"stream_type": "text",
+                            "index": 0,
+                            "mimetype": MIMETYPE,
+                            "version": "(:unap)",
+                            "delimiter": ",",
+                            "separator": "\n",
+                            "first_line": ["1997", "Ford", "E350",
+                                           "ac, abs, moon",
+                                           "3000.00"]}}},
          None, {}),
-        ('valid__header_only.csv', {
-            'purpose': 'Test file containing only the header without any data',
-            'stdout_part': 'successfully',
-            'stderr_part': '',
-            'streams': {0: {'stream_type': 'text',
-                            'index': 0,
-                            'mimetype': MIMETYPE,
-                            'version': '(:unap)',
-                            'delimiter': ';',
-                            'separator': '\n',
-                            'first_line': ['year,brand,model,detail,other']}}},
-         ['year,brand,model,detail,other'], {}),
-        ('valid__ascii_header.csv', {
-            'purpose': 'Invalid delimiter',
-            'inverse': True,
-            'stdout_part': '',
-            'stderr_part': 'CSV not well-formed: field counts',
-            'streams': {0: {'stream_type': 'text',
-                            'index': 0,
-                            'mimetype': MIMETYPE,
-                            'version': '(:unap)',
-                            'delimiter': ';',
-                            'separator': '\n',
-                            'first_line': ['year,brand,model,detail,other']}}},
-         ['year', 'brand', 'model', 'detail', 'other'], {}),
-        ('valid__iso8859-15.csv', {
-            'purpose': 'Non-ASCII characters',
-            'stdout_part': 'successfully',
-            'stderr_part': '',
-            'streams': {0: {'stream_type': 'text',
-                            'index': 0,
-                            'mimetype': MIMETYPE,
-                            'version': '(:unap)',
-                            'delimiter': ';',
-                            'separator': '\n',
-                            'first_line': ['year,brand,model,detail,other']}}},
-         ['year,brand,model,detail,other'], {'charset': 'iso8859-15'}),
-        ('valid__utf8.csv', {
-            'purpose': 'Non-ASCII characters',
-            'stdout_part': 'successfully',
-            'stderr_part': '',
-            'streams': {0: {'stream_type': 'text',
-                            'index': 0,
-                            'mimetype': MIMETYPE,
-                            'version': '(:unap)',
-                            'delimiter': ';',
-                            'separator': '\n',
-                            'first_line': ['year,brand,model,detail,other']}}},
-         ['year,brand,model,detail,other'], {'charset': 'utf-8'})
+        ("valid__header_only.csv", {
+            "purpose": "Test file containing only the header without any data",
+            "stdout_part": "successfully",
+            "stderr_part": "",
+            "streams": {0: {"stream_type": "text",
+                            "index": 0,
+                            "mimetype": MIMETYPE,
+                            "version": "(:unap)",
+                            "delimiter": ";",
+                            "separator": "\n",
+                            "first_line": ["year,brand,model,detail,other"]}}},
+         ["year,brand,model,detail,other"], {}),
+        ("valid__ascii_header.csv", {
+            "purpose": "Invalid delimiter",
+            "inverse": True,
+            "stdout_part": "",
+            "stderr_part": "CSV not well-formed: field counts",
+            "streams": {0: {"stream_type": "text",
+                            "index": 0,
+                            "mimetype": MIMETYPE,
+                            "version": "(:unap)",
+                            "delimiter": ";",
+                            "separator": "\n",
+                            "first_line": ["year,brand,model,detail,other"]}}},
+         ["year", "brand", "model", "detail", "other"], {}),
+        ("valid__iso8859-15.csv", {
+            "purpose": "Non-ASCII characters",
+            "stdout_part": "successfully",
+            "stderr_part": "",
+            "streams": {0: {"stream_type": "text",
+                            "index": 0,
+                            "mimetype": MIMETYPE,
+                            "version": "(:unap)",
+                            "delimiter": ";",
+                            "separator": "\n",
+                            "first_line": ["year,brand,model,detail,other"]}}},
+         ["year,brand,model,detail,other"], {"charset": "iso8859-15"}),
+        ("valid__utf8.csv", {
+            "purpose": "Non-ASCII characters",
+            "stdout_part": "successfully",
+            "stderr_part": "",
+            "streams": {0: {"stream_type": "text",
+                            "index": 0,
+                            "mimetype": MIMETYPE,
+                            "version": "(:unap)",
+                            "delimiter": ";",
+                            "separator": "\n",
+                            "first_line": ["year,brand,model,detail,other"]}}},
+         ["year,brand,model,detail,other"], {"charset": "utf-8"})
     ]
 )
 def test_scraper(filename, result_dict, header,
@@ -194,21 +194,21 @@ def test_scraper(filename, result_dict, header,
         contents.
     """
 
-    mimetype = result_dict['streams'][0]['mimetype']
-    version = result_dict['streams'][0]['version']
+    mimetype = result_dict["streams"][0]["mimetype"]
+    version = result_dict["streams"][0]["version"]
 
     correct = parse_results(filename, "text/csv", result_dict,
                             True)
     correct.update_mimetype(mimetype)
     correct.update_version(version)
-    if mimetype != 'text/csv':
+    if mimetype != "text/csv":
         correct.well_formed = False
 
     params = {
-        'separator': correct.streams[0]['separator'],
-        'delimiter': correct.streams[0]['delimiter'],
-        'fields': header,
-        'mimetype': 'text/csv'}
+        "separator": correct.streams[0]["separator"],
+        "delimiter": correct.streams[0]["delimiter"],
+        "fields": header,
+        "mimetype": "text/csv"}
     params.update(extra_params)
     scraper = CsvScraper(correct.filename, True, params=params)
     scraper.scrape_file()
@@ -223,7 +223,7 @@ def test_pdf_as_csv():
     scraper.scrape_file()
 
     assert not scraper.well_formed, scraper.messages() + scraper.errors()
-    assert not partial_message_included('successfully', scraper.messages())
+    assert not partial_message_included("successfully", scraper.messages())
     assert scraper.errors()
 
 
@@ -237,20 +237,20 @@ def test_pdf_as_csv():
 def test_no_parameters(filename, evaluate_scraper):
     """Test scraper without separate parameters."""
     correct = parse_results(filename, MIMETYPE,
-                            {'purpose': 'Test valid file on default settings.',
-                             'stdout_part': 'successfully',
-                             'stderr_part': '',
-                             'streams':
-                             {0: {'stream_type': 'text',
-                                  'index': 0,
-                                  'mimetype': MIMETYPE,
-                                  'version': '',
-                                  'delimiter': ',',
-                                  'separator': '\r\n',
-                                  'first_line': ['year', 'brand', 'model',
-                                                 'detail', 'other']}}},
+                            {"purpose": "Test valid file on default settings.",
+                             "stdout_part": "successfully",
+                             "stderr_part": "",
+                             "streams":
+                             {0: {"stream_type": "text",
+                                  "index": 0,
+                                  "mimetype": MIMETYPE,
+                                  "version": "",
+                                  "delimiter": ",",
+                                  "separator": "\r\n",
+                                  "first_line": ["year", "brand", "model",
+                                                 "detail", "other"]}}},
                             True)
-    correct.streams[0]['version'] = "(:unap)"
+    correct.streams[0]["version"] = "(:unap)"
     scraper = CsvScraper(correct.filename)
     scraper.scrape_file()
     evaluate_scraper(scraper, correct)
@@ -281,21 +281,21 @@ def test_nonexistent_file():
 def test_no_wellformed():
     """Test scraper without well-formed check."""
 
-    test_file = os.path.join(TEST_DATA_PATH, 'valid__ascii.csv')
+    test_file = os.path.join(TEST_DATA_PATH, "valid__ascii.csv")
 
     scraper = CsvScraper(test_file, False)
     scraper.scrape_file()
 
-    assert partial_message_included('Skipping scraper', scraper.messages())
+    assert partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
 
 
 def test_is_supported():
     """Test is_supported method."""
     mime = MIMETYPE
-    ver = ''
+    ver = ""
     assert CsvScraper.is_supported(mime, ver, True)
     assert CsvScraper.is_supported(mime, None, True)
     assert not CsvScraper.is_supported(mime, ver, False)
-    assert CsvScraper.is_supported(mime, 'foo', True)
-    assert not CsvScraper.is_supported('foo', ver, True)
+    assert CsvScraper.is_supported(mime, "foo", True)
+    assert not CsvScraper.is_supported("foo", ver, True)
