@@ -111,6 +111,7 @@ FORCED_MIMETYPES = {
     "tests/data/text_csv/valid__iso8859-15.csv": "text/csv",
     "tests/data/text_csv/valid__utf8.csv": "text/csv",
     "tests/data/text_csv/invalid__missing_end_quote.csv": "text/csv",
+    "tests/data/text_xml/valid__mets_noheader.xml": "text/xml",
     }
 
 
@@ -317,11 +318,6 @@ def test_coded_filename(testpath, fullname, mimetype):
         ("tests/data/application_x-internet-archive/valid_1.0_.arc.gz",
          {"mimetype": "application/gzip"}, True,
          "application/gzip", "(:unav)"),
-
-        # Scrape xml file without the header as xml (otherwise it is currently
-        # detected as plaintext)
-        ("tests/data/text_xml/valid__mets_noheader.xml",
-         {"mimetype": "text/xml", "version": "1.0"}, True, "text/xml", "1.0"),
     ]
 )
 def test_forced_filetype(filepath, params, well_formed, expected_mimetype,
