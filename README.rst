@@ -21,7 +21,7 @@ This will install virtualenv virtual environment with the following packages, bu
 
 The following software is required for minimal usage without file format well-formed check. Supported versions of the software is mentioned for some packages. The bolded software are NOT included in the pip installation script:
 
-    * For all files: opf-fido 1.3.12, file-magic, **file-5.30**
+    * For all files: opf-fido 1.4.0, file-magic, **file-5.30**
     * Additionally, for image files: Pillow, python-wand, **ImageMagick**
     * Additionally, for audio/video files: pymediainfo, **MediaInfo**, **ffmpeg-python 0.1.16-2** (patched by dpres)
     * Additionally, for pdf files: **veraPDF**
