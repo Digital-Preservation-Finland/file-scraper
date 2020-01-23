@@ -280,14 +280,14 @@ class VerapdfDetector(BaseDetector):
         return {}
 
 
-class CharsetDetector(BaseDetector):
+class MagicCharset(BaseDetector):
     """Charset detector."""
 
     def __init__(self, filename, mimetype=None, version=None):
         """Initialize detector."""
         self.charset = None
-        super(CharsetDetector, self).__init__(filename, mimetype=mimetype,
-                                              version=version)
+        super(MagicCharset, self).__init__(filename, mimetype=mimetype,
+                                           version=version)
 
     def detect(self):
         """Detect charset with MagicLib."""

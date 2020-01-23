@@ -1,7 +1,7 @@
 """File metadata scraper."""
 from __future__ import unicode_literals
 
-from file_scraper.detectors import VerapdfDetector, CharsetDetector
+from file_scraper.detectors import VerapdfDetector, MagicCharset
 from file_scraper.dummy.dummy_scraper import FileExists
 from file_scraper.iterator import iter_detectors, iter_scrapers
 from file_scraper.jhove.jhove_scraper import JHoveUtf8Scraper
@@ -50,7 +50,7 @@ class Scraper(object):
             self._update_filetype(vera_detector)
 
         if self.mimetype == "text/csv":
-            charset_detector = CharsetDetector(self.filename)
+            charset_detector = MagicCharset(self.filename)
             charset_detector.detect()
             self._params['charset'] = charset_detector.charset
 
