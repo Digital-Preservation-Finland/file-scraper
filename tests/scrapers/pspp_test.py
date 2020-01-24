@@ -39,6 +39,11 @@ MIMETYPE = "application/x-spss-por"
                        "e.g. SPSS 24) for DOT data type..",
             "stdout_part": "File conversion was succesful.",
             "stderr_part": ""}),
+        ("valid__spss24-dates.por", {
+            "purpose": "Test valid file that uses the newer standard (used by "
+                       "e.g. SPSS 24) for DATE data types..",
+            "stdout_part": "File conversion was succesful.",
+            "stderr_part": ""}),
         ("invalid__pspp_header.por", {
             "purpose": "Test invalid file with PSPP header.",
             "stdout_part": "",
@@ -58,12 +63,7 @@ MIMETYPE = "application/x-spss-por"
         ("invalid__truncated.por", {
             "purpose": "Test truncated file.",
             "stdout_part": "",
-            "stderr_part": "unexpected end of file"}),
-        ("invalid__variable_types.por", {
-            "purpose": "Test invalid file with bad portable date type.",
-            "stdout_part": "",
-            "stderr_part": "invalid__variable_types.por at offset 0x253: DATE:"
-                           " Bad format specifier byte (282).  Variable "})
+            "stderr_part": "unexpected end of file"})
     ]
 )
 def test_scraper(filename, result_dict, evaluate_scraper):
