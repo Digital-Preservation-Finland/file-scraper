@@ -268,6 +268,14 @@ def test_bad_parameters():
 
 
 def test_empty_file():
+    """
+    Test empty file, and that sniffer is not used if delimiter and
+    separator are given.
+
+    We first test with empty file that sniffer raises exception if the
+    parameters are not given. Secondly, sniffer is skipped when parameters
+    are given, but the then scraper raises exception elsewhere.
+    """
     scraper = CsvScraper("tests/data/text_csv/invalid__empty.csv")
     scraper.scrape_file()
     assert partial_message_included("Could not determine delimiter",
