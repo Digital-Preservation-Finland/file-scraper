@@ -290,7 +290,8 @@ class MagicCharset(BaseDetector):
                                            version=version)
 
     def detect(self):
-        """Detect charset with MagicLib."""
+        """Detect charset with MagicLib. A charset is detected from up to
+        1 megabytes of data from the beginning of file."""
 
         self.charset = magic_analyze(MAGIC_LIB, MAGIC_LIB.MAGIC_MIME_ENCODING,
                                      self.filename)
