@@ -267,6 +267,21 @@ def test_bad_parameters():
             six.text_type(err.value))
 
 
+def test_empty_file():
+    scraper = CsvScraper("tests/data/text_csv/invalid__empty.csv")
+    scraper.scrape_file()
+    assert partial_message_included("Could not determine delimiter",
+                                    scraper.errors())
+    assert not scraper.well_formed
+
+    scraper = CsvScraper("tests/data/text_csv/invalid__empty.csv",
+                         params={"delimiter": ";", "separator": "CRLF"})
+    scraper.scrape_file()
+    assert partial_message_included("Error reading file as CSV",
+                                    scraper.errors())
+    assert not scraper.well_formed
+
+
 def test_nonexistent_file():
     """
     Test that CsvScraper logs an error when file is not found.

@@ -48,11 +48,19 @@ class CsvScraper(BaseScraper):
 
         try:
             csvfile = self._open_csv_file(charset)
-            reader = csv.reader(csvfile)
-            dialect = csv.Sniffer().sniff(csvfile.read(1024))
 
-            delimiter = self._params.get("delimiter", dialect.delimiter)
-            separator = self._params.get("separator", dialect.lineterminator)
+            delimiter = self._params.get("delimiter", None)
+            separator = self._params.get("separator", None)
+
+            if delimiter is None or separator is None:
+                # Sniffer may not be able to find any delimiter or separator
+                # with the default dialect. This will raise an exception.
+                # Therefore, sniffing should be skipped totally, if the
+                # characters are given as a parameter.
+                reader = csv.reader(csvfile)
+                dialect = csv.Sniffer().sniff(csvfile.read(1024))
+                delimiter = dialect.delimiter
+                separator = dialect.lineterminator
 
             csv.register_dialect(
                 "new_dialect",
@@ -86,7 +94,7 @@ class CsvScraper(BaseScraper):
         except csv.Error as exception:
             self._errors.append("CSV error on line %s: %s" %
                                 (reader.line_num, exception))
-        except UnicodeDecodeError:
+        except (UnicodeDecodeError, StopIteration):
             self._errors.append("Error reading file as CSV")
         else:
             self._messages.append("CSV file was checked successfully.")
