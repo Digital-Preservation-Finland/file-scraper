@@ -53,6 +53,7 @@ UNAV_ELEMENTS = {
     "tests/data/audio_x-wav/valid__wav.wav": ["version"],
     "tests/data/application_x-spss-por/valid__spss24-dot.por": ["version"],
     "tests/data/application_x-spss-por/valid.por": ["version"],
+    "tests/data/application_x-spss-por/valid__spss24-dates.por": ["version"]
 }
 
 # These are actually valid with another mimetype or version
