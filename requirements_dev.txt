@@ -4,7 +4,6 @@ pytest-cov
 python-mimeparse
 six
 olefile
-opf-fido==1.4.0
 file-magic
 pymediainfo
 Pillow==6.0  # Pinned due to 6.1 causing a test case to fail
@@ -12,3 +11,5 @@ wand>=0.5.1
 lxml
 # Temporary patch for ffmpeg-python / jpeg2000 lossless detection
 git+https://github.com/Digital-Preservation-Finland/ffmpeg-python.git#egg=ffmpeg_python
+# Get our newest format string changes not yet present in official Fido repository
+git+https://gitlab.csc.fi/dpres/fido.git@develop#egg=opf_fido
