@@ -52,7 +52,6 @@ UNAV_ELEMENTS = {
                                           "codec_creator_app"],
     "tests/data/audio_x-wav/valid__wav.wav": ["version"],
     "tests/data/application_x-spss-por/valid__spss24-dot.por": ["version"],
-    "tests/data/application_x-spss-por/valid.por": ["version"],
     "tests/data/application_x-spss-por/valid__spss24-dates.por": ["version"]
 }
 
@@ -62,6 +61,7 @@ UNAV_ELEMENTS = {
 # invalid__header_corrupted.por -- is valid text/plain
 # invalid__truncated.por - is valid text/plain
 # invalid_1.0_no_doctype.xhtml - is valid text/xml
+# invalid__pspp_header.por - PSPP created .pors are not well-formed
 # Xml files would require schema or catalog, this is tested in
 # unit tests of Xmllint.
 IGNORE_INVALID = [
@@ -69,6 +69,7 @@ IGNORE_INVALID = [
     "tests/data/application_x-spss-por/invalid__header_corrupted.por",
     "tests/data/application_x-spss-por/invalid__truncated.por",
     "tests/data/application_xhtml+xml/invalid_1.0_no_doctype.xhtml",
+    "tests/data/application_x-spss-por/invalid__pspp_header.por"
 ]
 
 # XML schema definitions should not be tested.
@@ -92,7 +93,7 @@ IGNORE_FOR_METADATA = IGNORE_VALID + [
     "tests/data/application_x-internet-archive/valid_1.0_.arc.gz",
     "tests/data/image_x-dpx/valid_2.0.dpx",
     "tests/data/application_x-spss-por/valid__spss24-dot.por",
-    "tests/data/application_x-spss-por/valid.por",
+    "tests/data/application_x-spss-por/valid__spss24-dates.por",
     "tests/data/text_xml/valid_1.0_mets_noheader.xml",
 ]
 
