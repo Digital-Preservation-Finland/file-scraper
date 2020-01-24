@@ -105,11 +105,11 @@ from file_scraper.utils import (OverlappingLoseAndImportantException,
     ["filepath", "extra_hash", "algorithm", "expected_hash"],
     [
         ("tests/data/text_plain/valid__utf8.txt", None, None,
-         "a0d01fcbff5d86327d542687dcfd8b299d054147"),
+         "92103972564bca86230dbfd311eec01f422cead7"),
         ("tests/data/image_png/valid_1.2.png", None, "SHA-1",
          "a7947ca260c313a4e7ece2312fd25db6cbcb9283"),
         ("tests/data/text_plain/valid__utf8.txt", b"abc123", None,
-         "c7a2bcf3dc77cdae5b59dc9afbc7c4f1cc375b0f"),
+         "b047b952ae6c97060ff479661e8133654f8a3095"),
         ("tests/data/image_png/valid_1.2.png", None, "MD5",
          "ce778faab1d293275a471df03faecdcd")
     ]
