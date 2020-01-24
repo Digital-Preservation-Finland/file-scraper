@@ -283,6 +283,12 @@ class VerapdfDetector(BaseDetector):
 class MagicCharset(BaseDetector):
     """Charset detector."""
 
+    _supported = ["text/plain",
+                  "text/csv",
+                  "text/html",
+                  "text/xml",
+                  "application/xhtml+xml"]
+
     def __init__(self, filename, mimetype=None, version=None):
         """Initialize detector."""
         self.charset = None
@@ -292,10 +298,27 @@ class MagicCharset(BaseDetector):
     def detect(self):
         """Detect charset with MagicLib. A charset is detected from up to
         1 megabytes of data from the beginning of file."""
+        message = []
+        error = []
+        if self.mimetype in self._supported:
+            charset = magic_analyze(MAGIC_LIB,
+                                    MAGIC_LIB.MAGIC_MIME_ENCODING,
+                                    self.filename)
 
-        self.charset = magic_analyze(MAGIC_LIB, MAGIC_LIB.MAGIC_MIME_ENCODING,
-                                     self.filename)
+            if charset is None or charset.upper() == "BINARY":
+                error = ["Unable to detect character encoding."]
+            elif charset.upper() == "US-ASCII":
+                self.charset = "UTF-8"
+            elif charset.upper() == "ISO-8859-1":
+                self.charset = "ISO-8859-15"
+            elif charset.upper() == "UTF-16LE" or \
+                    charset.upper() == "UTF-16BE":
+                self.charset = "UTF-16"
+            else:
+                self.charset = charset
+
+        message = ["Character encoding detected as %s" % self.charset]
 
         self.info = {"class": self.__class__.__name__,
-                     "messages": [],
-                     "errors": []}
+                     "messages": message,
+                     "errors": error}

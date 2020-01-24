@@ -42,6 +42,8 @@ class BaseMagicMeta(BaseMeta):
             magic_version = magic_version.split(self._starttag)[-1]
         if self._endtag:
             magic_version = magic_version.split(self._endtag)[0]
+        if magic_version == "data":
+            return "(:unav)"
         return magic_version
 
 
@@ -54,48 +56,9 @@ class BinaryMagicBaseMeta(BaseMagicMeta):
         """Return file type."""
         return "binary"
 
-    @metadata()
-    def version(self):
-        """Return version."""
-        if self._given_mimetype and self._given_version:
-            return self._given_version
-
-        magic_version = super(BinaryMagicBaseMeta, self).version()
-        if magic_version == "data":
-            return None
-        return magic_version
-
 
 class TextMagicBaseMeta(BaseMagicMeta):
     """Base class for metadata models of text files."""
-
-    @metadata()
-    def version(self):
-        """Return version."""
-        if self._given_mimetype and self._given_version:
-            return self._given_version
-
-        version = super(TextMagicBaseMeta, self).version()
-        if version == "data":
-            return None
-        return version
-
-    @metadata()
-    def charset(self):
-        """Return charset."""
-        magic_charset = self._magic_result['magic_mime_encoding']
-
-        if magic_charset is None or magic_charset.upper() == "BINARY":
-            return None
-        if magic_charset.upper() == "US-ASCII":
-            return "UTF-8"
-        if magic_charset.upper() == "ISO-8859-1":
-            return "ISO-8859-15"
-        if magic_charset.upper() == "UTF-16LE" \
-                or magic_charset.upper() == "UTF-16BE":
-            return "UTF-16"
-
-        return magic_charset.upper()
 
     # pylint: disable=no-self-use
     @metadata()

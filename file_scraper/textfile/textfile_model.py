@@ -16,3 +16,30 @@ class TextFileMeta(BaseMeta):
     def stream_type(self):
         """Return stream type."""
         return "(:unav)"
+
+
+class TextEncodingMeta(BaseMeta):
+    """Text encoding metadata model."""
+
+    _supported = {"text/plain": [],
+                  "text/csv": [],
+                  "text/html": ["4.01", "5.0"],
+                  "text/xml": ["1.0"],
+                  "application/xhtml+xml": ["1.0", "1.1"]}
+    _allow__versions = True
+
+    def __init__(self, charset, mimetype=None, version=None):
+        """Initialize metadata model. Add charset to attribute."""
+        self._charset = charset
+        super(TextEncodingMeta, self).__init__(mimetype, version)
+
+    @metadata()
+    def charset(self):
+        """Return charset."""
+        return self._charset
+
+    # pylint: disable=no-self-use
+    @metadata()
+    def stream_type(self):
+        """Return stream type."""
+        return "(:unav)"

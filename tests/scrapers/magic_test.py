@@ -164,10 +164,7 @@ def test_scraper_valid(filename, mimetype, evaluate_scraper):
         correct.version = None
         correct.streams[0]["version"] = None
     if correct.mimetype in ["text/plain", "text/csv"]:
-        correct.streams[0]["charset"] = "UTF-8"
         correct.streams[0]["version"] = "(:unap)"
-    if filename == "valid__iso8859.txt":
-        correct.streams[0]["charset"] = "ISO-8859-15"
     if mimetype == "text/html" or "vnd." in mimetype or "msword" in mimetype:
         correct.streams[0]["version"] = "(:unav)"
     if mimetype == "image/jp2":
