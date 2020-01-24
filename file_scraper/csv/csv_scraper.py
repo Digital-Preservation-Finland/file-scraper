@@ -16,19 +16,6 @@ class CsvScraper(BaseScraper):
     _supported_metadata = [CsvMeta]
     _only_wellformed = True
 
-    def __init__(self, filename, check_wellformed=True, params=None):
-        """
-        Initializer for the scraper.
-
-        :filename: File path
-        :check_wellformed: True for the full well-formed check, False for just
-                           detection and metadata scraping
-        :params: Extra parameters: delimiter and separator
-        """
-        if params is None:
-            params = {}
-        super(CsvScraper, self).__init__(filename, check_wellformed, params)
-
     def scrape_file(self):
         """Scrape CSV file."""
 
@@ -59,8 +46,10 @@ class CsvScraper(BaseScraper):
                 # Therefore, sniffing should be skipped totally, if the
                 # characters are given as a parameter.
                 dialect = csv.Sniffer().sniff(csvfile.read(4096))
-                delimiter = dialect.delimiter
-                separator = dialect.lineterminator
+                if delimiter is None:
+                    delimiter = dialect.delimiter
+                if separator is None:
+                    separator = dialect.lineterminator
 
             csv.register_dialect(
                 "new_dialect",
@@ -97,7 +86,6 @@ class CsvScraper(BaseScraper):
                                     (reader.line_num, exception))
             else:
                 self._errors.append("CSV error: %s" % exception)
-
         except (UnicodeDecodeError, StopIteration):
             self._errors.append("Error reading file as CSV")
         else:
