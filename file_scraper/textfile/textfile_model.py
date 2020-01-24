@@ -15,7 +15,7 @@ class TextFileMeta(BaseMeta):
     @metadata()
     def stream_type(self):
         """Return stream type."""
-        return "text"
+        return "(:unav)"
 
 
 class TextEncodingMeta(BaseMeta):
@@ -42,4 +42,4 @@ class TextEncodingMeta(BaseMeta):
     @metadata()
     def stream_type(self):
         """Return stream type."""
-        return "(:unav)"
+        return "text"

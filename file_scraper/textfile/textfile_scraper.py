@@ -66,13 +66,8 @@ class TextEncodingScraper(BaseScraper):
 
     def scrape_file(self):
         """
-        Validate the given character encoding aginst the file.
+        Validate the file with decoding it with given character encoding.
         """
-        forbidden = ["\x00", "\x01", "\x02", "\x03", "\x04", "\x05", "\x06",
-                     "\x07", "\x08", "\x0B", "\x0C", "\x0E", "\x0F", "\x10",
-                     "\x11", "\x12", "\x13", "\x14", "\x15", "\x16", "\x17",
-                     "\x18", "\x19", "\x1A", "\x1B", "\x1C", "\x1D", "\x1E",
-                     "\x1F", "\xFF"]
         chunksize = 20*1024*1024  # chunk size
         limit = 100  # Limit file read in MB, 0 = unlimited
 
@@ -89,27 +84,19 @@ class TextEncodingScraper(BaseScraper):
         try:
             with io.open(self.filename, "rb") as infile:
                 position = 0
-                possibly_wrong = True
-                while True:
-                    chunk = infile.read(chunksize)
-                    if len(chunk) == 0:
-                        break
+                probably_utf8 = False
 
+                chunk = infile.read(chunksize)
+                while len(chunk) > 0:
+                    # Decoding must work with given charset
                     self._decode_chunk(chunk, self._charset, position)
-                    if self._charset.upper() in ["UTF-16", "ISO-8859-15"]:
-                        try:
-                            if self._charset.upper() == "ISO-8859-15":
-                                try:
-                                    self._decode_chunk(chunk, "ASCII", position)
-                                    possibly_wrong = False
-                                except (ValueError, UnicodeError) as e:
-                                    self._decode_chunk(chunk, "UTF-8", position)
-                            else:
-                                self._decode_chunk(chunk, "UTF-8", position)
-                        except (ValueError, UnicodeDecodeError):
-                            possibly_wrong = False
-                    else:
-                        possibly_wrong = False
+
+                    # Decoding to UTF-16 and ISO-8859-15 might work also with
+                    # UTF-8 files. Therefore, we want to know that it is not
+                    # UTF-8.
+                    probably_utf8 = self._utf8_contradiction(chunk, position)
+                    if probably_utf8:
+                        break
 
                     position = position + chunksize
                     if position > limit*1024*1024 and limit > 0:
@@ -117,11 +104,14 @@ class TextEncodingScraper(BaseScraper):
                             "First %s MB read, we skip the remainder." % (
                                 limit))
                         break
+                    chunk = infile.read(chunksize)
 
-                if possibly_wrong:
+
+                if probably_utf8:
                     self._errors.append(
-                        "Character decoding error: The character "
-                        "encoding is most likely UTF-8.")
+                        "Character decoding error: The character encoding "
+                        "passed with UTF-8, so therefore the given encoding "
+                        "%s is most likely wrong." % self._charset.upper())
                 else:
                     self._messages.append(
                         "Character encoding validated successfully.")
@@ -137,26 +127,66 @@ class TextEncodingScraper(BaseScraper):
 
         self._add_metadata()
 
+    def _utf8_contradiction(self, chunk, position):
+        """
+        Check that UTF-8 does not make a contradiction.
 
-def _decode_chunk(self, chunk, charset, position):
-    """Decode given chunk."""
-    forbidden = ["\x00", "\x01", "\x02", "\x03", "\x04", "\x05", "\x06",
-                 "\x07", "\x08", "\x0B", "\x0C", "\x0E", "\x0F", "\x10",
-                 "\x11", "\x12", "\x13", "\x14", "\x15", "\x16", "\x17",
-                 "\x18", "\x19", "\x1A", "\x1B", "\x1C", "\x1D", "\x1E",
-                 "\x1F", "\xFF"]
-    decoded_chunk = chunk.decode(charset)
-    for forb_char in forbidden:
-        if self._charset.upper() == "UTF-32":
-            break
-        index = decoded_chunk.find(forb_char)
-        if index > -1:
-            raise ValueError(
-                "Illegal character '%s' in position %s" % (
-                    forb_char, (position+index)))
+        With file passed with given encodings UTF-16 or ISO-8859-15 there is
+        a chance that the file is actually UTF-8. If the file is ASCII file,
+        then it can be accepted with ISO-8859-15 and there is no contradiction
+        with UTF-8. If ASCII decoding fails then UTF-8 decoding should fail
+        too. Otherwise, we do probably have UTF-8 file.
+
+        :chunk: Byte chunk from a file
+        :position: Chunk position in file
+        :returns: True if there is UTF-8 contradiction, otherwise False
+        """
+        if self._charset.upper() in ["UTF-8", "UTF-32"]:
+            return False
+
+        if self._charset.upper() == "ISO-8859-15":
+            try:
+                # If ASCII works, then also ISO-8859-15 is OK
+                self._decode_chunk(chunk, "ASCII", position)
+                return False
+            except (ValueError, UnicodeError):
+                # If ASCII did not work, then charset can be (almost) anything
+                pass
+
+        # If ASCII did not work, but UTF-8 works, then we quite probably have
+        # UTF-8. We can break since it is not given.
+        try:
+            self._decode_chunk(chunk, "UTF-8", position)
+        except (ValueError, UnicodeDecodeError):
+            # If it was not UTF-8, then we have to believe the given charset
+            return False
+        return True
+
+    def _decode_chunk(self, chunk, charset, position):
+        """
+        Decode given chunk.
+
+        :chunk: Byte chunk from a file
+        :charset: Decoding charset
+        :position: Chunk position in a file
+        """
+        forbidden = ["\x00", "\x01", "\x02", "\x03", "\x04", "\x05", "\x06",
+                     "\x07", "\x08", "\x0B", "\x0C", "\x0E", "\x0F", "\x10",
+                     "\x11", "\x12", "\x13", "\x14", "\x15", "\x16", "\x17",
+                     "\x18", "\x19", "\x1A", "\x1B", "\x1C", "\x1D", "\x1E",
+                     "\x1F", "\xFF"]
+        decoded_chunk = chunk.decode(charset)
+        for forb_char in forbidden:
+            if self._charset.upper() == "UTF-32":
+                break
+            index = decoded_chunk.find(forb_char)
+            if index > -1:
+                raise ValueError(
+                    "Illegal character '%s' in position %s" % (
+                        forb_char, (position+index)))
 
     def _add_metadata(self):
-        """Add metadata."""
+        """Add metadata to model."""
         for md_class in self._supported_metadata:
             self.streams.append(md_class(self._charset,
                                          self._given_mimetype,
