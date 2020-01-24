@@ -45,6 +45,7 @@ class CsvScraper(BaseScraper):
         first_line = None
         delimiter = None
         separator = None
+        reader = None
 
         try:
             csvfile = self._open_csv_file(charset)
@@ -57,8 +58,7 @@ class CsvScraper(BaseScraper):
                 # with the default dialect. This will raise an exception.
                 # Therefore, sniffing should be skipped totally, if the
                 # characters are given as a parameter.
-                reader = csv.reader(csvfile)
-                dialect = csv.Sniffer().sniff(csvfile.read(1024))
+                dialect = csv.Sniffer().sniff(csvfile.read(4096))
                 delimiter = dialect.delimiter
                 separator = dialect.lineterminator
 
@@ -92,8 +92,12 @@ class CsvScraper(BaseScraper):
             self._errors.append("Error when reading the file: " +
                                 six.text_type(err))
         except csv.Error as exception:
-            self._errors.append("CSV error on line %s: %s" %
-                                (reader.line_num, exception))
+            if reader is not None:
+                self._errors.append("CSV error on line %s: %s" %
+                                    (reader.line_num, exception))
+            else:
+                self._errors.append("CSV error: %s" % exception)
+
         except (UnicodeDecodeError, StopIteration):
             self._errors.append("Error reading file as CSV")
         else:
