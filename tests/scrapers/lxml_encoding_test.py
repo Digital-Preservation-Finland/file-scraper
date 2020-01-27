@@ -46,7 +46,8 @@ def test_xml_encoding(testpath, file_encoding):
     with open(tmppath, "wb") as file_:
         file_.write(xml.encode(file_encoding))
 
-    scraper = LxmlScraper(tmppath, "text/xml")
+    scraper = LxmlScraper(tmppath, "text/xml",
+                          {"charset": enc_match[file_encoding]})
     scraper.scrape_file()
 #    assert scraper.streams[0]["charset"] == enc_match[file_encoding]
     assert scraper.well_formed
@@ -60,7 +61,7 @@ def test_no_wellformed(testpath):
     tmppath = os.path.join(testpath, "valid__.csv")
     with open(tmppath, "wb") as file_:
         file_.write(xml)
-    scraper = LxmlScraper(tmppath, False)
+    scraper = LxmlScraper(tmppath, False, {"charset": "UTF-8"})
     scraper.scrape_file()
     assert partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
@@ -133,8 +134,34 @@ def test_forced_filetype(filename, result_dict, filetype, evaluate_scraper):
                                      filetype, ["(:unav)"])
 
     params = {"mimetype": filetype["given_mimetype"],
-              "version": filetype["given_version"]}
+              "version": filetype["given_version"],
+              "charset": "UTF-8"}
     scraper = LxmlScraper(correct.filename, True, params)
     scraper.scrape_file()
 
     evaluate_scraper(scraper, correct)
+
+
+@pytest.mark.parametrize(
+    ["filename", "charset", "well_formed"],
+    [("tests/data/text_xml/valid_1.0_xsd.xml", "UTF-8", True),
+     ("tests/data/text_xml/valid_1.0_xsd.xml", "ISO-8859-15", False),
+     ("tests/data/text_html/valid_5.0.html", "UTF-8", True),
+     ("tests/data/text_html/valid_5.0.html", "ISO-8859-15", False),
+     ("tests/data/text_xml/valid_1.0_xsd.xml", None, False)
+    ]
+)
+def test_charset(filename, charset, well_formed):
+    """
+    Test charset parameter.
+    """
+    params = {"charset": charset}
+    scraper = LxmlScraper(filename, True, params)
+    scraper.scrape_file()
+    assert scraper.well_formed == well_formed
+    if charset is not None and not well_formed:
+        assert partial_message_included(
+            "Found encoding declaration UTF-8", scraper.errors())
+    if charset is None:
+        assert partial_message_included("encoding not defined",
+                                        scraper.errors())

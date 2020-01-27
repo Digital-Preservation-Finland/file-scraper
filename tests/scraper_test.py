@@ -111,3 +111,19 @@ def test_detect_filetype(filename, params, expected_results):
         assert getattr(scraper, field) == value
     assert scraper.streams is None
     assert scraper.info
+
+
+@pytest.mark.parametrize(
+    "charset",
+    [None, "UTF-8", "ISO-8859-15"]
+)
+def test_charset_definition(charset):
+    """
+    Test defining charset.
+    """
+    scraper = Scraper("tests/data/text_plain/valid__utf8.txt",
+                      charset=charset)
+    scraper.detect_filetype()
+    if charset is None:
+        charset = "UTF-8"
+    assert scraper._params == {"charset": charset}

@@ -50,7 +50,7 @@ class Scraper(object):
             self._update_filetype(vera_detector)
 
         if MagicCharset.is_supported(self.mimetype) and \
-                not "charset" in self._params:
+                self._params.get("charset", None) is None:
             charset_detector = MagicCharset(self.filename)
             charset_detector.detect()
             self._params["charset"] = charset_detector.charset

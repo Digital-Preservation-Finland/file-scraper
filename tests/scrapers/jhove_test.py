@@ -197,14 +197,13 @@ def test_scraper_tiff(filename, result_dict, evaluate_scraper):
 )
 def test_scraper_utf8(filename, result_dict, evaluate_scraper):
     """Test utf8 text file scraping."""
-    correct = parse_results(filename, "text/plain",
-                            result_dict, True)
+    correct = parse_results(filename, "text/plain", result_dict, True,
+                            {"charset": "UTF-8"})
     scraper = JHoveUtf8Scraper(correct.filename, True, correct.params)
     scraper.scrape_file()
     correct.mimetype = None
     correct.version = None
     correct.streams[0]["mimetype"] = "(:unav)"
-    correct.streams[0]["charset"] = "UTF-8"
 
     evaluate_scraper(scraper, correct)
 
@@ -296,7 +295,13 @@ def test_scraper_jpeg(filename, result_dict, evaluate_scraper):
             "purpose": "Test valid file.",
             "stdout_part": "Well-Formed and valid",
             "stderr_part": ""},
-         "text/html", None, "4.01"),
+         "text/html", "UTF-8", "4.01"),
+        ("valid_4.01.html", {
+            "purpose": "Test valid file.",
+            "stdout_part": "",
+            "inverse": True,
+            "stderr_part": "Found encoding declaration UTF-8"},
+         "text/html", "ISO-8859-15", "4.01"),
         ("valid_1.0.xhtml", {
             "purpose": "Test valid file.",
             "stdout_part": "Well-Formed and valid",
@@ -348,11 +353,13 @@ def test_scraper_jpeg(filename, result_dict, evaluate_scraper):
 def test_scraper_html(filename, result_dict, mimetype, charset, version,
                       evaluate_scraper):
     """Test html and xhtml scraping."""
-    correct = parse_results(filename, mimetype,
-                            result_dict, True)
+    params = {}
+    if charset:
+        params = {"charset": charset}
+    correct = parse_results(filename, mimetype, result_dict, True,
+                            params)
     scraper = JHoveHtmlScraper(correct.filename, True, correct.params)
     scraper.scrape_file()
-    correct.streams[0]["charset"] = charset
     correct.streams[0]["stream_type"] = "text"
     correct.version = version
     correct.streams[0]["version"] = version
@@ -661,7 +668,35 @@ def test_forced_filetype(filename, scraper_class, result_dict, filetype,
                                      filetype)
     params = {"mimetype": filetype["given_mimetype"],
               "version": filetype["given_version"]}
+    if filename == "valid_4.01.html":
+        params["charset"] = "UTF-8"
     scraper = scraper_class(correct.filename, True, params)
     scraper.scrape_file()
 
     evaluate_scraper(scraper, correct)
+
+
+@pytest.mark.parametrize(
+    ["filename", "charset", "well_formed"],
+    [("tests/data/application_xhtml+xml/valid_1.0.xhtml", "UTF-8", True),
+     ("tests/data/application_xhtml+xml/valid_1.0.xhtml", "ISO-8859-15",
+      False),
+     ("tests/data/text_html/valid_4.01.html", "UTF-8", True),
+     ("tests/data/text_html/valid_4.01.html", "ISO-8859-15", False),
+     ("tests/data/text_html/valid_4.01.html", None, False)
+    ]
+)
+def test_charset(filename, charset, well_formed):
+    """
+    Test charset parameter.
+    """
+    params = {"charset": charset}
+    scraper = JHoveHtmlScraper(filename, True, params)
+    scraper.scrape_file()
+    assert scraper.well_formed == well_formed
+    if charset is not None and not well_formed:
+        assert partial_message_included(
+            "Found encoding declaration", scraper.errors())
+    if charset is None:
+        assert partial_message_included("encoding not defined",
+                                        scraper.errors())

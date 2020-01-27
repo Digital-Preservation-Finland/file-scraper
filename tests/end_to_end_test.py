@@ -349,3 +349,33 @@ def test_forced_filetype(filepath, params, well_formed, expected_mimetype,
     if well_formed:
         assert scraper.streams[0]["mimetype"] == expected_mimetype
         assert scraper.streams[0]["version"] == expected_version
+
+
+@pytest.mark.parametrize(
+    ["filepath", "charset", "well_formed"],
+    [("tests/data/text_plain/valid_utf8.txt", "UTF-8", True),
+     ("tests/data/text_plain/valid_utf8.txt", "utf-8", True),
+     ("tests/data/text_plain/valid_utf8.txt", "UTF-16", False),
+     ("tests/data/text_xml/valid_1.0_well_formed.xml", "UTF-8", True),
+     ("tests/data/text_xml/valid_1.0_well_formed.xml", "UTF-16", False),
+     ("tests/data/text_html/valid_4.01.html", "ISO-8859-15", True),
+     ("tests/data/text_html/valid_4.01.html", "UTF-8", False),
+     ("tests/data/application_xhtml+xml/valid_1.0.xhtml", "UTF-8", True),
+     ("tests/data/application_xhtml+xml/valid_1.0.xhtml", "UTF-16", False),
+     ("tests/data/text_csv/valid__ascii.csv", "UTF-8", True),
+     ("tests/data/text_csv/valid__ascii.csv", "ISO-8859-15", True),
+     ("tests/data/text_csv/valid__ascii.csv", "UTF-16", False)
+    ]
+)
+def test_charset(filepath, charset, well_formed):
+    """
+    Test charset parameter.
+
+    We are able to give charset as a parameter. This tests the
+    parameter with different mimetypes and charset inputs.
+    """
+    scraper = Scraper(filepath, charset=charset)
+    scraper.scrape()
+
+    assert scraper.well_formed == well_formed
+    assert scraper.streams[0]["charset"] == charset
