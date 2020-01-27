@@ -49,7 +49,7 @@ class Scraper(object):
             vera_detector = VerapdfDetector(self.filename)
             self._update_filetype(vera_detector)
 
-        if self.mimetype in MagicCharset._supported and \
+        if MagicCharset.is_supported(self.mimetype) and \
                 not "charset" in self._params:
             charset_detector = MagicCharset(self.filename)
             charset_detector.detect()

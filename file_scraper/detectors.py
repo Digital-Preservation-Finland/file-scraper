@@ -295,27 +295,36 @@ class MagicCharset(BaseDetector):
         super(MagicCharset, self).__init__(filename, mimetype=mimetype,
                                            version=version)
 
+    @classmethod
+    def is_supported(self, mimetype):
+        """
+        Check wheter the detector is supported with given mimetype.
+
+        :mimetype: Mimetype to check
+        :returns: True if mimetype is supported, False otherwise
+        """
+        return mimetype in self._supported
+
     def detect(self):
         """Detect charset with MagicLib. A charset is detected from up to
         1 megabytes of data from the beginning of file."""
         message = []
         error = []
-        if self.mimetype in self._supported:
-            charset = magic_analyze(MAGIC_LIB,
-                                    MAGIC_LIB.MAGIC_MIME_ENCODING,
-                                    self.filename)
+        charset = magic_analyze(MAGIC_LIB,
+                                MAGIC_LIB.MAGIC_MIME_ENCODING,
+                                self.filename)
 
-            if charset is None or charset.upper() == "BINARY":
-                error = ["Unable to detect character encoding."]
-            elif charset.upper() == "US-ASCII":
-                self.charset = "UTF-8"
-            elif charset.upper() == "ISO-8859-1":
-                self.charset = "ISO-8859-15"
-            elif charset.upper() == "UTF-16LE" or \
-                    charset.upper() == "UTF-16BE":
-                self.charset = "UTF-16"
-            else:
-                self.charset = charset
+        if charset is None or charset.upper() == "BINARY":
+            error = ["Unable to detect character encoding."]
+        elif charset.upper() == "US-ASCII":
+            self.charset = "UTF-8"
+        elif charset.upper() == "ISO-8859-1":
+            self.charset = "ISO-8859-15"
+        elif charset.upper() == "UTF-16LE" or \
+                charset.upper() == "UTF-16BE":
+            self.charset = "UTF-16"
+        else:
+            self.charset = charset.upper()
 
         message = ["Character encoding detected as %s" % self.charset]
 

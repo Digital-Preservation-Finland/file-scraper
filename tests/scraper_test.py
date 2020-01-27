@@ -42,9 +42,9 @@ def test_is_textfile():
 def test_checksum():
     """Test that checksum value of the file is returned."""
     scraper = Scraper("tests/data/text_plain/valid__utf8.txt")
-    assert scraper.checksum() == "b40c60d0770eb7bd1a345725f857c61a"
+    assert scraper.checksum() == "b50b89c3fb5299713b7b272c1797a1e3"
     assert scraper.checksum("SHA-1") == \
-        "a0d01fcbff5d86327d542687dcfd8b299d054147"
+        "92103972564bca86230dbfd311eec01f422cead7"
     with pytest.raises(ValueError):
         assert scraper.checksum("foo")
     with pytest.raises(IOError):

@@ -110,7 +110,7 @@ class JHoveHtmlMeta(JHoveBaseMeta):
         try:
             result_mimetype = mimeparse.parse_mime_type(results[0])
             params = result_mimetype[2]
-            return params.get("charset")
+            return params.get("charset").upper()
         except (mimeparse.MimeTypeParseException, IndexError):
             return None
 
@@ -119,7 +119,7 @@ class JHoveHtmlMeta(JHoveBaseMeta):
         query = '//j:property[j:name="Encoding"]//j:value/text()'
         results = self._report.xpath(query, namespaces=NAMESPACES)
         try:
-            return results[0]
+            return results[0].upper()
         except IndexError:
             return None
 
@@ -279,7 +279,7 @@ class JHoveUtf8Meta(JHoveBaseMeta):
         """Return charset from JHOVE."""
         if "Well-formed and valid" in get_field(self._report, "status"):
             return "UTF-8"
-        return get_field(self._report, "format")
+        return get_field(self._report, "format").upper()
 
     # pylint: disable=no-self-use
     @metadata()

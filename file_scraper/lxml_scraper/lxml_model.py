@@ -24,7 +24,7 @@ class LxmlMeta(BaseMeta):
     @metadata()
     def charset(self):
         """Return charset."""
-        return self._tree.docinfo.encoding
+        return self._tree.docinfo.encoding.upper()
 
     # pylint: disable=no-self-use
     @metadata()

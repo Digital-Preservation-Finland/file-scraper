@@ -26,7 +26,7 @@ class TextEncodingMeta(BaseMeta):
                   "text/html": ["4.01", "5.0"],
                   "text/xml": ["1.0"],
                   "application/xhtml+xml": ["1.0", "1.1"]}
-    _allow__versions = True
+    _allow_versions = True
 
     def __init__(self, charset, mimetype=None, version=None):
         """Initialize metadata model. Add charset to attribute."""

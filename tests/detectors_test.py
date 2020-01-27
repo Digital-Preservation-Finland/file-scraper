@@ -19,6 +19,7 @@ CHANGE_FIDO = {
     "tests/data/text_plain/valid__ascii.txt": None,
     "tests/data/text_plain/valid__iso8859.txt": None,
     "tests/data/text_plain/valid__utf8.txt": None,
+    "tests/data/text_plain/valid__utf16.txt": None,
     "tests/data/video_mp4/valid__h264_aac.mp4": None,
     "tests/data/application_msword/valid_11.0.doc": None,
     "tests/data/application_vnd.openxmlformats-officedocument.spreadsheetml"
