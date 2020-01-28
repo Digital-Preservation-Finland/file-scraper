@@ -72,7 +72,7 @@ ROOTPATH = os.path.abspath(os.path.join(
             "stdout_part": "Success",
             "stderr_part": ""},
          {"catalogs": False}),
-        ("valid__mets_noheader.xml", {
+        ("valid_1.0_mets_noheader.xml", {
             "purpose": "Test valid file without XML header.",
             "stdout_part": "Success",
             "stderr_part": ""},
@@ -86,16 +86,11 @@ def test_scraper_valid(filename, result_dict, params, evaluate_scraper):
     scraper = XmllintScraper(correct.filename, True, correct.params)
     scraper.scrape_file()
 
-    # Version is not present in the file name as the file has no header that
-    # would define the version. Only allowed XML version for preservation is
-    # 1.0 though, so it is reported for all files.
-    if filename == "valid__mets_noheader.xml":
-        correct.update_version("1.0")
-
     if not correct.well_formed:
         assert not scraper.well_formed
         assert not scraper.streams
-        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stdout_part,
+                                        scraper.messages())
         assert partial_message_included(correct.stderr_part, scraper.errors())
     else:
         evaluate_scraper(scraper, correct)

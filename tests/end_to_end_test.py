@@ -71,17 +71,17 @@ IGNORE_INVALID = [
 ]
 
 # XML schema definitions should not be tested.
-# Mets document without the xml header should also not be tested: it is known
-# that it cannot currently be detected as xml.
 IGNORE_VALID = [
     "tests/data/text_xml/valid_1.0_xsd.xml",
     "tests/data/text_xml/valid_1.0_local_xsd.xml",
     "tests/data/text_xml/valid_1.0_catalog.xml",
-    "tests/data/text_xml/valid__mets_noheader.xml"
     ]
 
 # Ignore these we know that warc, arc, por and dpx files are not currently
-# supported for full metadata scraping
+# supported for full metadata scraping.
+# METS document without XML declaration is also ignored, because the only
+# reasonable use-case for using scraper on those is to determine the
+# well-formedness of the document: IPT knows the file to be XML already.
 IGNORE_FOR_METADATA = IGNORE_VALID + [
     "tests/data/application_warc/valid_0.17.warc",
     "tests/data/application_warc/valid_0.18.warc",
@@ -92,6 +92,7 @@ IGNORE_FOR_METADATA = IGNORE_VALID + [
     "tests/data/image_x-dpx/valid_2.0.dpx",
     "tests/data/application_x-spss-por/valid__spss24-dot.por",
     "tests/data/application_x-spss-por/valid.por",
+    "tests/data/text_xml/valid_1.0_mets_noheader.xml",
 ]
 
 # These invalid files are recognized as application/gzip
@@ -111,7 +112,7 @@ FORCED_MIMETYPES = {
     "tests/data/text_csv/valid__iso8859-15.csv": "text/csv",
     "tests/data/text_csv/valid__utf8.csv": "text/csv",
     "tests/data/text_csv/invalid__missing_end_quote.csv": "text/csv",
-    "tests/data/text_xml/valid__mets_noheader.xml": "text/xml",
+    "tests/data/text_xml/valid_1.0_mets_noheader.xml": "text/xml",
     }
 
 
