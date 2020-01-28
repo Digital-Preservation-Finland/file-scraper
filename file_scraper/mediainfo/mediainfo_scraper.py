@@ -38,7 +38,7 @@ class MediainfoScraper(BaseScraper):
     def scrape_file(self):
         """Populate streams with supported metadata objects."""
         if not self._check_wellformed and self._only_wellformed:
-            self._messages.append("Skipping scraper: Well-formed check not"
+            self._messages.append("Skipping scraper: Well-formed check not "
                                   "used.")
             return
         if "mimetype_guess" not in self._params:

@@ -19,7 +19,7 @@ class OfficeScraper(BaseScraper):
     def scrape_file(self):
         """Scrape file."""
         if not self._check_wellformed and self._only_wellformed:
-            self._messages.append("Skipping scraper: Well-formed check not"
+            self._messages.append("Skipping scraper: Well-formed check not "
                                   "used.")
             return
         temp_dir = tempfile.mkdtemp()

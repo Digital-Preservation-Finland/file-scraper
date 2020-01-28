@@ -38,7 +38,7 @@ class JHoveScraperBase(BaseScraper):
     def scrape_file(self):
         """Run JHove command and store XML output to self.report."""
         if not self._check_wellformed and self._only_wellformed:
-            self._messages.append("Skipping scraper: Well-formed check not"
+            self._messages.append("Skipping scraper: Well-formed check not "
                                   "used.")
             return
 
