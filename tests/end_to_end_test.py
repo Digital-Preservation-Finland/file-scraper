@@ -55,20 +55,27 @@ UNAV_ELEMENTS = {
     "tests/data/application_x-spss-por/valid__spss24-dates.por": ["version"]
 }
 
-# These are actually valid with another mimetype or version
+# These test files are valid as another mimetype or version
 # or due to special parameters or missing scraper
-# invalid_1.4_wrong_version.pdf -- is valid PDF 1.7
-# invalid__header_corrupted.por -- is valid text/plain
-# invalid__truncated.por - is valid text/plain
-# invalid_1.0_no_doctype.xhtml - is valid text/xml
-# invalid__pspp_header.por - PSPP created .pors are not well-formed
-# Xml files would require schema or catalog, this is tested in
-# unit tests of Xmllint.
+
 IGNORE_INVALID = [
+    
+    # invalid_1.4_wrong_version.pdf -- is valid PDF 1.7
     "tests/data/application_pdf/invalid_1.4_wrong_version.pdf",
-    "tests/data/application_x-spss-por/invalid__header_corrupted.por",
-    "tests/data/application_x-spss-por/invalid__truncated.por",
+    
+    # invalid_1.0_no_doctype.xhtml - is valid text/xml
+    # Xml files would require schema or catalog, this is tested in
+    # unit tests of Xmllint.
     "tests/data/application_xhtml+xml/invalid_1.0_no_doctype.xhtml",
+    
+    # invalid__header_corrupted.por -- is valid text/plain
+    "tests/data/application_x-spss-por/invalid__header_corrupted.por",
+    
+    # invalid__truncated.por - is valid text/plain
+    "tests/data/application_x-spss-por/invalid__truncated.por",
+
+    # invalid__pspp_header.por - PSPP created .pors are not well-formed,
+    # but still validate as text/plain
     "tests/data/application_x-spss-por/invalid__pspp_header.por"
 ]
 
