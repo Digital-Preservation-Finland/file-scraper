@@ -84,7 +84,7 @@ class TextEncodingScraper(BaseScraper):
         try:
             with io.open(self.filename, "rb") as infile:
                 position = 0
-                probably_utf8 = False
+                probably_utf8 = None  # Not suggesting UTF-8 if empty file
 
                 chunk = infile.read(chunksize)
                 while len(chunk) > 0:
@@ -93,10 +93,13 @@ class TextEncodingScraper(BaseScraper):
 
                     # Decoding to UTF-16 and ISO-8859-15 might work also with
                     # UTF-8 files. Therefore, we want to know that it is not
-                    # UTF-8.
-                    probably_utf8 = self._utf8_contradiction(chunk, position)
-                    if probably_utf8:
-                        break
+                    # UTF-8. If all of the chucks result True here, we most
+                    # likely have UTF-8. Or in other words, if any of the
+                    # chuncks result False, then we don't have UTF-8.
+                    if probably_utf8 in [True, None]:
+                        # Will remain False, if once got such value
+                        probably_utf8 = self._utf8_contradiction(
+                            chunk, position)
 
                     position = position + chunksize
                     if position > limit*1024*1024 and limit > 0:
@@ -154,7 +157,7 @@ class TextEncodingScraper(BaseScraper):
                 pass
 
         # If ASCII did not work, but UTF-8 works, then we quite probably have
-        # UTF-8. We can break since it is not given.
+        # UTF-8.
         try:
             self._decode_chunk(chunk, "UTF-8", position)
         except (ValueError, UnicodeDecodeError):
@@ -170,15 +173,16 @@ class TextEncodingScraper(BaseScraper):
         :charset: Decoding charset
         :position: Chunk position in a file
         """
+        decoded_chunk = chunk.decode(charset)
+        if self._charset.upper() == "UTF-32":
+            return
+
         forbidden = ["\x00", "\x01", "\x02", "\x03", "\x04", "\x05", "\x06",
                      "\x07", "\x08", "\x0B", "\x0C", "\x0E", "\x0F", "\x10",
                      "\x11", "\x12", "\x13", "\x14", "\x15", "\x16", "\x17",
                      "\x18", "\x19", "\x1A", "\x1B", "\x1C", "\x1D", "\x1E",
                      "\x1F", "\xFF"]
-        decoded_chunk = chunk.decode(charset)
         for forb_char in forbidden:
-            if self._charset.upper() == "UTF-32":
-                break
             index = decoded_chunk.find(forb_char)
             if index > -1:
                 raise ValueError(

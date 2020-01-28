@@ -33,7 +33,7 @@ class TextEncodingMeta(BaseMeta):
         self._charset = charset
         super(TextEncodingMeta, self).__init__(mimetype, version)
 
-    @metadata()
+    @metadata(important=True)
     def charset(self):
         """Return charset."""
         return self._charset

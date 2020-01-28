@@ -43,7 +43,7 @@ class BaseMagicMeta(BaseMeta):
         if self._endtag:
             magic_version = magic_version.split(self._endtag)[0]
         if magic_version == "data":
-            return "(:unav)"
+            return None
         return magic_version
 
 
@@ -59,6 +59,23 @@ class BinaryMagicBaseMeta(BaseMagicMeta):
 
 class TextMagicBaseMeta(BaseMagicMeta):
     """Base class for metadata models of text files."""
+
+    @metadata()
+    def charset(self):
+        """Return charset."""
+        magic_charset = self._magic_result['magic_mime_encoding']
+
+        if magic_charset is None or magic_charset.upper() == "BINARY":
+            return None
+        if magic_charset.upper() == "US-ASCII":
+            return "UTF-8"
+        if magic_charset.upper() == "ISO-8859-1":
+            return "ISO-8859-15"
+        if magic_charset.upper() == "UTF-16LE" \
+                or magic_charset.upper() == "UTF-16BE":
+            return "UTF-16"
+
+        return magic_charset.upper()
 
     # pylint: disable=no-self-use
     @metadata()

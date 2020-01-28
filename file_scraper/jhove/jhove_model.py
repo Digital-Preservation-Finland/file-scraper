@@ -1,6 +1,11 @@
 """Metadata models for JHove"""
 from __future__ import unicode_literals
 
+try:
+    import mimeparse
+except ImportError:
+    pass
+
 from file_scraper.base import BaseMeta
 from file_scraper.utils import metadata
 
@@ -98,6 +103,26 @@ class JHoveHtmlMeta(JHoveBaseMeta):
             version = version.split()[-1]
         return version
 
+    def _get_charset_html(self):
+        """Get the charset from the JHove report for HTML files."""
+        query = '//j:property[j:name="Content"]//j:value/text()'
+        results = self._report.xpath(query, namespaces=NAMESPACES)
+        try:
+            result_mimetype = mimeparse.parse_mime_type(results[0])
+            params = result_mimetype[2]
+            return params.get("charset")
+        except (mimeparse.MimeTypeParseException, IndexError):
+            return None
+
+    def _get_charset_xml(self):
+        """Get the charset from the JHove report for XHTML files."""
+        query = '//j:property[j:name="Encoding"]//j:value/text()'
+        results = self._report.xpath(query, namespaces=NAMESPACES)
+        try:
+            return results[0]
+        except IndexError:
+            return None
+
     @metadata()
     def mimetype(self):
         """Return MIME type."""
@@ -108,6 +133,15 @@ class JHoveHtmlMeta(JHoveBaseMeta):
         if mime == "text/xml":
             return "application/xhtml+xml"
         return mime
+
+    @metadata()
+    def charset(self):
+        """Get the charset from HTML/XML files."""
+        if self._report is None:
+            return None
+        if "xml" in self.mimetype():
+            return self._get_charset_xml()
+        return self._get_charset_html()
 
     @metadata()
     def stream_type(self):
@@ -239,6 +273,13 @@ class JHoveUtf8Meta(JHoveBaseMeta):
     _supported = {}  # We will not run at normal stage
     _only_wellformed = True  # Only well-formed check
     _jhove_module = "UTF8-hul"  # JHove module
+
+    @metadata()
+    def charset(self):
+        """Return charset from JHOVE."""
+        if "Well-formed and valid" in get_field(self._report, "status"):
+            return "UTF-8"
+        return get_field(self._report, "format")
 
     # pylint: disable=no-self-use
     @metadata()

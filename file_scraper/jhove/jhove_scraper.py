@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 
 try:
     import lxml.etree
-    import mimeparse
 except ImportError:
     pass
 
@@ -12,8 +11,7 @@ from file_scraper.shell import Shell
 from file_scraper.jhove.jhove_model import (JHoveGifMeta, JHoveHtmlMeta,
                                             JHoveJpegMeta, JHoveTiffMeta,
                                             JHovePdfMeta, JHoveWavMeta,
-                                            JHoveUtf8Meta, get_field,
-                                            NAMESPACES)
+                                            JHoveUtf8Meta, get_field)
 
 
 class JHoveScraperBase(BaseScraper):
@@ -100,38 +98,17 @@ class JHoveHtmlScraper(JHoveScraperBase):
         Check the character encoding declaration additionally.
         """
         super(JHoveHtmlScraper, self).scrape_file()
-        if not self._params.get("charset", None):
-            self._errors.append("Character encoding not defined.")
-            return
-        encoding = self._get_charset_html()
-        if encoding is None:
-            encoding = self._get_charset_xml()
-        if encoding is not None and \
-                encoding.upper() != self._params["charset"]:
-            self._errors.append(
-                "Found encoding declaration %s from the file %s, but %s "
-                "was expected." % (encoding, self.filename,
-                                   self._params["charset"]))
-
-    def _get_charset_html(self):
-        """Get the charset from the JHove report for HTML files."""
-        query = '//j:property[j:name="Content"]//j:value/text()'
-        results = self._report.xpath(query, namespaces=NAMESPACES)
-        try:
-            result_mimetype = mimeparse.parse_mime_type(results[0])
-            params = result_mimetype[2]
-            return params.get("charset")
-        except (mimeparse.MimeTypeParseException, IndexError):
-            return None
-
-    def _get_charset_xml(self):
-        """Get the charset from the JHove report for XHTML files."""
-        query = '//j:property[j:name="Encoding"]//j:value/text()'
-        results = self._report.xpath(query, namespaces=NAMESPACES)
-        try:
-            return results[0]
-        except IndexError:
-            return None
+        if self.streams:
+            if not self._params.get("charset", None):
+                self._errors.append("Character encoding not defined.")
+                return
+            encoding = self.streams[0].charset()
+            if encoding is not None and \
+                    encoding.upper() != self._params["charset"]:
+                self._errors.append(
+                    "Found encoding declaration %s from the file %s, but %s "
+                    "was expected." % (encoding, self.filename,
+                                       self._params["charset"]))
 
 
 class JHoveJpegScraper(JHoveScraperBase):
