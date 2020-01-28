@@ -149,6 +149,24 @@ class XmlFileMagicMeta(TextMagicBaseMeta):
         return super(XmlFileMagicMeta, cls).is_supported(magic_result, version,
                                                          params)
 
+    @metadata()
+    def version(self):
+        """
+        Return the XML version.
+
+        For some files, e.g. XML files without header, the version might not be
+        successfully determined. In those cases, the field used for determining
+        the version can contain e.g. "ASCII text, with very long lines",
+        resulting in the version being "ASCII". As XML versions are always
+        decimal numbers, non-numerical outputs should not be returned.
+        """
+        version = super(XmlFileMagicMeta, self).version()
+        try:
+            float(version)
+            return version
+        except ValueError:
+            return "(:unav)"
+
 
 class XhtmlFileMagicMeta(TextMagicBaseMeta):
     """Metadata model for xhtml files."""
