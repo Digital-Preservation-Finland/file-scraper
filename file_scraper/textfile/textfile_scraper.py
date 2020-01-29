@@ -88,8 +88,20 @@ class TextEncodingScraper(BaseScraper):
 
                 chunk = infile.read(chunksize)
                 while len(chunk) > 0:
+                    # Using just UTF-32 to UTF-32BE without BOM does not work.
+                    # We have to try UTF-32BE instead. If it does not work,
+                    # we use given charset.
+                    passby = False
+                    if self._charset == "UTF-32":
+                        try:
+                            self._decode_chunk(chunk, "UTF-32BE", position)
+                            passby = True
+                        except (ValueError, UnicodeError):
+                            pass
+
                     # Decoding must work with given charset
-                    self._decode_chunk(chunk, self._charset, position)
+                    if not passby:
+                        self._decode_chunk(chunk, self._charset, position)
 
                     # Decoding to UTF-16 and ISO-8859-15 might work also with
                     # UTF-8 files. Therefore, we want to know that it is not

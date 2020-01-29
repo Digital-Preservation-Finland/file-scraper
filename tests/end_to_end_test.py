@@ -122,7 +122,24 @@ FORCED_MIMETYPES = {
     "tests/data/text_csv/valid__utf8.csv": "text/csv",
     "tests/data/text_csv/invalid__missing_end_quote.csv": "text/csv",
     "tests/data/text_xml/valid_1.0_mets_noheader.xml": "text/xml",
-    }
+    "tests/data/text_plain/valid__utf16be_without_bom.txt": "text/plain",
+    "tests/data/text_plain/valid__utf16le_without_bom.txt": "text/plain",
+    "tests/data/text_plain/valid__utf32be_without_bom.txt": "text/plain",
+    "tests/data/text_plain/valid__utf32le_without_bom.txt": "text/plain",
+    "tests/data/text_plain/valid__utf32be_bom.txt": "text/plain",
+    "tests/data/text_plain/valid__utf32le_bom.txt": "text/plain",
+}
+
+# To get some files validated against the strictest applicable criteria the
+# charset has to be forced.
+FORCED_CHARSETS = {
+    "tests/data/text_plain/valid__utf16be_without_bom.txt": "UTF-16",
+    "tests/data/text_plain/valid__utf16le_without_bom.txt": "UTF-16",
+    "tests/data/text_plain/valid__utf32be_without_bom.txt": "UTF-32",
+    "tests/data/text_plain/valid__utf32le_without_bom.txt": "UTF-32",
+    "tests/data/text_plain/valid__utf32be_bom.txt": "UTF-32",
+    "tests/data/text_plain/valid__utf32le_bom.txt": "UTF-32",
+}
 
 
 def _assert_valid_scraper_result(scraper, fullname, mimetype, well_formed):
@@ -167,7 +184,9 @@ def test_valid_combined(fullname, mimetype):
         pytest.skip("[%s] in ignore" % fullname)
 
     predefined_mimetype = FORCED_MIMETYPES.get(fullname, None)
-    scraper = Scraper(fullname, mimetype=predefined_mimetype)
+    predefined_charset = FORCED_CHARSETS.get(fullname, None)
+    scraper = Scraper(fullname, mimetype=predefined_mimetype,
+                      charset=predefined_charset)
     scraper.scrape()
 
     for _, info in iteritems(scraper.info):
@@ -192,7 +211,8 @@ def test_valid_combined(fullname, mimetype):
                 stream["version"] = scraper.streams[0]["version"]
 
     forced_scraper = Scraper(fullname, mimetype=scraper.mimetype,
-                             version=scraper.version)
+                             version=scraper.version,
+                             charset=scraper.streams[0].get("charset", None))
     forced_scraper.scrape()
 
     assert forced_scraper.mimetype == scraper.mimetype
@@ -216,7 +236,9 @@ def test_invalid_combined(fullname, mimetype):
         pytest.skip("[%s] has empty or in invalid ignore" % fullname)
 
     predefined_mimetype = FORCED_MIMETYPES.get(fullname, None)
-    scraper = Scraper(fullname, mimetype=predefined_mimetype)
+    predefined_charset = FORCED_CHARSETS.get(fullname, None)
+    scraper = Scraper(fullname, mimetype=predefined_mimetype,
+                      charset=predefined_charset)
     scraper.scrape()
 
     for _, info in iteritems(scraper.info):
@@ -242,7 +264,9 @@ def test_without_wellformed(fullname, mimetype):
         pytest.skip("[%s] in ignore" % fullname)
 
     predefined_mimetype = FORCED_MIMETYPES.get(fullname, None)
-    scraper = Scraper(fullname, mimetype=predefined_mimetype)
+    predefined_charset = FORCED_CHARSETS.get(fullname, None)
+    scraper = Scraper(fullname, mimetype=predefined_mimetype,
+                      charset=predefined_charset)
     scraper.scrape(False)
 
     _assert_valid_scraper_result(scraper, fullname, mimetype, False)
@@ -269,6 +293,8 @@ def test_coded_filename(testpath, fullname, mimetype):
     - Test that utf-8 encoded filenames work with all mimetypes
     """
     if fullname in IGNORE_VALID + ["tests/data/text_xml/valid_1.0_dtd.xml"]:
+        pytest.skip("[%s] in ignore" % fullname)
+    if fullname in FORCED_CHARSETS:
         pytest.skip("[%s] in ignore" % fullname)
     ext = fullname.rsplit(".", 1)[-1]
     unicode_name = os.path.join(testpath, "äöå.%s" % ext)
@@ -314,7 +340,7 @@ def test_coded_filename(testpath, fullname, mimetype):
          {"mimetype": "text/plain"}, True, "text/plain", "(:unap)"),
 
         # Scrape a random text file as HTML, as which it is not well-formed
-        ("tests/data/text_plain/valid__utf8.txt",
+        ("tests/data/text_plain/valid__utf8_without_bom.txt",
          {"mimetype": "text/html"}, False, "text/html", "(:unav)"),
 
         # Scrape a file with MIME type that can produce "well-formed" result
@@ -353,9 +379,29 @@ def test_forced_filetype(filepath, params, well_formed, expected_mimetype,
 
 @pytest.mark.parametrize(
     ["filepath", "charset", "well_formed"],
-    [("tests/data/text_plain/valid__utf8.txt", "UTF-8", True),
-     ("tests/data/text_plain/valid__utf8.txt", "utf-8", True),
-     ("tests/data/text_plain/valid__utf8.txt", "UTF-16", False),
+    [("tests/data/text_plain/valid__utf8_without_bom.txt", "UTF-8", True),
+     ("tests/data/text_plain/valid__utf8_without_bom.txt", "utf-8", True),
+     ("tests/data/text_plain/valid__utf8_without_bom.txt", "UTF-16", False),
+     ("tests/data/text_plain/valid__utf8_bom.txt", "UTF-8", True),
+     ("tests/data/text_plain/valid__utf8_bom.txt", "UTF-16", False),
+     ("tests/data/text_plain/valid__utf16be_without_bom.txt", "UTF-8", False),
+     ("tests/data/text_plain/valid__utf16be_without_bom.txt", "UTF-16", True),
+     ("tests/data/text_plain/valid__utf16be_bom.txt", "UTF-8", False),
+     ("tests/data/text_plain/valid__utf16be_bom.txt", "UTF-16", True),
+     ("tests/data/text_plain/valid__utf16le_without_bom.txt", "UTF-8", False),
+     ("tests/data/text_plain/valid__utf16le_without_bom.txt", "UTF-16", True),
+     ("tests/data/text_plain/valid__utf16le_bom.txt", "UTF-8", False),
+     ("tests/data/text_plain/valid__utf16le_bom.txt", "UTF-16", True),
+     ("tests/data/text_plain/valid__utf32be_without_bom.txt", "UTF-32", True),
+     ("tests/data/text_plain/valid__utf32be_without_bom.txt", "UTF-16", False),
+     ("tests/data/text_plain/valid__utf32be_bom.txt", "UTF-32", True),
+     ("tests/data/text_plain/valid__utf32be_bom.txt", "UTF-16", False),
+     ("tests/data/text_plain/valid__utf32le_without_bom.txt", "UTF-32", True),
+     ("tests/data/text_plain/valid__utf32le_without_bom.txt", "UTF-16", False),
+     ("tests/data/text_plain/valid__utf32le_bom.txt", "UTF-32", True),
+     ("tests/data/text_plain/valid__utf32le_bom.txt", "UTF-16", False),
+     ("tests/data/text_plain/valid__iso8859.txt", "ISO-8859-15", True),
+     ("tests/data/text_plain/valid__iso8859.txt", "UTF-16", False),
      ("tests/data/text_xml/valid_1.0_well_formed.xml", "UTF-8", True),
      ("tests/data/text_xml/valid_1.0_well_formed.xml", "UTF-16", False),
      ("tests/data/text_html/valid_4.01.html", "ISO-8859-15", False),
@@ -374,7 +420,9 @@ def test_charset(filepath, charset, well_formed):
     We are able to give charset as a parameter. This tests the
     parameter with different mimetypes and charset inputs.
     """
-    scraper = Scraper(filepath, charset=charset)
+    predefined_mimetype = FORCED_MIMETYPES.get(filepath, None)
+    scraper = Scraper(filepath, mimetype=predefined_mimetype,
+                      charset=charset)
     scraper.scrape()
 
     assert scraper.well_formed == well_formed

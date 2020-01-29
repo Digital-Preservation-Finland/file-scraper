@@ -104,11 +104,11 @@ from file_scraper.utils import (OverlappingLoseAndImportantException,
 @pytest.mark.parametrize(
     ["filepath", "extra_hash", "algorithm", "expected_hash"],
     [
-        ("tests/data/text_plain/valid__utf8.txt", None, None,
+        ("tests/data/text_plain/valid__utf8_without_bom.txt", None, None,
          "92103972564bca86230dbfd311eec01f422cead7"),
         ("tests/data/image_png/valid_1.2.png", None, "SHA-1",
          "a7947ca260c313a4e7ece2312fd25db6cbcb9283"),
-        ("tests/data/text_plain/valid__utf8.txt", b"abc123", None,
+        ("tests/data/text_plain/valid__utf8_without_bom.txt", b"abc123", None,
          "b047b952ae6c97060ff479661e8133654f8a3095"),
         ("tests/data/image_png/valid_1.2.png", None, "MD5",
          "ce778faab1d293275a471df03faecdcd")

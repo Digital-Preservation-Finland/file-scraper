@@ -159,9 +159,12 @@ def test_charset(filename, charset, well_formed):
     scraper = LxmlScraper(filename, True, params)
     scraper.scrape_file()
     assert scraper.well_formed == well_formed
-    if charset is not None and not well_formed:
-        assert partial_message_included(
-            "Found encoding declaration UTF-8", scraper.errors())
-    if charset is None:
+    if charset:
+        if well_formed:
+            assert not scraper.errors()
+        else:
+            assert partial_message_included(
+                "Found encoding declaration UTF-8", scraper.errors())
+    else:
         assert partial_message_included("encoding not defined",
                                         scraper.errors())

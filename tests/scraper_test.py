@@ -27,7 +27,7 @@ def test_is_textfile():
     """Test that text files (and only text files) are identified as such."""
     textfiles = ["tests/data/text_plain/valid__ascii.txt",
                  "tests/data/text_plain/valid__iso8859.txt",
-                 "tests/data/text_plain/valid__utf8.txt"]
+                 "tests/data/text_plain/valid__utf8_without_bom.txt"]
     binaryfiles = ["tests/data/text_plain/invalid__binary_data.txt",
                    "tests/data/image_png/valid_1.2.png",
                    "tests/data/application_pdf/valid_1.2.pdf"]
@@ -41,7 +41,7 @@ def test_is_textfile():
 
 def test_checksum():
     """Test that checksum value of the file is returned."""
-    scraper = Scraper("tests/data/text_plain/valid__utf8.txt")
+    scraper = Scraper("tests/data/text_plain/valid__utf8_without_bom.txt")
     assert scraper.checksum() == "b50b89c3fb5299713b7b272c1797a1e3"
     assert scraper.checksum("SHA-1") == \
         "92103972564bca86230dbfd311eec01f422cead7"
@@ -117,13 +117,13 @@ def test_detect_filetype(filename, params, expected_results):
     "charset",
     [None, "UTF-8", "ISO-8859-15"]
 )
-def test_charset_definition(charset):
+def test_charset_parameter(charset):
     """
-    Test defining charset.
+    Test charset parameter.
+    In the test we have an UTF-8 file. If given charset is None, it will be
+    detected as UTF-8. Otherwise, the parameter value is used.
     """
-    scraper = Scraper("tests/data/text_plain/valid__utf8.txt",
+    scraper = Scraper("tests/data/text_plain/valid__utf8_without_bom.txt",
                       charset=charset)
     scraper.detect_filetype()
-    if charset is None:
-        charset = "UTF-8"
-    assert scraper._params == {"charset": charset}
+    assert scraper._params == {"charset": charset or "UTF-8"}

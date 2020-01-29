@@ -7,7 +7,7 @@ def test_file_command():
     """Test that file command returns a mimetype
     """
     shell = file_scraper.magiclib.file_command(
-        "tests/data/text_plain/valid__utf8.txt",
+        "tests/data/text_plain/valid__utf8_without_bom.txt",
         ["-be", "soft", "--mime-type"])
     assert 'text/plain' in shell.stdout
     assert shell.stderr == ""
@@ -20,7 +20,7 @@ def test_analyze_magic():
     magic_lib = file_scraper.magiclib.magiclib()
     mimetype = file_scraper.magiclib.magic_analyze(
         magic_lib, magic_lib.MAGIC_MIME_TYPE,
-        "tests/data/text_plain/valid__utf8.txt")
+        "tests/data/text_plain/valid__utf8_without_bom.txt")
     assert mimetype == "text/plain"
 
 

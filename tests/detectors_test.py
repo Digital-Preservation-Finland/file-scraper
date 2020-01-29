@@ -18,8 +18,16 @@ from tests.common import get_files
 CHANGE_FIDO = {
     "tests/data/text_plain/valid__ascii.txt": None,
     "tests/data/text_plain/valid__iso8859.txt": None,
-    "tests/data/text_plain/valid__utf8.txt": None,
-    "tests/data/text_plain/valid__utf16.txt": None,
+    "tests/data/text_plain/valid__utf8_bom.txt": None,
+    "tests/data/text_plain/valid__utf8_without_bom.txt": None,
+    "tests/data/text_plain/valid__utf16le_bom.txt": None,
+    "tests/data/text_plain/valid__utf16le_without_bom.txt": None,
+    "tests/data/text_plain/valid__utf16be_bom.txt": None,
+    "tests/data/text_plain/valid__utf16be_without_bom.txt": None,
+    "tests/data/text_plain/valid__utf32le_bom.txt": None,
+    "tests/data/text_plain/valid__utf32le_without_bom.txt": None,
+    "tests/data/text_plain/valid__utf32be_bom.txt": None,
+    "tests/data/text_plain/valid__utf32be_without_bom.txt": None,
     "tests/data/video_mp4/valid__h264_aac.mp4": None,
     "tests/data/application_msword/valid_11.0.doc": None,
     "tests/data/application_vnd.openxmlformats-officedocument.spreadsheetml"
@@ -43,6 +51,18 @@ CHANGE_FIDO = {
 }
 
 CHANGE_MAGIC = {
+    "tests/data/text_plain/valid__utf16le_without_bom.txt":
+        "application/octet-stream",
+    "tests/data/text_plain/valid__utf16be_without_bom.txt":
+        "application/octet-stream",
+    "tests/data/text_plain/valid__utf32le_bom.txt":
+        "application/octet-stream",
+    "tests/data/text_plain/valid__utf32le_without_bom.txt":
+        "application/octet-stream",
+    "tests/data/text_plain/valid__utf32be_bom.txt":
+        "application/octet-stream",
+    "tests/data/text_plain/valid__utf32be_without_bom.txt":
+        "application/octet-stream",
     "tests/data/video_MP2T/valid_.ts": "application/octet-stream",
     "tests/data/application_x-internet-archive/valid_1.0_.arc.gz":
         "application/x-gzip",

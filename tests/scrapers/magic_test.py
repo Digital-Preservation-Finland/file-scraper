@@ -136,7 +136,7 @@ from tests.common import (parse_results, force_correct_filetype,
         ("valid.jp2", "image/jp2"),
         ("valid_6.0.tif", "image/tiff"),
         ("valid__iso8859.txt", "text/plain"),
-        ("valid__utf8.txt", "text/plain"),
+        ("valid__utf8_without_bom.txt", "text/plain"),
         ("valid_1.0_well_formed.xml", "text/xml"),
         ("valid_1.0.xhtml", "application/xhtml+xml"),
         ("valid_4.01.html", "text/html"),
@@ -355,7 +355,8 @@ def test_wrong_mime_with_xml(filepath):
 
 def test_no_mime_given():
     """Test that an error is recorded when no MIME type is given."""
-    scraper = MagicScraper("tests/data/text_plain/valid__utf8.txt", True, {})
+    scraper = MagicScraper(
+        "tests/data/text_plain/valid__utf8_without_bom.txt", True, {})
     with pytest.raises(AttributeError) as error:
         scraper.scrape_file()
     assert (
@@ -464,7 +465,7 @@ def run_filetype_test(filename, result_dict, filetype, evaluate_scraper):
 @pytest.mark.parametrize(
     ["filename", "mimetype", "version", "version_result"],
     [
-        ("valid__utf8.txt", "text/plain", "(:unap)", "(:unap)"),
+        ("valid__utf8_without_bom.txt", "text/plain", "(:unap)", "(:unap)"),
         ("valid_1.0_well_formed.xml", "text/xml", "1.0", "1.0"),
         ("valid_1.0.xhtml", "application/xhtml+xml", "1.0", "1.0"),
         ("valid_4.01.html", "text/html", "4.01", "(:unav)"),
@@ -544,7 +545,7 @@ def test_forced_filetype(filename, mimetype, version, version_result,
 @pytest.mark.parametrize(
     ["filename", "result_dict", "filetype"],
     [
-        ("valid__utf8.txt",
+        ("valid__utf8_without_bom.txt",
          {"purpose": "Test forcing text file to CSV file",
           "stdout_part": "MIME type not scraped, using",
           "stderr_part": ""},

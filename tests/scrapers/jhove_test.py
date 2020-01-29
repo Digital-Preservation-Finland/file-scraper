@@ -180,7 +180,7 @@ def test_scraper_tiff(filename, result_dict, evaluate_scraper):
 @pytest.mark.parametrize(
     ["filename", "result_dict"],
     [
-        ("valid__utf8.txt", {
+        ("valid__utf8_without_bom.txt", {
             "purpose": "Test valid UTF-8 file.",
             "stdout_part": "Well-Formed and valid",
             "stderr_part": ""}),
@@ -292,12 +292,12 @@ def test_scraper_jpeg(filename, result_dict, evaluate_scraper):
     ["filename", "result_dict", "mimetype", "charset", "version"],
     [
         ("valid_4.01.html", {
-            "purpose": "Test valid file.",
+            "purpose": "Test valid file with correctly specified charset.",
             "stdout_part": "Well-Formed and valid",
             "stderr_part": ""},
          "text/html", "UTF-8", "4.01"),
         ("valid_4.01.html", {
-            "purpose": "Test valid file.",
+            "purpose": "Test valid file with incorrectly specified charset.",
             "stdout_part": "",
             "inverse": True,
             "stderr_part": "Found encoding declaration UTF-8"},
@@ -353,9 +353,7 @@ def test_scraper_jpeg(filename, result_dict, evaluate_scraper):
 def test_scraper_html(filename, result_dict, mimetype, charset, version,
                       evaluate_scraper):
     """Test html and xhtml scraping."""
-    params = {}
-    if charset:
-        params = {"charset": charset}
+    params = {"charset": charset}
     correct = parse_results(filename, mimetype, result_dict, True,
                             params)
     scraper = JHoveHtmlScraper(correct.filename, True, correct.params)
@@ -428,7 +426,7 @@ def test_scraper_wav(filename, result_dict, version, evaluate_scraper):
         (JHoveGifScraper, "valid_1989a.gif", "image/gif"),
         (JHoveTiffScraper, "valid_6.0.tif", "image/tiff"),
         (JHovePdfScraper, "valid_1.4.pdf", "application/pdf"),
-        (JHoveUtf8Scraper, "valid__utf8.txt", "text/plain"),
+        (JHoveUtf8Scraper, "valid__utf8_without_bom.txt", "text/plain"),
         (JHoveJpegScraper, "valid_1.01.jpg", "image/jpeg"),
         (JHoveHtmlScraper, "valid_4.01.html", "text/html"),
         (JHoveWavScraper, "valid__wav.wav", "audio/x-wav")
@@ -668,7 +666,7 @@ def test_forced_filetype(filename, scraper_class, result_dict, filetype,
                                      filetype)
     params = {"mimetype": filetype["given_mimetype"],
               "version": filetype["given_version"]}
-    if filename == "valid_4.01.html":
+    if scraper_class == JHoveHtmlScraper:
         params["charset"] = "UTF-8"
     scraper = scraper_class(correct.filename, True, params)
     scraper.scrape_file()
@@ -694,9 +692,12 @@ def test_charset(filename, charset, well_formed):
     scraper = JHoveHtmlScraper(filename, True, params)
     scraper.scrape_file()
     assert scraper.well_formed == well_formed
-    if charset is not None and not well_formed:
-        assert partial_message_included(
-            "Found encoding declaration", scraper.errors())
-    if charset is None:
+    if charset:
+        if well_formed:
+            assert not scraper.errors()
+        else:
+            assert partial_message_included(
+                "Found encoding declaration", scraper.errors())
+    else:
         assert partial_message_included("encoding not defined",
                                         scraper.errors())

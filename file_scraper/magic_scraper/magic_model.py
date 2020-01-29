@@ -43,7 +43,7 @@ class BaseMagicMeta(BaseMeta):
         if self._endtag:
             magic_version = magic_version.split(self._endtag)[0]
         if magic_version == "data":
-            return None
+            return "(:unav)"
         return magic_version
 
 
