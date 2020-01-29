@@ -12,6 +12,13 @@ class PsppMeta(BaseMeta):
     _allow_versions = True                       # Allow any version
 
     @metadata()
+    def mimetype(self):
+        """Return MIME type"""
+        if not self._errors:
+            return "application/x-spss-por"
+        return "(:unav)"
+
+    @metadata()
     def stream_type(self):
         """Return file type."""
         # pylint: disable=no-self-use
