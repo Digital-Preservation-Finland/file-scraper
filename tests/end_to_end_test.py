@@ -51,9 +51,18 @@ UNAV_ELEMENTS = {
     "tests/data/application_x-spss-por/valid__spss24-dates.por": ["version"]
 }
 
-# Currently, only JHOVE returns WAV version, if not BWF
+# Currently, only JHOVE returns WAV version, if not BWF.
+# For CSV files, currently only CsvScraper (which only does well-formedness
+# check) is able to determine whether the version should be :unav or :unap.
 UNAV_ELEMENTS_PLUS = dict(UNAV_ELEMENTS, **{
-    "tests/data/audio_x-wav/valid__wav.wav": ["version"]})
+    "tests/data/audio_x-wav/valid__wav.wav": ["version"],
+    "tests/data/text_csv/valid__ascii.csv": ["version"],
+    "tests/data/text_csv/valid__ascii_header.csv": ["version"],
+    "tests/data/text_csv/valid__header_only.csv": ["version"],
+    "tests/data/text_csv/valid__iso8859-15.csv": ["version"],
+    "tests/data/text_csv/valid__utf8.csv": ["version"],
+    "tests/data/text_csv/invalid__missing_end_quote.csv": ["version"],
+    })
 
 # These are actually valid with another mimetype or version
 # or due to special parameters or missing scraper
