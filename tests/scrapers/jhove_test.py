@@ -607,7 +607,7 @@ def test_is_supported_utf8(mime, ver, class_):
           "stderr_part": ""},
          {"given_mimetype": "text/html", "given_version": "4.01",
           "expected_mimetype": "text/html", "expected_version": "4.01",
-          "correct_mimetype": "text/html"}),
+          "correct_mimetype": "text/html", "charset": "UTF-8"}),
         ("valid_4.01.html", JHoveHtmlScraper,
          {"purpose": "Forcing wrong but supported file type for html file",
           "stdout_part": "MIME type and version not scraped, using",
@@ -615,21 +615,21 @@ def test_is_supported_utf8(mime, ver, class_):
          {"given_mimetype": "application/xhtml+xml", "given_version": "1.0",
           "expected_mimetype": "application/xhtml+xml",
           "expected_version": "1.0",
-          "correct_mimetype": "application/xhtml+xmp"}),
+          "correct_mimetype": "application/xhtml+xmp", "charset": "UTF-8"}),
         ("valid_4.01.html", JHoveHtmlScraper,
          {"purpose": "Forcing unsupported MIME type for html file",
           "stdout_part": "MIME type not scraped, using",
           "stderr_part": ""},
          {"given_mimetype": "text/plain", "given_version": None,
           "expected_mimetype": "text/plain", "expected_version": "4.01",
-          "correct_mimetype": "text/html"}),
+          "correct_mimetype": "text/html", "charset": "UTF-8"}),
         ("valid_4.01.html", JHoveHtmlScraper,
          {"purpose": "Forcing only version for html file",
           "stdout_part": "Well-Formed and valid",
           "stderr_part": ""},
          {"given_mimetype": None, "given_version": "99",
           "expected_mimetype": "text/html", "expected_version": "4.01",
-          "correct_mimetype": "text/html"}),
+          "correct_mimetype": "text/html", "charset": "UTF-8"}),
         ("valid__wav.wav", JHoveWavScraper,
          {"purpose": "Forcing supported MIME type and version for wav files",
           "stdout_part": "MIME type and version not scraped",
@@ -666,8 +666,7 @@ def test_forced_filetype(filename, scraper_class, result_dict, filetype,
                                      filetype)
     params = {"mimetype": filetype["given_mimetype"],
               "version": filetype["given_version"]}
-    if scraper_class == JHoveHtmlScraper:
-        params["charset"] = "UTF-8"
+    params["charset"] = filetype.get("charset", None)
     scraper = scraper_class(correct.filename, True, params)
     scraper.scrape_file()
 
