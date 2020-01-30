@@ -29,6 +29,20 @@ class WandScraper(BaseScraper):
 
     _supported_metadata = [WandTiffMeta, WandImageMeta]
 
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize WandScraper.
+
+        The class inherits the __init__ method from its parent class
+        while adding the image file data as _wandresults.
+
+        The _wandresults are needed to be initialized to be able to
+        properly close them after the class has been executed.
+        """
+
+        super(WandScraper, self).__init__(*args, **kwargs)
+        self._wandresults = None
+
     def scrape_file(self):
         """
         Populate streams with supported metadata objects.
@@ -41,16 +55,26 @@ class WandScraper(BaseScraper):
                                   "Well-formed check not used.")
             return
         try:
-            wandresults = wand.image.Image(filename=self.filename)
+            self._wandresults = wand.image.Image(filename=self.filename)
         except Exception as e:  # pylint: disable=broad-except, invalid-name
             self._errors.append("Error in analyzing file")
             self._errors.append(six.text_type(e))
         else:
             for md_class in self._supported_metadata:
-                for image in wandresults.sequence:
+                for image in self._wandresults.sequence:
                     if not md_class.is_supported(image.container.mimetype):
                         continue
                     self.streams.append(md_class(image, self._given_mimetype,
                                                  self._given_version))
+
             self._check_supported(allow_unav_version=True)
             self._messages.append("The file was analyzed successfully.")
+
+    def __del__(self):
+        """
+        Close potential open image files using Python's File
+        close() method.
+        """
+
+        if self._wandresults:
+            self._wandresults.close()
