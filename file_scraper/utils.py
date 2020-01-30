@@ -218,27 +218,6 @@ def ensure_text(s, encoding="utf-8", errors="strict"):
         raise TypeError("not expecting type '{}'".format(type(s)))
 
 
-def common_elements(list1, list2):
-    """
-    Return True if there is at least one common element in the two lists.
-
-    :list1: a list or some other iterable
-    :list2: a list or some other iterable
-    :returns: True if the two lists have a common element, otherwise False
-    """
-    set1 = set(list1)
-    set2 = set(list2)
-
-    return len(set1.intersection(set2)) > 0
-
-
-class OverlappingLoseAndImportantException(Exception):
-    """
-    Raised when important and unimportant values overlap.
-    """
-    pass
-
-
 def _merge_to_stream(stream, method, lose, importants):
     """
     Merges the results of the method into the stream dict.
@@ -267,8 +246,6 @@ def _merge_to_stream(stream, method, lose, importants):
 
     if method_name not in stream:
         stream[method_name] = method_value
-        if method.is_important:
-            importants[method_name] = method_value
         return
     elif method_value in lose:
         return
@@ -276,17 +253,7 @@ def _merge_to_stream(stream, method, lose, importants):
         return
 
     if method.is_important:
-        if method_name not in importants:
-            stream[method_name] = method_value
-            importants[method_name] = method_value
-        elif importants[method_name] == method_value:
-            stream[method_name] = method_value
-        else:
-            raise ValueError("Conflict with values '%s' and '%s' for '%s': "
-                             "both are marked important." %
-                             (importants[method_name],
-                              method_value,
-                              method_name))
+        stream[method_name] = method_value
     elif method_name in importants:
         return
     elif stream[method_name] in lose:
@@ -297,6 +264,37 @@ def _merge_to_stream(stream, method, lose, importants):
                                              method_name))
 
 
+def _fill_importants(scraper_results, lose):
+    """
+    Find the important metadata values from scraper results.
+
+    :scraper_results: A list of lists containing all metadata methods. 
+    :lose: List of values which can not be important
+    :returns: A dict of important metadata values,
+              e.g. {"charset": "UTF-8", ...}
+    """
+    importants = {}
+    for model in chain.from_iterable(scraper_results):
+        for method in model.iterate_metadata_methods():
+            try:
+                method_name = method.__name__
+                method_value = method()
+                if method.is_important and method_value not in lose:
+                    if method_name in importants and \
+                            importants[method_name] != method_value:
+                        raise ValueError(
+                            "Conflict with values '%s' and '%s' for '%s': "
+                            "both are marked important." %
+                            (importants[method_name],
+                             method_value,
+                             method_name))
+                    importants[method_name] = method_value
+            except SkipElementException:
+                pass
+
+    return importants
+
+
 def generate_metadata_dict(scraper_results, lose):
     """
     Generate a metadata dict from the given scraper results.
@@ -304,8 +302,6 @@ def generate_metadata_dict(scraper_results, lose):
     The resulting dict contains the metadata of each stream as a dict,
     retrievable by using the index of the stream as a key. The indexing starts
     from zero.
-
-    scraper_results is a list of lists, e.g.
 
     :scraper_results: A list containing lists of all metadata methods, methods
                       of a single scraper in a single list. E.g.
@@ -318,15 +314,12 @@ def generate_metadata_dict(scraper_results, lose):
                    ...},
                1: {'mimetype': 'audio/mp4', 'index': 2,
                     'audio_data_encoding': 'AAC', ...}}
-    :raises: OverlappingLoseAndImportantException when metadata methods marked
-             as important return values that are present in the lose list i.e.
-             overwritable.
     """
     # if there are no scraper results, return an empty dict
     if not any(scraper_results):
         return {}
     streams = {}
-    importants = {}
+    importants = _fill_importants(scraper_results, lose)
 
     for model in chain.from_iterable(scraper_results):
         stream_index = model.index()
@@ -341,11 +334,6 @@ def generate_metadata_dict(scraper_results, lose):
             except SkipElementException:
                 # happens when the method is not to be indexed
                 continue
-
-    # Check that important values did not contain values marked as disposable
-    if common_elements(lose, importants.values()):
-        raise OverlappingLoseAndImportantException(
-            "The given lose dict contains values that are marked as important")
 
     return streams
 

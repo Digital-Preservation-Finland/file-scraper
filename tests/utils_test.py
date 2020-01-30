@@ -94,7 +94,7 @@ import pytest
 
 from file_scraper.base import BaseMeta
 from file_scraper.scraper import LOSE
-from file_scraper.utils import (OverlappingLoseAndImportantException,
+from file_scraper.utils import (_fill_importants,
                                 _merge_to_stream, concat,
                                 generate_metadata_dict, hexdigest,
                                 iso8601_duration, metadata,
@@ -219,94 +219,92 @@ class MetaTest(object):
 
 
 @pytest.mark.parametrize(
-    ["dict1", "method", "value", "lose", "importants", "result_dict",
+    ["dict1", "method", "value", "lose", "result_dict",
      "final_importants"],
     [
         # add new key, nothing originally in importants or in lose
-        ({"key1": "value1"}, "key_notimportant", "value2", [], {},
+        ({"key1": "value1"}, "key_notimportant", "value2", [],
          {"key1": "value1", "key_notimportant": "value2"}, {}),
 
-        ({"key1": "value1"}, "key_important", "value2", [], {},
+        ({"key1": "value1"}, "key_important", "value2", [],
          {"key1": "value1", "key_important": "value2"},
          {"key_important": "value2"}),
 
         ({"key1": "value1", "key3": "value3", "key4": "value4"},
-         "key_important", "value2", [], {},
+         "key_important", "value2", [],
          {"key1": "value1", "key_important": "value2", "key3": "value3",
           "key4": "value4"},
          {"key_important": "value2"}),
 
         # add new key to an empty dict
-        ({}, "key_notimportant", "value", [], {},
+        ({}, "key_notimportant", "value", [],
          {"key_notimportant": "value"}, {}),
 
         # add new key, value of which is in lose
-        ({"key1": "value1"}, "key_notimportant", "value2", ["value2"], {},
+        ({"key1": "value1"}, "key_notimportant", "value2", ["value2"],
          {"key1": "value1", "key_notimportant": "value2"}, {}),
 
         # add new key, value of which is None
-        ({"key1": "value1"}, "key_notimportant", None, [], {},
+        ({"key1": "value1"}, "key_notimportant", None, [],
          {"key1": "value1", "key_notimportant": None}, {}),
 
         # old value overridden by important method
-        ({"key_important": "oldvalue"}, "key_important", "value1", [], {},
+        ({"key_important": "oldvalue"}, "key_important", "value1", [],
          {"key_important": "value1"},
          {"key_important": "value1"}),
 
         # old value is important, new one is not
         ({"key_notimportant": "oldvalue"}, "key_notimportant", "value1", [],
-         {"key_notimportant": "oldvalue"}, {"key_notimportant": "oldvalue"},
-         {"key_notimportant": "oldvalue"}),
+         {"key_notimportant": "oldvalue"}, {"key_notimportant": "oldvalue"}),
 
         # old value in lose, new value not in important
         ({"key_notimportant": "oldvalue"}, "key_notimportant", "value1",
-         ["oldvalue"], {}, {"key_notimportant": "value1"}, {}),
+         ["oldvalue"], {"key_notimportant": "value1"}, {}),
 
         # old value in lose, new value important
         ({"key_important": "oldvalue"}, "key_important", "value1",
-         ["oldvalue"], {}, {"key_important": "value1"},
+         ["oldvalue"], {"key_important": "value1"},
          {"key_important": "value1"}),
 
         # key already present but new value in lose
         ({"key_notimportant": "oldvalue"}, "key_notimportant", "newvalue",
-         ["newvalue"], {}, {"key_notimportant": "oldvalue"}, {}),
+         ["newvalue"], {"key_notimportant": "oldvalue"}, {}),
 
         # key already present, both old and new value in lose (old one is kept)
         ({"key_notimportant": "oldvalue"}, "key_notimportant", "newvalue",
-         ["oldvalue", "newvalue"], {}, {"key_notimportant": "oldvalue"}, {}),
+         ["oldvalue", "newvalue"], {"key_notimportant": "oldvalue"}, {}),
 
         # both old and new values are important but there is no conflict
         ({"key_important": "value1", "key2": "value2"}, "key_important",
-         "value1", [], {"key_important": "value1"},
-         {"key_important": "value1", "key2": "value2"},
+         "value1", [], {"key_important": "value1", "key2": "value2"},
          {"key_important": "value1"}),
 
         # Add key with None value
-        ({}, "key_notimportant", None, LOSE, {},
+        ({}, "key_notimportant", None, LOSE,
          {"key_notimportant": None}, {}),
 
         # Add key with empty value
-        ({}, "key_notimportant", "", LOSE, {},
+        ({}, "key_notimportant", "", LOSE,
          {"key_notimportant": ""}, {}),
 
         # Try to replace value with None when using LOSE list from scraper.
-        ({"key_notimportant": "value"}, "key_notimportant", None, LOSE, {},
+        ({"key_notimportant": "value"}, "key_notimportant", None, LOSE,
          {"key_notimportant": "value"}, {}),
 
         # Try to replace value with empty string when using LOSE list from
         # scraper.
-        ({"key_notimportant": "value"}, "key_notimportant", "", LOSE, {},
+        ({"key_notimportant": "value"}, "key_notimportant", "", LOSE,
          {"key_notimportant": "value"}, {}),
     ]
 )
-def test_merge_to_stream(dict1, method, value, lose, importants, result_dict,
+def test_merge_to_stream(dict1, method, value, lose, result_dict,
                          final_importants):
     """Test combining stream and metadata dicts."""
     # pylint: disable=too-many-arguments
     testclass = MetaTest(value)
-    _merge_to_stream(dict1, getattr(testclass, method), lose, importants)
+    _merge_to_stream(dict1, getattr(testclass, method), lose,
+                     final_importants)
     assert dict1 == result_dict
-    assert importants == final_importants
 
 
 def test_merge_normal_conflict():
@@ -318,19 +316,6 @@ def test_merge_normal_conflict():
                          [], {})
     assert ("Conflict with existing value 'oldvalue' and new value 'newvalue'"
             in six.text_type(error.value))
-
-
-def test_merge_important_conflict():
-    """Test adding metadata to stream with conflicting important values."""
-    testclass = MetaTest("newvalue")
-    with pytest.raises(ValueError) as error:
-        _merge_to_stream({"key_important": "oldvalue"},
-                         getattr(testclass, "key_important"),
-                         [], {"key_important": "oldvalue"})
-    assert (
-        "Conflict with values 'oldvalue' and 'newvalue'"
-        in six.text_type(error.value)
-    )
 
 
 class Meta1(BaseMeta):
@@ -481,6 +466,39 @@ class Meta3(BaseMeta):
         return "value2"
 
 
+class Meta4(BaseMeta):
+    """
+    Conflicting important value with Meta1(), where key4() is also important.
+    """
+    # pylint: disable=no-self-use, missing-docstring
+    @metadata(important=True)
+    def key4(self):
+        return "conflictingvalue"
+
+
+def test_merge_important_conflict():
+    """Test adding metadata to stream with conflicting important values."""
+    results = [[Meta1()], [Meta2()], [Meta4()]]
+    with pytest.raises(ValueError) as error:
+        _fill_importants(results, [])
+    assert (
+        "Conflict with values 'importantvalue' and 'conflictingvalue'"
+        in six.text_type(error.value)
+    )
+
+
+def test_fill_importants():
+    """Test filling the importants list"""
+    results = [[Meta1()], [Meta2()], [Meta3()]]
+    lose = []
+    importants = _fill_importants(results, lose)
+    assert importants == {"key4": "importantvalue", "key3": "key2-3"}
+
+    lose = ["key2-3"]
+    importants = _fill_importants(results, lose)
+    assert importants == {"key4": "importantvalue"}
+
+
 def test_generate_metadata_dict():
     """Test generating metadata dict using the metadata objects."""
     results = [[Meta1()], [Meta2()], [Meta3()]]
@@ -494,16 +512,6 @@ def test_generate_metadata_dict():
                              1: {"index": 1, "key1": "value1",
                                  "key2": "value2", "mimetype": "anothermime",
                                  "version": 2, "stream_type": "audio"}}
-
-
-def test_overlapping_error():
-    """Test that important values within the lose list cause an exception."""
-    results = [[Meta2()]]
-    lose = ["key2-3"]
-    with pytest.raises(OverlappingLoseAndImportantException) as e_info:
-        generate_metadata_dict(results, lose)
-    assert ("The given lose dict contains values that are marked as important"
-            in six.text_type(e_info.value))
 
 
 def test_concat():
