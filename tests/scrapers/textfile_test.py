@@ -113,7 +113,7 @@ def test_existing_files(filename, mimetype, is_textfile, evaluate_scraper):
 )
 def test_encoding_check(filename, charset, is_wellformed, evaluate_scraper):
     """
-    Test character encoding validation
+    Test character encoding validation with brute force.
     """
     params = {"charset": charset}
     correct = parse_results(filename, "text/plain", {}, True, params)

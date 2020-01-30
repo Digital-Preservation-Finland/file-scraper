@@ -95,20 +95,29 @@ class JHoveHtmlScraper(JHoveScraperBase):
     def scrape_file(self):
         """
         Scrape the file.
-        Check the character encoding declaration additionally.
+
+        Check the character encoding declaration additionally. JHove HTML
+        module seems to check only the declaration or metadata elements from
+        the (X)HTML file, and these are optional in practice. If these are
+        missing, then we just need to rely on other scraper tools.
         """
         super(JHoveHtmlScraper, self).scrape_file()
-        if self.streams:
-            if not self._params.get("charset", None):
-                self._errors.append("Character encoding not defined.")
-                return
-            encoding = self.streams[0].charset()
-            if encoding is not None and \
-                    encoding.upper() != self._params["charset"]:
-                self._errors.append(
-                    "Found encoding declaration %s from the file %s, but %s "
-                    "was expected." % (encoding, self.filename,
-                                       self._params["charset"]))
+
+        # self.streams is empty if MIME type is not supported.
+        # We run _check_supported() in super() where this case
+        # is handled by giving an error message.
+        if not self.streams:
+            return
+        if not self._params.get("charset", None):
+            self._errors.append("Character encoding not defined.")
+            return
+        encoding = self.streams[0].charset()
+        if encoding is not None and \
+                encoding.upper() != self._params["charset"]:
+            self._errors.append(
+                "Found encoding declaration %s from the file %s, but %s "
+                "was expected." % (encoding, self.filename,
+                                   self._params["charset"]))
 
 
 class JHoveJpegScraper(JHoveScraperBase):

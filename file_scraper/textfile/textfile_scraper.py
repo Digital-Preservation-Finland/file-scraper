@@ -52,23 +52,35 @@ class TextEncodingScraper(BaseScraper):
     Text encoding scraper.
 
     Tries to use decode() and checks some of illegal character values.
-    """
 
+    The rules for decoding validation are following:
+
+    - For UTF-32 we try decoding with UTF-32BE first, and switch to UTF-32
+      if it fails. (utf-32be or utf-32)
+    - For UTF-16 we try decoding with UTF-16 first. This must success or the
+      file is not UTF-16 file. If success, then we also need to try UTF-8. If
+      that fails, the file is UTF-16, otherwise UTF-8.
+    - For UTF-8 we just try decoding with UTF-8. This must success or the file
+      is not valid UTF-8 file.
+    - For ISO-8859-15 files we try decoding with ISO-8859-15 first. This must
+      success or the file is not valid ISO-8859-15 file. If success, then
+      we also need to try ASCII. If ASCII succeeds, it is also ISO-8859-15
+      file. If ASCII fails, we also need to try UTF-8. If that fails, the
+      file is ISO-8859-15, otherwise UTF-8.
+    """
     _supported_metadata = [TextEncodingMeta]
 
     def __init__(self, filename, check_wellformed=True, params=None):
         """Initialize scraper. Add given charset."""
-        if params is None:
-            params = {}
-        self._charset = params.get("charset", "(:unav)")
         super(TextEncodingScraper, self).__init__(
             filename, check_wellformed, params)
+        self._charset = self._params.get("charset", "(:unav)")
 
     def scrape_file(self):
         """
         Validate the file with decoding it with given character encoding.
         """
-        chunksize = 20*1024*1024  # chunk size
+        chunksize = 20*1024**2  # chunk size
         limit = 100  # Limit file read in MB, 0 = unlimited
 
         if self._charset in [None, "(:unav)"]:
@@ -86,26 +98,12 @@ class TextEncodingScraper(BaseScraper):
                 position = 0
                 probably_utf8 = None  # Not suggesting UTF-8 if empty file
 
+                charset = self._predetect_charset(infile)
                 chunk = infile.read(chunksize)
                 while len(chunk) > 0:
-                    # Using just UTF-32 to UTF-32BE without BOM does not work.
-                    # We have to try UTF-32BE instead. If it does not work,
-                    # we use given charset.
-                    passby = False
-                    if self._charset == "UTF-32":
-                        try:
-                            self._decode_chunk(chunk, "UTF-32BE", position)
-                            passby = True
-                        except (ValueError, UnicodeError):
-                            pass
+                    self._decode_chunk(chunk, charset, position)
 
-                    # Decoding must work with given charset
-                    if not passby:
-                        self._decode_chunk(chunk, self._charset, position)
-
-                    # Decoding to UTF-16 and ISO-8859-15 might work also with
-                    # UTF-8 files. Therefore, we want to know that it is not
-                    # UTF-8. If all of the chucks result True here, we most
+                    # If all of the chucks result True here, we most
                     # likely have UTF-8. Or in other words, if any of the
                     # chuncks result False, then we don't have UTF-8.
                     if probably_utf8 in [True, None]:
@@ -114,19 +112,19 @@ class TextEncodingScraper(BaseScraper):
                             chunk, position)
 
                     position = position + chunksize
-                    if position > limit*1024*1024 and limit > 0:
+                    if position > limit*1024**2 and limit > 0:
                         self._messages.append(
                             "First %s MB read, we skip the remainder." % (
                                 limit))
                         break
                     chunk = infile.read(chunksize)
 
-
                 if probably_utf8:
                     self._errors.append(
                         "Character decoding error: The character encoding "
-                        "passed with UTF-8, so therefore the given encoding "
-                        "%s is most likely wrong." % self._charset.upper())
+                        "passed with UTF-8 and it contains characters "
+                        "colliding with the given encoding %s. Most likely "
+                        "the file is UTF-8 file." % self._charset.upper())
                 else:
                     self._messages.append(
                         "Character encoding validated successfully.")
@@ -136,21 +134,40 @@ class TextEncodingScraper(BaseScraper):
                                 six.text_type(err))
         except (ValueError, UnicodeDecodeError) as exception:
             self._errors.append("Character decoding error: %s" % exception)
-        finally:
-            if infile:
-                infile.close()
 
         self._add_metadata()
+
+    def _predetect_charset(self, infile):
+        """
+        Predetect charset.
+
+        In some cases, more accurate encoding information may be needed
+        to do the decoding. Currently, this applies to UTF-32, which
+        does not work, if the file is UTF-32BE and does not have BOM.
+        """
+        chunk = infile.read(1024)
+        infile.seek(0)
+        if self._charset == "UTF-32":
+            try:
+                self._decode_chunk(chunk, "UTF-32BE", 0)
+                return "UTF-32BE"
+            except (ValueError, UnicodeError):
+                pass
+        return self._charset
 
     def _utf8_contradiction(self, chunk, position):
         """
         Check that UTF-8 does not make a contradiction.
 
-        With file passed with given encodings UTF-16 or ISO-8859-15 there is
-        a chance that the file is actually UTF-8. If the file is ASCII file,
-        then it can be accepted with ISO-8859-15 and there is no contradiction
-        with UTF-8. If ASCII decoding fails then UTF-8 decoding should fail
-        too. Otherwise, we do probably have UTF-8 file.
+        With file passed with given decodings UTF-16 or ISO-8859-15 there is
+        a chance that the file is actually UTF-8.
+
+        E.g. "abcd".encode("UTF-8").decode("UTF-16") == u"\u6261\u6463"
+
+        If the file is ASCII file, then it can be accepted with ISO-8859-15
+        and there is no contradiction with UTF-8. If ASCII decoding fails
+        then UTF-8 decoding should fail too. Otherwise, we do probably have
+        UTF-8 file.
 
         :chunk: Byte chunk from a file
         :position: Chunk position in file
@@ -184,10 +201,14 @@ class TextEncodingScraper(BaseScraper):
         :chunk: Byte chunk from a file
         :charset: Decoding charset
         :position: Chunk position in a file
+        :raises: UnicodeError or ValueError when decoding was unsuccessful or
+                 a forbidden character was found.
         """
-        decoded_chunk = chunk.decode(charset)
         if self._charset.upper() == "UTF-32":
+            chunk.decode(charset)  # Raises an exception if not UTF-32
             return
+
+        decoded_chunk = chunk.decode(charset)
 
         forbidden = ["\x00", "\x01", "\x02", "\x03", "\x04", "\x05", "\x06",
                      "\x07", "\x08", "\x0B", "\x0C", "\x0E", "\x0F", "\x10",

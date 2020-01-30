@@ -222,13 +222,11 @@ def _merge_to_stream(stream, method, lose, importants):
     """
     Merges the results of the method into the stream dict.
 
-    Adds item 'method.__name__: method()' into the stream dict. If the method
-    is marked as important, it is also added into the importants dict. Both
-    dicts are edited in place.
+    Adds item 'method.__name__: method()' into the stream dict.
 
     If the stream dict already contains an entry with method.__name__ as the
     key, the given lose and importants are examined:
-        - Important values are always used.
+        - Important values are used unless those are lose values.
         - Values within the lose list are overwritten.
         - If neither entry is important or disposable, a ValueError is raised.
 
@@ -238,8 +236,7 @@ def _merge_to_stream(stream, method, lose, importants):
     :lose: A list of values that can be overwritten.
     :importants: A dict of keys and values that must not be overwritten.
     :raises: ValueError if the old entry in the stream and the value returned
-             by the given method conflict but neither is disposable or both
-             are marked as important.
+             by the given method conflict but neither is disposable.
     """
     method_name = method.__name__
     method_value = method()
@@ -268,10 +265,11 @@ def _fill_importants(scraper_results, lose):
     """
     Find the important metadata values from scraper results.
 
-    :scraper_results: A list of lists containing all metadata methods. 
+    :scraper_results: A list of lists containing all metadata methods.
     :lose: List of values which can not be important
     :returns: A dict of important metadata values,
               e.g. {"charset": "UTF-8", ...}
+    :raises: ValueError if two different important values collide in a method.
     """
     importants = {}
     for model in chain.from_iterable(scraper_results):
