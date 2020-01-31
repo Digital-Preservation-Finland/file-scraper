@@ -12,7 +12,8 @@ from __future__ import unicode_literals
 
 import pytest
 
-from file_scraper.detectors import FidoDetector, MagicDetector, VerapdfDetector
+from file_scraper.detectors import (FidoDetector, MagicDetector,
+                                    VerapdfDetector, MagicCharset)
 from tests.common import get_files, partial_message_included
 
 CHANGE_FIDO = {
@@ -178,21 +179,19 @@ def test_important_other(detector_class, mimetype):
 @pytest.mark.parametrize(
     ["filename", "charset"],
     [("tests/data/text_plain/valid__utf8_without_bom.txt", "UTF-8"),
-     ("tests/data/text_plain/valid__utf16le_without_bom.txt", "UTF-8"),
-     ("tests/data/text_plain/valid__utf32be_without_bom.txt", "UTF-8"),
-     ("tests/data/text_plain/valid__iso8859.txt", "UTF-8"),
+     ("tests/data/text_plain/valid__utf16le_bom.txt", "UTF-16"),
+     ("tests/data/text_plain/valid__iso8859.txt", "ISO-8859-15"),
      ("tests/data/video_dv/valid.dv", None)]
 )
 def test_magic_charset(filename, charset):
     """Test charset encoding detection"""
-    detector = MagicCharset(
-        "tests/data/text_plain/valid__utf8_without_bom.txt")
+    detector = MagicCharset(filename)
     detector.detect()
     if charset:
         detector.charset = charset
-        assert not self.errors
+        assert not detector.info["errors"]
         assert partial_message_included(
-            "Character encoding detected as", self.errors)
+            "Character encoding detected as", detector.info["messages"])
     else:
         assert partial_message_included(
-            "Unable to detect character encoding", self.errors)
+            "Unable to detect character encoding", detector.info["errors"])
