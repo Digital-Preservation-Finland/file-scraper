@@ -366,3 +366,58 @@ def sanitize_bytestring(input_bytes):
     utf8string = input_bytes.decode("utf8", errors="replace")
     sanitized_string = sanitize_string(utf8string)
     return ensure_text(sanitized_string.encode("utf-8"))
+
+
+def iter_utf_bytes(file_handle, chunksize, charset):
+    """
+    Iterate given file with matching the bytes with variable length UTF
+    characters. The byte sequence might have incomplete UTF characer in the
+    end. This is reserved for the next chunk.
+
+    :file_handle: File handle to read
+    :chunksize: Size of the chunk to read
+    :charset: Character encoding of the file
+    :returns: Sequence from the file
+    """
+    utf_buffer = b""
+    chunksize += 4 - chunksize % 4  # needs to be divisible by 4
+
+    def utf_sequence(chunk, sequence_params, possible_be=False):
+        """
+        Split the given byte chunk to UTF sequence and remainder. Remainder
+        is possible if last character of byte chunk is incomplete.
+        :chunk: Chunk to match
+        :sequenc_params: Dict of smallest and largest byte value of the first
+                         byte (or the second in big endian) of a character
+        :possible_be: True, big endian is possible, False otherwise
+        :returns: Tuple (x, y) where x is UTF sequence and y is remainder
+        """
+        for params in sequence_params:
+
+            for index in params["indexes"]:
+                if len(chunk) >= index and \
+                        ord(chunk[-index]) >= params["smallest"] and \
+                        ord(chunk[-index]) <= params["largest"]:
+                    if possible_be and index == 1:
+                        index = index + 1  # Move index left for big endian
+                    return chunk[:-index], chunk[-index:]
+
+        return (chunk, b"")
+
+    while True:
+        chunk = utf_buffer + file_handle.read(chunksize)
+
+        if not chunk:
+            return
+
+        if charset.upper() == "UTF-8":
+            chunk, utf_buffer = utf_sequence(chunk, [
+                {"smallest": 0xc0, "largest": 0xdf, "indexes": [1]},
+                {"smallest": 0xe0, "largest": 0xef, "indexes": [1, 2]},
+                {"smallest": 0xf0, "largest": 0xf7, "indexes": [1, 2, 3]}])
+        elif charset.upper() == "UTF-16":
+            chunk, utf_buffer = utf_sequence(
+                chunk, [{"smallest": 0xd8, "largest": 0xdb,
+                         "indexes": [1, 2]}], True)
+
+        yield chunk

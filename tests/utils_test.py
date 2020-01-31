@@ -98,7 +98,8 @@ from file_scraper.utils import (_fill_importants,
                                 _merge_to_stream, concat,
                                 generate_metadata_dict, hexdigest,
                                 iso8601_duration, metadata,
-                                sanitize_string, strip_zeros)
+                                sanitize_string, strip_zeros,
+                                iter_utf_bytes)
 
 
 @pytest.mark.parametrize(
@@ -523,3 +524,21 @@ def test_concat():
     assert concat(["test"], "prefix:") == "prefix:test"
     assert (concat(["test1", "test2"], "prefix:") ==
             "prefix:test1\nprefix:test2")
+
+
+@pytest.mark.parametrize(
+    "filename, charset", [
+        ("valid__utf8_without_bom.txt", "UTF-8"),
+        ("valid__utf8_bom.txt", "UTF-8"),
+        ("valid__utf16le_without_bom.txt", "UTF-16"),
+        ("valid__utf16le_bom.txt", "UTF-16"),
+        ("valid__utf16be_without_bom.txt", "UTF-16"),
+        ("valid__utf16be_bom.txt", "UTF-16"),
+        ]
+)
+def test_iter_utf_bytes(filename, charset):
+    """Test utf iterator"""
+    infile = open("tests/data/text_plain/" + filename, "rb")
+    for chunksize in range(4, 40):
+        for chunk in iter_utf_bytes(infile, chunksize, charset):
+            assert isinstance(chunk.decode(charset), unicode)

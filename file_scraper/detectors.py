@@ -296,14 +296,14 @@ class MagicCharset(BaseDetector):
                                            version=version)
 
     @classmethod
-    def is_supported(self, mimetype):
+    def is_supported(cls, mimetype):
         """
         Check wheter the detector is supported with given mimetype.
 
         :mimetype: Mimetype to check
         :returns: True if mimetype is supported, False otherwise
         """
-        return mimetype in self._supported
+        return mimetype in cls._supported
 
     def detect(self):
         """Detect charset with MagicLib. A charset is detected from up to
@@ -325,8 +325,9 @@ class MagicCharset(BaseDetector):
             self.charset = "UTF-16"
         else:
             self.charset = charset.upper()
-
-        messages.append("Character encoding detected as %s" % self.charset)
+        if not errors:
+            messages.append(
+                "Character encoding detected as %s" % self.charset)
 
         self.info = {"class": self.__class__.__name__,
                      "messages": messages,

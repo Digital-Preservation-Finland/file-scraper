@@ -5,6 +5,7 @@ import io
 import six
 from file_scraper.base import BaseScraper
 from file_scraper.magiclib import file_command
+from file_scraper.utils import iter_utf_bytes
 from file_scraper.textfile.textfile_model import (TextFileMeta,
                                                   TextEncodingMeta)
 
@@ -55,8 +56,8 @@ class TextEncodingScraper(BaseScraper):
 
     The rules for decoding validation are following:
 
-    - For UTF-32 we try decoding with UTF-32BE first, and switch to UTF-32
-      if it fails. (utf-32be or utf-32)
+    - For UTF-32 we try pre-decoding first 1024 bytes with UTF-32BE first and
+      use it if it succeeds, but switch to UTF-32 if it fails.
     - For UTF-16 we try decoding with UTF-16 first. This must success or the
       file is not UTF-16 file. If success, then we also need to try UTF-8. If
       that fails, the file is UTF-16, otherwise UTF-8.
@@ -69,6 +70,9 @@ class TextEncodingScraper(BaseScraper):
       file is ISO-8859-15, otherwise UTF-8.
     """
     _supported_metadata = [TextEncodingMeta]
+    _chunksize = 20*1024**2  # chunk size
+    _limit = 100*1024**2  # Limit file read in MB, 0 = unlimited
+                          # _limit must be divisible with _chunksize
 
     def __init__(self, filename, check_wellformed=True, params=None):
         """Initialize scraper. Add given charset."""
@@ -80,8 +84,6 @@ class TextEncodingScraper(BaseScraper):
         """
         Validate the file with decoding it with given character encoding.
         """
-        chunksize = 20*1024**2  # chunk size
-        limit = 100  # Limit file read in MB, 0 = unlimited
 
         if self._charset in [None, "(:unav)"]:
             self._errors.append("Character encoding not defined.")
@@ -99,8 +101,9 @@ class TextEncodingScraper(BaseScraper):
                 probably_utf8 = None  # Not suggesting UTF-8 if empty file
 
                 charset = self._predetect_charset(infile)
-                chunk = infile.read(chunksize)
-                while len(chunk) > 0:
+                for chunk in iter_utf_bytes(infile, self._chunksize,
+                                            self._charset):
+
                     self._decode_chunk(chunk, charset, position)
 
                     # If all of the chucks result True here, we most
@@ -111,13 +114,12 @@ class TextEncodingScraper(BaseScraper):
                         probably_utf8 = self._utf8_contradiction(
                             chunk, position)
 
-                    position = position + chunksize
-                    if position > limit*1024**2 and limit > 0:
+                    position = position + len(chunk)
+                    if position >= self._limit and self._limit > 0:
                         self._messages.append(
-                            "First %s MB read, we skip the remainder." % (
-                                limit))
+                            "First %s bytes read, we skip the remainder." % (
+                                self._limit))
                         break
-                    chunk = infile.read(chunksize)
 
                 if probably_utf8:
                     self._errors.append(
@@ -194,9 +196,14 @@ class TextEncodingScraper(BaseScraper):
             return False
         return True
 
+    # pylint: disable=no-self-use
     def _decode_chunk(self, chunk, charset, position):
         """
-        Decode given chunk.
+        Decode given chunk and check forbidden characters.
+
+        The forbidden characters are the ASCII control characters, in
+        exception of horizontal tab, carriage return, and line feed, which are
+        allowed.
 
         :chunk: Byte chunk from a file
         :charset: Decoding charset
@@ -204,17 +211,13 @@ class TextEncodingScraper(BaseScraper):
         :raises: UnicodeError or ValueError when decoding was unsuccessful or
                  a forbidden character was found.
         """
-        if self._charset.upper() == "UTF-32":
-            chunk.decode(charset)  # Raises an exception if not UTF-32
-            return
-
         decoded_chunk = chunk.decode(charset)
 
         forbidden = ["\x00", "\x01", "\x02", "\x03", "\x04", "\x05", "\x06",
                      "\x07", "\x08", "\x0B", "\x0C", "\x0E", "\x0F", "\x10",
                      "\x11", "\x12", "\x13", "\x14", "\x15", "\x16", "\x17",
                      "\x18", "\x19", "\x1A", "\x1B", "\x1C", "\x1D", "\x1E",
-                     "\x1F", "\xFF"]
+                     "\x1F", "\x7F"]
         for forb_char in forbidden:
             index = decoded_chunk.find(forb_char)
             if index > -1:

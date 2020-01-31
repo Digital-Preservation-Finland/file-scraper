@@ -12,7 +12,7 @@ for collecting metadata and checking well-formedness of the file. For now, there
 The detectors inherit ``BaseDetector`` class, which contains an abstract method ``detect()``. A detector class:
 
     * MUST call ``super()`` during initialization, if separate initialization method is created.
-    * MUST detect mimetype of selected file formats and store it in mimetype attribute when ``detect()`` is called.
+    * SHOULD detect mimetype of selected file formats and store it in mimetype attribute when ``detect()`` is called.
     * MAY detect also format version and store it in version attribute.
 
 The ``info`` attribute contains a dict of class name, and messages and errors occured during detection.

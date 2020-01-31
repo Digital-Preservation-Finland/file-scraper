@@ -132,3 +132,35 @@ def test_encoding_check(filename, charset, is_wellformed, evaluate_scraper):
         assert partial_message_included("decoding error", scraper.errors())
         assert scraper.errors()
         assert not scraper.well_formed
+
+
+@pytest.mark.parametrize(
+    "charset",
+    [
+        ("(:unav)"), (None)
+    ]
+)
+def test_encoding_not_defined(charset):
+    """
+    Test the case where encoding is not defined.
+    """
+    scraper = TextEncodingScraper(
+        "tests/data/text_plain/valid__utf8_without_bom.txt",
+        params={"charset": charset})
+    scraper.scrape_file()
+    assert partial_message_included(
+        "Character encoding not defined.", scraper.errors())
+
+
+def test_decoding_limit(monkeypatch):
+    """
+    Test limiting the decoding.
+    """
+    monkeypatch.setattr(TextEncodingScraper, "_chunksize", 4)
+    monkeypatch.setattr(TextEncodingScraper, "_limit", 8)
+    scraper = TextEncodingScraper(
+        "tests/data/text_plain/valid__utf8_bom.txt",
+        params={"charset": "UTF-8"})
+    scraper.scrape_file()
+    assert partial_message_included(
+        "First 8 bytes read, we skip the remainder", scraper.messages())
