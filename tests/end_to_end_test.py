@@ -124,6 +124,8 @@ FORCED_MIMETYPES = {
     "tests/data/text_xml/valid_1.0_mets_noheader.xml": "text/xml",
     "tests/data/text_plain/valid__utf16be_without_bom.txt": "text/plain",
     "tests/data/text_plain/valid__utf16le_without_bom.txt": "text/plain",
+    "tests/data/text_plain/valid__utf16be_multibyte.txt": "text/plain",
+    "tests/data/text_plain/valid__utf16le_multibyte.txt": "text/plain",
     "tests/data/text_plain/valid__utf32be_without_bom.txt": "text/plain",
     "tests/data/text_plain/valid__utf32le_without_bom.txt": "text/plain",
     "tests/data/text_plain/valid__utf32be_bom.txt": "text/plain",
@@ -133,6 +135,8 @@ FORCED_MIMETYPES = {
 # To get some files validated against the strictest applicable criteria the
 # charset has to be forced.
 FORCED_CHARSETS = {
+    "tests/data/text_plain/valid__utf16be_multibyte.txt": "UTF-16",
+    "tests/data/text_plain/valid__utf16le_multibyte.txt": "UTF-16",
     "tests/data/text_plain/valid__utf16be_without_bom.txt": "UTF-16",
     "tests/data/text_plain/valid__utf16le_without_bom.txt": "UTF-16",
     "tests/data/text_plain/valid__utf32be_without_bom.txt": "UTF-32",
@@ -410,7 +414,11 @@ def test_forced_filetype(filepath, params, well_formed, expected_mimetype,
      ("tests/data/application_xhtml+xml/valid_1.0.xhtml", "UTF-16", False),
      ("tests/data/text_csv/valid__ascii.csv", "UTF-8", True),
      ("tests/data/text_csv/valid__ascii.csv", "ISO-8859-15", True),
-     ("tests/data/text_csv/valid__ascii.csv", "UTF-16", False)
+     ("tests/data/text_csv/valid__ascii.csv", "UTF-16", False),
+     ("tests/data/text_plain/valid__utf16be_multibyte.txt", "UTF-16", True),    
+     ("tests/data/text_plain/valid__utf16be_multibyte.txt", "UTF-8", False),
+     ("tests/data/text_plain/valid__utf16le_multibyte.txt", "UTF-16", True),    
+     ("tests/data/text_plain/valid__utf16le_multibyte.txt", "UTF-8", False),
     ]
 )
 def test_charset(filepath, charset, well_formed):

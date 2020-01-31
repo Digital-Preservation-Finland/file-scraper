@@ -534,11 +534,22 @@ def test_concat():
         ("valid__utf16le_bom.txt", "UTF-16"),
         ("valid__utf16be_without_bom.txt", "UTF-16"),
         ("valid__utf16be_bom.txt", "UTF-16"),
+        ("valid__utf16be_multibyte.txt", "UTF-16"),
+        ("valid__utf16le_multibyte.txt", "UTF-16"),
+        ("valid__utf8_multibyte.txt", "UTF-8"),
         ]
 )
 def test_iter_utf_bytes(filename, charset):
     """Test utf iterator"""
     infile = open("tests/data/text_plain/" + filename, "rb")
+    original_bytes = infile.read()
+    original_text = original_bytes.decode(charset)
     for chunksize in range(4, 40):
+        infile.seek(0)
+        chunks = b""
         for chunk in iter_utf_bytes(infile, chunksize, charset):
             assert isinstance(chunk.decode(charset), unicode)
+            chunks += chunk
+        assert isinstance(chunks.decode(charset), unicode)
+        assert original_text == chunks.decode(charset)
+        assert original_bytes == chunks

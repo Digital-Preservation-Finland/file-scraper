@@ -109,6 +109,9 @@ def test_existing_files(filename, mimetype, is_textfile, evaluate_scraper):
         ("valid__iso8859.txt", "UTF-32", False),
         ("valid__iso8859.txt", "ISO-8859-15", True),
         ("invalid__empty.txt", "ISO-8859-15", True),
+        ("valid__utf16le_multibyte.txt", "UTF-16", True),
+        ("valid__utf16be_multibyte.txt", "UTF-16", True),
+        ("valid__utf8_multibyte.txt", "UTF-8", True),
     ]
 )
 def test_encoding_check(filename, charset, is_wellformed, evaluate_scraper):

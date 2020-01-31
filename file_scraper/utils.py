@@ -382,14 +382,14 @@ def iter_utf_bytes(file_handle, chunksize, charset):
     utf_buffer = b""
     chunksize += 4 - chunksize % 4  # needs to be divisible by 4
 
-    def utf_sequence(chunk, sequence_params, possible_be=False):
+    def utf_sequence(chunk, sequence_params, possible_le=False):
         """
         Split the given byte chunk to UTF sequence and remainder. Remainder
         is possible if last character of byte chunk is incomplete.
         :chunk: Chunk to match
         :sequenc_params: Dict of smallest and largest byte value of the first
                          byte (or the second in big endian) of a character
-        :possible_be: True, big endian is possible, False otherwise
+        :possible_le: True, little endian is possible, False otherwise
         :returns: Tuple (x, y) where x is UTF sequence and y is remainder
         """
         for params in sequence_params:
@@ -398,8 +398,8 @@ def iter_utf_bytes(file_handle, chunksize, charset):
                 if len(chunk) >= index and \
                         ord(chunk[-index]) >= params["smallest"] and \
                         ord(chunk[-index]) <= params["largest"]:
-                    if possible_be and index == 1:
-                        index = index + 1  # Move index left for big endian
+                    if possible_le and index == 1:
+                        index = index + 1  # Move index left for little endian
                     return chunk[:-index], chunk[-index:]
 
         return (chunk, b"")
