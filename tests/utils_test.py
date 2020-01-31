@@ -548,8 +548,8 @@ def test_iter_utf_bytes(filename, charset):
         infile.seek(0)
         chunks = b""
         for chunk in iter_utf_bytes(infile, chunksize, charset):
-            assert isinstance(chunk.decode(charset), unicode)
+            assert chunk.decode(charset)
             chunks += chunk
-        assert isinstance(chunks.decode(charset), unicode)
+        assert chunks.decode(charset)
         assert original_text == chunks.decode(charset)
         assert original_bytes == chunks
