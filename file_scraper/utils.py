@@ -392,6 +392,9 @@ def iter_utf_bytes(file_handle, chunksize, charset):
         :possible_le: True, little endian is possible, False otherwise
         :returns: Tuple (x, y) where x is UTF sequence and y is remainder
         """
+        if len(chunk) < 4:
+            return (chunk, b"")
+
         for params in sequence_params:
 
             for index in params["indexes"]:

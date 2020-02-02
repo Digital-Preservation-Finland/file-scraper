@@ -553,3 +553,16 @@ def test_iter_utf_bytes(filename, charset):
         assert chunks.decode(charset)
         assert original_text == chunks.decode(charset)
         assert original_bytes == chunks
+
+def test_iter_utf_bytes_trivial():
+    """
+    Test that the iterator ends also in trivial case.
+    The test file contains just 0xc3 which can not be decoded.
+    """
+    infile = open("tests/data/text_plain/invalid__utf8_just_c3.txt", "rb")
+    original_bytes = infile.read()
+    infile.seek(0)
+    chunks = b""
+    for chunk in iter_utf_bytes(infile, 4, "UTF-8"):
+        chunks += chunk
+    assert original_bytes == chunks

@@ -130,6 +130,7 @@ FORCED_MIMETYPES = {
     "tests/data/text_plain/valid__utf32le_without_bom.txt": "text/plain",
     "tests/data/text_plain/valid__utf32be_bom.txt": "text/plain",
     "tests/data/text_plain/valid__utf32le_bom.txt": "text/plain",
+    "tests/data/text_plain/invalid__utf8_just_c3.txt": "text/plain",
 }
 
 # To get some files validated against the strictest applicable criteria the
@@ -143,6 +144,7 @@ FORCED_CHARSETS = {
     "tests/data/text_plain/valid__utf32le_without_bom.txt": "UTF-32",
     "tests/data/text_plain/valid__utf32be_bom.txt": "UTF-32",
     "tests/data/text_plain/valid__utf32le_bom.txt": "UTF-32",
+    "tests/data/text_plain/invalid__utf8_just_c3.txt": "UTF-8",
 }
 
 
@@ -419,6 +421,7 @@ def test_forced_filetype(filepath, params, well_formed, expected_mimetype,
      ("tests/data/text_plain/valid__utf16be_multibyte.txt", "UTF-8", False),
      ("tests/data/text_plain/valid__utf16le_multibyte.txt", "UTF-16", True),    
      ("tests/data/text_plain/valid__utf16le_multibyte.txt", "UTF-8", False),
+     ("tests/data/text_plain/invalid__utf8_just_c3.txt", "UTF-8", False),
     ]
 )
 def test_charset(filepath, charset, well_formed):
