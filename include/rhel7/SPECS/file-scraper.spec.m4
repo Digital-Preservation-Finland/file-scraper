@@ -32,6 +32,7 @@ Requires:       %{name} = %{version}-%{release}
 Requires:       ffmpeg-python ffmpeg ghostscript jhove python-lxml veraPDF dpx-validator dpres-xml-schemas
 Requires:       warc-tools >= 4.8.3
 Requires:       pngcheck libreoffice pspp file-5.30 xhtml1-dtds vnu iso-schematron-xslt1
+Requires:       python2-mimeparse
 
 %description
 File scraper: Basic file detector and metadata collector tools
