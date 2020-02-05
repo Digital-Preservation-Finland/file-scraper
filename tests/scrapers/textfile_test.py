@@ -25,7 +25,10 @@ INVALID_MSG = "is not a text file"
     ["filename", "mimetype", "is_textfile"],
     [
         ("valid__utf8_without_bom.txt", "text/plain", True),
+        ("valid__utf16le_bom.txt", "text/plain", True),
         ("valid__iso8859.txt", "text/plain", True),
+        ("valid__utf16be_without_bom.txt", "text/plain", False),
+        ("valid__utf32le_bom.txt", "text/plain", False),
         ("valid_1.0_well_formed.xml", "text/xml", True),
         ("valid_4.01.html", "text/html", True),
         ("invalid_4.01_illegal_tags.html", "text/html", True),
@@ -36,9 +39,14 @@ INVALID_MSG = "is not a text file"
     ]
 )
 def test_existing_files(filename, mimetype, is_textfile, evaluate_scraper):
-    """Test detecting whether file is a textfile."""
+    """
+    Test detecting whether file is a textfile.
+    The scraper tool is not able to detect UTF-16 files without BOM nor
+    UTF-32 files.
+    """
     correct = parse_results(filename, mimetype, {}, True)
-    scraper = TextfileScraper(filename=correct.filename, mimetype="text/plain")
+    scraper = TextfileScraper(filename=correct.filename,
+                              mimetype="text/plain")
     scraper.scrape_file()
 
     if is_textfile:
@@ -125,11 +133,15 @@ def test_encoding_check(filename, charset, is_wellformed, evaluate_scraper):
     """
     params = {"charset": charset}
     correct = parse_results(filename, "text/plain", {}, True, params)
-    scraper = TextEncodingScraper(correct.filename, True, params)
+    scraper = TextEncodingScraper(filename=correct.filename,
+                                  mimetype="text/plain", params=params)
     scraper.scrape_file()
-
-    correct.streams[0]["version"] = "(:unav)"
-    correct.streams[0]["mimetype"] = "(:unav)"
+    if is_wellformed:
+        correct.streams[0]["mimetype"] = "text/plain"
+        correct.streams[0]["version"] = "(:unap)"
+    else:
+        correct.streams[0]["mimetype"] = "(:unav)"
+        correct.streams[0]["version"] = "(:unav)"
     correct.streams[0]["stream_type"] = "text"
     correct.well_formed = is_wellformed
     if correct.well_formed:
@@ -153,8 +165,8 @@ def test_encoding_not_defined(charset):
     Test the case where encoding is not defined.
     """
     scraper = TextEncodingScraper(
-        "tests/data/text_plain/valid__utf8_without_bom.txt",
-        params={"charset": charset})
+        filename="tests/data/text_plain/valid__utf8_without_bom.txt",
+        mimetype="text/plain", params={"charset": charset})
     scraper.scrape_file()
     assert partial_message_included(
         "Character encoding not defined.", scraper.errors())
@@ -167,8 +179,8 @@ def test_decoding_limit(monkeypatch):
     monkeypatch.setattr(TextEncodingScraper, "_chunksize", 4)
     monkeypatch.setattr(TextEncodingScraper, "_limit", 8)
     scraper = TextEncodingScraper(
-        "tests/data/text_plain/valid__utf8_bom.txt",
-        params={"charset": "UTF-8"})
+        filename="tests/data/text_plain/valid__utf8_bom.txt",
+        mimetype="text/plain", params={"charset": "UTF-8"})
     scraper.scrape_file()
     assert partial_message_included(
         "First 8 bytes read, we skip the remainder", scraper.messages())

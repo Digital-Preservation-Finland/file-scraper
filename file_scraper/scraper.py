@@ -50,7 +50,7 @@ class Scraper(object):
             vera_detector = VerapdfDetector(self.filename)
             self._update_filetype(vera_detector)
 
-        if MagicCharset.is_supported(self.mimetype) and \
+        if MagicCharset.is_supported(self._predefined_mimetype) and \
                 self._params.get("charset", None) is None:
             charset_detector = MagicCharset(self.filename)
             charset_detector.detect()
@@ -128,15 +128,12 @@ class Scraper(object):
         """
         if not self.well_formed and self._predefined_mimetype:
             self.streams[0]["mimetype"] = self._predefined_mimetype
-            self.mimetype = self._predefined_mimetype
-        else:
-            self.mimetype = self.streams[0]["mimetype"]
 
-        if self.streams[0]["version"] not in LOSE or not self._predefined_version:
-            self.version = self.streams[0]["version"]
-        elif self._predefined_version:
+        if self.streams[0]["version"] in LOSE and self._predefined_version:
             self.streams[0]["version"] = self._predefined_version
-            self.version = self._predefined_version
+
+        self.mimetype = self.streams[0]["mimetype"]
+        self.version = self.streams[0]["version"]
 
     def scrape(self, check_wellformed=True):
         """Scrape file and collect metadata.

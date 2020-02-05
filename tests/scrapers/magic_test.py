@@ -97,70 +97,72 @@ from tests.common import (parse_results, partial_message_included)
 
 
 @pytest.mark.parametrize(
-    ["filename", "mimetype", "scraper_class"],
+    ["filename", "mimetype", "charset", "scraper_class"],
     [
         ("valid_1.1.odt",
-         "application/vnd.oasis.opendocument.text", MagicBinaryScraper),
+         "application/vnd.oasis.opendocument.text", None, MagicBinaryScraper),
         ("valid_11.0.doc",
-         "application/msword", MagicBinaryScraper),
+         "application/msword", None, MagicBinaryScraper),
         ("valid_15.0.docx",
-         "application/vnd.openxmlformats-"
-         "officedocument.wordprocessingml.document", MagicBinaryScraper),
+         "application/vnd.openxmlformats-officedocument."
+         "wordprocessingml.document", None, MagicBinaryScraper),
         ("valid_1.1.odp",
-         "application/vnd.oasis.opendocument.presentation",
+         "application/vnd.oasis.opendocument.presentation", None,
          MagicBinaryScraper),
         ("valid_11.0.ppt",
-         "application/vnd.ms-powerpoint", MagicBinaryScraper),
+         "application/vnd.ms-powerpoint", None, MagicBinaryScraper),
         ("valid_15.0.pptx",
          "application/vnd.openxml"
-         "formats-officedocument.presentationml.presentation",
+         "formats-officedocument.presentationml.presentation", None,
          MagicBinaryScraper),
         ("valid_1.1.ods",
-         "application/vnd.oasis.opendocument.spreadsheet",
+         "application/vnd.oasis.opendocument.spreadsheet", None,
          MagicBinaryScraper),
         ("valid_11.0.xls",
-         "application/vnd.ms-excel", MagicBinaryScraper),
+         "application/vnd.ms-excel", None, MagicBinaryScraper),
         ("valid_15.0.xlsx",
          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-         MagicBinaryScraper),
+         None, MagicBinaryScraper),
         ("valid_1.1.odg",
-         "application/vnd.oasis.opendocument.graphics", MagicBinaryScraper),
-        ("valid_1.0.odf",
-         "application/vnd.oasis.opendocument.formula", MagicBinaryScraper),
-        ("valid_1.2.png", "image/png", MagicBinaryScraper),
-        ("valid_1.01.jpg", "image/jpeg", MagicBinaryScraper),
-        ("valid.jp2", "image/jp2", MagicBinaryScraper),
-        ("valid_6.0.tif", "image/tiff", MagicBinaryScraper),
-        ("valid__iso8859.txt", "text/plain", MagicTextScraper),
-        ("valid__utf8_without_bom.txt", "text/plain", MagicTextScraper),
-        ("valid_1.0_well_formed.xml", "text/xml", MagicTextScraper),
-        ("valid_1.0.xhtml", "application/xhtml+xml", MagicTextScraper),
-        ("valid_4.01.html", "text/html", MagicTextScraper),
-        ("valid_5.0.html", "text/html", MagicTextScraper),
-        ("valid_1.4.pdf", "application/pdf", MagicBinaryScraper),
-        ("valid_1.0.arc", "application/x-internet-archive",
+         "application/vnd.oasis.opendocument.graphics", None,
          MagicBinaryScraper),
+        ("valid_1.0.odf",
+         "application/vnd.oasis.opendocument.formula", None,
+         MagicBinaryScraper),
+        ("valid_1.2.png", "image/png", None, MagicBinaryScraper),
+        ("valid_1.01.jpg", "image/jpeg", None, MagicBinaryScraper),
+        ("valid.jp2", "image/jp2", None, MagicBinaryScraper),
+        ("valid_6.0.tif", "image/tiff", None, MagicBinaryScraper),
+        ("valid__iso8859.txt", "text/plain", "ISO-8859-15",
+         MagicTextScraper),
+        ("valid__utf8_without_bom.txt", "text/plain", "UTF-8",
+         MagicTextScraper),
+        ("valid_1.0_well_formed.xml", "text/xml", "UTF-8",
+         MagicTextScraper),
+        ("valid_1.0.xhtml", "application/xhtml+xml", "UTF-8",
+         MagicTextScraper),
+        ("valid_4.01.html", "text/html", "UTF-8", MagicTextScraper),
+        ("valid_5.0.html", "text/html", "UTF-8", MagicTextScraper),
+        ("valid_1.4.pdf", "application/pdf", None, MagicBinaryScraper),
+        ("valid_1.0.arc", "application/x-internet-archive",
+         None, MagicBinaryScraper),
     ])
-def test_scraper_valid(filename, mimetype, scraper_class, evaluate_scraper):
+def test_scraper_valid(filename, mimetype, charset, scraper_class,
+                       evaluate_scraper):
     """Test scraper."""
     result_dict = {
         "purpose": "Test valid file.",
         "stdout_part": "successfully",
         "stderr_part": ""}
-    correct = parse_results(filename, mimetype,
-                            result_dict, True)
-    scraper = scraper_class(filename=correct.filename, mimetype=mimetype)
+    correct = parse_results(filename, mimetype, result_dict, True,
+                            {"charset": charset})
+    scraper = scraper_class(filename=correct.filename, mimetype=mimetype,
+                            params={"charset": charset})
     scraper.scrape_file()
-
     if correct.streams[0]["mimetype"] == "application/xhtml+xml":
         correct.streams[0]["stream_type"] = "text"
     if (OfficeFileMagicMeta.is_supported(correct.streams[0]["mimetype"]) or
             HtmlFileMagicMeta.is_supported(correct.streams[0]["mimetype"])):
-        correct.streams[0]["version"] = "(:unav)"
-    if correct.streams[0]["mimetype"] in ["text/plain", "text/csv"]:
-        correct.streams[0]["charset"] = "UTF-8"
-        correct.streams[0]["version"] = "(:unap)"
-    if mimetype == "text/html" or "vnd." in mimetype or "msword" in mimetype:
         correct.streams[0]["version"] = "(:unav)"
 
     evaluate_scraper(scraper, correct)

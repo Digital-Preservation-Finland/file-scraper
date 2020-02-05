@@ -16,6 +16,8 @@ class TextfileScraper(BaseScraper):
 
     file (libmagick) checks mime-type and that if it is a text
     file with the soft option that excludes libmagick.
+
+    The tool is not able to detect UTF-16 files without BOM nor UTF-32 files.
     """
 
     _supported_metadata = [TextFileMeta]
@@ -35,6 +37,11 @@ class TextfileScraper(BaseScraper):
 
     def scrape_file(self):
         """Check MIME type determined by libmagic."""
+        charset = self._params.get("charset", None)
+        if charset is not None and charset.upper() in ["UTF-32", "UTF-16"]:
+            self._messages.append(
+                "Skipping scraper: Not supported with charset %s" % charset)
+            return
         self._messages.append("Trying text detection...")
 
         mimetype = self._file_mimetype()
@@ -44,7 +51,8 @@ class TextfileScraper(BaseScraper):
             self._check_supported(allow_unav_mime=True,
                                   allow_unav_version=True)
         else:
-            self._errors.append("File is not a text file")
+            self._errors.append("File is not a text file, or it is a UTF-16 "
+                                "file without BOM or a UTF-32 file.")
 
 
 class TextEncodingScraper(BaseScraper):
@@ -73,10 +81,12 @@ class TextEncodingScraper(BaseScraper):
     _limit = 100*1024**2  # Limit file read in MB, 0 = unlimited
                           # _limit must be divisible with _chunksize
 
-    def __init__(self, filename, check_wellformed=True, params=None):
+    def __init__(self, filename, mimetype, check_wellformed=True,
+                 params=None):
         """Initialize scraper. Add given charset."""
         super(TextEncodingScraper, self).__init__(
-            filename, check_wellformed, params)
+            filename=filename, mimetype=mimetype,
+            check_wellformed=check_wellformed, params=params)
         self._charset = self._params.get("charset", "(:unav)")
 
     def scrape_file(self):
@@ -86,12 +96,14 @@ class TextEncodingScraper(BaseScraper):
 
         if self._charset in [None, "(:unav)"]:
             self._errors.append("Character encoding not defined.")
-            self._add_metadata()
             return
         if not self._check_wellformed:
             self._messages.append("No character encoding validation done, "
                                   "setting predefined encoding value.")
-            self._add_metadata()
+            self.iterate_models(charset=self._charset,
+                                predefined_mimetype=self._predefined_mimetype)
+            self._check_supported(allow_unav_mime=True,
+                                  allow_unav_version=True)
             return
 
         try:
@@ -136,7 +148,9 @@ class TextEncodingScraper(BaseScraper):
         except (ValueError, UnicodeDecodeError) as exception:
             self._errors.append("Character decoding error: %s" % exception)
 
-        self._add_metadata()
+        self.iterate_models(charset=self._charset,
+                            predefined_mimetype=self._predefined_mimetype)
+        self._check_supported(allow_unav_mime=True, allow_unav_version=True)
 
     def _predetect_charset(self, infile):
         """
@@ -223,11 +237,3 @@ class TextEncodingScraper(BaseScraper):
                 raise ValueError(
                     "Illegal character '%s' in position %s" % (
                         forb_char, (position+index)))
-
-    def _add_metadata(self):
-        """Add metadata to model."""
-        for md_class in self._supported_metadata:
-            self.streams.append(md_class(self._charset,
-                                         self._given_mimetype,
-                                         self._given_version))
-        self._check_supported(allow_unav_mime=True, allow_unav_version=True)

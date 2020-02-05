@@ -46,10 +46,27 @@ class TextEncodingMeta(BaseMeta):
                   "application/xhtml+xml": ["1.0", "1.1"]}
     _allow_versions = True
 
-    def __init__(self, charset, mimetype=None, version=None):
+    def __init__(self, errors, charset, predefined_mimetype):
         """Initialize metadata model. Add charset to attribute."""
+        super(TextEncodingMeta, self).__init__(errors)
         self._charset = charset
-        super(TextEncodingMeta, self).__init__(mimetype, version)
+        self._predefined_mimetype = predefined_mimetype
+
+    @metadata()
+    def mimetype(self):
+        """Return mimetype only if text/plain expected and no errors."""
+        if self._predefined_mimetype == "text/plain" and not self._errors:
+            return "text/plain"
+        else:
+            return "(:unav)"
+
+    @metadata()
+    def version(self):
+        """Return version only if text/plain expected and no errors."""
+        if self._predefined_mimetype == "text/plain" and not self._errors:
+            return "(:unap)"
+        else:
+            return "(:unav)"
 
     @metadata(important=True)
     def charset(self):

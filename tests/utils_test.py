@@ -479,7 +479,7 @@ class Meta4(BaseMeta):
 
 def test_merge_important_conflict():
     """Test adding metadata to stream with conflicting important values."""
-    results = [[Meta1()], [Meta2()], [Meta4()]]
+    results = [[Meta1([])], [Meta2([])], [Meta4([])]]
     with pytest.raises(ValueError) as error:
         _fill_importants(results, [])
     assert (
@@ -490,7 +490,7 @@ def test_merge_important_conflict():
 
 def test_fill_importants():
     """Test filling the importants list"""
-    results = [[Meta1()], [Meta2()], [Meta3()]]
+    results = [[Meta1([])], [Meta2([])], [Meta3([])]]
     lose = []
     importants = _fill_importants(results, lose)
     assert importants == {"key4": "importantvalue", "key3": "key2-3"}

@@ -200,6 +200,7 @@ def test_scraper_utf8(filename, result_dict, evaluate_scraper):
                                params=correct.params)
     scraper.scrape_file()
     correct.streams[0]["mimetype"] = "(:unav)"
+    correct.streams[0]["version"] = "(:unav)"
 
     evaluate_scraper(scraper, correct)
 
@@ -310,42 +311,42 @@ def test_scraper_jpeg(filename, result_dict, evaluate_scraper):
             "inverse": True,
             "stdout_part": "",
             "stderr_part": "Unrecognized or missing DOCTYPE declaration"},
-         "text/html", None),
+         "text/html", "UTF-8"),
         ("invalid_4.01_illegal_tags.html", {
             "purpose": "Test illegal tag.",
             "stdout_part": "",
             "stderr_part": "Unknown tag"},
-         "text/html", None),
+         "text/html", "UTF-8"),
         ("invalid_4.01_nodoctype.html", {
             "purpose": "Test without doctype.",
             "stdout_part": "",
             "stderr_part": "Unrecognized or missing DOCTYPE declaration"},
-         "text/html", None),
+         "text/html", "UTF-8"),
         ("invalid__empty.html", {
             "purpose": "Test empty file.",
             "stdout_part": "",
             "stderr_part": "Document is empty"},
-         "text/html", None),
+         "text/html", "UTF-8"),
         ("invalid_1.0_illegal_tags.xhtml", {
             "purpose": "Test illegal tag.",
             "stdout_part": "",
             "stderr_part": "must be declared."},
-         "application/xhtml+xml", None),
+         "application/xhtml+xml", "UTF-8"),
         ("invalid_1.0_missing_closing_tag.xhtml", {
             "purpose": "Test missing closing tag.",
             "stdout_part": "",
             "stderr_part": "must be terminated by the matching end-tag"},
-         "application/xhtml+xml", None),
+         "application/xhtml+xml", "UTF-8"),
         ("invalid_1.0_no_doctype.xhtml", {
             "purpose": "Test without doctype.",
             "stdout_part": "",
             "stderr_part": "Cannot find the declaration of element"},
-         "application/xhtml+xml", None),
+         "application/xhtml+xml", "UTF-8"),
         ("invalid__empty.xhtml", {
             "purpose": "Test empty file.",
             "stdout_part": "",
             "stderr_part": "Document is empty"},
-         "application/xhtml+xml", None)
+         "application/xhtml+xml", "UTF-8")
     ]
 )
 def test_scraper_html(filename, result_dict, mimetype, charset,
@@ -354,18 +355,17 @@ def test_scraper_html(filename, result_dict, mimetype, charset,
     params = {"charset": charset}
     correct = parse_results(filename, mimetype, result_dict, True,
                             params)
+    correct.streams[0]["stream_type"] = "text"
     if not correct.well_formed:
         correct.update_mimetype("(:unav)")
-    correct.streams[0]["stream_type"] = "text"
-    if "inverse" in result_dict:
-        if result_dict["inverse"]:
-            correct.update_version("(:unav)")
+        correct.streams[0]["charset"] = "(:unav)"
+    if filename == "valid_4.01.html":
+        correct.streams[0]["charset"] = "UTF-8"
 
     scraper = JHoveHtmlScraper(filename=correct.filename,
                                mimetype=mimetype,
                                params=correct.params)
     scraper.scrape_file()
-    correct.streams[0]["charset"] = charset
 
     evaluate_scraper(scraper, correct)
 

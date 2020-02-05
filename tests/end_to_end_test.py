@@ -210,6 +210,25 @@ def test_valid_combined(fullname, mimetype):
 
     _assert_valid_scraper_result(scraper, fullname, mimetype, True)
 
+    # Test that output does not change if MIME type and version are forced
+    # to be the ones scraper would determine them to be in any case.
+
+    # This cannot be done with compressed arcs, as WarctoolsScraper reports
+    # the MIME type of the compressed archive instead of application/gzip,
+    # so for those types, all required testing is already done here.
+    if (scraper.mimetype in ["application/x-internet-archive"] and
+            fullname[-3:] == ".gz"):
+        return
+
+    forced_scraper = Scraper(fullname, mimetype=scraper.mimetype,
+                             version=scraper.version,
+                             charset=scraper.streams[0].get("charset", None))
+    forced_scraper.scrape()
+
+    assert forced_scraper.mimetype == scraper.mimetype
+    assert forced_scraper.version == scraper.version
+    assert forced_scraper.streams == scraper.streams
+
 
 @pytest.mark.parametrize(("fullname", "mimetype"),
                          get_files(well_formed=False))
@@ -355,7 +374,7 @@ def test_forced_filetype(filepath, params, well_formed, expected_mimetype,
     and for well-formed files also from the first stream. In addition to this,
     well-formedness status of the file should be as expected.
     """
-    scraper = Scraper(filepath, **params)
+    scraper = Scraper(filename=filepath, **params)
     scraper.scrape()
 
     assert scraper.well_formed == well_formed
