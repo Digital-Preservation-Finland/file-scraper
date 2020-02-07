@@ -128,7 +128,7 @@ The following additional arguments for the Scraper are also possible:
     
         * MIME type: ``mimetype=<mimetype>``. If MIME type is given, the file is scraped as this MIME type and the normal MIME type detection result is ignored. This makes it possible to e.g. scrape a file containing HTML as a plaintext file and thus not produce errors for problems like invalid HTML tags, which one might want to preserve as-is.
         * Version: ``version=<version>``. If both MIME type and version are given, the normal version detection results are also ignored, and the user-supplied version is used and reported instead. Providing a version without MIME type has no effect.
-        * Character encoding: ``charset=<charset>``. If the file is a text file, the file is validated with using the given character encoding. Supported values are ``UTF-8``, ``UTF-16``, ``UTF-32`` and ``ISO-8859-15``. By default, the character encoding is detected. The detection is always a statistics-based evaluation and therefore it may sometimes give false results.
+        * Character encoding: ``charset=<charset>``. If the file is a text file, the file is validated using the given character encoding. Supported values are ``UTF-8``, ``UTF-16``, ``UTF-32`` and ``ISO-8859-15``. By default, the character encoding is detected. The detection is always a statistics-based evaluation and therefore it may sometimes give false results.
 
 Additionally, the following returns a boolean value True, if the file is a text file, and False otherwise::
 
