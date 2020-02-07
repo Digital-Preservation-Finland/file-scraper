@@ -13,7 +13,7 @@ Install the required software with commands::
     sudo pip install virtualenv
     virtualenv .venv
     source ./.venv/bin/activate
-    pip install -r requirements_dev.txt
+    pip install -r requirements_github.txt
 
 This will install virtualenv virtual environment with the following packages, but this is NOT enough for the usage:
 
