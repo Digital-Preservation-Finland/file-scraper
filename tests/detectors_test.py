@@ -51,6 +51,8 @@ CHANGE_FIDO = {
     "text_csv/valid__header_only.csv": None,
     "text_csv/valid__iso8859-15.csv": None,
     "text_csv/valid__utf8.csv": None,
+    "text_csv/valid__utf8_header.csv": None,
+    "text_csv/valid__iso885915_header.csv": None,
     "text_xml/valid_1.0_mets_noheader.xml": None,
 }
 
@@ -83,6 +85,8 @@ CHANGE_MAGIC = {
     "text_csv/valid__header_only.csv": "text/plain",
     "text_csv/valid__iso8859-15.csv": "text/plain",
     "text_csv/valid__utf8.csv": "text/plain",
+    "text_csv/valid__utf8_header.csv": "text/plain",
+    "text_csv/valid__iso885915_header.csv": "text/plain",
     "text_xml/valid_1.0_mets_noheader.xml": "text/plain",
     "application_gml+xml/valid__x-fmt-227.xml": "text/xml",
     "application_gml+xml/valid_3.2_fmt-1047.xml": "text/xml",

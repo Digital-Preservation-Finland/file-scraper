@@ -120,6 +120,8 @@ FORCED_MIMETYPES = {
     "tests/data/text_csv/valid__header_only.csv": "text/csv",
     "tests/data/text_csv/valid__iso8859-15.csv": "text/csv",
     "tests/data/text_csv/valid__utf8.csv": "text/csv",
+    "tests/data/text_csv/valid__utf8_header.csv": "text/csv",
+    "tests/data/text_csv/valid__iso885915_header.csv": "text/csv",
     "tests/data/text_csv/invalid__missing_end_quote.csv": "text/csv",
     "tests/data/text_xml/valid_1.0_mets_noheader.xml": "text/xml",
     "tests/data/text_plain/valid__utf16be_without_bom.txt": "text/plain",
