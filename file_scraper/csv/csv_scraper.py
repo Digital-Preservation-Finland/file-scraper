@@ -63,7 +63,11 @@ class CsvScraper(BaseScraper):
             csvfile.seek(0)
             reader = csv.reader(csvfile, dialect="new_dialect")
 
-            first_line = next(reader)
+            first_row = next(reader)
+            if six.PY2 and charset is not None:
+                first_line = [item.decode(charset) for item in first_row]
+            else:
+                first_line = first_row
 
             if fields and len(fields) != len(first_line):
                 self._errors.append(
@@ -114,5 +118,5 @@ class CsvScraper(BaseScraper):
         """
         if six.PY2:
             return io_open(self.filename, "rb")
-        if six.PY3:
+        else:
             return io_open(self.filename, "rt", encoding=charset)
