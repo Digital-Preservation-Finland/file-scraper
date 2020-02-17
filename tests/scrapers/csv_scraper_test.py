@@ -229,7 +229,7 @@ def test_first_line_charset(filename, charset):
     scraper.scrape_file()
     assert scraper.well_formed
     assert scraper.streams[0].first_line() == \
-        ["year", "br\xe4nd", "m\xf6del", "detail", "other"]
+        ["year", "bränd", "mödel", "detail", "other"]
 
 
 def test_pdf_as_csv():
