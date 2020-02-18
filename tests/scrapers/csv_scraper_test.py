@@ -218,14 +218,14 @@ def test_scraper(filename, result_dict, header,
 
 @pytest.mark.parametrize("filename, charset", [
     ("tests/data/text_csv/valid__utf8_header.csv", "UTF-8"),
-    ("tests/data/text_csv/valid__iso885915_header.csv", "ISO-8859-15"),
+    ("tests/data/text_csv/valid__iso8859-15_header.csv", "ISO-8859-15"),
 ])
 def test_first_line_charset(filename, charset):
     """Test that CSV handles the first line encoding correctly."""
-    params = {"separator": ",", "delimiter": "CR+LF",
-            "mimetype": "text/csv", "charset": charset}
+    params = {"delimiter": ",", "separator": "CR+LF",
+              "mimetype": "text/csv", "charset": charset}
 
-    scraper = CsvScraper(filename, params={"charset": charset})
+    scraper = CsvScraper(filename, params=params)
     scraper.scrape_file()
     assert scraper.well_formed
     assert scraper.streams[0].first_line() == \

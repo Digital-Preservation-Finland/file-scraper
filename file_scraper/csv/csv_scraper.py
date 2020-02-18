@@ -118,5 +118,4 @@ class CsvScraper(BaseScraper):
         """
         if six.PY2:
             return io_open(self.filename, "rb")
-        else:
-            return io_open(self.filename, "rt", encoding=charset)
+        return io_open(self.filename, "rt", encoding=charset)
