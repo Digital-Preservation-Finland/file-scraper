@@ -159,10 +159,10 @@ def test_scraper_invalid(filename, result_dict, params, evaluate_scraper):
 def test_no_wellformed():
     """Test scraper without well-formed check."""
     scraper = XmllintScraper(
-        filename="tests/data/text_xml/valid_1.0_wellformed.xml",
+        filename="tests/data/text_xml/valid_1.0_well_formed.xml",
         mimetype="text/xml", check_wellformed=False)
     scraper.scrape_file()
-    assert partial_message_included("Skipping scraper", scraper.messages())
+    assert partial_message_included("XML file detected.", scraper.messages())
     assert scraper.well_formed is None
 
 
@@ -172,7 +172,7 @@ def test_is_supported():
     ver = "1.0"
     assert XmllintScraper.is_supported(mime, ver, True)
     assert XmllintScraper.is_supported(mime, None, True)
-    assert not XmllintScraper.is_supported(mime, ver, False)
+    assert XmllintScraper.is_supported(mime, ver, False)
     assert XmllintScraper.is_supported(mime, "foo", True)
     assert not XmllintScraper.is_supported("foo", ver, True)
 

@@ -220,7 +220,7 @@ class JHoveWavMeta(JHoveBaseMeta):
 
         return super(JHoveWavMeta, self).mimetype()
 
-    @metadata()
+    @metadata(important=True)
     def version(self):
         """
         Return version.

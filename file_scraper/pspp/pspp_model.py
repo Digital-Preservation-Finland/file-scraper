@@ -19,6 +19,13 @@ class PsppMeta(BaseMeta):
         return "(:unav)"
 
     @metadata()
+    def version(self):
+        """Return version."""
+        if not self._errors:
+            return "(:unap)"
+        return "(:unav)"
+
+    @metadata()
     def stream_type(self):
         """Return file type."""
         # pylint: disable=no-self-use

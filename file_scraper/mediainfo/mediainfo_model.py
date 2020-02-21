@@ -420,7 +420,7 @@ class WavMediainfoMeta(BaseMediainfoMeta):
         if self._tracks[0].bext_present is not None \
                 and self._tracks[0].bext_present == "Yes":
             return "2"
-        return "(:unav)"
+        return "(:unap)"
 
     @metadata()
     def codec_quality(self):

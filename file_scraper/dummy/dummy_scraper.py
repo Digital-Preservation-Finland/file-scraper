@@ -59,7 +59,6 @@ class MimeScraper(BaseScraper):
     resulted one.
     """
 
-    _only_wellformed = True
     _MIME_DICT = {"application/gzip": ["application/warc",
                                        "application/x-internet-archive"]}
 

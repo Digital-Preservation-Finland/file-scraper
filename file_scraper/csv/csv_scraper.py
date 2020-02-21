@@ -14,15 +14,9 @@ class CsvScraper(BaseScraper):
     """Scraper for CSV files."""
 
     _supported_metadata = [CsvMeta]
-    _only_wellformed = True
 
     def scrape_file(self):
         """Scrape CSV file."""
-
-        if not self._check_wellformed and self._only_wellformed:
-            self._messages.append("Skipping scraper: Well-formed check not "
-                                  "used.")
-            return
 
         fields = self._params.get("fields", [])
         charset = self._params.get("charset", None)

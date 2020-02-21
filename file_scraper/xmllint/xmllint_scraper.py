@@ -42,7 +42,6 @@ class XmllintScraper(BaseScraper):
     """
 
     _supported_metadata = [XmllintMeta]
-    _only_wellformed = True  # Only well-formed check
 
     def __init__(self, filename, mimetype, version=None,
                  check_wellformed=True, params=None):
@@ -108,10 +107,6 @@ class XmllintScraper(BaseScraper):
 
         .. seealso:: https://wiki.csc.fi/wiki/KDK/XMLTiedostomuotojenSkeemat
         """
-        if not self._check_wellformed and self._only_wellformed:
-            self._messages.append("Skipping scraper: Well-formed check not "
-                                  "used.")
-            return
         # Try to check syntax by opening file in XML parser
         try:
             file_ = io_open(self.filename, "rb")
@@ -119,12 +114,19 @@ class XmllintScraper(BaseScraper):
             tree = etree.parse(file_, parser=parser)
             file_.close()
         except etree.XMLSyntaxError as exception:
-            self._errors.append("Failed: document is not well-formed.")
+            self._errors.append("Failed: XML syntax is not well-formed.")
             self._errors.append(six.text_type(exception))
             return
         except IOError as exception:
             self._errors.append("Failed: missing file.")
             self._errors.append(six.text_type(exception))
+            return
+
+        if not self._check_wellformed:
+            if not self._errors:
+                self._messages.append("XML file detected.")
+            self.iterate_models(tree=tree)
+            self._check_supported()
             return
 
         # Try check against DTD

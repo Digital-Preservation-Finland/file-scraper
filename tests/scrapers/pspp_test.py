@@ -69,7 +69,10 @@ def test_scraper(filename, result_dict, evaluate_scraper):
 
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
-    correct.streams[0]["version"] = "(:unav)"
+    if correct.well_formed:
+        correct.streams[0]["version"] = "(:unap)"
+    else:
+        correct.streams[0]["version"] = "(:unav)"
 
     scraper = PsppScraper(filename=correct.filename,
                           mimetype="application/x-spss-por")

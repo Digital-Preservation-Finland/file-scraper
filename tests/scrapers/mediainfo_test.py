@@ -171,7 +171,7 @@ def test_mediainfo_scraper_wav(filename, result_dict, evaluate_scraper):
     if "2" in filename:
         correct.streams[0]["version"] = "2"
     else:
-        correct.streams[0]["version"] = "(:unav)"
+        correct.streams[0]["version"] = "(:unap)"
 
     scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()

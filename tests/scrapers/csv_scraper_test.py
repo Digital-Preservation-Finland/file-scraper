@@ -281,7 +281,8 @@ def test_no_wellformed():
                          check_wellformed=False)
     scraper.scrape_file()
 
-    assert partial_message_included("Skipping scraper", scraper.messages())
+    assert partial_message_included("was checked successfully",
+                                    scraper.messages())
     assert scraper.well_formed is None
 
 
@@ -291,6 +292,6 @@ def test_is_supported():
     ver = ""
     assert CsvScraper.is_supported(mime, ver, True)
     assert CsvScraper.is_supported(mime, None, True)
-    assert not CsvScraper.is_supported(mime, ver, False)
+    assert CsvScraper.is_supported(mime, ver, False)
     assert CsvScraper.is_supported(mime, "foo", True)
     assert not CsvScraper.is_supported("foo", ver, True)

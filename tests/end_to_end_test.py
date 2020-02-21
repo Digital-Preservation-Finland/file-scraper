@@ -47,22 +47,7 @@ UNAV_ELEMENTS = {
                                           "codec_creator_app"],
     "tests/data/video_mpeg/valid_2.m2v": ["codec_creator_app_version",
                                           "codec_creator_app"],
-    "tests/data/application_x-spss-por/valid__spss24-dot.por": ["version"],
-    "tests/data/application_x-spss-por/valid__spss24-dates.por": ["version"]
 }
-
-# Currently, only JHOVE returns WAV version, if not BWF.
-# For CSV files, currently only CsvScraper (which only does well-formedness
-# check) is able to determine whether the version should be :unav or :unap.
-UNAV_ELEMENTS_PLUS = dict(UNAV_ELEMENTS, **{
-    "tests/data/audio_x-wav/valid__wav.wav": ["version"],
-    "tests/data/text_csv/valid__ascii.csv": ["version"],
-    "tests/data/text_csv/valid__ascii_header.csv": ["version"],
-    "tests/data/text_csv/valid__header_only.csv": ["version"],
-    "tests/data/text_csv/valid__iso8859-15.csv": ["version"],
-    "tests/data/text_csv/valid__utf8.csv": ["version"],
-    "tests/data/text_csv/invalid__missing_end_quote.csv": ["version"],
-    })
 
 # These are actually valid with another mimetype or version
 # or due to special parameters or missing scraper
@@ -179,7 +164,7 @@ def _assert_valid_scraper_result(scraper, fullname, mimetype, well_formed):
             if stream_value == "(:unav)":
                 unavs.append(key)
 
-    unav_expected = UNAV_ELEMENTS if well_formed else UNAV_ELEMENTS_PLUS
+    unav_expected = UNAV_ELEMENTS
 
     if fullname in unav_expected:
         assert sorted(unavs) == sorted(unav_expected[fullname])
@@ -338,7 +323,7 @@ def test_coded_filename(testpath, fullname, mimetype):
 
         # Force unsupported MIME type, resulting in not well-formed
         ("tests/data/image_tiff/valid_6.0.tif", {"mimetype": "audio/mpeg"},
-         False, "audio/mpeg", "(:unav)"),
+            False, "(:unav)", "(:unav)"),
 
         # Scrape invalid XML as plaintext, as which it is well-formed
         ("tests/data/text_xml/invalid_1.0_no_closing_tag.xml",
@@ -350,13 +335,13 @@ def test_coded_filename(testpath, fullname, mimetype):
 
         # Scrape a random text file as HTML, as which it is not well-formed
         ("tests/data/text_plain/valid__utf8_without_bom.txt",
-         {"mimetype": "text/html"}, False, "text/html", "(:unav)"),
+         {"mimetype": "text/html"}, False, "(:unav)", "(:unav)"),
 
         # Scrape a file with MIME type that can produce "well-formed" result
         # from some scrapers, but combining the results should reveal the file
         # as not well-formed
         ("tests/data/image_gif/valid_1987a.gif", {"mimetype": "image/png"},
-         False, "image/png", "(:unav)"),
+         False, "image/gif", "(:unav)"),
 
         # Scrape compressed arc as gzip, corresponding to the MIME type of the
         # actual file instead of its compressed contents.
