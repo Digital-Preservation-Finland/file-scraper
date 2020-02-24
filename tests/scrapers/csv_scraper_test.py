@@ -178,7 +178,7 @@ def test_first_line_charset(filename, charset):
     params = {"delimiter": ",", "separator": "CR+LF",
               "mimetype": "text/csv", "charset": charset}
 
-    scraper = CsvScraper(filename, params=params)
+    scraper = CsvScraper(filename, mimetype="text/csv", params=params)
     scraper.scrape_file()
     assert scraper.well_formed
     assert scraper.streams[0].first_line() == \
