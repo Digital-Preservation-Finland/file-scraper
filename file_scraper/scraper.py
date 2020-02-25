@@ -119,22 +119,6 @@ class Scraper(object):
                                       "well_formed": self.well_formed})
         self._scrape_file(scraper)
 
-    def _check_mimetype_version(self):
-        """
-        Detect the MIME type and version.
-
-        Ideally the MIME type and version from the scraper are used, but if
-        they are not available, values supplied by the detector are used.
-        """
-        # if not self.well_formed and self._predefined_mimetype:
-        #     self.streams[0]["mimetype"] = self._predefined_mimetype
-
-        if self.streams[0]["version"] in LOSE and self._predefined_version:
-            self.streams[0]["version"] = self._predefined_version
-
-        self.mimetype = self.streams[0]["mimetype"]
-        self.version = self.streams[0]["version"]
-
     def scrape(self, check_wellformed=True):
         """Scrape file and collect metadata.
         :check_wellformed: True, full scraping; False, skip well-formed check.
@@ -157,7 +141,9 @@ class Scraper(object):
             self._scrape_file(scraper)
         self.streams = generate_metadata_dict(self._scraper_results, LOSE)
         self._check_utf8(check_wellformed)
-        self._check_mimetype_version()
+
+        self.mimetype = self.streams[0]["mimetype"]
+        self.version = self.streams[0]["version"]
         self._check_mime(check_wellformed)
 
     def detect_filetype(self):

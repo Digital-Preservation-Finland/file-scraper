@@ -311,3 +311,24 @@ class TiffFileMagicMeta(BinaryMagicBaseMeta):
     def stream_type(self):
         """Return stream type."""
         return "image"
+
+
+class GifFileMagicMeta(BinaryMagicBaseMeta):
+    """Metadata model for GIF files."""
+
+    _supported = {"image/gif": ["1987a", "1989a"]}
+    _allow_versions = True
+    _endtag = ","
+
+    @metadata()
+    def version(self):
+        """Return version."""
+        version = super(BinaryMagicBaseMeta, self).version()
+        if version in ["87a", "89a"]:
+            return "19" + version
+        return version
+
+    @metadata()
+    def stream_type(self):
+        """Return stream type."""
+        return "image"

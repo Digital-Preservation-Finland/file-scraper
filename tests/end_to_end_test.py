@@ -11,6 +11,22 @@ from six import iteritems
 from file_scraper.scraper import Scraper
 from tests.common import get_files
 
+# We currently do not have capability to define the file format version
+# of these test files
+UNAV_VERSION = [
+    "tests/data/application_x-internet-archive/valid_1.0_.arc.gz",
+    "tests/data/application_msword/valid_11.0.doc",
+    "tests/data/application_vnd.ms-excel/valid_11.0.xls",
+    "tests/data/application_vnd.ms-powerpoint/valid_11.0.ppt",
+    "tests/data/application_vnd.oasis.opendocument.formula/valid_1.0.odf",
+    "tests/data/application_vnd.openxmlformats-officedocument.presentationml"
+    ".presentation/valid_15.0.pptx",
+    "tests/data/application_vnd.openxmlformats-officedocument.spreadsheetml"
+    ".sheet/valid_15.0.xlsx",
+    "tests/data/application_vnd.openxmlformats-officedocument.word"
+    "processingml.document/valid_15.0.docx",
+]
+
 # These files will result (:unav) for some elements
 # For GIFs and TIFFs with 3 images inside, the version is missing from the
 # second and third streams, but exists in the first one.
@@ -143,12 +159,14 @@ FORCED_CHARSETS = {
 }
 
 
-def _assert_valid_scraper_result(scraper, fullname, mimetype, well_formed):
+def _assert_valid_scraper_result(scraper, fullname, mimetype, version,
+                                 well_formed):
     """Short hand function to assert the scrape result.
 
     :param scraper: Scraper object instance.
     :param fullname: Full filename in str.
     :param mimetype: Expected mimetype in str.
+    :param version: Expected version
     :param well_formed: Expected well-formed as either truthy or falsey.
     """
     if well_formed:
@@ -156,6 +174,8 @@ def _assert_valid_scraper_result(scraper, fullname, mimetype, well_formed):
     else:
         assert not scraper.well_formed
     assert scraper.mimetype == mimetype
+    if not fullname in UNAV_VERSION:
+        assert scraper.version == version
     assert scraper.streams not in [None, {}]
 
     unavs = []
@@ -172,8 +192,9 @@ def _assert_valid_scraper_result(scraper, fullname, mimetype, well_formed):
         assert not unavs
 
 
-@pytest.mark.parametrize(("fullname", "mimetype"), get_files(well_formed=True))
-def test_valid_combined(fullname, mimetype):
+@pytest.mark.parametrize(("fullname", "mimetype", "version"),
+                         get_files(well_formed=True))
+def test_valid_combined(fullname, mimetype, version):
     """Integration test for valid files.
     - Test that mimetype matches.
     - Test Find out all None elements.
@@ -193,7 +214,7 @@ def test_valid_combined(fullname, mimetype):
     for _, info in iteritems(scraper.info):
         assert not info["errors"]
 
-    _assert_valid_scraper_result(scraper, fullname, mimetype, True)
+    _assert_valid_scraper_result(scraper, fullname, mimetype, version, True)
 
     # Test that output does not change if MIME type and version are forced
     # to be the ones scraper would determine them to be in any case.
@@ -215,9 +236,9 @@ def test_valid_combined(fullname, mimetype):
     assert forced_scraper.streams == scraper.streams
 
 
-@pytest.mark.parametrize(("fullname", "mimetype"),
+@pytest.mark.parametrize(("fullname", "mimetype", "version"),
                          get_files(well_formed=False))
-def test_invalid_combined(fullname, mimetype):
+def test_invalid_combined(fullname, mimetype, version):
     """Integration test for all invalid files.
     - Test that well_formed is False and mimetype is expected.
     - If well_formed is None, check that Scraper was not found.
@@ -246,8 +267,9 @@ def test_invalid_combined(fullname, mimetype):
             fullname in DIFFERENT_MIMETYPE_INVALID)
 
 
-@pytest.mark.parametrize(("fullname", "mimetype"), get_files(well_formed=True))
-def test_without_wellformed(fullname, mimetype):
+@pytest.mark.parametrize(("fullname", "mimetype", "version"),
+                         get_files(well_formed=True))
+def test_without_wellformed(fullname, mimetype, version):
     """Test the case where metadata is collected without well-formedness check.
     - Test that well-formed is always None.
     - Test that mimetype matches.
@@ -264,7 +286,7 @@ def test_without_wellformed(fullname, mimetype):
                       charset=predefined_charset)
     scraper.scrape(False)
 
-    _assert_valid_scraper_result(scraper, fullname, mimetype, False)
+    _assert_valid_scraper_result(scraper, fullname, mimetype, version, False)
 
     mimepart = mimetype.split("/")[0]
     if mimepart in ["image", "video", "text", "audio"]:
@@ -279,10 +301,30 @@ def test_without_wellformed(fullname, mimetype):
         if stream["stream_type"] in elem_dict:
             assert elem_dict[stream["stream_type"]] in stream
 
+    # Test that output does not change if MIME type and version are forced
+    # to be the ones scraper would determine them to be in any case.
+
+    # This cannot be done with compressed arcs, as WarctoolsScraper reports
+    # the MIME type of the compressed archive instead of application/gzip,
+    # so for those types, all required testing is already done here.
+    if (scraper.mimetype in ["application/x-internet-archive"] and
+            fullname[-3:] == ".gz"):
+        return
+
+    forced_scraper = Scraper(fullname, mimetype=scraper.mimetype,
+                             version=scraper.version,
+                             charset=scraper.streams[0].get("charset", None))
+    forced_scraper.scrape()
+
+    assert forced_scraper.mimetype == scraper.mimetype
+    assert forced_scraper.version == scraper.version
+    assert forced_scraper.streams == scraper.streams
+
 
 # pylint: disable=unused-argument
-@pytest.mark.parametrize(("fullname", "mimetype"), get_files(well_formed=True))
-def test_coded_filename(testpath, fullname, mimetype):
+@pytest.mark.parametrize(("fullname", "mimetype", "version"),
+                         get_files(well_formed=True))
+def test_coded_filename(testpath, fullname, mimetype, version):
     """Integration test with unicode and utf-8 filename and with all scrapers.
     - Test that unicode filenames work with all mimetypes
     - Test that utf-8 encoded filenames work with all mimetypes

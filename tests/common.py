@@ -19,7 +19,10 @@ def get_files(well_formed):
             if fname.startswith(prefix):
                 fullname = os.path.join(root, fname)
                 mimetype = root.split("/")[-1].replace("_", "/")
-                yield fullname, mimetype
+                version = os.path.splitext(fname)[0].split("_")[1]
+                if not version:
+                    version = "(:unap)"
+                yield fullname, mimetype, version
 
 
 class Correct(object):

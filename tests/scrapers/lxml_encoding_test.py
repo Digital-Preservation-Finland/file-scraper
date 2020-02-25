@@ -64,7 +64,6 @@ def test_no_wellformed(testpath):
                           check_wellformed=False,
                           params={"charset": "UTF-8"})
     scraper.scrape_file()
-    assert partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
 
 
@@ -74,7 +73,7 @@ def test_is_supported_allow():
     ver = "1.0"
     assert LxmlScraper.is_supported(mime, ver, True)
     assert LxmlScraper.is_supported(mime, None, True)
-    assert not LxmlScraper.is_supported(mime, ver, False)
+    assert LxmlScraper.is_supported(mime, ver, False)
     assert not LxmlScraper.is_supported(mime, ver, True,
                                         {"schematron": "test"})
     assert LxmlScraper.is_supported(mime, "foo", True)
@@ -89,7 +88,7 @@ def test_is_supported_deny():
     assert LxmlScraper.is_supported(mime, None, True)
     assert not LxmlScraper.is_supported(mime, ver, True,
                                         {"schematron": "test"})
-    assert not LxmlScraper.is_supported(mime, ver, False)
+    assert LxmlScraper.is_supported(mime, ver, False)
     assert not LxmlScraper.is_supported(mime, "foo", True)
     assert not LxmlScraper.is_supported("foo", ver, True)
 

@@ -67,7 +67,6 @@ def test_scraper(filename, result_dict, evaluate_scraper):
 
         if not correct.well_formed:
             assert not scraper.well_formed
-            assert not scraper.streams
             assert partial_message_included(correct.stdout_part,
                                             scraper.messages())
             assert partial_message_included(correct.stderr_part,
@@ -101,7 +100,6 @@ def test_scraper_invalid_pdfa(filename, result_dict, evaluate_scraper):
 
     if not correct.well_formed:
         assert not scraper.well_formed
-        assert not scraper.streams
         assert partial_message_included(correct.stdout_part,
                                         scraper.messages())
         assert partial_message_included(correct.stderr_part,
@@ -116,8 +114,9 @@ def test_no_wellformed():
         filename="tests/data/application_pdf/valid_A-1a.pdf",
         mimetype=MIMETYPE, check_wellformed=False)
     scraper.scrape_file()
-    assert partial_message_included("Skipping scraper",
-                                    scraper.messages())
+    assert partial_message_included(
+        "PDF file is compliant with Validation Profile "
+        "requirements.", scraper.messages())
     assert scraper.well_formed is None
 
 
@@ -127,6 +126,6 @@ def test_is_supported():
     ver = "A-1b"
     assert VerapdfScraper.is_supported(mime, ver, True)
     assert VerapdfScraper.is_supported(mime, None, True)
-    assert not VerapdfScraper.is_supported(mime, ver, False)
+    assert VerapdfScraper.is_supported(mime, ver, False)
     assert not VerapdfScraper.is_supported(mime, "foo", True)
     assert not VerapdfScraper.is_supported("foo", ver, True)

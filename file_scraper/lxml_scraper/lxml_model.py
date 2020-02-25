@@ -9,8 +9,7 @@ class LxmlMeta(BaseMeta):
     """Metadata model for character encoding from XML/HTML header."""
 
     # We use JHOVE for HTML4 and XHTML files.
-    _supported = {"text/xml": ["1.0"], "text/html": ["5.0"]}
-    _only_wellformed = True  # Only well-formed check
+    _supported = {"text/xml": ["1.0"], "text/html": ["4.01", "5.0"]}
 
     def __init__(self, errors, tree):
         """
@@ -21,6 +20,15 @@ class LxmlMeta(BaseMeta):
         """
         self._tree = tree
         super(LxmlMeta, self).__init__(errors)
+
+    @metadata()
+    def version(self):
+        """Return version."""
+        if "<!DOCTYPE html>" in self._tree.docinfo.doctype:
+            return "5.0"
+        if "HTML 4.01" in self._tree.docinfo.doctype:
+            return "4.01"
+        return "(:unav)"
 
     @metadata()
     def charset(self):

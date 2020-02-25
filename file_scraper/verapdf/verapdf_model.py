@@ -36,8 +36,10 @@ class VerapdfMeta(BaseMeta):
         For files that are not PDF/A, other scrapers need to be used to
         determine the version.
         """
-        return "A" + self._profile.split("PDF/A")[1].split(
-            " validation profile")[0].lower()
+        if not self._errors and self._profile is not None:
+            return "A" + self._profile.split("PDF/A")[1].split(
+                " validation profile")[0].lower()
+        return "(:unav)"
 
     # pylint: disable=no-self-use
     @metadata()

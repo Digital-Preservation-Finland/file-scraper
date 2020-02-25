@@ -18,7 +18,6 @@ class VerapdfScraper(BaseScraper):
 
     # Supported mimetypes and versions
     _supported_metadata = [VerapdfMeta]
-    _only_wellformed = True  # Only well-formed check
 
     def scrape_file(self):
         """
@@ -36,6 +35,7 @@ class VerapdfScraper(BaseScraper):
         if shell.returncode != 0:
             raise VeraPDFError(shell.stderr)
         self._messages.append(shell.stdout)
+        profile = None
 
         try:
             report = ET.fromstring(shell.stdout_raw)
@@ -51,10 +51,9 @@ class VerapdfScraper(BaseScraper):
         except ET.XMLSyntaxError:
             self._errors.append(shell.stderr)
 
-        if self.well_formed:
-            self.iterate_models(profile=profile)
+        self.iterate_models(profile=profile)
 
-            self._check_supported()
+        self._check_supported()
 
 
 class VeraPDFError(Exception):

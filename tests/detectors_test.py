@@ -135,7 +135,7 @@ def test_detectors(detector_class, change_dict):
     :detector_class: Detector class to test
     :change_dict: Known exceptions to expected mimetypes
     """
-    for filename, expected_mimetype in get_files(well_formed=True):
+    for filename, expected_mimetype, _ in get_files(well_formed=True):
 
         detector = detector_class(filename)
         detector.detect()
