@@ -108,6 +108,10 @@ class XmllintScraper(BaseScraper):
 
         .. seealso:: https://wiki.csc.fi/wiki/KDK/XMLTiedostomuotojenSkeemat
         """
+        if not self._check_wellformed and self._only_wellformed:
+            self._messages.append("Skipping scraper: Well-formed check not "
+                                  "used.")
+            return
         # Try to check syntax by opening file in XML parser
         try:
             file_ = io_open(self.filename, "rb")
