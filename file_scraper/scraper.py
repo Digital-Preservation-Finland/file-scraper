@@ -31,8 +31,12 @@ class Scraper(object):
         self.info = None
         self._params = kwargs
         self._scraper_results = []
-        self._predefined_mimetype = self._params.get("mimetype", None)
-        self._predefined_version = self._params.get("version", None)
+        self._predefined_mimetype = None
+        self._predefined_version = None
+        if self._params.get("mimetype", None) not in LOSE:
+            self._predefined_mimetype = self._params.get("mimetype", None)
+        if self._params.get("version", None) not in LOSE:
+            self._predefined_version = self._params.get("version", None)
 
     def _identify(self):
         """Identify file format and version."""
@@ -115,9 +119,12 @@ class Scraper(object):
 
         :check_wellformed: Whether full scraping is used or not.
         """
+        version = None
+        if self._params.get("version", None) not in LOSE:
+            version = self._params.get("version", None)
         scraper = MimeScraper(filename=self.filename,
                               mimetype=self._predefined_mimetype,
-                              version=self._params.get("version", None),
+                              version=version,
                               check_wellformed=check_wellformed,
                               params={"mimetype": self.mimetype,
                                       "version": self.version,
@@ -170,16 +177,21 @@ class Scraper(object):
         self.streams = None
         self.info = {}
         self.well_formed = None
-        self._predefined_mimetype = self._params.get("mimetype", None)
-        self._predefined_version = self._params.get("version", None)
+        self._predefined_mimetype = None
+        self._predefined_version = None
+        if self._params.get("mimetype", None) not in LOSE:
+            self._predefined_mimetype = self._params.get("mimetype", None)
+        if self._params.get("version", None) not in LOSE:
+            self._predefined_version = self._params.get("version", None)
 
         file_exists = FileExists(self.filename, None)
         self._scrape_file(file_exists)
 
         if file_exists.well_formed is False:
-            return
+            return (None, None)
 
         self._identify()
+        return (self._predefined_mimetype, self._predefined_version)
 
     def is_textfile(self):
         """Find out if file is a text file.

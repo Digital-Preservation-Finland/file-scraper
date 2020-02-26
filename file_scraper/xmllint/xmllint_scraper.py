@@ -115,19 +115,12 @@ class XmllintScraper(BaseScraper):
             tree = etree.parse(file_, parser=parser)
             file_.close()
         except etree.XMLSyntaxError as exception:
-            self._errors.append("Failed: XML syntax is not well-formed.")
+            self._errors.append("Failed: document is not well-formed.")
             self._errors.append(six.text_type(exception))
             return
         except IOError as exception:
             self._errors.append("Failed: missing file.")
             self._errors.append(six.text_type(exception))
-            return
-
-        if not self._check_wellformed:
-            if not self._errors:
-                self._messages.append("XML file detected.")
-            self.iterate_models(tree=tree)
-            self._check_supported()
             return
 
         # Try check against DTD
