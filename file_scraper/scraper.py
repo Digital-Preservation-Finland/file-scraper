@@ -39,6 +39,7 @@ class Scraper(object):
         self.info = {}
         _mime = self._predefined_mimetype
         _version = self._predefined_version
+        self._params["detected_version"] = "(:unav)"
         for detector in iter_detectors():
             tool = detector(self.filename, _mime, _version)
             self._update_filetype(tool)
@@ -72,11 +73,15 @@ class Scraper(object):
         if self._predefined_mimetype == tool.mimetype and \
                 self._predefined_version in LOSE:
             self._predefined_version = tool.version
+        if ((self._params["detected_version"] in LOSE or
+                "version" in important) and
+                tool.__class__.__name__ != "PredefinedDetector"):
+            self._params["detected_version"] = tool.version
         if "mimetype" in important and \
-                important["mimetype"] is not None:
+                important["mimetype"] not in LOSE:
             self._predefined_mimetype = important["mimetype"]
         if "version" in important and \
-                important["version"] is not None:
+                important["version"] not in LOSE:
             self._predefined_version = important["version"]
 
     def _scrape_file(self, scraper):
@@ -131,11 +136,13 @@ class Scraper(object):
             return
 
         for scraper_class in iter_scrapers(
-                mimetype=self._predefined_mimetype, version=self._predefined_version,
+                mimetype=self._predefined_mimetype,
+                version=self._predefined_version,
                 check_wellformed=check_wellformed, params=self._params):
             scraper = scraper_class(
                 filename=self.filename,
                 mimetype=self._predefined_mimetype,
+                version=self._predefined_version,
                 check_wellformed=check_wellformed,
                 params=self._params)
             self._scrape_file(scraper)

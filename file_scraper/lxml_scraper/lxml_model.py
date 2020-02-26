@@ -8,8 +8,9 @@ from file_scraper.utils import metadata
 class LxmlMeta(BaseMeta):
     """Metadata model for character encoding from XML/HTML header."""
 
-    # We use JHOVE for HTML4 and XHTML files.
+    # We use JHOVE for XHTML files.
     _supported = {"text/xml": ["1.0"], "text/html": ["4.01", "5.0"]}
+    _only_wellformed = True  # Only well-formed check
 
     def __init__(self, errors, tree):
         """

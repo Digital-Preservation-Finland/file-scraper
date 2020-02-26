@@ -12,8 +12,8 @@ class BaseScraper(object):
     _supported_metadata = []
     _only_wellformed = False
 
-    def __init__(self, filename, mimetype, version=None, check_wellformed=True,
-                 params=None):
+    def __init__(self, filename, mimetype, version=None,
+                 check_wellformed=True, params=None):
         """
         Initialize scraper.
 

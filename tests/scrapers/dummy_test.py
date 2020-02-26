@@ -23,7 +23,9 @@ from __future__ import unicode_literals
 import pytest
 import six
 
-from file_scraper.dummy.dummy_scraper import FileExists, ScraperNotFound
+from file_scraper.dummy.dummy_scraper import (FileExists, ScraperNotFound,
+                                              MimeScraper,
+                                              DetectedVersionScraper)
 from tests.common import partial_message_included
 
 DEFAULTSTREAMS = {0: {"index": 0, "version": "(:unav)",
@@ -42,7 +44,7 @@ DEFAULTSTREAMS = {0: {"index": 0, "version": "(:unav)",
 def test_existing_files(filepath):
     """Test that existent files are identified correctly."""
 
-    scraper = FileExists(filepath, True)
+    scraper = FileExists(filepath, None)
     scraper.scrape_file()
 
     streams = DEFAULTSTREAMS.copy()
@@ -62,7 +64,7 @@ def test_existing_files(filepath):
 )
 def test_nonexistent_files(filepath):
     """Test that non-existent files are identified correctly."""
-    scraper = FileExists(filepath, True)
+    scraper = FileExists(filepath, None)
     scraper.scrape_file()
 
     assert not scraper.well_formed
@@ -89,7 +91,7 @@ def test_none_filename():
 )
 def test_scraper_not_found(filepath):
     """Check ScraperNotFound results."""
-    scraper = ScraperNotFound(filepath, True)
+    scraper = ScraperNotFound(filepath, None)
     scraper.scrape_file()
 
     streams = DEFAULTSTREAMS.copy()
@@ -99,3 +101,45 @@ def test_scraper_not_found(filepath):
         scraped_metadata = scraper.streams[stream_index]
         for key, value in six.iteritems(stream_metadata):
             assert getattr(scraped_metadata, key)() == value
+
+
+def test_mime_scraper():
+    """
+    Test scraper for MIME type and version match check."
+    """
+    scraper = MimeScraper(
+        None, mimetype="expected_mime", version="expected_version",
+        params={"mimetype": "expected_mime", "version": "expected_version"})
+    scraper.scrape_file()
+    assert scraper.well_formed
+
+    scraper = MimeScraper(
+        None, mimetype="mismatch", version="expected_version",
+        params={"mimetype": "expected_mime", "version": "expected_version"})
+    scraper.scrape_file()
+    assert not scraper.well_formed
+
+    scraper = MimeScraper(
+        None, mimetype="expected_mime", version="mismatch",
+        params={"mimetype": "expected_mime", "version": "expected_version"})
+    scraper.scrape_file()
+    assert not scraper.well_formed
+
+
+def test_detected_version_scraper():
+    """Test detected version scraper"""
+    scraper = DetectedVersionScraper(
+        None, "text/xml", params={"detected_version": "123"})
+    scraper.scrape_file()
+    assert scraper.well_formed
+    assert scraper.streams[0].version() == "123"
+
+    scraper = DetectedVersionScraper(None, "text/xml", params=None)
+    scraper.scrape_file()
+    assert scraper.well_formed
+    assert scraper.streams[0].version() == "(:unav)"
+
+    scraper = DetectedVersionScraper(None, "text/plain", params=None)
+    scraper.scrape_file()
+    assert partial_message_included(
+        "MIME type not supported", scraper.errors())

@@ -6,7 +6,8 @@ from file_scraper.csv.csv_scraper import CsvScraper
 from file_scraper.detectors import (FidoDetector, MagicDetector,
                                     PredefinedDetector)
 from file_scraper.dpx.dpx_scraper import DpxScraper
-from file_scraper.dummy.dummy_scraper import ScraperNotFound
+from file_scraper.dummy.dummy_scraper import (ScraperNotFound,
+                                              DetectedVersionScraper)
 from file_scraper.ffmpeg.ffmpeg_scraper import FFMpegScraper
 from file_scraper.ghostscript.ghostscript_scraper import GhostscriptScraper
 from file_scraper.jhove.jhove_scraper import (JHoveGifScraper,
@@ -61,13 +62,13 @@ def iter_scrapers(mimetype, version, check_wellformed=True, params=None):
 
     scrapers = [
         ArcWarctoolsScraper, GzipWarctoolsScraper, WarcWarctoolsScraper,
-        CsvScraper, DpxScraper, FFMpegScraper, GhostscriptScraper,
-        JHoveGifScraper, JHoveHtmlScraper, JHoveJpegScraper, JHovePdfScraper,
-        JHoveTiffScraper, JHoveWavScraper, LxmlScraper, MagicTextScraper,
-        MagicBinaryScraper, MediainfoScraper, OfficeScraper, PilScraper,
-        PngcheckScraper, PsppScraper, SchematronScraper, TextfileScraper,
-        TextEncodingScraper, VerapdfScraper, VnuScraper, WandScraper,
-        XmllintScraper]
+        CsvScraper, DetectedVersionScraper, DpxScraper, FFMpegScraper,
+        GhostscriptScraper, JHoveGifScraper, JHoveHtmlScraper,
+        JHoveJpegScraper, JHovePdfScraper, JHoveTiffScraper, JHoveWavScraper,
+        LxmlScraper, MagicTextScraper, MagicBinaryScraper, MediainfoScraper,
+        OfficeScraper, PilScraper, PngcheckScraper, PsppScraper,
+        SchematronScraper, TextfileScraper, TextEncodingScraper,
+        VerapdfScraper, VnuScraper, WandScraper, XmllintScraper]
 
     for scraper in scrapers:
         if scraper.is_supported(mimetype, version, check_wellformed, params):

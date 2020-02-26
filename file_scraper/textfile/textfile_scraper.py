@@ -81,11 +81,11 @@ class TextEncodingScraper(BaseScraper):
     _limit = 100*1024**2  # Limit file read in MB, 0 = unlimited
                           # _limit must be divisible with _chunksize
 
-    def __init__(self, filename, mimetype, check_wellformed=True,
-                 params=None):
+    def __init__(self, filename, mimetype, version=None,
+                 check_wellformed=True, params=None):
         """Initialize scraper. Add given charset."""
         super(TextEncodingScraper, self).__init__(
-            filename=filename, mimetype=mimetype,
+            filename=filename, mimetype=mimetype, version=version,
             check_wellformed=check_wellformed, params=params)
         self._charset = self._params.get("charset", "(:unav)")
 

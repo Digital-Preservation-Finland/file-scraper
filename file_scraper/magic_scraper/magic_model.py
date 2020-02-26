@@ -133,13 +133,15 @@ class XmlFileMagicMeta(TextMagicBaseMeta):
         the version can contain e.g. "ASCII text, with very long lines",
         resulting in the version being "ASCII". As XML versions are always
         decimal numbers, non-numerical outputs should not be returned.
+
+        We do not currently support XML 1.1.
         """
         version = super(XmlFileMagicMeta, self).version()
         try:
-            if version not in ["1.0", "1.1"]:
+            if version not in ["1.0"]:
                 raise ValueError(
                     "Invalid version '{}'. "
-                    "XML version must be '1.0' or '1.1'.".format(version))
+                    "XML version must be '1.0'.".format(version))
             return version
         except ValueError:
             return "(:unav)"

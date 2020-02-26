@@ -83,7 +83,7 @@ class JHoveHtmlMeta(JHoveBaseMeta):
     _supported = {"text/html": ["4.01"],
                   "application/xhtml+xml": ["1.0", "1.1"]}
 
-    @metadata()
+    @metadata(important=True)
     def version(self):
         """
         Return version.

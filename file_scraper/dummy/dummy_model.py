@@ -13,3 +13,38 @@ class DummyMeta(BaseMeta):
     def stream_type(self):
         """Stream type is not known so return (:unav)."""
         return "(:unav)"
+
+
+class DetectedVersionMeta(BaseMeta):
+    """Give the detected file format version."""
+
+    _supported = {
+        "application/vnd.oasis.opendocument.text": ["1.0", "1.1", "1.2"],
+        "application/vnd.oasis.opendocument.spreadsheet": [
+            "1.0", "1.1", "1.2"],
+        "application/vnd.oasis.opendocument.presentation": [
+            "1.0", "1.1", "1.2"],
+        "application/vnd.oasis.opendocument.graphics": ["1.0", "1.1", "1.2"],
+        "application/vnd.oasis.opendocument.formula": ["1.0", "1.2"],
+        "text/html": ["4.01", "5.0"],
+        "text/xml": ["1.0"],
+    }
+    _allow_versions = True
+
+    def __init__(self, errors, version):
+        """Initialize with given version."""
+        super(DetectedVersionMeta, self).__init__(errors=errors)
+        self._version = version
+
+    @metadata()
+    def version(self):
+        """Return the file format version"""
+        if self._version is not None:
+            return self._version
+        return "(:unav)"
+
+    # pylint: disable=no-self-use
+    @metadata()
+    def stream_type(self):
+        """Stream type is not known so return (:unav)."""
+        return "(:unav)"

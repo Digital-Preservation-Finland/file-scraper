@@ -5,7 +5,8 @@ import os.path
 
 from file_scraper.base import BaseScraper
 from file_scraper.utils import decode_path
-from file_scraper.dummy.dummy_model import DummyMeta
+from file_scraper.dummy.dummy_model import (DummyMeta,
+                                            DetectedVersionMeta)
 
 
 class ScraperNotFound(BaseScraper):
@@ -40,6 +41,7 @@ class FileExists(BaseScraper):
             )
         self.streams.append(DummyMeta(errors=self._errors))
 
+
     @property
     def well_formed(self):
         """
@@ -61,6 +63,7 @@ class MimeScraper(BaseScraper):
 
     _MIME_DICT = {"application/gzip": ["application/warc",
                                        "application/x-internet-archive"]}
+    _supported_metadata = [DummyMeta]
 
     def scrape_file(self):
         """No need to scrape anything, just compare data."""
@@ -89,3 +92,25 @@ class MimeScraper(BaseScraper):
                 "mismatch.".format(self._predefined_version, ver))
 
         self.streams.append(DummyMeta(errors=self._errors))
+        self._check_supported(allow_unav_mime=True,
+                              allow_unav_version=True,
+                              allow_unap_version=True)
+
+
+class DetectedVersionScraper(BaseScraper):
+    """
+    Use the detected file format version for some file formats.
+    """
+
+    _supported_metadata = [DetectedVersionMeta]
+
+    def scrape_file(self):
+        """
+        Enrich the metadata with the detected file format version for some
+        file formats.
+        """
+        version = self._params.get("detected_version", "(:unav)")
+        self._messages.append("Using detected file format version.")
+        self.iterate_models(version=version)
+        self._check_supported(allow_unav_mime=True, allow_unav_version=True,
+                              allow_unap_version=True)

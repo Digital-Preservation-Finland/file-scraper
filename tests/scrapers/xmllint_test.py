@@ -172,7 +172,7 @@ def test_is_supported():
     ver = "1.0"
     assert XmllintScraper.is_supported(mime, ver, True)
     assert XmllintScraper.is_supported(mime, None, True)
-    assert XmllintScraper.is_supported(mime, ver, False)
+    assert not XmllintScraper.is_supported(mime, ver, False)
     assert XmllintScraper.is_supported(mime, "foo", True)
     assert not XmllintScraper.is_supported("foo", ver, True)
 

@@ -130,4 +130,4 @@ def test_charset_parameter(charset):
     scraper = Scraper("tests/data/text_plain/valid__utf8_without_bom.txt",
                       charset=charset)
     scraper.detect_filetype()
-    assert scraper._params == {"charset": charset or "UTF-8"}
+    assert scraper._params["charset"] == charset or "UTF-8"
