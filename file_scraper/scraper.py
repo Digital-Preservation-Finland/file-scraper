@@ -50,8 +50,8 @@ class Scraper(object):
 
         # Unless version is given by the user, PDF files should be scrutinized
         # further to determine if they are PDF/A
-        if (self._predefined_mimetype == "application/pdf" and
-                not (self._predefined_version)):
+        if self._predefined_mimetype == "application/pdf" and \
+                not self._predefined_version:
             vera_detector = VerapdfDetector(self.filename)
             self._update_filetype(vera_detector)
 
@@ -77,9 +77,9 @@ class Scraper(object):
         if self._predefined_mimetype == tool.mimetype and \
                 self._predefined_version in LOSE:
             self._predefined_version = tool.version
-        if ((self._params["detected_version"] in LOSE or
-                "version" in important) and
-                tool.__class__.__name__ != "PredefinedDetector"):
+        if (self._params["detected_version"] in LOSE or
+                "version" in important) and \
+                tool.__class__.__name__ != "PredefinedDetector":
             self._params["detected_version"] = tool.version
         if "mimetype" in important and \
                 important["mimetype"] not in LOSE:

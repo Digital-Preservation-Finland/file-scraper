@@ -21,17 +21,15 @@ SAMPLES_PER_PIXEL_TAG = 277
 class BasePilMeta(BaseMeta):
     """Metadata model for image metadata."""
 
-    def __init__(self, errors, pil, index):
+    def __init__(self, pil, index):
         """
         Initialize scraper.
 
-        :errors: Errors from scraper.
         :pil: PIL image
         :index: Index of the current frame
         """
         self._pil = pil
         self._pil_index = index
-        super(BasePilMeta, self).__init__(errors=errors)
 
     @metadata()
     def mimetype(self):

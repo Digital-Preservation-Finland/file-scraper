@@ -58,11 +58,11 @@ class FFMpegSimpleMeta(BaseMeta):
         :probe_results: List of streams returned by ffmpeg.probe.
         :index:  Index of the current stream.
         """
+        self._errors = errors
         self._probe_results = probe_results
         self._index = index
         self._ffmpeg_stream = self._current_stream()
 
-        super(FFMpegSimpleMeta, self).__init__(errors)
 
     @metadata()
     def mimetype(self):
@@ -182,9 +182,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
     @metadata()
     def version(self):
         """Return (:unap) as supported types do not have different versions."""
-        if not self._errors:
-            return "(:unap)"
-        return "(:unav)"
+        return "(:unap)" if not self._errors else "(:unav)"
 
     @metadata()
     def codec_quality(self):

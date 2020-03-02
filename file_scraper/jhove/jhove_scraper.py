@@ -63,7 +63,7 @@ class JHoveScraperBase(BaseScraper):
             self._errors.append(shell.stdout)
             self._errors.append(shell.stderr)
 
-        self.iterate_models(report=self._report)
+        self.iterate_models(errors=self._errors, report=self._report)
 
         self._check_supported(allow_unav_version=True,
                               allow_unap_version=True)
@@ -163,4 +163,4 @@ class JHoveUtf8Scraper(JHoveScraperBase):
         the scraper is run differenty.
         """
         for md_class in self._supported_metadata:
-            self.streams.append(md_class(errors=self._errors, **kwargs))
+            self.streams.append(md_class(**kwargs))

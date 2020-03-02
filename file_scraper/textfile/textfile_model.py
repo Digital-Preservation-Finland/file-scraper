@@ -11,6 +11,10 @@ class TextFileMeta(BaseMeta):
     _supported = {"text/plain": []}
     _allow_versions = True
 
+    def __init__(self, errors):
+        """Initialize model."""
+        self._errors = errors
+
     @metadata()
     def mimetype(self):
         """
@@ -48,7 +52,7 @@ class TextEncodingMeta(BaseMeta):
 
     def __init__(self, errors, charset, predefined_mimetype):
         """Initialize metadata model. Add charset to attribute."""
-        super(TextEncodingMeta, self).__init__(errors)
+        self._errors = errors
         self._charset = charset
         self._predefined_mimetype = predefined_mimetype
 

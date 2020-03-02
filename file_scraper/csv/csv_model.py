@@ -30,27 +30,23 @@ class CsvMeta(BaseMeta):
                              "'delimiter', 'separator', 'fields' and "
                              "'first_line' as a parameter.")
 
+        self._errors = errors
         self._csv_delimiter = params["delimiter"]
         self._csv_separator = params["separator"]
         self._csv_fields = params["fields"]
         self._csv_first_line = params["first_line"]
-        super(CsvMeta, self).__init__(errors)
 
     @metadata()
     def mimetype(self):
         """
         Return mimetype. The file is CSV compliant if there are no errors.
         """
-        if not self._errors:
-            return "text/csv"
-        return "(:unav)"
+        return "text/csv" if not self._errors else "(:unav)"
 
     @metadata()
     def version(self):
         """Return version."""
-        if not self._errors:
-            return "(:unap)"
-        return "(:unav)"
+        return "(:unap)" if not self._errors else "(:unav)"
 
     @metadata()
     def delimiter(self):

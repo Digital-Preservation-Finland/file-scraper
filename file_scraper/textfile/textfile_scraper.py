@@ -47,7 +47,7 @@ class TextfileScraper(BaseScraper):
         mimetype = self._file_mimetype()
         if mimetype == "text/plain":
             self._messages.append("File is a text file.")
-            self.iterate_models()
+            self.iterate_models(errors=self._errors)
             self._check_supported(allow_unav_mime=True,
                                   allow_unav_version=True)
         else:
@@ -100,7 +100,7 @@ class TextEncodingScraper(BaseScraper):
         if not self._check_wellformed:
             self._messages.append("No character encoding validation done, "
                                   "setting predefined encoding value.")
-            self.iterate_models(charset=self._charset,
+            self.iterate_models(errors=self._errors, charset=self._charset,
                                 predefined_mimetype=self._predefined_mimetype)
             self._check_supported(allow_unav_mime=True,
                                   allow_unav_version=True)
@@ -148,7 +148,7 @@ class TextEncodingScraper(BaseScraper):
         except (ValueError, UnicodeDecodeError) as exception:
             self._errors.append("Character decoding error: %s" % exception)
 
-        self.iterate_models(charset=self._charset,
+        self.iterate_models(errors=self._errors, charset=self._charset,
                             predefined_mimetype=self._predefined_mimetype)
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)
 

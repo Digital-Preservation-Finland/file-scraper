@@ -11,14 +11,13 @@ class BaseMagicMeta(BaseMeta):
     _starttag = "version "  # Text before file format version in magic result.
     _endtag = None  # Text after file format version in magic result.
 
-    def __init__(self, errors, magic_result, pre_mimetype):
+    def __init__(self, magic_result, pre_mimetype):
         """Initialize the metadata model.
 
         :magic_result: Values resulted from magic module as Python dict
         """
         self._magic_result = magic_result
         self._predefined_mimetype = pre_mimetype
-        super(BaseMagicMeta, self).__init__(errors)
 
     @metadata()
     def mimetype(self):
@@ -325,7 +324,7 @@ class GifFileMagicMeta(BinaryMagicBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        version = super(BinaryMagicBaseMeta, self).version()
+        version = super(GifFileMagicMeta, self).version()
         if version in ["87a", "89a"]:
             return "19" + version
         return version

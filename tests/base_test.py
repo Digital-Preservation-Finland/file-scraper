@@ -140,8 +140,7 @@ class BaseMetaCustom(BaseMeta):
 
     _supported = {"test/mimetype": ["0.1"]}
 
-    def __init__(self, errors, mimetype, version):
-        super(BaseMetaCustom, self).__init__(errors)
+    def __init__(self, mimetype, version):
         self._mimetype = mimetype
         self._version = version
 
@@ -178,8 +177,7 @@ def test_check_supported(scraper_class, mimetype, version, errors):
     """Test scraper's _check_supported() method."""
     # pylint: disable=protected-access
     scraper = scraper_class("testfilename", mimetype)
-    scraper.streams.append(BaseMetaCustom(errors=errors,
-                                          mimetype=mimetype,
+    scraper.streams.append(BaseMetaCustom(mimetype=mimetype,
                                           version=version))
     scraper._check_supported()
     if not errors:

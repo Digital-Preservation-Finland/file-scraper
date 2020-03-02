@@ -17,15 +17,13 @@ class WandImageMeta(BaseMeta):
                   "image/gif": []}
     _allow_versions = True
 
-    def __init__(self, errors, image):
+    def __init__(self, image):
         """
         Initialize the metadata model.
 
-        :errors: Errors from the scraper.
         :image: Wand SingleImage object for which the metadata is collected
         """
         self._image = image
-        super(WandImageMeta, self).__init__(errors=errors)
 
     @metadata()
     def index(self):

@@ -16,11 +16,10 @@ class BaseMediainfoMeta(BaseMeta):
     _containers = []
     container_stream = None
 
-    def __init__(self, errors, tracks, index):
+    def __init__(self, tracks, index):
         """
         Initialize the metadata model.
 
-        :errors: Error messages from scraper.
         :tracks: list of tracks containing all tracks in the file
         :index: index of the track represented by this metadata model
         """
@@ -32,7 +31,6 @@ class BaseMediainfoMeta(BaseMeta):
             self.container_stream = tracks[0]
         else:
             self._index = index - 1
-        super(BaseMediainfoMeta, self).__init__(errors=errors)
 
     def hascontainer(self):
         """Find out if file is a video container."""
@@ -524,15 +522,14 @@ class SimpleMediainfoMeta(BaseMeta):
     _allow_versions = True  # Allow any version
     _containers = ["video/avi"]
 
-    def __init__(self, errors, tracks, index):
+    def __init__(self, tracks, index):
         """
         Initialize the metadata model. No extra functionality over BaseMeta.
 
-        :errors: Errors from scraper
         :tracks: list of tracks containing all tracks in the file
         :index: index of the track represented by this metadata model
         """
-        super(SimpleMediainfoMeta, self).__init__(errors=errors)
+        pass
 
     def hascontainer(self):
         """

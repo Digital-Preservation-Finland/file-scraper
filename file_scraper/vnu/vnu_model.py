@@ -11,6 +11,10 @@ class VnuMeta(BaseMeta):
     _supported = {"text/html": ["5.0"]}  # Supported mimetypes
 
 
+    def __init__(self, errors):
+        """Initialize the metadata model."""
+        self._errors = errors
+
     @metadata()
     def mimetype(self):
         """Return mimetype."""

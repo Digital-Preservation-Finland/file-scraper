@@ -32,15 +32,15 @@ def get_field(report, field):
 class JHoveBaseMeta(BaseMeta):
     """Metadata that is common for all files scraped using JHove"""
 
-    def __init__(self, errors, report): 
+    def __init__(self, errors, report):
         """
         Initialize the metadata model.
 
         :errors: Errors from scraper
         :report: JHove output as lxml.etree
         """
+        self._errors = errors
         self._report = report
-        super(JHoveBaseMeta, self).__init__(errors)
 
     @metadata()
     def mimetype(self):

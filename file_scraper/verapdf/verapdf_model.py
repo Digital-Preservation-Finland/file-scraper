@@ -18,8 +18,8 @@ class VerapdfMeta(BaseMeta):
 
         :profile: profileName from verapdf report
         """
+        self._errors = errors
         self._profile = profile
-        super(VerapdfMeta, self).__init__(errors=errors)
 
     @metadata()
     def mimetype(self):

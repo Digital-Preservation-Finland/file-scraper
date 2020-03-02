@@ -5,8 +5,7 @@ import os
 
 from file_scraper.magiclib import magiclib, magic_analyze
 from file_scraper.base import BaseScraper
-from file_scraper.magic_scraper.magic_model import (BaseMagicMeta,
-                                                    TextFileMagicMeta,
+from file_scraper.magic_scraper.magic_model import (TextFileMagicMeta,
                                                     XmlFileMagicMeta,
                                                     XhtmlFileMagicMeta,
                                                     HtmlFileMagicMeta,
@@ -82,7 +81,7 @@ class MagicTextScraper(MagicBaseScraper):
 class MagicBinaryScraper(MagicBaseScraper):
     """
     Magic scraper for binary files.
-    
+
     Currently, these are all mime types which can not be anything else at the
     same time. Therefore it is pretty safe to disallow (:unav) as a mimetype
     result.
@@ -91,4 +90,3 @@ class MagicBinaryScraper(MagicBaseScraper):
                            ArcFileMagicMeta, PngFileMagicMeta,
                            JpegFileMagicMeta, Jp2FileMagicMeta,
                            TiffFileMagicMeta, GifFileMagicMeta]
-

@@ -51,31 +51,7 @@ class LxmlScraper(BaseScraper):
         with open(self.filename, "rb") as file_:
             tree = etree.parse(file_, parser)
 
-        for md_class in self._supported_metadata:
-
-            if not md_class.is_supported(self._predefined_mimetype,
-                                         self._predefined_version,
-                                         self._params):
-                continue
-
-            md_model = md_class(errors=self._errors, tree=tree)
-
-            # It is possible that for files that are not well-formed, trying
-            # to use tree.docinfo causes an AssertionError. In that case we
-            # shouldn't add a stream at all, but instead log an error. Only if
-            # all metadata methods work normally, should the stream be added.
-            #
-            # The except catches all exceptions, because AssertionError from
-            # the compiled cython module is otherwise not caught by all python
-            # versions.
-            try:
-                for method in md_model.iterate_metadata_methods():
-                    method()
-            except Exception:  # pylint: disable=broad-except
-                self._errors.append("XML parsing failed: document "
-                                    "information could not be gathered.")
-            else:
-                self.streams.append(md_model)
+        self.iterate_models(tree=tree)
 
         # Only log success message if at least one metadata model was added to
         # streams. Check that it corresponds to given charset.
@@ -93,3 +69,33 @@ class LxmlScraper(BaseScraper):
                                        self._params["charset"]))
 
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)
+
+    def iterate_models(self, **kwargs):
+        """
+        Iterate metadata models.
+
+        It is possible that for files that are not well-formed, trying
+        to use tree.docinfo causes an AssertionError. In that case we
+        shouldn't add a stream at all, but instead log an error. Only if
+        all metadata methods work normally, should the stream be added.
+
+        The except catches all exceptions, because AssertionError from
+        the compiled cython module is otherwise not caught by all python
+        versions.
+        """
+        for md_class in self._supported_metadata:
+
+            if not md_class.is_supported(self._predefined_mimetype,
+                                         self._predefined_version,
+                                         self._params):
+                continue
+
+            md_model = md_class(**kwargs)
+            try:
+                for method in md_model.iterate_metadata_methods():
+                    method()
+            except Exception:  # pylint: disable=broad-except
+                self._errors.append("XML parsing failed: document "
+                                    "information could not be gathered.")
+            else:
+                self.streams.append(md_model)

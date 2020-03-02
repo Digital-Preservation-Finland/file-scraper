@@ -51,7 +51,7 @@ class VerapdfScraper(BaseScraper):
         except ET.XMLSyntaxError:
             self._errors.append(shell.stderr)
 
-        self.iterate_models(profile=profile)
+        self.iterate_models(errors=self._errors, profile=profile)
 
         self._check_supported()
 

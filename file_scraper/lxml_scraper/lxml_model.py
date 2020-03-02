@@ -12,15 +12,13 @@ class LxmlMeta(BaseMeta):
     _supported = {"text/xml": ["1.0"], "text/html": ["4.01", "5.0"]}
     _only_wellformed = True  # Only well-formed check
 
-    def __init__(self, errors, tree):
+    def __init__(self, tree):
         """
         Initialize the metadata class.
 
-        :errors: Errors from scraper.
         :tree: etree parsed from the file that is being scraped
         """
         self._tree = tree
-        super(LxmlMeta, self).__init__(errors)
 
     @metadata()
     def version(self):

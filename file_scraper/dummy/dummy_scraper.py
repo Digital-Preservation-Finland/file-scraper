@@ -16,7 +16,7 @@ class ScraperNotFound(BaseScraper):
         """No need to scrape anything, just collect."""
         self._messages.append("Proper scraper was not found. "
                               "The file was not analyzed.")
-        self.streams.append(DummyMeta(errors=self._errors))
+        self.streams.append(DummyMeta())
 
     @property
     def well_formed(self):
@@ -39,7 +39,7 @@ class FileExists(BaseScraper):
             self._errors.append(
                 "File {} does not exist.".format(decode_path(self.filename))
             )
-        self.streams.append(DummyMeta(errors=self._errors))
+        self.streams.append(DummyMeta())
 
 
     @property
@@ -67,7 +67,6 @@ class MimeScraper(BaseScraper):
 
     def scrape_file(self):
         """No need to scrape anything, just compare data."""
-        error = False
         if not self._check_wellformed and self._only_wellformed:
             self._messages.append("Skipping scraper: Well-formed check not"
                                   "used.")
@@ -91,7 +90,7 @@ class MimeScraper(BaseScraper):
                 "Predefined version '{}' and resulted version '{}' "
                 "mismatch.".format(self._predefined_version, ver))
 
-        self.streams.append(DummyMeta(errors=self._errors))
+        self.streams.append(DummyMeta())
         self._check_supported(allow_unav_mime=True,
                               allow_unav_version=True,
                               allow_unap_version=True)

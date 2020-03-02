@@ -11,6 +11,10 @@ class PsppMeta(BaseMeta):
     _supported = {"application/x-spss-por": []}  # Supported mimetype
     _allow_versions = True                       # Allow any version
 
+    def __init__(self, errors):
+        """Initialize model."""
+        self._errors = errors
+
     @metadata()
     def mimetype(self):
         """Return MIME type"""

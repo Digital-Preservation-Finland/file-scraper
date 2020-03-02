@@ -92,11 +92,11 @@ class CsvScraper(BaseScraper):
             if csvfile:
                 csvfile.close()
 
-        self.iterate_models(params={"delimiter": delimiter,
+        self.iterate_models(errors=self._errors,
+                            params={"delimiter": delimiter,
                                     "separator": separator,
                                     "fields": fields,
                                     "first_line": first_line})
-        
         self._check_supported(allow_unap_version=True)
 
     def _open_csv_file(self, charset):

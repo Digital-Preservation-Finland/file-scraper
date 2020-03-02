@@ -39,7 +39,6 @@ class WandScraper(BaseScraper):
         The _wandresults are needed to be initialized to be able to
         properly close them after the class has been executed.
         """
-
         super(WandScraper, self).__init__(*args, **kwargs)
         self._wandresults = None
 
@@ -63,8 +62,7 @@ class WandScraper(BaseScraper):
             for md_class in self._supported_metadata:
                 for image in self._wandresults.sequence:
                     if md_class.is_supported(image.container.mimetype):
-                        self.streams.append(md_class(errors=self._errors,
-                                                     image=image))
+                        self.streams.append(md_class(image=image))
             self._check_supported(allow_unav_version=True)
             self._messages.append("The file was analyzed successfully.")
 

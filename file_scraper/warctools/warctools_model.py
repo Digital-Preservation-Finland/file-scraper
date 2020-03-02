@@ -22,16 +22,14 @@ class GzipWarctoolsMeta(BaseWarctoolsMeta):
     _supported = {"application/gzip": []}  # Supported mimetype
     _allow_versions = True  # Allow any version
 
-    def __init__(self, errors, metadata_model):
+    def __init__(self, metadata_model):
         """
         Initialize the metadata model
 
-        :errors: Errors from scraper
         :metadata_model: Either WarcWarctoolsMeta or ArcWarctoolsMeta object
                          representing the extracted warc or arc.
         """
         self._metadata_model = metadata_model
-        super(GzipWarctoolsMeta, self).__init__(errors=errors)
 
     @metadata()
     def mimetype(self):
@@ -55,11 +53,10 @@ class WarcWarctoolsMeta(BaseWarctoolsMeta):
         """
         Initialize the metadata model.
 
-        :errors: Errors from scraper
         :line: The first line of the warc archive.
         """
+        self._errors = errors
         self._line = line
-        super(WarcWarctoolsMeta, self).__init__(errors=errors)
 
     @metadata()
     def mimetype(self):
@@ -84,10 +81,13 @@ class ArcWarctoolsMeta(BaseWarctoolsMeta):
     _supported = {"application/x-internet-archive": ["1.0", "1.1"]}
     _allow_versions = True  # Allow any version
 
+    def __init__(self, errors):
+        """Initialize the metadata model."""
+        self._errors = errors
+
     @metadata()
     def mimetype(self):
         """Return mimetype."""
         if not self._errors:
             return "application/x-internet-archive"
         return "(:unav)"
-

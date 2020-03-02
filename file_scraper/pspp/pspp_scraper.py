@@ -53,6 +53,6 @@ class PsppScraper(BaseScraper):
                 self._errors.append("File conversion failed.")
         finally:
             shutil.rmtree(temp_dir)
-            self.iterate_models()
+            self.iterate_models(errors=self._errors)
             self._check_supported(allow_unav_mime=True,
                                   allow_unav_version=True)

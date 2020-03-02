@@ -31,17 +31,14 @@ class DetectedVersionMeta(BaseMeta):
     }
     _allow_versions = True
 
-    def __init__(self, errors, version):
+    def __init__(self, version):
         """Initialize with given version."""
-        super(DetectedVersionMeta, self).__init__(errors=errors)
         self._version = version
 
     @metadata()
     def version(self):
         """Return the file format version"""
-        if self._version is not None:
-            return self._version
-        return "(:unav)"
+        return self._version if self._version is not None else "(:unav)"
 
     # pylint: disable=no-self-use
     @metadata()

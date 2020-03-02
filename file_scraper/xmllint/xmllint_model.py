@@ -19,8 +19,8 @@ class XmllintMeta(BaseMeta):
 
         :tree: XML element tree for the scraped file
         """
+        self._errors = errors
         self._tree = tree
-        super(XmllintMeta, self).__init__(errors=errors)
 
     @metadata()
     def mimetype(self):
