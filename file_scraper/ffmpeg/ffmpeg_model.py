@@ -51,14 +51,13 @@ class FFMpegSimpleMeta(BaseMeta):
         "JPEG 2000": "video/jpeg2000",
         }
 
-    def __init__(self, errors, probe_results, index):
+    def __init__(self, probe_results, index):
         """
         Initialize the metadata model.
 
         :probe_results: List of streams returned by ffmpeg.probe.
         :index:  Index of the current stream.
         """
-        self._errors = errors
         self._probe_results = probe_results
         self._index = index
         self._ffmpeg_stream = self._current_stream()
@@ -66,9 +65,9 @@ class FFMpegSimpleMeta(BaseMeta):
 
     @metadata()
     def mimetype(self):
-        """Return MIME type based on format name."""
-        if self._errors:
-            return "(:unav)"
+        """
+        Return MIME type based on format name.
+        """
         if "format_long_name" in self._ffmpeg_stream:
             if self._ffmpeg_stream["format_long_name"] in self._mimetype_dict:
                 return self._mimetype_dict[self._ffmpeg_stream[
@@ -166,9 +165,6 @@ class FFMpegMeta(FFMpegSimpleMeta):
         MIME type based on codec name is attempted. This is relevant for
         JPEG2000 streams.
         """
-        if self._errors:
-            return "(:unav)"
-
         mime = super(FFMpegMeta, self).mimetype()
         if mime not in ["(:unav)", None]:
             return mime
@@ -182,7 +178,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
     @metadata()
     def version(self):
         """Return (:unap) as supported types do not have different versions."""
-        return "(:unap)" if not self._errors else "(:unav)"
+        return "(:unap)" if self.mimetype() != "(:unav)" else "(:unav)"
 
     @metadata()
     def codec_quality(self):
@@ -309,9 +305,9 @@ class FFMpegMeta(FFMpegSimpleMeta):
         """
         Return data rate (bit rate) in mbps.
 
-        VideoMD defines dataRate as "data rate of the audio", but dpres File
-        format specification lists dataRate as mandatory element, so it is also
-        returned for video streams.
+        VideoMD specification defines dataRate as "data rate of the audio".
+        This is a copy-paste error in the specification, and it should be
+        "data rate of the video".
         """
         if self.stream_type() not in ["video"]:
             raise SkipElementException()

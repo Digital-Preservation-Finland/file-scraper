@@ -82,6 +82,8 @@ class LxmlScraper(BaseScraper):
         The except catches all exceptions, because AssertionError from
         the compiled cython module is otherwise not caught by all python
         versions.
+
+        :kwargs: Model specific parameters
         """
         for md_class in self._supported_metadata:
 

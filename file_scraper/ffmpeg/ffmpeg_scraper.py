@@ -73,8 +73,7 @@ class FFMpegScraper(BaseScraper):
             if not container and index == len(streams) - 1:
                 break
 
-            self.iterate_models(errors=self._errors,
-                                probe_results=probe_results,
+            self.iterate_models(probe_results=probe_results,
                                 index=index)
 
             for stream in self.streams:
@@ -90,6 +89,9 @@ class FFMpegScraper(BaseScraper):
         Returns a new string, containing all lines in errors except those that
         contain either "Last message repeated [number] times" or both
         "jpeg2000" and "bpno became negative".
+
+        :errors: Stderr result from Shell in scraping
+        :returns: Filtered error message result
         """
         # pylint: disable=no-self-use
         constructed_string = ""

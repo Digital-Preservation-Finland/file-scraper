@@ -53,6 +53,7 @@ class WarcWarctoolsMeta(BaseWarctoolsMeta):
         """
         Initialize the metadata model.
 
+        :errors: Errors from scraper.
         :line: The first line of the warc archive.
         """
         self._errors = errors
@@ -60,7 +61,12 @@ class WarcWarctoolsMeta(BaseWarctoolsMeta):
 
     @metadata()
     def mimetype(self):
-        """Return mimetype."""
+        """
+        Return mimetype.
+        
+        The file is a WARC file if there are not errors. This is returned only
+        if predefined as a WARC file.
+        """
         if not self._errors:
             return "application/warc"
         return "(:unav)"
@@ -82,12 +88,21 @@ class ArcWarctoolsMeta(BaseWarctoolsMeta):
     _allow_versions = True  # Allow any version
 
     def __init__(self, errors):
-        """Initialize the metadata model."""
+        """
+        Initialize the metadata model.
+
+        :errors: Errors from scraper
+        """
         self._errors = errors
 
     @metadata()
     def mimetype(self):
-        """Return mimetype."""
+        """
+        Return mimetype.
+        
+        The file is an ARC file if there are not errors. This is returned only
+        if predefined as an ARC file.
+        """
         if not self._errors:
             return "application/x-internet-archive"
         return "(:unav)"

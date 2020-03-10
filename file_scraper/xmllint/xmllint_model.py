@@ -24,7 +24,12 @@ class XmllintMeta(BaseMeta):
 
     @metadata()
     def mimetype(self):
-        """Return mimetype. The file is XML, if no errors."""
+        """
+        Return mimetype.
+        
+        The file is an XML file, if there are no errors. This will be returned
+        only if predefined as an XML file.
+        """
         if not self._errors:
             return "text/xml"
         return "(:unav)"
@@ -32,7 +37,10 @@ class XmllintMeta(BaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        return self._tree.docinfo.xml_version
+        if self.mimetype() in self._supported and \
+                self._tree.docinfo.xml_version:
+            return self._tree.docinfo.xml_version
+        return "(:unav)"
 
     # pylint: disable=no-self-use
     @metadata()

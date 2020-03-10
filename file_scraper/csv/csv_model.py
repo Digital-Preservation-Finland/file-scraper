@@ -39,7 +39,10 @@ class CsvMeta(BaseMeta):
     @metadata()
     def mimetype(self):
         """
-        Return mimetype. The file is CSV compliant if there are no errors.
+        Return mimetype.
+        
+        The file is CSV compliant if there are no errors, and
+        this will be returned only if predefined as CSV.
         """
         return "text/csv" if not self._errors else "(:unav)"
 

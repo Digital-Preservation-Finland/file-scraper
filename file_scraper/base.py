@@ -118,7 +118,11 @@ class BaseScraper(object):
                             (mimetype, version))
 
     def iterate_models(self, **kwargs):
-        """Iterate Scraper models and create streams"""
+        """
+        Iterate Scraper models and create streams.
+        
+        :kwargs: Model specific parameters
+        """
         for md_class in self._supported_metadata:
             if md_class.is_supported(self._predefined_mimetype,
                                      self._predefined_version, self._params):
@@ -146,6 +150,8 @@ class BaseScraper(object):
 
         The returned dict contains keys "class", "messages" and "errors", each
         having a single string as a value.
+
+        :returns: Info dict
         """
         return {"class": self.__class__.__name__,
                 "messages": self.messages(),

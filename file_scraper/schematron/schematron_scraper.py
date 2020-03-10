@@ -29,8 +29,18 @@ class SchematronScraper(BaseScraper):
         :version: Predefined file format version
         :check_wellformed: True for the full well-formed check, False for just
                            detection and metadata scraping
-        :params: Extra parameters needed for the scraper
+        :params: Extra parameters needed for the scraper. These may be:
+                 verbose: Verbose output, False by default
+                 cache: Cache of compiled schematron files are used,
+                        True by default
+                 schematron: Schematron file name
+                 extra_hash: Extra hash to determine if recompilation is
+                             required. This can be a hash of files which are
+                             called by the schematron file.
         """
+        super(SchematronScraper, self).__init__(
+            filename=filename, mimetype=mimetype, version=version,
+            check_wellformed=check_wellformed, params=params)
         if params is None:
             params = {}
         self._verbose = params.get("verbose", False)
@@ -40,9 +50,6 @@ class SchematronScraper(BaseScraper):
         self._returncode = None
         self._schematron_file = params.get("schematron", None)
         self._extra_hash = params.get("extra_hash", None)
-        super(SchematronScraper, self).__init__(
-            filename=filename, mimetype=mimetype, version=version,
-            check_wellformed=check_wellformed, params=params)
 
     @classmethod
     def is_supported(cls, mimetype, version=None,

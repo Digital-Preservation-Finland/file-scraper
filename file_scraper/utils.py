@@ -13,7 +13,12 @@ from file_scraper.exceptions import SkipElementException
 
 
 def metadata(important=False):
-    """Decorator for functions scraping metadata."""
+    """
+    Decorator for functions scraping metadata.
+    
+    :important: True if metadata is important, False otherwise
+    :returns: Decorator for function
+    """
     def _wrap(func):
         func.is_metadata = True
         func.is_important = important
@@ -22,12 +27,22 @@ def metadata(important=False):
 
 
 def is_metadata(func):
-    """Return True if given a function with metadata flag, otherwise False."""
+    """
+    Return True if given a function with metadata flag, otherwise False.
+
+    :func: Function to check
+    :returns: True if function has metadata flag, False otherwise
+    """
     return callable(func) and getattr(func, "is_metadata", False)
 
 
 def encode_path(filename):
-    """Encode Unicode filenames."""
+    """
+    Encode Unicode filenames.
+
+    :filename: File name no encode
+    :returns: Encoded file name
+    """
     if isinstance(filename, six.text_type):
         return filename.encode(encoding=sys.getfilesystemencoding())
     elif isinstance(filename, six.binary_type):
@@ -37,12 +52,19 @@ def encode_path(filename):
 
 
 def decode_path(filename):
-    """Decode Unicode filenames."""
+    """
+    Decode Unicode filenames.
+    
+    :filename: File name to decode
+    :returns: Decoded file name
+    """
     return ensure_text(filename, encoding=sys.getfilesystemencoding())
 
 
 def hexdigest(filename, algorithm="sha1", extra_hash=None):
-    """Calculte hash of given file.
+    """
+    Calculte hash of given file.
+
     :filename: File path
     :algorithm: Hash algorithm. MD5 or SHA variant.
     :extra_hash: Hash to be appended in calculation
@@ -61,7 +83,9 @@ def hexdigest(filename, algorithm="sha1", extra_hash=None):
 
 
 def sanitize_string(dirty_string):
-    """Strip non-printable control characters from unicode string
+    """
+    Strip non-printable control characters from unicode string.
+
     :dirty_string: String to sanitize
     :returns: Sanitized string
     """
@@ -147,9 +171,8 @@ def strip_zeros(float_str):
 
 
 def combine_metadata(stream, indexed_metadata, lose=None, important=None):
-    """Merge metadata dict to stream metadata dict.
-
-    Will raise ValueError if two different values collide.
+    """
+    Merge metadata dict to stream metadata dict.
 
     :param stream: Metadata dict where the new metadata is merged.
     :param metadata: Indexed metadata dict to be merged with.
@@ -157,6 +180,7 @@ def combine_metadata(stream, indexed_metadata, lose=None, important=None):
     :param important: Important values as dict, which will be used
                 in conflict situation, if given.
     :returns: Merged metadata dict.
+    :raises: ValueError if two different values collide.
     """
     if not indexed_metadata:
         return stream.copy()
@@ -206,8 +230,10 @@ def ensure_text(s, encoding="utf-8", errors="strict"):
       - `bytes` -> decoded to `str`
 
     Direct copy from release 1.12::
-
         https://github.com/benjaminp/six/blob/master/six.py#L892
+
+    :encoding: Used encoding
+    :errors: Error handling level
     """
     # pylint: disable=invalid-name
     if isinstance(s, six.binary_type):
@@ -361,7 +387,6 @@ def sanitize_bytestring(input_bytes):
 
     :input_bytes: Input as byte string
     :returns: Sanitized string as unicode string
-
     """
     utf8string = input_bytes.decode("utf8", errors="replace")
     sanitized_string = sanitize_string(utf8string)
@@ -386,6 +411,7 @@ def iter_utf_bytes(file_handle, chunksize, charset):
         """
         Split the given byte chunk to UTF sequence and remainder. Remainder
         is possible if last character of byte chunk is incomplete.
+
         :chunk: Chunk to match
         :sequenc_params: Dict of smallest and largest byte value of the first
                          byte (or the second in big endian) of a character

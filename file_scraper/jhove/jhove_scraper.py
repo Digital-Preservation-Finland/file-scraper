@@ -137,6 +137,15 @@ class JHoveWavScraper(JHoveScraperBase):
     _jhove_module = "WAVE-hul"
     _supported_metadata = [JHoveWavMeta]
 
+    def scrape_file(self):
+        """
+        Scrape file.
+        Add extra error message, if RF64 profile used.
+        """
+        super(JHoveWavScraper, self).scrape_file()
+        if "RF64" in get_field(self._report, "profile"):
+            self._errors.append("RF64 is not a supported format")
+
 
 class JHoveUtf8Scraper(JHoveScraperBase):
     """

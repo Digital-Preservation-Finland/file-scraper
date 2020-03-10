@@ -16,7 +16,14 @@ class DummyMeta(BaseMeta):
 
 
 class DetectedVersionMeta(BaseMeta):
-    """Give the detected file format version."""
+    """
+    This model results the given file format version for some file formats.
+    The corresponding scraper gets the version as a parameter (originally
+    from FIDO detector) and results it as a scraper value.
+
+    We don't currently know any other constructive way to get version info
+    for a few formats.
+    """
 
     _supported = {
         "application/vnd.oasis.opendocument.text": ["1.0", "1.1", "1.2"],
@@ -32,7 +39,11 @@ class DetectedVersionMeta(BaseMeta):
     _allow_versions = True
 
     def __init__(self, version):
-        """Initialize with given version."""
+        """
+        Initialize with given version.
+        
+        :version: File format version
+        """
         self._version = version
 
     @metadata()

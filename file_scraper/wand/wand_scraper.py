@@ -45,8 +45,6 @@ class WandScraper(BaseScraper):
     def scrape_file(self):
         """
         Populate streams with supported metadata objects.
-
-        :filename: Path to the file that is being scraped.
         """
 
         if not self._check_wellformed and self._only_wellformed:

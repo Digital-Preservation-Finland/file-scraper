@@ -15,6 +15,7 @@ class BaseMagicMeta(BaseMeta):
         """Initialize the metadata model.
 
         :magic_result: Values resulted from magic module as Python dict
+        :pre_mimetype: Predefined mimetype
         """
         self._magic_result = magic_result
         self._predefined_mimetype = pre_mimetype
@@ -31,6 +32,7 @@ class BaseMagicMeta(BaseMeta):
 
     @metadata()
     def version(self):
+        """Return file format version."""
         magic_version = self._magic_result['magic_none']
         if magic_version is not None:
             magic_version = magic_version.split(self._starttag)[-1]
@@ -79,7 +81,7 @@ class TextMagicBaseMeta(BaseMagicMeta):
 
 
 class TextFileMagicMeta(TextMagicBaseMeta):
-    """Metadata models for plaintext and csv files."""
+    """Metadata models for plain text and csv files."""
 
     _supported = {"text/plain": [], "text/csv": []}
     _allow_versions = True  # Allow any version
@@ -110,8 +112,6 @@ class XmlFileMagicMeta(TextMagicBaseMeta):
 
         :magic_result: Values resulted from magic module as dict
         :version: Identified version (if needed)
-        :check_wellformed: True for the full well-formed check, False for just
-                           detection and metadata scraping
         :params: Extra parameters needed for the scraper
         :returns: True if scraper is supported
         """
@@ -133,7 +133,7 @@ class XmlFileMagicMeta(TextMagicBaseMeta):
         resulting in the version being "ASCII". As XML versions are always
         decimal numbers, non-numerical outputs should not be returned.
 
-        We do not currently support XML 1.1.
+        We do not currently support XML 1.1. in dPres specifications.
         """
         version = super(XmlFileMagicMeta, self).version()
         try:

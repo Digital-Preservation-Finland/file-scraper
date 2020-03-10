@@ -85,6 +85,7 @@ class MediainfoScraper(BaseScraper):
         Otherwise a success message is recorded in self.messages.
 
         :mediainfo: Output from MediaInfo.parse
+        :returns: True for complete AV file, False otherwise
         """
         truncated = False
         track_found = False

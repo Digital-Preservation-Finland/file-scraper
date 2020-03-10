@@ -63,6 +63,7 @@ class _FidoReader(_FidoCachedFormats):
 
         Fido is done with old-style python and does not inherit object,
         so super() is not available.
+
         :filename: File path
         """
         self.filename = filename  # File path
@@ -138,10 +139,16 @@ class FidoDetector(BaseDetector):
     """Fido detector."""
 
     def __init__(self, filename, mimetype=None, version=None):
-        """Initialize detector."""
-        self._puid = None
+        """
+        Initialize detector.
+        
+        :filename: File name of file to detect
+        :mimetype: Mimetype from another source, e.g. METS
+        :version: File format version from another source, e.g. METS
+        """
         super(FidoDetector, self).__init__(filename, mimetype=mimetype,
                                            version=version)
+        self._puid = None
 
     def detect(self):
         """Detect file format and version."""

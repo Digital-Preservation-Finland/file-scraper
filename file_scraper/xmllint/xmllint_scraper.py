@@ -50,10 +50,21 @@ class XmllintScraper(BaseScraper):
         Initialize scraper.
 
         :filename: File path
+        :mimetype: Predefined mimetype
+        :version: PRedefined version
         :check_wellformed: True for the full well-formed check, False for just
                            detection and metadata scraping
-        :params: Extra parameters needed for the scraper
+        :params: Extra parameters needed for the scraper. The parameters are:
+                 schema: Schema path, None by default
+                 catalogs: True if XML catalog used (default), False otherwise
+                 no_network: True if no network connections allowed (default),
+                             False will try to fetch schema files from
+                             internet.
+                 catalog_path: Path to XMLcatalog
         """
+        super(XmllintScraper, self).__init__(
+            filename=filename, mimetype=mimetype, version=version,
+            check_wellformed=check_wellformed, params=params)
         if params is None:
             params = {}
         self._schema = params.get("schema", None)
@@ -61,9 +72,6 @@ class XmllintScraper(BaseScraper):
         self._catalogs = params.get("catalogs", True)
         self._no_network = params.get("no_network", True)
         self._catalog_path = params.get("catalog_path", None)
-        super(XmllintScraper, self).__init__(
-            filename=filename, mimetype=mimetype, version=version,
-            check_wellformed=check_wellformed, params=params)
 
     @classmethod
     def is_supported(cls, mimetype, version=None,

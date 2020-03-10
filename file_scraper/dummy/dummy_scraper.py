@@ -56,9 +56,7 @@ class FileExists(BaseScraper):
 class MimeScraper(BaseScraper):
     """
     Scraper to check if the predefined mimetype and version match with the
-    resulted ones. This is run if the predefined mimetype mismatches with the
-    resulted one, or if the version given by the user mismatches with the
-    resulted one.
+    resulted ones.
     """
 
     _MIME_DICT = {"application/gzip": ["application/warc",
@@ -66,21 +64,19 @@ class MimeScraper(BaseScraper):
     _supported_metadata = [DummyMeta]
 
     def scrape_file(self):
-        """No need to scrape anything, just compare data."""
-        if not self._check_wellformed and self._only_wellformed:
-            self._messages.append("Skipping scraper: Well-formed check not"
-                                  "used.")
-            return
-
-        self._messages.append("MIME type check")
+        """
+        No need to scrape anything, just compare already collected metadata.
+        """
+        self._messages.append("MIME type and file format varsion check")
 
         mime = self._params.get("mimetype", "(:unav)")
         ver = self._params.get("version", "(:unav)")
         well = self._params.get("well_formed", False)
         pre_list = self._MIME_DICT.get(self._predefined_mimetype, [])
 
-        if (mime == "(:unav)" and well) or \
-                (mime != self._predefined_mimetype and mime not in pre_list):
+        if mime == "(:unav)":
+            self._errors.append("File format is not supported.")
+        elif mime != self._predefined_mimetype and mime not in pre_list:
             self._errors.append(
                 "Predefined mimetype '{}' and resulted mimetype '{}' "
                 "mismatch.".format(self._predefined_mimetype, mime))
@@ -98,7 +94,7 @@ class MimeScraper(BaseScraper):
 
 class DetectedVersionScraper(BaseScraper):
     """
-    Use the detected file format version for some file formats.
+    Use the detected file format version (by FIDO) for some file formats.
     """
 
     _supported_metadata = [DetectedVersionMeta]

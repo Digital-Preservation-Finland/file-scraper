@@ -17,6 +17,8 @@ def get_field(report, field):
     """
     Return the value of a field from the given JHoves XML output.
 
+    :report: JHOVE XML report
+    :field: Element name from the XML report
     :returns: The value of the field (multiple values separated by a newline)
               or None if the report was None or field was not found in it.
     """
@@ -66,7 +68,7 @@ class JHoveGifMeta(JHoveBaseMeta):
         """
         if self._errors:
             return "(:unav)"
-        if get_field(self._report, "version"):
+        if get_field(self._report, "version") in ["87a", "89a"]:
             return "19" + get_field(self._report, "version")
         return "(:unav)"
 
@@ -225,15 +227,15 @@ class JHoveWavMeta(JHoveBaseMeta):
         """
         Return version.
 
-        Set version as "2" if profile is BWF, otherwise we don"t know.
-        For now, we don"t accept RF64.
+        Set version as "2" or "(:unap)" if profile is BWF or PCMWAVEFORMAT,
+        correspondingly. For now, we don"t accept RF64.
         """
         if self._errors:
             return "(:unav)"
         if get_field(self._report, "profile") is None:
             return "(:unav)"
         if "RF64" in get_field(self._report, "profile"):
-            self._errors.append("RF64 is not a supported format")
+            return "(:unav)"
         elif "BWF" in get_field(self._report, "profile"):
             return "2"
         elif "PCMWAVEFORMAT" in get_field(self._report, "profile"):

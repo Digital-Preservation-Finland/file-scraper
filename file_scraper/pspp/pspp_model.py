@@ -17,14 +17,23 @@ class PsppMeta(BaseMeta):
 
     @metadata()
     def mimetype(self):
-        """Return MIME type"""
+        """
+        Return MIME type.
+        
+        The file is compliant SPSS Portable file if there are no errors. This
+        is only returned if predefined as SPSS Portable.
+        """
         if not self._errors:
             return "application/x-spss-por"
         return "(:unav)"
 
     @metadata()
     def version(self):
-        """Return version."""
+        """Return version.
+        
+        The file is compliant SPSS Portable file if there are no errors. This
+        is only returned if predefined as SPSS Portable.
+        """
         if not self._errors:
             return "(:unap)"
         return "(:unav)"

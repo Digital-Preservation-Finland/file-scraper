@@ -103,6 +103,7 @@ class CsvScraper(BaseScraper):
         """
         Open the file in mode dependent on the python version.
 
+        :charset: File encoding
         :returns: handle to the newly-opened file
         :raises: IOError if the file cannot be read
         """

@@ -17,14 +17,24 @@ class VnuMeta(BaseMeta):
 
     @metadata()
     def mimetype(self):
-        """Return mimetype."""
+        """
+        Return mimetype.
+        
+        The file is a HTML5 file if there are no errors. This will be returned
+        only if predefined as HTML5.
+        """
         if not self._errors:
             return "text/html"
         return "(:unav)"
 
     @metadata()
     def version(self):
-        """Return version."""
+        """
+        Return version.
+        
+        The file is a HTML5 file if there are no errors. This will be returned
+        only if predefined as HTML5.
+        """
         if not self._errors:
             return "5.0"
         return "(:unav)"

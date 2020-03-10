@@ -19,7 +19,7 @@ class Scraper(object):
     def __init__(self, filename, **kwargs):
         """Initialize scraper.
         :filename: File path
-        :kwargs: Extra arguments for certain scrapers
+        :kwargs: Extra arguments for certain scrapers.
         """
         if filename is not None:
             filename = encode_path(filename)
@@ -39,7 +39,8 @@ class Scraper(object):
             self._predefined_version = self._params.get("version", None)
 
     def _identify(self):
-        """Identify file format and version."""
+        """Identify file format and version.
+        """
         self.info = {}
         _mime = self._predefined_mimetype
         _version = self._predefined_version
@@ -68,6 +69,8 @@ class Scraper(object):
         The MIME type or version is only changed if the old one is either
         present in the LOSE list or the new one is marked important by the
         detector.
+
+        :tool: Detector tool
         """
         tool.detect()
         self.info[len(self.info)] = tool.info
@@ -89,7 +92,9 @@ class Scraper(object):
             self._predefined_version = important["version"]
 
     def _scrape_file(self, scraper):
-        """Scrape with the given scraper.
+        """
+        Scrape with the given scraper.
+
         :scraper: Scraper instance
         """
         scraper.scrape_file()
@@ -103,8 +108,9 @@ class Scraper(object):
     def _check_utf8(self, check_wellformed):
         """
         UTF-8 check only for UTF-8.
-
         We know the charset after actual scraping.
+
+        :check_wellformed: Whether full scraping is used or not.
         """
         if "charset" in self.streams[0] and \
                 self.streams[0]["charset"] == "UTF-8":
@@ -133,6 +139,7 @@ class Scraper(object):
 
     def scrape(self, check_wellformed=True):
         """Scrape file and collect metadata.
+
         :check_wellformed: True, full scraping; False, skip well-formed check.
         """
         self.detect_filetype()
@@ -194,7 +201,9 @@ class Scraper(object):
         return (self._predefined_mimetype, self._predefined_version)
 
     def is_textfile(self):
-        """Find out if file is a text file.
+        """
+        Find out if file is a text file.
+
         :returns: True, if file is a text file, false otherwise
         """
         scraper = TextfileScraper(self.filename, "text/plain")
@@ -202,7 +211,9 @@ class Scraper(object):
         return scraper.well_formed
 
     def checksum(self, algorithm="MD5"):
-        """Return the checksum of the file with given algorithm.
+        """
+        Return the checksum of the file with given algorithm.
+
         :algorithm: MD5 or SHA variant
         :returns: Calculated checksum
         """

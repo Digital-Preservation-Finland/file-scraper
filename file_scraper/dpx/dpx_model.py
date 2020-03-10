@@ -11,22 +11,31 @@ class DpxMeta(BaseMeta):
     # Supported mimetype and version
     _supported = {"image/x-dpx": ["2.0", "1.0"]}
 
-    def __init__(self, errors, filename, messages):
-        """Initialize metadata model."""
+    def __init__(self, errors, messages, filename):
+        """
+        Initialize metadata model.
+        
+        :errors: Errors given by DPX scraper
+        :messages: Messages given by DPX scraper
+        :filename: DPX file name
+        """
         self._errors = errors
-        self._filename = filename
         self._messages = messages
+        self._filename = filename
 
     @metadata()
     def mimetype(self):
         """
-        Return mimetype. The file is DPX xompliant if there are no errors.
+        Return mimetype.
+        
+        The file is DPX compliant if there are no errors, and this will be
+        returned only if predefined as DPX.
         """
         return "image/x-dpx" if not self._errors else "(:unav)"
 
     @metadata()
     def version(self):
-        """Return version."""
+        """Return version. The version is returned, if there are no errors."""
         if self._errors:
             return "(:unav)"
 

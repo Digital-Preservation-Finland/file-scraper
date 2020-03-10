@@ -16,6 +16,7 @@ class VerapdfMeta(BaseMeta):
         """
         Initialize the metadata model.
 
+        :errors: Errors from scraper
         :profile: profileName from verapdf report
         """
         self._errors = errors
@@ -23,7 +24,12 @@ class VerapdfMeta(BaseMeta):
 
     @metadata()
     def mimetype(self):
-        """Return mime type. File is PDF compliant without errors."""
+        """
+        Return mime type.
+        
+        File is PDF/A compliant without errors. This is returned only if
+        predefined as PDF/A file.
+        """
         if not self._errors:
             return "application/pdf"
         return "(:unav)"
@@ -35,6 +41,9 @@ class VerapdfMeta(BaseMeta):
 
         For files that are not PDF/A, other scrapers need to be used to
         determine the version.
+
+        File is PDF/A compliant without errors. This is returned only if
+        predefined as PDF/A file.
         """
         if not self._errors and self._profile is not None:
             return "A" + self._profile.split("PDF/A")[1].split(
