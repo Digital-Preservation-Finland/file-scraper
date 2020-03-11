@@ -21,7 +21,6 @@ This module tests that:
 from __future__ import unicode_literals
 
 import pytest
-import six
 
 from file_scraper.pspp.pspp_scraper import PsppScraper
 from tests.common import (parse_results, partial_message_included)
@@ -65,7 +64,13 @@ MIMETYPE = "application/x-spss-por"
     ]
 )
 def test_scraper(filename, result_dict, evaluate_scraper):
-    """Test scraper."""
+    """
+    Test PSPP scraper.
+
+    :filename: Test file name
+    :result_dict: Result dict containing test purpose, and parts of
+                  expected results of stdout and stderr
+    """
 
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)

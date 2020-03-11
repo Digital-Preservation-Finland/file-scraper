@@ -88,6 +88,8 @@ This module tests that:
         - application/xhtml+xml, 1.0
     - Utf8JHove reports MIME type text/plain with "", None or a made up version
       as not supported, as well as a made up MIME type.
+    - JHove scarper works as designed when charset parameter for (X)HTML files
+      is given
 """
 from __future__ import unicode_literals
 
@@ -127,7 +129,13 @@ from tests.common import (parse_results, partial_message_included)
     ]
 )
 def test_scraper_gif(filename, result_dict, evaluate_scraper):
-    """Test gif scraping."""
+    """
+    Test gif scraping.
+
+    :filename: Test file name
+    :result_dict: Result dict containing test purpose, and parts of
+                  expected results of stdout and stderr
+    """
     for version in ["1987", "1989"]:
         filename = filename.replace("XXXX", version)
         correct = parse_results(filename, "image/gif",
@@ -162,7 +170,13 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
     ]
 )
 def test_scraper_tiff(filename, result_dict, evaluate_scraper):
-    """Test tiff scraping."""
+    """
+    Test tiff scraping.
+
+    :filename: Test file name
+    :result_dict: Result dict containing test purpose, and parts of
+                  expected results of stdout and stderr
+    """
     correct = parse_results(filename, "image/tiff",
                             result_dict, True)
     correct.update_mimetype("image/tiff")
@@ -192,7 +206,14 @@ def test_scraper_tiff(filename, result_dict, evaluate_scraper):
     ]
 )
 def test_scraper_utf8(filename, result_dict, evaluate_scraper):
-    """Test utf8 text file scraping."""
+    """
+    Test utf8 text file scraping.
+
+    :filename: Test file name
+    :result_dict: Result dict containing test purpose, parts of
+                  expected results of stdout and stderr, and inverse
+                  well-formed result
+    """
     correct = parse_results(filename, "text/plain", result_dict, True,
                             {"charset": "UTF-8"})
     scraper = JHoveUtf8Scraper(filename=correct.filename,
@@ -223,7 +244,13 @@ def test_scraper_utf8(filename, result_dict, evaluate_scraper):
     ]
 )
 def test_scraper_pdf(filename, result_dict, evaluate_scraper):
-    """Test pdf scraping."""
+    """
+    Test pdf scraping.
+
+    :filename: Test file name
+    :result_dict: Result dict containing test purpose, and parts of
+                  expected results of stdout and stderr
+    """
     for ver in ["1.2", "1.3", "1.4", "1.5", "1.6", "A-1a"]:
         filename = filename.replace("X", ver)
         correct = parse_results(filename, "application/pdf",
@@ -239,16 +266,16 @@ def test_scraper_pdf(filename, result_dict, evaluate_scraper):
 def test_scraper_invalid_pdfversion():
     """Test that wrong version is detected."""
     for ver in ["1.2", "1.3", "1.4", "1.5", "1.6", "A-1a"]:
-        scraper = JHovePdfScraper(filename="tests/data/application_pdf/"
-                                           "invalid_X_wrong_version.pdf" \
-                                               .replace("X", ver),
-                                  mimetype="application/pdf")
+        scraper = JHovePdfScraper(
+            filename="tests/data/application_pdf/invalid_X_wrong_version"
+                     ".pdf".replace("X", ver),
+            mimetype="application/pdf")
         scraper.scrape_file()
         found_ver = {"1.2": "1.0", "1.3": "1.0", "1.4": "1.7", "1.5": "1.1",
                      "1.6": "1.1", "A-1a": "1.0"}
         assert partial_message_included(
-            "MIME type application/pdf with version {} is not supported." \
-                .format(found_ver[ver]), scraper.errors())
+            "MIME type application/pdf with version {} is not "
+            "supported.".format(found_ver[ver]), scraper.errors())
         assert not scraper.well_formed
 
 
@@ -274,7 +301,13 @@ def test_scraper_invalid_pdfversion():
     ]
 )
 def test_scraper_jpeg(filename, result_dict, evaluate_scraper):
-    """Test jpeg scraping."""
+    """
+    Test jpeg scraping.
+
+    :filename: Test file name
+    :result_dict: Result dict containing test purpose, and parts of
+                  expected results of stdout and stderr
+    """
     correct = parse_results(filename, "image/jpeg",
                             result_dict, True)
     correct.update_mimetype("image/jpeg")
@@ -351,14 +384,25 @@ def test_scraper_jpeg(filename, result_dict, evaluate_scraper):
 )
 def test_scraper_html(filename, result_dict, mimetype, charset,
                       evaluate_scraper):
-    """Test html and xhtml scraping."""
+    """
+    Test html and xhtml scraping.
+
+    :filename: Test file name
+    :result_dict: Result dict containing test purpose, and parts of
+                  expected results of stdout and stderr
+    :mimetype: File MIME type
+    :charset: File character encoding
+    """
     params = {"charset": charset}
     correct = parse_results(filename, mimetype, result_dict, True,
                             params)
-    correct.streams[0]["stream_type"] = "text"
     if not correct.well_formed:
         correct.update_mimetype("(:unav)")
         correct.streams[0]["charset"] = "(:unav)"
+        correct.streams[0]["stream_type"] = "(:unav)"
+    else:
+        correct.streams[0]["stream_type"] = "text"
+
     if filename == "valid_4.01.html":
         correct.streams[0]["charset"] = "UTF-8"
 
@@ -400,7 +444,13 @@ def test_scraper_html(filename, result_dict, mimetype, charset,
     ]
 )
 def test_scraper_wav(filename, result_dict, evaluate_scraper):
-    """Test wav and bwf scraping."""
+    """
+    Test wav and bwf scraping.
+
+    :filename: Test file name
+    :result_dict: Result dict containing test purpose, and parts of
+                  expected results of stdout and stderr
+    """
     correct = parse_results(filename, "audio/x-wav",
                             result_dict, True)
     correct.update_mimetype("audio/x-wav")
@@ -424,7 +474,13 @@ def test_scraper_wav(filename, result_dict, evaluate_scraper):
     ]
 )
 def test_no_wellformed(scraper_class, filename, mime):
-    """Test scrapers without well-formed check."""
+    """
+    Test scrapers without well-formed check.
+
+    :scraper_class: Scraper to test
+    :filename: Test file name
+    :mime: File MIME type
+    """
     scraper = scraper_class(filename=os.path.join("tests/data/",
                                                   mime.replace("/", "_"),
                                                   filename),
@@ -445,7 +501,13 @@ def test_no_wellformed(scraper_class, filename, mime):
     ]
 )
 def test_is_supported_allow(mime, ver, class_):
-    """Test is_supported method, allow all versions."""
+    """
+    Test is_supported method, allow all versions.
+
+    :mime: MIME type
+    :ver: File format version
+    :class_: Scraper class to test
+    """
     assert class_.is_supported(mime, ver, True)
     assert class_.is_supported(mime, None, True)
     assert not class_.is_supported(mime, ver, False)
@@ -462,7 +524,13 @@ def test_is_supported_allow(mime, ver, class_):
     ]
 )
 def test_is_supported_deny(mime, ver, class_):
-    """Test is_supported method, allow only known versions."""
+    """
+    Test is_supported method, allow only known versions.
+
+    :mime: MIME type
+    :ver: File format version
+    :class_: Scraper class to test
+    """
     assert class_.is_supported(mime, ver, True)
     assert class_.is_supported(mime, None, True)
     assert not class_.is_supported(mime, ver, False)
@@ -477,7 +545,13 @@ def test_is_supported_deny(mime, ver, class_):
     ]
 )
 def test_is_supported_utf8(mime, ver, class_):
-    """Test is_supported method, utf8 scraper."""
+    """
+    Test is_supported method, utf8 scraper.
+
+    :mime: MIME type
+    :ver: File format version
+    :class_: Scraper class to test
+    """
     assert not class_.is_supported(mime, ver, True)
     assert not class_.is_supported(mime, None, True)
     assert not class_.is_supported(mime, ver, False)
@@ -499,7 +573,12 @@ def test_is_supported_utf8(mime, ver, class_):
 )
 def test_charset(filename, mimetype, charset, well_formed):
     """
-    Test charset parameter.
+    Test charset parameter in JhoveHtmlScraper.
+
+    :filename: Test file path
+    :mimetype: File MIME type
+    :chraset: File character encoding
+    :well_formed: Expected well-formed result
     """
     params = {"charset": charset}
     scraper = JHoveHtmlScraper(filename=filename, mimetype=mimetype,

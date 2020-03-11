@@ -7,6 +7,7 @@ This module tests that:
       certain mimetypes and MagicDetector returns certain mimetypes.
     - VerapdfDetector detects PDF/A MIME types and versions but no others.
     - VerapdfDetector results are important for PDF/A files.
+    - Character encoding detection works properly.
 """
 from __future__ import unicode_literals
 
@@ -112,6 +113,10 @@ def test_pdf_detector(filepath, mimetype, version):
 
     The detector should detect the file types of PDF/A files, but return None
     for other files, including PDF files that are not PDF/A.
+
+    :filepath: Test file
+    :mimetype: Expected MIME type
+    :version: Exprected file format version
     """
     detector = VerapdfDetector('tests/data/' + filepath)
     detector.detect()
@@ -160,6 +165,9 @@ def test_detectors(detector_class, change_dict):
 def test_important_pdf(filepath, important):
     """
     Test that VerapdfDetector results are important for PDF/A files only.
+
+    :filepath: Test file
+    :important: Expected boolean result of important
     """
     detector = VerapdfDetector(filepath)
     detector.detect()
@@ -180,7 +188,12 @@ def test_important_pdf(filepath, important):
     ]
 )
 def test_important_other(detector_class, mimetype):
-    """Test important with cruical mimetypes using other detectors."""
+    """
+    Test important with cruical mimetypes using other detectors.
+
+    :detector_class: Detector class
+    :mimetype: File MIME type
+    """
     detector = detector_class("testfilename")
     detector.mimetype = mimetype
     if detector_class == FidoDetector:
@@ -197,7 +210,12 @@ def test_important_other(detector_class, mimetype):
      ("tests/data/video_dv/valid.dv", None)]
 )
 def test_magic_charset(filename, charset):
-    """Test charset encoding detection"""
+    """
+    Test charset encoding detection.
+
+    :filename: Test file
+    :charset: Character encoding
+    """
     detector = MagicCharset(filename)
     detector.detect()
     if charset:

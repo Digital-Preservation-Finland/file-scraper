@@ -6,7 +6,7 @@ Tests for Csv scraper
 This module tests that:
     - mimetype, version and streams are scraped correctly when a csv file is
       scraped.
-    - scraper class used for csv scraping is Csv.
+    - scraper class used for csv scraping is CsvScraper.
     - well-formedness of csv files is determined accurately.
     - scraper reports errors in scraping as expected when there is a missing
       quote or wrong field delimiter is given.
@@ -23,6 +23,9 @@ This module tests that:
       version.
     - MIME type other than 'text/csv' is not supported.
     - Not giving CsvMeta enough parameters causes an error to be raised.
+    - Empty file is not well-formed.
+    - Sniffer is not used when giving the delimiter and separator as a
+      parameter.
     - Non-existent files are not well-formed and the inability to read the
       file is logged as an error.
 """
@@ -79,7 +82,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
             "purpose": "Test missing end quote",
             "stdout_part": "",
             "stderr_part": "unexpected end of data",
-            "streams": {0: {"stream_type": "text",
+            "streams": {0: {"stream_type": "(:unav)",
                             "index": 0,
                             "mimetype": "(:unav)",
                             "version": "(:unav)",
@@ -106,7 +109,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
             "inverse": True,
             "stdout_part": "",
             "stderr_part": "CSV not well-formed: field counts",
-            "streams": {0: {"stream_type": "text",
+            "streams": {0: {"stream_type": "(:unav)",
                             "index": 0,
                             "mimetype": "(:unav)",
                             "version": "(:unav)",
@@ -141,29 +144,26 @@ TEST_DATA_PATH = "tests/data/text_csv"
     ]
 )
 def test_scraper(filename, result_dict, header,
-                 evaluate_scraper, extra_params):
+                 extra_params, evaluate_scraper):
     """
     Write test data and run csv scraping for the file.
 
+    :filename: Test file name
+    :result_dict: Result dict containing purpose of the test, parts of
+                  expected stdout and stderr, and expected streams
+    :header: CSV header line
+    :extra_params: Extra parameters for the scraper (e.g. charset)
     """
-
-    mimetype = result_dict["streams"][0]["mimetype"]
-    version = result_dict["streams"][0]["version"]
-
     correct = parse_results(filename, "text/csv", result_dict,
                             True)
-    correct.update_mimetype(mimetype)
-    correct.update_version(version)
-    if mimetype != "text/csv":
-        correct.well_formed = False
-
     params = {
         "separator": correct.streams[0]["separator"],
         "delimiter": correct.streams[0]["delimiter"],
         "fields": header,
         "mimetype": "text/csv"}
     params.update(extra_params)
-    scraper = CsvScraper(filename=correct.filename, mimetype=MIMETYPE, params=params)
+    scraper = CsvScraper(filename=correct.filename, mimetype=MIMETYPE,
+                         params=params)
     scraper.scrape_file()
 
     evaluate_scraper(scraper, correct)
@@ -174,7 +174,12 @@ def test_scraper(filename, result_dict, header,
     ("tests/data/text_csv/valid__iso8859-15_header.csv", "ISO-8859-15"),
 ])
 def test_first_line_charset(filename, charset):
-    """Test that CSV handles the first line encoding correctly."""
+    """
+    Test that CSV handles the first line encoding correctly.
+
+    :filename: Test file name
+    :charset: Character encoding
+    """
     params = {"delimiter": ",", "separator": "CR+LF",
               "mimetype": "text/csv", "charset": charset}
 
@@ -187,7 +192,6 @@ def test_first_line_charset(filename, charset):
 
 def test_pdf_as_csv():
     """Test CSV scraper with PDF files."""
-
     scraper = CsvScraper(filename=PDF_PATH, mimetype="text/csv")
     scraper.scrape_file()
 
@@ -204,7 +208,11 @@ def test_pdf_as_csv():
     ]
 )
 def test_no_parameters(filename, evaluate_scraper):
-    """Test scraper without separate parameters."""
+    """
+    Test scraper without separate parameters.
+
+    :filename: Test file name
+    """
     correct = parse_results(filename, MIMETYPE,
                             {"purpose": "Test valid file on default settings.",
                              "stdout_part": "successfully",
@@ -213,13 +221,12 @@ def test_no_parameters(filename, evaluate_scraper):
                              {0: {"stream_type": "text",
                                   "index": 0,
                                   "mimetype": MIMETYPE,
-                                  "version": "",
+                                  "version": "(:unap)",
                                   "delimiter": ",",
                                   "separator": "\r\n",
                                   "first_line": ["year", "brand", "model",
                                                  "detail", "other"]}}},
                             True)
-    correct.streams[0]["version"] = "(:unap)"
     scraper = CsvScraper(correct.filename, mimetype="text/csv")
     scraper.scrape_file()
     evaluate_scraper(scraper, correct)

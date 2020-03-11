@@ -1,14 +1,12 @@
 """
-Test for pdf 1.7 ghostscript scraper.
+Test for Ghostscript scraper.
 
 This module tests that:
     - When full scraping is done for a valid pdf file, the following results
       are reported:
         - the file is well-formed
-        - MIME type is application/pdf
+        - MIME type and version are '(:unav)'
         - scraper messages do not contain the word 'Error'
-        - version is None
-        - in streams, version is None
     - Files containing JPEG2000 images are scraped correctly.
     - When full scraping is done for a file where the payload has been altered,
       or an XREF entry in XREF table has been removed, the results are similar
@@ -49,7 +47,14 @@ from tests.common import (parse_results, partial_message_included)
     ]
 )
 def test_scraper_pdf(filename, result_dict, evaluate_scraper):
-    """Test scraper."""
+    """
+    Test Ghostscript scraper.
+
+    :filename: Test filename. Character X is replaced with versions 1.7,
+               A-1a, A-2b, and A-3b. All of these files must be found.
+    :result_dict: Result dict containing the test purpose, and parts of
+                  expected results of stdout and stderr
+    """
     for ver in ["1.7", "A-1a", "A-2b", "A-3b"]:
         filename = filename.replace("X", ver)
         correct = parse_results(filename, "application/pdf",

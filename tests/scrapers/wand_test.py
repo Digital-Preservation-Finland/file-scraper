@@ -38,8 +38,10 @@ This module tests that:
         -For truncated version 1989a file, scraper errors contains "negative
          or zero image size".
         - For empty file, scraper errors contains "imporoper image header".
-    - When well-formedness is not checked, scraper messages contains "Skipping
-      scraper" and well_formed is None.
+    - WandTiffMeta model is supported for TIFF files and WandImageMeta for
+      other image files
+    - When well-formedness is not checked, scraper messages must not contain
+      "Skipping scraper", but well_formed is None.
     - With or without well-formedness check, the following MIME type and
       version pairs are supported by both WandScraper and their corresponding
       metadata models:
@@ -56,14 +58,13 @@ from __future__ import unicode_literals
 
 import os
 import pytest
-import six
 
 from file_scraper.wand.wand_model import WandImageMeta, WandTiffMeta
 from file_scraper.wand.wand_scraper import WandScraper
 from tests.common import (parse_results, partial_message_included)
 
 STREAM_VALID = {
-    "bps_unit": None,
+    "bps_unit": "(:unav)",
     "bps_value": "8",
     "colorspace": "srgb",
     "height": "6",
@@ -71,7 +72,7 @@ STREAM_VALID = {
     "width": "10"}
 
 GIF_APPEND = {
-    "bps_unit": None,
+    "bps_unit": "(:unav)",
     "bps_value": "8",
     "colorspace": "srgb",
     "compression": "lzw",
@@ -79,7 +80,7 @@ GIF_APPEND = {
     "mimetype": "image/gif",
     "samples_per_pixel": "(:unav)",
     "stream_type": "image",
-    "version": None,
+    "version": "(:unav)",
     "width": "1"}
 
 
@@ -101,7 +102,13 @@ GIF_APPEND = {
     ]
 )
 def test_scraper_tif(filename, result_dict, evaluate_scraper):
-    """Test scraper with valid tiff files."""
+    """
+    Test scraper with valid tiff files.
+
+    :filename: Test file name
+    :result_dict: Result dict containing the test purpose, parts of
+                  expected results of stdout and stderr, and expected streams
+    """
     correct = parse_results(filename, "image/tiff",
                             result_dict, True)
     for index in range(0, len(correct.streams)):
@@ -129,7 +136,13 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
     ]
 )
 def test_scraper_jpg(filename, result_dict, evaluate_scraper):
-    """Test scraper with jpeg files."""
+    """
+    Test scraper with valid jpeg files.
+
+    :filename: Test file name
+    :result_dict: Result dict containing the test purpose, parts of
+                  expected results of stdout and stderr, and expected streams
+    """
     correct = parse_results(filename, "image/jpeg",
                             result_dict, True)
     if correct.well_formed:
@@ -152,7 +165,13 @@ def test_scraper_jpg(filename, result_dict, evaluate_scraper):
     ]
 )
 def test_scraper_jp2(filename, result_dict, evaluate_scraper):
-    """Test scraper with jp2 files."""
+    """
+    Test scraper with valid jp2 files.
+
+    :filename: Test file name
+    :result_dict: Result dict containing the test purpose, parts of
+                  expected results of stdout and stderr, and expected streams
+    """
     correct = parse_results(filename, "image/jp2",
                             result_dict, True)
     if correct.well_formed:
@@ -176,7 +195,13 @@ def test_scraper_jp2(filename, result_dict, evaluate_scraper):
     ]
 )
 def test_scraper_png(filename, result_dict, evaluate_scraper):
-    """Test scraper with png files."""
+    """
+    Test scraper with valid png files.
+
+    :filename: Test file name
+    :result_dict: Result dict containing the test purpose, parts of
+                  expected results of stdout and stderr, and expected streams
+    """
     correct = parse_results(filename, "image/png",
                             result_dict, True)
     if correct.well_formed:
@@ -206,7 +231,13 @@ def test_scraper_png(filename, result_dict, evaluate_scraper):
     ]
 )
 def test_scraper_gif(filename, result_dict, evaluate_scraper):
-    """Test scraper with gif files."""
+    """
+    Test scraper with valid gif files.
+
+    :filename: Test file name
+    :result_dict: Result dict containing the test purpose, parts of
+                  expected results of stdout and stderr, and expected streams
+    """
     correct = parse_results(filename, "image/gif",
                             result_dict, True)
     if correct.well_formed:
@@ -261,11 +292,17 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
     ]
 )
 def test_scraper_invalid(filename, mimetype, stderr_part):
-    """Test WandScraper with invalid tiff files."""
-    scraper = WandScraper(filename=os.path.join("tests/data/",
-                                                mimetype.replace("/", "_"),
-                                                filename),
-                                                mimetype=mimetype)
+    """
+    Test WandScraper with invalid files.
+
+    :filename: Test file name
+    :mimetype: File MIME type
+    :stderr_part: Part of the expected stderr
+    """
+    scraper = WandScraper(
+        filename=os.path.join("tests/data/", mimetype.replace("/", "_"),
+                              filename),
+        mimetype=mimetype)
     scraper.scrape_file()
 
     assert not scraper.streams
@@ -275,14 +312,19 @@ def test_scraper_invalid(filename, mimetype, stderr_part):
     assert not scraper.well_formed
 
 
-def test_no_wellformed():
+def test_no_wellformed(evaluate_scraper):
     """Test scraper without well-formed check."""
+    result_dict = {"streams": {0: STREAM_VALID.copy()},
+                   "stdout_part": "", "stderr_part": ""}
+    correct = parse_results("valid_6.0.tif", "image/tiff", result_dict, False)
+    correct.update_version("(:unav)")
     scraper = WandScraper(filename="tests/data/image_tiff/valid_6.0.tif",
                           mimetype="image/tiff",
                           check_wellformed=False)
     scraper.scrape_file()
     assert not partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -296,7 +338,13 @@ def test_no_wellformed():
     ]
 )
 def test_model_is_supported(mime, ver, class_):
-    """Test is_supported method for WandTiffMeta and WandImageMeta."""
+    """
+    Test is_supported method for WandTiffMeta and WandImageMeta.
+
+    :mime: MIME type
+    :ver: File format version
+    :class_: Metadata model class
+    """
     assert class_.is_supported(mime, ver)
     assert class_.is_supported(mime, None)
     assert class_.is_supported(mime, "foo")
@@ -314,7 +362,12 @@ def test_model_is_supported(mime, ver, class_):
     ]
 )
 def test_scraper_is_supported(mime, ver):
-    """Test is_supported method for WandScraper"""
+    """
+    Test is_supported method for WandScraper
+
+    :mime: MIME type
+    :ver: File format version
+    """
     assert WandScraper.is_supported(mime, ver, True)
     assert WandScraper.is_supported(mime, None, True)
     assert WandScraper.is_supported(mime, ver, False)

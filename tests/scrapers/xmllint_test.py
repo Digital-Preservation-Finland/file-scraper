@@ -34,7 +34,6 @@ from __future__ import unicode_literals
 
 import os
 import pytest
-import six
 
 from file_scraper.xmllint.xmllint_scraper import XmllintScraper
 from tests.common import (parse_results, partial_message_included)
@@ -77,7 +76,14 @@ ROOTPATH = os.path.abspath(os.path.join(
     ]
 )
 def test_scraper_valid(filename, result_dict, params, evaluate_scraper):
-    """Test scraper."""
+    """
+    Test scraper with valid files.
+
+    :filename: Test file name
+    :result_dict: Result dict containing test purpose, and parts of
+                  expected results of stdout and stderr
+    :params: Extra parameters for Scraper
+    """
     correct = parse_results(filename, "text/xml",
                             result_dict, True, params)
     scraper = XmllintScraper(filename=correct.filename,
@@ -135,7 +141,14 @@ def test_scraper_valid(filename, result_dict, params, evaluate_scraper):
     ]
 )
 def test_scraper_invalid(filename, result_dict, params, evaluate_scraper):
-    """Test scraper."""
+    """
+    Test scraper with invalid files.
+
+    :filename: Test file name
+    :result_dict: Result dict containing test purpose, and parts of
+                  expected results of stdout and stderr
+    :params: Extra parameters for Scraper
+    """
     correct = parse_results(filename, "text/xml",
                             result_dict, True, params)
     scraper = XmllintScraper(filename=correct.filename,
@@ -149,7 +162,8 @@ def test_scraper_invalid(filename, result_dict, params, evaluate_scraper):
     if not correct.well_formed:
         assert not scraper.well_formed
         assert not scraper.streams
-        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stdout_part,
+                                        scraper.messages())
         assert partial_message_included(correct.stderr_part, scraper.errors())
     else:
         evaluate_scraper(scraper, correct)

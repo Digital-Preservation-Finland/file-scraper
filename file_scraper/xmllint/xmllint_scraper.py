@@ -44,6 +44,7 @@ class XmllintScraper(BaseScraper):
     _supported_metadata = [XmllintMeta]
     _only_wellformed = True  # Only well-formed check
 
+    # pylint: disable=too-many-arguments
     def __init__(self, filename, mimetype, version=None,
                  check_wellformed=True, params=None):
         """

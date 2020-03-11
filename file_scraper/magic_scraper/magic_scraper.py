@@ -78,6 +78,7 @@ class MagicTextScraper(MagicBaseScraper):
     _supported_metadata = [TextFileMagicMeta, XmlFileMagicMeta,
                            XhtmlFileMagicMeta, HtmlFileMagicMeta]
 
+
 class MagicBinaryScraper(MagicBaseScraper):
     """
     Magic scraper for binary files.

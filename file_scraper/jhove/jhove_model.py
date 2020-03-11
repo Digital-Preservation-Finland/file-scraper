@@ -75,7 +75,7 @@ class JHoveGifMeta(JHoveBaseMeta):
     @metadata()
     def stream_type(self):
         """Return file type."""
-        return "image"
+        return "image" if not self._errors else "(:unav)"
 
 
 class JHoveHtmlMeta(JHoveBaseMeta):
@@ -143,7 +143,7 @@ class JHoveHtmlMeta(JHoveBaseMeta):
     @metadata()
     def stream_type(self):
         """Return file type."""
-        return "text"
+        return "text" if not self._errors else "(:unav)"
 
 
 class JHoveJpegMeta(JHoveBaseMeta):
@@ -157,7 +157,7 @@ class JHoveJpegMeta(JHoveBaseMeta):
     @metadata()
     def stream_type(self):
         """Return file type."""
-        return "image"
+        return "image" if not self._errors else "(:unav)"
 
 
 class JHoveTiffMeta(JHoveBaseMeta):
@@ -177,7 +177,7 @@ class JHoveTiffMeta(JHoveBaseMeta):
     @metadata()
     def stream_type(self):
         """Return file type."""
-        return "image"
+        return "image" if not self._errors else "(:unav)"
 
 
 class JHovePdfMeta(JHoveBaseMeta):
@@ -246,7 +246,7 @@ class JHoveWavMeta(JHoveBaseMeta):
     @metadata()
     def stream_type(self):
         """Return file type."""
-        return "audio"
+        return "audio" if not self._errors else "(:unav)"
 
 
 class JHoveUtf8Meta(JHoveBaseMeta):
@@ -269,17 +269,18 @@ class JHoveUtf8Meta(JHoveBaseMeta):
             return "UTF-8"
         return get_field(self._report, "format")
 
-    # pylint: disable=no-self-use
     @metadata()
     def stream_type(self):
         """Return file type."""
-        return "text"
+        return "text" if not self._errors else "(:unav)"
 
+    # pylint: disable=no-self-use
     @metadata()
     def mimetype(self):
         """We don't know the mimetype."""
         return "(:unav)"
 
+    # pylint: disable=no-self-use
     @metadata()
     def version(self):
         """We don't know the version."""

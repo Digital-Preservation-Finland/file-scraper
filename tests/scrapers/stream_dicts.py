@@ -1,4 +1,6 @@
-"""Stream dicts"""
+"""
+Expected stream results for different AV files
+"""
 from __future__ import unicode_literals
 
 MOV_CONTAINER = {

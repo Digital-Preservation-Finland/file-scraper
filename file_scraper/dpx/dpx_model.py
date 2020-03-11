@@ -14,7 +14,7 @@ class DpxMeta(BaseMeta):
     def __init__(self, errors, messages, filename):
         """
         Initialize metadata model.
-        
+
         :errors: Errors given by DPX scraper
         :messages: Messages given by DPX scraper
         :filename: DPX file name
@@ -27,7 +27,7 @@ class DpxMeta(BaseMeta):
     def mimetype(self):
         """
         Return mimetype.
-        
+
         The file is DPX compliant if there are no errors, and this will be
         returned only if predefined as DPX.
         """
@@ -52,4 +52,4 @@ class DpxMeta(BaseMeta):
     @metadata()
     def stream_type(self):
         """Return file type."""
-        return "image"
+        return "image" if not self._errors else "(:unav)"

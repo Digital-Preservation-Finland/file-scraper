@@ -13,8 +13,6 @@ This module tests that:
     - In addition to this, the scraper messages contain "successfully" and no
       errors are recorded.
 
-    - For empty files, all these scrapers report MIME type as inode/x-empty.
-
     - For office files (odt, doc, docx, odp, ppt, pptx, ods, xls, xlsx, odg and
       odf) with missing bytes:
         - MIME type is application/octet-stream
@@ -38,13 +36,13 @@ This module tests that:
         - file is not well-formed
 
     - For text files actually containing binary data:
-        - version is None
-        - MIME type is application/octet-stream
+        - MIME type and version is "(:unav)"
         - scraper errors contains "do not match"
         - file is not well-formed
 
-    - Running scraper without full scraping results in well_formed being None
-      and scraper messages containing "Skipping scraper"
+    - Running scraper with binary file without full scraping results in
+      well_formed being None and scraper messages containing
+      "Skipping scraper"
 
     - The following MIME type and version pairs are supported when full
       scraping is performed:
@@ -72,22 +70,14 @@ This module tests that:
         - application/x-internet-archive, 1.0
     - Any of these MIME types with version None is also supported,
       except text/html
-    - Valid MIME type with made up version is supported, except
-      text/html
+    - Valid MIME type with made up version is supported, except for text files
     - Made up MIME type with any version is not supported
-    - When full scraping is not done, none of these combinations are supported.
-
-    - The scraper requires the parameter dict to contain "mimetype_guess"
-      entry.
-    - If the scraper determines the file to be either XML or XHTML file and
-      would thus need to use the supplied MIME type from the dict, but the
-      given MIME type does not match either of the types, an error is recorded,
-      no metadata is scraped and the file is reported as not well-formed.
+    - When full scraping is not done, these combinations are supported only
+      for text files.
 """
 from __future__ import unicode_literals
 
 import pytest
-import six
 
 from file_scraper.magic_scraper.magic_model import (HtmlFileMagicMeta,
                                                     OfficeFileMagicMeta)
@@ -236,6 +226,8 @@ def test_invalid_markdown_pdf_arc(filename, mimetype, scraper_class,
         "stderr_part": ""}
     correct = parse_results(filename, mimetype, result_dict, True)
     correct.update_mimetype(mimetype)
+    if correct.streams[0]["stream_type"] == "(:unav)":
+        correct.streams[0]["stream_type"] = "text"
     if mimetype != "text/html":
         correct.update_version(filename.split("_")[1])
     scraper = scraper_class(filename=correct.filename, mimetype=mimetype)
@@ -275,13 +267,38 @@ def test_invalid_images(filename, mimetype):
     assert partial_message_included(correct.stderr_part, scraper.errors())
 
 
+@pytest.mark.parametrize(
+    ["filename", "mimetype"],
+    [
+        ("invalid__binary_data.txt", "text/plain"),
+        ("invalid__empty.txt", "text/plain"),
+    ]
+)
+def test_invalid_text(filename, mimetype):
+    """
+    Test TextFileMagic with invalid files.
+
+    :filename: Test file name
+    :mimetype: File MIME type
+    """
+    scraper = MagicTextScraper(
+        filename=filename, mimetype=mimetype,
+        check_wellformed=True, params={"charset": "UTF-8"})
+    scraper.scrape_file()
+    assert not scraper.well_formed
+    assert scraper.streams[0]["mimetype"] == "(:unav)"
+    assert scraper.streams[0]["version"] == "(:unav)"
+    assert partial_message_included("foo", scraper.errors())
+
+
 def test_no_wellformed():
     """Test scraper without well-formed check."""
     scraper = MagicBinaryScraper(
         filename="tests/data/image_jpeg/valid_1.01.jpg",
         mimetype="image/jpeg", check_wellformed=False)
     scraper.scrape_file()
-    assert not partial_message_included("Skipping scraper", scraper.messages())
+    assert not partial_message_included("Skipping scraper",
+                                        scraper.messages())
     assert scraper.well_formed is None
 
 
@@ -319,7 +336,13 @@ def test_no_wellformed():
     ]
 )
 def test_is_supported_allow(mime, ver, scraper_class):
-    """Test is_supported method."""
+    """
+    Test is_supported method.
+
+    :mime: MIME type
+    :ver: File format version
+    :scraper_class: Scraper class to test
+    """
     assert scraper_class.is_supported(mime, ver, True)
     assert scraper_class.is_supported(mime, None, True)
     assert scraper_class.is_supported(mime, ver, False)
@@ -334,7 +357,12 @@ def test_is_supported_allow(mime, ver, scraper_class):
     ]
 )
 def test_is_supported_deny(mime, ver):
-    """Test is_supported method."""
+    """
+    Test is_supported method.
+
+    :mime: MIME type
+    :ver: File format version
+    """
     assert MagicTextScraper.is_supported(mime, ver, True)
     assert MagicTextScraper.is_supported(mime, None, True)
     assert MagicTextScraper.is_supported(mime, ver, False)

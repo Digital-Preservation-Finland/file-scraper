@@ -1,15 +1,15 @@
 """
-    - shell.shell
-        - Given command is run and its returncode is returned as the first
-          member of the returned tuple.
-        - If no stdout file is given, the output of the command is returned
-          as the second member of the returned tuple.
-        - The stderr output of t he command is returned as the third member
-          of the returned tuple.
-        - If a stdout file is given, the stdout output of the command is
-          recorded in that file.
-        - If custom environment variables are supplied, they are used when
-          running the command.
+The module tests that:
+    - Given command is run and its returncode is returned as the first member
+      of the returned tuple.
+    - If no stdout file is given, the output of the command is returned as the
+      second member of the returned tuple.
+    - The stderr output of t he command is returned as the third member of the
+      returned tuple.
+    - If a stdout file is given, the stdout output of the command is recorded
+      in that file.
+    - If custom environment variables are supplied, they are used when running
+      the command.
 """
 
 import os
@@ -34,7 +34,14 @@ from file_scraper.shell import Shell
 )
 def test_shell(command, expected_returncode, expected_stdout,
                expected_stderr):
-    """Test running commands normally."""
+    """
+    Test running commands normally.
+
+    :command: Shell command
+    :expected_returncode: Expected return code
+    :expected_stdout: Expected stdout
+    :expected_stderr: Expected stderr
+    """
 
     shell = Shell(command)
 

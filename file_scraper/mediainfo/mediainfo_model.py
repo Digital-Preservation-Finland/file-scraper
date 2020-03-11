@@ -78,7 +78,7 @@ class BaseMediainfoMeta(BaseMeta):
                 return "Grayscale"
         if self._stream.chroma_subsampling is not None:
             return "Color"
-        return None
+        return "(:unav)"
 
     @metadata()
     def signal_format(self):
@@ -182,7 +182,7 @@ class BaseMediainfoMeta(BaseMeta):
             raise SkipElementException()
         if self._stream.compression_mode is not None:
             return self._stream.compression_mode.lower()
-        return None
+        return "(:unav)"
 
     @metadata()
     def data_rate_mode(self):
@@ -198,7 +198,7 @@ class BaseMediainfoMeta(BaseMeta):
             return "Fixed"
         if self._stream.bit_rate_mode is not None:
             return "Variable"
-        return None
+        return "(:unav)"
 
     @metadata()
     def audio_data_encoding(self):
@@ -346,7 +346,7 @@ class MovMediainfoMeta(BaseMediainfoMeta):
         constant bit rate.
         """
         mode = super(MovMediainfoMeta, self).data_rate_mode()
-        if mode:
+        if mode not in ["(:unav)", None]:
             return mode
         if self.mimetype() == "video/mp4":
             return "Variable"
@@ -387,7 +387,6 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
             raise SkipElementException()
         return "(:unap)"
 
-    # pylint: disable=inconsistent-return-statements
     @metadata()
     def codec_quality(self):
         """Returns codec quality."""

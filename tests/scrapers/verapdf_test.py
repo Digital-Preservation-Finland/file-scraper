@@ -21,15 +21,10 @@ This module tests that:
       when well-formedness is checked, but does not support them when
       well-formedness is not checked. The scraper also does not support made
       up MIME types or versions.
-    - Versions A-1a, A-1b, A-2a, A-2b, A-2u, A-3a, A-3b and A-3u are recorded
-      in dict returned by get_important() function when scraper messages
-      contain "Success", but when scraper errors contain "Error", the dict is
-      empty.
 """
 from __future__ import unicode_literals
 
 import pytest
-import six
 
 from file_scraper.verapdf.verapdf_scraper import VerapdfScraper
 from tests.common import (parse_results, partial_message_included)
@@ -56,7 +51,13 @@ MIMETYPE = "application/pdf"
     ]
 )
 def test_scraper(filename, result_dict, evaluate_scraper):
-    """Test scraper with PDF/A."""
+    """
+    Test scraper with PDF/A.
+
+    :filename: Test file name
+    :result_dict: Result dict containing test purpose, and parts of
+                  expected results of stdout and stderr
+    """
     for ver in ["A-1a", "A-2b", "A-3b"]:
         filename = filename.replace("X", ver)
         correct = parse_results(filename, MIMETYPE,
@@ -91,7 +92,13 @@ def test_scraper(filename, result_dict, evaluate_scraper):
     ]
 )
 def test_scraper_invalid_pdfa(filename, result_dict, evaluate_scraper):
-    """Test scraper with files that are not valid PDF/A."""
+    """
+    Test scraper with files that are not valid PDF/A.
+
+    :filename: Test file name
+    :result_dict: Result dict containing test purpose, and parts of
+                  expected results of stdout and stderr
+    """
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
     scraper = VerapdfScraper(filename=correct.filename,
@@ -114,9 +121,7 @@ def test_no_wellformed():
         filename="tests/data/application_pdf/valid_A-1a.pdf",
         mimetype=MIMETYPE, check_wellformed=False)
     scraper.scrape_file()
-    assert partial_message_included(
-        "PDF file is compliant with Validation Profile "
-        "requirements.", scraper.messages())
+    assert partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
 
 
@@ -126,6 +131,6 @@ def test_is_supported():
     ver = "A-1b"
     assert VerapdfScraper.is_supported(mime, ver, True)
     assert VerapdfScraper.is_supported(mime, None, True)
-    assert VerapdfScraper.is_supported(mime, ver, False)
+    assert not VerapdfScraper.is_supported(mime, ver, False)
     assert not VerapdfScraper.is_supported(mime, "foo", True)
     assert not VerapdfScraper.is_supported("foo", ver, True)

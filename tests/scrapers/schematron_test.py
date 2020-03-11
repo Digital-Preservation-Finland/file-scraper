@@ -37,7 +37,6 @@ from __future__ import unicode_literals
 
 import os
 import pytest
-import six
 
 from file_scraper.schematron.schematron_scraper import SchematronScraper
 from tests.common import (parse_results, partial_message_included)
@@ -70,7 +69,14 @@ ROOTPATH = os.path.abspath(os.path.join(
     ]
 )
 def test_scraper(filename, result_dict, params, evaluate_scraper):
-    """Test scraper."""
+    """
+    Test scraper.
+
+    :filename: Test file name
+    :result_dict: Result dict containing test purpose, and parts of
+                  expected results of stdout and stderr
+    :params: schematron file as extra parameter
+    """
 
     correct = parse_results(filename, "text/xml",
                             result_dict, True, params)
@@ -78,9 +84,9 @@ def test_scraper(filename, result_dict, params, evaluate_scraper):
                                 mimetype="text/xml",
                                 params=correct.params)
     scraper.scrape_file()
-    correct.version = None
-    correct.streams[0]["version"] = "(:unav)"
-    correct.streams[0]["mimetype"] = "(:unav)"
+    correct.update_mimetype("(:unav)")
+    correct.update_version("(:unav)")
+    correct.streams[0]["stream_type"] = "(:unav)"
 
     evaluate_scraper(scraper, correct)
 

@@ -6,7 +6,8 @@ import os.path
 from file_scraper.base import BaseScraper
 from file_scraper.utils import decode_path
 from file_scraper.dummy.dummy_model import (DummyMeta,
-                                            DetectedVersionMeta)
+                                            DetectedVersionMeta,
+                                            DetectedPdfaVersionMeta)
 
 
 class ScraperNotFound(BaseScraper):
@@ -41,7 +42,6 @@ class FileExists(BaseScraper):
             )
         self.streams.append(DummyMeta())
 
-
     @property
     def well_formed(self):
         """
@@ -52,6 +52,7 @@ class FileExists(BaseScraper):
         if self._errors:
             return False
         return None
+
 
 class MimeScraper(BaseScraper):
     """
@@ -71,7 +72,6 @@ class MimeScraper(BaseScraper):
 
         mime = self._params.get("mimetype", "(:unav)")
         ver = self._params.get("version", "(:unav)")
-        well = self._params.get("well_formed", False)
         pre_list = self._MIME_DICT.get(self._predefined_mimetype, [])
 
         if mime == "(:unav)":
@@ -97,7 +97,7 @@ class DetectedVersionScraper(BaseScraper):
     Use the detected file format version (by FIDO) for some file formats.
     """
 
-    _supported_metadata = [DetectedVersionMeta]
+    _supported_metadata = [DetectedVersionMeta, DetectedPdfaVersionMeta]
 
     def scrape_file(self):
         """

@@ -62,7 +62,6 @@ class FFMpegSimpleMeta(BaseMeta):
         self._index = index
         self._ffmpeg_stream = self._current_stream()
 
-
     @metadata()
     def mimetype(self):
         """
@@ -258,7 +257,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             if self._ffmpeg_stream["pix_fmt"] in ["monob", "monow"]:
                 return "B&W"
             return "Color"
-        return None
+        return "(:unav)"
 
     @metadata()
     def width(self):

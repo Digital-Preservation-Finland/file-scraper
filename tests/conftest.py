@@ -42,7 +42,8 @@ def evaluate_scraper():
 
         for stream_index, stream_metadata in correct.streams.items():
             assert scraper.streams, ("Empty stream list resulted, "
-                                     "possibly unexpected predefined mimetype.")
+                                     "possibly unexpected predefined "
+                                     "mimetype.")
             scraped_metadata = scraper.streams[stream_index]
             for key, value in stream_metadata.items():
                 assert getattr(scraped_metadata, key)() == value, (
@@ -56,8 +57,8 @@ def evaluate_scraper():
 
         if eval_output:
             assert partial_message_included(correct.stdout_part,
-                                           scraper.messages())
+                                            scraper.messages())
             assert partial_message_included(correct.stderr_part,
-                                           scraper.errors())
+                                            scraper.errors())
 
     return _func

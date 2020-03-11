@@ -61,7 +61,7 @@ class BasePilMeta(BaseMeta):
         """Return image width."""
         if self._pil.width is not None:
             return six.text_type(self._pil.width)
-        return None
+        return "(:unav)"
 
     @metadata()
     def height(self):
@@ -69,7 +69,7 @@ class BasePilMeta(BaseMeta):
         if self._pil is not None and \
                 self._pil.height is not None:
             return six.text_type(self._pil.height)
-        return None
+        return "(:unav)"
 
     @metadata()
     def bps_value(self):
@@ -80,7 +80,7 @@ class BasePilMeta(BaseMeta):
     def bps_unit(self):
         """Return sample unit."""
         if self._pil is None:
-            return None
+            return "(:unav)"
         if self._pil.mode == "F":
             return "floating point"
 
@@ -122,7 +122,7 @@ class TiffPilMeta(BasePilMeta):
     def samples_per_pixel(self):
         """Return samples per pixel."""
         if self._pil is None:
-            return None
+            return "(:unav)"
         tag_info = self._pil.tag_v2
         if tag_info and SAMPLES_PER_PIXEL_TAG in tag_info.keys():
             return six.text_type(tag_info[SAMPLES_PER_PIXEL_TAG])

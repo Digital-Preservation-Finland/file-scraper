@@ -15,7 +15,7 @@ from file_scraper.exceptions import SkipElementException
 def metadata(important=False):
     """
     Decorator for functions scraping metadata.
-    
+
     :important: True if metadata is important, False otherwise
     :returns: Decorator for function
     """
@@ -54,7 +54,7 @@ def encode_path(filename):
 def decode_path(filename):
     """
     Decode Unicode filenames.
-    
+
     :filename: File name to decode
     :returns: Decoded file name
     """

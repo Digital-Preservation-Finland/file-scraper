@@ -1,5 +1,15 @@
 # -*- coding: utf-8 -*-
-"""Integration test for scrapers."""
+"""
+Integration test for scrapers:
+    - Scraping with checking the well-formedness for valid files,
+      without and with user defined MIME type and version.
+    - Scraping with checking the well-formedness for invalid files.
+    - Scraping without checking the well-formedness for valid files,
+      without and with user defined MIME type and version.
+    - Scraping with unicode and utf-8 encoded file names.
+    - Scraping with user predefined MIME type and version.
+    - Scraping with predefined character encoding.
+"""
 from __future__ import unicode_literals
 
 import os
@@ -195,12 +205,15 @@ def _assert_valid_scraper_result(scraper, fullname, mimetype, version,
 @pytest.mark.parametrize(("fullname", "mimetype", "version"),
                          get_files(well_formed=True))
 def test_valid_combined(fullname, mimetype, version):
-    """Integration test for valid files.
-    - Test that mimetype matches.
+    """
+    Integration test for valid files.
+    - Test that mimetype and version matches.
     - Test Find out all None elements.
     - Test that errors are not given.
     - Test that all files are well-formed.
     - Ignore few files because of required parameter or missing scraper.
+    - Test that forcing the resulted MIME type, version and charset
+      produce the same results.
     """
     if fullname in IGNORE_VALID:
         pytest.skip("[%s] in ignore" % fullname)
@@ -238,8 +251,10 @@ def test_valid_combined(fullname, mimetype, version):
 
 @pytest.mark.parametrize(("fullname", "mimetype", "version"),
                          get_files(well_formed=False))
+# pylint: disable=unused-argument
 def test_invalid_combined(fullname, mimetype, version):
-    """Integration test for all invalid files.
+    """
+    Integration test for all invalid files.
     - Test that well_formed is False and mimetype is expected.
     - If well_formed is None, check that Scraper was not found.
     - Skip files that are known cases where it is identified
@@ -270,12 +285,15 @@ def test_invalid_combined(fullname, mimetype, version):
 @pytest.mark.parametrize(("fullname", "mimetype", "version"),
                          get_files(well_formed=True))
 def test_without_wellformed(fullname, mimetype, version):
-    """Test the case where metadata is collected without well-formedness check.
+    """
+    Test the case where metadata is collected without well-formedness check.
     - Test that well-formed is always None.
-    - Test that mimetype matches.
+    - Test that mimetype and version matches.
     - Test that there exists correct stream type for image, video, audio
       and text.
     - Test a random element existence for image, video, audio and text.
+    - Test that forcing the resulted MIME type, version and charset
+      produce the same results.
     """
     if fullname in IGNORE_FOR_METADATA:
         pytest.skip("[%s] in ignore" % fullname)
@@ -297,7 +315,7 @@ def test_without_wellformed(fullname, mimetype, version):
                  "text": "charset", "audio": "num_channels"}
 
     for stream in scraper.streams.values():
-        assert stream["stream_type"] is not None
+        assert stream["stream_type"] not in ["(:unav)", None]
         if stream["stream_type"] in elem_dict:
             assert elem_dict[stream["stream_type"]] in stream
 
@@ -321,11 +339,12 @@ def test_without_wellformed(fullname, mimetype, version):
     assert forced_scraper.streams == scraper.streams
 
 
-# pylint: disable=unused-argument
 @pytest.mark.parametrize(("fullname", "mimetype", "version"),
                          get_files(well_formed=True))
+# pylint: disable=unused-argument
 def test_coded_filename(testpath, fullname, mimetype, version):
-    """Integration test with unicode and utf-8 filename and with all scrapers.
+    """
+    Integration test with unicode and utf-8 filename and with all scrapers.
     - Test that unicode filenames work with all mimetypes
     - Test that utf-8 encoded filenames work with all mimetypes
     """
@@ -342,6 +361,7 @@ def test_coded_filename(testpath, fullname, mimetype, version):
     scraper = Scraper(unicode_name.encode("utf-8"))
     scraper.scrape()
     assert scraper.well_formed
+
 
 @pytest.mark.parametrize(
     ["filepath", "params", "well_formed", "expected_mimetype",
@@ -365,7 +385,7 @@ def test_coded_filename(testpath, fullname, mimetype, version):
 
         # Force unsupported MIME type, resulting in not well-formed
         ("tests/data/image_tiff/valid_6.0.tif", {"mimetype": "audio/mpeg"},
-            False, "(:unav)", "(:unav)"),
+         False, "(:unav)", "(:unav)"),
 
         # Scrape invalid XML as plaintext, as which it is well-formed
         ("tests/data/text_xml/invalid_1.0_no_closing_tag.xml",
@@ -400,6 +420,12 @@ def test_forced_filetype(filepath, params, well_formed, expected_mimetype,
     MIME type and version results are checked both directly from the scraper
     and for well-formed files also from the first stream. In addition to this,
     well-formedness status of the file should be as expected.
+
+    :filepath: Test file path
+    :params: Parameters for Scraper
+    :well_formed: Expected result of well-formedness
+    :expected_mimetype: Expected MIME type result
+    :exprected_version: Expected file format version
     """
     scraper = Scraper(filename=filepath, **params)
     scraper.scrape()
@@ -460,6 +486,10 @@ def test_charset(filepath, charset, well_formed):
 
     We are able to give charset as a parameter. This tests the
     parameter with different mimetypes and charset inputs.
+
+    :filepath: Test file path
+    :charset: Given and expected character encoding of a test file
+    :well_formed: Expected result of well-formedness
     """
     predefined_mimetype = FORCED_MIMETYPES.get(filepath, None)
     scraper = Scraper(filepath, mimetype=predefined_mimetype,

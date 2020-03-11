@@ -26,7 +26,7 @@ class XmllintMeta(BaseMeta):
     def mimetype(self):
         """
         Return mimetype.
-        
+
         The file is an XML file, if there are no errors. This will be returned
         only if predefined as an XML file.
         """

@@ -18,12 +18,12 @@ This module tests that:
     - the scraper reports other MIME type or version as not supported when
       full scraping is done
     - the scraper reports MIME type 'image/x-dpx' with version 2.0 as not
-      supported when only well-formed check is performed
+      supported when no well-formed check is performed
 """
 from __future__ import unicode_literals
 
 import pytest
-from tests.common import (parse_results, partial_message_included)
+from tests.common import parse_results, partial_message_included
 from file_scraper.dpx.dpx_scraper import DpxScraper
 
 MIMETYPE = "image/x-dpx"
@@ -55,7 +55,13 @@ MIMETYPE = "image/x-dpx"
     ]
 )
 def test_scraper(filename, result_dict, evaluate_scraper):
-    """Test scraper."""
+    """
+    Test DPX scraper functionality.
+
+    :filename: Test file name
+    :result_dict: Result dict containing purpose of the test, and
+                  parts of the expected results of stdout and stderr
+    """
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
     scraper = DpxScraper(filename=correct.filename, mimetype=MIMETYPE)
@@ -69,9 +75,8 @@ def test_no_wellformed():
     scraper = DpxScraper(filename="tests/data/image_x-dpx/valid_2.0.dpx",
                          mimetype=MIMETYPE, check_wellformed=False)
     scraper.scrape_file()
-    for stream in scraper.streams:
-        assert stream.version() == "2.0"
     assert scraper.well_formed is None
+    assert partial_message_included("Skipping scraper", scraper.messages())
 
 
 def test_is_supported():
@@ -80,7 +85,7 @@ def test_is_supported():
     assert DpxScraper.is_supported(mime, "2.0", True)
     assert DpxScraper.is_supported(mime, None, True)
     assert DpxScraper.is_supported(mime, "1.0", True)
-    assert DpxScraper.is_supported(mime, "2.0", False)
+    assert not DpxScraper.is_supported(mime, "2.0", False)
     assert not DpxScraper.is_supported(mime, "3.0", False)
     assert not DpxScraper.is_supported(mime, "foo", True)
     assert not DpxScraper.is_supported("foo", "2.0", True)

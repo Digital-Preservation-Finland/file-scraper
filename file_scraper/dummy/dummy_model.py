@@ -35,13 +35,14 @@ class DetectedVersionMeta(BaseMeta):
         "application/vnd.oasis.opendocument.formula": ["1.0", "1.2"],
         "text/html": ["4.01", "5.0"],
         "text/xml": ["1.0"],
+        "image/x-dpx": ["2.0", "1.0"]
     }
     _allow_versions = True
 
     def __init__(self, version):
         """
         Initialize with given version.
-        
+
         :version: File format version
         """
         self._version = version
@@ -56,3 +57,18 @@ class DetectedVersionMeta(BaseMeta):
     def stream_type(self):
         """Stream type is not known so return (:unav)."""
         return "(:unav)"
+
+class DetectedPdfaVersionMeta(DetectedVersionMeta):
+    """
+    Variation of DetectedVersionMeta model for PDF/A files.
+    We allow only supported versions and keep it important.
+    """
+    # Supported mimetypes and versions
+    _supported = {"application/pdf": ["A-1a", "A-1b", "A-2a", "A-2b", "A-2u",
+                                      "A-3a", "A-3b", "A-3u"]}
+    _allow_versions = False  # No other versions allowed
+
+    @metadata(important=True)
+    def version(self):
+        """Return the file format version"""
+        return self._version if self._version is not None else "(:unav)"

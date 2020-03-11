@@ -72,7 +72,13 @@ from tests.common import (parse_results, partial_message_included)
     ]
 )
 def test_gzip_scraper(filename, result_dict, evaluate_scraper):
-    """Test scraper."""
+    """
+    Test scraper for gzip files.
+
+    :filename: Test file name
+    :result_dict: Result dict containing test purpose, and parts of
+                  expected results of stdout and stderr
+    """
     if "warc" in filename:
         mime = "application/warc"
         classname = "WarcWarctoolsScraper"
@@ -86,15 +92,16 @@ def test_gzip_scraper(filename, result_dict, evaluate_scraper):
     scraper.scrape_file()
 
     if correct.streams[0]["mimetype"] == "application/x-internet-archive":
-        correct.streams[0]["version"] = "(:unav)"
+        correct.update_version("(:unav)")
     if not correct.well_formed and correct.streams[0]["version"] == "(:unav)":
-        correct.streams[0]["mimetype"] = "application/gzip"
+        correct.update_mimetype("application/gzip")
         classname = "GzipWarctoolsScraper"
 
     if not correct.well_formed:
         assert not scraper.well_formed
         assert not scraper.streams
-        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stdout_part,
+                                        scraper.messages())
         assert partial_message_included(correct.stderr_part, scraper.errors())
     else:
         evaluate_scraper(scraper, correct, exp_scraper_cls=classname)
@@ -134,7 +141,13 @@ def test_gzip_scraper(filename, result_dict, evaluate_scraper):
     ]
 )
 def test_warc_scraper(filename, result_dict, evaluate_scraper):
-    """Test scraper."""
+    """
+    Test scraper for warc files.
+
+    :filename: Test file name
+    :result_dict: Result dict containing test purpose, and parts of
+                  expected results of stdout and stderr
+    """
     correct = parse_results(filename, "application/warc",
                             result_dict, True)
     scraper = WarcWarctoolsScraper(filename=correct.filename,
@@ -144,7 +157,8 @@ def test_warc_scraper(filename, result_dict, evaluate_scraper):
     if not correct.well_formed:
         assert not scraper.well_formed
         assert not scraper.streams
-        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stdout_part,
+                                        scraper.messages())
         assert partial_message_included(correct.stderr_part, scraper.errors())
     else:
         evaluate_scraper(scraper, correct)
@@ -180,19 +194,26 @@ def test_warc_scraper(filename, result_dict, evaluate_scraper):
     ]
 )
 def test_arc_scraper(filename, result_dict, evaluate_scraper):
-    """Test scraper."""
+    """
+    Test scraper for arc files.
+
+    :filename: Test file name
+    :result_dict: Result dict containing test purpose, and parts of
+                  expected results of stdout and stderr
+    """
     correct = parse_results(filename, "application/x-internet-archive",
                             result_dict, True)
     scraper = ArcWarctoolsScraper(
         filename=correct.filename,
         mimetype="application/x-internet-archive")
     scraper.scrape_file()
-    correct.streams[0]["version"] = "(:unav)"
+    correct.update_version("(:unav)")
 
     if not correct.well_formed:
         assert not scraper.well_formed
         assert not scraper.streams
-        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stdout_part,
+                                        scraper.messages())
         assert partial_message_included(correct.stderr_part, scraper.errors())
     else:
         evaluate_scraper(scraper, correct)

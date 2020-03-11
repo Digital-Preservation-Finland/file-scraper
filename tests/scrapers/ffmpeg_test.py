@@ -40,11 +40,8 @@ This module tests that:
         - video/MP2T, "" or None
     - A made up version with supported MIME type is reported as supported.
     - A made up MIME type with supported version is reported as not supported.
-    - Otherwise supported MIME type is not supported when well-formedness is
-      not checked.
-    - If scraping is done without well-formedness check, an error is recorded
-      and no metadata is scraped.
-    - Forcing MIME type and/or version works.
+    - Supported MIME type is supported when well-formedness is not checked.
+    - Scraping is done also when well-formedness is not checked.
 """
 from __future__ import unicode_literals
 
@@ -109,7 +106,14 @@ UNAV_MIME = []
     ])
 def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
                              evaluate_scraper):
-    """Test FFMpegScraper with valid files when no metadata is scraped."""
+    """
+    Test FFMpegScraper with valid files when no metadata is scraped.
+
+    :filename: Test file name
+    :result_dict: Result dict containing, test purpose, and parts of
+                  expected results of stdout and stderr
+    :mimetype: Given and expected mimetype
+    """
     correct = parse_results(filename, mimetype, result_dict, True)
     correct.streams.update(NO_METADATA)
 
@@ -171,7 +175,14 @@ def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
     ])
 def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
                               evaluate_scraper):
-    """Test FFMpegScraper with valid files when metadata is scraped."""
+    """
+    Test FFMpegScraper with valid files when metadata is scraped.
+
+    :filename: Test file name
+    :result_dict: Result dict containing, test purpose, and parts of
+                  expected results of stdout and stderr
+    :mimetype: Given and expected mimetype
+    """
     correct = parse_results(filename, mimetype, result_dict, True)
 
     scraper = FFMpegScraper(filename=correct.filename, mimetype=mimetype)
@@ -186,16 +197,23 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
     evaluate_scraper(scraper, correct)
 
 
-def test_no_wellformed():
+def test_no_wellformed(evaluate_scraper):
     """
     Test that scraping is also done without well-formedness check.
     """
-    scraper = FFMpegScraper(filename="tests/data/video_avi/valid__JPEG2000.avi",
-                            mimetype="video/avi", check_wellformed=False)
+    result_dict = {"streams": {0: AVI_CONTAINER.copy(),
+                               1: AVI_JPEG2000_VIDEO.copy()},
+                   "stdout_part": "", "stderr_part": ""}
+    correct = parse_results("valid__JPEG2000.avi", "video/avi", result_dict,
+                            False)
+    scraper = FFMpegScraper(
+        filename="tests/data/video_avi/valid__JPEG2000.avi",
+        mimetype="video/avi", check_wellformed=False)
     scraper.scrape_file()
     assert partial_message_included("The file was analyzed successfully.",
                                     scraper.messages())
     assert scraper.well_formed is None
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
@@ -291,7 +309,14 @@ def test_no_wellformed():
     ])
 def test_ffmpeg_scraper_invalid(filename, result_dict, mimetype,
                                 evaluate_scraper):
-    """Test FFMpegScraper with invalid files."""
+    """
+    Test FFMpegScraper with invalid files.
+
+    :filename: Test file name
+    :result_dict: Result dict containing test purpose, and parts of
+                  expected results of stdout and stderr
+    :mimetype: Given and expected mimetype
+    """
     correct = parse_results(filename, mimetype, result_dict, True)
     correct.streams = {}
 
@@ -314,7 +339,12 @@ def test_ffmpeg_scraper_invalid(filename, result_dict, mimetype,
     ]
 )
 def test_is_supported_mpeg(mime, ver):
-    """Test is_supported method."""
+    """
+    Test is_supported method.
+
+    :mime: Predefined mimetype
+    :ver: Predefined version
+    """
     assert FFMpegScraper.is_supported(mime, ver, True)
     assert FFMpegScraper.is_supported(mime, None, True)
     assert FFMpegScraper.is_supported(mime, ver, False)

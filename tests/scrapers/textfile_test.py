@@ -8,6 +8,11 @@ This module tests that:
         - xml document
         - html document
     - Empty file, pdf and gif files are identified as not text files.
+    - Character encoding validation works as designed with all combinations of
+      supported encodings.
+    - Error message is given with missing character encoding
+    - Limiting the decoding works as designed by reading the first 8 bytes
+      and skipping the remainder
 """
 from __future__ import unicode_literals
 
@@ -43,6 +48,10 @@ def test_existing_files(filename, mimetype, is_textfile, evaluate_scraper):
     Test detecting whether file is a textfile.
     The scraper tool is not able to detect UTF-16 files without BOM nor
     UTF-32 files.
+
+    :filename: Test file name
+    :mimetype: File MIME type
+    :is_textfile: Expected result whether a file is a text file or not
     """
     correct = parse_results(filename, mimetype, {}, True)
     scraper = TextfileScraper(filename=correct.filename,
@@ -130,19 +139,19 @@ def test_existing_files(filename, mimetype, is_textfile, evaluate_scraper):
 def test_encoding_check(filename, charset, is_wellformed, evaluate_scraper):
     """
     Test character encoding validation with brute force.
+
+    :filename: Test file name
+    :charset: Character encoding
+    :is_wellformed: Expected result of well-formedness
     """
     params = {"charset": charset}
     correct = parse_results(filename, "text/plain", {}, True, params)
     scraper = TextEncodingScraper(filename=correct.filename,
                                   mimetype="text/plain", params=params)
     scraper.scrape_file()
-    if is_wellformed:
-        correct.streams[0]["mimetype"] = "text/plain"
-        correct.streams[0]["version"] = "(:unap)"
-    else:
-        correct.streams[0]["mimetype"] = "(:unav)"
-        correct.streams[0]["version"] = "(:unav)"
-    correct.streams[0]["stream_type"] = "text"
+    if not is_wellformed:
+        correct.update_mimetype("(:unav)")
+        correct.update_version("(:unav)")
     correct.well_formed = is_wellformed
     if correct.well_formed:
         correct.stdout_part = "encoding validated successfully"
@@ -163,6 +172,8 @@ def test_encoding_check(filename, charset, is_wellformed, evaluate_scraper):
 def test_encoding_not_defined(charset):
     """
     Test the case where encoding is not defined.
+
+    :charset: Character encoding
     """
     scraper = TextEncodingScraper(
         filename="tests/data/text_plain/valid__utf8_without_bom.txt",

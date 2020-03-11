@@ -28,7 +28,7 @@ class FFMpegScraper(BaseScraper):
     as the metadata model.
     """
 
-    # Supported mimetypes
+    # Supported metadata models
     _supported_metadata = [FFMpegSimpleMeta, FFMpegMeta]
 
     def scrape_file(self):

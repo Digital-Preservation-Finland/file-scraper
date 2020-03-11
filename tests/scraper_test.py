@@ -13,8 +13,10 @@ This module tests that:
     - non-existent files are not well-formed according to the scraper.
     - giving None instead of a file name to the scraper results in successful
       scraping with a result of not well-formed.
-    - file type detection without scraping works and respects the forced file
-      type if provided.
+    - file type detection without scraping works and respects the predefined
+      file type if provided.
+    - Character encoding detection works and respects the predefined file type
+      if provided.
 """
 from __future__ import unicode_literals
 
@@ -82,7 +84,8 @@ def test_missing_file():
         ("tests/data/image_png/invalid_1.2_wrong_CRC.png", {},
          {"_predefined_mimetype": "image/png", "_predefined_version": "1.0",
           "well_formed": None}),
-        ("tests/data/video_mp4/valid__h264_aac.mp4", {"mimetype": "video/mpeg"},
+        ("tests/data/video_mp4/valid__h264_aac.mp4",
+         {"mimetype": "video/mpeg"},
          {"_predefined_mimetype": "video/mpeg", "_predefined_version": None,
           "well_formed": None}),
     ]
@@ -98,6 +101,11 @@ def test_detect_filetype(filename, params, expected_results):
 
     Then it is tested that the same results are also returned if full scraping
     is run before filetype detection.
+
+    :filename: Test file name
+    :params: Parameters for Scarper
+    :expected_results: Expected results, containing expected values of Scraper
+                       attributes
     """
     # Filetype detection should work without scraping
     scraper = Scraper(filename, **params)
@@ -126,8 +134,11 @@ def test_charset_parameter(charset):
     Test charset parameter.
     In the test we have an UTF-8 file. If given charset is None, it will be
     detected as UTF-8. Otherwise, the parameter value is used.
+
+    :charset: Given character encoding
     """
     scraper = Scraper("tests/data/text_plain/valid__utf8_without_bom.txt",
                       charset=charset)
     scraper.detect_filetype()
+    # pylint: disable=protected-access
     assert scraper._params["charset"] == charset or "UTF-8"

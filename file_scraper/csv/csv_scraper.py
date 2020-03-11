@@ -15,6 +15,7 @@ class CsvScraper(BaseScraper):
 
     _supported_metadata = [CsvMeta]
 
+    # pylint: disable=too-many-branches
     def scrape_file(self):
         """Scrape CSV file."""
 

@@ -30,6 +30,7 @@ class Correct(object):
 
     # pylint: disable=too-few-public-methods, too-many-instance-attributes
     def __init__(self):
+        """Initialize attributes."""
         self.filename = None
         self.purpose = None
         self.streams = None
@@ -42,9 +43,10 @@ class Correct(object):
         """
         Changes the MIME type of the object.
 
-        This can be needed e.g. when forced file types are tested. If streams
-        were found, the mimetype in the first stream is also set in addition to
-        the mimetype variable.
+        This can be needed e.g. when predefined file format is different, e.g.
+        HTML document is changed to plain text.
+
+        :new_mimetype: New MIME type
         """
         if self.streams:
             self.streams[0]["mimetype"] = new_mimetype
@@ -53,9 +55,10 @@ class Correct(object):
         """
         Changes the version of the object.
 
-        This can be needed e.g. when forced file types are tested. If streams
-        were found, the version in the first stream is also set in addition to
-        the version variable.
+        This can be needed e.g. when predefined file format version is
+        different, e.g. PDF/A-1a is changed to PDF 1.4.
+
+        :new_version: New file format version
         """
         if self.streams:
             self.streams[0]["version"] = new_version
@@ -64,7 +67,7 @@ class Correct(object):
 def parse_results(filename, mimetype, results, check_wellformed,
                   params=None, basepath="tests/data"):
     """
-    Parse results from filepath and given results.
+    Parse expected results from filepath and given results.
 
     :filename: File name
     :mimetype: Mimetype
@@ -73,9 +76,9 @@ def parse_results(filename, mimetype, results, check_wellformed,
     :check_wellformed: True, if well-formed check, otherwise False
     :basepath: Base path
     :params: Parameters for the scraper
-    :returns: Correct instance
+    :returns: Correct instance, with expected results for tests
     """
-    # pylint: disable=too-many-locals, too-many-arguments
+    # pylint: disable=too-many-locals, too-many-arguments, too-many-branches
     well_dict = {"valid": True, "invalid": False}
     path = os.path.join(basepath, mimetype.replace("/", "_"))
     words = filename.rsplit(".", 1)[0].split("_", 2)
@@ -104,6 +107,7 @@ def parse_results(filename, mimetype, results, check_wellformed,
                                    results["inverse"]):
         correct_mime = "(:unav)"
         correct_ver = "(:unav)"
+        stream_type = "(:unav)" if stream_type != "binary" else stream_type
     else:
         correct_mime = mimetype
         correct_ver = version
@@ -144,5 +148,6 @@ def partial_message_included(part, messages):
 
     :part: The substring to find in messages.
     :messages: An iterable of strings.
+    :returns: True if partial message found, False otherwise
     """
     return part == "" or any(part in message for message in messages)

@@ -8,6 +8,7 @@ This module tests that:
     - MIME type, version, streams and well-formedness of corrupted office
       files are determined correctly with 'source file could not be loaded'
       being recorded in scraper errors.
+    - Scraper uses parallel instances of LibreOffice properly.
     - Without well-formedness check, scraper messages contain 'Skipping
       scraper' and well_formed is None
     - With well-formedness check, the following MIME type and version
@@ -37,7 +38,6 @@ import os
 from multiprocessing import Pool
 
 import pytest
-import six
 
 from file_scraper.office.office_scraper import OfficeScraper
 from tests.common import (parse_results, partial_message_included)
@@ -67,17 +67,17 @@ BASEPATH = "tests/data"
     ]
 )
 def test_scraper_valid_file(filename, mimetype, evaluate_scraper):
-    """Test valid files with scraper."""
-    result_dict = {
-        "purpose": "Test valid file.",
-        "stdout_part": "",
-        "stderr_part": ""}
-    correct = parse_results(filename, mimetype,
-                            result_dict, True)
+    """
+    Test valid files with scraper.
+
+    :filename: Test file name
+    :mimetype: File MIME type
+    """
+    correct = parse_results(filename, mimetype, {}, True)
     scraper = OfficeScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
-    correct.streams[0]["version"] = "(:unav)"
-    correct.streams[0]["mimetype"] = "(:unav)"
+    correct.update_mimetype("(:unav)")
+    correct.update_version("(:unav)")
 
     evaluate_scraper(scraper, correct, False)
     assert scraper.messages()
@@ -106,7 +106,12 @@ def test_scraper_valid_file(filename, mimetype, evaluate_scraper):
     ]
 )
 def test_scraper_invalid_file(filename, mimetype, evaluate_scraper):
-    """Test scraper with invalid files."""
+    """
+    Test scraper with invalid files.
+
+    :filename: Test file name
+    :mimetype: File MIME type
+    """
     result_dict = {
         "purpose": "Test invalid file.",
         "stdout_part": "",
@@ -140,6 +145,9 @@ def test_parallel_validation(filename, mimetype):
 
     This is done because Libreoffice convert command is prone for
     freezing which would cause TimeOutError here.
+
+    :filename: Test file name
+    :mimetype: File MIME type
     """
 
     number = 3
@@ -153,9 +161,9 @@ def test_parallel_validation(filename, mimetype):
 
 def test_no_wellformed():
     """Test scraper without well-formed check."""
-    scraper = OfficeScraper(filename="tests/data/application_msword/valid_11.0.doc",
-                            mimetype="application/msword",
-                            check_wellformed=False)
+    scraper = OfficeScraper(
+        filename="tests/data/application_msword/valid_11.0.doc",
+        mimetype="application/msword", check_wellformed=False)
     scraper.scrape_file()
     assert partial_message_included("Skipping scraper", scraper.messages())
     assert scraper.well_formed is None
@@ -181,7 +189,12 @@ def test_no_wellformed():
     ]
 )
 def test_is_supported(mime, ver):
-    """Test is_supported method."""
+    """
+    Test is_supported method.
+
+    :mime: MIME type
+    :ver: File format version
+    """
     assert OfficeScraper.is_supported(mime, ver, True)
     assert OfficeScraper.is_supported(mime, None, True)
     assert not OfficeScraper.is_supported(mime, ver, False)

@@ -21,6 +21,7 @@ class JHoveScraperBase(BaseScraper):
     _jhove_module = None
     _only_wellformed = True
 
+    # pylint: disable=too-many-arguments
     def __init__(self, filename, mimetype, version=None,
                  check_wellformed=True, params=None):
         """
@@ -34,10 +35,9 @@ class JHoveScraperBase(BaseScraper):
         :params: Extra parameters needed for the scraper
         """
         self._report = None  # JHove report
-        super(JHoveScraperBase, self).__init__(filename=filename, mimetype=mimetype,
-                                               version=version,
-                                               check_wellformed=check_wellformed,
-                                               params=params)
+        super(JHoveScraperBase, self).__init__(
+            filename=filename, mimetype=mimetype, version=version,
+            check_wellformed=check_wellformed, params=params)
 
     def scrape_file(self):
         """Run JHove command and store XML output to self.report."""

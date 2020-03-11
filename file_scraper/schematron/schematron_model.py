@@ -14,5 +14,5 @@ class SchematronMeta(BaseMeta):
     # pylint: disable=no-self-use
     @metadata()
     def stream_type(self):
-        """Return file type."""
-        return "text"
+        """We do not need to resolve stream type."""
+        return "(:unav)"

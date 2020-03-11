@@ -8,8 +8,8 @@ This module tests that:
     - These are also scraped correctly from files of same type with errors
       such as missing data, broken header or empty file, with scraper errors
       containing 'Error in analyzing file'.
-    - If well-formedness is not tested, scraper messages contains 'Skipping
-      scraper' and well_formed is None.
+    - If well-formedness is not tested, scraper messages must not contain
+      'Skipping scraper', but well_formed is None.
     - The following MIME type and version pairs are supported both with and
       without well-formedness check:
         - image/tiff, 6.0
@@ -77,7 +77,13 @@ STREAM_INVALID = {}
     ]
 )
 def test_scraper_tif(filename, result_dict, evaluate_scraper):
-    """Test scraper with tiff files."""
+    """
+    Test scraper with tiff files.
+
+    :filename: Test file name
+    :result_dict: Result dict containing the test purpose, parts of
+                  expected results of stdout and stderr, and expected streams
+    """
     correct = parse_results(filename, "image/tiff",
                             result_dict, True)
     if correct.well_formed:
@@ -95,8 +101,10 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
         evaluate_scraper(scraper, correct)
     else:
         assert not scraper.well_formed
-        assert partial_message_included(correct.stdout_part, scraper.messages())
-        assert partial_message_included(correct.stderr_part, scraper.errors())
+        assert partial_message_included(correct.stdout_part,
+                                        scraper.messages())
+        assert partial_message_included(correct.stderr_part,
+                                        scraper.errors())
         assert not scraper.streams
 
 
@@ -120,7 +128,13 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
     ]
 )
 def test_scraper_jpg(filename, result_dict, evaluate_scraper):
-    """Test scraper with jpeg files."""
+    """
+    Test scraper with jpeg files.
+
+    :filename: Test file name
+    :result_dict: Result dict containing the test purpose, parts of
+                  expected results of stdout and stderr, and expected streams
+    """
     correct = parse_results(filename, "image/jpeg",
                             result_dict, True)
     correct.streams[0]["mimetype"] = "image/jpeg"
@@ -138,8 +152,10 @@ def test_scraper_jpg(filename, result_dict, evaluate_scraper):
         evaluate_scraper(scraper, correct)
     else:
         assert not scraper.well_formed
-        assert partial_message_included(correct.stdout_part, scraper.messages())
-        assert partial_message_included(correct.stderr_part, scraper.errors())
+        assert partial_message_included(correct.stdout_part,
+                                        scraper.messages())
+        assert partial_message_included(correct.stderr_part,
+                                        scraper.errors())
         assert not scraper.streams
 
 
@@ -158,7 +174,13 @@ def test_scraper_jpg(filename, result_dict, evaluate_scraper):
     ]
 )
 def test_scraper_jp2(filename, result_dict, evaluate_scraper):
-    """Test scraper with jp2 files."""
+    """
+    Test scraper with jp2 files.
+
+    :filename: Test file name
+    :result_dict: Result dict containing the test purpose, parts of
+                  expected results of stdout and stderr, and expected streams
+    """
     correct = parse_results(filename, "image/jp2",
                             result_dict, True)
     if correct.well_formed:
@@ -174,8 +196,10 @@ def test_scraper_jp2(filename, result_dict, evaluate_scraper):
         evaluate_scraper(scraper, correct)
     else:
         assert not scraper.well_formed
-        assert partial_message_included(correct.stdout_part, scraper.messages())
-        assert partial_message_included(correct.stderr_part, scraper.errors())
+        assert partial_message_included(correct.stdout_part,
+                                        scraper.messages())
+        assert partial_message_included(correct.stderr_part,
+                                        scraper.errors())
         assert not scraper.streams
 
 
@@ -204,7 +228,13 @@ def test_scraper_jp2(filename, result_dict, evaluate_scraper):
     ]
 )
 def test_scraper_png(filename, result_dict, evaluate_scraper):
-    """Test scraper with png files."""
+    """
+    Test scraper with png files.
+
+    :filename: Test file name
+    :result_dict: Result dict containing the test purpose, parts of
+                  expected results of stdout and stderr, and expected streams
+    """
     correct = parse_results(filename, "image/png",
                             result_dict, True)
     correct.streams[0]["version"] = "(:unav)"
@@ -221,7 +251,8 @@ def test_scraper_png(filename, result_dict, evaluate_scraper):
         evaluate_scraper(scraper, correct)
     else:
         assert not scraper.well_formed
-        assert partial_message_included(correct.stdout_part, scraper.messages())
+        assert partial_message_included(correct.stdout_part,
+                                        scraper.messages())
         assert partial_message_included(correct.stderr_part, scraper.errors())
         assert not scraper.streams
 
@@ -256,9 +287,14 @@ def test_scraper_png(filename, result_dict, evaluate_scraper):
     ]
 )
 def test_scraper_gif(filename, result_dict, evaluate_scraper):
-    """Test scraper with gif files."""
-    correct = parse_results(filename, "image/gif",
-                            result_dict, True)
+    """
+    Test scraper with gif files.
+
+    :filename: Test file name
+    :result_dict: Result dict containing the test purpose, parts of
+                  expected results of stdout and stderr, and expected streams
+    """
+    correct = parse_results(filename, "image/gif", result_dict, True)
     # GIF is an index image
     if correct.well_formed:
         correct.streams[0]["samples_per_pixel"] = "1"
@@ -277,35 +313,49 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
         evaluate_scraper(scraper, correct)
     else:
         assert not scraper.well_formed
-        assert partial_message_included(correct.stdout_part, scraper.messages())
-        assert partial_message_included(correct.stderr_part, scraper.errors())
+        assert partial_message_included(correct.stdout_part,
+                                        scraper.messages())
+        assert partial_message_included(correct.stderr_part,
+                                        scraper.errors())
         assert not scraper.streams
 
 
-def test_no_wellformed():
+def test_no_wellformed(evaluate_scraper):
     """Test scraper without well-formed check."""
-    scraper = PilScraper(filename="tests/data/image_gif/valid_1987a.gif",
+    result_dict = {"streams": {0: STREAM_VALID.copy()},
+                   "stdout_part": "", "stderr_part": ""}
+    correct = parse_results("valid_1989a.gif", "image/gif", result_dict, False)
+
+    scraper = PilScraper(filename="tests/data/image_gif/valid_1989a.gif",
                          mimetype="image/gif",
                          check_wellformed=False)
     scraper.scrape_file()
+    correct.update_version("(:unav)")
+    correct.streams[0]["samples_per_pixel"] = "1"
+    correct.well_formed = None
     assert not partial_message_included("Skipping scraper", scraper.messages())
-    assert scraper.well_formed is None
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
-    ["mime", "ver", "class_"],
+    ["mime", "ver"],
     [
-        ("image/tiff", "6.0", PilScraper),
-        ("image/jpeg", "1.01", PilScraper),
-        ("image/jp2", "", PilScraper),
-        ("image/png", "1.2", PilScraper),
-        ("image/gif", "1987a", PilScraper),
+        ("image/tiff", "6.0"),
+        ("image/jpeg", "1.01"),
+        ("image/jp2", ""),
+        ("image/png", "1.2"),
+        ("image/gif", "1987a"),
     ]
 )
-def test_is_supported(mime, ver, class_):
-    """Test is_supported method."""
-    assert class_.is_supported(mime, ver, True)
-    assert class_.is_supported(mime, None, True)
-    assert class_.is_supported(mime, ver, False)
-    assert class_.is_supported(mime, "foo", True)
-    assert not class_.is_supported("foo", ver, True)
+def test_is_supported(mime, ver):
+    """
+    Test is_supported method.
+
+    :mime: MIME type
+    :ver: File format version
+    """
+    assert PilScraper.is_supported(mime, ver, True)
+    assert PilScraper.is_supported(mime, None, True)
+    assert PilScraper.is_supported(mime, ver, False)
+    assert PilScraper.is_supported(mime, "foo", True)
+    assert not PilScraper.is_supported("foo", ver, True)

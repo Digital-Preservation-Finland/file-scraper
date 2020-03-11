@@ -15,12 +15,13 @@ This module tests that:
     - A correct MIME type with made up version is reported as supported for
       text/xml files but not for text/html files.
     - A made up MIME type with correct version is reported as not supported.
+    - Scraper works as designed with charset parameter.
 """
 from __future__ import unicode_literals
 
 import os
 import tempfile
-from io import open
+import io
 
 import pytest
 
@@ -35,14 +36,18 @@ from tests.common import partial_message_included
     ]
 )
 def test_xml_encoding(testpath, file_encoding):
-    """Test that encoding check from XML header works."""
+    """
+    Test that encoding check from XML header works.
+
+    :file_encoding: File character encoding
+    """
     enc_match = {"latin_1": u"ISO-8859-15",
                  "utf_8": "UTF-8",
                  "utf_16": "UTF-16"}
     xml = """<?xml version="1.0" encoding="{}" ?>
               <a>åäö</a>""".format(enc_match[file_encoding])
     tmppath = os.path.join(testpath, "valid__.csv")
-    with open(tmppath, "wb") as file_:
+    with io.open(tmppath, "wb") as file_:
         file_.write(xml.encode(file_encoding))
 
     scraper = LxmlScraper(filename=tmppath, mimetype="text/xml",
@@ -58,22 +63,23 @@ def test_no_wellformed(testpath):
     xml = """<?xml version="1.0" encoding="UTF-8" ?>
               <a>åäö</a>""".encode("utf-8")
     tmppath = os.path.join(testpath, "valid__.csv")
-    with open(tmppath, "wb") as file_:
+    with io.open(tmppath, "wb") as file_:
         file_.write(xml)
     scraper = LxmlScraper(filename=tmppath, mimetype="text/csv",
                           check_wellformed=False,
                           params={"charset": "UTF-8"})
     scraper.scrape_file()
     assert scraper.well_formed is None
+    assert partial_message_included("Skipping scraper", scraper.messages())
 
 
 def test_is_supported_allow():
-    """Test is_supported method for xml files."""
+    """Test is_supported method for xml 1.0 files."""
     mime = "text/xml"
     ver = "1.0"
     assert LxmlScraper.is_supported(mime, ver, True)
     assert LxmlScraper.is_supported(mime, None, True)
-    assert LxmlScraper.is_supported(mime, ver, False)
+    assert not LxmlScraper.is_supported(mime, ver, False)
     assert not LxmlScraper.is_supported(mime, ver, True,
                                         {"schematron": "test"})
     assert LxmlScraper.is_supported(mime, "foo", True)
@@ -81,14 +87,14 @@ def test_is_supported_allow():
 
 
 def test_is_supported_deny():
-    """Test is_supported method for html files."""
+    """Test is_supported method for html 5.0 files."""
     mime = "text/html"
     ver = "5.0"
     assert LxmlScraper.is_supported(mime, ver, True)
     assert LxmlScraper.is_supported(mime, None, True)
     assert not LxmlScraper.is_supported(mime, ver, True,
                                         {"schematron": "test"})
-    assert LxmlScraper.is_supported(mime, ver, False)
+    assert not LxmlScraper.is_supported(mime, ver, False)
     assert not LxmlScraper.is_supported(mime, "foo", True)
     assert not LxmlScraper.is_supported("foo", ver, True)
 
@@ -107,6 +113,11 @@ def test_is_supported_deny():
 def test_charset(filename, mimetype, charset, well_formed):
     """
     Test charset parameter.
+
+    :filename: Test file name
+    :mimetype: File MIME type
+    :charset: File character encoding
+    :well_formed: Expected result of well-formedness
     """
     params = {"charset": charset}
     scraper = LxmlScraper(filename=filename, mimetype=mimetype, params=params)

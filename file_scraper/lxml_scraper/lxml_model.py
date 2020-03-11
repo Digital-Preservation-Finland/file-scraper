@@ -10,7 +10,6 @@ class LxmlMeta(BaseMeta):
 
     # We use JHOVE for XHTML files.
     _supported = {"text/xml": ["1.0"], "text/html": ["4.01", "5.0"]}
-    _only_wellformed = True  # Only well-formed check
 
     def __init__(self, tree):
         """

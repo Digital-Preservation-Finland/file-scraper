@@ -12,6 +12,7 @@ class DpxScraper(BaseScraper):
     """DPX scraper."""
 
     _supported_metadata = [DpxMeta]
+    _only_wellformed = True
 
     def scrape_file(self):
         """Scrape DPX."""

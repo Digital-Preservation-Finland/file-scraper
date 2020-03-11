@@ -63,13 +63,11 @@ class WarcWarctoolsMeta(BaseWarctoolsMeta):
     def mimetype(self):
         """
         Return mimetype.
-        
+
         The file is a WARC file if there are not errors. This is returned only
         if predefined as a WARC file.
         """
-        if not self._errors:
-            return "application/warc"
-        return "(:unav)"
+        return "application/warc" if not self._errors else "(:unav)"
 
     @metadata()
     def version(self):
@@ -99,10 +97,9 @@ class ArcWarctoolsMeta(BaseWarctoolsMeta):
     def mimetype(self):
         """
         Return mimetype.
-        
+
         The file is an ARC file if there are not errors. This is returned only
         if predefined as an ARC file.
         """
-        if not self._errors:
-            return "application/x-internet-archive"
-        return "(:unav)"
+        return "application/x-internet-archive" if not self._errors \
+            else "(:unav)"

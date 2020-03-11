@@ -141,7 +141,7 @@ class FidoDetector(BaseDetector):
     def __init__(self, filename, mimetype=None, version=None):
         """
         Initialize detector.
-        
+
         :filename: File name of file to detect
         :mimetype: Mimetype from another source, e.g. METS
         :version: File format version from another source, e.g. METS

@@ -12,31 +12,30 @@ class PsppMeta(BaseMeta):
     _allow_versions = True                       # Allow any version
 
     def __init__(self, errors):
-        """Initialize model."""
+        """Initialize model.
+
+        :errors: Errors from scraper
+        """
         self._errors = errors
 
     @metadata()
     def mimetype(self):
         """
         Return MIME type.
-        
+
         The file is compliant SPSS Portable file if there are no errors. This
         is only returned if predefined as SPSS Portable.
         """
-        if not self._errors:
-            return "application/x-spss-por"
-        return "(:unav)"
+        return "application/x-spss-por" if not self._errors else "(:unav)"
 
     @metadata()
     def version(self):
         """Return version.
-        
+
         The file is compliant SPSS Portable file if there are no errors. This
         is only returned if predefined as SPSS Portable.
         """
-        if not self._errors:
-            return "(:unap)"
-        return "(:unav)"
+        return "(:unap)" if not self._errors else "(:unav)"
 
     @metadata()
     def stream_type(self):

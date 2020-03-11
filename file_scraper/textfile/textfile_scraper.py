@@ -81,6 +81,7 @@ class TextEncodingScraper(BaseScraper):
     _limit = 100*1024**2  # Limit file read in MB, 0 = unlimited
                           # _limit must be divisible with _chunksize
 
+    # pylint: disable=too-many-arguments
     def __init__(self, filename, mimetype, version=None,
                  check_wellformed=True, params=None):
         """Initialize scraper. Add given charset."""

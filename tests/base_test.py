@@ -8,6 +8,8 @@ This module tests:
     - That messages and errors are returned properly.
     - That scraper attributes and well_formed property are set and retrieved
       correctly
+    - That _check_supported() method gives error messages proprly
+    - That initialization of detector works properly
 """
 from __future__ import unicode_literals
 
@@ -21,7 +23,7 @@ from tests.common import partial_message_included
 class BaseMetaBasic(BaseMeta):
     """Metadata model supporting specific versions of one MIME type"""
 
-    _supported = {"test/mimetype": ["0.1", "0.2"]}
+    _supported = {"test/mimetype": ["0.1", "0.2"]}  # Supported file formats
 
 
 class BaseScraperBasic(BaseScraper):
@@ -32,7 +34,7 @@ class BaseScraperBasic(BaseScraper):
     and is used for metadata collection.
     """
 
-    _supported_metadata = [BaseMetaBasic]
+    _supported_metadata = [BaseMetaBasic]  # Supported metadata models
 
     def scrape_file(self):
         """Do nothing, scraping not needed here."""
@@ -42,8 +44,8 @@ class BaseScraperBasic(BaseScraper):
 class BaseMetaVersion(BaseMeta):
     """Basic metadata model supporting all versions of a single MIME type."""
 
-    _allow_versions = True
-    _supported = {"test/mimetype": []}
+    _allow_versions = True  # Allow all versions
+    _supported = {"test/mimetype": []}  # Supported file formats
 
 
 class BaseScraperVersion(BaseScraperBasic):
@@ -54,13 +56,13 @@ class BaseScraperVersion(BaseScraperBasic):
     and is used for metadata collection
     """
 
-    _supported_metadata = [BaseMetaVersion]
+    _supported_metadata = [BaseMetaVersion]  # Supported metadata models
 
 
 class BaseScraperWellFormed(BaseScraperBasic):
     """Scraper that allows only scraping for well_formed result."""
 
-    _only_wellformed = True
+    _only_wellformed = True  # Use only when checking well-formedness
 
 
 class BaseDetectorBasic(BaseDetector):
@@ -68,6 +70,7 @@ class BaseDetectorBasic(BaseDetector):
 
     # pylint: disable=too-few-public-methods
     def detect(self):
+        """Do not detect anything"""
         pass
 
 
@@ -93,7 +96,14 @@ class BaseDetectorBasic(BaseDetector):
 )
 def test_is_supported(scraper_class, mimetype, version, check_wellformed,
                       supported):
-    """Test scraper's is_supported() method."""
+    """
+    Test scraper's is_supported() method.
+
+    :mimetype: File MIME type
+    :version: File format version
+    :check_wellformed: True for well-formed check, False otherwise
+    :supported: Expected boolean result from is_supported()
+    """
     assert (scraper_class.is_supported(mimetype, version, check_wellformed) ==
             supported)
 
@@ -138,18 +148,26 @@ def test_scraper_properties():
 class BaseMetaCustom(BaseMeta):
     """Metadata model that uses MIME type and version given to constructor."""
 
-    _supported = {"test/mimetype": ["0.1"]}
+    _supported = {"test/mimetype": ["0.1"]}  # Supported file formats
 
     def __init__(self, mimetype, version):
+        """
+        Initialize metadata model
+
+        :mimetype: File MIME type
+        :version: File format version
+        """
         self._mimetype = mimetype
         self._version = version
 
     @metadata()
     def mimetype(self):
+        """Return MIME type"""
         return self._mimetype
 
     @metadata()
     def version(self):
+        """Return file format version"""
         return self._version
 
 
@@ -174,7 +192,14 @@ class BaseScraperSupported(BaseScraper):
     ]
 )
 def test_check_supported(scraper_class, mimetype, version, errors):
-    """Test scraper's _check_supported() method."""
+    """
+    Test scraper's _check_supported() method.
+
+    :scraper_class: Test scraper class
+    :mimetype: File MIME type
+    :version: File format version
+    :errors: Expected errors
+    """
     # pylint: disable=protected-access
     scraper = scraper_class("testfilename", mimetype)
     scraper.streams.append(BaseMetaCustom(mimetype=mimetype,
@@ -187,6 +212,10 @@ def test_check_supported(scraper_class, mimetype, version, errors):
 
 
 def test_base_detector():
-    """Test base detector."""
-    detector = BaseDetectorBasic("testfilename")
+    """Test base detector initialization."""
+    detector = BaseDetectorBasic(
+        filename="testfilename", mimetype="test/mime", version="0.0")
     assert detector.filename == "testfilename"
+    # pylint: disable=protected-access
+    assert detector._given_mimetype == "test/mime"
+    assert detector._given_version == "0.0"

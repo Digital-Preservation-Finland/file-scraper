@@ -10,7 +10,6 @@ class VnuMeta(BaseMeta):
 
     _supported = {"text/html": ["5.0"]}  # Supported mimetypes
 
-
     def __init__(self, errors):
         """Initialize the metadata model."""
         self._errors = errors
@@ -19,27 +18,23 @@ class VnuMeta(BaseMeta):
     def mimetype(self):
         """
         Return mimetype.
-        
+
         The file is a HTML5 file if there are no errors. This will be returned
         only if predefined as HTML5.
         """
-        if not self._errors:
-            return "text/html"
-        return "(:unav)"
+        return "text/html" if not self._errors else "(:unav)"
 
     @metadata()
     def version(self):
         """
         Return version.
-        
+
         The file is a HTML5 file if there are no errors. This will be returned
         only if predefined as HTML5.
         """
-        if not self._errors:
-            return "5.0"
-        return "(:unav)"
+        return "5.0" if not self._errors else "(:unav)"
 
     @metadata()
     def stream_type(self):
         """Return file type."""
-        return "text"
+        return "text" if not self._errors else "(:unav)"

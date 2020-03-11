@@ -40,7 +40,7 @@ class CsvMeta(BaseMeta):
     def mimetype(self):
         """
         Return mimetype.
-        
+
         The file is CSV compliant if there are no errors, and
         this will be returned only if predefined as CSV.
         """
@@ -69,4 +69,4 @@ class CsvMeta(BaseMeta):
     @metadata()
     def stream_type(self):
         """Return file type."""
-        return "text"
+        return "text" if not self._errors else "(:unav)"

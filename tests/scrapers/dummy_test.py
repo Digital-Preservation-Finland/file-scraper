@@ -2,7 +2,7 @@
 Test module for dummy.py
 
 This module tests the following scraper classes:
-    - ScraperNotFound
+    - FileExists
         - Existing files, both well-formed and non-well-formed, are found and
           their mimetype and streams are identified correctly whereas version
           and well_formed should be reported as None. No errors should be
@@ -17,6 +17,14 @@ This module tests the following scraper classes:
         - MIME type is what is given to the scraper.
         - Streams contain only one dict with version and stream_type as None
           and MIME type as what was given to the scraper.
+    - MimeScraper
+        - well_formed is True if predefined file type (mimetype and version)
+          and given file type match
+        - well_formed is False if predefined filetype and given file type
+          conflicts
+    - DetectedVersionScraper
+        - Results given file format version as a scraper result
+        - Results error in MIME type is not supported
 """
 from __future__ import unicode_literals
 
@@ -42,7 +50,11 @@ DEFAULTSTREAMS = {0: {"index": 0, "version": "(:unav)",
     ]
 )
 def test_existing_files(filepath):
-    """Test that existent files are identified correctly."""
+    """
+    Test that existent files are identified correctly.
+
+    :filepath: Existing test file name
+    """
 
     scraper = FileExists(filepath, None)
     scraper.scrape_file()
@@ -63,7 +75,11 @@ def test_existing_files(filepath):
     "filepath", "tests/data/image_gif/nonexistent_file.gif"
 )
 def test_nonexistent_files(filepath):
-    """Test that non-existent files are identified correctly."""
+    """
+    Test that non-existent files are identified correctly.
+
+    :filepath: Non-existing file path
+    """
     scraper = FileExists(filepath, None)
     scraper.scrape_file()
 
@@ -90,7 +106,11 @@ def test_none_filename():
     ]
 )
 def test_scraper_not_found(filepath):
-    """Check ScraperNotFound results."""
+    """
+    Check ScraperNotFound results.
+
+    :filepath: Test file
+    """
     scraper = ScraperNotFound(filepath, None)
     scraper.scrape_file()
 
@@ -104,9 +124,7 @@ def test_scraper_not_found(filepath):
 
 
 def test_mime_scraper():
-    """
-    Test scraper for MIME type and version match check."
-    """
+    """Test scraper for MIME type and version match check."""
     scraper = MimeScraper(
         None, mimetype="expected_mime", version="expected_version",
         params={"mimetype": "expected_mime", "version": "expected_version"})

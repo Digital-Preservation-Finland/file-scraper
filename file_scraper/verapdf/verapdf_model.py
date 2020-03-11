@@ -26,13 +26,11 @@ class VerapdfMeta(BaseMeta):
     def mimetype(self):
         """
         Return mime type.
-        
+
         File is PDF/A compliant without errors. This is returned only if
         predefined as PDF/A file.
         """
-        if not self._errors:
-            return "application/pdf"
-        return "(:unav)"
+        return "application/pdf" if not self._errors else "(:unav)"
 
     @metadata(important=True)
     def version(self):

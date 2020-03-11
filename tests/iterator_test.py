@@ -15,6 +15,7 @@ from file_scraper.iterator import iter_scrapers, iter_detectors
 @pytest.mark.parametrize(
     ["mimetype", "version", "scraper_classes"],
     [
+        ("image/x-dpx", None, ["DpxScraper", "DetectedVersionScraper"]),
         ("application/x-spss-por", None, ["PsppScraper"]),
         ("application/warc", None, ["WarcWarctoolsScraper"]),
         ("text/csv", None, ["CsvScraper", "MagicTextScraper",
@@ -33,21 +34,29 @@ from file_scraper.iterator import iter_scrapers, iter_detectors
         ("application/pdf", "1.5", ["MagicBinaryScraper", "JHovePdfScraper"]),
         ("application/pdf", "1.6", ["MagicBinaryScraper", "JHovePdfScraper"]),
         ("application/pdf", "A-1a", ["MagicBinaryScraper", "JHovePdfScraper",
-                                     "VerapdfScraper"]),
+                                     "VerapdfScraper",
+                                     "DetectedVersionScraper"]),
         ("application/pdf", "A-1b", ["MagicBinaryScraper", "JHovePdfScraper",
-                                     "VerapdfScraper"]),
+                                     "VerapdfScraper",
+                                     "DetectedVersionScraper"]),
         ("application/pdf", "A-2a",
-         ["MagicBinaryScraper", "GhostscriptScraper", "VerapdfScraper"]),
+         ["MagicBinaryScraper", "GhostscriptScraper", "VerapdfScraper",
+          "DetectedVersionScraper"]),
         ("application/pdf", "A-2b",
-         ["MagicBinaryScraper", "GhostscriptScraper", "VerapdfScraper"]),
+         ["MagicBinaryScraper", "GhostscriptScraper", "VerapdfScraper",
+          "DetectedVersionScraper"]),
         ("application/pdf", "A-2u",
-         ["MagicBinaryScraper", "GhostscriptScraper", "VerapdfScraper"]),
+         ["MagicBinaryScraper", "GhostscriptScraper", "VerapdfScraper",
+          "DetectedVersionScraper"]),
         ("application/pdf", "A-3a",
-         ["MagicBinaryScraper", "GhostscriptScraper", "VerapdfScraper"]),
+         ["MagicBinaryScraper", "GhostscriptScraper", "VerapdfScraper",
+          "DetectedVersionScraper"]),
         ("application/pdf", "A-3b",
-         ["MagicBinaryScraper", "GhostscriptScraper", "VerapdfScraper"]),
+         ["MagicBinaryScraper", "GhostscriptScraper", "VerapdfScraper",
+          "DetectedVersionScraper"]),
         ("application/pdf", "A-3u",
-         ["MagicBinaryScraper", "GhostscriptScraper", "VerapdfScraper"]),
+         ["MagicBinaryScraper", "GhostscriptScraper", "VerapdfScraper",
+          "DetectedVersionScraper"]),
         ("application/pdf", "1.7", ["MagicBinaryScraper",
                                     "GhostscriptScraper"]),
         ("image/tiff", None, ["JHoveTiffScraper", "MagicBinaryScraper",
@@ -99,7 +108,13 @@ from file_scraper.iterator import iter_scrapers, iter_detectors
         ("test/unknown", None, ["ScraperNotFound"])
     ])
 def test_iter_scrapers(mimetype, version, scraper_classes):
-    """Test scraper discovery."""
+    """
+    Test scraper discovery.
+
+    :mimetype: Predefined mimetype
+    :version: Predefined file format version
+    :scraper_classes: Expected Scraper classes which are run
+    """
     scrapers = iter_scrapers(mimetype, version)
     assert set([x.__name__ for x in scrapers]) == set(scraper_classes)
 

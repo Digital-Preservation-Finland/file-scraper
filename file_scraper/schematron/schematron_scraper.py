@@ -19,6 +19,7 @@ class SchematronScraper(BaseScraper):
     _supported_metadata = [SchematronMeta]
     _only_wellformed = True
 
+    # pylint: disable=too-many-arguments
     def __init__(self, filename, mimetype, version=None,
                  check_wellformed=True, params=None):
         """

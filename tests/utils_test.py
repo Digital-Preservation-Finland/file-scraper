@@ -67,6 +67,15 @@ requirements:
               is raised.
         - If the method is important, the entry is also added to the importants
           dict.
+    - merge_normal_conflict
+        - Adding non-important metadata causes conflict error when another
+          value already exists in stream.
+    - merge_important_conflict
+        - Adding important value causes conflict error when another important
+          value already exists in stream.
+    - fill_importants
+        - Important values are resulted as important
+        - Lose values marked as important are not important
     - generate_metadata_dict
         - A dict with metadata method names as keys and return values as values
           is returned with priority of conflicting values determined correctly
@@ -86,6 +95,11 @@ requirements:
         - Concatenation of a two item list while using a prefix produces
           a single string containing each of the items prefixed with the
           prefix, and the two separated by a newline.
+    - iter_utf_bytes
+        - UTF iterator works as designed with different files and encodings
+    - iter_utf_bytes_trivial
+        - UTF iterator works as designed if there is only UTF control
+          character (c3) in a file
 """
 from __future__ import unicode_literals
 
@@ -116,7 +130,14 @@ from file_scraper.utils import (_fill_importants,
     ]
 )
 def test_hexdigest(filepath, extra_hash, algorithm, expected_hash):
-    """Test that hexdigest returns correct sha1 and MD5 hashes."""
+    """
+    Test that hexdigest returns correct sha1 and MD5 hashes.
+
+    :filepath: Test file name
+    :extra_hash: Hash of depending file(s), or None if no such dependency
+    :algorithm: Hash algorithm
+    :expected_hash: Expected hash result
+    """
     if algorithm is None:
         assert hexdigest(filepath, extra_hash=extra_hash) == expected_hash
     else:
@@ -135,7 +156,12 @@ def test_hexdigest(filepath, extra_hash, algorithm, expected_hash):
     ]
 )
 def test_sanitize_string(original_string, sanitized_string):
-    """Test sanitize_string."""
+    """
+    Test sanitize_string.
+
+    :original_string: Original string
+    :sanitized_string: Sanitized string
+    """
     assert sanitize_string(original_string) == sanitized_string
 
 
@@ -174,8 +200,10 @@ def test_iso8601_duration(seconds, expected_output):
     parts in seconds, it is checked that those parts are not present in the
     returned string, with the exception that for a zero-duration time PT0S is
     returned.
-    """
 
+    :seconds: Seconds to be converted
+    :expected_output: ISO8601 representation of seconds
+    """
     assert iso8601_duration(seconds) == expected_output
 
 
@@ -198,29 +226,40 @@ def test_iso8601_duration(seconds, expected_output):
     ]
 )
 def test_strip_zeros(float_str, expected_output):
-    """Test stripping zeros from string representation of a float."""
+    """
+    Test stripping decimal zeros from string representation of a float.
+
+    :float_str: Float string
+    :expected_output: Float string where decimal zeros are stripped
+    """
 
     assert strip_zeros(float_str) == expected_output
 
 
 class MetaTest(object):
     """A collection of metadata methods for testing purposes."""
-    # pylint: disable=no-self-use, missing-docstring
 
     def __init__(self, value):
+        """
+        Initialize test metadata model
+
+        :value: Attribute value to return in metadata methods
+        """
         self.value = value
 
     @metadata()
     def key_notimportant(self):
+        """Not important metadata"""
         return self.value
 
     @metadata(important=True)
     def key_important(self):
+        """Important metadata"""
         return self.value
 
 
 @pytest.mark.parametrize(
-    ["dict1", "method", "value", "lose", "result_dict",
+    ["meta_dict", "method", "value", "lose", "result_dict",
      "final_importants"],
     [
         # add new key, nothing originally in importants or in lose
@@ -298,14 +337,22 @@ class MetaTest(object):
          {"key_notimportant": "value"}, {}),
     ]
 )
-def test_merge_to_stream(dict1, method, value, lose, result_dict,
+def test_merge_to_stream(meta_dict, method, value, lose, result_dict,
                          final_importants):
-    """Test combining stream and metadata dicts."""
+    """
+    Test combining stream and metadata dicts.
+
+    :meta_dict: Stream metadata dict
+    :method: Method name which result will be merged
+    :lose: Lose values
+    :result_dict: Resulted stream metadata after merge
+    :final_importants: Resulted important metadata
+    """
     # pylint: disable=too-many-arguments
     testclass = MetaTest(value)
-    _merge_to_stream(dict1, getattr(testclass, method), lose,
+    _merge_to_stream(meta_dict, getattr(testclass, method), lose,
                      final_importants)
-    assert dict1 == result_dict
+    assert meta_dict == result_dict
 
 
 def test_merge_normal_conflict():
@@ -440,30 +487,36 @@ class Meta3(BaseMeta):
     version, stream_type or other metadata fields do not need to match the
     other streams.
     """
-    # pylint: disable=no-self-use, missing-docstring
+    # pylint: disable=no-self-use
 
     @metadata()
     def index(self):
+        """Return stream index"""
         return 1
 
     @metadata()
     def mimetype(self):
+        """Return MIME type"""
         return "anothermime"
 
     @metadata()
     def version(self):
+        """Return version"""
         return 2
 
     @metadata()
     def stream_type(self):
+        """Return stream type"""
         return "audio"
 
     @metadata()
     def key1(self):
+        """Return metadata"""
         return "value1"
 
     @metadata()
     def key2(self):
+        """Return metadata"""
         return "value2"
 
 
@@ -471,9 +524,10 @@ class Meta4(BaseMeta):
     """
     Conflicting important value with Meta1(), where key4() is also important.
     """
-    # pylint: disable=no-self-use, missing-docstring
+    # pylint: disable=no-self-use
     @metadata(important=True)
     def key4(self):
+        """Return metadata, which will conflict with Meta1()"""
         return "conflictingvalue"
 
 
@@ -540,7 +594,12 @@ def test_concat():
         ]
 )
 def test_iter_utf_bytes(filename, charset):
-    """Test utf iterator"""
+    """
+    Test utf iterator.
+
+    :filename: Test file name
+    :charset: Character encoding
+    """
     infile = open("tests/data/text_plain/" + filename, "rb")
     original_bytes = infile.read()
     original_text = original_bytes.decode(charset)
@@ -553,6 +612,7 @@ def test_iter_utf_bytes(filename, charset):
         assert chunks.decode(charset)
         assert original_text == chunks.decode(charset)
         assert original_bytes == chunks
+
 
 def test_iter_utf_bytes_trivial():
     """

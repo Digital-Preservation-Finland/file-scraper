@@ -15,6 +15,7 @@ class LxmlScraper(BaseScraper):
 
     # We use JHOVE for HTML4 and XHTML files.
     _supported_metadata = [LxmlMeta]
+    _only_wellformed = True  # Only well-formed check
 
     @classmethod
     def is_supported(cls, mimetype, version=None,

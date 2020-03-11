@@ -21,7 +21,6 @@ This module tests that:
 from __future__ import unicode_literals
 
 import pytest
-import six
 
 from file_scraper.vnu.vnu_scraper import VnuScraper
 from tests.common import (parse_results, partial_message_included)
@@ -51,7 +50,13 @@ MIMETYPE = "text/html"
     ]
 )
 def test_scraper(filename, result_dict, evaluate_scraper):
-    """Test scraper."""
+    """
+    Test vnu scraper.
+
+    :filename: Test file name
+    :result_dict: Result dict containing test purpose, and parts of
+                  expected results of stdout and stderr
+    """
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
     scraper = VnuScraper(filename=correct.filename, mimetype=MIMETYPE)
@@ -60,8 +65,10 @@ def test_scraper(filename, result_dict, evaluate_scraper):
     if not correct.well_formed:
         assert not scraper.well_formed
         assert not scraper.streams
-        assert partial_message_included(correct.stdout_part, scraper.messages())
-        assert partial_message_included(correct.stderr_part, scraper.errors())
+        assert partial_message_included(correct.stdout_part,
+                                        scraper.messages())
+        assert partial_message_included(correct.stderr_part,
+                                        scraper.errors())
     else:
         evaluate_scraper(scraper, correct)
 

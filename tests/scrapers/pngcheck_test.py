@@ -17,7 +17,6 @@ This module tests that:
 from __future__ import unicode_literals
 
 import pytest
-import six
 
 from file_scraper.pngcheck.pngcheck_scraper import PngcheckScraper
 from tests.common import (parse_results, partial_message_included)
@@ -43,14 +42,20 @@ MIMETYPE = "image/png"
     ]
 )
 def test_scraper(filename, result_dict, evaluate_scraper):
-    """Test scraper."""
+    """
+    Test pngcheck scraper.
+
+    :filename: Test file name
+    :result_dict: Dict containing purpose of the test
+    """
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
     scraper = PngcheckScraper(filename=correct.filename, mimetype="image/png")
     scraper.scrape_file()
     correct.version = None
-    correct.streams[0]["version"] = "(:unav)"
-    correct.streams[0]["mimetype"] = "(:unav)"
+    correct.update_mimetype("(:unav)")
+    correct.update_version("(:unav)")
+    correct.streams[0]["stream_type"] = "(:unav)"
     if correct.well_formed:
         correct.stdout_part = "OK"
         correct.stderr_part = ""

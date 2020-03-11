@@ -14,7 +14,7 @@ class TextFileMeta(BaseMeta):
     def __init__(self, errors):
         """
         Initialize metadata model.
-        
+
         :errors: Error messages from scraper
         """
         self._errors = errors
@@ -23,32 +23,30 @@ class TextFileMeta(BaseMeta):
     def mimetype(self):
         """
         Return mimetype.
-        
+
         The file is text/plain compliant if there are no errors. This will
         be returned only if predefined as plain text.
         """
-        if not self._errors:
-            return "text/plain"
-        return "(:unav)"
+        return "text/plain" if not self._errors else "(:unav)"
 
     @metadata()
     def version(self):
-        """Return version."""
-        if not self._errors:
-            return "(:unap)"
-        return "(:unav)"
+        """Return version.
+
+        The file is text/plain compliant if there are no errors. This will
+        be returned only if predefined as plain text.
+        """
+        return "(:unap)" if not self._errors else "(:unav)"
 
     @metadata()
     def stream_type(self):
         """
         Return stream type.
-        
+
         The file is text if there are no errors. This will be returned
         only if predefined as plain text.
         """
-        if not self._errors:
-            return "text"
-        return "(:unav)"
+        return "text" if not self._errors else "(:unav)"
 
 
 class TextEncodingMeta(BaseMeta):
@@ -64,7 +62,7 @@ class TextEncodingMeta(BaseMeta):
     def __init__(self, errors, charset, predefined_mimetype):
         """
         Initialize metadata model.
-        
+
         :errors: Errors from scraper
         :charset: Encoding from scraper
         :predefined_mimetype: Predefined mimetype

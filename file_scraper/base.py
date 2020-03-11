@@ -12,6 +12,7 @@ class BaseScraper(object):
     _supported_metadata = []
     _only_wellformed = False
 
+    # pylint: disable=too-many-arguments
     def __init__(self, filename, mimetype, version=None,
                  check_wellformed=True, params=None):
         """
@@ -120,7 +121,7 @@ class BaseScraper(object):
     def iterate_models(self, **kwargs):
         """
         Iterate Scraper models and create streams.
-        
+
         :kwargs: Model specific parameters
         """
         for md_class in self._supported_metadata:

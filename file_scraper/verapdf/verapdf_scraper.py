@@ -18,6 +18,7 @@ class VerapdfScraper(BaseScraper):
 
     # Supported mimetypes and versions
     _supported_metadata = [VerapdfMeta]
+    _only_wellformed = True  # Only well-formed check
 
     def scrape_file(self):
         """
