@@ -18,7 +18,47 @@ from file_scraper.magiclib import magiclib, magic_analyze
 MAGIC_LIB = magiclib()
 
 
-class _FidoReader(Fido):
+class _ModifiedFido(Fido):
+
+    def load_fido_xml(self, file):
+        """Overloads the default load_fido_xml so that it has an option to
+        prevent being called again.
+
+        :param file: File that will be loaded.
+        """
+        if not getattr(self, '_fido_xml_loaded', False):
+            self.formats = Fido.load_fido_xml(self, file=file)
+        return self.formats
+
+
+class _SingletonFidoReader(object):
+    """A singleton class of _FidoReader. This singleton will act as a proxy for
+    _FidoReader-class so the functionality and usage will be the same as if no
+    Singleton is being implemented.
+    """
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not _SingletonFidoReader._instance:
+            _SingletonFidoReader._instance = _FidoReader(*args, **kwargs)
+            _SingletonFidoReader._instance._fido_xml_loaded = True
+        else:
+            _SingletonFidoReader._instance.__init__(*args, **kwargs)
+        return _SingletonFidoReader._instance
+
+    def __init__(self, filename):
+        """Will reset the _FidoReader's state whilst retaining the formats."""
+        _format = self._instance.formats
+        self._instance.__init__(filename)
+
+    def __getattr__(self, name):
+        return getattr(self._instance, name)
+
+    def __setattr__(self, name):
+        return setattr(self._instance, name)
+
+
+class _FidoReader(_ModifiedFido):
     """Fido wrapper to get pronom code, mimetype and version."""
 
     def __init__(self, filename):
@@ -33,7 +73,7 @@ class _FidoReader(Fido):
         self.puid = None  # Identified pronom code
         self.mimetype = None  # Identified mime type
         self.version = None  # Identified file format version
-        Fido.__init__(self, quiet=True, format_files=[
+        _ModifiedFido.__init__(self, quiet=True, format_files=[
             "formats-v95.xml", "format_extensions.xml"])
 
     def identify(self):
@@ -109,7 +149,7 @@ class FidoDetector(BaseDetector):
 
     def detect(self):
         """Detect file format and version."""
-        fido = _FidoReader(self.filename)
+        fido = _SingletonFidoReader(self.filename)
         fido.identify()
         self.mimetype = fido.mimetype
         self.version = fido.version
