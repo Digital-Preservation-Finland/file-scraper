@@ -19,10 +19,16 @@ MAGIC_LIB = magiclib()
 
 
 class _ModifiedFido(Fido):
+    """Class whose sole purpose is to override one of the default function
+    provided by Fido.
+    """
 
     def load_fido_xml(self, file):
         """Overloads the default load_fido_xml so that it has an option to
         prevent being called again.
+
+        _fido_xml_loaded is an attribute that would be assigned by the
+        Singleton-class.
 
         :param file: File that will be loaded.
         """
@@ -43,13 +49,20 @@ class _SingletonFidoReader(object):
             _SingletonFidoReader._instance = _FidoReader(*args, **kwargs)
             _SingletonFidoReader._instance._fido_xml_loaded = True
         else:
-            _SingletonFidoReader._instance.__init__(*args, **kwargs)
+            _SingletonFidoReader.reset(*args, **kwargs)
         return _SingletonFidoReader._instance
 
-    def __init__(self, filename):
-        """Will reset the _FidoReader's state whilst retaining the formats."""
-        _format = self._instance.formats
-        self._instance.__init__(filename)
+    @classmethod
+    def reset(cls, *args, **kwargs):
+        """Will reset the _FidoReader's state whilst retaining the values
+        that would get assigned by during load_fido_xml-function."""
+        _formats = cls._instance.formats
+        _puid_format_map = cls._instance.puid_format_map
+        _puid_has_priority_over_map = cls._instance.puid_has_priority_over_map
+        cls._instance.__init__(*args, **kwargs)
+        cls._instance.formats = _formats
+        cls._instance.puid_format_map = _puid_format_map
+        cls._instance.puid_has_priority_over_map = _puid_has_priority_over_map
 
     def __getattr__(self, name):
         return getattr(self._instance, name)
