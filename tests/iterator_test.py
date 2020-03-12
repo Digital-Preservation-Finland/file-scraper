@@ -12,12 +12,23 @@ import pytest
 from file_scraper.iterator import iter_scrapers, iter_detectors
 
 
+WELLFORMED_SCRAPERS = [
+    "DpxScraper", "GhostscriptScraper", "JHoveGifScraper", "JHoveHtmlScraper",
+    "JHoveJpegScraper", "JHoveTiffScraper", "JHovePdfScraper",
+    "JHoveWavScraper", "JHoveUtf8Scraper", "LxmlScraper", "OfficeScraper",
+    "PngcheckScraper", "PsppScraper", "SchematronScraper",
+    "TextEncodingScraper", "VerapdfScraper", "VnuScraper",
+    "ArcWarctoolsScraper", "WarcWarctoolsScraper", "GzipWarctoolsScraper",
+    "XmllintScraper"
+]
+
+
 @pytest.mark.parametrize(
     ["mimetype", "version", "scraper_classes"],
     [
-        ("image/x-dpx", None, ["DpxScraper", "DetectedVersionScraper"]),
-        ("application/x-spss-por", None, ["PsppScraper"]),
-        ("application/warc", None, ["WarcWarctoolsScraper"]),
+        ("image/x-dpx", None, ["DpxScraper"]),
+        ("application/x-spss-por", None, ["PsppScraper",
+                                          "DetectedMimeVersionScraper"]),
         ("text/csv", None, ["CsvScraper", "MagicTextScraper",
                             "TextEncodingScraper"]),
         ("text/plain", None, ["MagicTextScraper", "TextfileScraper",
@@ -35,28 +46,28 @@ from file_scraper.iterator import iter_scrapers, iter_detectors
         ("application/pdf", "1.6", ["MagicBinaryScraper", "JHovePdfScraper"]),
         ("application/pdf", "A-1a", ["MagicBinaryScraper", "JHovePdfScraper",
                                      "VerapdfScraper",
-                                     "DetectedVersionScraper"]),
+                                     "DetectedMimeVersionScraper"]),
         ("application/pdf", "A-1b", ["MagicBinaryScraper", "JHovePdfScraper",
                                      "VerapdfScraper",
-                                     "DetectedVersionScraper"]),
+                                     "DetectedMimeVersionScraper"]),
         ("application/pdf", "A-2a",
          ["MagicBinaryScraper", "GhostscriptScraper", "VerapdfScraper",
-          "DetectedVersionScraper"]),
+          "DetectedMimeVersionScraper"]),
         ("application/pdf", "A-2b",
          ["MagicBinaryScraper", "GhostscriptScraper", "VerapdfScraper",
-          "DetectedVersionScraper"]),
+          "DetectedMimeVersionScraper"]),
         ("application/pdf", "A-2u",
          ["MagicBinaryScraper", "GhostscriptScraper", "VerapdfScraper",
-          "DetectedVersionScraper"]),
+          "DetectedMimeVersionScraper"]),
         ("application/pdf", "A-3a",
          ["MagicBinaryScraper", "GhostscriptScraper", "VerapdfScraper",
-          "DetectedVersionScraper"]),
+          "DetectedMimeVersionScraper"]),
         ("application/pdf", "A-3b",
          ["MagicBinaryScraper", "GhostscriptScraper", "VerapdfScraper",
-          "DetectedVersionScraper"]),
+          "DetectedMimeVersionScraper"]),
         ("application/pdf", "A-3u",
          ["MagicBinaryScraper", "GhostscriptScraper", "VerapdfScraper",
-          "DetectedVersionScraper"]),
+          "DetectedMimeVersionScraper"]),
         ("application/pdf", "1.7", ["MagicBinaryScraper",
                                     "GhostscriptScraper"]),
         ("image/tiff", None, ["JHoveTiffScraper", "MagicBinaryScraper",
@@ -65,19 +76,22 @@ from file_scraper.iterator import iter_scrapers, iter_detectors
                               "PilScraper", "WandScraper"]),
         ("image/gif", None, ["JHoveGifScraper", "MagicBinaryScraper",
                              "PilScraper", "WandScraper"]),
-        ("text/html", "4.01", ["DetectedVersionScraper", "JHoveHtmlScraper",
-                               "LxmlScraper", "MagicTextScraper",
+        ("text/html", "4.01", ["DetectedMimeVersionScraper",
+                               "JHoveHtmlScraper", "LxmlScraper",
+                               "MagicTextScraper",
                                "TextEncodingScraper"]),
-        ("text/html", "5.0", ["DetectedVersionScraper", "VnuScraper",
+        ("text/html", "5.0", ["DetectedMimeVersionScraper", "VnuScraper",
                               "LxmlScraper", "MagicTextScraper",
                               "TextEncodingScraper"]),
         ("image/png", None,
          ["PngcheckScraper", "MagicBinaryScraper", "PilScraper",
           "WandScraper"]),
-        ("application/warc", None, ["WarcWarctoolsScraper"]),
+        ("application/gzip", None, ["GzipWarctoolsScraper"]),
+        ("application/warc", None, ["WarcWarctoolsScraper",
+                                    "MagicBinaryScraper"]),
         ("application/x-internet-archive", None,
          ["MagicBinaryScraper", "ArcWarctoolsScraper"]),
-        ("text/xml", "1.0", ["DetectedVersionScraper", "XmllintScraper",
+        ("text/xml", "1.0", ["DetectedMimeVersionScraper", "XmllintScraper",
                              "LxmlScraper", "MagicTextScraper",
                              "TextEncodingScraper"]),
         ("application/xhtml+xml", "1.0", ["JHoveHtmlScraper",
@@ -85,15 +99,20 @@ from file_scraper.iterator import iter_scrapers, iter_detectors
                                           "TextEncodingScraper"]),
         ("audio/x-wav", None, ["JHoveWavScraper", "MediainfoScraper"]),
         ("application/vnd.oasis.opendocument.text", None,
-         ["DetectedVersionScraper", "OfficeScraper", "MagicBinaryScraper"]),
+         ["DetectedMimeVersionScraper", "OfficeScraper",
+          "MagicBinaryScraper"]),
         ("application/vnd.oasis.opendocument.spreadsheet", None,
-         ["DetectedVersionScraper", "OfficeScraper", "MagicBinaryScraper"]),
+         ["DetectedMimeVersionScraper", "OfficeScraper",
+          "MagicBinaryScraper"]),
         ("application/vnd.oasis.opendocument.presentation", None,
-         ["DetectedVersionScraper", "OfficeScraper", "MagicBinaryScraper"]),
+         ["DetectedMimeVersionScraper", "OfficeScraper",
+          "MagicBinaryScraper"]),
         ("application/vnd.oasis.opendocument.graphics", None,
-         ["DetectedVersionScraper", "OfficeScraper", "MagicBinaryScraper"]),
+         ["DetectedMimeVersionScraper", "OfficeScraper",
+          "MagicBinaryScraper"]),
         ("application/vnd.oasis.opendocument.formula", None,
-         ["DetectedVersionScraper", "OfficeScraper", "MagicBinaryScraper"]),
+         ["DetectedMimeVersionScraper", "OfficeScraper",
+          "MagicBinaryScraper"]),
         ("application/msword", None, ["OfficeScraper", "MagicBinaryScraper"]),
         ("application/vnd.ms-excel", None, ["OfficeScraper",
                                             "MagicBinaryScraper"]),
@@ -117,6 +136,16 @@ def test_iter_scrapers(mimetype, version, scraper_classes):
     """
     scrapers = iter_scrapers(mimetype, version)
     assert set([x.__name__ for x in scrapers]) == set(scraper_classes)
+
+    scraper_classes = [
+        "TextEncodingMetaScraper" if x == "TextEncodingScraper" else x
+        for x in scraper_classes
+    ]
+    scrapers = iter_scrapers(mimetype, version, False)
+    scraper_set = set(scraper_classes).difference(set(WELLFORMED_SCRAPERS))
+    if mimetype in ["application/gzip", "image/x-dpx"]:
+        scraper_set = set(["ScraperNotFound"])
+    assert set([x.__name__ for x in scrapers]) == scraper_set
 
 
 def test_iter_detectors():

@@ -73,6 +73,7 @@ This module tests that:
 """
 from __future__ import unicode_literals
 
+import os
 import pytest
 
 from file_scraper.magic_scraper.magic_model import (HtmlFileMagicMeta,
@@ -261,30 +262,6 @@ def test_invalid_images(filename, mimetype):
     assert not scraper.well_formed
     assert partial_message_included(correct.stdout_part, scraper.messages())
     assert partial_message_included(correct.stderr_part, scraper.errors())
-
-
-@pytest.mark.parametrize(
-    ["filename", "mimetype"],
-    [
-        ("invalid__binary_data.txt", "text/plain"),
-        ("invalid__empty.txt", "text/plain"),
-    ]
-)
-def test_invalid_text(filename, mimetype):
-    """
-    Test TextFileMagic with invalid files.
-
-    :filename: Test file name
-    :mimetype: File MIME type
-    """
-    scraper = MagicTextScraper(
-        filename=filename, mimetype=mimetype,
-        params={"charset": "UTF-8"})
-    scraper.scrape_file()
-    assert not scraper.well_formed
-    assert scraper.streams[0]["mimetype"] == "(:unav)"
-    assert scraper.streams[0]["version"] == "(:unav)"
-    assert partial_message_included("foo", scraper.errors())
 
 
 @pytest.mark.parametrize(

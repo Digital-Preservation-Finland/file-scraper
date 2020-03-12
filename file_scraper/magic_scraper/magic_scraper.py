@@ -16,7 +16,8 @@ from file_scraper.magic_scraper.magic_model import (TextFileMagicMeta,
                                                     JpegFileMagicMeta,
                                                     Jp2FileMagicMeta,
                                                     TiffFileMagicMeta,
-                                                    GifFileMagicMeta)
+                                                    GifFileMagicMeta,
+                                                    WarcFileMagicMeta)
 
 MAGIC_LIB = magiclib()
 
@@ -85,4 +86,5 @@ class MagicBinaryScraper(MagicBaseScraper):
     _supported_metadata = [PdfFileMagicMeta, OfficeFileMagicMeta,
                            ArcFileMagicMeta, PngFileMagicMeta,
                            JpegFileMagicMeta, Jp2FileMagicMeta,
-                           TiffFileMagicMeta, GifFileMagicMeta]
+                           TiffFileMagicMeta, GifFileMagicMeta,
+                           WarcFileMagicMeta]

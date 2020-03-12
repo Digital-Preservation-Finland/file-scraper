@@ -73,8 +73,6 @@ class SchematronScraper(BaseScraper):
     @property
     def well_formed(self):
         """Check if document resulted errors."""
-        if not self._check_wellformed:
-            return None
         if not self.errors() and self.messages():
             if not any("<svrl:failed-assert " in message
                        for message in self.messages()) \

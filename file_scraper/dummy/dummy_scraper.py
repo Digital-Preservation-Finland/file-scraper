@@ -5,9 +5,10 @@ import os.path
 
 from file_scraper.base import BaseScraper
 from file_scraper.utils import decode_path
-from file_scraper.dummy.dummy_model import (DummyMeta,
-                                            DetectedVersionMeta,
-                                            DetectedPdfaVersionMeta)
+from file_scraper.dummy.dummy_model import (
+    DummyMeta, DetectedBinaryVersionMeta, DetectedTextVersionMeta,
+    DetectedPdfaVersionMeta
+)
 
 
 class ScraperNotFound(BaseScraper):
@@ -92,12 +93,13 @@ class MimeScraper(BaseScraper):
                               allow_unap_version=True)
 
 
-class DetectedVersionScraper(BaseScraper):
+class DetectedMimeVersionScraper(BaseScraper):
     """
     Use the detected file format version (by FIDO) for some file formats.
     """
 
-    _supported_metadata = [DetectedVersionMeta, DetectedPdfaVersionMeta]
+    _supported_metadata = [DetectedBinaryVersionMeta, DetectedTextVersionMeta,
+                           DetectedPdfaVersionMeta]
 
     def scrape_file(self):
         """
@@ -106,6 +108,7 @@ class DetectedVersionScraper(BaseScraper):
         """
         version = self._params.get("detected_version", "(:unav)")
         self._messages.append("Using detected file format version.")
-        self.iterate_models(version=version)
+        self.iterate_models(mimetype=self._predefined_mimetype,
+                            version=version)
         self._check_supported(allow_unav_mime=True, allow_unav_version=True,
                               allow_unap_version=True)

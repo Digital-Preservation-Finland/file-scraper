@@ -33,7 +33,7 @@ import six
 
 from file_scraper.dummy.dummy_scraper import (FileExists, ScraperNotFound,
                                               MimeScraper,
-                                              DetectedVersionScraper)
+                                              DetectedMimeVersionScraper)
 from tests.common import partial_message_included
 
 DEFAULTSTREAMS = {0: {"index": 0, "version": "(:unav)",
@@ -146,18 +146,18 @@ def test_mime_scraper():
 
 def test_detected_version_scraper():
     """Test detected version scraper"""
-    scraper = DetectedVersionScraper(
+    scraper = DetectedMimeVersionScraper(
         None, "text/xml", params={"detected_version": "123"})
     scraper.scrape_file()
-    assert scraper.well_formed
+    assert not scraper.well_formed
     assert scraper.streams[0].version() == "123"
 
-    scraper = DetectedVersionScraper(None, "text/xml", params=None)
+    scraper = DetectedMimeVersionScraper(None, "text/xml", params=None)
     scraper.scrape_file()
     assert scraper.well_formed
-    assert scraper.streams[0].version() == "(:unav)"
+    assert scraper.streams[0].version() == "1.0"
 
-    scraper = DetectedVersionScraper(None, "text/plain", params=None)
+    scraper = DetectedMimeVersionScraper(None, "text/plain", params=None)
     scraper.scrape_file()
     assert partial_message_included(
         "MIME type not supported", scraper.errors())

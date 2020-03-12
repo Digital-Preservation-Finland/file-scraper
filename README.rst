@@ -162,7 +162,7 @@ All contribution is welcome. Please see `Technical Notes <./doc/contribute.rst>`
 Misc notes
 ----------
 
-    * Without the Warctools scraper tool, gzipped WARC and ARC files are identified as 'application/gzip'.
+    * Gzipped WARC and ARC files are scraped correctly only when ``check_wellformed`` is ``True``.
     * The software may result arbitrary metadata values, if incorrect MIME type or version is given as a parameter. However, the file is also the denoted as invalid.
 
 Copyright

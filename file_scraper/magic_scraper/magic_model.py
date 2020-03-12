@@ -242,6 +242,22 @@ class ArcFileMagicMeta(BinaryMagicBaseMeta):
         return version
 
 
+class WarcFileMagicMeta(BinaryMagicBaseMeta):
+    """Metadata model for Arc files."""
+
+    # Supported mimetype
+    _supported = {"application/warc": ["0.17", "0.18", "1.0"]}
+    _allow_versions = True  # Allow any version
+    _endtag = "\\"
+
+    @metadata()
+    def version(self):
+        """Return version."""
+        if self.mimetype() not in self._supported:
+            return "(:unav)"
+        return super(WarcFileMagicMeta, self).version()
+
+
 class PngFileMagicMeta(BinaryMagicBaseMeta):
     """Metadata model for PNG files."""
 
