@@ -332,7 +332,7 @@ def test_without_wellformed(fullname, mimetype, version):
     forced_scraper = Scraper(fullname, mimetype=scraper.mimetype,
                              version=scraper.version,
                              charset=scraper.streams[0].get("charset", None))
-    forced_scraper.scrape()
+    forced_scraper.scrape(False)
 
     assert forced_scraper.mimetype == scraper.mimetype
     assert forced_scraper.version == scraper.version

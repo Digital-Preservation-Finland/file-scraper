@@ -69,9 +69,6 @@ This module tests that:
         - For files with missing data bytes, scraper errors contains "Bytes
           missing".
 
-    - When well-formedness is not checked, scraper errors contains "Skipping
-      scraper" and well_formed is None for all scrapers.
-
     - The following MIME-type and version pairs are supported by their
       respective scrapers when well-formedness is checked, in addition to
       which these MIME types are also supported with None or a made up version.
@@ -459,36 +456,6 @@ def test_scraper_wav(filename, result_dict, evaluate_scraper):
     scraper.scrape_file()
 
     evaluate_scraper(scraper, correct)
-
-
-@pytest.mark.parametrize(
-    ["scraper_class", "filename", "mime"],
-    [
-        (JHoveGifScraper, "valid_1989a.gif", "image/gif"),
-        (JHoveTiffScraper, "valid_6.0.tif", "image/tiff"),
-        (JHovePdfScraper, "valid_1.4.pdf", "application/pdf"),
-        (JHoveUtf8Scraper, "valid__utf8_without_bom.txt", "text/plain"),
-        (JHoveJpegScraper, "valid_1.01.jpg", "image/jpeg"),
-        (JHoveHtmlScraper, "valid_4.01.html", "text/html"),
-        (JHoveWavScraper, "valid__wav.wav", "audio/x-wav")
-    ]
-)
-def test_no_wellformed(scraper_class, filename, mime):
-    """
-    Test scrapers without well-formed check.
-
-    :scraper_class: Scraper to test
-    :filename: Test file name
-    :mime: File MIME type
-    """
-    scraper = scraper_class(filename=os.path.join("tests/data/",
-                                                  mime.replace("/", "_"),
-                                                  filename),
-                            mimetype=mime,
-                            check_wellformed=False)
-    scraper.scrape_file()
-    assert partial_message_included("Skipping scraper", scraper.messages())
-    assert scraper.well_formed is None
 
 
 @pytest.mark.parametrize(

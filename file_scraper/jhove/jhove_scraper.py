@@ -21,31 +21,22 @@ class JHoveScraperBase(BaseScraper):
     _jhove_module = None
     _only_wellformed = True
 
-    # pylint: disable=too-many-arguments
-    def __init__(self, filename, mimetype, version=None,
-                 check_wellformed=True, params=None):
+    def __init__(self, filename, mimetype, version=None, params=None):
         """
         Initialize JHove base scarper.
 
         :filename: File path
         :mimetype: Predefined mimetype
         :version: Predefined file format version
-        :check_wellformed: True for the full well-formed check, False for just
-                           detection and metadata scraping
         :params: Extra parameters needed for the scraper
         """
         self._report = None  # JHove report
         super(JHoveScraperBase, self).__init__(
             filename=filename, mimetype=mimetype, version=version,
-            check_wellformed=check_wellformed, params=params)
+            params=params)
 
     def scrape_file(self):
         """Run JHove command and store XML output to self.report."""
-        if not self._check_wellformed and self._only_wellformed:
-            self._messages.append("Skipping scraper: Well-formed check not "
-                                  "used.")
-            return
-
         exec_cmd = ["jhove", "-h", "XML", "-m",
                     self._jhove_module, self.filename]
         shell = Shell(exec_cmd)

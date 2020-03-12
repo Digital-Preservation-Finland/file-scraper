@@ -16,12 +16,6 @@ class DpxScraper(BaseScraper):
 
     def scrape_file(self):
         """Scrape DPX."""
-
-        if not self._check_wellformed and self._only_wellformed:
-            self._messages.append("Skipping scraper: "
-                                  "Well-formed check not used.")
-            return
-
         shell = Shell(["dpxv", encode_path(self.filename)])
 
         if shell.returncode != 0:

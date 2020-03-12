@@ -40,19 +40,73 @@ class TextfileScraper(BaseScraper):
         charset = self._params.get("charset", None)
         if charset is not None and charset.upper() in ["UTF-32", "UTF-16"]:
             self._messages.append(
-                "Skipping scraper: Not supported with charset %s" % charset)
-            return
-        self._messages.append("Trying text detection...")
-
-        mimetype = self._file_mimetype()
-        if mimetype == "text/plain":
-            self._messages.append("File is a text file.")
-            self.iterate_models(errors=self._errors)
-            self._check_supported(allow_unav_mime=True,
-                                  allow_unav_version=True)
+                "Scraper not supported with charset %s. Predefined metadata "
+                "is collected." % charset)
         else:
-            self._errors.append("File is not a text file, or it is a UTF-16 "
-                                "file without BOM or a UTF-32 file.")
+            self._messages.append("Trying text detection...")
+
+            mimetype = self._file_mimetype()
+            if mimetype == "text/plain":
+                self._messages.append("File is a text file.")
+            else:
+                self._errors.append(
+                    "File is not a text file, or it is a UTF-16 file without "
+                    "BOM or a UTF-32 file.")
+        self.iterate_models(errors=self._errors)
+        self._check_supported(allow_unav_mime=True,
+                              allow_unav_version=True)
+
+
+class TextEncodingMetaScraper(BaseScraper):
+    """
+    Scraper to set predefined character encoding to metadata.
+
+    This is run in the iterator only when well-formed checking is not done.
+    Otherwise the charset information is not collected with some encondings,
+    such as UTF-16 without BOM and UTF-32.
+    """
+    _supported_metadata = [TextEncodingMeta]
+
+    def __init__(self, filename, mimetype, version=None, params=None):
+        """
+        Initialize scraper. Add given charset.
+
+        :filename: File name
+        :mimetype: File MIME type
+        :version: File format version
+        :params: Extra parameters as dict, the following is required:
+                 charset: File character encoding
+        """
+        super(TextEncodingMetaScraper, self).__init__(
+            filename=filename, mimetype=mimetype, version=version,
+            params=params)
+        self._charset = self._params.get("charset", "(:unav)")
+
+    @classmethod
+    def is_supported(cls, mimetype, version=None, check_wellformed=True,
+                     params=None):  # pylint: disable=unused-argument
+        """
+        Support only when no checking of well-formedness is done.
+
+        :mimetype: MIME type of a file
+        :version: Version of a file. Defaults to None.
+        :check_wellformed: True for scraping with well-formedness check, False
+                           for skipping the check. Defaults to True.
+        :params: None
+        :returns: True if the MIME type and version are supported, False if not
+        """
+        if check_wellformed:
+            return False
+        return any([x.is_supported(mimetype, version) for x in
+                    cls._supported_metadata])
+
+    def scrape_file(self):
+        """No actual scraping. Set the predefined character encoding value."""
+        self._messages.append("Setting character encoding.")
+        self.iterate_models(errors=self._errors, charset=self._charset,
+                            predefined_mimetype=self._predefined_mimetype)
+        self._check_supported(allow_unav_mime=True,
+                              allow_unav_version=True)
 
 
 class TextEncodingScraper(BaseScraper):
@@ -77,36 +131,33 @@ class TextEncodingScraper(BaseScraper):
       file is ISO-8859-15, otherwise UTF-8.
     """
     _supported_metadata = [TextEncodingMeta]
+    _only_wellformed = True
     _chunksize = 20*1024**2  # chunk size
     _limit = 100*1024**2  # Limit file read in MB, 0 = unlimited
                           # _limit must be divisible with _chunksize
 
-    # pylint: disable=too-many-arguments
-    def __init__(self, filename, mimetype, version=None,
-                 check_wellformed=True, params=None):
-        """Initialize scraper. Add given charset."""
+    def __init__(self, filename, mimetype, version=None, params=None):
+        """
+        Initialize scraper. Add given charset.
+
+        :filename: File name
+        :mimetype: File MIME type
+        :version: File format version
+        :params: Extra parameters as dict, the following is required:
+                 charset: File character encoding
+        """
         super(TextEncodingScraper, self).__init__(
             filename=filename, mimetype=mimetype, version=version,
-            check_wellformed=check_wellformed, params=params)
+            params=params)
         self._charset = self._params.get("charset", "(:unav)")
 
     def scrape_file(self):
         """
         Validate the file with decoding it with given character encoding.
         """
-
         if self._charset in [None, "(:unav)"]:
             self._errors.append("Character encoding not defined.")
             return
-        if not self._check_wellformed:
-            self._messages.append("No character encoding validation done, "
-                                  "setting predefined encoding value.")
-            self.iterate_models(errors=self._errors, charset=self._charset,
-                                predefined_mimetype=self._predefined_mimetype)
-            self._check_supported(allow_unav_mime=True,
-                                  allow_unav_version=True)
-            return
-
         try:
             with io.open(self.filename, "rb") as infile:
                 position = 0

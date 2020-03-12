@@ -17,10 +17,8 @@ This module tests that:
     - scraper is able to extract the MIME type of a well-formed file and
       guess the file as a well-formed one also when separator, delimiter
       and fields are not given by user.
-    - well-formed result is None when skipping wellformed check.
-    - all files with MIME type 'text/csv' are reported to be supported with
-      full well-formed check and for empty, None or arbitrary string as the
-      version.
+    - all files with MIME type 'text/csv' are reported to be supported
+      and for empty, None or arbitrary string as the version.
     - MIME type other than 'text/csv' is not supported.
     - Not giving CsvMeta enough parameters causes an error to be raised.
     - Empty file is not well-formed.
@@ -278,19 +276,6 @@ def test_nonexistent_file():
     assert partial_message_included("Error when reading the file: ",
                                     scraper.errors())
     assert not scraper.well_formed
-
-
-def test_no_wellformed():
-    """Test scraper without well-formed check."""
-
-    test_file = os.path.join(TEST_DATA_PATH, "valid__ascii.csv")
-    scraper = CsvScraper(test_file, mimetype="text/csv",
-                         check_wellformed=False)
-    scraper.scrape_file()
-
-    assert partial_message_included("was checked successfully",
-                                    scraper.messages())
-    assert scraper.well_formed is None
 
 
 def test_is_supported():

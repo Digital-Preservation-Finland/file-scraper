@@ -44,17 +44,13 @@ class XmllintScraper(BaseScraper):
     _supported_metadata = [XmllintMeta]
     _only_wellformed = True  # Only well-formed check
 
-    # pylint: disable=too-many-arguments
-    def __init__(self, filename, mimetype, version=None,
-                 check_wellformed=True, params=None):
+    def __init__(self, filename, mimetype, version=None, params=None):
         """
         Initialize scraper.
 
         :filename: File path
         :mimetype: Predefined mimetype
-        :version: PRedefined version
-        :check_wellformed: True for the full well-formed check, False for just
-                           detection and metadata scraping
+        :version: Predefined version
         :params: Extra parameters needed for the scraper. The parameters are:
                  schema: Schema path, None by default
                  catalogs: True if XML catalog used (default), False otherwise
@@ -65,7 +61,7 @@ class XmllintScraper(BaseScraper):
         """
         super(XmllintScraper, self).__init__(
             filename=filename, mimetype=mimetype, version=version,
-            check_wellformed=check_wellformed, params=params)
+            params=params)
         if params is None:
             params = {}
         self._schema = params.get("schema", None)
@@ -117,10 +113,6 @@ class XmllintScraper(BaseScraper):
 
         .. seealso:: https://wiki.csc.fi/wiki/KDK/XMLTiedostomuotojenSkeemat
         """
-        if not self._check_wellformed and self._only_wellformed:
-            self._messages.append("Skipping scraper: Well-formed check not "
-                                  "used.")
-            return
         # Try to check syntax by opening file in XML parser
         try:
             file_ = io_open(self.filename, "rb")

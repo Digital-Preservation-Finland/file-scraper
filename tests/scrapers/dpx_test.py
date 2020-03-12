@@ -3,22 +3,19 @@ Tests for DPX scraper.
 
 This module tests that:
     - MIME type, version, streams and well-formedness of files are scraped
-      correctly using DpxScraper scraper when full well-formed check is
-      performed. This is done with a valid file and files with different errors
-      in them:
+      correctly using DpxScraper scraper. This is done with a valid file and
+      files with different errors in them:
         - empty file
         - file size is larger than is reported in the header
         - last byte of the file is missing
         - header reports little-endian order but contents of the file are
           big-endian
-    - when check_wellformed is set to False, well-formedness is reported as
-      None and scraper messages report skipped scraping.
     - the scraper reports MIME type 'image/x-dpx' with version 2.0 as
       supported when full scraping is done
     - the scraper reports other MIME type or version as not supported when
       full scraping is done
     - the scraper reports MIME type 'image/x-dpx' with version 2.0 as not
-      supported when no well-formed check is performed
+      supported when only well-formed check is performed
 """
 from __future__ import unicode_literals
 
@@ -68,15 +65,6 @@ def test_scraper(filename, result_dict, evaluate_scraper):
     scraper.scrape_file()
 
     evaluate_scraper(scraper, correct)
-
-
-def test_no_wellformed():
-    """Test scraper without well-formed check."""
-    scraper = DpxScraper(filename="tests/data/image_x-dpx/valid_2.0.dpx",
-                         mimetype=MIMETYPE, check_wellformed=False)
-    scraper.scrape_file()
-    assert scraper.well_formed is None
-    assert partial_message_included("Skipping scraper", scraper.messages())
 
 
 def test_is_supported():

@@ -12,9 +12,7 @@ class BaseScraper(object):
     _supported_metadata = []
     _only_wellformed = False
 
-    # pylint: disable=too-many-arguments
-    def __init__(self, filename, mimetype, version=None,
-                 check_wellformed=True, params=None):
+    def __init__(self, filename, mimetype, version=None, params=None):
         """
         Initialize scraper.
 
@@ -24,8 +22,6 @@ class BaseScraper(object):
         :filename: Path to the file that is to be scraped
         :mimetype: Predefined mimetype
         :version: Predefined file format version
-        :check_wellformed: True for full scraping, False for skipping the well-
-                           formedness check
         :params: Extra parameters that some scrapers can use.
         """
         self.streams = []
@@ -34,7 +30,6 @@ class BaseScraper(object):
         self._predefined_version = version
         self._messages = []
         self._errors = []
-        self._check_wellformed = check_wellformed
         self._params = params if params is not None else {}
 
     @property
@@ -45,8 +40,6 @@ class BaseScraper(object):
         :returns: None if scraper does not check well-formedness, True if the
                   file has been scraped without errors and otherwise False
         """
-        if not self._check_wellformed:
-            return None
         return len(self._messages) > 0 and len(self._errors) == 0
 
     @classmethod

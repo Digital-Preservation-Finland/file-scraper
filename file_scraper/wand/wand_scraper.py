@@ -46,11 +46,6 @@ class WandScraper(BaseScraper):
         """
         Populate streams with supported metadata objects.
         """
-
-        if not self._check_wellformed and self._only_wellformed:
-            self._messages.append("Skipping scraper: "
-                                  "Well-formed check not used.")
-            return
         try:
             self._wandresults = wand.image.Image(filename=self.filename)
         except Exception as e:  # pylint: disable=broad-except, invalid-name

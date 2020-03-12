@@ -47,11 +47,6 @@ class MagicBaseScraper(BaseScraper):
 
     def scrape_file(self):
         """Populate streams with supported metadata objects."""
-        if not self._check_wellformed and self._only_wellformed:
-            self._messages.append("Skipping scraper: Well-formed check not "
-                                  "used.")
-            return
-
         if not os.path.exists(self.filename):
             self._errors.append("File not found.")
             return

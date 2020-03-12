@@ -40,8 +40,6 @@ This module tests that:
         - For empty file, scraper errors contains "imporoper image header".
     - WandTiffMeta model is supported for TIFF files and WandImageMeta for
       other image files
-    - When well-formedness is not checked, scraper messages must not contain
-      "Skipping scraper", but well_formed is None.
     - With or without well-formedness check, the following MIME type and
       version pairs are supported by both WandScraper and their corresponding
       metadata models:
@@ -310,21 +308,6 @@ def test_scraper_invalid(filename, mimetype, stderr_part):
     assert not scraper.messages()
     assert partial_message_included(stderr_part, scraper.errors())
     assert not scraper.well_formed
-
-
-def test_no_wellformed(evaluate_scraper):
-    """Test scraper without well-formed check."""
-    result_dict = {"streams": {0: STREAM_VALID.copy()},
-                   "stdout_part": "", "stderr_part": ""}
-    correct = parse_results("valid_6.0.tif", "image/tiff", result_dict, False)
-    correct.update_version("(:unav)")
-    scraper = WandScraper(filename="tests/data/image_tiff/valid_6.0.tif",
-                          mimetype="image/tiff",
-                          check_wellformed=False)
-    scraper.scrape_file()
-    assert not partial_message_included("Skipping scraper", scraper.messages())
-    assert scraper.well_formed is None
-    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(

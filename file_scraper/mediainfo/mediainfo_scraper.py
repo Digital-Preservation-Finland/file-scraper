@@ -34,11 +34,6 @@ class MediainfoScraper(BaseScraper):
 
     def scrape_file(self):
         """Populate streams with supported metadata objects."""
-        if not self._check_wellformed and self._only_wellformed:
-            self._messages.append("Skipping scraper: Well-formed check not "
-                                  "used.")
-            return
-
         try:
             mediainfo = MediaInfo.parse(decode_path(self.filename))
         except Exception as e:  # pylint: disable=invalid-name, broad-except

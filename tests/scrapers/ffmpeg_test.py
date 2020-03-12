@@ -197,25 +197,6 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
     evaluate_scraper(scraper, correct)
 
 
-def test_no_wellformed(evaluate_scraper):
-    """
-    Test that scraping is also done without well-formedness check.
-    """
-    result_dict = {"streams": {0: AVI_CONTAINER.copy(),
-                               1: AVI_JPEG2000_VIDEO.copy()},
-                   "stdout_part": "", "stderr_part": ""}
-    correct = parse_results("valid__JPEG2000.avi", "video/avi", result_dict,
-                            False)
-    scraper = FFMpegScraper(
-        filename="tests/data/video_avi/valid__JPEG2000.avi",
-        mimetype="video/avi", check_wellformed=False)
-    scraper.scrape_file()
-    assert partial_message_included("The file was analyzed successfully.",
-                                    scraper.messages())
-    assert scraper.well_formed is None
-    evaluate_scraper(scraper, correct)
-
-
 @pytest.mark.parametrize(
     ["filename", "result_dict", "mimetype"],
     [

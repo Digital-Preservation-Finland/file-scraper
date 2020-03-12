@@ -8,8 +8,6 @@ This module tests that:
     - These are also scraped correctly from files of same type with errors
       such as missing data, broken header or empty file, with scraper errors
       containing 'Error in analyzing file'.
-    - If well-formedness is not tested, scraper messages must not contain
-      'Skipping scraper', but well_formed is None.
     - The following MIME type and version pairs are supported both with and
       without well-formedness check:
         - image/tiff, 6.0
@@ -318,23 +316,6 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
         assert partial_message_included(correct.stderr_part,
                                         scraper.errors())
         assert not scraper.streams
-
-
-def test_no_wellformed(evaluate_scraper):
-    """Test scraper without well-formed check."""
-    result_dict = {"streams": {0: STREAM_VALID.copy()},
-                   "stdout_part": "", "stderr_part": ""}
-    correct = parse_results("valid_1989a.gif", "image/gif", result_dict, False)
-
-    scraper = PilScraper(filename="tests/data/image_gif/valid_1989a.gif",
-                         mimetype="image/gif",
-                         check_wellformed=False)
-    scraper.scrape_file()
-    correct.update_version("(:unav)")
-    correct.streams[0]["samples_per_pixel"] = "1"
-    correct.well_formed = None
-    assert not partial_message_included("Skipping scraper", scraper.messages())
-    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(

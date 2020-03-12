@@ -21,17 +21,16 @@ This will install virtualenv virtual environment with the following packages, bu
 
 The following software is required for minimal usage without file format well-formed check. Supported versions of the software is mentioned for some packages. The bolded software are NOT included in the pip installation script:
 
-    * For all files: opf-fido 1.4.0, file-magic, **file-5.30**
+    * For all files: opf-fido 1.4.0 (patched by dpres), file-magic, **file-5.30**
     * Additionally, for image files: Pillow, python-wand, **ImageMagick**
-    * Additionally, for audio/video files: pymediainfo, **MediaInfo**, **ffmpeg-python 0.1.16-2** (patched by dpres)
+    * Additionally, for audio/video files: pymediainfo, ffmpeg-python 0.1.16-2 (patched by dpres), **MediaInfo**, **FFMpeg 2.8.15**
     * Additionally, for pdf files: **veraPDF**
 
 Additionally, the following software is required for complete well-formed check. The bolded software are NOT included in the pip installation script. Where the version supplied by the CentOS repositories differs from the one file-scraper uses, the version has been marked after the software name. It is possible that other versions work too, but file-scraper has only been tested using the marked versions.
 
     * For text and xml files: python-lxml, python-mimeparse, **JHove 1.20.1**, **v.Nu 17.7**, **iso-schematron-xslt1**
-    * For WAVE audio files: **JHove 1.20.1**
     * For image files: **JHove 1.20.1**, **dpx-validator**, **pngcheck 2.3**
-    * For audio/video files (excluding WAVE audio): ffmpeg-python, **FFMpeg 2.8.15**
+    * For audio/video files: **JHove 1.20.1** (for WAVE audio files)
     * For other files: **JHove 1.20.1**, **LibreOffice**,  **GhostScript 9.20**, **warc-tools >= 4.8.3**, **pspp 1.2.0-2** (patched by dpres)
 
 See also:

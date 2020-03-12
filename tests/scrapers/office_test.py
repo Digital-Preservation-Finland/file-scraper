@@ -9,10 +9,7 @@ This module tests that:
       files are determined correctly with 'source file could not be loaded'
       being recorded in scraper errors.
     - Scraper uses parallel instances of LibreOffice properly.
-    - Without well-formedness check, scraper messages contain 'Skipping
-      scraper' and well_formed is None
-    - With well-formedness check, the following MIME type and version
-      combinations are supported:
+    - The following MIME type and version combinations are supported:
         - application/vnd.oasis.opendocument.text, 1.1
         - application/msword, 11.0
         - application/vnd.openxmlformats-officedocument.wordprocessingml.document,
@@ -157,16 +154,6 @@ def test_parallel_validation(filename, mimetype):
 
     for result in results:
         assert result.get(timeout=5)
-
-
-def test_no_wellformed():
-    """Test scraper without well-formed check."""
-    scraper = OfficeScraper(
-        filename="tests/data/application_msword/valid_11.0.doc",
-        mimetype="application/msword", check_wellformed=False)
-    scraper.scrape_file()
-    assert partial_message_included("Skipping scraper", scraper.messages())
-    assert scraper.well_formed is None
 
 
 @pytest.mark.parametrize(

@@ -11,9 +11,6 @@ This module tests that:
       (i.e. wav) audio, and to mkv container containing ffv1 video. For valid
       files scraper messages contains 'file was analyzed successfully' and for
       empty file scraper errors contains 'No audio or video tracks found'.
-    - When well-formedness is not checked, scraper messages does NOT contain
-      'Skipping scraper' (i.e. the metadata is collected anyway), but
-      well_formed is None. This is tested with a wav file.
     - The following MIME type and version combinations are supported whether
       well-formedness is checked or not:
         - audio/x-wav, '2'
@@ -409,21 +406,6 @@ def test_mediainfo_scraper_avi(filename, result_dict):
                 assert method() == 0
             else:
                 assert method() == "(:unav)"
-
-
-def test_no_wellformed(evaluate_scraper):
-    """Test scraper without well-formed check."""
-    result_dict = {"streams": {0: WAV_AUDIO.copy()},
-                   "stdout_part": "", "stderr_part": ""}
-    correct = parse_results("valid__wav.wav", "audio/x-wav", result_dict,
-                            False)
-    scraper = MediainfoScraper(
-        filename="tests/data/audio_x-wav/valid__wav.wav",
-        mimetype="audio/x-wav", check_wellformed=False)
-    scraper.scrape_file()
-    assert not partial_message_included("Skipping scraper", scraper.messages())
-    assert scraper.well_formed is None
-    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(

@@ -152,6 +152,12 @@ def test_encoding_check(filename, charset, is_wellformed, evaluate_scraper):
     if not is_wellformed:
         correct.update_mimetype("(:unav)")
         correct.update_version("(:unav)")
+        correct.streams[0]["stream_type"] = "(:unav)"
+    else:
+        correct.update_mimetype("text/plain")
+        correct.update_version("(:unap)")
+        correct.streams[0]["stream_type"] = "text"
+
     correct.well_formed = is_wellformed
     if correct.well_formed:
         correct.stdout_part = "encoding validated successfully"

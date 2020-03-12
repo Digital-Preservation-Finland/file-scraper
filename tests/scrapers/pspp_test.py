@@ -10,8 +10,6 @@ This module tests that:
       date string length'.
     - When file with missing data is scraped, scraper errors contains
       'unexpected end of file'.
-    - When well-formedness is not checked, scraper messages contains 'Skipping
-      scraper' and well_formed is None.
     - When well-formedness is checked, MIME type application/x-spss-por is
       supported with '', None or 'foo' as a version
     - When well-formedness is not checked, application/x-spss-por is not
@@ -84,16 +82,6 @@ def test_scraper(filename, result_dict, evaluate_scraper):
     scraper.scrape_file()
 
     evaluate_scraper(scraper, correct)
-
-
-def test_no_wellformed():
-    """Test scraper without well-formed check."""
-    scraper = PsppScraper(
-        filename="tests/data/application_x-spss-por/valid__spss24-dates.por",
-        mimetype="application/x-spss-por", check_wellformed=False)
-    scraper.scrape_file()
-    assert partial_message_included("Skipping scraper", scraper.messages())
-    assert scraper.well_formed is None
 
 
 def test_is_supported():

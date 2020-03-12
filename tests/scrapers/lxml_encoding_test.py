@@ -6,8 +6,6 @@ Tests for XML encoding validator.
 This module tests that:
     - Well-formed XML files with latin-1, utf-8 or utf-16 encodings are
       reported as well_formed and the charset is identified correctly.
-    - When full scraping is not done, scraper messages contain 'Skipping
-      scraper' and well-formedness be reported as None.
     - When full scraping is done, MIME type text/xml with version 1.0 and
       text/html with version 5.0 is reported as supported.
     - When full scraping is not done, text/xml version 1.0 is reported as not
@@ -53,24 +51,7 @@ def test_xml_encoding(testpath, file_encoding):
     scraper = LxmlScraper(filename=tmppath, mimetype="text/xml",
                           params={"charset": enc_match[file_encoding]})
     scraper.scrape_file()
-#    assert scraper.streams[0]["charset"] == enc_match[file_encoding]
     assert scraper.well_formed
-
-
-def test_no_wellformed(testpath):
-    """Test scraper without well-formed check."""
-    (_, tmppath) = tempfile.mkstemp()
-    xml = """<?xml version="1.0" encoding="UTF-8" ?>
-              <a>åäö</a>""".encode("utf-8")
-    tmppath = os.path.join(testpath, "valid__.csv")
-    with io.open(tmppath, "wb") as file_:
-        file_.write(xml)
-    scraper = LxmlScraper(filename=tmppath, mimetype="text/csv",
-                          check_wellformed=False,
-                          params={"charset": "UTF-8"})
-    scraper.scrape_file()
-    assert scraper.well_formed is None
-    assert partial_message_included("Skipping scraper", scraper.messages())
 
 
 def test_is_supported_allow():

@@ -20,9 +20,6 @@ This module tests that:
     - For empty file, scraper errors contains "Document is empty".
     - XML files without the header can be reported as well-formed.
 
-    - Without well-formedness check, scraper messages contains "Skipping
-      scraper" and well_formed is None.
-
     - MIME type text/xml with version 1.0 or None is supported when well-
       formedness is checked.
     - When well-formedness is not checked, text/xml 1.0 is not supported.
@@ -88,7 +85,7 @@ def test_scraper_valid(filename, result_dict, params, evaluate_scraper):
                             result_dict, True, params)
     scraper = XmllintScraper(filename=correct.filename,
                              mimetype="text/xml",
-                             check_wellformed=True, params=correct.params)
+                             params=correct.params)
     scraper.scrape_file()
 
     if not correct.well_formed:
@@ -153,7 +150,7 @@ def test_scraper_invalid(filename, result_dict, params, evaluate_scraper):
                             result_dict, True, params)
     scraper = XmllintScraper(filename=correct.filename,
                              mimetype="text/xml",
-                             check_wellformed=True, params=correct.params)
+                             params=correct.params)
     scraper.scrape_file()
     if "empty" in filename or "no_closing_tag" in filename:
         correct.version = None
@@ -168,15 +165,6 @@ def test_scraper_invalid(filename, result_dict, params, evaluate_scraper):
     else:
         evaluate_scraper(scraper, correct)
     assert not partial_message_included("<note>", scraper.messages())
-
-
-def test_no_wellformed():
-    """Test scraper without well-formed check."""
-    scraper = XmllintScraper("tests/data/text_xml/valid_1.0_wellformed.xml",
-                             mimetype="text/xml", check_wellformed=False)
-    scraper.scrape_file()
-    assert partial_message_included("Skipping scraper", scraper.messages())
-    assert scraper.well_formed is None
 
 
 def test_is_supported():

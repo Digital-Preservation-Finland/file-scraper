@@ -15,8 +15,6 @@ This module tests that:
     - For files that are valid PDF 1.7 or 1.4 but not valid PDF/A, MIME type,
       version and streams are scraped correctly but they are reported as
       not well-formed.
-    - When well-formedness is not checked, scraper messages contain "Skipping
-      scraper" and well_formed is None.
     - The scraper supports MIME type application/pdf with versions A-1b
       when well-formedness is checked, but does not support them when
       well-formedness is not checked. The scraper also does not support made
@@ -113,16 +111,6 @@ def test_scraper_invalid_pdfa(filename, result_dict, evaluate_scraper):
                                         scraper.errors())
     else:
         evaluate_scraper(scraper, correct)
-
-
-def test_no_wellformed():
-    """Test scraper without well-formed check."""
-    scraper = VerapdfScraper(
-        filename="tests/data/application_pdf/valid_A-1a.pdf",
-        mimetype=MIMETYPE, check_wellformed=False)
-    scraper.scrape_file()
-    assert partial_message_included("Skipping scraper", scraper.messages())
-    assert scraper.well_formed is None
 
 
 def test_is_supported():

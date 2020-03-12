@@ -18,9 +18,6 @@ This module tests that:
         - For files with missing data, scraper errors contains "unpack
           requires a string argument of length 4".
 
-    - When using any of these scrapers without checking well-formedness,
-      scraper messages contains "Skipping scraper" and well_formed is None.
-
     - With well-formedness check, the following MIME types and versions are
       supported:
         - GzipWarctoolsScraper supports application/gzip with "", None or a
@@ -217,36 +214,6 @@ def test_arc_scraper(filename, result_dict, evaluate_scraper):
         assert partial_message_included(correct.stderr_part, scraper.errors())
     else:
         evaluate_scraper(scraper, correct)
-
-
-def test_no_wellformed_gzip():
-    """Test scraper without well-formed check."""
-    scraper = GzipWarctoolsScraper(
-        filename="tests/data/application_warc/valid_1.0_.warc.gz",
-        mimetype="application/warc", check_wellformed=False)
-    scraper.scrape_file()
-    assert partial_message_included("Skipping scraper", scraper.messages())
-    assert scraper.well_formed is None
-
-
-def test_no_wellformed_warc():
-    """Test scraper without well-formed check."""
-    scraper = WarcWarctoolsScraper(
-        filename="tests/data/application_warc/valid_1.0_.warc",
-        mimetype="application/warc", check_wellformed=False)
-    scraper.scrape_file()
-    assert partial_message_included("Skipping scraper", scraper.messages())
-    assert scraper.well_formed is None
-
-
-def test_no_wellformed_arc():
-    """Test scraper without well-formed check."""
-    scraper = ArcWarctoolsScraper(
-        filename="tests/data/application_x-internet-archive/valid_1.0_.arc",
-        mimetype="application/x-internet-archive", check_wellformed=False)
-    scraper.scrape_file()
-    assert partial_message_included("Skipping scraper", scraper.messages())
-    assert scraper.well_formed is None
 
 
 def test_gzip_is_supported():

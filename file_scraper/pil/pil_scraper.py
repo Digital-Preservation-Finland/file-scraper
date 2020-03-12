@@ -21,10 +21,6 @@ class PilScraper(BaseScraper):
 
     def scrape_file(self):
         """Scrape data from file."""
-        if not self._check_wellformed and self._only_wellformed:
-            self._messages.append("Skipping scraper: Well-formed check not "
-                                  "used.")
-            return
         try:
             pil = PIL.Image.open(self.filename)
         except Exception as e:  # pylint: disable=invalid-name, broad-except

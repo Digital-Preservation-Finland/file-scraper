@@ -8,8 +8,6 @@ This module tests that:
     - For empty files, scraper errors contains 'Document is empty'.
     - If and only if verbose option is set to False, scraper messages also
       contain 'have been suppressed'.
-    - If well-formedness is not tested, scraper messages contain 'Skipping
-      scraper' and well_formed is None
 
     - is_supported(cls, mimetype, version, check_wellformed, params) returns
       False if params does not contain 'schematron' as a key.
@@ -96,16 +94,6 @@ def test_scraper(filename, result_dict, params, evaluate_scraper):
     elif scraper.messages():
         assert partial_message_included("have been suppressed",
                                         scraper.messages())
-
-
-def test_no_wellformed():
-    """Test scraper without well-formed check."""
-    scraper = SchematronScraper(
-        filename="tests/data/text_xml/valid_1.0_wellformed.xml",
-        mimetype="text/xml", check_wellformed=False)
-    scraper.scrape_file()
-    assert partial_message_included("Skipping scraper", scraper.messages())
-    assert scraper.well_formed is None
 
 
 def test_is_supported():

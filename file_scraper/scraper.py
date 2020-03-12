@@ -91,19 +91,20 @@ class Scraper(object):
                 important["version"] not in LOSE:
             self._predefined_version = important["version"]
 
-    def _scrape_file(self, scraper):
+    def _scrape_file(self, scraper, check_wellformed):
         """
         Scrape with the given scraper.
 
         :scraper: Scraper instance
+        :check_wellformed: True for well-formed checking, False otherwise
         """
         scraper.scrape_file()
         if scraper.streams:
             self._scraper_results.append(scraper.streams)
         self.info[len(self.info)] = scraper.info()
-        if scraper.well_formed is not None:
-            if self.well_formed in [None, True]:
-                self.well_formed = scraper.well_formed
+        if self.well_formed in [None, True] and \
+                (check_wellformed or not scraper.well_formed):
+            self.well_formed = scraper.well_formed
 
     def _check_utf8(self, check_wellformed):
         """
@@ -112,14 +113,15 @@ class Scraper(object):
 
         :check_wellformed: Whether full scraping is used or not.
         """
+        if not check_wellformed:
+            return
         if "charset" in self.streams[0] and \
                 self.streams[0]["charset"] == "UTF-8":
             scraper = JHoveUtf8Scraper(filename=self.filename,
-                                       mimetype="(:unav)",
-                                       check_wellformed=check_wellformed)
-            self._scrape_file(scraper)
+                                       mimetype="(:unav)")
+            self._scrape_file(scraper, True)
 
-    def _check_mime(self, check_wellformed=True):
+    def _check_mime(self, check_wellformed):
         """
         Check that predefined mimetype and resulted mimetype match.
 
@@ -131,11 +133,10 @@ class Scraper(object):
         scraper = MimeScraper(filename=self.filename,
                               mimetype=self._predefined_mimetype,
                               version=version,
-                              check_wellformed=check_wellformed,
                               params={"mimetype": self.mimetype,
                                       "version": self.version,
                                       "well_formed": self.well_formed})
-        self._scrape_file(scraper)
+        self._scrape_file(scraper, check_wellformed)
 
     def scrape(self, check_wellformed=True):
         """Scrape file and collect metadata.
@@ -157,9 +158,8 @@ class Scraper(object):
                 filename=self.filename,
                 mimetype=self._predefined_mimetype,
                 version=self._predefined_version,
-                check_wellformed=check_wellformed,
                 params=self._params)
-            self._scrape_file(scraper)
+            self._scrape_file(scraper, check_wellformed)
         self.streams = generate_metadata_dict(self._scraper_results, LOSE)
         self._check_utf8(check_wellformed)
 
@@ -192,7 +192,7 @@ class Scraper(object):
             self._predefined_version = self._params.get("version", None)
 
         file_exists = FileExists(self.filename, None)
-        self._scrape_file(file_exists)
+        self._scrape_file(file_exists, True)
 
         if file_exists.well_formed is False:
             return (None, None)

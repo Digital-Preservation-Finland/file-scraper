@@ -26,10 +26,6 @@ class VerapdfScraper(BaseScraper):
 
         :raises: VeraPDFError
         """
-        if not self._check_wellformed and self._only_wellformed:
-            self._messages.append("Skipping scraper: Well-formed check not "
-                                  "used.")
-            return
         cmd = [VERAPDF_PATH, encode_path(self.filename)]
 
         shell = Shell(cmd)

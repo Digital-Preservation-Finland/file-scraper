@@ -2,18 +2,15 @@
 Test for Ghostscript scraper.
 
 This module tests that:
-    - When full scraping is done for a valid pdf file, the following results
-      are reported:
+    - The following results are reported:
         - the file is well-formed
         - MIME type and version are '(:unav)'
         - scraper messages do not contain the word 'Error'
     - Files containing JPEG2000 images are scraped correctly.
-    - When full scraping is done for a file where the payload has been altered,
+    - When scraping is done for a file where the payload has been altered,
       or an XREF entry in XREF table has been removed, the results are similar
       but the file is not well-formed, scraper messages are not checked and
       scraper errors contain 'An error occurred while reading an XREF table.'
-    - When well-formedness is not checked, scraper messages should contain
-      'Skipping scraper' and well-formednes be reported as None
     - MIME type application/pdf with version 1.7 is reported as
       supported when full scraping is done
     - When full scraping is not done, application/pdf version 1.7 is reported
@@ -102,17 +99,6 @@ def test_jpeg2000_inside_pdf(evaluate_scraper):
     correct.streams[0]["mimetype"] = "(:unav)"
 
     evaluate_scraper(scraper, correct, eval_output=False)
-
-
-def test_no_wellformed():
-    """Test scraper without well-formed check."""
-    scraper = GhostscriptScraper(filename="tests/data/application_pdf/"
-                                          "valid_1.4.pdf",
-                                 mimetype="application/pdf",
-                                 check_wellformed=False)
-    scraper.scrape_file()
-    assert partial_message_included("Skipping scraper", scraper.messages())
-    assert scraper.well_formed is None
 
 
 def test_is_supported():

@@ -40,10 +40,6 @@ This module tests that:
         - scraper errors contains "do not match"
         - file is not well-formed
 
-    - Running scraper with binary file without full scraping results in
-      well_formed being None and scraper messages containing
-      "Skipping scraper"
-
     - The following MIME type and version pairs are supported when full
       scraping is performed:
         - application/vnd.oasis.opendocument.text, 1.1
@@ -283,23 +279,12 @@ def test_invalid_text(filename, mimetype):
     """
     scraper = MagicTextScraper(
         filename=filename, mimetype=mimetype,
-        check_wellformed=True, params={"charset": "UTF-8"})
+        params={"charset": "UTF-8"})
     scraper.scrape_file()
     assert not scraper.well_formed
     assert scraper.streams[0]["mimetype"] == "(:unav)"
     assert scraper.streams[0]["version"] == "(:unav)"
     assert partial_message_included("foo", scraper.errors())
-
-
-def test_no_wellformed():
-    """Test scraper without well-formed check."""
-    scraper = MagicBinaryScraper(
-        filename="tests/data/image_jpeg/valid_1.01.jpg",
-        mimetype="image/jpeg", check_wellformed=False)
-    scraper.scrape_file()
-    assert not partial_message_included("Skipping scraper",
-                                        scraper.messages())
-    assert scraper.well_formed is None
 
 
 @pytest.mark.parametrize(

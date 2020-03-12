@@ -125,7 +125,7 @@ def test_scraper_properties():
     """Test scraper's attributes and well_formed property."""
     scraper = BaseScraperBasic(
         filename="testfilename", mimetype="test/mime",
-        check_wellformed=True, params={"test": "value"})
+        params={"test": "value"})
     # pylint: disable=protected-access
     scraper._messages.append("success")
     assert scraper.well_formed
@@ -134,15 +134,7 @@ def test_scraper_properties():
 
     assert scraper.filename == "testfilename"
     # pylint: disable=protected-access
-    assert scraper._check_wellformed
     assert scraper._params == {"test": "value"}
-
-    scraper = BaseScraperBasic(
-        filename="testfilename", mimetype="test/mime", check_wellformed=False)
-    scraper._messages.append("success")
-    assert scraper.well_formed is None
-    scraper._errors.append("error")
-    assert scraper.well_formed is None
 
 
 class BaseMetaCustom(BaseMeta):

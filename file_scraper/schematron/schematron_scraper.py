@@ -19,17 +19,13 @@ class SchematronScraper(BaseScraper):
     _supported_metadata = [SchematronMeta]
     _only_wellformed = True
 
-    # pylint: disable=too-many-arguments
-    def __init__(self, filename, mimetype, version=None,
-                 check_wellformed=True, params=None):
+    def __init__(self, filename, mimetype, version=None, params=None):
         """
         Initialize instance.
 
         :filename: File path
         :mimetype: Predefined mimetype of the file
         :version: Predefined file format version
-        :check_wellformed: True for the full well-formed check, False for just
-                           detection and metadata scraping
         :params: Extra parameters needed for the scraper. These may be:
                  verbose: Verbose output, False by default
                  cache: Cache of compiled schematron files are used,
@@ -41,7 +37,7 @@ class SchematronScraper(BaseScraper):
         """
         super(SchematronScraper, self).__init__(
             filename=filename, mimetype=mimetype, version=version,
-            check_wellformed=check_wellformed, params=params)
+            params=params)
         if params is None:
             params = {}
         self._verbose = params.get("verbose", False)
@@ -88,11 +84,6 @@ class SchematronScraper(BaseScraper):
 
     def scrape_file(self):
         """Do the Schematron check."""
-        if not self._check_wellformed and self._only_wellformed:
-            self._messages.append("Skipping scraper: Well-formed check not "
-                                  "used.")
-            return
-
         if self._schematron_file is None:
             self._errors.append("Schematron file missing from parameters.")
             return

@@ -7,8 +7,6 @@ This module tests that:
     - For well-formed files, scraper messages contains 'OK' and there are no
       errors.
     - For non-well-formed files, scraper error is recorded.
-    - When well-formedness is not checked, scraper messages contain 'Skipping
-      scraper' and well_formed is None.
     - MIME type image/png is supported with version 1.2, None or a made up
       version when well-formedness is checked.
     - When well-formedness is not checked, image/png 1.2 is not supported.
@@ -64,16 +62,6 @@ def test_scraper(filename, result_dict, evaluate_scraper):
         correct.stderr_part = "Failed:"
 
     evaluate_scraper(scraper, correct)
-
-
-def test_no_wellformed():
-    """Test scraper without well-formed check."""
-    scraper = PngcheckScraper(filename="tests/data/image_png/valid_1.2.png",
-                              mimetype="image/png",
-                              check_wellformed=False)
-    scraper.scrape_file()
-    assert partial_message_included("Skipping scraper", scraper.messages())
-    assert scraper.well_formed is None
 
 
 def test_is_supported():

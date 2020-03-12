@@ -20,6 +20,7 @@ Source0:        %{file_prefix}-v%{file_version}%{?file_release_tag}-%{file_build
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 Requires:       python python2-pymediainfo python-pillow python-magic python-opf-fido veraPDF
+Requires:       ffmpeg-python ffmpeg file-5.30 
 Requires:       python-wand >= 0.5.1
 BuildRequires:  python-setuptools ImageMagick libmediainfo
 Conflicts:      file-scraper-full < %{version}-%{release}, file-scraper-full > %{version}-%{release}
@@ -29,9 +30,9 @@ Summary: 	File scraper analysis tool - full installation
 Group:          Applications/Archiving
 Conflicts:      %{name} < %{version}-%{release}, %{name} > %{version}-%{release}
 Requires:       %{name} = %{version}-%{release}
-Requires:       ffmpeg-python ffmpeg ghostscript jhove python-lxml veraPDF dpx-validator dpres-xml-schemas
+Requires:       ghostscript jhove python-lxml dpx-validator dpres-xml-schemas
 Requires:       warc-tools >= 4.8.3
-Requires:       pngcheck libreoffice pspp file-5.30 xhtml1-dtds vnu iso-schematron-xslt1
+Requires:       pngcheck libreoffice pspp xhtml1-dtds vnu iso-schematron-xslt1
 Requires:       python2-mimeparse
 
 %description

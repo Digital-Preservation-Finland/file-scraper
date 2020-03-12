@@ -15,10 +15,6 @@ class VnuScraper(BaseScraper):
 
     def scrape_file(self):
         """Scrape file using vnu.jar."""
-        if not self._check_wellformed and self._only_wellformed:
-            self._messages.append("Skipping scraper: Well-formed check not "
-                                  "used.")
-            return
         shell = Shell([
             "java", "-jar", VNU_PATH, "--verbose",
             self.filename])

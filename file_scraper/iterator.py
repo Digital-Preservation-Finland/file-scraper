@@ -26,6 +26,7 @@ from file_scraper.pngcheck.pngcheck_scraper import PngcheckScraper
 from file_scraper.pspp.pspp_scraper import PsppScraper
 from file_scraper.schematron.schematron_scraper import SchematronScraper
 from file_scraper.textfile.textfile_scraper import (TextEncodingScraper,
+                                                    TextEncodingMetaScraper,
                                                     TextfileScraper)
 from file_scraper.verapdf.verapdf_scraper import VerapdfScraper
 from file_scraper.vnu.vnu_scraper import VnuScraper
@@ -68,7 +69,8 @@ def iter_scrapers(mimetype, version, check_wellformed=True, params=None):
         LxmlScraper, MagicTextScraper, MagicBinaryScraper, MediainfoScraper,
         OfficeScraper, PilScraper, PngcheckScraper, PsppScraper,
         SchematronScraper, TextfileScraper, TextEncodingScraper,
-        VerapdfScraper, VnuScraper, WandScraper, XmllintScraper]
+        TextEncodingMetaScraper, VerapdfScraper, VnuScraper, WandScraper,
+        XmllintScraper]
 
     for scraper in scrapers:
         if scraper.is_supported(mimetype, version, check_wellformed, params):
