@@ -23,10 +23,6 @@ UNAV_ELEMENTS = {
     "tests/data/application_vnd.ms-powerpoint/valid_11.0.ppt": ["version"],
     "tests/data/application_vnd.oasis.opendocument.formula/valid_1.0"
     ".odf": ["version"],
-    "tests/data/application_vnd.openxmlformats-officedocument.presentationml"
-    ".presentation/valid_15.0.pptx": ["version"],
-    "tests/data/application_vnd.openxmlformats-officedocument.spreadsheetml"
-    ".sheet/valid_15.0.xlsx": ["version"],
     "tests/data/application_vnd.openxmlformats-officedocument.word"
     "processingml.document/valid_15.0.docx": ["version"],
     "tests/data/image_gif/valid_1989a.gif": ["version", "version"],
@@ -59,18 +55,18 @@ UNAV_ELEMENTS = {
 # or due to special parameters or missing scraper
 
 IGNORE_INVALID = [
-    
+
     # invalid_1.4_wrong_version.pdf -- is valid PDF 1.7
     "tests/data/application_pdf/invalid_1.4_wrong_version.pdf",
-    
+
     # invalid_1.0_no_doctype.xhtml - is valid text/xml
     # Xml files would require schema or catalog, this is tested in
     # unit tests of Xmllint.
     "tests/data/application_xhtml+xml/invalid_1.0_no_doctype.xhtml",
-    
+
     # invalid__header_corrupted.por -- is valid text/plain
     "tests/data/application_x-spss-por/invalid__header_corrupted.por",
-    
+
     # invalid__truncated.por - is valid text/plain
     "tests/data/application_x-spss-por/invalid__truncated.por",
 
@@ -84,7 +80,7 @@ IGNORE_VALID = [
     "tests/data/text_xml/valid_1.0_xsd.xml",
     "tests/data/text_xml/valid_1.0_local_xsd.xml",
     "tests/data/text_xml/valid_1.0_catalog.xml",
-    ]
+]
 
 # Ignore these we know that warc, arc, por and dpx files are not currently
 # supported for full metadata scraping.
@@ -107,9 +103,9 @@ IGNORE_FOR_METADATA = IGNORE_VALID + [
 # These invalid files are recognized as application/gzip
 DIFFERENT_MIMETYPE_INVALID = {
     "tests/data/application_warc/invalid__missing_data.warc.gz":
-    "application/gzip",
+        "application/gzip",
     "tests/data/application_x-internet-archive/invalid__missing_data.arc.gz":
-    "application/gzip"}
+        "application/gzip"}
 
 # To get some files validated against the strictest applicable criteria instead
 # of just checking that they are indeed text files, the MIME type has to be
@@ -256,7 +252,7 @@ def test_invalid_combined(fullname, mimetype):
 
     assert scraper.well_formed is False  # Could be also None (wrong)
     assert scraper.mimetype == mimetype or (
-        fullname in DIFFERENT_MIMETYPE_INVALID)
+            fullname in DIFFERENT_MIMETYPE_INVALID)
 
 
 @pytest.mark.parametrize(("fullname", "mimetype"), get_files(well_formed=True))
@@ -419,12 +415,12 @@ def test_forced_filetype(filepath, params, well_formed, expected_mimetype,
      ("tests/data/text_csv/valid__ascii.csv", "UTF-8", True),
      ("tests/data/text_csv/valid__ascii.csv", "ISO-8859-15", True),
      ("tests/data/text_csv/valid__ascii.csv", "UTF-16", False),
-     ("tests/data/text_plain/valid__utf16be_multibyte.txt", "UTF-16", True),    
+     ("tests/data/text_plain/valid__utf16be_multibyte.txt", "UTF-16", True),
      ("tests/data/text_plain/valid__utf16be_multibyte.txt", "UTF-8", False),
-     ("tests/data/text_plain/valid__utf16le_multibyte.txt", "UTF-16", True),    
+     ("tests/data/text_plain/valid__utf16le_multibyte.txt", "UTF-16", True),
      ("tests/data/text_plain/valid__utf16le_multibyte.txt", "UTF-8", False),
      ("tests/data/text_plain/invalid__utf8_just_c3.txt", "UTF-8", False),
-    ]
+     ]
 )
 def test_charset(filepath, charset, well_formed):
     """
