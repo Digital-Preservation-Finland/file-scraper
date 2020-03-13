@@ -67,8 +67,8 @@ class _SingletonFidoReader(object):
     def __getattr__(self, name):
         return getattr(self._instance, name)
 
-    def __setattr__(self, name):
-        return setattr(self._instance, name)
+    def __setattr__(self, name, value):
+        setattr(self._instance, name, value)
 
 
 class _FidoReader(_ModifiedFido):
