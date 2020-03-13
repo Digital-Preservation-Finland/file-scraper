@@ -97,8 +97,8 @@ class TextEncodingMetaScraper(BaseScraper):
         """
         if check_wellformed:
             return False
-        return any([x.is_supported(mimetype, version) for x in
-                    cls._supported_metadata])
+        return super(TextEncodingMetaScraper, cls).is_supported(
+            mimetype, version, check_wellformed, params)
 
     def scrape_file(self):
         """No actual scraping. Set the predefined character encoding value."""

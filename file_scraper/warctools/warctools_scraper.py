@@ -18,7 +18,56 @@ from file_scraper.warctools.warctools_model import (ArcWarctoolsMeta,
 
 class WarcWarctoolsScraper(BaseScraper):
     """
-    Implements WARC file format scraper.
+    Implements WARC file format scraper for metadata collecting.
+
+    This scraper uses Internet Archives warctools scraper.
+
+    .. seealso:: https://github.com/internetarchive/warctools
+    """
+
+    _supported_metadata = [WarcWarctoolsMeta]
+
+    @classmethod
+    def is_supported(cls, mimetype, version=None, check_wellformed=True,
+                     params=None):  # pylint: disable=unused-argument
+        """
+        Support only when no checking of well-formedness is done.
+
+        :mimetype: MIME type of a file
+        :version: Version of a file. Defaults to None.
+        :check_wellformed: True for scraping with well-formedness check, False
+                           for skipping the check. Defaults to True.
+        :params: None
+        :returns: True if the MIME type and version are supported, False if not
+        """
+        if check_wellformed:
+            return False
+        return super(WarcWarctoolsScraper, cls).is_supported(
+            mimetype, version, check_wellformed, params)
+
+    def scrape_file(self):
+        """Scrape WARC file."""
+        try:
+            # First assume archive is compressed
+            with gzip.open(self.filename) as warc_fd:
+                line = warc_fd.readline()
+        except IOError:
+            # Not compressed archive
+            with io_open(self.filename, "rb") as warc_fd:
+                line = warc_fd.readline()
+        except Exception as exception:  # pylint: disable=broad-except
+            # Compressed but corrupted gzip file
+            self._errors.append(six.text_type(exception))
+            return
+
+        self._messages.append("File was analyzed successfully.")
+        self.iterate_models(errors=self._errors, line=line)
+        self._check_supported()
+
+
+class WarcWarctoolsFullScraper(WarcWarctoolsScraper):
+    """
+    Implements WARC file format scraper for validation.
 
     This scraper uses Internet Archives warctools scraper.
 
@@ -27,6 +76,25 @@ class WarcWarctoolsScraper(BaseScraper):
 
     _supported_metadata = [WarcWarctoolsMeta]
     _only_wellformed = True  # Only well-formed check
+
+    @classmethod
+    def is_supported(cls, mimetype, version=None, check_wellformed=True,
+                     params=None):  # pylint: disable=unused-argument
+        """
+        Use the default is_supported method from BaseScraper.
+        Super class has a special is_supported() method.
+
+        :mimetype: MIME type of a file
+        :version: Version of a file. Defaults to None.
+        :check_wellformed: True for scraping with well-formedness check, False
+                           for skipping the check. Defaults to True.
+        :params: None
+        :returns: True if the MIME type and version are supported, False if not
+        """
+        if cls._only_wellformed and not check_wellformed:
+            return False
+        return any([x.is_supported(mimetype, version) for x in
+                    cls._supported_metadata])
 
     def scrape_file(self):
         """Scrape WARC file."""
@@ -46,22 +114,7 @@ class WarcWarctoolsScraper(BaseScraper):
 
         self._messages.append(shell.stdout)
 
-        try:
-            # First assume archive is compressed
-            with gzip.open(self.filename) as warc_fd:
-                line = warc_fd.readline()
-        except IOError:
-            # Not compressed archive
-            with io_open(self.filename, "rb") as warc_fd:
-                line = warc_fd.readline()
-        except Exception as exception:  # pylint: disable=broad-except
-            # Compressed but corrupted gzip file
-            self._errors.append(six.text_type(exception))
-            return
-
-        self._messages.append("File was analyzed successfully.")
-        self.iterate_models(errors=self._errors, line=line)
-        self._check_supported()
+        super(WarcWarctoolsFullScraper, self).scrape_file()
 
 
 class ArcWarctoolsScraper(BaseScraper):
@@ -103,13 +156,13 @@ class GzipWarctoolsScraper(BaseScraper):
     _only_wellformed = True  # Only well-formed check
     _scraper = None
 
-    _supported_scrapers = [WarcWarctoolsScraper, ArcWarctoolsScraper]
+    _supported_scrapers = [WarcWarctoolsFullScraper, ArcWarctoolsScraper]
 
     def scrape_file(self):
         """Scrape file. If Warc fails, try Arc."""
         original_messages = self._messages
         for class_ in self._supported_scrapers:
-            if class_ == WarcWarctoolsScraper:
+            if class_ == WarcWarctoolsFullScraper:
                 mime = "application/warc"
             else:
                 mime = "application/x-internet-archive"

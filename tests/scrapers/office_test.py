@@ -37,7 +37,7 @@ from multiprocessing import Pool
 import pytest
 
 from file_scraper.office.office_scraper import OfficeScraper
-from tests.common import (parse_results, partial_message_included)
+from tests.common import parse_results
 
 BASEPATH = "tests/data"
 

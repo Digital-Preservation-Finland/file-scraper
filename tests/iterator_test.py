@@ -18,7 +18,7 @@ WELLFORMED_SCRAPERS = [
     "JHoveWavScraper", "JHoveUtf8Scraper", "LxmlScraper", "OfficeScraper",
     "PngcheckScraper", "PsppScraper", "SchematronScraper",
     "TextEncodingScraper", "VerapdfScraper", "VnuScraper",
-    "ArcWarctoolsScraper", "WarcWarctoolsScraper", "GzipWarctoolsScraper",
+    "ArcWarctoolsScraper", "WarcWarctoolsFullScraper", "GzipWarctoolsScraper",
     "XmllintScraper"
 ]
 
@@ -87,8 +87,7 @@ WELLFORMED_SCRAPERS = [
          ["PngcheckScraper", "MagicBinaryScraper", "PilScraper",
           "WandScraper"]),
         ("application/gzip", None, ["GzipWarctoolsScraper"]),
-        ("application/warc", None, ["WarcWarctoolsScraper",
-                                    "MagicBinaryScraper"]),
+        ("application/warc", None, ["WarcWarctoolsFullScraper"]),
         ("application/x-internet-archive", None,
          ["MagicBinaryScraper", "ArcWarctoolsScraper"]),
         ("text/xml", "1.0", ["DetectedMimeVersionScraper", "XmllintScraper",
@@ -139,6 +138,10 @@ def test_iter_scrapers(mimetype, version, scraper_classes):
 
     scraper_classes = [
         "TextEncodingMetaScraper" if x == "TextEncodingScraper" else x
+        for x in scraper_classes
+    ]
+    scraper_classes = [
+        "WarcWarctoolsScraper" if x == "WarcWarctoolsFullScraper" else x
         for x in scraper_classes
     ]
     scrapers = iter_scrapers(mimetype, version, False)

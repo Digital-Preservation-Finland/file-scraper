@@ -31,9 +31,9 @@ from file_scraper.textfile.textfile_scraper import (TextEncodingScraper,
 from file_scraper.verapdf.verapdf_scraper import VerapdfScraper
 from file_scraper.vnu.vnu_scraper import VnuScraper
 from file_scraper.wand.wand_scraper import WandScraper
-from file_scraper.warctools.warctools_scraper import (ArcWarctoolsScraper,
-                                                      GzipWarctoolsScraper,
-                                                      WarcWarctoolsScraper)
+from file_scraper.warctools.warctools_scraper import (
+    ArcWarctoolsScraper, GzipWarctoolsScraper, WarcWarctoolsFullScraper,
+    WarcWarctoolsScraper)
 from file_scraper.xmllint.xmllint_scraper import XmllintScraper
 
 
@@ -62,13 +62,13 @@ def iter_scrapers(mimetype, version, check_wellformed=True, params=None):
     scraper_found = False
 
     scrapers = [
-        ArcWarctoolsScraper, GzipWarctoolsScraper, WarcWarctoolsScraper,
-        CsvScraper, DetectedMimeVersionScraper, DpxScraper, FFMpegScraper,
-        GhostscriptScraper, JHoveGifScraper, JHoveHtmlScraper,
-        JHoveJpegScraper, JHovePdfScraper, JHoveTiffScraper, JHoveWavScraper,
-        LxmlScraper, MagicTextScraper, MagicBinaryScraper, MediainfoScraper,
-        OfficeScraper, PilScraper, PngcheckScraper, PsppScraper,
-        SchematronScraper, TextfileScraper, TextEncodingScraper,
+        WarcWarctoolsFullScraper, ArcWarctoolsScraper, GzipWarctoolsScraper,
+        WarcWarctoolsScraper, CsvScraper, DetectedMimeVersionScraper,
+        DpxScraper, FFMpegScraper, GhostscriptScraper, JHoveGifScraper,
+        JHoveHtmlScraper, JHoveJpegScraper, JHovePdfScraper, JHoveTiffScraper,
+        JHoveWavScraper, LxmlScraper, MagicTextScraper, MagicBinaryScraper,
+        MediainfoScraper, OfficeScraper, PilScraper, PngcheckScraper,
+        PsppScraper, SchematronScraper, TextfileScraper, TextEncodingScraper,
         TextEncodingMetaScraper, VerapdfScraper, VnuScraper, WandScraper,
         XmllintScraper]
 

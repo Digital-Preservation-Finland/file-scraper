@@ -73,7 +73,6 @@ This module tests that:
 """
 from __future__ import unicode_literals
 
-import os
 import pytest
 
 from file_scraper.magic_scraper.magic_model import (HtmlFileMagicMeta,

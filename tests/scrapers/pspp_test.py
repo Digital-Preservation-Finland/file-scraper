@@ -21,7 +21,7 @@ from __future__ import unicode_literals
 import pytest
 
 from file_scraper.pspp.pspp_scraper import PsppScraper
-from tests.common import (parse_results, partial_message_included)
+from tests.common import parse_results
 
 MIMETYPE = "application/x-spss-por"
 

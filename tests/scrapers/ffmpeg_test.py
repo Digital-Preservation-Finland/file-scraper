@@ -48,7 +48,7 @@ from __future__ import unicode_literals
 import pytest
 
 from file_scraper.ffmpeg.ffmpeg_scraper import FFMpegScraper
-from tests.common import (parse_results, partial_message_included)
+from tests.common import parse_results
 from tests.scrapers.stream_dicts import (
     AVI_CONTAINER,
     AVI_JPEG2000_VIDEO,

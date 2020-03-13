@@ -20,7 +20,7 @@ This module tests that:
 from __future__ import unicode_literals
 
 import pytest
-from tests.common import parse_results, partial_message_included
+from tests.common import parse_results
 from file_scraper.dpx.dpx_scraper import DpxScraper
 
 MIMETYPE = "image/x-dpx"

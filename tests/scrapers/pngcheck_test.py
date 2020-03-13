@@ -17,7 +17,7 @@ from __future__ import unicode_literals
 import pytest
 
 from file_scraper.pngcheck.pngcheck_scraper import PngcheckScraper
-from tests.common import (parse_results, partial_message_included)
+from tests.common import parse_results
 
 MIMETYPE = "image/png"
 

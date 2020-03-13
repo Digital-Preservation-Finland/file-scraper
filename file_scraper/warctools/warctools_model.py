@@ -49,7 +49,7 @@ class WarcWarctoolsMeta(BaseWarctoolsMeta):
     _supported = {"application/warc": ["0.17", "0.18", "1.0"]}
     _allow_versions = True  # Allow any version
 
-    def __init__(self, errors, line):
+    def __init__(self, errors, line=None):
         """
         Initialize the metadata model.
 
@@ -72,6 +72,8 @@ class WarcWarctoolsMeta(BaseWarctoolsMeta):
     @metadata()
     def version(self):
         """Return the version."""
+        if self._line is None:
+            return "(:unav)"
         if len(self._line.split(b"WARC/", 1)) > 1:
             return ensure_text(
                 self._line.split(b"WARC/", 1)[1].split(b" ")[0].strip())

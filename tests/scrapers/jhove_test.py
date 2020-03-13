@@ -90,8 +90,6 @@ This module tests that:
 """
 from __future__ import unicode_literals
 
-import os
-
 import pytest
 
 from file_scraper.jhove.jhove_scraper import (JHoveGifScraper,

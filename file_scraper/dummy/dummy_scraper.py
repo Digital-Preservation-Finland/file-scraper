@@ -69,7 +69,7 @@ class MimeScraper(BaseScraper):
         """
         No need to scrape anything, just compare already collected metadata.
         """
-        self._messages.append("MIME type and file format varsion check")
+        self._messages.append("MIME type and file format version check")
 
         mime = self._params.get("mimetype", "(:unav)")
         ver = self._params.get("version", "(:unav)")

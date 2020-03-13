@@ -9,7 +9,7 @@ This module tests that:
         - For empty files, scraper errors contains "Empty file."
         - For files with missing data, scraper errors contains "unpack
           requires a string argument of length 4".
-    - When using WarcWarctoolsScraper:
+    - When using WarcWarctoolsFullScraper:
         - For whiles where the reported content length is shorter than the
           actual content, scraper errors contains "warc errors at".
     - When using ArcWarctoolsScraper:
@@ -22,20 +22,21 @@ This module tests that:
       supported:
         - GzipWarctoolsScraper supports application/gzip with "", None or a
           made up string as a version.
-        - WarcWarctoolsScraper supports application/warc with "", None or a
-          made up string as a version.
+        - WarcWarctoolsScraper and WarcWarctoolsFullScraper support
+          application/warc with "", None or a made up string as a version.
         - ArcWarctoolsScraper supports applivation/x-internet-archive with "",
           None or a made up string as a version
-    - Without well-formedness check, these MIME types are not supported.
+    - Without well-formedness check, these MIME types are supported only in
+      WarcWarctoolsScraper.
     - None of these scrapers supports a made up MIME type.
 """
 from __future__ import unicode_literals
 
 import pytest
 
-from file_scraper.warctools.warctools_scraper import (ArcWarctoolsScraper,
-                                                      GzipWarctoolsScraper,
-                                                      WarcWarctoolsScraper)
+from file_scraper.warctools.warctools_scraper import (
+    ArcWarctoolsScraper, GzipWarctoolsScraper, WarcWarctoolsFullScraper,
+    WarcWarctoolsScraper)
 from tests.common import (parse_results, partial_message_included)
 
 
@@ -78,7 +79,7 @@ def test_gzip_scraper(filename, result_dict, evaluate_scraper):
     """
     if "warc" in filename:
         mime = "application/warc"
-        classname = "WarcWarctoolsScraper"
+        classname = "WarcWarctoolsFullScraper"
     else:
         mime = "application/x-internet-archive"
         classname = "ArcWarctoolsScraper"
@@ -147,8 +148,8 @@ def test_warc_scraper(filename, result_dict, evaluate_scraper):
     """
     correct = parse_results(filename, "application/warc",
                             result_dict, True)
-    scraper = WarcWarctoolsScraper(filename=correct.filename,
-                                   mimetype="application/warc")
+    scraper = WarcWarctoolsFullScraper(filename=correct.filename,
+                                       mimetype="application/warc")
     scraper.scrape_file()
 
     if not correct.well_formed:
@@ -216,34 +217,19 @@ def test_arc_scraper(filename, result_dict, evaluate_scraper):
         evaluate_scraper(scraper, correct)
 
 
-def test_gzip_is_supported():
+@pytest.mark.parametrize(
+    ["scraper_class", "mimetype", "version", "only_wellformed"],
+    [(GzipWarctoolsScraper, "application/gzip", "", True),
+     (WarcWarctoolsFullScraper, "application/warc", "1.0", True),
+     (WarcWarctoolsScraper, "application/warc", "1.0", False),
+     (ArcWarctoolsScraper, "application/x-internet-archive", "1.0", True)
+    ]
+)
+def test_is_supported(scraper_class, mimetype, version, only_wellformed):
     """Test is_supported method."""
-    mime = "application/gzip"
-    ver = ""
-    assert GzipWarctoolsScraper.is_supported(mime, ver, True)
-    assert GzipWarctoolsScraper.is_supported(mime, None, True)
-    assert not GzipWarctoolsScraper.is_supported(mime, ver, False)
-    assert GzipWarctoolsScraper.is_supported(mime, "foo", True)
-    assert not GzipWarctoolsScraper.is_supported("foo", ver, True)
-
-
-def test_warc_is_supported():
-    """Test is_supported method."""
-    mime = "application/warc"
-    ver = ""
-    assert WarcWarctoolsScraper.is_supported(mime, ver, True)
-    assert WarcWarctoolsScraper.is_supported(mime, None, True)
-    assert not WarcWarctoolsScraper.is_supported(mime, ver, False)
-    assert WarcWarctoolsScraper.is_supported(mime, "foo", True)
-    assert not WarcWarctoolsScraper.is_supported("foo", ver, True)
-
-
-def test_arc_is_supported():
-    """Test is_supported method."""
-    mime = "application/x-internet-archive"
-    ver = ""
-    assert ArcWarctoolsScraper.is_supported(mime, ver, True)
-    assert ArcWarctoolsScraper.is_supported(mime, None, True)
-    assert not ArcWarctoolsScraper.is_supported(mime, ver, False)
-    assert ArcWarctoolsScraper.is_supported(mime, "foo", True)
-    assert not ArcWarctoolsScraper.is_supported("foo", ver, True)
+    assert scraper_class.is_supported(mimetype, version, only_wellformed)
+    assert scraper_class.is_supported(mimetype, None, only_wellformed)
+    assert not scraper_class.is_supported(mimetype, version,
+                                          not only_wellformed)
+    assert scraper_class.is_supported(mimetype, "foo", only_wellformed)
+    assert not scraper_class.is_supported("foo", version, only_wellformed)
