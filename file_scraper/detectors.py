@@ -18,67 +18,43 @@ from file_scraper.magiclib import magiclib, magic_analyze
 MAGIC_LIB = magiclib()
 
 
-class _ModifiedFido(Fido):
+class _FidoCachedFormats(Fido):
     """Class whose sole purpose is to override one of the default function
-    provided by Fido.
+    provided by Fido by caching the fido XML data.
+
+    This is made to optimize the usage of Fido via the use of
+    _ModifiedFido. Fido has an issue that for one file at a time, it needs
+    to read format XML file. This will cause slowness when detecting batches
+    of files, because Fido needs to re-read the same XML and assign values
+    to specific attributes. Thus this class strives to minimize the need to
+    re-read the same format XML.
     """
+
+    _formats = None
+    _puid_format_map = None
+    _puid_has_priority_over_map = None
 
     def load_fido_xml(self, file):
         """Overloads the default load_fido_xml so that it has an option to
         prevent being called again.
 
-        _fido_xml_loaded is an attribute that would be assigned by the
-        Singleton-class.
+        If data has been cached, will use that data instead.
 
         :param file: File that will be loaded.
         """
-        if not getattr(self, '_fido_xml_loaded', False):
-            self.formats = Fido.load_fido_xml(self, file=file)
+        if not _FidoCachedFormats._formats:
+            Fido.load_fido_xml(self, file=file)
+            _FidoCachedFormats._formats = self.formats
+            _FidoCachedFormats._puid_format_map = self.puid_format_map
+            _FidoCachedFormats._puid_has_priority_over_map = self.puid_has_priority_over_map
+        else:
+            self.formats = _FidoCachedFormats._formats
+            self.puid_format_map = _FidoCachedFormats._puid_format_map
+            self.puid_has_priority_over_map = _FidoCachedFormats._puid_has_priority_over_map
         return self.formats
 
 
-class _SingletonFidoReader(object):
-    """A singleton class of _FidoReader. This singleton will act as a proxy for
-    _FidoReader-class so the functionality and usage will be the same as if no
-    Singleton is being implemented.
-
-    This singleton class is made to optimize the usage of Fido via the use of
-    _ModifiedFido. Fido has an issue that for one file at a time, it needs
-    to read format XML file. This will cause slowness when detecting batches
-    of files, because Fido needs to re-read the same XML and assign values
-    to specific attributes. Thus this class with its reset-function strives to
-    minimize the need to re-read the same format XML.
-    """
-    _instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if not _SingletonFidoReader._instance:
-            _SingletonFidoReader._instance = _FidoReader(*args, **kwargs)
-            _SingletonFidoReader._instance._fido_xml_loaded = True
-        else:
-            _SingletonFidoReader.reset(*args, **kwargs)
-        return _SingletonFidoReader._instance
-
-    @classmethod
-    def reset(cls, *args, **kwargs):
-        """Will reset the _FidoReader's state whilst retaining the values
-        that would get assigned by during load_fido_xml-function."""
-        _formats = cls._instance.formats
-        _puid_format_map = cls._instance.puid_format_map
-        _puid_has_priority_over_map = cls._instance.puid_has_priority_over_map
-        cls._instance.__init__(*args, **kwargs)
-        cls._instance.formats = _formats
-        cls._instance.puid_format_map = _puid_format_map
-        cls._instance.puid_has_priority_over_map = _puid_has_priority_over_map
-
-    def __getattr__(self, name):
-        return getattr(self._instance, name)
-
-    def __setattr__(self, name, value):
-        setattr(self._instance, name, value)
-
-
-class _FidoReader(_ModifiedFido):
+class _FidoReader(_FidoCachedFormats):
     """Fido wrapper to get pronom code, mimetype and version."""
 
     def __init__(self, filename):
@@ -93,7 +69,7 @@ class _FidoReader(_ModifiedFido):
         self.puid = None  # Identified pronom code
         self.mimetype = None  # Identified mime type
         self.version = None  # Identified file format version
-        _ModifiedFido.__init__(self, quiet=True, format_files=[
+        _FidoCachedFormats.__init__(self, quiet=True, format_files=[
             "formats-v95.xml", "format_extensions.xml"])
 
     def identify(self):
@@ -169,7 +145,7 @@ class FidoDetector(BaseDetector):
 
     def detect(self):
         """Detect file format and version."""
-        fido = _SingletonFidoReader(self.filename)
+        fido = _FidoReader(self.filename)
         fido.identify()
         self.mimetype = fido.mimetype
         self.version = fido.version
