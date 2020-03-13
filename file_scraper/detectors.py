@@ -23,16 +23,16 @@ class _FidoCachedFormats(Fido):
     provided by Fido by caching the fido XML data.
 
     This is made to optimize the usage of Fido via the use of
-    _ModifiedFido. Fido has an issue that for one file at a time, it needs
+    cache-pattern. Fido has an issue that for one file at a time, it needs
     to read format XML file. This will cause slowness when detecting batches
     of files, because Fido needs to re-read the same XML and assign values
     to specific attributes. Thus this class strives to minimize the need to
     re-read the same format XML.
     """
 
-    _formats = None
-    _puid_format_map = None
-    _puid_has_priority_over_map = None
+    _cached_formats = None
+    _cached_puid_format_map = None
+    _cached_puid_has_priority_over_map = None
 
     def load_fido_xml(self, file):
         """Overloads the default load_fido_xml so that it has an option to
@@ -42,15 +42,15 @@ class _FidoCachedFormats(Fido):
 
         :param file: File that will be loaded.
         """
-        if not _FidoCachedFormats._formats:
+        if not _FidoCachedFormats._cached_formats:
             Fido.load_fido_xml(self, file=file)
-            _FidoCachedFormats._formats = self.formats
-            _FidoCachedFormats._puid_format_map = self.puid_format_map
-            _FidoCachedFormats._puid_has_priority_over_map = self.puid_has_priority_over_map
+            _FidoCachedFormats._cached_formats = self.formats
+            _FidoCachedFormats._cached_puid_format_map = self.puid_format_map
+            _FidoCachedFormats._cached_puid_has_priority_over_map = self.puid_has_priority_over_map
         else:
-            self.formats = _FidoCachedFormats._formats
-            self.puid_format_map = _FidoCachedFormats._puid_format_map
-            self.puid_has_priority_over_map = _FidoCachedFormats._puid_has_priority_over_map
+            self.formats = _FidoCachedFormats._cached_formats
+            self.puid_format_map = _FidoCachedFormats._cached_puid_format_map
+            self.puid_has_priority_over_map = _FidoCachedFormats._cached_puid_has_priority_over_map
         return self.formats
 
 
