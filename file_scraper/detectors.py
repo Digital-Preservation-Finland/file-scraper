@@ -41,6 +41,13 @@ class _SingletonFidoReader(object):
     """A singleton class of _FidoReader. This singleton will act as a proxy for
     _FidoReader-class so the functionality and usage will be the same as if no
     Singleton is being implemented.
+
+    This singleton class is made to optimize the usage of Fido via the use of
+    _ModifiedFido. Fido has an issue that for one file at a time, it needs
+    to read format XML file. This will cause slowness when detecting batches
+    of files, because Fido needs to re-read the same XML and assign values
+    to specific attributes. Thus this class with its reset-function strives to
+    minimize the need to re-read the same format XML.
     """
     _instance = None
 
