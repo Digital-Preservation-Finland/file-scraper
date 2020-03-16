@@ -116,7 +116,7 @@ def test_scraper_not_found(filepath):
 
     streams = DEFAULTSTREAMS.copy()
 
-    assert scraper.well_formed is None
+    assert scraper.well_formed is False
     for stream_index, stream_metadata in six.iteritems(streams):
         scraped_metadata = scraper.streams[stream_index]
         for key, value in six.iteritems(stream_metadata):

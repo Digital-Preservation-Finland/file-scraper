@@ -16,14 +16,18 @@ class ScraperNotFound(BaseScraper):
 
     def scrape_file(self):
         """No need to scrape anything, just collect."""
-        self._messages.append("Proper scraper was not found. "
+        self._errors.append("Proper scraper was not found. "
                               "The file was not analyzed.")
         self.streams.append(DummyMeta())
 
     @property
     def well_formed(self):
-        """Well-formedness is not known: return None."""
-        return None
+        """
+        Academicly, well-formedness is not known and therefore result
+        should be None. However, ScraperNotFound should always be unwanted
+        output, and therefore we return False.
+        """
+        return False
 
 
 class FileExists(BaseScraper):

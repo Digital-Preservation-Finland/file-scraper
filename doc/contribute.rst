@@ -39,7 +39,7 @@ A usable scraper tool class:
 
         * MUST add metadata objects of all metadata models to ``streams`` list for each stream in the file. The MIME type and version given in params MUST be passed to the metadata object.
         * SHOULD call ``_check_supported()`` when the metadata has been collected. This checks that the final mimetype and version are supported ones, in case those have changed.
-        * MUST log all errors (e.g. ""The file is truncated" or ""File not found.") to ``_errors`` list and messages (e.g. "File was analyzed successfully" or "Skipping scraper") to ``_messages`` list.
+        * MUST log all errors (e.g. ""The file is truncated" or ""File not found.") to ``_errors`` list and messages (e.g. "File was analyzed successfully") to ``_messages`` list.
     * The ``info()`` method of a scraper MUST return a dict of class name, and messages and errors occured during scraping. See ``<scraper info X>`` from `README.rst <../README.rst>`_ for the content of the info attribute.
 
 The metadata is represented by metadata model objects, e.g. ``GhostscriptMeta`` used by ``GhostscriptScraper``, and ``JHoveGifMeta``, ``JHoveHtmlMeta`` and others used by ``JHoveScraper``. These metadata model classes:
@@ -50,7 +50,7 @@ The metadata is represented by metadata model objects, e.g. ``GhostscriptMeta`` 
         * These methods MUST be decorated with ``metadata``-function, and MUST normally return string, with exception of ``index()`` which returns stream index as integer.
         * The metadata methods MUST normalize the value to a normalized format. The formats described e.g. in AudioMD [1]_, VideoMD [1]_, and MIX [2]_ are used in normalization.
         * The key of the metadata element in ``streams`` will be the method name, and value is the return value of the method.
-        * Metadata method MAY raise ``SkipElement`` from ``file_scraper.base``, if the methods needs to be omitted in collection phase. This may become handy with files containing different kinds of streams. The value ``None`` is used for the case that the value SHOULD be returned, but the scraper tool is not capable of doing that. Value ``(:unav)`` is returned when a scraper cannot determine the value of a metadata element and ``(:unap)`` when the metadata element is not applicable to the stream type.
+        * Metadata method MAY raise ``SkipElement`` from ``file_scraper.base``, if the methods needs to be omitted in collection phase. This may become handy with files containing different kinds of streams. Value ``(:unav)`` is returned when a scraper cannot determine the value of a metadata element and ``(:unap)`` when the metadata element is not applicable to the stream type.
         * Example of a metadata method::
         
             @metadata
@@ -87,3 +87,19 @@ The main Scraper does everything in sequenced order. Should the scraper function
 and the utility functions it uses.
 
 .. image:: scraper_seq.png
+
+A Few Guidelines for Resulting MIME Type
+----------------------------------------
+
+    * If the validator supports only one particular file format, then the scraper can result the mimetype as a string, if there are no errors.
+      Then it means that the file is compliant with the only supported (and originally predefined) format.
+      If there are errors, then the validator does not really know the mimetype, and therefore "(:unav)" should be returned.
+    * If we give a PNG file predefined as GIF file, then a GIF scraper produces errors and PNG+GIF scraper does not.
+      The GIF scraper can not give the mimetype, since it gives errors, and therefore it does not know what the file is.
+      The PNG+GIF scraper can give the mimetype ONLY if it is able to resolve the mimetype.
+    * If we give an XML file as a Plain text file, then Plain text scrapers are run.
+      These should result either text/plain as mimetype, or "(:unav)" if they are not sure about it.
+      For Plain text files this is actually possible only if the scraper is a plain text specific scraper and no errors are found.
+    * If all the scrapers result "(:unav)" as mimetype, then the actual file format is unknown.
+      There must be at least one scraper which resolves the mimetype and version.
+    * If the predefined mimetype differs from the resulted one, then it is the main scraper's responsibility to resolve this with an extra error message.
