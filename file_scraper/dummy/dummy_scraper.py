@@ -99,7 +99,7 @@ class MimeScraper(BaseScraper):
 
 class DetectedMimeVersionScraper(BaseScraper):
     """
-    Use the detected file format version (by FIDO) for some file formats.
+    Use the detected file format version for some file formats.
     """
 
     _supported_metadata = [DetectedBinaryVersionMeta, DetectedTextVersionMeta,

@@ -19,10 +19,10 @@ class DetectedBinaryVersionMeta(BaseMeta):
     """
     This model results the given file format MIME type and version for some
     file formats. The corresponding scraper gets the version as a parameter
-    (originally from FIDO detector) and results it as a scraper value.
+    originally from a detector and results it as a scraper value.
 
     We don't currently know any other constructive way to get file format
-    for a few formats.
+    version for a few formats.
     """
 
     _supported = {
@@ -69,6 +69,9 @@ class DetectedBinaryVersionMeta(BaseMeta):
 class DetectedTextVersionMeta(DetectedBinaryVersionMeta):
     """
     Variation of DetectedBinaryVersionMeta model for some text files.
+
+    Full scraping actually is able to result the same, but this is needed
+    when Scraper is used for metadata collecting.
     """
     _supported = {
         "text/html": ["4.01", "5.0"],
@@ -92,7 +95,11 @@ class DetectedTextVersionMeta(DetectedBinaryVersionMeta):
 class DetectedPdfaVersionMeta(DetectedBinaryVersionMeta):
     """
     Variation of DetectedBinaryVersionMeta model for PDF/A files.
+
     We allow only supported versions and keep it important.
+
+    Full scraping actually is able to result the same, but this is needed
+    when Scraper is used for metadata collecting.
     """
     # Supported mimetypes and versions
     _supported = {"application/pdf": ["A-1a", "A-1b", "A-2a", "A-2b", "A-2u",
