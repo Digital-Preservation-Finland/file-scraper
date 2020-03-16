@@ -6,8 +6,8 @@ import os.path
 from file_scraper.base import BaseScraper
 from file_scraper.utils import decode_path
 from file_scraper.dummy.dummy_model import (
-    DummyMeta, DetectedBinaryVersionMeta, DetectedTextVersionMeta,
-    DetectedPdfaVersionMeta
+    DummyMeta, PredefinedOfficeVersionMeta, PredefinedTextVersionMeta,
+    PredefinedSpssVersionMeta, PredefinedPdfaVersionMeta
 )
 
 
@@ -17,7 +17,7 @@ class ScraperNotFound(BaseScraper):
     def scrape_file(self):
         """No need to scrape anything, just collect."""
         self._errors.append("Proper scraper was not found. "
-                              "The file was not analyzed.")
+                            "The file was not analyzed.")
         self.streams.append(DummyMeta())
 
     @property
@@ -97,13 +97,13 @@ class MimeScraper(BaseScraper):
                               allow_unap_version=True)
 
 
-class DetectedMimeVersionScraper(BaseScraper):
+class PredefinedBinaryVersionScraper(BaseScraper):
     """
     Use the detected file format version for some file formats.
+    Support in metadata scraping and well-formedness checking.
     """
 
-    _supported_metadata = [DetectedBinaryVersionMeta, DetectedTextVersionMeta,
-                           DetectedPdfaVersionMeta]
+    _supported_metadata = [PredefinedOfficeVersionMeta]
 
     def scrape_file(self):
         """
@@ -116,3 +116,32 @@ class DetectedMimeVersionScraper(BaseScraper):
                             version=version)
         self._check_supported(allow_unav_mime=True, allow_unav_version=True,
                               allow_unap_version=True)
+
+
+class PredefinedMetaVersionScraper(PredefinedBinaryVersionScraper):
+    """
+    Variation of PredefinedOfficeVersionScraper for PDF files.
+    Support only in metadata scraping.
+    """
+
+    _supported_metadata = [PredefinedSpssVersionMeta,
+                           PredefinedTextVersionMeta,
+                           PredefinedPdfaVersionMeta]
+
+    @classmethod
+    def is_supported(cls, mimetype, version=None, check_wellformed=True,
+                     params=None):  # pylint: disable=unused-argument
+        """
+        Support only when no checking of well-formedness is done.
+
+        :mimetype: MIME type of a file
+        :version: Version of a file. Defaults to None.
+        :check_wellformed: True for scraping with well-formedness check, False
+                           for skipping the check. Defaults to True.
+        :params: None
+        :returns: True if the MIME type and version are supported, False if not
+        """
+        if check_wellformed:
+            return False
+        return super(PredefinedMetaVersionScraper, cls).is_supported(
+            mimetype, version, check_wellformed, params)

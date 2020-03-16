@@ -15,7 +15,7 @@ class DummyMeta(BaseMeta):
         return "(:unav)"
 
 
-class DetectedBinaryVersionMeta(BaseMeta):
+class PredefinedOfficeVersionMeta(BaseMeta):
     """
     This model results the given file format MIME type and version for some
     file formats. The corresponding scraper gets the version as a parameter
@@ -33,9 +33,7 @@ class DetectedBinaryVersionMeta(BaseMeta):
             "1.0", "1.1", "1.2"],
         "application/vnd.oasis.opendocument.graphics": ["1.0", "1.1", "1.2"],
         "application/vnd.oasis.opendocument.formula": ["1.0", "1.2"],
-        "application/x-spss-por": []
     }
-    _allow_versions = True
 
     def __init__(self, mimetype, version):
         """
@@ -66,9 +64,25 @@ class DetectedBinaryVersionMeta(BaseMeta):
         return "binary" if self.mimetype() != "(:unav)" else "(:unav)"
 
 
-class DetectedTextVersionMeta(DetectedBinaryVersionMeta):
+class PredefinedSpssVersionMeta(PredefinedOfficeVersionMeta):
     """
-    Variation of DetectedBinaryVersionMeta model for some text files.
+    Variation of PredefinedOfficeVersionMeta model for SPSS Portable files.
+
+    We allow all versions.
+
+    Full scraping actually is able to result the same, but this is needed
+    when Scraper is used for metadata collecting.
+
+    """
+    _supported = {
+        "application/x-spss-por": []
+    }
+    _allow_versions = True
+
+
+class PredefinedTextVersionMeta(PredefinedOfficeVersionMeta):
+    """
+    Variation of PredefinedOfficeVersionMeta model for some text files.
 
     Full scraping actually is able to result the same, but this is needed
     when Scraper is used for metadata collecting.
@@ -81,7 +95,7 @@ class DetectedTextVersionMeta(DetectedBinaryVersionMeta):
     @metadata()
     def version(self):
         """Return version."""
-        version = super(DetectedTextVersionMeta, self).version()
+        version = super(PredefinedTextVersionMeta, self).version()
         if version == "(:unav)" and self.mimetype() == "text/xml":
             return "1.0"
         return version
@@ -92,11 +106,11 @@ class DetectedTextVersionMeta(DetectedBinaryVersionMeta):
         return "text" if self.mimetype() != "(:unav)" else "(:unav)"
 
 
-class DetectedPdfaVersionMeta(DetectedBinaryVersionMeta):
+class PredefinedPdfaVersionMeta(PredefinedOfficeVersionMeta):
     """
-    Variation of DetectedBinaryVersionMeta model for PDF/A files.
+    Variation of PredefinedOfficeVersionMeta model for PDF/A files.
 
-    We allow only supported versions and keep it important.
+    We keep the version important.
 
     Full scraping actually is able to result the same, but this is needed
     when Scraper is used for metadata collecting.
@@ -104,7 +118,6 @@ class DetectedPdfaVersionMeta(DetectedBinaryVersionMeta):
     # Supported mimetypes and versions
     _supported = {"application/pdf": ["A-1a", "A-1b", "A-2a", "A-2b", "A-2u",
                                       "A-3a", "A-3b", "A-3u"]}
-    _allow_versions = False  # No other versions allowed
 
     @metadata(important=True)
     def version(self):

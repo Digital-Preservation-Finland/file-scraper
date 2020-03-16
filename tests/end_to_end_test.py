@@ -375,7 +375,7 @@ def test_coded_filename(testpath, fullname, mimetype, version):
 
         # Give the correct MIME type with another accepted version:
         # file is reported as well-formed
-        ("tests/data/application_pdf/valid_A-1a.pdf", 
+        ("tests/data/application_pdf/valid_A-1a.pdf",
          {"mimetype": "application/pdf", "version": "1.4"},
          True, "application/pdf", "1.4", None),
 
@@ -391,7 +391,7 @@ def test_coded_filename(testpath, fullname, mimetype, version):
         # Give the correct MIME type and charset, but wrong version
         ("tests/data/text_html/valid_4.01.html",
          {"mimetype": "text/html", "version": "0.0", "charset": "UTF-8"},
-         False, "text/html", "4.01", "UTF-8"),
+         False, "(:unav)", "(:unav)", "UTF-8"),
 
         # Scrape invalid XML as plaintext, as which it is well-formed
         ("tests/data/text_xml/invalid_1.0_no_closing_tag.xml",
@@ -415,7 +415,7 @@ def test_coded_filename(testpath, fullname, mimetype, version):
 
         # Scrape a random text file as HTML, as which it is not well-formed
         ("tests/data/text_plain/valid__utf8_without_bom.txt",
-         {"mimetype": "text/html"}, False, "text/html", "(:unav)", "UTF-8"),
+         {"mimetype": "text/html"}, False, "(:unav)", "(:unav)", "UTF-8"),
 
         # Scrape a file with MIME type that can produce "well-formed" result
         # from some scrapers, but combining the results should reveal the file

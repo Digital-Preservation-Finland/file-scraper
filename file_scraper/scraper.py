@@ -48,6 +48,7 @@ class Scraper(object):
         for detector in iter_detectors():
             tool = detector(self.filename, _mime, _version)
             self._update_filetype(tool)
+            self._params["detected_version"] = self._predefined_version
 
         # Unless version is given by the user, PDF files should be scrutinized
         # further to determine if they are PDF/A
@@ -80,10 +81,6 @@ class Scraper(object):
         if self._predefined_mimetype == tool.mimetype and \
                 self._predefined_version in LOSE:
             self._predefined_version = tool.version
-        if (self._params["detected_version"] in LOSE or
-                "version" in important) and \
-                tool.__class__.__name__ != "PredefinedDetector":
-            self._params["detected_version"] = tool.version
         if "mimetype" in important and \
                 important["mimetype"] not in LOSE:
             self._predefined_mimetype = important["mimetype"]

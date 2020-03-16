@@ -22,7 +22,7 @@ This module tests the following scraper classes:
           and given file type match
         - well_formed is False if predefined filetype and given file type
           conflicts
-    - DetectedVersionScraper
+    - PredefinedVersionScraper
         - Results given file format version as a scraper result
         - Results error in MIME type is not supported
 """
@@ -33,7 +33,8 @@ import six
 
 from file_scraper.dummy.dummy_scraper import (FileExists, ScraperNotFound,
                                               MimeScraper,
-                                              DetectedMimeVersionScraper)
+                                              PredefinedMetaVersionScraper,
+                                              PredefinedBinaryVersionScraper)
 from tests.common import partial_message_included
 
 DEFAULTSTREAMS = {0: {"index": 0, "version": "(:unav)",
@@ -146,18 +147,25 @@ def test_mime_scraper():
 
 def test_detected_version_scraper():
     """Test detected version scraper"""
-    scraper = DetectedMimeVersionScraper(
+    scraper = PredefinedMetaVersionScraper(
         None, "text/xml", params={"detected_version": "123"})
     scraper.scrape_file()
     assert not scraper.well_formed
     assert scraper.streams[0].version() == "123"
 
-    scraper = DetectedMimeVersionScraper(None, "text/xml", params=None)
+    scraper = PredefinedMetaVersionScraper(None, "text/xml", params=None)
     scraper.scrape_file()
     assert scraper.well_formed
     assert scraper.streams[0].version() == "1.0"
 
-    scraper = DetectedMimeVersionScraper(None, "text/plain", params=None)
+    scraper = PredefinedMetaVersionScraper(None, "text/plain", params=None)
     scraper.scrape_file()
     assert partial_message_included(
         "MIME type not supported", scraper.errors())
+
+    scraper = PredefinedBinaryVersionScraper(
+        None, "application/vnd.oasis.opendocument.text",
+        params={"detected_version": "123"})
+    scraper.scrape_file()
+    assert not scraper.well_formed
+    assert scraper.streams[0].version() == "123"
