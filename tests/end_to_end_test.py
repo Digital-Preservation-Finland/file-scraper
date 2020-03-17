@@ -107,10 +107,13 @@ IGNORE_VALID = [
 
 # Ignore these we know that warc, arc and dpx files are not currently
 # supported for metadata scraping.
+# XML files without a header does not currently work when just metadata
+# scraping is done.
 IGNORE_FOR_METADATA = IGNORE_VALID + [
     "tests/data/image_x-dpx/valid_2.0.dpx",
     "tests/data/application_warc/valid_1.0_.warc.gz",
     "tests/data/application_x-internet-archive/valid_1.0_.arc.gz",
+    "tests/data/text_xml/valid_1.0_mets_noheader.xml"
 ]
 
 # These invalid files are recognized as application/gzip
@@ -167,12 +170,15 @@ def _assert_valid_scraper_result(scraper, fullname, mimetype, version,
     :param fullname: Full filename in str.
     :param mimetype: Expected mimetype in str.
     :param version: Expected version
-    :param well_formed: Expected well-formed as either truthy or falsey.
+    :param well_formed: Expected well-formed as True, False or None.
     """
     if well_formed:
         assert scraper.well_formed
-    else:
-        assert not scraper.well_formed
+    elif well_formed is None:
+        assert scraper.well_formed is None
+    elif well_formed is False:
+        assert scraper.well_formed is False
+
     assert scraper.mimetype == mimetype
     if not fullname in UNAV_VERSION:
         assert scraper.version == version
@@ -294,7 +300,7 @@ def test_without_wellformed(fullname, mimetype, version):
                       charset=predefined_charset)
     scraper.scrape(False)
 
-    _assert_valid_scraper_result(scraper, fullname, mimetype, version, False)
+    _assert_valid_scraper_result(scraper, fullname, mimetype, version, None)
 
     mimepart = mimetype.split("/")[0]
     if mimepart in ["image", "video", "text", "audio"]:
@@ -355,82 +361,85 @@ def test_coded_filename(testpath, fullname, mimetype, version):
 
 @pytest.mark.parametrize(
     ["filepath", "params", "well_formed", "expected_mimetype",
-     "expected_version", "expected_charset"],
+     "expected_version", "expected_charset", "meta_well_formed"],
     [
         # Give the correct MIME type, let scrapers handle version
         ("tests/data/image_tiff/valid_6.0.tif", {"mimetype": "image/tiff"},
-         True, "image/tiff", "6.0", None),
+         True, "image/tiff", "6.0", None, None),
 
         # Give the correct MIME type with unsupported version, resulting
         # in not well-formed file
         ("tests/data/image_tiff/valid_6.0.tif",
          {"mimetype": "image/tiff", "version": "99.9"},
-         False, "image/tiff", "6.0", None),
+         False, "image/tiff", "6.0", None, False),
 
         # Give the correct MIME type with a supported but incorrect version:
         # file is reported as not well-formed.
         ("tests/data/image_gif/valid_1987a.gif",
          {"mimetype": "image/gif", "version": "1989a"},
-         False, "image/gif", "1987a", None),
+         False, "image/gif", "1987a", None, False),
 
         # Give the correct MIME type with another accepted version:
         # file is reported as well-formed
         ("tests/data/application_pdf/valid_A-1a.pdf",
          {"mimetype": "application/pdf", "version": "1.4"},
-         True, "application/pdf", "1.4", None),
+         True, "application/pdf", "1.4", None, None),
 
         # Give unsupported MIME type, resulting in not well-formed
         ("tests/data/image_tiff/valid_6.0.tif", {"mimetype": "audio/mpeg"},
-         False, "(:unav)", "(:unav)", None),
+         False, "(:unav)", "(:unav)", None, False),
 
         # Give the correct MIME type but wrong charset
         ("tests/data/text_plain/valid__utf8_bom.txt",
          {"mimetype": "text/plain", "charset": "UTF-16"},
-         False, "text/plain", "(:unap)", "UTF-16"),
+         False, "text/plain", "(:unap)", "UTF-16", None),
 
         # Give the correct MIME type and charset, but wrong version
         ("tests/data/text_html/valid_4.01.html",
          {"mimetype": "text/html", "version": "0.0", "charset": "UTF-8"},
-         False, "(:unav)", "(:unav)", "UTF-8"),
+         False, "(:unav)", "(:unav)", "UTF-8", False),
 
         # Scrape invalid XML as plaintext, as which it is well-formed
         ("tests/data/text_xml/invalid_1.0_no_closing_tag.xml",
-         {"mimetype": "text/plain"}, True, "text/plain", "(:unap)", "UTF-8"),
+         {"mimetype": "text/plain"}, True, "text/plain", "(:unap)", "UTF-8",
+         None),
 
         # Scrape invalid HTML as plaintext, as which it is well-formed
         ("tests/data/text_html/invalid_5.0_illegal_tags.html",
-         {"mimetype": "text/plain"}, True, "text/plain", "(:unap)", "UTF-8"),
+         {"mimetype": "text/plain"}, True, "text/plain", "(:unap)", "UTF-8",
+         None),
 
         # Scrape invalid HTML as plaintext and give correct charset, as which
         # it is well-formed
         ("tests/data/text_html/invalid_5.0_illegal_tags.html",
          {"mimetype": "text/plain", "charset": "UTF-8"}, True,
-         "text/plain", "(:unap)", "UTF-8"),
+         "text/plain", "(:unap)", "UTF-8", None),
 
         # Scrape invalid HTML as plaintext and give incorrect charset, as
         # which it is not well-formed
         ("tests/data/text_html/invalid_5.0_illegal_tags.html",
          {"mimetype": "text/plain", "charset": "UTF-16"}, False,
-         "text/plain", "(:unap)", "UTF-16"),
+         "text/plain", "(:unap)", "UTF-16", None),
 
         # Scrape a random text file as HTML, as which it is not well-formed
         ("tests/data/text_plain/valid__utf8_without_bom.txt",
-         {"mimetype": "text/html"}, False, "(:unav)", "(:unav)", "UTF-8"),
+         {"mimetype": "text/html"}, False, "(:unav)", "(:unav)", "UTF-8",
+         False),
 
         # Scrape a file with MIME type that can produce "well-formed" result
         # from some scrapers, but combining the results should reveal the file
         # as not well-formed
         ("tests/data/image_gif/valid_1987a.gif", {"mimetype": "image/png"},
-         False, "image/gif", "(:unav)", None),
+         False, "image/gif", "(:unav)", None, False),
 
         # We assume that application/gzip is either gzipped ARC or WARC
         ("tests/data/application_x-internet-archive/valid_1.0_.arc.gz",
          {"mimetype": "application/gzip"}, True,
-         "application/x-internet-archive", "(:unav)", None),
+         "application/x-internet-archive", "(:unav)", None, False),
     ]
 )
 def test_given_filetype(filepath, params, well_formed, expected_mimetype,
-                        expected_version, expected_charset):
+                        expected_version, expected_charset, meta_well_formed):
     """
     Test the scraping to be done as user given file type.
 
@@ -448,6 +457,26 @@ def test_given_filetype(filepath, params, well_formed, expected_mimetype,
     scraper.scrape()
 
     assert scraper.well_formed == well_formed
+    assert scraper.mimetype == expected_mimetype
+    assert scraper.version == expected_version
+    if expected_charset:
+        assert scraper.streams[0]["charset"] == expected_charset
+    else:
+        assert "charset" not in scraper.streams[0]
+
+    assert scraper.streams[0]["mimetype"] == expected_mimetype
+    assert scraper.streams[0]["version"] == expected_version
+
+    # Just collect metadata without well-formedness checking
+
+    # ARC files can not be scraped without well-formedness check
+    if expected_mimetype == "application/x-internet-archive":
+        return
+
+    scraper = Scraper(filename=filepath, **params)
+    scraper.scrape(False)
+
+    assert scraper.well_formed == meta_well_formed
     assert scraper.mimetype == expected_mimetype
     assert scraper.version == expected_version
     if expected_charset:

@@ -44,16 +44,19 @@ class Scraper(object):
         self.info = {}
         _mime = self._predefined_mimetype
         _version = self._predefined_version
+        self._params["detected_mimetype"] = "(:unav)"
         self._params["detected_version"] = "(:unav)"
         for detector in iter_detectors():
             tool = detector(self.filename, _mime, _version)
             self._update_filetype(tool)
-            self._params["detected_version"] = self._predefined_version
 
         # Unless version is given by the user, PDF files should be scrutinized
         # further to determine if they are PDF/A
         if self._predefined_mimetype == "application/pdf" and \
-                not self._predefined_version:
+                (not self._predefined_version or
+                 self._predefined_version in ["A-1a", "A-1b", "A-2a",
+                                              "A-2b", "A-2u", "A-3a",
+                                              "A-3b", "A-3u"]):
             vera_detector = VerapdfDetector(self.filename)
             self._update_filetype(vera_detector)
 
@@ -87,6 +90,12 @@ class Scraper(object):
         if "version" in important and \
                 important["version"] not in LOSE:
             self._predefined_version = important["version"]
+        if tool.info["class"] != "PredefinedDetector" and \
+                self._predefined_mimetype == tool.mimetype and \
+                ("version" in important or
+                 self._params["detected_version"] in LOSE):
+            self._params["detected_mimetype"] = tool.mimetype
+            self._params["detected_version"] = tool.version
 
     def _scrape_file(self, scraper, check_wellformed):
         """

@@ -15,7 +15,7 @@ class DummyMeta(BaseMeta):
         return "(:unav)"
 
 
-class PredefinedOfficeVersionMeta(BaseMeta):
+class DetectedOfficeVersionMeta(BaseMeta):
     """
     This model results the given file format MIME type and version for some
     file formats. The corresponding scraper gets the version as a parameter
@@ -64,9 +64,9 @@ class PredefinedOfficeVersionMeta(BaseMeta):
         return "binary" if self.mimetype() != "(:unav)" else "(:unav)"
 
 
-class PredefinedSpssVersionMeta(PredefinedOfficeVersionMeta):
+class DetectedSpssVersionMeta(DetectedOfficeVersionMeta):
     """
-    Variation of PredefinedOfficeVersionMeta model for SPSS Portable files.
+    Variation of DetectedOfficeVersionMeta model for SPSS Portable files.
 
     We allow all versions.
 
@@ -80,9 +80,9 @@ class PredefinedSpssVersionMeta(PredefinedOfficeVersionMeta):
     _allow_versions = True
 
 
-class PredefinedTextVersionMeta(PredefinedOfficeVersionMeta):
+class DetectedTextVersionMeta(DetectedOfficeVersionMeta):
     """
-    Variation of PredefinedOfficeVersionMeta model for some text files.
+    Variation of DetectedOfficeVersionMeta model for some text files.
 
     Full scraping actually is able to result the same, but this is needed
     when Scraper is used for metadata collecting.
@@ -95,7 +95,7 @@ class PredefinedTextVersionMeta(PredefinedOfficeVersionMeta):
     @metadata()
     def version(self):
         """Return version."""
-        version = super(PredefinedTextVersionMeta, self).version()
+        version = super(DetectedTextVersionMeta, self).version()
         if version == "(:unav)" and self.mimetype() == "text/xml":
             return "1.0"
         return version
@@ -106,9 +106,9 @@ class PredefinedTextVersionMeta(PredefinedOfficeVersionMeta):
         return "text" if self.mimetype() != "(:unav)" else "(:unav)"
 
 
-class PredefinedPdfaVersionMeta(PredefinedOfficeVersionMeta):
+class DetectedPdfaVersionMeta(DetectedOfficeVersionMeta):
     """
-    Variation of PredefinedOfficeVersionMeta model for PDF/A files.
+    Variation of DetectedOfficeVersionMeta model for PDF/A files.
 
     We keep the version important.
 

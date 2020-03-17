@@ -6,8 +6,8 @@ import os.path
 from file_scraper.base import BaseScraper
 from file_scraper.utils import decode_path
 from file_scraper.dummy.dummy_model import (
-    DummyMeta, PredefinedOfficeVersionMeta, PredefinedTextVersionMeta,
-    PredefinedSpssVersionMeta, PredefinedPdfaVersionMeta
+    DummyMeta, DetectedOfficeVersionMeta, DetectedTextVersionMeta,
+    DetectedSpssVersionMeta, DetectedPdfaVersionMeta
 )
 
 
@@ -97,36 +97,36 @@ class MimeScraper(BaseScraper):
                               allow_unap_version=True)
 
 
-class PredefinedBinaryVersionScraper(BaseScraper):
+class DetectedBinaryVersionScraper(BaseScraper):
     """
     Use the detected file format version for some file formats.
     Support in metadata scraping and well-formedness checking.
     """
 
-    _supported_metadata = [PredefinedOfficeVersionMeta]
+    _supported_metadata = [DetectedOfficeVersionMeta]
 
     def scrape_file(self):
         """
         Enrich the metadata with the detected file format version for some
         file formats.
         """
+        mimetype = self._params.get("detected_mimetype", self._predefined_mimetype)
         version = self._params.get("detected_version", "(:unav)")
         self._messages.append("Using detected file format version.")
-        self.iterate_models(mimetype=self._predefined_mimetype,
-                            version=version)
-        self._check_supported(allow_unav_mime=True, allow_unav_version=True,
+        self.iterate_models(mimetype=mimetype, version=version)
+        self._check_supported(allow_unav_mime=False, allow_unav_version=True,
                               allow_unap_version=True)
 
 
-class PredefinedMetaVersionScraper(PredefinedBinaryVersionScraper):
+class DetectedMetaVersionScraper(DetectedBinaryVersionScraper):
     """
-    Variation of PredefinedOfficeVersionScraper for PDF files.
+    Variation of DetectedOfficeVersionScraper for PDF files.
     Support only in metadata scraping.
     """
 
-    _supported_metadata = [PredefinedSpssVersionMeta,
-                           PredefinedTextVersionMeta,
-                           PredefinedPdfaVersionMeta]
+    _supported_metadata = [DetectedSpssVersionMeta,
+                           DetectedTextVersionMeta,
+                           DetectedPdfaVersionMeta]
 
     @classmethod
     def is_supported(cls, mimetype, version=None, check_wellformed=True,
@@ -143,5 +143,5 @@ class PredefinedMetaVersionScraper(PredefinedBinaryVersionScraper):
         """
         if check_wellformed:
             return False
-        return super(PredefinedMetaVersionScraper, cls).is_supported(
+        return super(DetectedMetaVersionScraper, cls).is_supported(
             mimetype, version, check_wellformed, params)

@@ -88,19 +88,19 @@ WELLFORMED_SCRAPERS = [
                                           "TextEncodingScraper"]),
         ("audio/x-wav", None, ["JHoveWavScraper", "MediainfoScraper"]),
         ("application/vnd.oasis.opendocument.text", None,
-         ["PredefinedBinaryVersionScraper", "OfficeScraper",
+         ["DetectedBinaryVersionScraper", "OfficeScraper",
           "MagicBinaryScraper"]),
         ("application/vnd.oasis.opendocument.spreadsheet", None,
-         ["PredefinedBinaryVersionScraper", "OfficeScraper",
+         ["DetectedBinaryVersionScraper", "OfficeScraper",
           "MagicBinaryScraper"]),
         ("application/vnd.oasis.opendocument.presentation", None,
-         ["PredefinedBinaryVersionScraper", "OfficeScraper",
+         ["DetectedBinaryVersionScraper", "OfficeScraper",
           "MagicBinaryScraper"]),
         ("application/vnd.oasis.opendocument.graphics", None,
-         ["PredefinedBinaryVersionScraper", "OfficeScraper",
+         ["DetectedBinaryVersionScraper", "OfficeScraper",
           "MagicBinaryScraper"]),
         ("application/vnd.oasis.opendocument.formula", None,
-         ["PredefinedBinaryVersionScraper", "OfficeScraper",
+         ["DetectedBinaryVersionScraper", "OfficeScraper",
           "MagicBinaryScraper"]),
         ("application/msword", None, ["OfficeScraper", "MagicBinaryScraper"]),
         ("application/vnd.ms-excel", None, ["OfficeScraper",
@@ -119,8 +119,8 @@ def test_iter_scrapers(mimetype, version, scraper_classes):
     """
     Test scraper discovery.
 
-    :mimetype: Predefined mimetype
-    :version: Predefined file format version
+    :mimetype: Detected mimetype
+    :version: Detected file format version
     :scraper_classes: Expected Scraper classes which are run
     """
     scrapers = iter_scrapers(mimetype, version)
@@ -137,7 +137,7 @@ def test_iter_scrapers(mimetype, version, scraper_classes):
     if mimetype in ["application/x-spss-por", "text/html", "text/xml"] or \
             mimetype == "application/pdf" and version in \
             ["A-1a", "A-1b", "A-2a", "A-2b", "A-2u", "A-3a", "A-3b", "A-3u"]:
-        scraper_classes.append("PredefinedMetaVersionScraper")
+        scraper_classes.append("DetectedMetaVersionScraper")
 
     scrapers = iter_scrapers(mimetype, version, False)
     scraper_set = set(scraper_classes).difference(set(WELLFORMED_SCRAPERS))
