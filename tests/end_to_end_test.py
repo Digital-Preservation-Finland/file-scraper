@@ -49,6 +49,10 @@ UNAV_ELEMENTS = {
     "tests/data/application_vnd.ms-powerpoint/valid_11.0.ppt": ["version"],
     "tests/data/application_vnd.oasis.opendocument.formula/valid_1.0"
     ".odf": ["version"],
+    "tests/data/application_vnd.openxmlformats-officedocument.presentationml"
+    ".presentation/valid_15.0.pptx": ["version"],
+    "tests/data/application_vnd.openxmlformats-officedocument.spreadsheetml"
+    ".sheet/valid_15.0.xlsx": ["version"],
     "tests/data/application_vnd.openxmlformats-officedocument.word"
     "processingml.document/valid_15.0.docx": ["version"],
     "tests/data/image_gif/valid_1989a.gif": ["version", "version"],
