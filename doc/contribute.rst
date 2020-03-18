@@ -88,18 +88,33 @@ and the utility functions it uses.
 
 .. image:: scraper_seq.png
 
-A Few Guidelines for Resulting MIME Type
-----------------------------------------
+Scraping without checking well-formedness
+-----------------------------------------
+
+    * Individual scraper tools return always ``True`` or ``False`` as ``well_formed``, regardless of the use of ``check_wellformed`` parameter in main Scraper.
+      The main Scraper resolves ``well_formed`` as ``None``, if the tool's result was ``True`` and ``check_wellformed`` parameter is ``False``.
+      This is because all required scraper tools are not used when ``check_wellformed`` is ``False``.
+      The ``is_supported()`` method in the tools solves whether a tool shoud be run or not, but otherwise the tools do not know which method is used in the main Scraper.
+    * Scraping without checking well-formedness must still somehow detect the mimetype and version, and it must give error in ``info()``
+      if the detection does not comply with the given file type. Mainly for this reason, some file format versions detected by the detectors
+      (not ``PredefinedDetector``) are provided to a dummy scraper, which result this value for the main Scraper.
+
+          * Example: If ``text/plain`` is given, but ``text/html`` is resolved, then well_formed must be ``True`` (in the end ``None``).
+          * Example: If ``image/jpeg`` is given, but ``text/plain`` is resolved, then well_formed must be ``False`` (in the end ``False``).
+
+A Few Guidelines for Resulting MIME Type (and version)
+------------------------------------------------------
 
     * If the validator supports only one particular file format, then the scraper can result the mimetype as a string, if there are no errors.
       Then it means that the file is compliant with the only supported (and originally predefined) format.
-      If there are errors, then the validator does not really know the mimetype, and therefore "(:unav)" should be returned.
+      If there are errors, then the validator does not really know the mimetype, and therefore ``(:unav)`` should be returned.
     * If we give a PNG file predefined as GIF file, then a GIF scraper produces errors and PNG+GIF scraper does not.
       The GIF scraper can not give the mimetype, since it gives errors, and therefore it does not know what the file is.
       The PNG+GIF scraper can give the mimetype ONLY if it is able to resolve the mimetype.
     * If we give an XML file as a Plain text file, then Plain text scrapers are run.
-      These should result either text/plain as mimetype, or "(:unav)" if they are not sure about it.
+      These should result either ``text/plain`` as mimetype, or ``(:unav)`` if they are not sure about it.
       For Plain text files this is actually possible only if the scraper is a plain text specific scraper and no errors are found.
-    * If all the scrapers result "(:unav)" as mimetype, then the actual file format is unknown.
+    * If all the scrapers result ``(:unav)`` as mimetype, then the actual file format is unknown.
       There must be at least one scraper which resolves the mimetype and version.
-    * If the predefined mimetype differs from the resulted one, then it is the main scraper's responsibility to resolve this with an extra error message.
+    * If the predefined mimetype differs from the resulted one, then it is the main Scraper's responsibility to resolve this with an extra error message.
+    * The same applies also to file format version.
