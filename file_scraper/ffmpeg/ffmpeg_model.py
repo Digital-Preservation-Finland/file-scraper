@@ -49,6 +49,8 @@ class FFMpegSimpleMeta(BaseMeta):
         "MXF (Material eXchange Format)": "application/mxf",
         "AVI (Audio Video Interleaved)": "video/avi",
         "JPEG 2000": "video/jpeg2000",
+        "QuickTime / MOV": "(:unav)",
+        "MP2/3 (MPEG audio layer 2/3)": "(:unav)",
         }
 
     def __init__(self, probe_results, index):
