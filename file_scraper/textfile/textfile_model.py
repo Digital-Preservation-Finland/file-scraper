@@ -11,42 +11,42 @@ class TextFileMeta(BaseMeta):
     _supported = {"text/plain": []}
     _allow_versions = True
 
-    def __init__(self, errors):
+    def __init__(self, well_formed):
         """
         Initialize metadata model.
 
-        :errors: Error messages from scraper
+        :well_formed: Well-formed status from scraper
         """
-        self._errors = errors
+        self._well_formed = well_formed
 
     @metadata()
     def mimetype(self):
         """
         Return mimetype.
 
-        The file is text/plain compliant if there are no errors. This will
-        be returned only if predefined as plain text.
+        If the well-formed status from scraper is False,
+        then we do not know the actual MIME type.
         """
-        return "text/plain" if not self._errors else "(:unav)"
+        return "text/plain" if self._well_formed else "(:unav)"
 
     @metadata()
     def version(self):
         """Return version.
 
-        The file is text/plain compliant if there are no errors. This will
-        be returned only if predefined as plain text.
+        If the well-formed status from scraper is False,
+        then we do not know the actual version.
         """
-        return "(:unap)" if not self._errors else "(:unav)"
+        return "(:unap)" if self._well_formed else "(:unav)"
 
     @metadata()
     def stream_type(self):
         """
         Return stream type.
 
-        The file is text if there are no errors. This will be returned
-        only if predefined as plain text.
+        If the well-formed status from scraper is False,
+        then we do not know the actual stream type.
         """
-        return "text" if not self._errors else "(:unav)"
+        return "text" if self._well_formed else "(:unav)"
 
 
 class TextEncodingMeta(BaseMeta):
@@ -59,15 +59,15 @@ class TextEncodingMeta(BaseMeta):
                   "application/xhtml+xml": ["1.0", "1.1"]}
     _allow_versions = True
 
-    def __init__(self, errors, charset, predefined_mimetype):
+    def __init__(self, well_formed, charset, predefined_mimetype):
         """
         Initialize metadata model.
 
-        :errors: Errors from scraper
+        :well_formed: Well-formed status from scraper
         :charset: Encoding from scraper
         :predefined_mimetype: Predefined mimetype
         """
-        self._errors = errors
+        self._well_formed = well_formed
         self._charset = charset
         self._predefined_mimetype = predefined_mimetype
 
@@ -79,7 +79,7 @@ class TextEncodingMeta(BaseMeta):
         Other scrapers are not able to figure out the mimetype for plain text
         files with some encodings, such as UTF-16 without BOM or UTF-32.
         """
-        if self._predefined_mimetype == "text/plain" and not self._errors:
+        if self._predefined_mimetype == "text/plain" and self._well_formed:
             return "text/plain"
         else:
             return "(:unav)"
@@ -92,7 +92,7 @@ class TextEncodingMeta(BaseMeta):
         Other scrapers are not able to figure out the mimetype for plain text
         files with some encodings, such as UTF-16 without BOM or UTF-32.
         """
-        if self._predefined_mimetype == "text/plain" and not self._errors:
+        if self._predefined_mimetype == "text/plain" and self._well_formed:
             return "(:unap)"
         else:
             return "(:unav)"

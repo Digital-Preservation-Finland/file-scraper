@@ -6,7 +6,7 @@ import os.path
 from file_scraper.base import BaseScraper
 from file_scraper.utils import decode_path
 from file_scraper.dummy.dummy_model import (
-    DummyMeta, DetectedOfficeVersionMeta, DetectedTextVersionMeta,
+    DummyMeta, DetectedMimeVersionMeta, DetectedTextVersionMeta,
     DetectedSpssVersionMeta, DetectedPdfaVersionMeta
 )
 
@@ -59,14 +59,15 @@ class FileExists(BaseScraper):
         return None
 
 
-class MimeScraper(BaseScraper):
+class MimeMatchScraper(BaseScraper):
     """
     Scraper to check if the predefined mimetype and version match with the
     resulted ones.
     """
 
-    _MIME_DICT = {"application/gzip": ["application/warc",
-                                       "application/x-internet-archive"]}
+    _ALTERNATIVE_MIMETYPES = {
+        "application/gzip": ["application/warc",
+                             "application/x-internet-archive"]}
     _supported_metadata = [DummyMeta]
 
     def scrape_file(self):
@@ -77,7 +78,8 @@ class MimeScraper(BaseScraper):
 
         mime = self._params.get("mimetype", "(:unav)")
         ver = self._params.get("version", "(:unav)")
-        pre_list = self._MIME_DICT.get(self._predefined_mimetype, [])
+        pre_list = self._ALTERNATIVE_MIMETYPES.get(
+            self._predefined_mimetype, [])
 
         if mime == "(:unav)":
             self._errors.append("File format is not supported.")
@@ -97,31 +99,33 @@ class MimeScraper(BaseScraper):
                               allow_unap_version=True)
 
 
-class DetectedBinaryVersionScraper(BaseScraper):
+class DetectedMimeVersionScraper(BaseScraper):
     """
     Use the detected file format version for some file formats.
     Support in metadata scraping and well-formedness checking.
     """
 
-    _supported_metadata = [DetectedOfficeVersionMeta]
+    _supported_metadata = [DetectedMimeVersionMeta]
 
     def scrape_file(self):
         """
         Enrich the metadata with the detected file format version for some
         file formats.
         """
-        mimetype = self._params.get("detected_mimetype", self._predefined_mimetype)
+        mimetype = self._params.get("detected_mimetype",
+                                    self._predefined_mimetype)
         version = self._params.get("detected_version", "(:unav)")
         self._messages.append("Using detected file format version.")
-        self.iterate_models(mimetype=mimetype, version=version)
+        self.streams = list(self.iterate_models(mimetype=mimetype,
+                                                version=version))
         self._check_supported(allow_unav_mime=False, allow_unav_version=True,
                               allow_unap_version=True)
 
 
-class DetectedMetaVersionScraper(DetectedBinaryVersionScraper):
+class DetectedMimeVersionMetadataScraper(DetectedMimeVersionScraper):
     """
-    Variation of DetectedOfficeVersionScraper for PDF files.
-    Support only in metadata scraping.
+    Variation of DetectedMimeVersionScraper for SPSS Portable, text and PDF
+    files. Support only in metadata scraping.
     """
 
     _supported_metadata = [DetectedSpssVersionMeta,
@@ -143,5 +147,5 @@ class DetectedMetaVersionScraper(DetectedBinaryVersionScraper):
         """
         if check_wellformed:
             return False
-        return super(DetectedMetaVersionScraper, cls).is_supported(
+        return super(DetectedMimeVersionMetadataScraper, cls).is_supported(
             mimetype, version, check_wellformed, params)

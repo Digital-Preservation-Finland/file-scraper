@@ -48,7 +48,8 @@ class MediainfoScraper(BaseScraper):
             self._messages.append("The file was analyzed successfully.")
 
         for index in range(len(mediainfo.tracks)):
-            self.iterate_models(tracks=mediainfo.tracks, index=index)
+            self.streams += list(self.iterate_models(
+                tracks=mediainfo.tracks, index=index))
 
         # Files scraped with SimpleMediainfoMeta will have (:unav) MIME type,
         # but for other scrapes the tests need to be performed without allowing
@@ -67,7 +68,7 @@ class MediainfoScraper(BaseScraper):
             if md_class.is_supported(self._predefined_mimetype):
                 md_object = md_class(**kwargs)
                 if md_object.hascontainer() or kwargs["index"] > 0:
-                    self.streams.append(md_object)
+                    yield md_object
 
     def _tracks_ok(self, mediainfo):
         """

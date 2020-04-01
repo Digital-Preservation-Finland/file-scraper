@@ -11,31 +11,31 @@ class PsppMeta(BaseMeta):
     _supported = {"application/x-spss-por": []}  # Supported mimetype
     _allow_versions = True                       # Allow any version
 
-    def __init__(self, errors):
+    def __init__(self, well_formed):
         """Initialize model.
 
-        :errors: Errors from scraper
+        :well_formed: Well-formed status from scraper
         """
-        self._errors = errors
+        self._well_formed = well_formed
 
     @metadata()
     def mimetype(self):
         """
         Return MIME type.
 
-        The file is compliant SPSS Portable file if there are no errors. This
-        is only returned if predefined as SPSS Portable.
+        If the well-formed status from scraper is False,
+        then we do not know the actual MIME type.
         """
-        return "application/x-spss-por" if not self._errors else "(:unav)"
+        return "application/x-spss-por" if self._well_formed else "(:unav)"
 
     @metadata()
     def version(self):
         """Return version.
 
-        The file is compliant SPSS Portable file if there are no errors. This
-        is only returned if predefined as SPSS Portable.
+        If the well-formed status from scraper is False,
+        then we do not know the actual version.
         """
-        return "(:unap)" if not self._errors else "(:unav)"
+        return "(:unap)" if self._well_formed else "(:unav)"
 
     @metadata()
     def stream_type(self):

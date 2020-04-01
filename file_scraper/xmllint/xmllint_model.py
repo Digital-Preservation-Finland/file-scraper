@@ -13,13 +13,14 @@ class XmllintMeta(BaseMeta):
     _supported = {"text/xml": ["1.0"]}  # Supported mimetype
     _allow_versions = True
 
-    def __init__(self, errors, tree):
+    def __init__(self, well_formed, tree):
         """
         Initialize the metadata model.
 
+        :well_formed: Well-formed status from scraper
         :tree: XML element tree for the scraped file
         """
-        self._errors = errors
+        self._well_formed = well_formed
         self._tree = tree
 
     @metadata()
@@ -27,12 +28,10 @@ class XmllintMeta(BaseMeta):
         """
         Return mimetype.
 
-        The file is an XML file, if there are no errors. This will be returned
-        only if predefined as an XML file.
+        If the well-formed status from scraper is False,
+        then we do not know the actual MIME type.
         """
-        if not self._errors:
-            return "text/xml"
-        return "(:unav)"
+        return "text/xml" if self._well_formed else "(:unav)"
 
     @metadata()
     def version(self):
@@ -45,5 +44,10 @@ class XmllintMeta(BaseMeta):
     # pylint: disable=no-self-use
     @metadata()
     def stream_type(self):
-        """Return file type."""
-        return "text"
+        """
+        Return file type.
+
+        If the well-formed status from scraper is False,
+        then we do not know the actual stream type.
+        """
+        return "text" if self._well_formed else "(:unav)"

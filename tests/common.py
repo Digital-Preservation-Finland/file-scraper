@@ -71,8 +71,12 @@ def parse_results(filename, mimetype, results, check_wellformed,
 
     :filename: File name
     :mimetype: Mimetype
-    :results: Results: purpose, part of stdout, part of stderr,
-              streams if not default
+    :results: Expected results:
+              purpose: Purpose of the test
+              stdout_part: Part of expected stdout
+              stderr_part: Part of expected stderr,
+              streams: Expected streams
+              inverse: True to inverse the expected well-formedness
     :check_wellformed: True, if well-formed check, otherwise False
     :basepath: Base path
     :params: Parameters for the scraper

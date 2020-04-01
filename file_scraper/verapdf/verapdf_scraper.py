@@ -31,7 +31,6 @@ class VerapdfScraper(BaseScraper):
         shell = Shell(cmd)
         if shell.returncode != 0:
             raise VeraPDFError(shell.stderr)
-        self._messages.append(shell.stdout)
         profile = None
 
         try:
@@ -41,6 +40,8 @@ class VerapdfScraper(BaseScraper):
                     "//validationReport")[0].get("isCompliant")
                 if compliant == "false":
                     self._errors.append(shell.stdout)
+                else:
+                    self._messages.append(shell.stdout)
                 profile = \
                     report.xpath("//validationReport")[0].get("profileName")
             else:
@@ -48,7 +49,8 @@ class VerapdfScraper(BaseScraper):
         except ET.XMLSyntaxError:
             self._errors.append(shell.stderr)
 
-        self.iterate_models(errors=self._errors, profile=profile)
+        self.streams = list(self.iterate_models(
+            well_formed=self.well_formed, profile=profile))
 
         self._check_supported()
 

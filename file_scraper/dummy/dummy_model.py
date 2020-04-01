@@ -15,7 +15,7 @@ class DummyMeta(BaseMeta):
         return "(:unav)"
 
 
-class DetectedOfficeVersionMeta(BaseMeta):
+class DetectedMimeVersionMeta(BaseMeta):
     """
     This model results the given file format MIME type and version for some
     file formats. The corresponding scraper gets the version as a parameter
@@ -37,7 +37,7 @@ class DetectedOfficeVersionMeta(BaseMeta):
 
     def __init__(self, mimetype, version):
         """
-        Initialize with given version.
+        Initialize with given mimetype and version.
 
         :version: File format version
         """
@@ -54,8 +54,6 @@ class DetectedOfficeVersionMeta(BaseMeta):
     @metadata()
     def version(self):
         """Return the file format version"""
-        if self.mimetype() == "application/x-spss-por":
-            return "(:unap)"
         return self._version if self._version is not None else "(:unav)"
 
     @metadata()
@@ -64,9 +62,9 @@ class DetectedOfficeVersionMeta(BaseMeta):
         return "binary" if self.mimetype() != "(:unav)" else "(:unav)"
 
 
-class DetectedSpssVersionMeta(DetectedOfficeVersionMeta):
+class DetectedSpssVersionMeta(DetectedMimeVersionMeta):
     """
-    Variation of DetectedOfficeVersionMeta model for SPSS Portable files.
+    Variation of DetectedMimeVersionMeta model for SPSS Portable files.
 
     We allow all versions.
 
@@ -79,10 +77,15 @@ class DetectedSpssVersionMeta(DetectedOfficeVersionMeta):
     }
     _allow_versions = True
 
+    @metadata()
+    def version(self):
+        """Return the file format version"""
+        return "(:unap)"
 
-class DetectedTextVersionMeta(DetectedOfficeVersionMeta):
+
+class DetectedTextVersionMeta(DetectedMimeVersionMeta):
     """
-    Variation of DetectedOfficeVersionMeta model for some text files.
+    Variation of DetectedMimeVersionMeta model for some text files.
 
     Full scraping actually is able to result the same, but this is needed
     when Scraper is used for metadata collecting.
@@ -106,9 +109,9 @@ class DetectedTextVersionMeta(DetectedOfficeVersionMeta):
         return "text" if self.mimetype() != "(:unav)" else "(:unav)"
 
 
-class DetectedPdfaVersionMeta(DetectedOfficeVersionMeta):
+class DetectedPdfaVersionMeta(DetectedMimeVersionMeta):
     """
-    Variation of DetectedOfficeVersionMeta model for PDF/A files.
+    Variation of DetectedMimeVersionMeta model for PDF/A files.
 
     We keep the version important.
 

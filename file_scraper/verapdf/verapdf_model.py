@@ -12,14 +12,14 @@ class VerapdfMeta(BaseMeta):
     _supported = {"application/pdf": ["A-1a", "A-1b", "A-2a", "A-2b", "A-2u",
                                       "A-3a", "A-3b", "A-3u"]}
 
-    def __init__(self, errors, profile):
+    def __init__(self, well_formed, profile):
         """
         Initialize the metadata model.
 
-        :errors: Errors from scraper
+        :well_formed: Well-formed status from scraper
         :profile: profileName from verapdf report
         """
-        self._errors = errors
+        self._well_formed = well_formed
         self._profile = profile
 
     @metadata()
@@ -27,10 +27,10 @@ class VerapdfMeta(BaseMeta):
         """
         Return mime type.
 
-        File is PDF/A compliant without errors. This is returned only if
-        predefined as PDF/A file.
+        If the well-formed status from scraper is False,
+        then we do not know the actual MIME type.
         """
-        return "application/pdf" if not self._errors else "(:unav)"
+        return "application/pdf" if self._well_formed else "(:unav)"
 
     @metadata(important=True)
     def version(self):
@@ -40,10 +40,10 @@ class VerapdfMeta(BaseMeta):
         For files that are not PDF/A, other scrapers need to be used to
         determine the version.
 
-        File is PDF/A compliant without errors. This is returned only if
-        predefined as PDF/A file.
+        If the well-formed status from scraper is False,
+        then we do not know the actual version.
         """
-        if not self._errors and self._profile is not None:
+        if self._well_formed and self._profile is not None:
             return "A" + self._profile.split("PDF/A")[1].split(
                 " validation profile")[0].lower()
         return "(:unav)"

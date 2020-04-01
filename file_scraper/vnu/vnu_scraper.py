@@ -24,5 +24,6 @@ class VnuScraper(BaseScraper):
         self._messages.append(shell.stdout)
 
         if self.well_formed:
-            self.iterate_models(errors=self._errors)
+            self.streams = list(self.iterate_models(
+                well_formed=self.well_formed))
             self._check_supported()

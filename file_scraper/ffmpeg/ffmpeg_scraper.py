@@ -68,8 +68,8 @@ class FFMpegScraper(BaseScraper):
             if not container and index == len(streams) - 1:
                 break
 
-            self.iterate_models(probe_results=probe_results,
-                                index=index)
+            self.streams += list(self.iterate_models(
+                probe_results=probe_results, index=index))
 
             for stream in self.streams:
                 if stream.hascontainer():

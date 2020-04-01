@@ -52,7 +52,8 @@ class TextfileScraper(BaseScraper):
                 self._errors.append(
                     "File is not a text file, or it is a UTF-16 file without "
                     "BOM or a UTF-32 file.")
-        self.iterate_models(errors=self._errors)
+        self.streams = list(self.iterate_models(
+            well_formed=self.well_formed))
         self._check_supported(allow_unav_mime=True,
                               allow_unav_version=True)
 
@@ -103,8 +104,9 @@ class TextEncodingMetaScraper(BaseScraper):
     def scrape_file(self):
         """No actual scraping. Set the predefined character encoding value."""
         self._messages.append("Setting character encoding.")
-        self.iterate_models(errors=self._errors, charset=self._charset,
-                            predefined_mimetype=self._predefined_mimetype)
+        self.streams = list(self.iterate_models(
+            well_formed=self.well_formed, charset=self._charset,
+            predefined_mimetype=self._predefined_mimetype))
         self._check_supported(allow_unav_mime=True,
                               allow_unav_version=True)
 
@@ -200,8 +202,9 @@ class TextEncodingScraper(BaseScraper):
         except (ValueError, UnicodeDecodeError) as exception:
             self._errors.append("Character decoding error: %s" % exception)
 
-        self.iterate_models(errors=self._errors, charset=self._charset,
-                            predefined_mimetype=self._predefined_mimetype)
+        self.streams = list(self.iterate_models(
+            well_formed=self.well_formed, charset=self._charset,
+            predefined_mimetype=self._predefined_mimetype))
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)
 
     def _predetect_charset(self, infile):

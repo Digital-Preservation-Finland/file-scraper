@@ -82,9 +82,6 @@ def test_scraper(filename, result_dict, params, evaluate_scraper):
                                 mimetype="text/xml",
                                 params=correct.params)
     scraper.scrape_file()
-    correct.update_mimetype("(:unav)")
-    correct.update_version("(:unav)")
-    correct.streams[0]["stream_type"] = "(:unav)"
 
     evaluate_scraper(scraper, correct)
 

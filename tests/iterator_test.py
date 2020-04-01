@@ -88,19 +88,19 @@ WELLFORMED_SCRAPERS = [
                                           "TextEncodingScraper"]),
         ("audio/x-wav", None, ["JHoveWavScraper", "MediainfoScraper"]),
         ("application/vnd.oasis.opendocument.text", None,
-         ["DetectedBinaryVersionScraper", "OfficeScraper",
+         ["DetectedMimeVersionScraper", "OfficeScraper",
           "MagicBinaryScraper"]),
         ("application/vnd.oasis.opendocument.spreadsheet", None,
-         ["DetectedBinaryVersionScraper", "OfficeScraper",
+         ["DetectedMimeVersionScraper", "OfficeScraper",
           "MagicBinaryScraper"]),
         ("application/vnd.oasis.opendocument.presentation", None,
-         ["DetectedBinaryVersionScraper", "OfficeScraper",
+         ["DetectedMimeVersionScraper", "OfficeScraper",
           "MagicBinaryScraper"]),
         ("application/vnd.oasis.opendocument.graphics", None,
-         ["DetectedBinaryVersionScraper", "OfficeScraper",
+         ["DetectedMimeVersionScraper", "OfficeScraper",
           "MagicBinaryScraper"]),
         ("application/vnd.oasis.opendocument.formula", None,
-         ["DetectedBinaryVersionScraper", "OfficeScraper",
+         ["DetectedMimeVersionScraper", "OfficeScraper",
           "MagicBinaryScraper"]),
         ("application/msword", None, ["OfficeScraper", "MagicBinaryScraper"]),
         ("application/vnd.ms-excel", None, ["OfficeScraper",
@@ -137,7 +137,7 @@ def test_iter_scrapers(mimetype, version, scraper_classes):
     if mimetype in ["application/x-spss-por", "text/html", "text/xml"] or \
             mimetype == "application/pdf" and version in \
             ["A-1a", "A-1b", "A-2a", "A-2b", "A-2u", "A-3a", "A-3b", "A-3u"]:
-        scraper_classes.append("DetectedMetaVersionScraper")
+        scraper_classes.append("DetectedMimeVersionMetadataScraper")
 
     scrapers = iter_scrapers(mimetype, version, False)
     scraper_set = set(scraper_classes).difference(set(WELLFORMED_SCRAPERS))

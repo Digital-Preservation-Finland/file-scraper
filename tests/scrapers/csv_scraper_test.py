@@ -236,8 +236,8 @@ def test_bad_parameters():
     """
     with pytest.raises(ValueError) as err:
         # "separator" is missing from the keys
-        CsvMeta(errors=[], params={"delimiter": ",", "fields": [],
-                                   "first_line": ""})
+        CsvMeta(well_formed=True, params={"delimiter": ",", "fields": [],
+                                          "first_line": ""})
     assert ("CsvMeta must be given a dict containing keys" in
             six.text_type(err.value))
 

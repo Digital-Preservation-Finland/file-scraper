@@ -46,11 +46,13 @@ class _FidoCachedFormats(Fido):
             Fido.load_fido_xml(self, file=file)
             _FidoCachedFormats._cached_formats = self.formats
             _FidoCachedFormats._cached_puid_format_map = self.puid_format_map
-            _FidoCachedFormats._cached_puid_has_priority_over_map = self.puid_has_priority_over_map
+            _FidoCachedFormats._cached_puid_has_priority_over_map = \
+                self.puid_has_priority_over_map
         else:
             self.formats = _FidoCachedFormats._cached_formats
             self.puid_format_map = _FidoCachedFormats._cached_puid_format_map
-            self.puid_has_priority_over_map = _FidoCachedFormats._cached_puid_has_priority_over_map
+            self.puid_has_priority_over_map = \
+                _FidoCachedFormats._cached_puid_has_priority_over_map
         return self.formats
 
 

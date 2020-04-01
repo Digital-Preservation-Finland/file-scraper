@@ -48,7 +48,7 @@ class LxmlScraper(BaseScraper):
         with open(self.filename, "rb") as file_:
             tree = etree.parse(file_, parser)
 
-        self.iterate_models(tree=tree)
+        self.streams = list(self.iterate_models(tree=tree))
 
         # Only log success message if at least one metadata model was added to
         # streams. Check that it corresponds to given charset.
@@ -97,4 +97,4 @@ class LxmlScraper(BaseScraper):
                 self._errors.append("XML parsing failed: document "
                                     "information could not be gathered.")
             else:
-                self.streams.append(md_model)
+                yield md_model

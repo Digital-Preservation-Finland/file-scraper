@@ -27,9 +27,9 @@ class DpxScraper(BaseScraper):
         if shell.stdout:
             self._messages += list(shell.stdout.splitlines())
 
-        self.iterate_models(errors=self._errors,
-                            messages=self._messages,
-                            filename=self.filename)
+        self.streams = list(self.iterate_models(
+            well_formed=self.well_formed, messages=self._messages,
+            filename=self.filename))
 
         self._check_supported()
 

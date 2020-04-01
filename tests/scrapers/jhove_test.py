@@ -392,14 +392,15 @@ def test_scraper_html(filename, result_dict, mimetype, charset,
     correct = parse_results(filename, mimetype, result_dict, True,
                             params)
     if not correct.well_formed:
-        correct.update_mimetype("(:unav)")
-        correct.streams[0]["charset"] = "(:unav)"
         correct.streams[0]["stream_type"] = "(:unav)"
     else:
         correct.streams[0]["stream_type"] = "text"
 
     if filename == "valid_4.01.html":
+        correct.update_mimetype("text/html")
+        correct.update_version("4.01")
         correct.streams[0]["charset"] = "UTF-8"
+        correct.streams[0]["stream_type"] = "text"
 
     scraper = JHoveHtmlScraper(filename=correct.filename,
                                mimetype=mimetype,

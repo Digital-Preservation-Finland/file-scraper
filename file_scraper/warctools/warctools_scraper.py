@@ -61,7 +61,8 @@ class WarcWarctoolsScraper(BaseScraper):
             return
 
         self._messages.append("File was analyzed successfully.")
-        self.iterate_models(errors=self._errors, line=line)
+        self.streams = list(self.iterate_models(
+            well_formed=self.well_formed, line=line))
         self._check_supported()
 
 
@@ -145,7 +146,8 @@ class ArcWarctoolsScraper(BaseScraper):
             self._messages.append("File was analyzed successfully.")
             if shell.stdout:
                 self._messages.append(shell.stdout)
-        self.iterate_models(errors=self._errors)
+        self.streams = list(self.iterate_models(
+            well_formed=self.well_formed))
         self._check_supported(allow_unav_version=True)
 
 
@@ -180,7 +182,8 @@ class GzipWarctoolsScraper(BaseScraper):
                 self._errors = self._scraper._errors
 
             if self._scraper.well_formed:
-                self.iterate_models(metadata_model=self._scraper.streams)
+                self.streams = list(self.iterate_models(
+                    metadata_model=self._scraper.streams))
                 self._check_supported()
                 break
 

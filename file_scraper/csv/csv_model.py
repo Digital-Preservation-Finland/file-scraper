@@ -12,11 +12,11 @@ class CsvMeta(BaseMeta):
     _supported = {"text/csv": []}  # Supported mimetype
     _allow_versions = True           # Allow any version
 
-    def __init__(self, errors, params):
+    def __init__(self, well_formed, params):
         """
         Initialize for delimiter and separator info.
 
-        :errors: Errors from scraper
+        :well_formed: Well-formed status from scraper
         :params: A dict containing the following keys:
                  delimiter:  the field delimiter used in the file
                  separator:  the line separator
@@ -30,7 +30,7 @@ class CsvMeta(BaseMeta):
                              "'delimiter', 'separator', 'fields' and "
                              "'first_line' as a parameter.")
 
-        self._errors = errors
+        self._well_formed = well_formed
         self._csv_delimiter = params["delimiter"]
         self._csv_separator = params["separator"]
         self._csv_fields = params["fields"]
@@ -41,15 +41,20 @@ class CsvMeta(BaseMeta):
         """
         Return mimetype.
 
-        The file is CSV compliant if there are no errors, and
-        this will be returned only if predefined as CSV.
+        If the well-formed status from scraper is False,
+        then we do not know the actual MIME type.
         """
-        return "text/csv" if not self._errors else "(:unav)"
+        return "text/csv" if self._well_formed else "(:unav)"
 
     @metadata()
     def version(self):
-        """Return version."""
-        return "(:unap)" if not self._errors else "(:unav)"
+        """
+        Return version.
+
+        If the well-formed status from scraper is False,
+        then we do not know the actual version.
+        """
+        return "(:unap)" if self._well_formed else "(:unav)"
 
     @metadata()
     def delimiter(self):
@@ -68,5 +73,10 @@ class CsvMeta(BaseMeta):
 
     @metadata()
     def stream_type(self):
-        """Return file type."""
-        return "text" if not self._errors else "(:unav)"
+        """
+        Return file type.
+
+        If the well-formed status from scraper is False,
+        then we do not know the actual stream type.
+        """
+        return "text" if self._well_formed else "(:unav)"

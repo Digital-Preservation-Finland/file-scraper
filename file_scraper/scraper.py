@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from file_scraper.detectors import VerapdfDetector, MagicCharset
-from file_scraper.dummy.dummy_scraper import FileExists, MimeScraper
+from file_scraper.dummy.dummy_scraper import FileExists, MimeMatchScraper
 from file_scraper.iterator import iter_detectors, iter_scrapers
 from file_scraper.jhove.jhove_scraper import JHoveUtf8Scraper
 from file_scraper.textfile.textfile_scraper import TextfileScraper
@@ -136,12 +136,13 @@ class Scraper(object):
         version = None
         if self._params.get("version", None) not in LOSE:
             version = self._params.get("version", None)
-        scraper = MimeScraper(filename=self.filename,
-                              mimetype=self._predefined_mimetype,
-                              version=version,
-                              params={"mimetype": self.mimetype,
-                                      "version": self.version,
-                                      "well_formed": self.well_formed})
+        scraper = MimeMatchScraper(
+            filename=self.filename,
+            mimetype=self._predefined_mimetype,
+            version=version,
+            params={"mimetype": self.mimetype,
+                    "version": self.version,
+                    "well_formed": self.well_formed})
         self._scrape_file(scraper, check_wellformed)
 
     def scrape(self, check_wellformed=True):

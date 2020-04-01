@@ -102,7 +102,7 @@ class SchematronScraper(BaseScraper):
         else:
             self._messages.append(shell.stdout)
 
-        self.iterate_models()
+        self.streams = list(self.iterate_models(well_formed=self.well_formed))
 
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)
 

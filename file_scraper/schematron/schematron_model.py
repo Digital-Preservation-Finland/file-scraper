@@ -11,8 +11,26 @@ class SchematronMeta(BaseMeta):
     _supported = {"text/xml": []}  # Supported mimetypes
     _allow_versions = True
 
+    def __init__(self, well_formed):
+        """
+        Initialize metadata model.
+
+        :well_formed: Schematron well-formedness of XML file
+        """
+        self._well_formed = well_formed
+
+    @metadata()
+    def mimetype(self):
+        """Return MIME type."""
+        return "text/xml" if self._well_formed else "(:unav)"
+
+    @metadata()
+    def version(self):
+        """Return file format version."""
+        return "1.0" if self._well_formed else "(:unav)"
+
     # pylint: disable=no-self-use
     @metadata()
     def stream_type(self):
-        """We do not need to resolve stream type."""
-        return "(:unav)"
+        """Return stream type."""
+        return "text" if self._well_formed else "(:unav)"

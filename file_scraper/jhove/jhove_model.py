@@ -34,14 +34,14 @@ def get_field(report, field):
 class JHoveBaseMeta(BaseMeta):
     """Metadata that is common for all files scraped using JHove"""
 
-    def __init__(self, errors, report):
+    def __init__(self, well_formed, report):
         """
         Initialize the metadata model.
 
-        :errors: Errors from scraper
+        :well_formed: Well-formed status from scraper
         :report: JHove output as lxml.etree
         """
-        self._errors = errors
+        self._well_formed = well_formed
         self._report = report
 
     @metadata()
@@ -64,9 +64,12 @@ class JHoveGifMeta(JHoveBaseMeta):
 
         Jhove returns the version as "87a" or "89a" but "1987a"
         or "1989a" is used. Hence "19" is prepended to the version returned by
-        Jhove
+        Jhove.
+
+        If the well-formed status from scraper is False,
+        then we do not know the actual version.
         """
-        if self._errors:
+        if not self._well_formed:
             return "(:unav)"
         if get_field(self._report, "version") in ["87a", "89a"]:
             return "19" + get_field(self._report, "version")
@@ -74,8 +77,13 @@ class JHoveGifMeta(JHoveBaseMeta):
 
     @metadata()
     def stream_type(self):
-        """Return file type."""
-        return "image" if not self._errors else "(:unav)"
+        """
+        Return file type.
+
+        If the well-formed status from scraper is False,
+        then we do not know the actual stream type.
+        """
+        return "image" if self._well_formed else "(:unav)"
 
 
 class JHoveHtmlMeta(JHoveBaseMeta):
@@ -91,9 +99,12 @@ class JHoveHtmlMeta(JHoveBaseMeta):
         Return version.
 
         Jhove returns the version as "HTML 4.01" but only the "4.01" part is
-        used. Hence we drop "HTML " prefix from the string returned by Jhove
+        used. Hence we drop "HTML " prefix from the string returned by Jhove.
+
+        If the well-formed status from scraper is False,
+        then we do not know the actual version.
         """
-        if self._errors:
+        if not self._well_formed:
             return "(:unav)"
         version = get_field(self._report, "version")
         if version:
@@ -122,8 +133,13 @@ class JHoveHtmlMeta(JHoveBaseMeta):
 
     @metadata()
     def mimetype(self):
-        """Return MIME type."""
-        if self._errors:
+        """
+        Return MIME type.
+
+        If the well-formed status from scraper is False,
+        then we do not know the actual MIME type.
+        """
+        if not self._well_formed:
             return "(:unav)"
         mime = super(JHoveHtmlMeta, self).mimetype()
         if mime == "text/xml" and \
@@ -142,8 +158,13 @@ class JHoveHtmlMeta(JHoveBaseMeta):
 
     @metadata()
     def stream_type(self):
-        """Return file type."""
-        return "text" if not self._errors else "(:unav)"
+        """
+        Return file type.
+
+        If the well-formed status from scraper is False,
+        then we do not know the actual stream type.
+        """
+        return "text" if self._well_formed else "(:unav)"
 
 
 class JHoveJpegMeta(JHoveBaseMeta):
@@ -156,8 +177,13 @@ class JHoveJpegMeta(JHoveBaseMeta):
 
     @metadata()
     def stream_type(self):
-        """Return file type."""
-        return "image" if not self._errors else "(:unav)"
+        """
+        Return file type.
+
+        If the well-formed status from scraper is False,
+        then we do not know the actual stream type.
+        """
+        return "image" if self._well_formed else "(:unav)"
 
 
 class JHoveTiffMeta(JHoveBaseMeta):
@@ -169,15 +195,23 @@ class JHoveTiffMeta(JHoveBaseMeta):
 
     @metadata()
     def version(self):
-        """Return version."""
-        if not self._errors:
-            return "6.0"
-        return "(:unav)"
+        """
+        Return version.
+
+        If the well-formed status from scraper is False,
+        then we do not know the actual version.
+        """
+        return "6.0" if self._well_formed else "(:unav)"
 
     @metadata()
     def stream_type(self):
-        """Return file type."""
-        return "image" if not self._errors else "(:unav)"
+        """
+        Return file type.
+
+        If the well-formed status from scraper is False,
+        then we do not know the actual stream type.
+        """
+        return "image" if self._well_formed else "(:unav)"
 
 
 class JHovePdfMeta(JHoveBaseMeta):
@@ -189,8 +223,13 @@ class JHovePdfMeta(JHoveBaseMeta):
 
     @metadata()
     def version(self):
-        """Return version."""
-        if not self._errors:
+        """
+        Return version.
+
+        If the well-formed status from scraper is False,
+        then we do not know the actual version.
+        """
+        if self._well_formed:
             return get_field(self._report, "version")
         return "(:unav)"
 
@@ -229,8 +268,11 @@ class JHoveWavMeta(JHoveBaseMeta):
 
         Set version as "2" or "(:unap)" if profile is BWF or PCMWAVEFORMAT,
         correspondingly. For now, we don"t accept RF64.
+
+        If the well-formed status from scraper is False,
+        then we do not know the actual version.
         """
-        if self._errors:
+        if not self._well_formed:
             return "(:unav)"
         if get_field(self._report, "profile") is None:
             return "(:unav)"
@@ -245,8 +287,13 @@ class JHoveWavMeta(JHoveBaseMeta):
 
     @metadata()
     def stream_type(self):
-        """Return file type."""
-        return "audio" if not self._errors else "(:unav)"
+        """
+        Return file type.
+
+        If the well-formed status from scraper is False,
+        then we do not know the actual stream type.
+        """
+        return "audio" if self._well_formed else "(:unav)"
 
 
 class JHoveUtf8Meta(JHoveBaseMeta):
@@ -271,8 +318,13 @@ class JHoveUtf8Meta(JHoveBaseMeta):
 
     @metadata()
     def stream_type(self):
-        """Return file type."""
-        return "text" if not self._errors else "(:unav)"
+        """
+        Return file type.
+
+        If the well-formed status from scraper is False,
+        then we do not know the actual stream type.
+        """
+        return "text" if self._well_formed else "(:unav)"
 
     # pylint: disable=no-self-use
     @metadata()

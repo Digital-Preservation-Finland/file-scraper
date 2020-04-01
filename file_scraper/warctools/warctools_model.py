@@ -49,14 +49,14 @@ class WarcWarctoolsMeta(BaseWarctoolsMeta):
     _supported = {"application/warc": ["0.17", "0.18", "1.0"]}
     _allow_versions = True  # Allow any version
 
-    def __init__(self, errors, line=None):
+    def __init__(self, well_formed, line=None):
         """
         Initialize the metadata model.
 
-        :errors: Errors from scraper.
+        :well_formed: Well-formed status from scraper.
         :line: The first line of the warc archive.
         """
-        self._errors = errors
+        self._well_formed = well_formed
         self._line = line
 
     @metadata()
@@ -67,7 +67,7 @@ class WarcWarctoolsMeta(BaseWarctoolsMeta):
         The file is a WARC file if there are not errors. This is returned only
         if predefined as a WARC file.
         """
-        return "application/warc" if not self._errors else "(:unav)"
+        return "application/warc" if self._well_formed else "(:unav)"
 
     @metadata()
     def version(self):
@@ -87,21 +87,21 @@ class ArcWarctoolsMeta(BaseWarctoolsMeta):
     _supported = {"application/x-internet-archive": ["1.0", "1.1"]}
     _allow_versions = True  # Allow any version
 
-    def __init__(self, errors):
+    def __init__(self, well_formed):
         """
         Initialize the metadata model.
 
-        :errors: Errors from scraper
+        :well_formed: Well-formed status from scraper
         """
-        self._errors = errors
+        self._well_formed = well_formed
 
     @metadata()
     def mimetype(self):
         """
         Return mimetype.
 
-        The file is an ARC file if there are not errors. This is returned only
-        if predefined as an ARC file.
+        If the well-formed status from scraper is False,
+        then we do not know the actual MIME type.
         """
-        return "application/x-internet-archive" if not self._errors \
+        return "application/x-internet-archive" if self._well_formed \
             else "(:unav)"

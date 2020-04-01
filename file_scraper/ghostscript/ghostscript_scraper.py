@@ -43,7 +43,7 @@ class GhostscriptScraper(BaseScraper):
         else:
             self._messages.append("Well-Formed and valid")
 
-        self.iterate_models()
+        self.streams = list(self.iterate_models())
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)
 
     @property

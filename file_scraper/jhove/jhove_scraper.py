@@ -54,7 +54,8 @@ class JHoveScraperBase(BaseScraper):
             self._errors.append(shell.stdout)
             self._errors.append(shell.stderr)
 
-        self.iterate_models(errors=self._errors, report=self._report)
+        self.streams = list(self.iterate_models(
+            well_formed=self.well_formed, report=self._report))
 
         self._check_supported(allow_unav_version=True,
                               allow_unap_version=True)
@@ -162,5 +163,4 @@ class JHoveUtf8Scraper(JHoveScraperBase):
         We need to override this since _supported attribute is empty and
         the scraper is run differenty.
         """
-        for md_class in self._supported_metadata:
-            self.streams.append(md_class(**kwargs))
+        yield self._supported_metadata[0](**kwargs)

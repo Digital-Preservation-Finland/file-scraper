@@ -70,9 +70,8 @@ class FFMpegSimpleMeta(BaseMeta):
         Return MIME type based on format name.
         """
         if "format_long_name" in self._ffmpeg_stream:
-            if self._ffmpeg_stream["format_long_name"] in self._mimetype_dict:
-                return self._mimetype_dict[self._ffmpeg_stream[
-                    "format_long_name"]]
+            return self._mimetype_dict.get(
+                self._ffmpeg_stream["format_long_name"], "(:unav)")
         return "(:unav)"
 
     @metadata()

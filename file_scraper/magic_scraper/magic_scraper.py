@@ -53,8 +53,9 @@ class MagicBaseScraper(BaseScraper):
 
         magic_result = self._magic_call()
 
-        self.iterate_models(magic_result=magic_result,
-                            pre_mimetype=self._predefined_mimetype)
+        self.streams = list(self.iterate_models(
+            magic_result=magic_result,
+            pre_mimetype=self._predefined_mimetype))
 
         self._check_supported(allow_unav_mime=self._allow_unav_mime,
                               allow_unav_version=True,

@@ -11,15 +11,15 @@ class DpxMeta(BaseMeta):
     # Supported mimetype and version
     _supported = {"image/x-dpx": ["2.0", "1.0"]}
 
-    def __init__(self, errors, messages, filename):
+    def __init__(self, well_formed, messages, filename):
         """
         Initialize metadata model.
 
-        :errors: Errors given by DPX scraper
+        :well_formed: Well-formed status from DPX scraper
         :messages: Messages given by DPX scraper
         :filename: DPX file name
         """
-        self._errors = errors
+        self._well_formed = well_formed
         self._messages = messages
         self._filename = filename
 
@@ -28,15 +28,20 @@ class DpxMeta(BaseMeta):
         """
         Return mimetype.
 
-        The file is DPX compliant if there are no errors, and this will be
-        returned only if predefined as DPX.
+        If the well-formed status from scraper is False,
+        then we do not know the actual MIME type.
         """
-        return "image/x-dpx" if not self._errors else "(:unav)"
+        return "image/x-dpx" if self._well_formed else "(:unav)"
 
     @metadata()
     def version(self):
-        """Return version. The version is returned, if there are no errors."""
-        if self._errors:
+        """
+        Return file format version.
+
+        If the well-formed status from scraper is False,
+        then we do not know the actual version.
+        """
+        if not self._well_formed:
             return "(:unav)"
 
         for supported_version in self._supported["image/x-dpx"]:
@@ -51,5 +56,10 @@ class DpxMeta(BaseMeta):
 
     @metadata()
     def stream_type(self):
-        """Return file type."""
-        return "image" if not self._errors else "(:unav)"
+        """
+        Return file type.
+
+        If the well-formed status from scraper is False,
+        then we do not know the actual stream type.
+        """
+        return "image" if self._well_formed else "(:unav)"

@@ -141,7 +141,8 @@ class XmllintScraper(BaseScraper):
                     # was well formed.
                     self._messages.append("Success: Document is well-formed "
                                           "but does not contain schema.")
-                    self.iterate_models(errors=self._errors, tree=tree)
+                    self.streams = list(self.iterate_models(
+                        well_formed=self.well_formed, tree=tree))
                     self._check_supported()
                     return
 
@@ -159,7 +160,8 @@ class XmllintScraper(BaseScraper):
         if self._has_constructed_schema:
             os.remove(self._schema)
 
-        self.iterate_models(errors=self._errors, tree=tree)
+        self.streams = list(self.iterate_models(
+            well_formed=self.well_formed, tree=tree))
         self._check_supported()
 
     def construct_xsd(self, document_tree):

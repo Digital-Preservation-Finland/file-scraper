@@ -113,14 +113,15 @@ class BaseScraper(object):
 
     def iterate_models(self, **kwargs):
         """
-        Iterate Scraper models and create streams.
+        Iterate Scraper models.
 
         :kwargs: Model specific parameters
+        :returns: Metadata model
         """
         for md_class in self._supported_metadata:
             if md_class.is_supported(self._predefined_mimetype,
                                      self._predefined_version, self._params):
-                self.streams.append(md_class(**kwargs))
+                yield md_class(**kwargs)
 
     def errors(self):
         """
@@ -142,8 +143,11 @@ class BaseScraper(object):
         """
         Return a dict containing class name, messages and errors.
 
-        The returned dict contains keys "class", "messages" and "errors", each
-        having a single string as a value.
+        The returned dict contains keys "class", "messages" and "errors",
+        where:
+            class: The scraper class name.
+            messages: List of info messages in scraping
+            errors: List of errors in scraping
 
         :returns: Info dict
         """
@@ -194,6 +198,16 @@ class BaseMeta(object):
         :returns: 0
         """
         return 0
+
+    @metadata()
+    def stream_type(self):
+        """
+        BaseMeta does no real scraping. Should be implemented in subclasses.
+        Resolve only if unambiguous.
+
+        :returns: "(:unav)"
+        """
+        return "(:unav)"
 
     @classmethod
     def is_supported(cls, mimetype, version=None, params=None):
