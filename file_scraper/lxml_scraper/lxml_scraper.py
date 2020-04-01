@@ -84,17 +84,16 @@ class LxmlScraper(BaseScraper):
         """
         for md_class in self._supported_metadata:
 
-            if not md_class.is_supported(self._predefined_mimetype,
-                                         self._predefined_version,
-                                         self._params):
-                continue
+            if md_class.is_supported(self._predefined_mimetype,
+                                     self._predefined_version,
+                                     self._params):
 
-            md_model = md_class(**kwargs)
-            try:
-                for method in md_model.iterate_metadata_methods():
-                    method()
-            except Exception:  # pylint: disable=broad-except
-                self._errors.append("XML parsing failed: document "
-                                    "information could not be gathered.")
-            else:
-                yield md_model
+                md_model = md_class(**kwargs)
+                try:
+                    for method in md_model.iterate_metadata_methods():
+                        method()
+                except Exception:  # pylint: disable=broad-except
+                    self._errors.append("XML parsing failed: document "
+                                        "information could not be gathered.")
+                else:
+                    yield md_model
