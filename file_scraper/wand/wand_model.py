@@ -42,8 +42,8 @@ class WandImageMeta(BaseMeta):
 
     @metadata()
     def colorspace(self):
-        """If image exists, return its colorspace, otherwise
-           return (:unav).
+        """
+        If image exists, return its colorspace, otherwise return (:unav).
         """
         if not self._image:
             return "(:unav)"
@@ -58,15 +58,15 @@ class WandImageMeta(BaseMeta):
 
     @metadata()
     def height(self):
-        """Ig image exists, return its height, otherwise return (:unav)."""
+        """If image exists, return its height, otherwise return (:unav)."""
         if not self._image:
             return "(:unav)"
         return six.text_type(self._image.height)
 
     @metadata()
     def bps_value(self):
-        """If image exists, return its colour depth, otherwise
-           return (:unav).
+        """
+        If image exists, return its colour depth, otherwise return (:unav).
         """
         if not self._image:
             return "(:unav)"
@@ -86,8 +86,8 @@ class WandImageMeta(BaseMeta):
 
     @metadata()
     def samples_per_pixel(self):
-        """Samples per pixel not available from this scraper,
-           return (:unav).
+        """
+        Samples per pixel not available from this scraper, return (:unav).
         """
         return "(:unav)"
 

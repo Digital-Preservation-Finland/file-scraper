@@ -267,7 +267,7 @@ class JHoveWavMeta(JHoveBaseMeta):
         Return version.
 
         Set version as "2" or "(:unap)" if profile is BWF or PCMWAVEFORMAT,
-        correspondingly. For now, we don"t accept RF64.
+        respectively. For now, we don't accept RF64.
 
         If the well-formed status from scraper is False,
         then we do not know the actual version.

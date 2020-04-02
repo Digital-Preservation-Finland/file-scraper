@@ -166,7 +166,7 @@ Misc notes
     * Metadata is not collected for DPX images, only well-formedness is checked.
     * Retrieving version number can not be done for ARC, MS-Office, and ODF Formula formats.
     * Scraping XML files without XML header works correctly only when ``check_wellformed`` parameter is ``True``.
-    * The software may result arbitrary metadata values, if incorrect MIME type or version is given as a parameter. However, the file is also the denoted as invalid.
+    * The software may result arbitrary metadata values, if incorrect MIME type or version is given as a parameter. However, the file is also then denoted as invalid.
 
 Copyright
 ---------

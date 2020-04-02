@@ -46,7 +46,7 @@ INVALID_MSG = "is not a text file"
 def test_existing_files(filename, mimetype, is_textfile, evaluate_scraper):
     """
     Test detecting whether file is a textfile.
-    The scraper tool is not able to detect UTF-16 files without BOM nor
+    The scraper tool is not able to detect UTF-16 files without BOM or
     UTF-32 files.
 
     :filename: Test file name

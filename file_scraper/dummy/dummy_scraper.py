@@ -23,7 +23,7 @@ class ScraperNotFound(BaseScraper):
     @property
     def well_formed(self):
         """
-        Academicly, well-formedness is not known and therefore result
+        Academically, well-formedness is not known and therefore result
         should be None. However, ScraperNotFound should always be unwanted
         output, and therefore we return False.
         """

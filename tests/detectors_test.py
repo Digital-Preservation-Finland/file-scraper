@@ -189,7 +189,7 @@ def test_important_pdf(filepath, important):
 )
 def test_important_other(detector_class, mimetype):
     """
-    Test important with cruical mimetypes using other detectors.
+    Test important with crucial mimetypes using other detectors.
 
     :detector_class: Detector class
     :mimetype: File MIME type

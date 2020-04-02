@@ -8,7 +8,7 @@ This module tests:
     - That messages and errors are returned properly.
     - That scraper attributes and well_formed property are set and retrieved
       correctly
-    - That _check_supported() method gives error messages proprly
+    - That _check_supported() method gives error messages properly
     - That initialization of detector works properly
 """
 from __future__ import unicode_literals

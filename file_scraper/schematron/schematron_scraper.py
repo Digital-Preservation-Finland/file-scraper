@@ -28,8 +28,8 @@ class SchematronScraper(BaseScraper):
         :version: Predefined file format version
         :params: Extra parameters needed for the scraper. These may be:
                  verbose: Verbose output, False by default
-                 cache: Cache of compiled schematron files are used,
-                        True by default
+                 cache: Use a Cache of compiled schematron files, True by
+                        default
                  schematron: Schematron file name
                  extra_hash: Extra hash to determine if recompilation is
                              required. This can be a hash of files which are

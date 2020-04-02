@@ -137,7 +137,7 @@ class XmllintScraper(BaseScraper):
             if not self._schema:
                 self._schema = self.construct_xsd(tree)
                 if not self._schema:
-                    # No given schema and didn"t find included schemas but XML
+                    # No given schema and didn't find included schemas but XML
                     # was well formed.
                     self._messages.append("Success: Document is well-formed "
                                           "but does not contain schema.")

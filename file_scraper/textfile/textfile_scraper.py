@@ -17,7 +17,7 @@ class TextfileScraper(BaseScraper):
     file (libmagick) checks mime-type and that if it is a text
     file with the soft option that excludes libmagick.
 
-    The tool is not able to detect UTF-16 files without BOM nor UTF-32 files.
+    The tool is not able to detect UTF-16 files without BOM or UTF-32 files.
     """
 
     _supported_metadata = [TextFileMeta]
