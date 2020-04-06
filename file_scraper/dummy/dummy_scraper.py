@@ -74,8 +74,6 @@ class MimeMatchScraper(BaseScraper):
         """
         No need to scrape anything, just compare already collected metadata.
         """
-        self._messages.append("MIME type and file format version check")
-
         mime = self._params.get("mimetype", "(:unav)")
         ver = self._params.get("version", "(:unav)")
         pre_list = self._ALTERNATIVE_MIMETYPES.get(
@@ -92,6 +90,8 @@ class MimeMatchScraper(BaseScraper):
             self._errors.append(
                 "Predefined version '{}' and resulted version '{}' "
                 "mismatch.".format(self._predefined_version, ver))
+
+        self._messages.append("MIME type and file format version checked.")
 
         self.streams.append(DummyMeta())
         self._check_supported(allow_unav_mime=True,

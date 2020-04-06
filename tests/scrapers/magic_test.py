@@ -296,9 +296,11 @@ def test_invalid_images(filename, mimetype):
         ("application/x-internet-archive", "1.0", MagicBinaryScraper),
     ]
 )
-def test_is_supported_allow(mime, ver, scraper_class):
+# pylint: disable=invalid-name
+def test_is_supported_allow_versions(mime, ver, scraper_class):
     """
     Test is_supported method.
+    Any version is supported.
 
     :mime: MIME type
     :ver: File format version
@@ -317,9 +319,11 @@ def test_is_supported_allow(mime, ver, scraper_class):
         ("text/html", "4.01"),
     ]
 )
-def test_is_supported_deny(mime, ver):
+# pylint: disable=invalid-name
+def test_is_supported_disallow_versions(mime, ver):
     """
     Test is_supported method.
+    Only defined versions are supported.
 
     :mime: MIME type
     :ver: File format version
