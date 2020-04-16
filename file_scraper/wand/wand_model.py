@@ -8,11 +8,10 @@ from file_scraper.utils import metadata
 
 
 class WandImageMeta(BaseMeta):
-    """Metadata models for png, jpeg, jp2 and gif files scraped with Wand"""
+    """Metadata models for png, jp2 and gif files scraped with Wand"""
     # pylint: disable=no-self-use
 
     _supported = {"image/png": [],
-                  "image/jpeg": [],
                   "image/jp2": [],
                   "image/gif": []}
     _allow_versions = True
@@ -118,3 +117,45 @@ class WandTiffMeta(WandImageMeta):
                     return "little endian"
 
         raise ValueError("Unsupported byte order reported by Wand.")
+
+
+class WandExifMeta(WandImageMeta):
+    """Metadata models for JPEG files with EXIF metadata scraped with Wand"""
+
+    _supported = {"image/jpeg": []}
+    _allow_versions = True
+
+    @metadata(important=True)
+    def version(self):
+        """EXIF version in PRONOM registry form."""
+
+        for key, value in self._image.container.metadata.items():
+            if key == "exif:ExifVersion":
+                return format_wand_version(value)
+
+        return "(:unav)"
+
+
+def format_wand_version(wand_exif_version):
+    """Construct version numbering conforming to versions for Exchangeable
+    Image File Format (Compressed) in PRONOM registry.
+
+    Wand library extracts EXIF version from metadata as a string. The string is
+    in form of '48, 50, 50, 48' for 0220, 2.20 or 2.2 and is passed in that
+    form to this format function. First to bytes form the major version number,
+    third byte the minor and the last (optional) byte is the patch number of
+    the version.
+
+    :wand_exif_version: Version bytes string
+    :return: Formatted version string
+
+    """
+
+    version_bytes = [chr(int(byte)) for byte in wand_exif_version.split(', ')]
+
+    version_bytes[0] += version_bytes.pop(1)
+
+    if version_bytes[-1] == '0':
+        version_bytes.pop(-1)
+
+    return '.'.join([str(int(version)) for version in version_bytes])
