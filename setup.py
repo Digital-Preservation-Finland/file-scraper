@@ -1,7 +1,6 @@
 """Installation script for the `file-scraper` package."""
-from file_scraper import __version__
-
 from setuptools import setup, find_packages
+from file_scraper import __version__
 
 setup(
     name='file_scraper',
