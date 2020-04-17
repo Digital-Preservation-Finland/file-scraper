@@ -38,13 +38,13 @@ This module tests that:
         -For truncated version 1989a file, scraper errors contains "negative
          or zero image size".
         - For empty file, scraper errors contains "imporoper image header".
-    - WandTiffMeta model is supported for TIFF files and WandImageMeta for
-      other image files
+    - WandTiffMeta model is supported for TIFF files, WandExifMeta for JPEG
+      files and  WandImageMeta for other image files
     - With or without well-formedness check, the following MIME type and
       version pairs are supported by both WandScraper and their corresponding
       metadata models:
         - image/tiff, 6.0
-        - image/jpeg, 1.01
+        - image/jpeg, ''
         - image/jp2, ''
         - image/png, 1.2
         - image/gif, 1987a
@@ -57,7 +57,8 @@ from __future__ import unicode_literals
 import os
 import pytest
 
-from file_scraper.wand.wand_model import WandImageMeta, WandTiffMeta
+from file_scraper.wand.wand_model import (WandImageMeta, WandTiffMeta,
+                                          WandExifMeta)
 from file_scraper.wand.wand_scraper import WandScraper
 from tests.common import (parse_results, partial_message_included)
 
@@ -314,7 +315,7 @@ def test_scraper_invalid(filename, mimetype, stderr_part):
     ["mime", "ver", "class_"],
     [
         ("image/tiff", "6.0", WandTiffMeta),
-        ("image/jpeg", "1.01", WandImageMeta),
+        ("image/jpeg", "", WandExifMeta),
         ("image/jp2", "", WandImageMeta),
         ("image/png", "1.2", WandImageMeta),
         ("image/gif", "1987a", WandImageMeta),
@@ -338,7 +339,7 @@ def test_model_is_supported(mime, ver, class_):
     ["mime", "ver"],
     [
         ("image/tiff", "6.0"),
-        ("image/jpeg", "1.01"),
+        ("image/jpeg", ""),
         ("image/jp2", ""),
         ("image/png", "1.2"),
         ("image/gif", "1987a"),

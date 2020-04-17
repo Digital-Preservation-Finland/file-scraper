@@ -127,20 +127,20 @@ class WandExifMeta(WandImageMeta):
 
     @metadata(important=True)
     def version(self):
-        """EXIF version in PRONOM registry form."""
+        """Exif version in PRONOM registry form."""
 
         for key, value in self._image.container.metadata.items():
             if key == "exif:ExifVersion":
-                return format_wand_version(value)
+                return format_exif_version(value)
 
         return "(:unav)"
 
 
-def format_wand_version(wand_exif_version):
+def format_exif_version(wand_exif_version):
     """Construct version numbering conforming to versions for Exchangeable
     Image File Format (Compressed) in PRONOM registry.
 
-    Wand library extracts EXIF version from metadata as a string. The string is
+    Wand library extracts Exif version from metadata as a string. The string is
     in form of '48, 50, 50, 48' for 0220, 2.20 or 2.2 and is passed in that
     form to this format function. First to bytes form the major version number,
     third byte the minor and the last (optional) byte is the patch number of
