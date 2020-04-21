@@ -142,9 +142,9 @@ def format_exif_version(wand_exif_version):
 
     Wand library extracts Exif version from metadata as a string. The string is
     in form of '48, 50, 50, 48' for 0220, 2.20 or 2.2 and is passed in that
-    form to this format function. First to bytes form the major version number,
-    third byte the minor and the last (optional) byte is the patch number of
-    the version.
+    form to this format function. First two bytes form the major version
+    number, third byte the minor and the last (optional) byte is the patch
+    number of the version.
 
     :wand_exif_version: Version bytes string
     :return: Formatted version string

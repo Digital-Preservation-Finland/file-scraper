@@ -275,6 +275,18 @@ class JpegFileMagicMeta(BinaryMagicBaseMeta):
         """Return stream type."""
         return "image"
 
+    @metadata()
+    def version(self):
+        """Return JFIF version when available. Version is determined as in
+        BaseMagicMeta version() unless the file has been identified as
+        Exif standard."""
+
+        exif_magic_line = "JPEG image data, Exif standard"
+
+        if self._magic_result['magic_none'].startswith(exif_magic_line):
+            return "(:unav)"
+        return super(JpegFileMagicMeta, self).version()
+
 
 class Jp2FileMagicMeta(BinaryMagicBaseMeta):
     """Metadata model for JP2 files."""
