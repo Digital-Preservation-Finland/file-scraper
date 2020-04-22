@@ -129,9 +129,9 @@ class WandExifMeta(WandImageMeta):
     def version(self):
         """Exif version in PRONOM registry form."""
 
-        for key, value in self._image.container.metadata.items():
-            if key == "exif:ExifVersion":
-                return format_exif_version(value)
+        exif_version = self._image.container.metadata.get('exif:ExifVersion')
+        if exif_version:
+            return format_exif_version(exif_version)
 
         return "(:unav)"
 
