@@ -17,6 +17,8 @@ This module tests that:
         - For file without start marker, scraper errors contain "starts with
           0xff 0xe0".
         - For empty file, scraper errors contain "Empty input file".
+        - For Exif JPEGs, version is interpreted and set
+        - For JFIFs, version is unavailable
     - streams and well-formedness are scraped correctly for jp2 files.
         - For well-formed files, scraper messages contain "successfully".
         - For an empty file or a file with missing data, scraper errors
@@ -68,7 +70,17 @@ STREAM_VALID = {
     "colorspace": "srgb",
     "height": "6",
     "samples_per_pixel": "(:unav)",
-    "width": "10"}
+    "width": "10",
+    "version": "(:unav)"}
+
+EXIF_VALID = {
+    "bps_unit": "(:unav)",
+    "bps_value": "8",
+    "colorspace": "srgb",
+    "height": "8",
+    "samples_per_pixel": "(:unav)",
+    "width": "10",
+    "version": "2.2.1"}
 
 GIF_APPEND = {
     "bps_unit": "(:unav)",
@@ -132,6 +144,16 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
             "streams": {0: STREAM_VALID.copy()},
             "stdout_part": "successfully",
             "stderr_part": ""}),
+        ("valid_2.2.1_exif_metadata.jpg", {
+            "purpose": "Test valid file.",
+            "streams": {0: EXIF_VALID.copy()},
+            "stdout_part": "successfully",
+            "stderr_part": ""}),
+        ("valid_2.2.1_exif_no_jfif.jpg", {
+            "purpose": "Test valid file.",
+            "streams": {0: EXIF_VALID.copy()},
+            "stdout_part": "successfully",
+            "stderr_part": ""}),
     ]
 )
 def test_scraper_jpg(filename, result_dict, evaluate_scraper):
@@ -146,7 +168,6 @@ def test_scraper_jpg(filename, result_dict, evaluate_scraper):
                             result_dict, True)
     if correct.well_formed:
         correct.streams[0]["compression"] = "jpeg"
-    correct.streams[0]["version"] = "(:unav)"
 
     scraper = WandScraper(filename=correct.filename, mimetype="image/jpeg")
     scraper.scrape_file()
