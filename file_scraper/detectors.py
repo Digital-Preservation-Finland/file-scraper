@@ -161,7 +161,8 @@ class FidoDetector(BaseDetector):
         self._puid = fido.puid
         self.info = {"class": self.__class__.__name__,
                      "messages": [],
-                     "errors": []}
+                     "errors": [],
+                     "tools": []}
 
     def get_important(self):
         """
@@ -200,7 +201,8 @@ class MagicDetector(BaseDetector):
             self.mimetype = six.text_type(mimetype)
         self.info = {"class": self.__class__.__name__,
                      "messages": [],
-                     "errors": []}
+                     "errors": [],
+                     "tools": []}
 
     def get_important(self):
         """
@@ -243,7 +245,8 @@ class PredefinedDetector(BaseDetector):
             messages = []
         self.info = {"class": self.__class__.__name__,
                      "messages": messages,
-                     "errors": []}
+                     "errors": [],
+                     "tools": []}
 
     def get_important(self):
         """
@@ -297,7 +300,8 @@ class VerapdfDetector(BaseDetector):
         self.mimetype = "application/pdf"
         self.info = {"class": self.__class__.__name__,
                      "messages": ["PDF/A version detected by veraPDF."],
-                     "errors": []}
+                     "errors": [],
+                     "tools": []}
 
     def _set_info_not_pdf_a(self, error_shell=None):
         """
@@ -309,7 +313,8 @@ class VerapdfDetector(BaseDetector):
         self.info = {"class": self.__class__.__name__,
                      "messages": ["File is not PDF/A, veraPDF detection not "
                                   "needed"],
-                     "errors": []}
+                     "errors": [],
+                     "tools": []}
         if error_shell:
             self.info["errors"] = [error_shell.stderr]
 
@@ -376,4 +381,5 @@ class MagicCharset(BaseDetector):
 
         self.info = {"class": self.__class__.__name__,
                      "messages": messages,
-                     "errors": errors}
+                     "errors": errors,
+                     "tools":  []}
