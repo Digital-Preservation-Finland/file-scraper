@@ -30,6 +30,7 @@ class BaseScraper(object):
         self._predefined_version = version
         self._messages = []
         self._errors = []
+        self._tools = []
         self._params = params if params is not None else {}
 
     @property
@@ -139,6 +140,14 @@ class BaseScraper(object):
         """
         return [message for message in self._messages if message]
 
+    def tools(self):
+        """
+        Return used software tools in a list.
+
+        :returns: list containing the tools used by the scraper
+        """
+        return [tools for tool in self._tools if tool]
+
     def info(self):
         """
         Return a dict containing class name, messages and errors.
@@ -153,7 +162,8 @@ class BaseScraper(object):
         """
         return {"class": self.__class__.__name__,
                 "messages": self.messages(),
-                "errors": self.errors()}
+                "errors": self.errors(),
+                "tools": self.tools()}
 
 
 class BaseMeta(object):
