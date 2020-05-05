@@ -12,6 +12,8 @@ try:
 except ImportError:
     pass
 
+# Raise the limit to around a gigabyte for a 3 bpp image
+PIL.Image.MAX_IMAGE_PIXELS = int(1024 * 1024 * 1024 // 3)
 
 class PilScraper(BaseScraper):
     """Scraper that uses PIL to scrape tiff, png, jpeg and gif images."""
