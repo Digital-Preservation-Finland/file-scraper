@@ -35,7 +35,7 @@ This module tests that:
         - For file with invalid header, scraper errors contain "improper
           image header".
         - For empty file, scraper errors contain "improper image header".
-    - streams and well-formedness are scraped correctly for gif files.
+     streams and well-formedness are scraped correctly for gif files.
         - For well-formed files with one or more images, scraper messages
           contain "successfully".
         - For images with broken header, scraper errors contains "improper
