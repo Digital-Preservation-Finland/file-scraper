@@ -14,7 +14,7 @@ except ImportError:
 
 SAMPLES_PER_PIXEL = {"1": "1", "L": "1", "P": "1", "RGB": "3", "YCbCr": "3",
                      "LAB": "3", "HSV": "3", "RGBA": "4", "CMYK": "4",
-                     "I": "1", "F": "1"}
+                     "I": "1", "F": "1", "LA": "16"}
 SAMPLES_PER_PIXEL_TAG = 277
 
 
