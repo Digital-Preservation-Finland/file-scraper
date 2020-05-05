@@ -6,7 +6,8 @@ This module tests that:
         - For valid files containing one or more images, scraper messages
           contain "successfully".
         - For file where payload has been altered, scraper errors contain
-          "Failed to read directory at offset 182".
+          "Failed to allocate memory for to read TIFF directory (0 elements of
+          12 bytes each)."
         - For file with wrong byte order reported in the header, scraper errors
           contain "Not a TIFF file, bad version number 10752".
         - For an empty file, scraper errors contain "Cannot read TIFF header."
@@ -16,17 +17,21 @@ This module tests that:
           length".
         - For file without start marker, scraper errors contain "starts with
           0xff 0xe0".
-        - For empty file, scraper errors contain "Empty input file".
+        - For empty file, scraper errors contain "insufficient image data in
+          file".
         - For Exif JPEGs, version is interpreted and set
         - For JFIFs, version is unavailable
     - streams and well-formedness are scraped correctly for jp2 files.
         - For well-formed files, scraper messages contain "successfully".
-        - For an empty file or a file with missing data, scraper errors
-          contain "unable to decode image file".
+        - For an empty file, scraper errors contain "MagickReadImage returns
+          false, but did not raise ImageMagick exception.".
+        - For a file with missing data, scraper errors contain "Malformed JP2
+          file format: second box must be file type box"
     - streams and well-formedness are scraped correctly for png files.
         - For well-formed files, scraper messages contain "successfully".
-        - For file with missing IEND or IHDR chunk or wrong CRC, scraper
-          errors contain "corrupt image".
+        - For file with missing IEND or IHDR chunk scraper errors contain
+          "MagickReadImage returns false, but did not raise ImageMagick
+          exception.".
         - For file with invalid header, scraper errors contain "improper
           image header".
         - For empty file, scraper errors contain "improper image header".
@@ -37,9 +42,9 @@ This module tests that:
           image header".
         - For truncated version 1987a file, scraper errors contains "corrupt
           image".
-        -For truncated version 1989a file, scraper errors contains "negative
-         or zero image size".
-        - For empty file, scraper errors contains "imporoper image header".
+        - For truncated version 1989a file, scraper errors contains "negative
+          or zero image size".
+        - For empty file, scraper errors contains "improper image header".
     - WandTiffMeta model is supported for TIFF files, WandExifMeta for JPEG
       files and  WandImageMeta for other image files
     - With or without well-formedness check, the following MIME type and
@@ -274,7 +279,8 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
     ["filename", "mimetype", "stderr_part"],
     [
         ("invalid_6.0_payload_altered.tif", "image/tiff",
-         "Failed to read directory at offset 182"),
+         "Failed to allocate memory for to read TIFF directory (0 elements of"
+         " 12 bytes each)"),
         ("invalid_6.0_wrong_byte_order.tif", "image/tiff",
          "Not a TIFF file, bad version number 10752"),
         ("invalid__empty.tif", "image/tiff",
@@ -284,17 +290,18 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
         ("invalid_1.01_no_start_marker.jpg", "image/jpeg",
          "starts with 0xff 0xe0"),
         ("invalid__empty.jpg", "image/jpeg",
-         "Empty input file"),
+         "insufficient image data in file"),
         ("invalid__data_missing.jp2", "image/jp2",
-         "unable to decode image file"),
+         "Malformed JP2 file format: second box must be file type box"),
         ("invalid__empty.jp2", "image/jp2",
-         "unable to decode image file"),
+         "MagickReadImage returns false, but did not raise ImageMagick"
+         "  exception."),
         ("invalid_1.2_no_IEND.png", "image/png",
-         "corrupt image"),
+         "MagickReadImage returns false, but did not raise ImageMagick"
+         "  exception."),
         ("invalid_1.2_no_IHDR.png", "image/png",
-         "corrupt image"),
-        ("invalid_1.2_wrong_CRC.png", "image/png",
-         "corrupt image"),
+         "MagickReadImage returns false, but did not raise ImageMagick"
+         "  exception."),
         ("invalid_1.2_wrong_header.png", "image/png",
          "improper image header"),
         ("invalid__empty.png", "image/png",
