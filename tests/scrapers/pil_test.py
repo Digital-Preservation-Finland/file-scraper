@@ -37,6 +37,15 @@ STREAM_VALID = {
     "samples_per_pixel": "3",
     "compression": "(:unav)"}
 
+STREAM_VALID_LA = {
+    "bps_unit": "integer",
+    "bps_value": "(:unav)",
+    "colorspace": "(:unav)",
+    "height": "(:unav)",
+    "width": "(:unav)",
+    "samples_per_pixel": "2",
+    "compression": "(:unav)"}
+
 GIF_APPEND = {
     "bps_unit": "integer",
     "bps_value": "(:unav)",
@@ -207,6 +216,9 @@ def test_scraper_jp2(filename, result_dict, evaluate_scraper):
         ("valid_1.2.png", {
             "purpose": "Test valid file.",
             "streams": {0: STREAM_VALID.copy()}}),
+        ("valid_LA.png", {
+            "purpose": "Test valid gray+alpha file.",
+            "streams": {0: STREAM_VALID_LA.copy()}}),
         ("invalid_1.2_no_IEND.png", {
             "purpose": "Test without IEND.",
             "inverse": True,
