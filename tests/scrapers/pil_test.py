@@ -216,7 +216,7 @@ def test_scraper_jp2(filename, result_dict, evaluate_scraper):
         ("valid_1.2.png", {
             "purpose": "Test valid file.",
             "streams": {0: STREAM_VALID.copy()}}),
-        ("valid_LA.png", {
+        ("valid_1.2_LA.png", {
             "purpose": "Test valid gray+alpha file.",
             "streams": {0: STREAM_VALID_LA.copy()}}),
         ("invalid_1.2_no_IEND.png", {
