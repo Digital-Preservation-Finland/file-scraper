@@ -12,8 +12,6 @@ try:
 except ImportError:
     pass
 
-# Raise the limit to around a gigabyte for a 3 bpp image
-PIL.Image.MAX_IMAGE_PIXELS = int(1024 * 1024 * 1024 // 3)
 
 class PilScraper(BaseScraper):
     """Scraper that uses PIL to scrape tiff, png, jpeg and gif images."""
@@ -24,6 +22,9 @@ class PilScraper(BaseScraper):
     def scrape_file(self):
         """Scrape data from file."""
         try:
+            # Raise the size limit to around a gigabyte for a 3 bpp image
+            PIL.Image.MAX_IMAGE_PIXELS = int(1024 * 1024 * 1024 // 3)
+
             pil = PIL.Image.open(self.filename)
         except Exception as e:  # pylint: disable=invalid-name, broad-except
             self._errors.append("Error in analyzing file.")
