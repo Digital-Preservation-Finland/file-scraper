@@ -71,7 +71,7 @@ from tests.scrapers.stream_dicts import (AVI_CONTAINER,
                         1: MOV_MPEG4_VIDEO.copy(),
                         2: MOV_MPEG4_AUDIO.copy()}},
          "video/quicktime"),
-        ("valid.dv", {
+        ("valid__pal_lossy.dv", {
             "purpose": "Test valid DV.",
             "stdout_part": "file was analyzed successfully",
             "stderr_part": "",

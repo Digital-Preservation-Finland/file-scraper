@@ -55,6 +55,7 @@ CHANGE_FIDO = {
     "text_csv/valid__utf8_header.csv": None,
     "text_csv/valid__iso8859-15_header.csv": None,
     "text_xml/valid_1.0_mets_noheader.xml": None,
+    "video_dv/valid__pal_lossy.dv": None
 }
 
 CHANGE_MAGIC = {
@@ -91,6 +92,7 @@ CHANGE_MAGIC = {
     "text_xml/valid_1.0_mets_noheader.xml": "text/plain",
     "application_gml+xml/valid__x-fmt-227.xml": "text/xml",
     "application_gml+xml/valid_3.2_fmt-1047.xml": "text/xml",
+    "video_dv/valid__pal_lossy.dv": "application/octet-stream"
 }
 
 
@@ -207,7 +209,7 @@ def test_important_other(detector_class, mimetype):
     [("tests/data/text_plain/valid__utf8_without_bom.txt", "UTF-8"),
      ("tests/data/text_plain/valid__utf16le_bom.txt", "UTF-16"),
      ("tests/data/text_plain/valid__iso8859.txt", "ISO-8859-15"),
-     ("tests/data/video_dv/valid.dv", None)]
+     ("tests/data/video_dv/valid__pal_lossy.dv", None)]
 )
 def test_magic_charset(filename, charset):
     """

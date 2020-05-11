@@ -68,7 +68,7 @@ UNAV_MIME = []
             "stdout_part": "file was analyzed successfully",
             "stderr_part": ""},
          "video/quicktime"),
-        ("valid.dv", {
+        ("valid__pal_lossy.dv", {
             "purpose": "Test valid DV.",
             "stdout_part": "file was analyzed successfully",
             "stderr_part": ""},

@@ -77,6 +77,8 @@ UNAV_ELEMENTS = {
                                           "codec_creator_app"],
     "tests/data/video_mpeg/valid_2.m2v": ["codec_creator_app_version",
                                           "codec_creator_app"],
+    "tests/data/video_dv/valid__pal_lossy.dv": ["codec_creator_app_version",
+                                                "codec_creator_app"]
 }
 
 # These are actually valid with another mimetype or version
@@ -149,6 +151,7 @@ GIVEN_MIMETYPES = {
     "tests/data/text_plain/valid__utf32be_bom.txt": "text/plain",
     "tests/data/text_plain/valid__utf32le_bom.txt": "text/plain",
     "tests/data/text_plain/invalid__utf8_just_c3.txt": "text/plain",
+    "tests/data/video_dv/valid__pal_lossy.dv": "video/dv"
 }
 
 # To get some files validated against the strictest applicable criteria the
@@ -350,15 +353,19 @@ def test_coded_filename(testpath, fullname, mimetype, version):
     """
     if fullname in IGNORE_VALID + ["tests/data/text_xml/valid_1.0_dtd.xml"]:
         pytest.skip("[%s] in ignore" % fullname)
-    if fullname in GIVEN_CHARSETS:
-        pytest.skip("[%s] in ignore" % fullname)
+
+    predefined_mimetype = GIVEN_MIMETYPES.get(fullname, None)
+    predefined_charset = GIVEN_CHARSETS.get(fullname, None)
     ext = fullname.rsplit(".", 1)[-1]
     unicode_name = os.path.join(testpath, "äöå.%s" % ext)
     shutil.copy(fullname, unicode_name)
-    scraper = Scraper(unicode_name)
+    scraper = Scraper(unicode_name, mimetype=predefined_mimetype,
+                      charset=predefined_charset)
     scraper.scrape()
     assert scraper.well_formed
-    scraper = Scraper(unicode_name.encode("utf-8"))
+    scraper = Scraper(unicode_name.encode("utf-8"),
+                      mimetype=predefined_mimetype,
+                      charset=predefined_charset)
     scraper.scrape()
     assert scraper.well_formed
 
