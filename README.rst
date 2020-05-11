@@ -51,6 +51,11 @@ or
 
 * create a symbolic link between a directory listed in ``$PATH`` and the executable, e.g. ``ln -s /home/username/jhove/jhove /usr/bin/jhove``.
 
+Wand Usage Notes
+----------------
+
+Wand usage on PNG, JPEG, JP2, GIF and TIFF file formats require respective decode delegates on ImageMagick. Tests require Wand error messages as generated with ImageMagick version 6.9.10.68.
+
 Developer Usage
 ---------------
 
