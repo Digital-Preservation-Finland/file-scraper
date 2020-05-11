@@ -124,13 +124,13 @@ Test Data
 
 When new test data is added under ``tests/data``, it is automatically discovered by ``tests/end_to_end_test.py``. These tests determine the expected scraping result based on the file name and path, so in order for these tests to pass, the files must follow the naming ::
 
-    tests/data/<mime_type>/<well_formedness>_<version>_<optional_description>.<extension>
+    tests/data/<mime_type>/<well_formedness>_<version>_<description>.<extension>
 
 where
 
 * ``mime_type`` is the MIME type of the file with slash replaced with underscore, e.g. ``image_jpeg``
 * ``well_formedness`` is either ``valid`` or ``invalid`` depending on whether the file is well-formed
 * ``version`` is the version of the file type, e.g. `1.01`
-* Everything that comes after the underscore following the version number is optional, and ``optional_description`` can be used e.g. to specify other relevant information about the file (e.g. why it is not well-formed, or relevant information about non-filetype metadata)
+* Everything that comes after the underscore following the version number is technically optional but should still be included for clarity, and ``description`` can be used e.g. to specify other relevant information about the file (e.g. why it is not well-formed, or relevant information about non-filetype metadata)
 * ``extension`` is also not used by the tests, but it should be included for human-readability
 
