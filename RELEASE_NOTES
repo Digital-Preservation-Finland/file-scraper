@@ -1,6 +1,11 @@
 Release notes
 =============
 
+Version 0.18
+------------
+
+Changed Wand and ImageMagick error messages have been updated to tests.
+
 Version 0.17
 ------------
 
