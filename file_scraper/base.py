@@ -146,7 +146,7 @@ class BaseScraper(object):
 
         :returns: list containing the tools used by the scraper
         """
-        return [tools for tool in self._tools if tool]
+        return [tool for tool in self._tools if tool]
 
     def info(self):
         """

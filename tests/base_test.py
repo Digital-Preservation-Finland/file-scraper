@@ -210,4 +210,22 @@ def test_base_detector():
     assert detector.filename == "testfilename"
     # pylint: disable=protected-access
     assert detector._given_mimetype == "test/mime"
+
     assert detector._given_version == "0.0"
+
+
+@pytest.mark.parametrize(('tools_given', 'tools_expected'), [
+    (None, []),
+    (['foo', 'bar'], ['foo', 'bar']),
+    ([False, 'foo'], ['foo']),
+
+])
+def test_tools(tools_given, tools_expected):
+    """Tests that self.tools outputs the expected sring for
+    given tools.
+    """
+    scraper = BaseScraperBasic("testfilename", "test/mimetype")
+    if tools_given:
+        for tool in tools_given:
+            scraper._tools.append(tool)
+    assert scraper.tools() == tools_expected
