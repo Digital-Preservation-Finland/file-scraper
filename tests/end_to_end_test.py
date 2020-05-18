@@ -129,9 +129,9 @@ DIFFERENT_MIMETYPE_INVALID = {
     "tests/data/application_x-internet-archive/invalid__missing_data.arc.gz":
         "application/gzip"}
 
-# To get some files validated against the strictest applicable criteria instead
-# of just checking that they are indeed text files, the MIME type has to be
-# given by the user.
+# Some MIME types can not be detected, either because of the file format
+# itself (eg. text/csv), or because of the used character encoding
+# (e.g. UTF-32). The MIME type of these files must be given as a parameter.
 GIVEN_MIMETYPES = {
     "tests/data/text_csv/valid__ascii.csv": "text/csv",
     "tests/data/text_csv/valid__ascii_header.csv": "text/csv",
