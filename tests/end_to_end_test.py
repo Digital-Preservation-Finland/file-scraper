@@ -187,7 +187,7 @@ def _assert_valid_scraper_result(scraper, fullname, mimetype, version,
         assert scraper.well_formed is False
 
     assert scraper.mimetype == mimetype
-    if not fullname in UNAV_VERSION:
+    if fullname not in UNAV_VERSION:
         assert scraper.version == version
     assert scraper.streams not in [None, {}]
 
@@ -250,6 +250,7 @@ def test_valid_combined(fullname, mimetype, version):
     assert given_scraper.mimetype == scraper.mimetype
     assert given_scraper.version == scraper.version
     assert given_scraper.streams == scraper.streams
+    assert given_scraper.well_formed == scraper.well_formed
 
 
 @pytest.mark.parametrize(("fullname", "mimetype", "version"),
@@ -333,13 +334,14 @@ def test_without_wellformed(fullname, mimetype, version):
         return
 
     given_scraper = Scraper(fullname, mimetype=scraper.mimetype,
-                             version=scraper.version,
-                             charset=scraper.streams[0].get("charset", None))
+                            version=scraper.version,
+                            charset=scraper.streams[0].get("charset", None))
     given_scraper.scrape(False)
 
     assert given_scraper.mimetype == scraper.mimetype
     assert given_scraper.version == scraper.version
     assert given_scraper.streams == scraper.streams
+    assert given_scraper.well_formed == scraper.well_formed
 
 
 @pytest.mark.parametrize(("fullname", "mimetype", "version"),

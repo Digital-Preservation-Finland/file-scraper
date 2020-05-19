@@ -143,6 +143,14 @@ def test_mime_match_scraper():
     scraper.scrape_file()
     assert not scraper.well_formed
 
+    scraper = MimeMatchScraper(
+        None, mimetype="expected_mime", version="some_version",
+        params={"mimetype": "expected_mime", "version": "(:unav)"})
+    scraper.scrape_file()
+    assert partial_message_included(
+        "File format version could not be resolved.", scraper.messages())
+    assert scraper.well_formed
+
 
 def test_detected_version_scraper():
     """Test detected version scraper"""

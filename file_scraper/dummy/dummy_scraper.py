@@ -86,7 +86,10 @@ class MimeMatchScraper(BaseScraper):
                 "Predefined mimetype '{}' and resulted mimetype '{}' "
                 "mismatch.".format(self._predefined_mimetype, mime))
 
-        if self._predefined_version not in [ver, None]:
+        if ver in ["(:unav)", None]:
+            self._messages.append(
+                "File format version could not be resolved.")
+        elif self._predefined_version not in [ver, None]:
             self._errors.append(
                 "Predefined version '{}' and resulted version '{}' "
                 "mismatch.".format(self._predefined_version, ver))
