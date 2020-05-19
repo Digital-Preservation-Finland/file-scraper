@@ -68,6 +68,23 @@ class MimeMatchScraper(BaseScraper):
     _ALTERNATIVE_MIMETYPES = {
         "application/gzip": ["application/warc",
                              "application/x-internet-archive"]}
+    _MIMES_UNAV_VERSIONS = [
+        "application/vnd.oasis.opendocument.text",
+        "application/vnd.oasis.opendocument.spreadsheet",
+        "application/vnd.oasis.opendocument.presentation",
+        "application/vnd.oasis.opendocument.graphics",
+        "application/vnd.oasis.opendocument.formula",
+        "application/msword",
+        "application/vnd.ms-excel",
+        "application/vnd.ms-powerpoint",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml."
+        "document",
+        "application/vnd.openxmlformats-officedocument."
+        "spreadsheetml.sheet",
+        "application/vnd.openxmlformats-officedocument.presentationml."
+        "presentation",
+        "application/x-internet-archive"
+    ]
     _supported_metadata = [DummyMeta]
 
     def scrape_file(self):
@@ -87,8 +104,12 @@ class MimeMatchScraper(BaseScraper):
                 "mismatch.".format(self._predefined_mimetype, mime))
 
         if ver in ["(:unav)", None]:
-            self._messages.append(
-                "File format version could not be resolved.")
+            if mime in self._MIMES_UNAV_VERSIONS:
+                self._messages.append(
+                    "File format version can not be resolved for this file "
+                    "format.")
+            else:
+                self._errors.append("File format version is not supported.")
         elif self._predefined_version not in [ver, None]:
             self._errors.append(
                 "Predefined version '{}' and resulted version '{}' "

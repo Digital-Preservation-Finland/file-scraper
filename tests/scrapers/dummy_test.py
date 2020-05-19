@@ -148,7 +148,17 @@ def test_mime_match_scraper():
         params={"mimetype": "expected_mime", "version": "(:unav)"})
     scraper.scrape_file()
     assert partial_message_included(
-        "File format version could not be resolved.", scraper.messages())
+        "File format version is not supported", scraper.errors())
+    assert not scraper.well_formed
+
+    scraper = MimeMatchScraper(
+        None, mimetype="application/vnd.oasis.opendocument.text",
+        version="some_version",
+        params={"mimetype": "application/vnd.oasis.opendocument.text",
+                "version": "(:unav)"})
+    scraper.scrape_file()
+    assert partial_message_included(
+        "File format version can not be resolved", scraper.messages())
     assert scraper.well_formed
 
 
