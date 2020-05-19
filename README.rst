@@ -73,7 +73,7 @@ As a result the collected metadata and results are in the following instance var
     * File format: ``scraper.mimetype``
     * Format version: ``scraper.version``
     * Metadata of the streams: ``scraper.streams``
-    * Detector and scraper class names, messages and errors: ``scraper.info``
+    * Detector and scraper class names, used software, messages and errors: ``scraper.info``
     * Result of the well-formed check: ``scraper.well_formed``: True: File is well-formed; False: File is not well-formed; None: The file format well-formed check was not done.
 
 The ``scraper.streams`` includes a following kind of dict::
@@ -92,13 +92,14 @@ The ``scraper.info`` includes a following kind of dict::
 
     {0: <scraper info 0>, 1: <scraper info 1>, ...}
 
-where ``<scraper info X>`` contains name of the scraper, the resulted info messages and the resulted errors::
+where ``<scraper info X>`` contains name of the scraper, used software, the resulted info messages and the resulted errors::
 
     {'class': <scraper name>,
      'messages': <messages from scraper>,
-     'errors': <errors from scraper>}
+     'errors': <errors from scraper>,
+     'tools': <names and versions of used 3rd party software by scraper>}
 
-The type of elements in the previous dictionaries is string, in exception of the ``index`` element (which is integer), and the ``messages`` and ``errors`` elements (which are lists of strings).
+The type of elements in the previous dictionaries is string, in exception of the ``index`` element (which is integer), and the ``messages``, ``errors`` and ``tools`` elements (which are lists of strings).
 
 The following additional arguments for the Scraper are also possible:
 

@@ -15,7 +15,7 @@ The detectors inherit ``BaseDetector`` class, which contains an abstract method 
     * SHOULD detect mimetype of selected file formats and store it in mimetype attribute when ``detect()`` is called.
     * MAY detect also format version and store it in version attribute.
 
-The ``info`` attribute contains a dict of class name, and messages and errors occured during detection.
+The ``info`` attribute contains a dict of class name and scraper software as well as messages and errors occured during detection.
 See ``<scraper info X>`` from `README.rst <../README.rst>`_ for the content of the info attribute.
 
 .. image:: scraper_tree.png
@@ -40,7 +40,7 @@ A usable scraper tool class:
         * MUST add metadata objects of all metadata models to ``streams`` list for each stream in the file. The MIME type and version given in params MUST be passed to the metadata object.
         * SHOULD call ``_check_supported()`` when the metadata has been collected. This checks that the final mimetype and version are supported ones, in case those have changed.
         * MUST log all errors (e.g. ""The file is truncated" or ""File not found.") to ``_errors`` list and messages (e.g. "File was analyzed successfully") to ``_messages`` list.
-    * The ``info()`` method of a scraper MUST return a dict of class name, and messages and errors occured during scraping. See ``<scraper info X>`` from `README.rst <../README.rst>`_ for the content of the info attribute.
+    * The ``info()`` method of a scraper MUST return a dict of class name and used 3rd party software, and messages and errors occured during scraping. See ``<scraper info X>`` from `README.rst <../README.rst>`_ for the content of the info attribute.
 
 The metadata is represented by metadata model objects, e.g. ``GhostscriptMeta`` used by ``GhostscriptScraper``, and ``JHoveGifMeta``, ``JHoveHtmlMeta`` and others used by ``JHoveScraper``. These metadata model classes:
 
