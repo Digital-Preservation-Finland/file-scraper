@@ -12,9 +12,11 @@ from file_scraper.scraper import Scraper
 
 @click.group()
 def cli():
+    """Scrape files"""
     pass
 
 
+# pylint: disable=too-many-arguments
 @cli.command("scrape-file", context_settings=dict(
     ignore_unknown_options=True,
     allow_extra_args=True,
@@ -38,7 +40,16 @@ def scrape_file(ctx, filename, check_wellformed, tool_info, mimetype, version):
 
     In addition to the given options, the user can provide any extra arguments
     that are passed onto the scraper. The arguments must be in the form
-    ``key=value``. Only string and boolean values are possible.
+    key=value. Only string and boolean values are possible.
+    \f
+
+    :ctx: Context object
+    :filename: Path to the file that should be scraped
+    :check_wellformed: Flag whether the scraper checks wellformedness
+    :tool_info: Flag whether the scraper includes messages from different 3rd party tools
+    :mimetype: Specified mimetype for the scraped file
+    :version: Specified version for the scraped file
+
     TODO describe more
     """  # TODO
     # Turn the list of extra arguments into a dict that can be passed to
@@ -63,7 +74,14 @@ def scrape_file(ctx, filename, check_wellformed, tool_info, mimetype, version):
     if tool_info:
         results["tool_info"] = scraper.info
 
-    click.echo(json.dumps(results, indent=4))
+    scrape_success = True
+    for item in scraper.info.values():
+        if "ScraperNotFound" in item["class"]:
+            scrape_success = False
+            click.echo("Proper scraper was not found. The file was not analyzed.")
+
+    if scrape_success:
+        click.echo(json.dumps(results, indent=4))
 
 
 def _string_to_bool(element):
