@@ -61,8 +61,11 @@ def scrape_file(ctx, filename, check_wellformed, tool_info, mimetype, version):
     params_dict.update(check_wellformed=check_wellformed,
                        mimetype=mimetype, version=version)
 
-    scraper = Scraper(filename, **params_dict)
-    scraper.scrape()
+    try:
+        scraper = Scraper(filename, **params_dict)
+        scraper.scrape()
+    except Exception as exception:
+        raise click.ClickException(str(exception))
 
     results = {
         "path": scraper.filename,
