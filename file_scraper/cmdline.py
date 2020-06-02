@@ -46,7 +46,8 @@ def scrape_file(ctx, filename, check_wellformed, tool_info, mimetype, version):
     :ctx: Context object
     :filename: Path to the file that should be scraped
     :check_wellformed: Flag whether the scraper checks wellformedness
-    :tool_info: Flag whether the scraper includes messages from different 3rd party tools
+    :tool_info: Flag whether the scraper includes messages from different 3rd
+                party tools
     :mimetype: Specified mimetype for the scraped file
     :version: Specified version for the scraped file
 
@@ -74,14 +75,12 @@ def scrape_file(ctx, filename, check_wellformed, tool_info, mimetype, version):
     if tool_info:
         results["tool_info"] = scraper.info
 
-    scrape_success = True
     for item in scraper.info.values():
         if "ScraperNotFound" in item["class"]:
-            scrape_success = False
-            click.echo("Proper scraper was not found. The file was not analyzed.")
+            raise click.ClickException("Proper scraper was not found. The "
+                                       "file was not analyzed.")
 
-    if scrape_success:
-        click.echo(json.dumps(results, indent=4))
+    click.echo(json.dumps(results, indent=4))
 
 
 def _string_to_bool(element):
