@@ -38,9 +38,9 @@ def scrape_file(ctx, filename, check_wellformed, tool_info, mimetype, version):
     """
     Identify file type, collect metadata, and optionally check well-formedness.
 
-    In addition to the given options, the user can provide any extra arguments
-    that are passed onto the scraper. The arguments must be in the form
-    key=value. Only string and boolean values are possible.
+    In addition to the given options, the user can provide any extra options
+    that are passed onto the scraper. These options must be in the long form,
+    e.g. "--charset=UTF-8" or "--charset UTF-8".
     \f
 
     :ctx: Context object
@@ -50,19 +50,9 @@ def scrape_file(ctx, filename, check_wellformed, tool_info, mimetype, version):
                 party tools
     :mimetype: Specified mimetype for the scraped file
     :version: Specified version for the scraped file
-
-    TODO describe more
-    """  # TODO
-    # Turn the list of extra arguments into a dict that can be passed to
-    # the scraper, and append the explicit click options to that
-    params_split = [element for item in ctx.args for element in item.split("=")]
-    params_split = [_string_to_bool(element) for element in params_split]
-    params_dict = dict(zip(params_split[::2], params_split[1::2]))
-    params_dict.update(check_wellformed=check_wellformed,
-                       mimetype=mimetype, version=version)
-
+    """
     try:
-        scraper = Scraper(filename, **params_dict)
+        scraper = Scraper(filename, **_extra_options_to_dict(ctx.args))
         scraper.scrape()
     except Exception as exception:
         raise click.ClickException(str(exception))
@@ -84,6 +74,54 @@ def scrape_file(ctx, filename, check_wellformed, tool_info, mimetype, version):
                                        "file was not analyzed.")
 
     click.echo(json.dumps(results, indent=4))
+
+
+def _extra_options_to_dict(args):
+    """
+    Create a dict from the extra options and return it.
+
+    If string representations of boolean values (e.g. "True") are encountered,
+    their boolean counterparts are used.
+
+    These extra parameters are expected to be in format `--key=value` or
+    `--key value`. Missing values or encountered positional arguments raise a
+    ClickException with an explanatory message to be printed to the user by
+    click.
+
+    :args: A list of arguments that were not handled by click.
+    :returns: A dictionary containing option names (as dictionary keys) and
+              their values.
+    """
+    option_dict = {}
+    next_option_index = 0
+    while next_option_index < len(args):
+        current_option = args[next_option_index]
+
+        if current_option.find("--") != 0:
+            raise click.ClickException(
+                "Unexpected positional argument '{}' encountered"
+                "".format(current_option))
+        current_option = current_option.lstrip("--")
+
+        if "=" in current_option:  # --key=value
+            [key, value] = current_option.split("=", 1)
+            next_option_index += 1
+        else:  # --key value
+            key = current_option
+
+            try:
+                value = args[next_option_index + 1]
+            except IndexError:
+                raise click.ClickException(
+                     "No value found for parameter '{}'".format(key))
+
+            if value[0] == "-":
+                raise click.ClickException(
+                     "No value found for parameter '{}'".format(key))
+            next_option_index += 2
+        option_dict[key] = _string_to_bool(value)
+
+    return option_dict
 
 
 def _string_to_bool(element):
