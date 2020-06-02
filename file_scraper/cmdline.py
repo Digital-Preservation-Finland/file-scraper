@@ -52,7 +52,9 @@ def scrape_file(ctx, filename, check_wellformed, tool_info, mimetype, version):
     :version: Specified version for the scraped file
     """
     try:
-        scraper = Scraper(filename, **_extra_options_to_dict(ctx.args))
+        scraper = Scraper(filename, mimetype=mimetype, version=version,
+                          check_wellformed=check_wellformed,
+                          **_extra_options_to_dict(ctx.args))
         scraper.scrape()
     except Exception as exception:
         raise click.ClickException(str(exception))
