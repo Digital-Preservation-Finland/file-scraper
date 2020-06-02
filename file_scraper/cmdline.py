@@ -22,7 +22,7 @@ def cli():
     allow_extra_args=True,
 ))
 @click.argument("filename", type=click.Path(exists=True))
-@click.option("--no-wellformedness", "check_wellformed",
+@click.option("--skip-wellformed-check", "check_wellformed",
               default=True, flag_value=False,
               help="Don't check if the file is well-formed, only scrape "
                    "metadata")
