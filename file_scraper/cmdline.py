@@ -70,10 +70,18 @@ def scrape_file(ctx, filename, check_wellformed, tool_info, mimetype, version):
     if tool_info:
         results["tool_info"] = scraper.info
 
+    errors = {}
+
     for item in scraper.info.values():
         if "ScraperNotFound" in item["class"]:
             raise click.ClickException("Proper scraper was not found. The "
                                        "file was not analyzed.")
+
+        if item["errors"]:
+            errors[item["class"]] = item["errors"]
+
+    if errors:
+        results["errors"] = errors
 
     click.echo(json.dumps(results, indent=4))
 
@@ -115,11 +123,11 @@ def _extra_options_to_dict(args):
                 value = args[next_option_index + 1]
             except IndexError:
                 raise click.ClickException(
-                     "No value found for parameter '{}'".format(key))
+                    "No value found for parameter '{}'".format(key))
 
             if value[0] == "-":
                 raise click.ClickException(
-                     "No value found for parameter '{}'".format(key))
+                    "No value found for parameter '{}'".format(key))
             next_option_index += 2
         option_dict[key] = _string_to_bool(value)
 
