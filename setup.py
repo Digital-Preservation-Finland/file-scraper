@@ -8,7 +8,7 @@ setup(
     include_package_data=True,
     version=__version__,
     entry_points={'console_scripts': [
-        'scraper=file_scraper.cmdline:main']},
+        'scraper=file_scraper.cmdline:cli']},
     zip_safe=False,
     tests_require=['pytest'],
     test_suite='tests')
