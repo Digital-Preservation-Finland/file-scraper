@@ -24,7 +24,7 @@ def cli():
 @click.argument("filename", type=click.Path(exists=True))
 @click.option("--skip-wellformed-check", "check_wellformed",
               default=True, flag_value=False,
-              help="Don't check if the file is well-formed, only scrape "
+              help="Don't check the file well-formedness, only scrape "
                    "metadata")
 @click.option("--tool-info", default=False, is_flag=True,
               help="Include errors and messages from different 3rd party "

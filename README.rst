@@ -153,7 +153,7 @@ The file scraper has a command line tool for scraping individual files. After in
 
 The options that can be given to the tool are:
 
-    * Skip wellformedness check: ``--skip-wellformed-check``. Don't check if the file is well-formed, only scrape metadata.
+    * Skip well-formedness check: ``--skip-wellformed-check``. Don't check the file well-formedness, only scrape metadata.
     * Print tool info: ``--tool-info``. Include errors and messages from different 3rd party tools that were used.
     * Specify MIME type: ``--mimetype=<mimetype>``
     * Specify version: ``--version=<version>``
