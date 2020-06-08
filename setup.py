@@ -7,6 +7,9 @@ setup(
     packages=find_packages(exclude=['tests', 'tests.*']),
     include_package_data=True,
     version=__version__,
+    install_requires=[
+        "click"
+    ],
     entry_points={'console_scripts': [
         'scraper=file_scraper.cmdline:cli']},
     zip_safe=False,
