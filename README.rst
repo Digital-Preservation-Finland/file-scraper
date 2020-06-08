@@ -144,6 +144,25 @@ The following returns a checksum of the file with given algorithm (MD5 or SHA va
     scraper.checksum(algorithm=<algorithm>)
 
 
+Command line tool
+-----------------
+
+The file scraper has a command line tool for scraping individual files. After installing the file-scraper package, it can be used with::
+
+    scraper scrape-file [OPTIONS] FILENAME [EXTRA PARAMETERS]
+
+The options that can be given to the tool are:
+
+    * Skip wellformedness check: ``--skip-wellformed-check``. Don't check if the file is well-formed, only scrape metadata.
+    * Print tool info: ``--tool-info``. Include errors and messages from different 3rd party tools that were used.
+    * Specify MIME type: ``--mimetype=<mimetype>``
+    * Specify version: ``--version=<version>``
+
+In addition to these specific options, the user can provide any extra options that will then be passed onto the scraper. These options must be in the long form, e.g. ``--charset=UTF-8`` or ``--charset UTF-8``. Only string and boolean values are currently accepted.
+
+The tool will always print out detector/scraper errors if there are any.
+
+
 File type detection without full scraping
 -----------------------------------------
 
