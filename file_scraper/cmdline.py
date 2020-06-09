@@ -53,9 +53,8 @@ def scrape_file(ctx, filename, check_wellformed, tool_info, mimetype, version):
     """
     try:
         scraper = Scraper(filename, mimetype=mimetype, version=version,
-                          check_wellformed=check_wellformed,
                           **_extra_options_to_dict(ctx.args))
-        scraper.scrape()
+        scraper.scrape(check_wellformed=check_wellformed)
     except Exception as exception:
         raise click.ClickException(str(exception))
 
