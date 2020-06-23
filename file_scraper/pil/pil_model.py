@@ -163,9 +163,8 @@ class Jp2PilMeta(BasePilMeta):
     @metadata()
     def mimetype(self):
         mime = super(Jp2PilMeta, self).mimetype()
-        # Pillow 5.0.0 misidentifies JPEG2000
         if mime == "image/jpx":
-            return "image/jp2"
+            return "(:unav)"
         return mime
 
     @metadata()
