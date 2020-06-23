@@ -365,6 +365,7 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
         """Returns mimetype for stream."""
         mime_dict = {"Matroska": "video/x-matroska",
                      "PCM": "audio/x-wav",
+                     "FLAC": "audio/flac",
                      "FFV1": "video/x-ffv"}
         try:
             return mime_dict[self.codec_name()]
@@ -374,7 +375,17 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
 
     @metadata()
     def version(self):
-        """Return version of stream."""
+        """
+        Return version of stream.
+
+        The version number 1.2.1 of FLAC comes from PRONOM registry. This is
+        actually the version number of FLAC tools containing FLAC format
+        specification. This includes the latest format change and was released
+        in 2007. There is no separate version numbering in FLAC format itself,
+        and therefore, there is no proper way to extract it.
+        """
+        if self.mimetype() == "audio/flac":
+            return "1.2.1"
         version = super(MkvMediainfoMeta, self).version()
         if isinstance(version, six.text_type):
             version = version.split(".")[0]

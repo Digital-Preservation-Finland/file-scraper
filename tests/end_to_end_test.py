@@ -78,7 +78,9 @@ UNAV_ELEMENTS = {
     "tests/data/video_mpeg/valid_2.m2v": ["codec_creator_app_version",
                                           "codec_creator_app"],
     "tests/data/video_dv/valid__pal_lossy.dv": ["codec_creator_app_version",
-                                                "codec_creator_app"]
+                                                "codec_creator_app"],
+    "tests/data/video_x-matroska/valid_4_ffv1_flac.mkv": ["data_rate",
+                                                          "data_rate"]
 }
 
 # These are actually valid with another mimetype or version
