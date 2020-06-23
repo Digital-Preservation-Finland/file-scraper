@@ -380,7 +380,8 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
 
         The version number 1.2.1 of FLAC comes from PRONOM registry. This is
         actually the version number of FLAC tools containing FLAC format
-        specification. This includes the latest format change and was released
+        specification. Although the latest FLAC tools version is 1.3.3,
+        version 1.2.1 still includes the latest format change and was released
         in 2007. There is no separate version numbering in FLAC format itself,
         and therefore, there is no proper way to extract it.
         """
