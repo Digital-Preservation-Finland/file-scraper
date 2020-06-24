@@ -60,14 +60,14 @@ WAV_AUDIO = {
     "sampling_frequency": "44.1", "stream_type": "audio"}
 
 FLAC_AUDIO = {
-     "audio_data_encoding": "FLAC", "bits_per_sample": "24",
-     "codec_creator_app": "Lavf56.40.101",
-     "codec_creator_app_version": "56.40.101",
-     "codec_name": "FLAC", "codec_quality": "lossless",
-     "data_rate": "(:unav)", "data_rate_mode": "Variable",
-     "duration": "PT0.86S", "index": 2, "mimetype": "audio/flac",
-     "num_channels": "2", "sampling_frequency": "44.1",
-     "stream_type": "audio", "version": "1.2.1"}
+    "audio_data_encoding": "FLAC", "bits_per_sample": "24",
+    "codec_creator_app": "Lavf56.40.101",
+    "codec_creator_app_version": "56.40.101",
+    "codec_name": "FLAC", "codec_quality": "lossless",
+    "data_rate": "(:unav)", "data_rate_mode": "Variable",
+    "duration": "PT0.86S", "index": 2, "mimetype": "audio/flac",
+    "num_channels": "2", "sampling_frequency": "44.1",
+    "stream_type": "audio", "version": "1.2.1"}
 
 MPEG1_VIDEO = {
     "mimetype": "video/mpeg", "index": 0, "par": "1", "frame_rate": "30",
