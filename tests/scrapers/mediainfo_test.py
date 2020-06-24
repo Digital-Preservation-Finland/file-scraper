@@ -7,10 +7,11 @@ well-formed checks.
 This module tests that:
     - MIME type, version, streams, and well-formedness are scraped correctly
       for dv, wav, m1v, m2v, mp4, mp3 and ts files. Additionally, this is
-      scraped correctly to mov video container containing dv video and pcm
-      (i.e. wav) audio, and to mkv container containing ffv1 video. For valid
-      files scraper messages contains 'file was analyzed successfully' and for
-      empty file scraper errors contains 'No audio or video tracks found'.
+      scraped correctly to mov video container containing dv video and lpcm8
+      audio, and to mkv container containing ffv1 video without sound and with
+      lpcm8 and flac sound. For valid files scraper messages contains 'file
+      was analyzed successfully' and for empty file scraper errors contains
+      'No audio or video tracks found'.
     - The following MIME type and version combinations are supported whether
       well-formedness is checked or not:
         - audio/x-wav, '2'
@@ -34,6 +35,7 @@ from tests.scrapers.stream_dicts import (AVI_CONTAINER,
                                          FFV_VIDEO,
                                          FFV_VIDEO_TRUNCATED,
                                          FFV_VIDEO_SOUND,
+                                         FFV_VIDEO_SOUND_DATARATE,
                                          FLAC_AUDIO,
                                          MKV_CONTAINER,
                                          MOV_CONTAINER,
@@ -51,19 +53,20 @@ from tests.scrapers.stream_dicts import (AVI_CONTAINER,
                                          MPEGTS_CONTAINER,
                                          MPEGTS_OTHER,
                                          MPEGTS_VIDEO,
+                                         LPCM8_AUDIO,
                                          WAV_AUDIO)
 
 
 @pytest.mark.parametrize(
     ["filename", "result_dict", "mimetype"],
     [
-        ("valid__dv_wav.mov", {
-            "purpose": "Test valid MOV with DV and WAV.",
+        ("valid__dv_lpcm8.mov", {
+            "purpose": "Test valid MOV with DV and LPCM8.",
             "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
             "streams": {0: MOV_CONTAINER.copy(),
                         1: MOV_DV_VIDEO.copy(),
-                        2: WAV_AUDIO.copy(),
+                        2: LPCM8_AUDIO.copy(),
                         3: MOV_TC.copy()}}, "video/quicktime"),
         ("valid__h264_aac.mov", {
             "purpose": "Test valid MOV with AVC and AAC.",
@@ -127,6 +130,13 @@ def test_mediainfo_scraper_mov(filename, result_dict, mimetype,
             "streams": {0: MKV_CONTAINER.copy(),
                         1: FFV_VIDEO_SOUND.copy(),
                         2: FLAC_AUDIO.copy()}}),
+        ("valid_4_ffv1_lpcm8.mkv", {
+            "purpose": "Test valid MKV with FFV1 and LPCM8.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": "",
+            "streams": {0: MKV_CONTAINER.copy(),
+                        1: FFV_VIDEO_SOUND_DATARATE.copy(),
+                        2: LPCM8_AUDIO.copy()}}),
         ("invalid_4_ffv1_missing_data.mkv", {
             "purpose": "Test truncated MKV.",
             "stdout_part": "",

@@ -288,7 +288,6 @@ class MovMediainfoMeta(BaseMediainfoMeta):
     def mimetype(self):
         """Returns mimetype for stream."""
         mime_dict = {"QuickTime": "video/quicktime",
-                     "PCM": "audio/x-wav",
                      "DV": "video/dv",
                      "AVC": "video/mp4",
                      "AAC": "audio/mp4"}
@@ -301,16 +300,21 @@ class MovMediainfoMeta(BaseMediainfoMeta):
             try:
                 return mime_dict[self._stream.format_profile]
             except KeyError:
-                pass
+                if self.codec_name() == "PCM" and \
+                        int(self.bits_per_sample()) > 0:
+                    return "audio/l%s" % self.bits_per_sample()
         return "(:unav)"
 
     @metadata()
     def version(self):
         """Return version."""
         # Quicktime container does not have different versions.
-        if self.mimetype() in ["video/quicktime", "video/dv", "video/mp4",
-                               "audio/mp4"]:
-            return "(:unap)"
+        try:
+            if self.codec_name() == "PCM" or self.mimetype() in [
+                    "video/quicktime", "video/dv", "video/mp4", "audio/mp4"]:
+                return "(:unap)"
+        except SkipElementException:
+            pass
         return super(MovMediainfoMeta, self).version()
 
     @metadata()
@@ -364,13 +368,14 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
     def mimetype(self):
         """Returns mimetype for stream."""
         mime_dict = {"Matroska": "video/x-matroska",
-                     "PCM": "audio/x-wav",
                      "FLAC": "audio/flac",
                      "FFV1": "video/x-ffv"}
         try:
             return mime_dict[self.codec_name()]
         except (SkipElementException, KeyError):
-            pass
+            if self.codec_name() == "PCM" and \
+                    int(self.bits_per_sample()) > 0:
+                return "audio/l%s" % self.bits_per_sample()
         return "(:unav)"
 
     @metadata()
@@ -387,6 +392,11 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
         """
         if self.mimetype() == "audio/flac":
             return "1.2.1"
+        try:
+            if self.codec_name() == "PCM":
+                return "(:unap)"
+        except SkipElementException:
+            pass
         version = super(MkvMediainfoMeta, self).version()
         if isinstance(version, six.text_type):
             version = version.split(".")[0]

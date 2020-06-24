@@ -49,6 +49,8 @@ FFV_VIDEO_TRUNCATED = dict(FFV_VIDEO, **{
     "data_rate": "2.077741", "version": "0"})
 FFV_VIDEO_SOUND = dict(FFV_VIDEO, **{
     "data_rate": "(:unav)", "sound": "Yes"})
+FFV_VIDEO_SOUND_DATARATE = dict(FFV_VIDEO_SOUND, **{
+    "data_rate": "2.278507"})
 
 WAV_AUDIO = {
     "audio_data_encoding": "PCM", "bits_per_sample": "8",
@@ -58,6 +60,8 @@ WAV_AUDIO = {
     "data_rate": "705.6", "data_rate_mode": "Fixed", "duration": "PT0.86S",
     "index": 0, "mimetype": "audio/x-wav", "num_channels": "2",
     "sampling_frequency": "44.1", "stream_type": "audio"}
+LPCM8_AUDIO = dict(WAV_AUDIO, **{
+    "mimetype": "audio/l8", "version": "(:unap)"})
 
 FLAC_AUDIO = {
     "audio_data_encoding": "FLAC", "bits_per_sample": "24",
