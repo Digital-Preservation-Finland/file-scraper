@@ -300,9 +300,15 @@ class MovMediainfoMeta(BaseMediainfoMeta):
             try:
                 return mime_dict[self._stream.format_profile]
             except KeyError:
-                if self.codec_name() == "PCM" and \
-                        int(self.bits_per_sample()) > 0:
-                    return "audio/l%s" % self.bits_per_sample()
+                pass
+
+        try:
+            if self.codec_name() == "PCM" and \
+                    int(self.bits_per_sample()) > 0:
+                return "audio/l%s" % self.bits_per_sample()
+        except SkipElementException:
+            pass
+
         return "(:unav)"
 
     @metadata()
@@ -373,9 +379,15 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
         try:
             return mime_dict[self.codec_name()]
         except (SkipElementException, KeyError):
+            pass
+
+        try:
             if self.codec_name() == "PCM" and \
                     int(self.bits_per_sample()) > 0:
                 return "audio/l%s" % self.bits_per_sample()
+        except SkipElementException:
+            pass
+
         return "(:unav)"
 
     @metadata()
