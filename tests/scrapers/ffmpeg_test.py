@@ -22,7 +22,7 @@ This module tests that:
     - For mp3 files with wrong version reported in the header, the file is not
       well-formed and errors should contain "Error while decoding stream".
     - The mimetypes tested are:
-        - video/quicktime containing dv video and pcm (wav) audio stream
+        - video/quicktime containing dv video and lpcm8 audio stream
         - video/x-matroska containing ffv1 video stream
         - video/dv
         - video/mpeg, with version 1 and 2 separately
@@ -63,8 +63,8 @@ UNAV_MIME = []
 @pytest.mark.parametrize(
     ["filename", "result_dict", "mimetype"],
     [
-        ("valid__dv_wav.mov", {
-            "purpose": "Test valid MOV with DV and WAV.",
+        ("valid__dv_lpcm8.mov", {
+            "purpose": "Test valid MOV with DV and LPCM8.",
             "stdout_part": "file was analyzed successfully",
             "stderr_part": ""},
          "video/quicktime"),
