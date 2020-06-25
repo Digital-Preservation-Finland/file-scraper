@@ -26,7 +26,7 @@ class FFMpegSimpleMeta(BaseMeta):
         "video/MP1S": [],
         "video/MP2P": [],
         "video/MP2T": [],
-        "audio/x-wav": [], 
+        "audio/x-wav": [],
         "video/x-matroska": [],
         "video/quicktime": [],
         "video/dv": [],
