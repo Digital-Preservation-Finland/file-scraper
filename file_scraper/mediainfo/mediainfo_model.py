@@ -305,7 +305,11 @@ class MovMediainfoMeta(BaseMediainfoMeta):
         try:
             if self.codec_name() == "PCM" and \
                     int(self.bits_per_sample()) > 0:
-                return "audio/L%s" % self.bits_per_sample()
+                mime = "audio/L%s" % self.bits_per_sample()
+                # Allow only certain bit depths
+                if mime in ["audio/L8", "audio/L16", "audio/L20",
+                            "audio/L24"]:
+                    return mime
         except SkipElementException:
             pass
 
@@ -384,7 +388,11 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
         try:
             if self.codec_name() == "PCM" and \
                     int(self.bits_per_sample()) > 0:
-                return "audio/L%s" % self.bits_per_sample()
+                mime = "audio/L%s" % self.bits_per_sample()
+                # Allow only certain bit depths
+                if mime in ["audio/L8", "audio/L16", "audio/L20",
+                            "audio/L24"]:
+                    return mime
         except SkipElementException:
             pass
 
