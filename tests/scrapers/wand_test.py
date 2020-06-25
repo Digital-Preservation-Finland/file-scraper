@@ -19,7 +19,8 @@ This module tests that:
           0xff 0xe0".
         - For empty file, scraper errors contain "insufficient image data in
           file".
-        - For Exif JPEGs, version is interpreted and set
+        - For Exif JPEGs, version is interpreted and set, and can interpret
+          both version formats returned by Wand/ImageMagick
         - For JFIFs, version is unavailable
     - streams and well-formedness are scraped correctly for jp2 files.
         - For well-formed files, scraper messages contain "successfully".
@@ -87,6 +88,15 @@ EXIF_VALID = {
     "width": "10",
     "version": "2.2.1"}
 
+EXIF_220_VALID = {
+    "bps_unit": "(:unav)",
+    "bps_value": "8",
+    "colorspace": "srgb",
+    "height": "377",
+    "samples_per_pixel": "(:unav)",
+    "width": "500",
+    "version": "2.2"}
+
 GIF_APPEND = {
     "bps_unit": "(:unav)",
     "bps_value": "8",
@@ -147,6 +157,14 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
         ("valid_1.01.jpg", {
             "purpose": "Test valid file.",
             "streams": {0: STREAM_VALID.copy()},
+            "stdout_part": "successfully",
+            "stderr_part": ""}),
+        ("valid_2.2.0_exif_ascii_version.jpg", {
+            "purpose": (
+                "Test valid file with differently formatted EXIF "
+                "version."
+            ),
+            "streams": {0: EXIF_220_VALID.copy()},
             "stdout_part": "successfully",
             "stderr_part": ""}),
         ("valid_2.2.1_exif_metadata.jpg", {

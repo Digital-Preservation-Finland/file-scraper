@@ -141,21 +141,44 @@ def format_exif_version(wand_exif_version):
     Image File Format (Compressed) in PRONOM registry.
 
     Wand library extracts Exif version from metadata as a string. The string is
-    in form of '48, 50, 50, 48' for 0220, 2.20 or 2.2 and is passed in that
-    form to this format function. First two bytes form the major version
-    number, third byte the minor and the last (optional) byte is the patch
-    number of the version.
+    most often in form of '48, 50, 50, 48' for 0220, 2.20 or 2.2 and is passed
+    in that form to this format function. First two bytes form the major
+    version number, third byte the minor and the last (optional) byte is the
+    patch number of the version.
+
+    In certain situations, the Exif version may also be returned as a 4-digit
+    ASCII string such as '0220'.
 
     :wand_exif_version: Version bytes string
     :return: Formatted version string
 
     """
+    # ImageMagick versions prior to the commit
+    # ac36bf9a08f058a259c902f7325b5b544f700994
+    # may return the EXIF version as an ASCII string.
+    # For example, instead of '48, 50, 50, 48' it may return '0220' instead
 
-    version_bytes = [chr(int(byte)) for byte in wand_exif_version.split(', ')]
+    if len(wand_exif_version) == 4 and wand_exif_version.isdigit():
+        # Version string is a four-digit ASCII string
+        major = str(int(wand_exif_version[0:2]))
+        minor = wand_exif_version[2]
+        patch = wand_exif_version[3]
+        version_bytes = [major, minor]
 
-    version_bytes[0] += version_bytes.pop(1)
+        if patch != "0":
+            version_bytes.append(version_bytes)
 
-    if version_bytes[-1] == '0':
-        version_bytes.pop(-1)
+        return '.'.join(version_bytes)
+    else:
+        # Version string is a comma-separated list of integers mapping to
+        # ASCII symbols
+        version_bytes = [
+            chr(int(byte)) for byte in wand_exif_version.split(', ')
+        ]
 
-    return '.'.join([str(int(version)) for version in version_bytes])
+        version_bytes[0] += version_bytes.pop(1)
+
+        if version_bytes[-1] == '0':
+            version_bytes.pop(-1)
+
+        return '.'.join([str(int(version)) for version in version_bytes])
