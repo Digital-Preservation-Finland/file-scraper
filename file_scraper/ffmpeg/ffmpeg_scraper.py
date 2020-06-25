@@ -58,7 +58,7 @@ class FFMpegScraper(BaseScraper):
         # We deny A-law PCM, mu-law PCM, DPCM and ADPCM as those are not LPCM.
         for index in range(len(streams)):
             if any(x in streams[index].get("codec_long_name", "(:unav)")
-                    for x in ["A-law", "mu-law", "DPCM"]):
+                    for x in ["PCM A-law", "PCM mu-law", "DPCM"]):
                 self._errors.append("%s does not seem to be LPCM format." \
                     % streams[index]["codec_long_name"])
 
