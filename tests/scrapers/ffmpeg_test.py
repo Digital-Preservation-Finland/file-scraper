@@ -19,6 +19,8 @@ This module tests that:
         - With video/MP2T files: "invalid new backstep"
         - With audio/mpeg files: "Error while decoding stream"
         - With video/dv files: "AC EOB marker is absent"
+    - The scraper should give an error if PCM stream is not LPCM. This is
+      tested with a WAV file which includes A-law PCM format.
     - For mp3 files with wrong version reported in the header, the file is not
       well-formed and errors should contain "Error while decoding stream".
     - The mimetypes tested are:
@@ -31,6 +33,7 @@ This module tests that:
         - audio/mpeg version 1 file
         - video/avi
         - video/mxf
+        - audio/x-wav
     - Whether well-formed check is performed or not, the scraper reports the
       following combinations of mimetypes and versions as supported:
         - video/mpeg, "1" or None
@@ -98,11 +101,16 @@ UNAV_MIME = []
             "stdout_part": "file was analyzed successfully",
             "stderr_part": ""},
          "audio/mpeg"),
-        ("valid_.ts", {
+        ("valid__mpeg2_mp3.ts", {
             "purpose": "Test valid MPEG-TS.",
             "stdout_part": "file was analyzed successfully",
             "stderr_part": ""},
          "video/MP2T"),
+        ("valid__wav.wav", {
+            "purpose": "Test valid WAV.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": ""},
+         "audio/x-wav"),
     ])
 def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
                              evaluate_scraper):
@@ -287,6 +295,11 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
             "stdout_part": "",
             "stderr_part": "Invalid data found when processing input"},
          "video/avi"),
+        ("invalid__pcm_alaw_format.wav", {
+            "purpose": "Test WAV file including A-law PCM.",
+            "stdout_part": "",
+            "stderr_part": "does not seem to be LPCM"},
+         "audio/x-wav"),
     ])
 def test_ffmpeg_scraper_invalid(filename, result_dict, mimetype,
                                 evaluate_scraper):

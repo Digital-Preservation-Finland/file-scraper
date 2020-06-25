@@ -75,7 +75,7 @@ CHANGE_MAGIC = {
         "application/octet-stream",
     "text_plain/valid__utf32be_without_bom.txt":
         "application/octet-stream",
-    "video_MP2T/valid_.ts": "application/octet-stream",
+    "video_MP2T/valid__mpeg2_mp3.ts": "application/octet-stream",
     "application_x-internet-archive/valid_1.0_.arc.gz":
         "application/x-gzip",
     "application_xhtml+xml/valid_1.0.xhtml": "text/xml",

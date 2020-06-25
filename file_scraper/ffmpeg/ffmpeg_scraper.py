@@ -50,12 +50,17 @@ class FFMpegScraper(BaseScraper):
 
         if shell.returncode == 0:
             self._messages.append("The file was analyzed successfully.")
-        # if "truncated" in self.filename:
-        #     __import__('pdb').set_trace()
 
         if self._filter_stderr(shell.stderr):
             self._errors.append(shell.stderr)
             return
+
+        # We deny A-law PCM, mu-law PCM, DPCM and ADPCM as those are not LPCM.
+        for index in range(len(streams)):
+            if any(x in streams[index].get("codec_long_name", "(:unav)")
+                    for x in ["A-law", "mu-law", "DPCM"]):
+                self._errors.append("%s does not seem to be LPCM format." \
+                    % streams[index]["codec_long_name"])
 
         container = False
         for index in range(len(streams)):

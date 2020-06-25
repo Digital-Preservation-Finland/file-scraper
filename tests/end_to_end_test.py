@@ -58,13 +58,11 @@ UNAV_ELEMENTS = {
     "tests/data/image_gif/valid_1989a.gif": ["version", "version"],
     "tests/data/image_tiff/valid_6.0_multiple_tiffs.tif": [
         "version", "version"],
-    "tests/data/video_MP2T/valid_.ts": ["codec_creator_app_version",
-                                        "codec_creator_app", "data_rate",
-                                        "codec_creator_app_version",
-                                        "codec_creator_app", "bits_per_sample",
-                                        "codec_creator_app_version",
-                                        "codec_creator_app",
-                                        "mimetype", "version"],
+    "tests/data/video_MP2T/valid__mpeg2_mp3.ts": [
+        "codec_creator_app_version", "codec_creator_app", "data_rate",
+        "codec_creator_app_version", "codec_creator_app", "bits_per_sample",
+        "codec_creator_app_version", "codec_creator_app", "mimetype",
+        "version"],
     "tests/data/video_quicktime/valid__dv_lpcm8.mov": ["mimetype", "version"],
     "tests/data/video_quicktime/valid__h264_aac.mov": ["bits_per_sample",
                                                        "mimetype", "version"],

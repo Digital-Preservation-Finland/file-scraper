@@ -26,6 +26,7 @@ class FFMpegSimpleMeta(BaseMeta):
         "video/MP1S": [],
         "video/MP2P": [],
         "video/MP2T": [],
+        "audio/x-wav": [], 
         "video/x-matroska": [],
         "video/quicktime": [],
         "video/dv": [],
@@ -49,6 +50,7 @@ class FFMpegSimpleMeta(BaseMeta):
         "MXF (Material eXchange Format)": "application/mxf",
         "AVI (Audio Video Interleaved)": "video/avi",
         "JPEG 2000": "video/jpeg2000",
+        "WAV / WAVE (Waveform Audio)": "audio/x-wav",
         "QuickTime / MOV": "(:unav)",
         "MP2/3 (MPEG audio layer 2/3)": "(:unav)",
         }
@@ -86,7 +88,7 @@ class FFMpegSimpleMeta(BaseMeta):
         """Check if file has a video container."""
         return ("codec_type" not in self._probe_results["format"]
                 and self._probe_results["format"]["format_name"] not in
-                ["mp3", "mpegvideo"])
+                ["mp3", "mpegvideo", "wav"])
 
     @property
     def _container_stream(self):

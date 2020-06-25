@@ -338,7 +338,7 @@ def test_mediainfo_scraper_mp3(filename, result_dict, evaluate_scraper):
 @pytest.mark.parametrize(
     ["filename", "result_dict"],
     [
-        ("valid_.ts", {
+        ("valid__mpeg2_mp3.ts", {
             "purpose": "Test valid MPEG-TS.",
             "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
