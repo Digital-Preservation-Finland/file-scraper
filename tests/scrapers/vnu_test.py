@@ -45,6 +45,10 @@ MIMETYPE = "text/html"
             "purpose": "Test valid file.",
             "stdout_part": "",
             "stderr_part": "End of file seen without seeing a doctype first"}),
+        ("valid_5.0_language_warning.html", {
+            "purpose": "Test valid file.",
+            "stdout_part": "valid_5.0_language_warning.html",
+            "stderr_part": ""}),
     ]
 )
 def test_scraper(filename, result_dict, evaluate_scraper):

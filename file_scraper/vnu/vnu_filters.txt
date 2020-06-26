@@ -1,0 +1,2 @@
+# Filter out language warnings
+.*This document appears to be written in.*

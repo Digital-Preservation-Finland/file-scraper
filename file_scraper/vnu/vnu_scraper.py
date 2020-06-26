@@ -15,8 +15,13 @@ class VnuScraper(BaseScraper):
 
     def scrape_file(self):
         """Scrape file using vnu.jar."""
+        #TODO sort out the path issue
+        # need to decide where the file can be located
+        # and how to always install it appropriately
+        filterfile = "/home/vagrant/scratch/file-scraper/file_scraper/vnu/vnu_filters.txt"
         shell = Shell([
             "java", "-jar", VNU_PATH, "--verbose",
+            "--filterfile", filterfile,
             self.filename])
 
         if shell.stderr:
