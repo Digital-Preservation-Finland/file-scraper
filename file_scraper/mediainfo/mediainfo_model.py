@@ -450,8 +450,7 @@ class WavMediainfoMeta(BaseMediainfoMeta):
     def mimetype(self):
         if self._tracks[0].format == "Wave":
             return "audio/x-wav"
-        else:
-            return "(:unav)"
+        return "(:unav)"
 
     @metadata()
     def version(self):

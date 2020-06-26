@@ -59,8 +59,8 @@ class FFMpegScraper(BaseScraper):
         for stream in streams:
             if any(x in stream.get("codec_long_name", "(:unav)")
                    for x in ["PCM A-law", "PCM mu-law", "DPCM"]):
-                self._errors.append("%s does not seem to be LPCM format." \
-                    % stream["codec_long_name"])
+                self._errors.append("%s does not seem to be LPCM format."
+                                    % stream["codec_long_name"])
 
         container = False
         for index in range(len(streams)):
