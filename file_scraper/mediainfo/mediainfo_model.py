@@ -9,12 +9,31 @@ from file_scraper.exceptions import SkipElementException
 from file_scraper.utils import iso8601_duration, strip_zeros, metadata
 
 
+def pcm_mimetype(codec_name, bits_per_sample):
+    """
+    Check if stream is PCM and return it's mimetype.
+
+    :codec_name: Codec name from Mediainfo
+    :bits_per_sample: Bits per sample from Mediainfo
+    :returns: PCM mimetype or (:unav)
+    """
+    if codec_name == "PCM" and bits_per_sample is not None:
+        mime = "audio/L%s" % bits_per_sample
+        # Allow only certain bit depths
+        if mime in ["audio/L8", "audio/L16", "audio/L20",
+                    "audio/L24"]:
+            return mime
+
+    raise ValueError("Not a PCM stream.")
+
+
 class BaseMediainfoMeta(BaseMeta):
     """Metadata models for files scraped using MediainfoScraper"""
     # pylint: disable=too-many-public-methods
 
-    _containers = []
     container_stream = None
+    _containers = []
+    _mime_dict = {}
 
     def __init__(self, tracks, index):
         """
@@ -40,6 +59,16 @@ class BaseMediainfoMeta(BaseMeta):
             return False
 
         return True
+
+    @metadata()
+    def mimetype(self):
+        """Returns mimetype for stream."""
+        try:
+            return self._mime_dict[self.codec_name()]
+        except (KeyError, SkipElementException):
+            pass
+
+        return "(:unav)"
 
     @metadata()
     def version(self):
@@ -283,48 +312,32 @@ class MovMediainfoMeta(BaseMediainfoMeta):
     _supported = {"video/quicktime": [""], "video/dv": [""]}
     _allow_versions = True  # Allow any version
     _containers = ["QuickTime"]
+    _mime_dict = {"QuickTime": "video/quicktime",
+                  "DV": "video/dv",
+                  "AVC": "video/mp4",
+                  "AAC": "audio/mp4"}
 
     @metadata()
     def mimetype(self):
         """Returns mimetype for stream."""
-        mime_dict = {"QuickTime": "video/quicktime",
-                     "DV": "video/dv",
-                     "AVC": "video/mp4",
-                     "AAC": "audio/mp4"}
-
         try:
-            return mime_dict[self.codec_name()]
-        except SkipElementException:
-            pass
-        except KeyError:
+            return pcm_mimetype(self.codec_name(), self.bits_per_sample())
+        except (ValueError, SkipElementException):
             try:
-                return mime_dict[self._stream.format_profile]
+                return self._mime_dict[self._stream.format_profile]
             except KeyError:
                 pass
 
-        try:
-            if self.codec_name() == "PCM" and \
-                    int(self.bits_per_sample()) > 0:
-                mime = "audio/L%s" % self.bits_per_sample()
-                # Allow only certain bit depths
-                if mime in ["audio/L8", "audio/L16", "audio/L20",
-                            "audio/L24"]:
-                    return mime
-        except SkipElementException:
-            pass
-
-        return "(:unav)"
+        return super(MovMediainfoMeta, self).mimetype()
 
     @metadata()
     def version(self):
         """Return version."""
         # Quicktime container does not have different versions.
-        try:
-            if self.codec_name() == "PCM" or self.mimetype() in [
-                    "video/quicktime", "video/dv", "video/mp4", "audio/mp4"]:
-                return "(:unap)"
-        except SkipElementException:
-            pass
+        if self.mimetype() in [
+                "audio/L8", "audio/L16", "audio/L20", "audio/24",
+                "video/quicktime", "video/dv", "video/mp4", "audio/mp4"]:
+            return "(:unap)"
         return super(MovMediainfoMeta, self).version()
 
     @metadata()
@@ -373,30 +386,19 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
     _supported = {"video/x-matroska": ["4"]}
     _allow_versions = True  # Allow any version
     _containers = ["Matroska"]
+    _mime_dict = {"Matroska": "video/x-matroska",
+                  "FLAC": "audio/flac",
+                  "FFV1": "video/x-ffv"}
 
     @metadata()
     def mimetype(self):
         """Returns mimetype for stream."""
-        mime_dict = {"Matroska": "video/x-matroska",
-                     "FLAC": "audio/flac",
-                     "FFV1": "video/x-ffv"}
         try:
-            return mime_dict[self.codec_name()]
-        except (SkipElementException, KeyError):
+            return pcm_mimetype(self.codec_name(), self.bits_per_sample())
+        except (ValueError, SkipElementException):
             pass
 
-        try:
-            if self.codec_name() == "PCM" and \
-                    int(self.bits_per_sample()) > 0:
-                mime = "audio/L%s" % self.bits_per_sample()
-                # Allow only certain bit depths
-                if mime in ["audio/L8", "audio/L16", "audio/L20",
-                            "audio/L24"]:
-                    return mime
-        except SkipElementException:
-            pass
-
-        return "(:unav)"
+        return super(MkvMediainfoMeta, self).mimetype()
 
     @metadata()
     def version(self):
@@ -412,11 +414,10 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
         """
         if self.mimetype() == "audio/flac":
             return "1.2.1"
-        try:
-            if self.codec_name() == "PCM":
-                return "(:unap)"
-        except SkipElementException:
-            pass
+        if self.mimetype() in ["audio/L8", "audio/L16", "audio/L20",
+                               "audio/24"]:
+            return "(:unap)"
+
         version = super(MkvMediainfoMeta, self).version()
         if isinstance(version, six.text_type):
             version = version.split(".")[0]
@@ -478,6 +479,11 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
                   "video/MP2T": [""]}
     _allow_versions = True  # Allow any version
     _containers = ["MPEG-TS", "MPEG-PS", "MPEG-4"]
+    _mime_dict = {"AAC": "audio/mp4",
+                  "AVC": "video/mp4",
+                  "MPEG-4": "video/mp4",
+                  "MPEG Video": "video/mpeg",
+                  "MPEG Audio": "audio/mpeg"}
 
     @metadata()
     def signal_format(self):
@@ -507,15 +513,11 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
     @metadata()
     def mimetype(self):
         """Returns mimetype for stream."""
-        mime_dict = {"AAC": "audio/mp4",
-                     "AVC": "video/mp4",
-                     "MPEG-4": "video/mp4",
-                     "MPEG Video": "video/mpeg",
-                     "MPEG Audio": "audio/mpeg"}
-
         try:
-            return mime_dict[self.codec_name()]
-        except (SkipElementException, KeyError):
+            return self._mime_dict[self.codec_name()]
+        except SkipElementException:
+            pass
+        except KeyError:
             for track in self._tracks:
                 try:
                     if track.track_type == "Video":
@@ -529,6 +531,7 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
                                 return "video/MP1S"
                 except SkipElementException:
                     pass
+
         return "(:unav)"
 
     @metadata()
