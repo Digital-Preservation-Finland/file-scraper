@@ -18,7 +18,7 @@ class VnuScraper(BaseScraper):
         #TODO sort out the path issue
         # need to decide where the file can be located
         # and how to always install it appropriately
-        filterfile = "/home/vagrant/scratch/file-scraper/file_scraper/vnu/vnu_filters.txt"
+        filterfile = "/etc/file-scraper/vnu_filters.txt"
         shell = Shell([
             "java", "-jar", VNU_PATH, "--verbose",
             "--filterfile", filterfile,
