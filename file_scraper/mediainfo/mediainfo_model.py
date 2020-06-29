@@ -332,8 +332,12 @@ class MovMediainfoMeta(BaseMediainfoMeta):
 
     @metadata()
     def version(self):
-        """Return version."""
-        # Quicktime container does not have different versions.
+        """
+        Return version.
+
+        Quicktime, DV, MP4, and PCM streams (audio/L*) do not have version,
+        and and therefore the result is unapplicable (:unap).
+        """
         if self.mimetype() in [
                 "audio/L8", "audio/L16", "audio/L20", "audio/24",
                 "video/quicktime", "video/dv", "video/mp4", "audio/mp4"]:
@@ -411,6 +415,9 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
         version 1.2.1 still includes the latest format change and was released
         in 2007. There is no separate version numbering in FLAC format itself,
         and therefore, there is no proper way to extract it.
+
+        PCM audio streams (i.e. audio/L*) do not have version, and therefore
+        the result is unapplicable (:unap).
         """
         if self.mimetype() == "audio/flac":
             return "1.2.1"

@@ -55,10 +55,14 @@ class FFMpegScraper(BaseScraper):
             self._errors.append(shell.stderr)
             return
 
-        # We deny A-law PCM, mu-law PCM, DPCM and ADPCM as those are not LPCM.
+        # We deny e.g. A-law PCM, mu-law PCM, DPCM and ADPCM and allow only
+        # signed/unsigned linear PCM. Note that we need this check only if
+        # PCM audio is present. This should not be given e.g. for video
+        # streams nor audio streams of another type (such as MPEG).
         for stream in streams:
-            if any(x in stream.get("codec_long_name", "(:unav)")
-                   for x in ["PCM A-law", "PCM mu-law", "DPCM"]):
+            if "PCM" in stream.get("codec_long_name", "(:unav)") and not \
+                    any(stream.get("codec_long_name", "(:unav)").startswith(x)
+                            for x in ["PCM signed", "PCM unsigned"]):
                 self._errors.append("%s does not seem to be LPCM format."
                                     % stream["codec_long_name"])
 
