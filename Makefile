@@ -21,7 +21,7 @@ clean:
 
 install: clean
 		mkdir -p "${ETC}/file-scraper"
-		cp -r include/etc/file-scraper/* "${ETC}/file-scraper/"
+		cp file_scraper/vnu/vnu_filters.txt "${ETC}/file-scraper/"
 
 		python setup.py build ; python ./setup.py install -O1 --prefix="${PREFIX}" --root="${PYROOT}" --record=INSTALLED_FILES.in
 		cat INSTALLED_FILES.in | sed 's/^/\//g' >> INSTALLED_FILES
