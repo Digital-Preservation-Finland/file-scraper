@@ -1,6 +1,7 @@
 PREFIX=/usr
 ROOT=
 PYROOT=${ROOT}/
+ETC=${ROOT}/etc
 
 all: info
 
@@ -19,6 +20,9 @@ clean:
 		rm -f INSTALLED_FILES.in
 
 install: clean
+		mkdir -p "${ETC}/file-scraper"
+		cp -r include/etc/file-scraper/* "${ETC}/file-scraper/"
+
 		python setup.py build ; python ./setup.py install -O1 --prefix="${PREFIX}" --root="${PYROOT}" --record=INSTALLED_FILES.in
 		cat INSTALLED_FILES.in | sed 's/^/\//g' >> INSTALLED_FILES
 		echo "-- INSTALLED_FILES"
