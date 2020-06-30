@@ -1,6 +1,8 @@
 """A HTML5 scraper module using The Nu Html Checker."""
 from __future__ import unicode_literals
 
+import os
+
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.config import VNU_PATH
@@ -18,7 +20,7 @@ class VnuScraper(BaseScraper):
         #TODO sort out the path issue
         # need to decide where the file can be located
         # and how to always install it appropriately
-        filterfile = "/etc/file-scraper/vnu_filters.txt"
+        filterfile = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'vnu_filters.txt')
         shell = Shell([
             "java", "-jar", VNU_PATH, "--verbose",
             "--filterfile", filterfile,

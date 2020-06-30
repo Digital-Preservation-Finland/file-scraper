@@ -56,7 +56,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -f INSTALLED_FILES
 %defattr(-,root,root,-)
-/etc/file-scraper
 
 # 'full' only contains dependencies and is thus empty
 %files -n file-scraper-full
