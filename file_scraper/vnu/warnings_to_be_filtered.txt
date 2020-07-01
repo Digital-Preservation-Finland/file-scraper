@@ -1,0 +1,230 @@
+src/nu/validator/checker/ConformingButObsoleteWarner.java:
+"The \u201Cborder\u201D attribute is obsolete."
++ " Consider specifying \u201Cimg { border: 0; }\u201D"
++ " in CSS instead."
+--
+src/nu/validator/checker/ConformingButObsoleteWarner.java:
+"The \u201Clanguage\u201D attribute on the"
++ " \u201Cscript\u201D element is obsolete."
++ " You can safely omit it."
+--
+src/nu/validator/checker/ConformingButObsoleteWarner.java:
+"The \u201Cname\u201D attribute is obsolete."
++ " Consider putting an \u201Cid\u201D attribute"
++ " on the nearest container instead."
+--
+src/nu/validator/checker/ConformingButObsoleteWarner.java:
+"The manifest-based application cache feature is"
++ " obsolete. Consider using service workers instead."
+--
+src/nu/validator/checker/LanguageDetectingChecker.java:
+"This document appears to be written in"
++ " Norwegian but the value of the HTTP"
++ " \u201CContent-Language\u201D header is"+ " \u201C"
++ lowerCaseContentLang+ "\u201D. Consider"
++ " changing it to \u201Cnn\u201D or \u201Cnn\u201D"
++ " (or variant) to the \u201Chtml\u201D start tag."
+--
+src/nu/validator/checker/NormalizationChecker.java:
+"Text run starts with a composing character."
+--
+src/nu/validator/checker/NormalizationChecker.java:
+"Source text is not in Unicode Normalization Form C."
+src/nu/validator/checker/NormalizationChecker.java:
+"Text run is not in Unicode Normalization Form C."
+--
+src/nu/validator/checker/NormalizationChecker.java:
+"Processing instruction data in not in Unicode Normalization Form C."
+--
+src/nu/validator/checker/UncheckedSubtreeWarner.java:
+"This validator does not validate RDF. RDF subtrees go unchecked."
+src/nu/validator/checker/UncheckedSubtreeWarner.java:
+"This validator does not validate OpenMath. OpenMath subtrees go unchecked."
+--
+src/nu/validator/checker/UncheckedSubtreeWarner.java:
+"This validator does not validate Inkscape extensions properly. Inkscape-specific errors may go unnoticed."
+src/nu/validator/checker/UncheckedSubtreeWarner.java:
+"Unsupported SVG version specified. This validator only supports SVG 1.1. The recommended way to suppress this warning is to remove the \u201Cversion\u201D attribute altogether."
+--
+src/nu/validator/checker/UnsupportedFeatureChecker.java:
+"The \u201C"+ name+ "\u201D input type is not supported in"
++ " all browsers. Please be sure to test, and consider"
++ " using a polyfill."
+--
+src/nu/validator/checker/UnsupportedFeatureChecker.java:
+"The \u201C"+ name+ "\u201D attribute is not supported in"
++ " all browsers. Please be sure to test, and consider"
++ " using a polyfill."
+--
+src/nu/validator/checker/UnsupportedFeatureChecker.java:
+"The \u201C"+ name+ "\u201D element is not supported in"
++ " all browsers. Please be sure to test, and consider"
++ " using a polyfill."
+--
+src/nu/validator/checker/UnsupportedFeatureChecker.java:
+"The \u201C"+ attributeName+ "\u201D attribute on the"
++ " \u201C"+ elementName+ "\u201D element is not supported"
++ " in all browsers. Please be sure to test, and consider"
++ " using a polyfill."
+--
+src/nu/validator/checker/XmlPiChecker.java:
+"When processing \u201cxml-stylesheet\u201d instructions,"
++ " browsers ignore the pseudo-attributes \u201ctitle\u201d,"
++ " \u201cmedia\u201d, \u201ccharset\u201d, and"
++ " \u201calternate\u201d."
+--
+src/nu/validator/checker/XmlPiChecker.java:
+"Some browsers ignore the value of the"
++ " \u201cxml-stylesheet\u201d pseudo-attribute"
++ " \u201ccharset\u201d."
+--
+src/nu/validator/checker/schematronequiv/Assertions.java:
+"The \u201C"+ attribute+ "\u201D attribute on the \u201C"
++ element+ "\u201D element is obsolete."+ suggestion
+--
+src/nu/validator/checker/schematronequiv/Assertions.java:
+"The \u201C"+ role+ "\u201D role is unnecessary for element"
++ " \u201C"+ element+ "\u201D whose"+ " type is"+ " \u201C"
++ type+ "\u201D."
+--
+src/nu/validator/checker/schematronequiv/Assertions.java:
+"Section lacks heading. Consider using"
++ " \u201ch2\u201d-\u201ch6\u201d elements to add"
++ " identifying headings to all sections.",
+                        node.locator()
+src/nu/validator/checker/schematronequiv/Assertions.java:
+"Article lacks heading. Consider using"
++ " \u201ch2\u201d-\u201ch6\u201d elements to add"
++ " identifying headings to all articles.",
+                        node.locator()
+--
+src/nu/validator/checker/schematronequiv/Assertions.java:
+"Empty heading.", node.locator()
+--
+src/nu/validator/checker/schematronequiv/Assertions.java:
+"Element \u201Cmath\u201D does not need a"
++ " \u201Crole\u201D attribute."
+--
+src/nu/validator/checker/schematronequiv/Assertions.java:
+"Attribute \u201C"+ stateOrProperty
++ "\u201D is unnecessary for elements that"
++ " have attribute \u201C"+ attLocal
++ "\u201D."
+--
+src/nu/validator/checker/schematronequiv/Assertions.java:
+"The \u201Ctype\u201D attribute is unnecessary for"
++ " JavaScript resources."
+--
+src/nu/validator/checker/schematronequiv/Assertions.java:
+" The \u201Ctype\u201D attribute for the"
++ " \u201Cstyle\u201D element is not needed and"
++ " should be omitted."
+--
+src/nu/validator/checker/schematronequiv/Assertions.java:
+"Consider avoiding viewport values that"
++ " prevent users from resizing documents."
+--
+src/nu/validator/checker/schematronequiv/Assertions.java:
+"The \u201C"+ role+ "\u201D role is unnecessary for"
++ " element"+ " \u201C"+ localName+ "\u201D."
+--
+src/nu/validator/checker/schematronequiv/Assertions.java:
+"The \u201C"+ role+ "\u201D role is unnecessary for"
++ " element"+ " \u201C"+ localName+ "\u201D."
+src/nu/validator/checker/schematronequiv/Assertions.java:
+"Element \u201C"+ localName+ "\u201D does not need a"
++ " \u201Crole\u201D attribute."
+--
+src/nu/validator/checker/schematronequiv/Assertions.java:
+"The \u201Ctextbox\u201D role is unnecessary"
++ " for an \u201Cinput\u201D element that"
++ " has no \u201Clist\u201D attribute and"
++ " whose type is"+ " \u201C"
++ inputTypeVal+ "\u201D."
+--
+src/nu/validator/checker/schematronequiv/Assertions.java:
+"The \u201Csearchbox\u201D role is unnecessary"
++ " for an \u201Cinput\u201D element that"
++ " has no \u201Clist\u201D attribute and"
++ " whose type is"+ " \u201C"
++ inputTypeVal+ "\u201D."
+--
+src/nu/validator/checker/schematronequiv/Assertions.java:
+"The \u201Ccombobox\u201D role is unnecessary"
++ " for an \u201Cinput\u201D element that"
++ " has a \u201Clist\u201D attribute and"
++ " whose type is"+ " \u201C"
++ inputTypeVal+ "\u201D."
+--
+src/nu/validator/checker/schematronequiv/Assertions.java:
+"The \u201Clink\u201D role is unnecessary for element"
++ " \u201C"+ localName+ "\u201D with attribute"
++ " \u201Chref\u201D."
+--
+src/nu/validator/checker/schematronequiv/Assertions.java:
+"The \u201Clink\u201D role is unnecessary for element"
++ " \u201C"+ localName+ "\u201D with attribute"
++ " \u201Chref\u201D."
+src/nu/validator/checker/schematronequiv/Assertions.java:
+"The \u201Crowgroup\u201D role is unnecessary for element"
++ " \u201C"+ localName+ "\u201D."
+src/nu/validator/checker/schematronequiv/Assertions.java:
+"The \u201C"+ role+ "\u201D role is unnecessary for"
++ " element \u201Cth\u201D."
+src/nu/validator/checker/schematronequiv/Assertions.java:
+"The \u201Clistitem\u201D role is unnecessary for an"
++ " \u201Cli\u201D element whose parent is"
++ " an \u201Col\u201D element or a"
++ " \u201Cul\u201D element."
+--
+src/nu/validator/checker/schematronequiv/Assertions.java:
+"The \u201Clistitem\u201D role is unnecessary for an"
++ " \u201Cli\u201D element whose parent is"
++ " an \u201Col\u201D element or a"
++ " \u201Cul\u201D element."
+--
+src/nu/validator/checker/schematronequiv/Assertions.java:
+"Possible misuse of \u201Caria-label\u201D. (If you disagree"
++ " with this warning, file an issue report or send e-mail"
++ " to www-validator@w3.org.)"
+--
+src/nu/validator/checker/schematronequiv/Assertions.java:
+"The \u201Clistbox\u201D role is unnecessary for"
++ " element \u201Cselect\u201D with a"
++ " \u201Cmultiple\u201D attribute or with a"
++ " \u201Csize\u201D attribute whose value"
++ " is greater than 1."
+--
+src/nu/validator/checker/schematronequiv/Assertions.java:
+"The \u201Ccombobox\u201D role is unnecessary"
++ " for element \u201Cselect\u201D"
++ " without a \u201Cmultiple\u201D"
++ " attribute and without a"
++ " \u201Csize\u201D attribute whose value"
+--
+src/nu/validator/checker/table/Table.java:
+"A col element causes a span attribute with value "
++ pendingColGroupSpan
++ " to be ignored on the parent colgroup."
+--
+src/nu/validator/gnu/xml/aelfred2/SAXDriver.java:
+"No base URI; hope this SYSTEM id is absolute: "
++ systemId
+--
+src/nu/validator/gnu/xml/aelfred2/SAXDriver.java:
+"relative URI for namespace: "+ uri
+--
+src/nu/validator/gnu/xml/aelfred2/XmlParser.java:
+"XML processors are required to support the UTF-8 and UTF-16 character encodings. The encoding was \u201C"
++ actualName
++ "\u201D instead, which is an incompatibility risk."
+--
+src/nu/validator/gnu/xml/aelfred2/XmlParser.java:
+"modifying document by adding external subset"
+--
+src/nu/validator/gnu/xml/aelfred2/XmlParser.java:
+"modifying document by adding DTD"
+--
+src/nu/validator/gnu/xml/aelfred2/XmlParser.java:
+"No base URI; hope URI is absolute: "
++ ids.systemId

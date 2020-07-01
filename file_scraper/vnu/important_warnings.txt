@@ -1,0 +1,147 @@
+"Processing instruction target starts with a composing character.");
+---
+src/nu/validator/checker/NormalizationChecker.java:
+"Element name \u201C "+ localName
++ "\u201D starts with a composing character.");
+--
+src/nu/validator/checker/NormalizationChecker.java:
+"Attribute name \u201C "+ localName
++ "\u201D starts with a composing character.");
+--
+src/nu/validator/checker/NormalizationChecker.java:
+"The value of attribute \u201C"
++ atts.getLocalName(i)
++ "\u201D"
++ ("".equals(atts.getURI(i)) ? "" : " in namespace \u201C"+ atts.getURI(i) + "\u201D")
++ " on element \u201C"
++ localName + "\u201D from namespace \u201C" + uri
++ "\u201D starts with a composing character.");
+--
+src/nu/validator/checker/NormalizationChecker.java:
+"Namespace prefix \u201C "+ prefix
++ "\u201D starts with a composing character.");
+src/nu/validator/checker/NormalizationChecker.java:
+"Namespace URI \u201C "+ uri
++ "\u201D starts with a composing character.");
+--
+src/nu/validator/checker/RdfaLiteChecker.java:
+"RDFa Core attribute \u201C"+ att
++ "\u201D is not allowed on the \u201C"+ localName
++ "\u201D element in HTML5+ RDFa 1.1 Lite documents."
++ GUIDANCE);
+--
+src/nu/validator/checker/RdfaLiteChecker.java:
+"RDFa Core attribute \u201C"+ att
++ "\u201D is not allowed in HTML5+ RDFa 1.1 Lite documents."
++ GUIDANCE);
+
+"An \u201cxml-stylesheet\u201d instruction should not be used"
++ " within a \u201cDOCTYPE\u201d declaration.");
+--
+src/nu/validator/checker/XmlPiChecker.java:
+"For indicating XSLT,"
++ " \u201ctext/xsl\u201d is the only"
++ " MIME type for the"
++ " \u201cxml-stylesheet\u201d"
++ " pseudo-attribute \u201ctype\u201d"
+--
+src/nu/validator/checker/XmlPiChecker.java:
+"Browsers do not support multiple"
++ " \u201cxml-stylesheet\u201d"
++ " instructions with a"
++ " \u201ctype\u201d value that"
++ " indicates XSLT.");
+--
+src/nu/validator/checker/XmlPiChecker.java:
+"\u201ctext/css\u201d and"
++ " \u201ctext/xsl\u201d are the only"
++ " MIME types for the"
++ " \u201cxml-stylesheet\u201d"
++ " pseudo-attribute \u201ctype\u201d"
+---
+src/nu/validator/checker/XmlPiChecker.java:
+"Document uses the Unicode Private Use Area(s), which should"
++ " not be used in publicly exchanged documents."
++ " (Charmod C073)");
+--
+src/nu/validator/checker/XmlPiChecker.java:
+"Character reference expands to a control character ("
++ toUPlusString((char) value)+ ").");
+--
+"Attribute \u201Caria-activedescendant\u201D value should "
++ "either refer to a descendant element, or should "
++ "be accompanied by attribute \u201Caria-owns\u201D.",
+                    locator);
+--
+src/nu/validator/checker/schematronequiv/Assertions.java:
+
+"\u201Caudio\u201D or \u201Cvideo\u201D element"
++ " has more than one \u201Ctrack\u201D child"
++ " element with a \u201Cdefault\u201D attribute.",
+                                    locator);
+                            locator.markTainted();
+--
+src/nu/validator/checker/schematronequiv/Assertions.java:
+"\u201Clabel\u201D element with multiple labelable"
++ " descendants.", locator);
+--
+src/nu/validator/checker/schematronequiv/Assertions.java:
+--
+"Can't absolutize SYSTEM id: "+ e.getMessage());
+--
+src/nu/validator/gnu/xml/aelfred2/XmlParser.java:
+"External encoding information specified "
++ used
++ ", but XML declaration specified "
++ detected
++ ". Allowing external to override per RFC 3023. The well-formedness status of this document may change when decoupled from the external character encoding information.");
+---
+src/nu/validator/gnu/xml/aelfred2/XmlParser.java:
+"Documents encoded as \u201C"
++ htmlActual.getCanonName()
++ "\u201D are often mislabeled as \u201C"
++ actualName
++ "\u201D, which is the declared encoding of this document.");
+--
+"Character reference expands to a control character: U+00"
++ Integer.toHexString(value)+ ".");
+--
+src/nu/validator/gnu/xml/aelfred2/XmlParser.java:
+"Character reference expands to a control character: U+00"
++ Integer.toHexString(value)+ ".");
+--
+src/nu/validator/gnu/xml/aelfred2/XmlParser.java:
+"Saw a control character: U+00"
++ Integer.toHexString(c)+ ".");
+--
+src/nu/validator/gnu/xml/aelfred2/XmlParser.java:
+"Astral non-character.");
+--
+src/nu/validator/gnu/xml/aelfred2/XmlParser.java:
+"Saw a control character: U+00"
++ Integer.toHexString(c)+ ".");
+--
+src/nu/validator/gnu/xml/aelfred2/XmlParser.java:
+"External encoding information specified a non-UTF-8/non-UTF-16 encoding ("
++ encoding
++ "), but there was no matching internal encoding declaration. The well-formedness status of this document may change when decoupled from the external encoding information.");
+--
+src/nu/validator/gnu/xml/aelfred2/XmlParser.java:
+"Document uses the Unicode Private Use Area(s), which should not be used in publicly exchanged documents. (Charmod C073)");
+--
+src/nu/validator/checker/table/RowGroup.java:
+"A table row was "
++ insertionPoint
++ " columns wide and exceeded the column count established by the first row ("
++ columnCount+ ")."
+src/nu/validator/checker/table/RowGroup.java:
+"A table row was "
++ insertionPoint
++ " columns wide, which is less than the column count established by the first row ("
++ columnCount+ ")."
+--
+src/nu/validator/gnu/xml/aelfred2/XmlParser.java:
+"modifying document by adding external subset"
+--
+src/nu/validator/gnu/xml/aelfred2/XmlParser.java:
+"modifying document by adding DTD"
