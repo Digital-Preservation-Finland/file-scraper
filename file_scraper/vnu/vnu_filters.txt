@@ -1,2 +1,33 @@
 # Filter out language warnings
 .*This document appears to be written in.*
+
+# RDF, OpenMath and Inkscape subtrees aren't validated by v.nu, but that's
+# not a problem for us
+^This validator does not validate.*
+
+# Other SVG versions are fine even though v.nu doesn't validate them
+^Unsupported SVG version specified\. This validator only supports SVG 1\.1\..*
+
+# It's ok to use features that some browsers don't support
+.* is not supported in all browsers\. Please be sure to test, and consider.*
+^Some browsers ignore the value of the.*
+^When processing .xml-stylesheet. instructions, browsers ignore the pseudo-attributes.*
+
+# Unnecessary elements, roles or attributes dont invalidate the file
+.* role is unnecessary for element .*
+.* role is unnecessary for an .input. element that has (a|no) .list. attribute and whose type is .*
+.* role is unnecessary for an .li. element whose parent is .*
+^Element .* does not need a .* attribute\.
+^Attribute .* is unnecessary for elements that have attribute .*
+^The .type. attribute is unnecessary for JavaScript resources\.
+^The .type. attribute for the .style. element is not needed and should be omitted\.
+
+# Missing headings do not invalidate the file
+.* lacks heading. Consider using .*
+Empty heading\.
+
+# "Possible" violations of semantic stuff don't invalidate the file
+^Possible misuse of .aria.label.*
+
+# Wonky tables don't invalidate the file
+^A col element causes a span attribute with value .* to be ignored on the parent colgroup\.

@@ -1,3 +1,6 @@
+src/nu/validator/checker/NormalizationChecker.java:
+"Text run starts with a composing character."
+--
 "Processing instruction target starts with a composing character.");
 ---
 src/nu/validator/checker/NormalizationChecker.java:
