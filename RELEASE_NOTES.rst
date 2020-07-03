@@ -1,6 +1,32 @@
 Release notes
 =============
 
+Version 0.22
+------------
+
+- FLAC stream support for Matroska videos added
+- MIME type update for LPCM streams
+- Wand memory leaking issues fixed
+- Filter unnecessary v.Nu warnings related to HTML5 validation
+- Distinguish JP2 and JPX files
+
+Version 0.21
+------------
+
+Add command-line interface
+
+Version 0.20
+------------
+
+- Add key to info dict to contain used tools in scraping
+- Minor bugfix related to unavailabe file format version
+
+Version 0.19
+------------
+
+- Raise maximum image size for PIL
+- Add support for images with grayscale+alpha channels
+
 Version 0.18
 ------------
 
