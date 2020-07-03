@@ -1,10 +1,6 @@
 # Filter out language warnings
 .*This document appears to be written in.*
 
-# RDF, OpenMath and Inkscape subtrees aren't validated by v.nu, but that's
-# not a problem for us
-^This validator does not validate.*
-
 # Other SVG versions are fine even though v.nu doesn't validate them
 ^Unsupported SVG version specified\. This validator only supports SVG 1\.1\..*
 
