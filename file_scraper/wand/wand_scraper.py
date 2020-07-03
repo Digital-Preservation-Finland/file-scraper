@@ -67,4 +67,6 @@ class WandScraper(BaseScraper):
         """
 
         if self._wandresults:
+            for frame in self._wandresults.sequence:
+                frame.destroy()
             self._wandresults.close()
