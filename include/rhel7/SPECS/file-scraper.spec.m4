@@ -22,7 +22,7 @@ BuildArch:      noarch
 Requires:       python python2-pymediainfo python-magic python-opf-fido veraPDF
 Requires:       ffmpeg-python ffmpeg file-5.30 python-click
 Requires:       python-wand = 0.5.9
-Requires:       python-pillow = 6.0
+Requires:       python-pillow >= 6.0, python-pillow < 6.1
 BuildRequires:  python-setuptools ImageMagick libmediainfo
 Conflicts:      file-scraper-full < %{version}-%{release}, file-scraper-full > %{version}-%{release}
 
