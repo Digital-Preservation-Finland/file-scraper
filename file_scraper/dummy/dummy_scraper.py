@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import os.path
 
 from file_scraper.base import BaseScraper
+from file_scraper.defaults import UNAV
 from file_scraper.utils import decode_path
 from file_scraper.dummy.dummy_model import (
     DummyMeta, DetectedMimeVersionMeta, DetectedTextVersionMeta,
@@ -91,19 +92,19 @@ class MimeMatchScraper(BaseScraper):
         """
         No need to scrape anything, just compare already collected metadata.
         """
-        mime = self._params.get("mimetype", "(:unav)")
-        ver = self._params.get("version", "(:unav)")
+        mime = self._params.get("mimetype", UNAV)
+        ver = self._params.get("version", UNAV)
         pre_list = self._ALTERNATIVE_MIMETYPES.get(
             self._predefined_mimetype, [])
 
-        if mime == "(:unav)":
+        if mime == UNAV:
             self._errors.append("File format is not supported.")
         elif mime != self._predefined_mimetype and mime not in pre_list:
             self._errors.append(
                 "Predefined mimetype '{}' and resulted mimetype '{}' "
                 "mismatch.".format(self._predefined_mimetype, mime))
 
-        if ver in ["(:unav)", None]:
+        if ver in [UNAV, None]:
             if mime in self._MIMES_UNAV_VERSIONS:
                 self._messages.append(
                     "File format version can not be resolved for this file "
@@ -138,7 +139,7 @@ class DetectedMimeVersionScraper(BaseScraper):
         """
         mimetype = self._params.get("detected_mimetype",
                                     self._predefined_mimetype)
-        version = self._params.get("detected_version", "(:unav)")
+        version = self._params.get("detected_version", UNAV)
         self._messages.append("Using detected file format version.")
         self.streams = list(self.iterate_models(mimetype=mimetype,
                                                 version=version))

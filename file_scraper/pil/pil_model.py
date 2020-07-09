@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import six
 
 from file_scraper.base import BaseMeta
+from file_scraper.defaults import UNAP, UNAV
 from file_scraper.utils import metadata
 
 try:
@@ -39,7 +40,7 @@ class BasePilMeta(BaseMeta):
     @metadata()
     def version(self):
         """PIL does not know the version, return (:unav)."""
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def stream_type(self):
@@ -54,14 +55,14 @@ class BasePilMeta(BaseMeta):
     @metadata()
     def colorspace(self):
         """Return colorspace."""
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def width(self):
         """Return image width."""
         if self._pil.width is not None:
             return six.text_type(self._pil.width)
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def height(self):
@@ -69,18 +70,18 @@ class BasePilMeta(BaseMeta):
         if self._pil is not None and \
                 self._pil.height is not None:
             return six.text_type(self._pil.height)
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def bps_value(self):
         """Return bits per sample."""
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def bps_unit(self):
         """Return sample unit."""
         if self._pil is None:
-            return "(:unav)"
+            return UNAV
         if self._pil.mode == "F":
             return "floating point"
 
@@ -89,7 +90,7 @@ class BasePilMeta(BaseMeta):
     @metadata()
     def compression(self):
         """Return compression scheme."""
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def samples_per_pixel(self):
@@ -106,23 +107,23 @@ class TiffPilMeta(BasePilMeta):
     @metadata()
     def width(self):
         """We will get width from another scraper."""
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def height(self):
         """We will get height from another scraper."""
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def colorspace(self):
         """We will get colorspace from another scraper."""
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def samples_per_pixel(self):
         """Return samples per pixel."""
         if self._pil is None:
-            return "(:unav)"
+            return UNAV
         tag_info = self._pil.tag_v2
         if tag_info and SAMPLES_PER_PIXEL_TAG in tag_info.keys():
             return six.text_type(tag_info[SAMPLES_PER_PIXEL_TAG])
@@ -140,17 +141,17 @@ class ImagePilMeta(BasePilMeta):
     @metadata()
     def width(self):
         """Return (:unav): we will get width from another scraper."""
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def height(self):
         """Return (:unav): we will get height from another scraper."""
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def colorspace(self):
         """Return (:unav): we will get colorspace from another scraper."""
-        return "(:unav)"
+        return UNAV
 
 
 class Jp2PilMeta(BasePilMeta):
@@ -164,29 +165,29 @@ class Jp2PilMeta(BasePilMeta):
     def mimetype(self):
         mime = super(Jp2PilMeta, self).mimetype()
         if mime == "image/jpx":
-            return "(:unav)"
+            return UNAV
         return mime
 
     @metadata()
     def version(self):
         if self.mimetype() == "image/jp2":
-            return "(:unap)"
-        return "(:unav)"
+            return UNAP
+        return UNAV
 
     @metadata()
     def width(self):
         """Return (:unav): we will get width from another scraper."""
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def height(self):
         """Return (:unav): we will get height from another scraper."""
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def colorspace(self):
         """Return (:unav): we will get colorspace from another scraper."""
-        return "(:unav)"
+        return UNAV
 
 
 class JpegPilMeta(BasePilMeta):
@@ -198,17 +199,17 @@ class JpegPilMeta(BasePilMeta):
     @metadata()
     def width(self):
         """Return (:unav): we will get width from another scraper."""
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def height(self):
         """Return (:unav): We will get height from another scraper."""
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def colorspace(self):
         """Return (:unav): We will get colorspace from another scraper."""
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def samples_per_pixel(self):

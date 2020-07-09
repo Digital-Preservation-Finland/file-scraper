@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 
 import os
 
+from file_scraper.defaults import UNAP, UNAV
+
 
 def get_files(well_formed):
     """Get all well-formed/not well-formed files from tests.
@@ -21,7 +23,7 @@ def get_files(well_formed):
                 mimetype = root.split("/")[-1].replace("_", "/")
                 version = os.path.splitext(fname)[0].split("_")[1]
                 if not version:
-                    version = "(:unap)"
+                    version = UNAP
                 yield fullname, mimetype, version
 
 
@@ -90,7 +92,7 @@ def parse_results(filename, mimetype, results, check_wellformed,
     if "streams" in results and "version" in results["streams"][0]:
         version = results["streams"][0]["version"]
     else:
-        version = words[1] if len(words) > 1 and words[1] else "(:unap)"
+        version = words[1] if len(words) > 1 and words[1] else UNAP
     testfile = os.path.join(path, filename)
 
     correct = Correct()
@@ -109,9 +111,9 @@ def parse_results(filename, mimetype, results, check_wellformed,
 
     if ("invalid" in filename) != ("inverse" in results and
                                    results["inverse"]):
-        correct_mime = "(:unav)"
-        correct_ver = "(:unav)"
-        stream_type = "(:unav)" if stream_type != "binary" else stream_type
+        correct_mime = UNAV
+        correct_ver = UNAV
+        stream_type = UNAV if stream_type != "binary" else stream_type
     else:
         correct_mime = mimetype
         correct_ver = version

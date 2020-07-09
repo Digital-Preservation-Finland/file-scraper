@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import io
 import six
 from file_scraper.base import BaseScraper
+from file_scraper.defaults import UNAV
 from file_scraper.magiclib import file_command
 from file_scraper.utils import iter_utf_bytes
 from file_scraper.textfile.textfile_model import (TextFileMeta,
@@ -81,7 +82,7 @@ class TextEncodingMetaScraper(BaseScraper):
         super(TextEncodingMetaScraper, self).__init__(
             filename=filename, mimetype=mimetype, version=version,
             params=params)
-        self._charset = self._params.get("charset", "(:unav)")
+        self._charset = self._params.get("charset", UNAV)
 
     @classmethod
     def is_supported(cls, mimetype, version=None, check_wellformed=True,
@@ -151,13 +152,13 @@ class TextEncodingScraper(BaseScraper):
         super(TextEncodingScraper, self).__init__(
             filename=filename, mimetype=mimetype, version=version,
             params=params)
-        self._charset = self._params.get("charset", "(:unav)")
+        self._charset = self._params.get("charset", UNAV)
 
     def scrape_file(self):
         """
         Validate the file with decoding it with given character encoding.
         """
-        if self._charset in [None, "(:unav)"]:
+        if self._charset in [None, UNAV]:
             self._errors.append("Character encoding not defined.")
             return
         try:

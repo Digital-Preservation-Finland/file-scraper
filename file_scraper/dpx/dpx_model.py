@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from file_scraper.base import BaseMeta
+from file_scraper.defaults import UNAV
 from file_scraper.utils import metadata, ensure_text
 
 
@@ -31,7 +32,7 @@ class DpxMeta(BaseMeta):
         If the well-formed status from scraper is False,
         then we do not know the actual MIME type.
         """
-        return "image/x-dpx" if self._well_formed else "(:unav)"
+        return "image/x-dpx" if self._well_formed else UNAV
 
     @metadata()
     def version(self):
@@ -42,7 +43,7 @@ class DpxMeta(BaseMeta):
         then we do not know the actual version.
         """
         if not self._well_formed:
-            return "(:unav)"
+            return UNAV
 
         for supported_version in self._supported["image/x-dpx"]:
 
@@ -52,7 +53,7 @@ class DpxMeta(BaseMeta):
             if version_string in self._messages:
                 return supported_version
 
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def stream_type(self):
@@ -62,4 +63,4 @@ class DpxMeta(BaseMeta):
         If the well-formed status from scraper is False,
         then we do not know the actual stream type.
         """
-        return "image" if self._well_formed else "(:unav)"
+        return "image" if self._well_formed else UNAV

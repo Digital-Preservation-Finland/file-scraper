@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 
 import pytest
 
+from file_scraper.defaults import UNAV
 from file_scraper.ghostscript.ghostscript_scraper import GhostscriptScraper
 from tests.common import (parse_results, partial_message_included)
 
@@ -61,8 +62,8 @@ def test_scraper_pdf(filename, result_dict, evaluate_scraper):
         scraper.scrape_file()
 
         # Ghostscript cannot handle version or MIME type
-        correct.streams[0]["version"] = "(:unav)"
-        correct.streams[0]["mimetype"] = "(:unav)"
+        correct.streams[0]["version"] = UNAV
+        correct.streams[0]["mimetype"] = UNAV
 
         evaluate_scraper(scraper, correct, eval_output=False)
 
@@ -95,8 +96,8 @@ def test_jpeg2000_inside_pdf(evaluate_scraper):
     scraper.scrape_file()
 
     # Ghostscript cannot handle version or MIME type
-    correct.streams[0]["version"] = "(:unav)"
-    correct.streams[0]["mimetype"] = "(:unav)"
+    correct.streams[0]["version"] = UNAV
+    correct.streams[0]["mimetype"] = UNAV
 
     evaluate_scraper(scraper, correct, eval_output=False)
 

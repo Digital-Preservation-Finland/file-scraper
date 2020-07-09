@@ -61,3 +61,9 @@ PRONOM_DICT = {
     "fmt/5": ("video/avi", ""),
     "fmt/569": ("video/x-matroska", "4")
 }
+
+# (:unap) = Not applicable, makes no sense
+# (:unav) = Value unavailable, possibly unknown
+# See: http://digitalpreservation.fi/specifications/vocabularies/unknown-values
+UNAP = "(:unap)"
+UNAV = "(:unav)"

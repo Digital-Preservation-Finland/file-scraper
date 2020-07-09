@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from file_scraper.base import BaseMeta
+from file_scraper.defaults import UNAV
 from file_scraper.utils import metadata
 
 
@@ -26,7 +27,7 @@ class LxmlMeta(BaseMeta):
             return "5.0"
         if "HTML 4.01" in self._tree.docinfo.doctype:
             return "4.01"
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def charset(self):

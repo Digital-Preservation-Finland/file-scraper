@@ -5,6 +5,7 @@ import re
 import six
 
 from file_scraper.base import BaseMeta
+from file_scraper.defaults import UNAP, UNAV
 from file_scraper.exceptions import SkipElementException
 from file_scraper.utils import iso8601_duration, strip_zeros, metadata
 
@@ -68,14 +69,14 @@ class BaseMediainfoMeta(BaseMeta):
         except (KeyError, SkipElementException):
             pass
 
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def version(self):
         """Return version of stream."""
         if self._stream.format_version is not None:
             return self._stream.format_version.replace("Version ", "")
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def stream_type(self):
@@ -107,7 +108,7 @@ class BaseMediainfoMeta(BaseMeta):
                 return "Grayscale"
         if self._stream.chroma_subsampling is not None:
             return "Color"
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def signal_format(self):
@@ -116,7 +117,7 @@ class BaseMediainfoMeta(BaseMeta):
             raise SkipElementException()
         if self._stream.standard is not None:
             return self._stream.standard
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def width(self):
@@ -125,7 +126,7 @@ class BaseMediainfoMeta(BaseMeta):
             raise SkipElementException()
         if self._stream.width is not None:
             return six.text_type(self._stream.width)
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def height(self):
@@ -134,7 +135,7 @@ class BaseMediainfoMeta(BaseMeta):
             raise SkipElementException()
         if self._stream.height is not None:
             return six.text_type(self._stream.height)
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def par(self):
@@ -143,7 +144,7 @@ class BaseMediainfoMeta(BaseMeta):
             raise SkipElementException()
         if self._stream.pixel_aspect_ratio is not None:
             return strip_zeros(six.text_type(self._stream.pixel_aspect_ratio))
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def dar(self):
@@ -153,7 +154,7 @@ class BaseMediainfoMeta(BaseMeta):
         if self._stream.display_aspect_ratio is not None:
             return strip_zeros(six.text_type(
                 self._stream.display_aspect_ratio))
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def data_rate(self):
@@ -166,7 +167,7 @@ class BaseMediainfoMeta(BaseMeta):
                     self._stream.bit_rate) / 1000000))
             return strip_zeros(six.text_type(float(
                 self._stream.bit_rate)/1000))
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def frame_rate(self):
@@ -175,7 +176,7 @@ class BaseMediainfoMeta(BaseMeta):
             raise SkipElementException()
         if self._stream.frame_rate is not None:
             return strip_zeros(six.text_type(self._stream.frame_rate))
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def sampling(self):
@@ -184,7 +185,7 @@ class BaseMediainfoMeta(BaseMeta):
             raise SkipElementException()
         if self._stream.chroma_subsampling is not None:
             return self._stream.chroma_subsampling
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def sound(self):
@@ -211,7 +212,7 @@ class BaseMediainfoMeta(BaseMeta):
             raise SkipElementException()
         if self._stream.compression_mode is not None:
             return self._stream.compression_mode.lower()
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def data_rate_mode(self):
@@ -227,7 +228,7 @@ class BaseMediainfoMeta(BaseMeta):
             return "Fixed"
         if self._stream.bit_rate_mode is not None:
             return "Variable"
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def audio_data_encoding(self):
@@ -236,7 +237,7 @@ class BaseMediainfoMeta(BaseMeta):
             raise SkipElementException()
         if self._stream.format is not None:
             return six.text_type(self._stream.format)
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def sampling_frequency(self):
@@ -246,7 +247,7 @@ class BaseMediainfoMeta(BaseMeta):
         if self._stream.sampling_rate is not None:
             return strip_zeros(six.text_type(float(
                 self._stream.sampling_rate)/1000))
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def num_channels(self):
@@ -255,7 +256,7 @@ class BaseMediainfoMeta(BaseMeta):
             raise SkipElementException()
         if self._stream.channel_s is not None:
             return six.text_type(self._stream.channel_s)
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def codec_creator_app(self):
@@ -264,7 +265,7 @@ class BaseMediainfoMeta(BaseMeta):
             raise SkipElementException()
         if self._tracks[0].writing_application is not None:
             return self._tracks[0].writing_application
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def codec_creator_app_version(self):
@@ -276,7 +277,7 @@ class BaseMediainfoMeta(BaseMeta):
                             self._tracks[0].writing_application)
             if reg is not None:
                 return reg.group(1)
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def codec_name(self):
@@ -285,7 +286,7 @@ class BaseMediainfoMeta(BaseMeta):
             raise SkipElementException()
         if self._stream.format is not None:
             return self._stream.format
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def duration(self):
@@ -295,7 +296,7 @@ class BaseMediainfoMeta(BaseMeta):
         if self._stream.duration is not None:
             return iso8601_duration(float(
                 self._stream.duration) / 1000)
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def bits_per_sample(self):
@@ -304,7 +305,7 @@ class BaseMediainfoMeta(BaseMeta):
             raise SkipElementException()
         if self._stream.bit_depth is not None:
             return six.text_type(self._stream.bit_depth)
-        return "(:unav)"
+        return UNAV
 
 
 class MovMediainfoMeta(BaseMediainfoMeta):
@@ -341,7 +342,7 @@ class MovMediainfoMeta(BaseMediainfoMeta):
         if self.mimetype() in [
                 "audio/L8", "audio/L16", "audio/L20", "audio/24",
                 "video/quicktime", "video/dv", "video/mp4", "audio/mp4"]:
-            return "(:unap)"
+            return UNAP
         return super(MovMediainfoMeta, self).version()
 
     @metadata()
@@ -355,7 +356,7 @@ class MovMediainfoMeta(BaseMediainfoMeta):
             return "lossless"
         if self.mimetype() == "video/mp4":
             return "lossy"
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def signal_format(self):
@@ -377,11 +378,11 @@ class MovMediainfoMeta(BaseMediainfoMeta):
         constant bit rate.
         """
         mode = super(MovMediainfoMeta, self).data_rate_mode()
-        if mode not in ["(:unav)", None]:
+        if mode not in [UNAV, None]:
             return mode
         if self.mimetype() == "video/mp4":
             return "Variable"
-        return "(:unav)"
+        return UNAV
 
 
 class MkvMediainfoMeta(BaseMediainfoMeta):
@@ -423,7 +424,7 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
             return "1.2.1"
         if self.mimetype() in ["audio/L8", "audio/L16", "audio/L20",
                                "audio/24"]:
-            return "(:unap)"
+            return UNAP
 
         version = super(MkvMediainfoMeta, self).version()
         if isinstance(version, six.text_type):
@@ -435,7 +436,7 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
         """Returns signal format."""
         if self.stream_type() not in ["video"]:
             raise SkipElementException()
-        return "(:unap)"
+        return UNAP
 
     @metadata()
     def codec_quality(self):
@@ -458,7 +459,7 @@ class WavMediainfoMeta(BaseMediainfoMeta):
     def mimetype(self):
         if self._tracks[0].format == "Wave":
             return "audio/x-wav"
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def version(self):
@@ -466,7 +467,7 @@ class WavMediainfoMeta(BaseMediainfoMeta):
         if self._tracks[0].bext_present is not None \
                 and self._tracks[0].bext_present == "Yes":
             return "2"
-        return "(:unap)"
+        return UNAP
 
     @metadata()
     def codec_quality(self):
@@ -497,7 +498,7 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
         """Returns signal format."""
         if self.stream_type() not in ["video"]:
             raise SkipElementException()
-        return "(:unap)"
+        return UNAP
 
     @metadata()
     def codec_quality(self):
@@ -539,14 +540,14 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
                 except SkipElementException:
                     pass
 
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def version(self):
         """Return version of stream."""
         if self.mimetype() in ["video/MP2T", "video/MP2P", "video/MP1S",
                                "video/mp4", "audio/mp4"]:
-            return "(:unap)"
+            return UNAP
         # mp3 "container" does not know the version, so it has to be checked
         # from the first stream
         if (self.mimetype() == "audio/mpeg" and
@@ -556,7 +557,7 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
 
         if self._stream.format_version is not None:
             return six.text_type(self._stream.format_version)[-1]
-        return "(:unav)"
+        return UNAV
 
 
 class SimpleMediainfoMeta(BaseMeta):

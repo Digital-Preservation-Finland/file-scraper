@@ -5,6 +5,7 @@ import re
 import six
 
 from file_scraper.base import BaseScraper
+from file_scraper.defaults import UNAV
 from file_scraper.shell import Shell
 from file_scraper.ffmpeg.ffmpeg_model import FFMpegSimpleMeta, FFMpegMeta
 from file_scraper.utils import ensure_text, encode_path
@@ -60,9 +61,9 @@ class FFMpegScraper(BaseScraper):
         # PCM audio is present. This should not be given e.g. for video
         # streams nor audio streams of another type (such as MPEG).
         for stream in streams:
-            if "PCM" in stream.get("codec_long_name", "(:unav)") and not \
-                    any(stream.get("codec_long_name", "(:unav)").startswith(x)
-                            for x in ["PCM signed", "PCM unsigned"]):
+            if "PCM" in stream.get("codec_long_name", UNAV) and not \
+                    any(stream.get("codec_long_name", UNAV).startswith(x)
+                        for x in ["PCM signed", "PCM unsigned"]):
                 self._errors.append("%s does not seem to be LPCM format."
                                     % stream["codec_long_name"])
 

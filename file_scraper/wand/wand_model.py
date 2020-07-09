@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import six
 
 from file_scraper.base import BaseMeta
+from file_scraper.defaults import UNAV
 from file_scraper.utils import metadata
 
 
@@ -45,7 +46,7 @@ class WandImageMeta(BaseMeta):
         If image exists, return its colorspace, otherwise return (:unav).
         """
         if not self._image:
-            return "(:unav)"
+            return UNAV
         colorspace = six.text_type(self._image.colorspace)
         if colorspace.lower() != "sRGB".lower():
             return colorspace
@@ -63,21 +64,21 @@ class WandImageMeta(BaseMeta):
 
         The name of the profile is same as the ICC description."""
         if not self._image:
-            return "(:unav)"
-        return self._image.container.metadata.get("icc:description", "(:unav)")
+            return UNAV
+        return self._image.container.metadata.get("icc:description", UNAV)
 
     @metadata()
     def width(self):
         """If image exists, return its width, otherwise return (:unav)."""
         if not self._image:
-            return "(:unav)"
+            return UNAV
         return six.text_type(self._image.width)
 
     @metadata()
     def height(self):
         """If image exists, return its height, otherwise return (:unav)."""
         if not self._image:
-            return "(:unav)"
+            return UNAV
         return six.text_type(self._image.height)
 
     @metadata()
@@ -86,19 +87,19 @@ class WandImageMeta(BaseMeta):
         If image exists, return its colour depth, otherwise return (:unav).
         """
         if not self._image:
-            return "(:unav)"
+            return UNAV
         return six.text_type(self._image.depth)
 
     @metadata()
     def bps_unit(self):
         """Unit is always same, return (:unav)."""
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def compression(self):
         """Return the compression type if image exists, otherwise (:unav)."""
         if not self._image:
-            return "(:unav)"
+            return UNAV
         return self._image.compression
 
     @metadata()
@@ -106,7 +107,7 @@ class WandImageMeta(BaseMeta):
         """
         Samples per pixel not available from this scraper, return (:unav).
         """
-        return "(:unav)"
+        return UNAV
 
 
 class WandTiffMeta(WandImageMeta):
@@ -125,7 +126,7 @@ class WandTiffMeta(WandImageMeta):
         :raises: ValueError if Wand reports a value other than "msb" or "lsb".
         """
         if not self._image:
-            return "(:unav)"
+            return UNAV
 
         for key, value in self._image.container.metadata.items():
             if key.startswith("tiff:endian"):
@@ -151,7 +152,7 @@ class WandExifMeta(WandImageMeta):
         if exif_version:
             return format_exif_version(exif_version)
 
-        return "(:unav)"
+        return UNAV
 
 
 def format_exif_version(wand_exif_version):

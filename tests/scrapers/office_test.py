@@ -36,6 +36,7 @@ from multiprocessing import Pool
 
 import pytest
 
+from file_scraper.defaults import UNAV
 from file_scraper.office.office_scraper import OfficeScraper
 from tests.common import parse_results
 
@@ -73,8 +74,8 @@ def test_scraper_valid_file(filename, mimetype, evaluate_scraper):
     correct = parse_results(filename, mimetype, {}, True)
     scraper = OfficeScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
-    correct.update_mimetype("(:unav)")
-    correct.update_version("(:unav)")
+    correct.update_mimetype(UNAV)
+    correct.update_version(UNAV)
 
     evaluate_scraper(scraper, correct, False)
     assert scraper.messages()
@@ -116,8 +117,8 @@ def test_scraper_invalid_file(filename, mimetype, evaluate_scraper):
     correct = parse_results(filename, mimetype, result_dict, True)
     scraper = OfficeScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
-    correct.streams[0]["version"] = "(:unav)"
-    correct.streams[0]["mimetype"] = "(:unav)"
+    correct.streams[0]["version"] = UNAV
+    correct.streams[0]["mimetype"] = UNAV
 
     evaluate_scraper(scraper, correct)
 

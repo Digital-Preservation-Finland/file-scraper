@@ -18,6 +18,7 @@ from __future__ import unicode_literals
 
 import pytest
 
+from file_scraper.defaults import UNAP, UNAV
 from file_scraper.textfile.textfile_scraper import (TextfileScraper,
                                                     TextEncodingScraper)
 from tests.common import parse_results, partial_message_included
@@ -61,11 +62,11 @@ def test_existing_files(filename, mimetype, is_textfile, evaluate_scraper):
     if is_textfile:
         correct.streams[0]["stream_type"] = "text"
         correct.update_mimetype("text/plain")
-        correct.streams[0]["version"] = "(:unap)"
+        correct.streams[0]["version"] = UNAP
     else:
-        correct.streams[0]["stream_type"] = "(:unav)"
-        correct.update_mimetype("(:unav)")
-        correct.streams[0]["version"] = "(:unav)"
+        correct.streams[0]["stream_type"] = UNAV
+        correct.update_mimetype(UNAV)
+        correct.streams[0]["version"] = UNAV
 
     correct.well_formed = is_textfile
     if correct.well_formed:
@@ -150,12 +151,12 @@ def test_encoding_check(filename, charset, is_wellformed, evaluate_scraper):
                                   mimetype="text/plain", params=params)
     scraper.scrape_file()
     if not is_wellformed:
-        correct.update_mimetype("(:unav)")
-        correct.update_version("(:unav)")
-        correct.streams[0]["stream_type"] = "(:unav)"
+        correct.update_mimetype(UNAV)
+        correct.update_version(UNAV)
+        correct.streams[0]["stream_type"] = UNAV
     else:
         correct.update_mimetype("text/plain")
-        correct.update_version("(:unap)")
+        correct.update_version(UNAP)
         correct.streams[0]["stream_type"] = "text"
 
     correct.well_formed = is_wellformed
@@ -172,7 +173,7 @@ def test_encoding_check(filename, charset, is_wellformed, evaluate_scraper):
 @pytest.mark.parametrize(
     "charset",
     [
-        ("(:unav)"), (None)
+        (UNAV), (None)
     ]
 )
 def test_encoding_not_defined(charset):

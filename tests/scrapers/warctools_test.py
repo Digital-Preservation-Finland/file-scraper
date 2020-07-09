@@ -34,6 +34,7 @@ from __future__ import unicode_literals
 
 import pytest
 
+from file_scraper.defaults import UNAV
 from file_scraper.warctools.warctools_scraper import (
     ArcWarctoolsScraper, GzipWarctoolsScraper, WarcWarctoolsFullScraper,
     WarcWarctoolsScraper)
@@ -90,8 +91,8 @@ def test_gzip_scraper(filename, result_dict, evaluate_scraper):
     scraper.scrape_file()
 
     if correct.streams[0]["mimetype"] == "application/x-internet-archive":
-        correct.update_version("(:unav)")
-    if not correct.well_formed and correct.streams[0]["version"] == "(:unav)":
+        correct.update_version(UNAV)
+    if not correct.well_formed and correct.streams[0]["version"] == UNAV:
         correct.update_mimetype("application/gzip")
         classname = "GzipWarctoolsScraper"
 
@@ -205,7 +206,7 @@ def test_arc_scraper(filename, result_dict, evaluate_scraper):
         filename=correct.filename,
         mimetype="application/x-internet-archive")
     scraper.scrape_file()
-    correct.update_version("(:unav)")
+    correct.update_version(UNAV)
 
     if not correct.well_formed:
         assert not scraper.well_formed

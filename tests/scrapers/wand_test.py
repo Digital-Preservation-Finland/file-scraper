@@ -67,42 +67,43 @@ import os
 
 import pytest
 
+from file_scraper.defaults import UNAV
 from file_scraper.wand.wand_model import (WandImageMeta, WandTiffMeta,
                                           WandExifMeta)
 from file_scraper.wand.wand_scraper import WandScraper
 from tests.common import (parse_results, partial_message_included)
 
 STREAM_VALID = {
-    "bps_unit": "(:unav)",
+    "bps_unit": UNAV,
     "bps_value": "8",
     "colorspace": "rgb",
     "height": "6",
-    "samples_per_pixel": "(:unav)",
+    "samples_per_pixel": UNAV,
     "width": "10",
-    "version": "(:unav)"}
+    "version": UNAV}
 
 STREAM_VALID_WITH_SRGB = STREAM_VALID.copy()
 STREAM_VALID_WITH_SRGB['colorspace'] = 'srgb'
 
 EXIF_VALID = {
-    "bps_unit": "(:unav)",
+    "bps_unit": UNAV,
     "bps_value": "8",
     "colorspace": "rgb",
     "height": "8",
-    "samples_per_pixel": "(:unav)",
+    "samples_per_pixel": UNAV,
     "width": "10",
     "version": "2.2.1"}
 
 GIF_APPEND = {
-    "bps_unit": "(:unav)",
+    "bps_unit": UNAV,
     "bps_value": "8",
     "colorspace": "rgb",
     "compression": "lzw",
     "height": "1",
     "mimetype": "image/gif",
-    "samples_per_pixel": "(:unav)",
+    "samples_per_pixel": UNAV,
     "stream_type": "image",
-    "version": "(:unav)",
+    "version": UNAV,
     "width": "1"}
 
 
@@ -140,7 +141,7 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
             correct.streams[0]["mimetype"]
         correct.streams[index]["stream_type"] = \
             correct.streams[0]["stream_type"]
-        correct.streams[index]["version"] = "(:unav)"
+        correct.streams[index]["version"] = UNAV
 
     scraper = WandScraper(filename=correct.filename, mimetype="image/tiff")
     scraper.scrape_file()
@@ -213,7 +214,7 @@ def test_scraper_jp2(filename, result_dict, evaluate_scraper):
     if correct.well_formed:
         correct.streams[0]["compression"] = "jpeg2000"
         correct.streams[0]["colorspace"] = "rgb"
-        correct.streams[0]["version"] = "(:unav)"
+        correct.streams[0]["version"] = UNAV
 
     scraper = WandScraper(filename=correct.filename, mimetype="image/jp2")
     scraper.scrape_file()
@@ -242,7 +243,7 @@ def test_scraper_png(filename, result_dict, evaluate_scraper):
                             result_dict, True)
     if correct.well_formed:
         correct.streams[0]["compression"] = "zip"
-    correct.streams[0]["version"] = "(:unav)"
+    correct.streams[0]["version"] = UNAV
 
     scraper = WandScraper(filename=correct.filename, mimetype="image/png")
     scraper.scrape_file()
@@ -279,7 +280,7 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
     if correct.well_formed:
         correct.streams[0]["compression"] = "lzw"
     for stream in correct.streams.values():
-        stream["version"] = "(:unav)"
+        stream["version"] = UNAV
 
     scraper = WandScraper(filename=correct.filename, mimetype="image/gif")
     scraper.scrape_file()

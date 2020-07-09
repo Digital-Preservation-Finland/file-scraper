@@ -1,6 +1,7 @@
 """File metadata scraper."""
 from __future__ import unicode_literals
 
+from file_scraper.defaults import UNAV
 from file_scraper.detectors import VerapdfDetector, MagicCharset
 from file_scraper.dummy.dummy_scraper import FileExists, MimeMatchScraper
 from file_scraper.iterator import iter_detectors, iter_scrapers
@@ -8,7 +9,7 @@ from file_scraper.jhove.jhove_scraper import JHoveUtf8Scraper
 from file_scraper.textfile.textfile_scraper import TextfileScraper
 from file_scraper.utils import encode_path, generate_metadata_dict, hexdigest
 
-LOSE = (None, "(:unav)", "")
+LOSE = (None, UNAV, "")
 
 
 class Scraper(object):
@@ -44,8 +45,8 @@ class Scraper(object):
         self.info = {}
         _mime = self._predefined_mimetype
         _version = self._predefined_version
-        self._params["detected_mimetype"] = "(:unav)"
-        self._params["detected_version"] = "(:unav)"
+        self._params["detected_mimetype"] = UNAV
+        self._params["detected_version"] = UNAV
         for detector in iter_detectors():
             tool = detector(self.filename, _mime, _version)
             self._update_filetype(tool)
@@ -124,7 +125,7 @@ class Scraper(object):
         if "charset" in self.streams[0] and \
                 self.streams[0]["charset"] == "UTF-8":
             scraper = JHoveUtf8Scraper(filename=self.filename,
-                                       mimetype="(:unav)")
+                                       mimetype=UNAV)
             self._scrape_file(scraper, True)
 
     def _check_mime(self, check_wellformed):

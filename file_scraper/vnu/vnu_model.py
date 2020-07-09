@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from file_scraper.base import BaseMeta
+from file_scraper.defaults import UNAV
 from file_scraper.utils import metadata
 
 
@@ -26,7 +27,7 @@ class VnuMeta(BaseMeta):
         If the well-formed status from scraper is False,
         then we do not know the actual MIME type.
         """
-        return "text/html" if self._well_formed else "(:unav)"
+        return "text/html" if self._well_formed else UNAV
 
     @metadata()
     def version(self):
@@ -36,7 +37,7 @@ class VnuMeta(BaseMeta):
         If the well-formed status from scraper is False,
         then we do not know the actual version.
         """
-        return "5.0" if self._well_formed else "(:unav)"
+        return "5.0" if self._well_formed else UNAV
 
     @metadata()
     def stream_type(self):
@@ -46,4 +47,4 @@ class VnuMeta(BaseMeta):
         If the well-formed status from scraper is False,
         then we do not know the actual stream type.
         """
-        return "text" if self._well_formed else "(:unav)"
+        return "text" if self._well_formed else UNAV

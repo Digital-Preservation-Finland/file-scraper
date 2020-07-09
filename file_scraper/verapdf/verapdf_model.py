@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from file_scraper.base import BaseMeta
+from file_scraper.defaults import UNAV
 from file_scraper.utils import metadata
 
 
@@ -30,7 +31,7 @@ class VerapdfMeta(BaseMeta):
         If the well-formed status from scraper is False,
         then we do not know the actual MIME type.
         """
-        return "application/pdf" if self._well_formed else "(:unav)"
+        return "application/pdf" if self._well_formed else UNAV
 
     @metadata(important=True)
     def version(self):
@@ -46,7 +47,7 @@ class VerapdfMeta(BaseMeta):
         if self._well_formed and self._profile is not None:
             return "A" + self._profile.split("PDF/A")[1].split(
                 " validation profile")[0].lower()
-        return "(:unav)"
+        return UNAV
 
     # pylint: disable=no-self-use
     @metadata()

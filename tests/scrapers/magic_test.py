@@ -75,6 +75,7 @@ from __future__ import unicode_literals
 
 import pytest
 
+from file_scraper.defaults import UNAV
 from file_scraper.magic_scraper.magic_model import (HtmlFileMagicMeta,
                                                     OfficeFileMagicMeta)
 from file_scraper.magic_scraper.magic_scraper import (MagicTextScraper,
@@ -149,7 +150,7 @@ def test_scraper_valid(filename, mimetype, charset, scraper_class,
         correct.streams[0]["stream_type"] = "text"
     if (OfficeFileMagicMeta.is_supported(correct.streams[0]["mimetype"]) or
             HtmlFileMagicMeta.is_supported(correct.streams[0]["mimetype"])):
-        correct.streams[0]["version"] = "(:unav)"
+        correct.streams[0]["version"] = UNAV
 
     evaluate_scraper(scraper, correct)
 
@@ -222,7 +223,7 @@ def test_invalid_markdown_pdf_arc(filename, mimetype, scraper_class,
         "stderr_part": ""}
     correct = parse_results(filename, mimetype, result_dict, True)
     correct.update_mimetype(mimetype)
-    if correct.streams[0]["stream_type"] == "(:unav)":
+    if correct.streams[0]["stream_type"] == UNAV:
         correct.streams[0]["stream_type"] = "text"
     if mimetype != "text/html":
         correct.update_version(filename.split("_")[1])

@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from file_scraper.base import BaseMeta
-from file_scraper.defaults import MIMETYPE_DICT
+from file_scraper.defaults import MIMETYPE_DICT, UNAP, UNAV
 from file_scraper.utils import metadata
 
 
@@ -28,7 +28,7 @@ class BaseMagicMeta(BaseMeta):
             mimetype = MIMETYPE_DICT[mimetype]
         if mimetype == self._predefined_mimetype:
             return mimetype
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def version(self):
@@ -39,7 +39,7 @@ class BaseMagicMeta(BaseMeta):
         if self._endtag:
             magic_version = magic_version.split(self._endtag)[0]
         if magic_version == "data":
-            return "(:unav)"
+            return UNAV
         return magic_version
 
 
@@ -62,7 +62,7 @@ class TextMagicBaseMeta(BaseMagicMeta):
         magic_charset = self._magic_result['magic_mime_encoding']
 
         if magic_charset is None or magic_charset.upper() == "BINARY":
-            return "(:unav)"
+            return UNAV
         if magic_charset.upper() == "US-ASCII":
             return "UTF-8"
         if magic_charset.upper() == "ISO-8859-1":
@@ -90,8 +90,8 @@ class TextFileMagicMeta(TextMagicBaseMeta):
     def version(self):
         """Return version."""
         if self.mimetype() in self._supported:
-            return "(:unap)"
-        return "(:unav)"
+            return UNAP
+        return UNAV
 
 
 class XmlFileMagicMeta(TextMagicBaseMeta):
@@ -143,7 +143,7 @@ class XmlFileMagicMeta(TextMagicBaseMeta):
                     "XML version must be '1.0'.".format(version))
             return version
         except ValueError:
-            return "(:unav)"
+            return UNAV
 
 
 class XhtmlFileMagicMeta(TextMagicBaseMeta):
@@ -162,7 +162,7 @@ class XhtmlFileMagicMeta(TextMagicBaseMeta):
         if mime in ["application/xml", "text/xml", "text/html",
                     "application/xhtml+xml"]:
             return "application/xhtml+xml"
-        return "(:unav)"
+        return UNAV
 
 
 class HtmlFileMagicMeta(TextMagicBaseMeta):
@@ -174,7 +174,7 @@ class HtmlFileMagicMeta(TextMagicBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        return "(:unav)"
+        return UNAV
 
 
 class PdfFileMagicMeta(BinaryMagicBaseMeta):
@@ -213,7 +213,7 @@ class OfficeFileMagicMeta(BinaryMagicBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        return "(:unav)"
+        return UNAV
 
 
 class ArcFileMagicMeta(BinaryMagicBaseMeta):
@@ -235,7 +235,7 @@ class ArcFileMagicMeta(BinaryMagicBaseMeta):
     def version(self):
         """Return version."""
         if self.mimetype() not in self._supported:
-            return "(:unav)"
+            return UNAV
         version = super(ArcFileMagicMeta, self).version()
         if version == "1":
             version = "1.0"
@@ -253,7 +253,7 @@ class PngFileMagicMeta(BinaryMagicBaseMeta):
         """Return version."""
         if self.mimetype() in self._supported:
             return "1.2"
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def stream_type(self):
@@ -284,7 +284,7 @@ class JpegFileMagicMeta(BinaryMagicBaseMeta):
         exif_magic_line = "JPEG image data, Exif standard"
 
         if self._magic_result['magic_none'].startswith(exif_magic_line):
-            return "(:unav)"
+            return UNAV
         return super(JpegFileMagicMeta, self).version()
 
 
@@ -298,8 +298,8 @@ class Jp2FileMagicMeta(BinaryMagicBaseMeta):
     def version(self):
         """Return version."""
         if self.mimetype() in self._supported:
-            return "(:unap)"
-        return "(:unav)"
+            return UNAP
+        return UNAV
 
     @metadata()
     def stream_type(self):
@@ -318,7 +318,7 @@ class TiffFileMagicMeta(BinaryMagicBaseMeta):
         """Return version."""
         if self.mimetype() in self._supported:
             return "6.0"
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def stream_type(self):

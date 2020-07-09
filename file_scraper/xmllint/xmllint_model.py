@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from file_scraper.base import BaseMeta
+from file_scraper.defaults import UNAV
 from file_scraper.utils import metadata
 
 
@@ -31,7 +32,7 @@ class XmllintMeta(BaseMeta):
         If the well-formed status from scraper is False,
         then we do not know the actual MIME type.
         """
-        return "text/xml" if self._well_formed else "(:unav)"
+        return "text/xml" if self._well_formed else UNAV
 
     @metadata()
     def version(self):
@@ -39,7 +40,7 @@ class XmllintMeta(BaseMeta):
         if self.mimetype() in self._supported and \
                 self._tree.docinfo.xml_version:
             return self._tree.docinfo.xml_version
-        return "(:unav)"
+        return UNAV
 
     # pylint: disable=no-self-use
     @metadata()
@@ -50,4 +51,4 @@ class XmllintMeta(BaseMeta):
         If the well-formed status from scraper is False,
         then we do not know the actual stream type.
         """
-        return "text" if self._well_formed else "(:unav)"
+        return "text" if self._well_formed else UNAV

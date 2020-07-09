@@ -27,6 +27,7 @@ from __future__ import unicode_literals
 
 import pytest
 
+from file_scraper.defaults import UNAP, UNAV
 from file_scraper.mediainfo.mediainfo_scraper import MediainfoScraper
 from tests.common import (parse_results, partial_message_included)
 from tests.scrapers.stream_dicts import (AVI_CONTAINER,
@@ -205,7 +206,7 @@ def test_mediainfo_scraper_wav(filename, result_dict, evaluate_scraper):
     if "2" in filename:
         correct.streams[0]["version"] = "2"
     else:
-        correct.streams[0]["version"] = "(:unap)"
+        correct.streams[0]["version"] = UNAP
 
     scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
@@ -424,7 +425,7 @@ def test_mediainfo_scraper_avi(filename, result_dict):
             if method.__name__ == "index":
                 assert method() == 0
             else:
-                assert method() == "(:unav)"
+                assert method() == UNAV
 
 
 @pytest.mark.parametrize(

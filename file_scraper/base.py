@@ -2,6 +2,8 @@
 from __future__ import unicode_literals
 
 import abc
+
+from file_scraper.defaults import UNAP, UNAV
 from file_scraper.utils import metadata, is_metadata
 
 
@@ -92,7 +94,7 @@ class BaseScraper(object):
         if mimetype is None:
             self._errors.append("None is not a supported MIME type.")
 
-        if mimetype == "(:unav)" and allow_unav_mime:
+        if mimetype == UNAV and allow_unav_mime:
             return
 
         for md_class in self._supported_metadata:
@@ -104,8 +106,8 @@ class BaseScraper(object):
                 if not md_class.supported_mimetypes()[mimetype]:
                     return
                 # version is (:unav) or (:unap) but that is allowed
-                if ((allow_unav_version and version == "(:unav)") or
-                        (allow_unap_version and version == "(:unap)")):
+                if ((allow_unav_version and version == UNAV) or
+                        (allow_unap_version and version == UNAP)):
                     return
 
         # No supporting metadata models found.
@@ -188,7 +190,7 @@ class BaseMeta(object):
 
         :returns: "(:unav)"
         """
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def version(self):
@@ -198,7 +200,7 @@ class BaseMeta(object):
 
         :returns: "(:unav)"
         """
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def index(self):
@@ -217,7 +219,7 @@ class BaseMeta(object):
 
         :returns: "(:unav)"
         """
-        return "(:unav)"
+        return UNAV
 
     @classmethod
     def is_supported(cls, mimetype, version=None, params=None):

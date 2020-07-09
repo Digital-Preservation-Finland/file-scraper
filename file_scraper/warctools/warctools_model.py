@@ -1,6 +1,7 @@
 """Metadata models for Warcs and Arcs."""
 from __future__ import unicode_literals
 
+from file_scraper.defaults import UNAV
 from file_scraper.utils import metadata, ensure_text
 from file_scraper.base import BaseMeta
 
@@ -67,17 +68,17 @@ class WarcWarctoolsMeta(BaseWarctoolsMeta):
         The file is a WARC file if there are not errors. This is returned only
         if predefined as a WARC file.
         """
-        return "application/warc" if self._well_formed else "(:unav)"
+        return "application/warc" if self._well_formed else UNAV
 
     @metadata()
     def version(self):
         """Return the version."""
         if self._line is None:
-            return "(:unav)"
+            return UNAV
         if len(self._line.split(b"WARC/", 1)) > 1:
             return ensure_text(
                 self._line.split(b"WARC/", 1)[1].split(b" ")[0].strip())
-        return "(:unav)"
+        return UNAV
 
 
 class ArcWarctoolsMeta(BaseWarctoolsMeta):
@@ -104,4 +105,4 @@ class ArcWarctoolsMeta(BaseWarctoolsMeta):
         then we do not know the actual MIME type.
         """
         return "application/x-internet-archive" if self._well_formed \
-            else "(:unav)"
+            else UNAV

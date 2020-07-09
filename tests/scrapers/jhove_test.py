@@ -92,6 +92,7 @@ from __future__ import unicode_literals
 
 import pytest
 
+from file_scraper.defaults import UNAV
 from file_scraper.jhove.jhove_scraper import (JHoveGifScraper,
                                               JHoveHtmlScraper,
                                               JHoveJpegScraper,
@@ -215,8 +216,8 @@ def test_scraper_utf8(filename, result_dict, evaluate_scraper):
                                mimetype="text/plain",
                                params=correct.params)
     scraper.scrape_file()
-    correct.streams[0]["mimetype"] = "(:unav)"
-    correct.streams[0]["version"] = "(:unav)"
+    correct.streams[0]["mimetype"] = UNAV
+    correct.streams[0]["version"] = UNAV
 
     evaluate_scraper(scraper, correct)
 
@@ -309,7 +310,7 @@ def test_scraper_jpeg(filename, result_dict, evaluate_scraper):
     scraper = JHoveJpegScraper(filename=correct.filename,
                                mimetype="image/jpeg")
     scraper.scrape_file()
-    correct.streams[0]["version"] = "(:unav)"
+    correct.streams[0]["version"] = UNAV
 
     evaluate_scraper(scraper, correct)
 
@@ -392,7 +393,7 @@ def test_scraper_html(filename, result_dict, mimetype, charset,
     correct = parse_results(filename, mimetype, result_dict, True,
                             params)
     if not correct.well_formed:
-        correct.streams[0]["stream_type"] = "(:unav)"
+        correct.streams[0]["stream_type"] = UNAV
     else:
         correct.streams[0]["stream_type"] = "text"
 

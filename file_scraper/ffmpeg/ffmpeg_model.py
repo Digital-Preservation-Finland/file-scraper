@@ -6,6 +6,7 @@ from fractions import Fraction
 import six
 
 from file_scraper.base import BaseMeta
+from file_scraper.defaults import UNAP, UNAV
 from file_scraper.exceptions import SkipElementException
 from file_scraper.utils import metadata, strip_zeros, iso8601_duration
 
@@ -51,8 +52,8 @@ class FFMpegSimpleMeta(BaseMeta):
         "AVI (Audio Video Interleaved)": "video/avi",
         "JPEG 2000": "video/jpeg2000",
         "WAV / WAVE (Waveform Audio)": "audio/x-wav",
-        "QuickTime / MOV": "(:unav)",
-        "MP2/3 (MPEG audio layer 2/3)": "(:unav)",
+        "QuickTime / MOV": UNAV,
+        "MP2/3 (MPEG audio layer 2/3)": UNAV,
         }
 
     def __init__(self, probe_results, index):
@@ -73,8 +74,8 @@ class FFMpegSimpleMeta(BaseMeta):
         """
         if "format_long_name" in self._ffmpeg_stream:
             return self._mimetype_dict.get(
-                self._ffmpeg_stream["format_long_name"], "(:unav)")
-        return "(:unav)"
+                self._ffmpeg_stream["format_long_name"], UNAV)
+        return UNAV
 
     @metadata()
     def stream_type(self):
@@ -82,7 +83,7 @@ class FFMpegSimpleMeta(BaseMeta):
         This metadata model scrapes nothing, return (:unav).
         """
         # pylint: disable=no-self-use
-        return "(:unav)"
+        return UNAV
 
     def hascontainer(self):
         """Check if file has a video container."""
@@ -168,7 +169,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
         JPEG2000 streams.
         """
         mime = super(FFMpegMeta, self).mimetype()
-        if mime not in ["(:unav)", None]:
+        if mime not in [UNAV, None]:
             return mime
 
         if "codec_long_name" in self._ffmpeg_stream:
@@ -180,7 +181,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
     @metadata()
     def version(self):
         """Return (:unap) as supported types do not have different versions."""
-        return "(:unap)" if self.mimetype() != "(:unav)" else "(:unav)"
+        return UNAP if self.mimetype() != UNAV else UNAV
 
     @metadata()
     def codec_quality(self):
@@ -197,7 +198,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             if self._ffmpeg_stream["lossless_wavelet_transform"]:
                 return "lossless"
             return "lossy"
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def data_rate_mode(self):
@@ -211,7 +212,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             raise SkipElementException()
         if self.mimetype() in ["video/jpeg2000"]:
             return "Variable"
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def signal_format(self):
@@ -220,8 +221,8 @@ class FFMpegMeta(FFMpegSimpleMeta):
             raise SkipElementException()
         if self.mimetype() in ["video/jpeg2000"]:
             # signal format not relevant for JPEG2000 streams
-            return "(:unap)"
-        return "(:unav)"
+            return UNAP
+        return UNAV
 
     @metadata()
     def stream_type(self):
@@ -260,7 +261,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             if self._ffmpeg_stream["pix_fmt"] in ["monob", "monow"]:
                 return "B&W"
             return "Color"
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def width(self):
@@ -269,7 +270,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             raise SkipElementException()
         if "width" in self._ffmpeg_stream:
             return six.text_type(self._ffmpeg_stream["width"])
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def height(self):
@@ -278,7 +279,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             raise SkipElementException()
         if "height" in self._ffmpeg_stream:
             return six.text_type(self._ffmpeg_stream["height"])
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def par(self):
@@ -289,7 +290,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             return strip_zeros("%.3f" % float(Fraction(
                 self._ffmpeg_stream["sample_aspect_ratio"].replace(":", "/"))))
 
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def dar(self):
@@ -300,7 +301,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             return strip_zeros("%.3f" % float(Fraction(
                 self._ffmpeg_stream["display_aspect_ratio"].replace(
                     ":", "/"))))
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def data_rate(self):
@@ -323,7 +324,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             return strip_zeros(six.text_type(float(
                 self._probe_results["format"]["bit_rate"]) / 10**6))
 
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def duration(self):
@@ -340,7 +341,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
         if "r_frame_rate" in self._ffmpeg_stream:
             return strip_zeros("%.2f" % float(Fraction(
                 self._ffmpeg_stream["r_frame_rate"])))
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def sampling(self):
@@ -349,15 +350,15 @@ class FFMpegMeta(FFMpegSimpleMeta):
             raise SkipElementException()
         if "pix_fmt" in self._ffmpeg_stream:
             if self._ffmpeg_stream["pix_fmt"] in ["gray", "monob", "monow"]:
-                return "(:unap)"
+                return UNAP
             for sampling_code in ["444", "422", "420", "440", "411", "410"]:
                 if sampling_code in self._ffmpeg_stream["pix_fmt"]:
                     return ":".join(sampling_code)
             # If pix_fmt is defined but none of the checks above apply, then
             # chroma subsampling is not possible for this format.
-            return "(:unap)"
+            return UNAP
 
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def sound(self):
@@ -388,7 +389,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
         if "sample_rate" in self._ffmpeg_stream:
             return strip_zeros(six.text_type(float(
                 self._ffmpeg_stream["sample_rate"])/1000))
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def num_channels(self):
@@ -397,7 +398,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             raise SkipElementException()
         if "channels" in self._ffmpeg_stream:
             return six.text_type(self._ffmpeg_stream["channels"])
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def codec_creator_app(self):
@@ -413,7 +414,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             parts.append(format_info.get("company_name", None))
             parts.append(format_info.get("product_name", None))
             return " ".join(filter(None, parts))
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def codec_creator_app_version(self):
@@ -427,7 +428,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
                 return reg.group()
         if "product_version" in self._probe_results["format"]["tags"]:
             return self._probe_results["format"]["tags"]["product_version"]
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def codec_name(self):
@@ -435,7 +436,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
         if self.stream_type() not in ["audio", "video", "videocontainer"]:
             raise SkipElementException()
 
-        codec = "(:unav)"
+        codec = UNAV
         if "codec_long_name" in self._ffmpeg_stream:
             codec = self._ffmpeg_stream["codec_long_name"]
         if "format_long_name" in self._ffmpeg_stream:
@@ -452,4 +453,4 @@ class FFMpegMeta(FFMpegSimpleMeta):
             raise SkipElementException()
         if "bits_per_raw_sample" in self._ffmpeg_stream is not None:
             return six.text_type(self._ffmpeg_stream["bits_per_raw_sample"])
-        return "(:unav)"
+        return UNAV

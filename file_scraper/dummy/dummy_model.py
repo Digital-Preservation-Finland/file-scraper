@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from file_scraper.base import BaseMeta
+from file_scraper.defaults import UNAP, UNAV
 from file_scraper.utils import metadata
 
 
@@ -12,7 +13,7 @@ class DummyMeta(BaseMeta):
     @metadata()
     def stream_type(self):
         """Stream type is not known so return (:unav)."""
-        return "(:unav)"
+        return UNAV
 
 
 class DetectedMimeVersionMeta(BaseMeta):
@@ -49,17 +50,17 @@ class DetectedMimeVersionMeta(BaseMeta):
         """Return MIME type"""
         if self._mimetype:
             return self._mimetype
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def version(self):
         """Return the file format version"""
-        return self._version if self._version is not None else "(:unav)"
+        return self._version if self._version is not None else UNAV
 
     @metadata()
     def stream_type(self):
         """Return stream type."""
-        return "binary" if self.mimetype() != "(:unav)" else "(:unav)"
+        return "binary" if self.mimetype() != UNAV else UNAV
 
 
 class DetectedSpssVersionMeta(DetectedMimeVersionMeta):
@@ -80,7 +81,7 @@ class DetectedSpssVersionMeta(DetectedMimeVersionMeta):
     @metadata()
     def version(self):
         """Return the file format version"""
-        return "(:unap)"
+        return UNAP
 
 
 class DetectedTextVersionMeta(DetectedMimeVersionMeta):
@@ -99,14 +100,14 @@ class DetectedTextVersionMeta(DetectedMimeVersionMeta):
     def version(self):
         """Return version."""
         version = super(DetectedTextVersionMeta, self).version()
-        if version == "(:unav)" and self.mimetype() == "text/xml":
+        if version == UNAV and self.mimetype() == "text/xml":
             return "1.0"
         return version
 
     @metadata()
     def stream_type(self):
         """Return stream type."""
-        return "text" if self.mimetype() != "(:unav)" else "(:unav)"
+        return "text" if self.mimetype() != UNAV else UNAV
 
 
 class DetectedPdfaVersionMeta(DetectedMimeVersionMeta):
@@ -125,4 +126,4 @@ class DetectedPdfaVersionMeta(DetectedMimeVersionMeta):
     @metadata(important=True)
     def version(self):
         """Return the file format version"""
-        return self._version if self._version is not None else "(:unav)"
+        return self._version if self._version is not None else UNAV

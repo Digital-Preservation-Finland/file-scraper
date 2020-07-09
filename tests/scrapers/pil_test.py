@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 
 import pytest
 
+from file_scraper.defaults import UNAV
 from file_scraper.pil.pil_scraper import PilScraper
 from tests.common import (parse_results, partial_message_included)
 
@@ -30,33 +31,33 @@ INVALID_MSG = "Error in analyzing file."
 
 STREAM_VALID = {
     "bps_unit": "integer",
-    "bps_value": "(:unav)",
-    "colorspace": "(:unav)",
-    "height": "(:unav)",
-    "width": "(:unav)",
+    "bps_value": UNAV,
+    "colorspace": UNAV,
+    "height": UNAV,
+    "width": UNAV,
     "samples_per_pixel": "3",
-    "compression": "(:unav)"}
+    "compression": UNAV}
 
 STREAM_VALID_LA = {
     "bps_unit": "integer",
-    "bps_value": "(:unav)",
-    "colorspace": "(:unav)",
-    "height": "(:unav)",
-    "width": "(:unav)",
+    "bps_value": UNAV,
+    "colorspace": UNAV,
+    "height": UNAV,
+    "width": UNAV,
     "samples_per_pixel": "2",
-    "compression": "(:unav)"}
+    "compression": UNAV}
 
 GIF_APPEND = {
     "bps_unit": "integer",
-    "bps_value": "(:unav)",
-    "colorspace": "(:unav)",
-    "compression": "(:unav)",
-    "height": "(:unav)",
+    "bps_value": UNAV,
+    "colorspace": UNAV,
+    "compression": UNAV,
+    "height": UNAV,
     "mimetype": "image/gif",
     "samples_per_pixel": "1",
     "stream_type": "image",
-    "version": "(:unav)",
-    "width": "(:unav)"}
+    "version": UNAV,
+    "width": UNAV}
 
 STREAM_INVALID = {}
 
@@ -104,7 +105,7 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
 
     if correct.well_formed:
         for index in range(0, len(correct.streams)):
-            correct.streams[index]["version"] = "(:unav)"
+            correct.streams[index]["version"] = UNAV
         evaluate_scraper(scraper, correct)
     else:
         assert not scraper.well_formed
@@ -145,7 +146,7 @@ def test_scraper_jpg(filename, result_dict, evaluate_scraper):
     correct = parse_results(filename, "image/jpeg",
                             result_dict, True)
     correct.streams[0]["mimetype"] = "image/jpeg"
-    correct.streams[0]["version"] = "(:unav)"
+    correct.streams[0]["version"] = UNAV
     if correct.well_formed:
         correct.stdout_part = VALID_MSG
         correct.stderr_part = ""
@@ -247,7 +248,7 @@ def test_scraper_png(filename, result_dict, evaluate_scraper):
     """
     correct = parse_results(filename, "image/png",
                             result_dict, True)
-    correct.streams[0]["version"] = "(:unav)"
+    correct.streams[0]["version"] = UNAV
     if correct.well_formed:
         correct.stdout_part = VALID_MSG
         correct.stderr_part = ""
@@ -309,7 +310,7 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
     if correct.well_formed:
         correct.streams[0]["samples_per_pixel"] = "1"
     for stream in correct.streams.values():
-        stream["version"] = "(:unav)"
+        stream["version"] = UNAV
     if correct.well_formed:
         correct.stdout_part = VALID_MSG
         correct.stderr_part = ""

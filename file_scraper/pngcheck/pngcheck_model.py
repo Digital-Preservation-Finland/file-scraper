@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from file_scraper.base import BaseMeta
+from file_scraper.defaults import UNAV
 from file_scraper.utils import metadata
 
 
@@ -19,4 +20,4 @@ class PngcheckMeta(BaseMeta):
     @metadata()
     def stream_type(self):
         """We do not need to resolve stream type."""
-        return "(:unav)"
+        return UNAV

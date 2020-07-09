@@ -31,13 +31,14 @@ from __future__ import unicode_literals
 import pytest
 import six
 
+from file_scraper.defaults import UNAV
 from file_scraper.dummy.dummy_scraper import (
     FileExists, ScraperNotFound, MimeMatchScraper,
     DetectedMimeVersionScraper, DetectedMimeVersionMetadataScraper)
 from tests.common import partial_message_included
 
-DEFAULTSTREAMS = {0: {"index": 0, "version": "(:unav)",
-                      "stream_type": "(:unav)", "mimetype": "(:unav)"}}
+DEFAULTSTREAMS = {0: {"index": 0, "version": UNAV,
+                      "stream_type": UNAV, "mimetype": UNAV}}
 
 
 @pytest.mark.parametrize(
@@ -145,7 +146,7 @@ def test_mime_match_scraper():
 
     scraper = MimeMatchScraper(
         None, mimetype="expected_mime", version="some_version",
-        params={"mimetype": "expected_mime", "version": "(:unav)"})
+        params={"mimetype": "expected_mime", "version": UNAV})
     scraper.scrape_file()
     assert partial_message_included(
         "File format version is not supported", scraper.errors())
@@ -155,7 +156,7 @@ def test_mime_match_scraper():
         None, mimetype="application/vnd.oasis.opendocument.text",
         version="some_version",
         params={"mimetype": "application/vnd.oasis.opendocument.text",
-                "version": "(:unav)"})
+                "version": UNAV})
     scraper.scrape_file()
     assert partial_message_included(
         "File format version can not be resolved", scraper.messages())

@@ -16,6 +16,7 @@ from __future__ import unicode_literals
 
 import pytest
 
+from file_scraper.defaults import UNAV
 from file_scraper.pngcheck.pngcheck_scraper import PngcheckScraper
 from tests.common import parse_results
 
@@ -51,9 +52,9 @@ def test_scraper(filename, result_dict, evaluate_scraper):
     scraper = PngcheckScraper(filename=correct.filename, mimetype="image/png")
     scraper.scrape_file()
     correct.version = None
-    correct.update_mimetype("(:unav)")
-    correct.update_version("(:unav)")
-    correct.streams[0]["stream_type"] = "(:unav)"
+    correct.update_mimetype(UNAV)
+    correct.update_version(UNAV)
+    correct.streams[0]["stream_type"] = UNAV
     if correct.well_formed:
         correct.stdout_part = "OK"
         correct.stderr_part = ""

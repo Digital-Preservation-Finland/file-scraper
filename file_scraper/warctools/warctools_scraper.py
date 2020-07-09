@@ -9,6 +9,7 @@ from io import open as io_open
 import six
 
 from file_scraper.base import BaseScraper
+from file_scraper.defaults import UNAV
 from file_scraper.shell import Shell
 from file_scraper.utils import sanitize_bytestring, encode_path
 from file_scraper.warctools.warctools_model import (ArcWarctoolsMeta,
@@ -215,7 +216,7 @@ class GzipWarctoolsScraper(BaseScraper):
 
         mimetype = self.streams[0].mimetype()
         version = self.streams[0].version()
-        if version == "(:unav)":
+        if version == UNAV:
             version = None
 
         # Check own metadata models for support: if supporting model is found,

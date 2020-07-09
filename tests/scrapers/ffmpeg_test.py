@@ -50,6 +50,7 @@ from __future__ import unicode_literals
 
 import pytest
 
+from file_scraper.defaults import UNAP
 from file_scraper.ffmpeg.ffmpeg_scraper import FFMpegScraper
 from tests.common import parse_results
 from tests.scrapers.stream_dicts import (
@@ -160,7 +161,7 @@ def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
             "streams": {0: AVI_CONTAINER.copy(),
                         1: dict(AVI_JPEG2000_VIDEO.copy(),
                                 **{"data_rate": "10.11328",
-                                   "sampling": "(:unap)",
+                                   "sampling": UNAP,
                                    "codec_quality": "lossless"})}},
          "video/avi"),
         ("valid__jpeg2000.mxf", {
@@ -178,7 +179,7 @@ def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
                         1: dict(MXF_JPEG2000_VIDEO.copy(),
                                 **{"data_rate": "2.21007",
                                    "color": "Grayscale",
-                                   "sampling": "(:unap)"})}},
+                                   "sampling": UNAP})}},
          "application/mxf"),
     ])
 def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,

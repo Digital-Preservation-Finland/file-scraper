@@ -1,6 +1,8 @@
 """Metadata models for JHove"""
 from __future__ import unicode_literals
 
+from file_scraper.defaults import UNAP, UNAV
+
 try:
     import mimeparse
 except ImportError:
@@ -23,11 +25,11 @@ def get_field(report, field):
               or None if the report was None or field was not found in it.
     """
     if report is None:
-        return "(:unav)"
+        return UNAV
     query = "//j:%s/text()" % field
     results = report.xpath(query, namespaces=NAMESPACES)
     if not results:
-        return "(:unav)"
+        return UNAV
     return "\n".join(results)
 
 
@@ -70,10 +72,10 @@ class JHoveGifMeta(JHoveBaseMeta):
         then we do not know the actual version.
         """
         if not self._well_formed:
-            return "(:unav)"
+            return UNAV
         if get_field(self._report, "version") in ["87a", "89a"]:
             return "19" + get_field(self._report, "version")
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def stream_type(self):
@@ -83,7 +85,7 @@ class JHoveGifMeta(JHoveBaseMeta):
         If the well-formed status from scraper is False,
         then we do not know the actual stream type.
         """
-        return "image" if self._well_formed else "(:unav)"
+        return "image" if self._well_formed else UNAV
 
 
 class JHoveHtmlMeta(JHoveBaseMeta):
@@ -105,7 +107,7 @@ class JHoveHtmlMeta(JHoveBaseMeta):
         then we do not know the actual version.
         """
         if not self._well_formed:
-            return "(:unav)"
+            return UNAV
         version = get_field(self._report, "version")
         if version:
             version = version.split()[-1]
@@ -120,7 +122,7 @@ class JHoveHtmlMeta(JHoveBaseMeta):
             params = result_mimetype[2]
             return params.get("charset")
         except (mimeparse.MimeTypeParseException, IndexError):
-            return "(:unav)"
+            return UNAV
 
     def _get_charset_xml(self):
         """Get the charset from the JHove report for XHTML files."""
@@ -129,7 +131,7 @@ class JHoveHtmlMeta(JHoveBaseMeta):
         try:
             return results[0]
         except IndexError:
-            return "(:unav)"
+            return UNAV
 
     @metadata()
     def mimetype(self):
@@ -140,7 +142,7 @@ class JHoveHtmlMeta(JHoveBaseMeta):
         then we do not know the actual MIME type.
         """
         if not self._well_formed:
-            return "(:unav)"
+            return UNAV
         mime = super(JHoveHtmlMeta, self).mimetype()
         if mime == "text/xml" and \
                 get_field(self._report, "format") == "XHTML":
@@ -151,7 +153,7 @@ class JHoveHtmlMeta(JHoveBaseMeta):
     def charset(self):
         """Get the charset from HTML/XML files."""
         if self._report is None:
-            return "(:unav)"
+            return UNAV
         if "xml" in self.mimetype():
             return self._get_charset_xml()
         return self._get_charset_html()
@@ -164,7 +166,7 @@ class JHoveHtmlMeta(JHoveBaseMeta):
         If the well-formed status from scraper is False,
         then we do not know the actual stream type.
         """
-        return "text" if self._well_formed else "(:unav)"
+        return "text" if self._well_formed else UNAV
 
 
 class JHoveJpegMeta(JHoveBaseMeta):
@@ -183,7 +185,7 @@ class JHoveJpegMeta(JHoveBaseMeta):
         If the well-formed status from scraper is False,
         then we do not know the actual stream type.
         """
-        return "image" if self._well_formed else "(:unav)"
+        return "image" if self._well_formed else UNAV
 
 
 class JHoveTiffMeta(JHoveBaseMeta):
@@ -201,7 +203,7 @@ class JHoveTiffMeta(JHoveBaseMeta):
         If the well-formed status from scraper is False,
         then we do not know the actual version.
         """
-        return "6.0" if self._well_formed else "(:unav)"
+        return "6.0" if self._well_formed else UNAV
 
     @metadata()
     def stream_type(self):
@@ -211,7 +213,7 @@ class JHoveTiffMeta(JHoveBaseMeta):
         If the well-formed status from scraper is False,
         then we do not know the actual stream type.
         """
-        return "image" if self._well_formed else "(:unav)"
+        return "image" if self._well_formed else UNAV
 
 
 class JHovePdfMeta(JHoveBaseMeta):
@@ -231,7 +233,7 @@ class JHovePdfMeta(JHoveBaseMeta):
         """
         if self._well_formed:
             return get_field(self._report, "version")
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def stream_type(self):
@@ -273,17 +275,17 @@ class JHoveWavMeta(JHoveBaseMeta):
         then we do not know the actual version.
         """
         if not self._well_formed:
-            return "(:unav)"
+            return UNAV
         if get_field(self._report, "profile") is None:
-            return "(:unav)"
+            return UNAV
         if "RF64" in get_field(self._report, "profile"):
-            return "(:unav)"
+            return UNAV
         elif "BWF" in get_field(self._report, "profile"):
             return "2"
         elif "PCMWAVEFORMAT" in get_field(self._report, "profile"):
-            return "(:unap)"
+            return UNAP
 
-        return "(:unav)"
+        return UNAV
 
     @metadata()
     def stream_type(self):
@@ -293,7 +295,7 @@ class JHoveWavMeta(JHoveBaseMeta):
         If the well-formed status from scraper is False,
         then we do not know the actual stream type.
         """
-        return "audio" if self._well_formed else "(:unav)"
+        return "audio" if self._well_formed else UNAV
 
 
 class JHoveUtf8Meta(JHoveBaseMeta):
@@ -324,16 +326,16 @@ class JHoveUtf8Meta(JHoveBaseMeta):
         If the well-formed status from scraper is False,
         then we do not know the actual stream type.
         """
-        return "text" if self._well_formed else "(:unav)"
+        return "text" if self._well_formed else UNAV
 
     # pylint: disable=no-self-use
     @metadata()
     def mimetype(self):
         """We don't know the mimetype."""
-        return "(:unav)"
+        return UNAV
 
     # pylint: disable=no-self-use
     @metadata()
     def version(self):
         """We don't know the version."""
-        return "(:unav)"
+        return UNAV

@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from file_scraper.base import BaseMeta
+from file_scraper.defaults import UNAP, UNAV
 from file_scraper.utils import metadata
 
 
@@ -26,7 +27,7 @@ class PsppMeta(BaseMeta):
         If the well-formed status from scraper is False,
         then we do not know the actual MIME type.
         """
-        return "application/x-spss-por" if self._well_formed else "(:unav)"
+        return "application/x-spss-por" if self._well_formed else UNAV
 
     @metadata()
     def version(self):
@@ -35,7 +36,7 @@ class PsppMeta(BaseMeta):
         If the well-formed status from scraper is False,
         then we do not know the actual version.
         """
-        return "(:unap)" if self._well_formed else "(:unav)"
+        return UNAP if self._well_formed else UNAV
 
     @metadata()
     def stream_type(self):

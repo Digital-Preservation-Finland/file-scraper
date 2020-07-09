@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import pytest
 
+from file_scraper.defaults import UNAP, UNAV
 from file_scraper.pspp.pspp_scraper import PsppScraper
 from tests.common import parse_results
 
@@ -73,9 +74,9 @@ def test_scraper(filename, result_dict, evaluate_scraper):
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
     if correct.well_formed:
-        correct.streams[0]["version"] = "(:unap)"
+        correct.streams[0]["version"] = UNAP
     else:
-        correct.streams[0]["version"] = "(:unav)"
+        correct.streams[0]["version"] = UNAV
 
     scraper = PsppScraper(filename=correct.filename,
                           mimetype="application/x-spss-por")

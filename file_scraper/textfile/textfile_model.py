@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from file_scraper.base import BaseMeta
+from file_scraper.defaults import UNAP, UNAV
 from file_scraper.utils import metadata
 
 
@@ -27,7 +28,7 @@ class TextFileMeta(BaseMeta):
         If the well-formed status from scraper is False,
         then we do not know the actual MIME type.
         """
-        return "text/plain" if self._well_formed else "(:unav)"
+        return "text/plain" if self._well_formed else UNAV
 
     @metadata()
     def version(self):
@@ -36,7 +37,7 @@ class TextFileMeta(BaseMeta):
         If the well-formed status from scraper is False,
         then we do not know the actual version.
         """
-        return "(:unap)" if self._well_formed else "(:unav)"
+        return UNAP if self._well_formed else UNAV
 
     @metadata()
     def stream_type(self):
@@ -46,7 +47,7 @@ class TextFileMeta(BaseMeta):
         If the well-formed status from scraper is False,
         then we do not know the actual stream type.
         """
-        return "text" if self._well_formed else "(:unav)"
+        return "text" if self._well_formed else UNAV
 
 
 class TextEncodingMeta(BaseMeta):
@@ -82,7 +83,7 @@ class TextEncodingMeta(BaseMeta):
         if self._predefined_mimetype == "text/plain" and self._well_formed:
             return "text/plain"
         else:
-            return "(:unav)"
+            return UNAV
 
     @metadata()
     def version(self):
@@ -93,9 +94,8 @@ class TextEncodingMeta(BaseMeta):
         files with some encodings, such as UTF-16 without BOM or UTF-32.
         """
         if self._predefined_mimetype == "text/plain" and self._well_formed:
-            return "(:unap)"
-        else:
-            return "(:unav)"
+            return UNAP
+        return UNAV
 
     @metadata(important=True)
     def charset(self):
