@@ -30,9 +30,7 @@ import pytest
 from file_scraper.defaults import UNAP, UNAV
 from file_scraper.mediainfo.mediainfo_scraper import MediainfoScraper
 from tests.common import (parse_results, partial_message_included)
-from tests.scrapers.stream_dicts import (AVI_CONTAINER,
-                                         AVI_JPEG2000_VIDEO,
-                                         DV_VIDEO,
+from tests.scrapers.stream_dicts import (DV_VIDEO,
                                          FFV_VIDEO,
                                          FFV_VIDEO_TRUNCATED,
                                          FFV_VIDEO_SOUND,
@@ -375,60 +373,6 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
 
 
 @pytest.mark.parametrize(
-    ["filename", "result_dict"],
-    [
-        ("valid__JPEG2000.avi", {
-            "purpose": "Test valid AVI with JPEG2000.",
-            "stdout_part": "file was analyzed successfully",
-            "stderr_part": "",
-            "streams": {0: AVI_CONTAINER.copy(),
-                        1: AVI_JPEG2000_VIDEO.copy()}}),
-        ("invalid__JPEG2000_missing_data.avi", {
-            "purpose": "Test truncated file.",
-            "stdout_part": "",
-            "stderr_part": "The file is truncated.",
-            "streams": {0: AVI_CONTAINER.copy(),
-                        # data rate changes when data is removed
-                        1: dict(AVI_JPEG2000_VIDEO.copy(),
-                                **{"data_rate": "1.64036"})}}),
-        ("invalid__JPEG2000_no_avi_signature.avi", {
-            "purpose": "Test file with modified header.",
-            "stdout_part": "",
-            "stderr_part": "No audio or video tracks found"}),
-    ])
-def test_mediainfo_scraper_avi(filename, result_dict):
-    """
-    Test AVI scraping with Mediainfo.
-
-    Both Mediainfo and FFMpeg cannot be used for metadata scraping, and FFMpeg
-    meets our needs better with AVI, so MediainfoScraper should just return one
-    stream full of unavs to be overwritten by results from FFMpeg.
-
-    :filename: Test file name
-    :result_dict: Result dict containing the test purpose, parts of
-                  expected results of stdout and stderr, and expected streams
-    """
-    mimetype = "video/avi"
-    correct = parse_results(filename, mimetype, result_dict, True)
-
-    scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
-    scraper.scrape_file()
-
-    assert partial_message_included(correct.stdout_part,
-                                    scraper.messages())
-    assert partial_message_included(correct.stderr_part, scraper.errors())
-    if "invalid" in filename:
-        assert not scraper.streams
-    else:
-        assert len(scraper.streams) == 1
-        for method in scraper.streams[0].iterate_metadata_methods():
-            if method.__name__ == "index":
-                assert method() == 0
-            else:
-                assert method() == UNAV
-
-
-@pytest.mark.parametrize(
     ["mime", "ver"],
     [
         ("video/mpeg", "1"),
@@ -436,7 +380,6 @@ def test_mediainfo_scraper_avi(filename, result_dict):
         ("video/MP1S", ""),
         ("video/MP2P", ""),
         ("video/MP2T", ""),
-        ("video/avi", ""),
         ("audio/x-wav", ""),
     ]
 )

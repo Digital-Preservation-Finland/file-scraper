@@ -47,6 +47,9 @@ CHANGE_FIDO = {
     "application_x-internet-archive/valid_1.0.arc": "text/html",
     "application_mxf/valid__jpeg2000.mxf": None,
     "application_mxf/valid__jpeg2000_grayscale.mxf": None,
+    "application_mxf/valid__jpeg2000_lossless.mxf": None,
+    "application_mxf/valid__jpeg2000_lossless-wavelet_lossy-"
+    "subsampling.mxf": None,
     "text_csv/valid__ascii.csv": None,
     "text_csv/valid__ascii_header.csv": None,
     "text_csv/valid__header_only.csv": None,

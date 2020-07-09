@@ -123,7 +123,7 @@ class FFMpegSimpleMeta(BaseMeta):
 
 class FFMpegMeta(FFMpegSimpleMeta):
     """
-    Metadata model for video/avi.
+    Metadata model for application/mxf.
 
     This metadata model is used only for a limited selection of video formats,
     as the order of the reported streams from FFMpeg and MediaInfo do not
@@ -139,7 +139,6 @@ class FFMpegMeta(FFMpegSimpleMeta):
 
     # Supported mimetypes
     _supported = {
-        "video/avi": [],
         "application/mxf": [],
         }
     _allow_versions = True   # Allow any version
@@ -147,13 +146,11 @@ class FFMpegMeta(FFMpegSimpleMeta):
     # Codec names returned by ffmpeg do not always correspond to ones from
     # different scraper tools. This dict is used to unify the results.
     _codec_names = {
-        "AVI (Audio Video Interleaved)": "AVI",
         "MXF (Material eXchange Format)": "MXF",
         }
 
     # Some MIME types need to be decided based on codec name
     _codec_mimetype_dict = {
-        "AVI (Audio Video Interleaved)": "video/avi",
         "MXF (Material eXchange Format)": "application/mxf",
         "JPEG 2000": "video/jpeg2000",
         }

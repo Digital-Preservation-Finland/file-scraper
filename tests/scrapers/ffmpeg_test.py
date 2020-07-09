@@ -31,7 +31,7 @@ This module tests that:
         - video/mp4 containing h264 video and aac audio streams
         - video/MP2T file
         - audio/mpeg version 1 file
-        - video/avi
+        - video/mxf
         - video/mxf
         - audio/x-wav
     - Whether well-formed check is performed or not, the scraper reports the
@@ -54,8 +54,6 @@ from file_scraper.defaults import UNAP
 from file_scraper.ffmpeg.ffmpeg_scraper import FFMpegScraper
 from tests.common import parse_results
 from tests.scrapers.stream_dicts import (
-    AVI_CONTAINER,
-    AVI_JPEG2000_VIDEO,
     MXF_CONTAINER,
     MXF_JPEG2000_VIDEO,
     )
@@ -135,35 +133,28 @@ def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
 @pytest.mark.parametrize(
     ["filename", "result_dict", "mimetype"],
     [
-        # TODO codec_quality testing for both avi files
-        ("valid__JPEG2000.avi", {
-            "purpose": "Test valid AVI.",
-            "stdout_part": "file was analyzed successfully",
-            "stderr_part": "",
-            "streams": {0: AVI_CONTAINER.copy(),
-                        1: AVI_JPEG2000_VIDEO.copy()}},
-         "video/avi"),
-        ("valid__JPEG2000_lossless-wavelet_lossy-subsampling.avi", {
-            "purpose": ("Test valid AVI/JPEG2000 with lossless wavelet "
+        # TODO codec_quality testing for both mxf files
+        ("valid__jpeg2000_lossless-wavelet_lossy-subsampling.mxf", {
+            "purpose": ("Test valid MXF/JPEG2000 with lossless wavelet "
                         "transform and chroma subsampling."),
             "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
-            "streams": {0: AVI_CONTAINER.copy(),
-                        1: dict(AVI_JPEG2000_VIDEO.copy(),
-                                **{"data_rate": "3.559952",
+            "streams": {0: MXF_CONTAINER.copy(),
+                        1: dict(MXF_JPEG2000_VIDEO.copy(),
+                                **{"data_rate": "3.683156",
                                    "codec_quality": "lossless"})}},
-         "video/avi"),
-        ("valid__JPEG2000_lossless.avi", {
-            "purpose": ("Test valid AVI/JPEG2000 with lossless wavelet "
+         "application/mxf"),
+        ("valid__jpeg2000_lossless.mxf", {
+            "purpose": ("Test valid MXF/JPEG2000 with lossless wavelet "
                         "transform and no chroma subsampling."),
             "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
-            "streams": {0: AVI_CONTAINER.copy(),
-                        1: dict(AVI_JPEG2000_VIDEO.copy(),
-                                **{"data_rate": "10.11328",
+            "streams": {0: MXF_CONTAINER.copy(),
+                        1: dict(MXF_JPEG2000_VIDEO.copy(),
+                                **{"data_rate": "10.030892",
                                    "sampling": UNAP,
                                    "codec_quality": "lossless"})}},
-         "video/avi"),
+         "application/mxf"),
         ("valid__jpeg2000.mxf", {
             "purpose": "Test valid MXF.",
             "stdout_part": "file was analyzed successfully",
@@ -196,12 +187,6 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
 
     scraper = FFMpegScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
-    # TODO remove these when mxf testing is added and made functional
-#    from file_scraper.utils import generate_metadata_dict
-#    print generate_metadata_dict([scraper.streams], [])
-#    for stream in range(len(scraper.streams)):
-#        print "scraper: " + scraper.streams[stream].stream_type()
-#        print "correct: " + correct.streams[stream]["stream_type"]
 
     evaluate_scraper(scraper, correct)
 
@@ -276,26 +261,16 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
             "stdout_part": "",
             "stderr_part": "Invalid data found when processing input"},
          "video/MP2T"),
-        ("invalid_1.2_jpeg2000_wrong_signature.mxf", {
+        ("invalid__jpeg2000_wrong_signature.mxf", {
             "purpose": "Test MXF with invalid header.",
             "stdout_part": "",
             "stderr_part": "Invalid data found when processing input"},
          "application/mxf"),
-        ("invalid_1.2_jpeg2000_truncated.mxf", {
+        ("invalid__jpeg2000_truncated.mxf", {
             "purpose": "Test truncated MXF.",
             "stdout_part": "",
             "stderr_part": "IndexSID 0 segment at 0 missing"},
          "application/mxf"),
-        ("invalid__JPEG2000_no_avi_signature.avi", {
-            "purpose": "Test AVI with invalid header.",
-            "stdout_part": "",
-            "stderr_part": "Error in analyzing file."},
-         "video/avi"),
-        ("invalid__JPEG2000_missing_data.avi", {
-            "purpose": "Test truncated AVI.",
-            "stdout_part": "",
-            "stderr_part": "Invalid data found when processing input"},
-         "video/avi"),
         ("invalid__pcm_alaw_format.wav", {
             "purpose": "Test WAV file including A-law PCM.",
             "stdout_part": "",
@@ -330,7 +305,7 @@ def test_ffmpeg_scraper_invalid(filename, result_dict, mimetype,
         ("video/MP1S", ""),
         ("video/MP2P", ""),
         ("video/MP2T", ""),
-        ("video/avi", "")
+        ("application/mxf", "")
     ]
 )
 def test_is_supported_mpeg(mime, ver):

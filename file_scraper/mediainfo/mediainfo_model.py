@@ -558,33 +558,3 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
         if self._stream.format_version is not None:
             return six.text_type(self._stream.format_version)[-1]
         return UNAV
-
-
-class SimpleMediainfoMeta(BaseMeta):
-    """
-    Metadata model for checking well-formedness without metadata scraping.
-
-    This class is used for file types for which the metadata collection is done
-    using FFMpeg. Both tools cannot currently be used simultaneously, as we do
-    not have a reliable way of sorting the streams so that outputs from both
-    tools could be reliably combined.
-    """
-    _supported = {"video/avi": []}
-    _allow_versions = True  # Allow any version
-    _containers = ["video/avi"]
-
-    def __init__(self, tracks, index):
-        """
-        Initialize the metadata model. No extra functionality over BaseMeta.
-
-        :tracks: list of tracks containing all tracks in the file
-        :index: index of the track represented by this metadata model
-        """
-        pass
-
-    def hascontainer(self):
-        """
-        No metadata is scraped, so container data is irrelevant: returns False.
-        """
-        # pylint: disable=no-self-use
-        return False

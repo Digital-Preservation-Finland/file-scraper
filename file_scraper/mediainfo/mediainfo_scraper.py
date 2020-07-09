@@ -8,7 +8,6 @@ from file_scraper.mediainfo.mediainfo_model import (
     MkvMediainfoMeta,
     MovMediainfoMeta,
     MpegMediainfoMeta,
-    SimpleMediainfoMeta,
     WavMediainfoMeta,
     )
 from file_scraper.utils import decode_path
@@ -28,7 +27,6 @@ class MediainfoScraper(BaseScraper):
         MkvMediainfoMeta,
         MovMediainfoMeta,
         MpegMediainfoMeta,
-        SimpleMediainfoMeta,
         WavMediainfoMeta,
     ]
 
@@ -51,13 +49,6 @@ class MediainfoScraper(BaseScraper):
             self.streams += list(self.iterate_models(
                 tracks=mediainfo.tracks, index=index))
 
-        # Files scraped with SimpleMediainfoMeta will have (:unav) MIME type,
-        # but for other scrapes the tests need to be performed without allowing
-        # unavs MIME types.
-        if self.streams and isinstance(self.streams[0], SimpleMediainfoMeta):
-            self._check_supported(allow_unav_mime=True,
-                                  allow_unav_version=True)
-            return
         self._check_supported(allow_unav_version=True, allow_unap_version=True)
 
     def iterate_models(self, **kwargs):

@@ -143,14 +143,6 @@ MPEGTS_OTHER = {
     "index": 3, "mimetype": UNAV, "stream_type": "menu",
     "version": UNAV}
 
-AVI_CONTAINER = {
-    "index": 0, "mimetype": "video/avi", "version": UNAP,
-    "stream_type": "videocontainer", "codec_name": "AVI",
-    "codec_creator_app_version": "56.40.101",
-    "codec_creator_app": "Lavf56.40.101",
-    "duration": "PT1.03S"
-}
-
 BASE_JPEG2000_VIDEO = {
     "index": 1, "mimetype": "video/jpeg2000", "version": UNAP,
     "par": "1",
@@ -164,12 +156,6 @@ BASE_JPEG2000_VIDEO = {
     "codec_quality": "lossy",
     "bits_per_sample": "8",
 }
-
-AVI_JPEG2000_VIDEO = dict(BASE_JPEG2000_VIDEO,
-                          **{"data_rate": "1.6964",
-                             "bits_per_sample": "8",
-                             "frame_rate": "30",
-                             "codec_creator_app": "Lavf56.40.101"})
 
 MXF_CONTAINER = {
     "index": 0, "mimetype": "video/avi", "version": UNAP,
