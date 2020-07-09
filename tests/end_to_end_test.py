@@ -61,7 +61,7 @@ UNAV_ELEMENTS = {
                                              "icc_profile_name",
                                              "icc_profile_name",
                                              "icc_profile_name"],
-    "tests/data/image_jp2/valid__srgb.gif": ["icc_profile_name"],
+    "tests/data/image_jp2/valid__srgb.jp2": ["icc_profile_name"],
     "tests/data/image_jpeg/valid_1.01.jpg": ["icc_profile_name"],
     "tests/data/image_jpeg/valid_2.2.1_exif_metadata.jpg": [
         "icc_profile_name"],

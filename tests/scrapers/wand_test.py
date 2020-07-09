@@ -75,16 +75,19 @@ from tests.common import (parse_results, partial_message_included)
 STREAM_VALID = {
     "bps_unit": "(:unav)",
     "bps_value": "8",
-    "colorspace": "srgb",
+    "colorspace": "rgb",
     "height": "6",
     "samples_per_pixel": "(:unav)",
     "width": "10",
     "version": "(:unav)"}
 
+STREAM_VALID_WITH_SRGB = STREAM_VALID.copy()
+STREAM_VALID_WITH_SRGB['colorspace'] = 'srgb'
+
 EXIF_VALID = {
     "bps_unit": "(:unav)",
     "bps_value": "8",
-    "colorspace": "srgb",
+    "colorspace": "rgb",
     "height": "8",
     "samples_per_pixel": "(:unav)",
     "width": "10",
@@ -93,7 +96,7 @@ EXIF_VALID = {
 GIF_APPEND = {
     "bps_unit": "(:unav)",
     "bps_value": "8",
-    "colorspace": "srgb",
+    "colorspace": "rgb",
     "compression": "lzw",
     "height": "1",
     "mimetype": "image/gif",
@@ -152,6 +155,11 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
             "streams": {0: STREAM_VALID.copy()},
             "stdout_part": "successfully",
             "stderr_part": ""}),
+        ("valid_1.01_icc_sRGB_profile.jpg", {
+            "purpose": "Test valid file.",
+            "streams": {0: STREAM_VALID_WITH_SRGB.copy()},
+            "stdout_part": "successfully",
+            "stderr_part": ""}),
         ("valid_2.2.1_exif_metadata.jpg", {
             "purpose": "Test valid file.",
             "streams": {0: EXIF_VALID.copy()},
@@ -204,7 +212,7 @@ def test_scraper_jp2(filename, result_dict, evaluate_scraper):
                             result_dict, True)
     if correct.well_formed:
         correct.streams[0]["compression"] = "jpeg2000"
-        correct.streams[0]["colorspace"] = "srgb"
+        correct.streams[0]["colorspace"] = "rgb"
         correct.streams[0]["version"] = "(:unav)"
 
     scraper = WandScraper(filename=correct.filename, mimetype="image/jp2")
