@@ -49,6 +49,13 @@ class WandImageMeta(BaseMeta):
         return six.text_type(self._image.colorspace)
 
     @metadata()
+    def icc_profile_name(self):
+        """Return ICC profile name if one is available."""
+        if not self._image:
+            return "(:unav)"
+        return self._image.container.metadata.get("icc:description", "(:unav)")
+
+    @metadata()
     def width(self):
         """If image exists, return its width, otherwise return (:unav)."""
         if not self._image:
