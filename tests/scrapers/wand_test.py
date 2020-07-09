@@ -47,6 +47,8 @@ This module tests that:
         - For empty file, scraper errors contains "improper image header".
     - WandTiffMeta model is supported for TIFF files, WandExifMeta for JPEG
       files and  WandImageMeta for other image files
+    - Image colorspace detected as "sRGB" will be detected as "RGB" unless
+      explicitly expressed by a metadata for colorspace to be sRGB.
     - With or without well-formedness check, the following MIME type and
       version pairs are supported by both WandScraper and their corresponding
       metadata models:
@@ -62,6 +64,7 @@ This module tests that:
 from __future__ import unicode_literals
 
 import os
+
 import pytest
 
 from file_scraper.wand.wand_model import (WandImageMeta, WandTiffMeta,
@@ -273,6 +276,32 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
     scraper = WandScraper(filename=correct.filename, mimetype="image/gif")
     scraper.scrape_file()
     evaluate_scraper(scraper, correct)
+
+
+@pytest.mark.parametrize(("mimetype", "filename", "expected"), [
+    ("image/gif", "valid_1987a.gif", "RGB"),
+    ("image/gif", "valid_1989a.gif", "RGB"),
+    ("image/jp2", "valid__srgb.jp2", "RGB"),
+    ("image/jpeg", "valid_1.01.jpg", "RGB"),
+    ("image/jpeg", "valid_1.01_icc_sRGB_profile.jpg", "sRGB"),
+    ("image/jpeg", "valid_2.2.1_exif_metadata.jpg", "RGB"),
+    ("image/jpeg", "valid_2.2.1_exif_no_jfif.jpg", "RGB"),
+    ("image/png", "valid_1.2.png", "RGB"),
+    ("image/png", "valid_1.2_LA.png", "Gray"),
+    ("image/tiff", "valid_6.0.tif", "RGB"),
+    ("image/tiff", "valid_6.0_multiple_tiffs.tif", "RGB")
+])
+def test_scraper_colorspace(mimetype, filename, expected):
+    """
+    Test that correct colorspace is returned.
+    """
+    scraper = WandScraper(
+        filename=os.path.join("tests/data/", mimetype.replace("/", "_"),
+                              filename),
+        mimetype=mimetype)
+    scraper.scrape_file()
+
+    assert scraper.streams[0].colorspace().lower() == expected.lower()
 
 
 @pytest.mark.parametrize(

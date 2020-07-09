@@ -46,11 +46,22 @@ class WandImageMeta(BaseMeta):
         """
         if not self._image:
             return "(:unav)"
-        return six.text_type(self._image.colorspace)
+        colorspace = six.text_type(self._image.colorspace)
+        if colorspace.lower() != "sRGB".lower():
+            return colorspace
+
+        # Further processing if sRGB was detected as colorspace.
+        if colorspace.lower() in (self.icc_profile_name().lower(),):
+            return colorspace
+        # No valid reason to conclude the colorspace to be sRGB so returning
+        # RGB.
+        return "rgb"
 
     @metadata()
     def icc_profile_name(self):
-        """Return ICC profile name if one is available."""
+        """Return ICC profile name if one is available.
+
+        The name of the profile is same as the ICC description."""
         if not self._image:
             return "(:unav)"
         return self._image.container.metadata.get("icc:description", "(:unav)")
