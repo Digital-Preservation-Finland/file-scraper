@@ -483,10 +483,9 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
     # Supported mimetypes
     _supported = {"video/mpeg": ["1", "2"], "video/mp4": [""],
                   "audio/mpeg": ["1", "2"], "audio/mp4": [""],
-                  "video/MP1S": [""], "video/MP2P": [""],
                   "video/MP2T": [""]}
     _allow_versions = True  # Allow any version
-    _containers = ["MPEG-TS", "MPEG-PS", "MPEG-4"]
+    _containers = ["MPEG-TS", "MPEG-4"]
     _mime_dict = {"AAC": "audio/mp4",
                   "AVC": "video/mp4",
                   "MPEG-4": "video/mp4",
@@ -532,6 +531,50 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
                         if self.codec_name() == "MPEG-TS":
                             if track.format_version == "Version 2":
                                 return "video/MP2T"
+                except SkipElementException:
+                    pass
+
+        return UNAV
+
+    @metadata()
+    def version(self):
+        """Return version of stream."""
+        if self.mimetype() in ["video/MP2T", "video/mp4", "audio/mp4"]:
+            return UNAP
+        # mp3 "container" does not know the version, so it has to be checked
+        # from the first stream
+        if (self.mimetype() == "audio/mpeg" and
+                self._stream.track_type == "General" and
+                len(self._tracks) >= 2):
+            return six.text_type(self._tracks[1].format_version)[-1]
+
+        if self._stream.format_version is not None:
+            return six.text_type(self._stream.format_version)[-1]
+        return UNAV
+
+
+class MpegPSMediainfoMeta(MpegMediainfoMeta):
+    """Scraper for MPEG Program Stream video and audio."""
+
+    # Supported mimetypes
+    _supported = {"video/mpeg": ["1", "2"], "audio/mpeg": ["1", "2"],
+                  "video/MP1S": [""], "video/MP2P": [""]}
+    _allow_versions = True  # Allow any version
+    _containers = ["MPEG-PS"]
+    _mime_dict = {"MPEG Video": "video/mpeg",
+                  "MPEG Audio": "audio/mpeg"}
+
+    @metadata()
+    def mimetype(self):
+        """Returns mimetype for stream."""
+        try:
+            return self._mime_dict[self.codec_name()]
+        except SkipElementException:
+            pass
+        except KeyError:
+            for track in self._tracks:
+                try:
+                    if track.track_type == "Video":
                         if self.codec_name() == "MPEG-PS":
                             if track.format_version == "Version 2":
                                 return "video/MP2P"
@@ -545,16 +588,7 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
     @metadata()
     def version(self):
         """Return version of stream."""
-        if self.mimetype() in ["video/MP2T", "video/MP2P", "video/MP1S",
-                               "video/mp4", "audio/mp4"]:
+        if self.mimetype() in ["video/MP2P", "video/MP1S"]:
             return UNAP
-        # mp3 "container" does not know the version, so it has to be checked
-        # from the first stream
-        if (self.mimetype() == "audio/mpeg" and
-                self._stream.track_type == "General" and
-                len(self._tracks) >= 2):
-            return six.text_type(self._tracks[1].format_version)[-1]
 
-        if self._stream.format_version is not None:
-            return six.text_type(self._stream.format_version)[-1]
-        return UNAV
+        return super(MpegPSMediainfoMeta, self).version()

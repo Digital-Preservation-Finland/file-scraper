@@ -8,6 +8,7 @@ from file_scraper.mediainfo.mediainfo_model import (
     MkvMediainfoMeta,
     MovMediainfoMeta,
     MpegMediainfoMeta,
+    MpegPSMediainfoMeta,
     WavMediainfoMeta,
     )
 from file_scraper.utils import decode_path
@@ -27,6 +28,7 @@ class MediainfoScraper(BaseScraper):
         MkvMediainfoMeta,
         MovMediainfoMeta,
         MpegMediainfoMeta,
+        MpegPSMediainfoMeta,
         WavMediainfoMeta,
     ]
 
