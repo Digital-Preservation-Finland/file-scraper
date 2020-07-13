@@ -53,9 +53,8 @@ class WandImageMeta(BaseMeta):
 
         # Further processing if sRGB was detected as colorspace based on
         # predetermined fields.
-        for case in (self.icc_profile_name().lower(),):
-            if colorspace.lower() in case:
-                return colorspace
+        if colorspace.lower() in self.icc_profile_name().lower():
+            return colorspace
         # No valid reason to conclude the colorspace to be sRGB so returning
         # RGB.
         return "rgb"
