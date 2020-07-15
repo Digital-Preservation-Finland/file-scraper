@@ -31,8 +31,7 @@ This module tests that:
         - video/mp4 containing h264 video and aac audio streams
         - video/MP2T file
         - audio/mpeg version 1 file
-        - video/mxf
-        - video/mxf
+        - application/mxf
         - audio/x-wav
     - Whether well-formed check is performed or not, the scraper reports the
       following combinations of mimetypes and versions as supported:
