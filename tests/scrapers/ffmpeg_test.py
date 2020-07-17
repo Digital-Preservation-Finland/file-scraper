@@ -49,7 +49,7 @@ from __future__ import unicode_literals
 
 import pytest
 
-from file_scraper.defaults import UNAP
+from file_scraper.defaults import UNAP, UNAV
 from file_scraper.ffmpeg.ffmpeg_scraper import FFMpegScraper
 from tests.common import parse_results
 from tests.scrapers.stream_dicts import (
@@ -57,7 +57,7 @@ from tests.scrapers.stream_dicts import (
     MXF_JPEG2000_VIDEO,
     )
 
-NO_METADATA = {0: {'index': 0, 'version': '(:unav)', 'stream_type': '(:unav)'}}
+NO_METADATA = {0: {'index': 0, 'version': UNAV, 'stream_type': UNAV}}
 UNAV_MIME = []
 
 

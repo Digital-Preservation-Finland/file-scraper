@@ -186,8 +186,8 @@ def test_invalid_office(filename, mimetype):
     result_dict = {
         "purpose": "Test invalid file.",
         "stdout_part": "",
-        "stderr_part": "MIME type (:unav) with version (:unav) "
-                       "is not supported."}
+        "stderr_part": "MIME type %s with version %s is not "
+                       "supported." % (UNAV, UNAV)}
 
     correct = parse_results(filename, mimetype,
                             result_dict, True)
@@ -251,8 +251,8 @@ def test_invalid_images(filename, mimetype):
     result_dict = {
         "purpose": "Test invalid file.",
         "stdout_part": "",
-        "stderr_part": "MIME type (:unav) with version (:unav) "
-                       "is not supported."}
+        "stderr_part": "MIME type %s with version %s is not "
+                       "supported." % (UNAV, UNAV)}
     correct = parse_results(filename, mimetype, result_dict, True)
     correct.update_mimetype(mimetype)
     correct.update_version(filename.split("_")[1])
