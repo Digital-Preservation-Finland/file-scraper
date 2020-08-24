@@ -12,6 +12,8 @@ from file_scraper.config import VERAPDF_PATH
 from file_scraper.verapdf.verapdf_model import VerapdfMeta
 from file_scraper.utils import encode_path
 
+OK_CODES = [0, 1, 7, 8]
+
 
 class VerapdfScraper(BaseScraper):
     """PDF/A scraper."""
@@ -29,7 +31,7 @@ class VerapdfScraper(BaseScraper):
         cmd = [VERAPDF_PATH, encode_path(self.filename)]
 
         shell = Shell(cmd)
-        if shell.returncode != 0:
+        if shell.returncode not in OK_CODES:
             raise VeraPDFError(shell.stderr)
         profile = None
 
