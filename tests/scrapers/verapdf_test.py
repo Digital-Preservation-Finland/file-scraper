@@ -45,7 +45,7 @@ MIMETYPE = "application/pdf"
         ("invalid_X_removed_xref.pdf", {
             "purpose": "Test xref change.",
             "stdout_part": "",
-            "stderr_part": "In a cross reference subsection header"}),
+            "stderr_part": "End of file is reached"}),
     ]
 )
 def test_scraper(filename, result_dict, evaluate_scraper):
