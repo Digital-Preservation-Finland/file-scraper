@@ -15,8 +15,10 @@ from file_scraper.utils import encode_path
 # Exit codes given by veraPDF that we don't want to immediately
 # raise as fatal errors
 # 0: All files parsed and valid PDF/A
-# 1: All files parsed, some invalid PDF/A
-# 7: Failed to parse one or more files
+# 1: All files parsed, some invalid PDF/A.
+#    The files might still be valid PDFs, just not A format
+# 7: Failed to parse one or more files.
+#    The files are somehow broken/invalid PDFs
 OK_CODES = [0, 1, 7]
 
 
