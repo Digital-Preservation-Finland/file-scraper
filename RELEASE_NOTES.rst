@@ -1,6 +1,13 @@
 Release notes
 =============
 
+Version 0.23
+------------
+
+- Fix colorspace value handling and add support for ICC profile name
+- Remove JPEG2000 from AVI and AVC/AAC from MPEG-1/2 PS to meet the current specifications
+- Support newer version of veraPDF
+
 Version 0.22
 ------------
 
