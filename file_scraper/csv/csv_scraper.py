@@ -15,6 +15,9 @@ class CsvScraper(BaseScraper):
 
     _supported_metadata = [CsvMeta]
 
+    # Raise csv field size limit to 1 MB
+    csv.field_size_limit(1048576)
+
     # pylint: disable=too-many-branches
     def scrape_file(self):
         """Scrape CSV file."""
