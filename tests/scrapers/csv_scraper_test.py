@@ -77,20 +77,6 @@ TEST_DATA_PATH = "tests/data/text_csv"
                             "first_line": ["year", "brand", "model", "detail",
                                            "other"]}}},
          ["year", "brand", "model", "detail", "other"], {}),
-        ("valid__ascii_large_field.csv", {
-            "purpose": "Test valid file with a large field.",
-            "stdout_part": "successfully",
-            "stderr_part": "",
-            "streams": {0: {"stream_type": "text",
-                            "index": 0,
-                            "mimetype": MIMETYPE,
-                            "version": UNAP,
-                            "delimiter": ",",
-                            "separator": "\n",
-                            "first_line": ["1997", "Ford", "E350",
-                                           "ac, abs, moon",
-                                           "3000.00"]}}},
-         None, {}),
         ("invalid__missing_end_quote.csv", {
             "purpose": "Test missing end quote",
             "stdout_part": "",
@@ -169,6 +155,71 @@ def test_scraper(filename, result_dict, header,
     """
     correct = parse_results(filename, "text/csv", result_dict,
                             True)
+    params = {
+        "separator": correct.streams[0]["separator"],
+        "delimiter": correct.streams[0]["delimiter"],
+        "fields": header,
+        "mimetype": "text/csv"}
+    params.update(extra_params)
+    scraper = CsvScraper(filename=correct.filename, mimetype=MIMETYPE,
+                         params=params)
+    scraper.scrape_file()
+
+    evaluate_scraper(scraper, correct)
+
+
+@pytest.mark.parametrize(
+    ["filename", "result_dict", "header", "extra_params", "size"],
+    [
+        ("valid__large_field.csv", {
+            "purpose": "Test valid file with a large field.",
+            "stdout_part": "successfully",
+            "stderr_part": "",
+            "streams": {0: {"stream_type": "text",
+                            "index": 0,
+                            "mimetype": MIMETYPE,
+                            "version": UNAP,
+                            "delimiter": ",",
+                            "separator": "\n",
+                            "first_line": ["test1", "test2"]}}},
+         None, {}, 1048500),
+        ("invalid__too_large_field.csv", {
+            "purpose": "Test a file with too large field.",
+            "stdout_part": "",
+            "stderr_part": "field larger than field limit",
+            "streams": {0: {"stream_type": UNAV,
+                            "index": 0,
+                            "mimetype": UNAV,
+                            "version": UNAV,
+                            "delimiter": ",",
+                            "separator": "\n",
+                            "first_line": ["test1", "test2"]}}},
+         None, {}, 1048600),
+    ]
+)
+def test_large_field(filename, result_dict, header,
+                     extra_params, size,
+                     evaluate_scraper, testpath):
+    """
+    Test that large field sizes are properly handled.
+    Large test files are created on the fly so as not to take up space.
+
+    :filename: Test file name
+    :result_dict: Result dict containing purpose of the test, parts of
+                  expected stdout and stderr, and expected streams
+    :header: CSV header line
+    :extra_params: Extra parameters for the scraper (e.g. charset)
+    :size: Amount of bytes in the large field
+    """
+    tempdatapath = os.path.join(testpath, "text_csv")
+    os.makedirs(tempdatapath)
+    tempfilepath = os.path.join(tempdatapath, filename)
+    with open(tempfilepath, 'w') as tempfile:
+        tempfile.write("test1,test2\ntest3,")
+        tempfile.write(size*"a")
+
+    correct = parse_results(filename, "text/csv", result_dict,
+                            True, basepath=testpath)
     params = {
         "separator": correct.streams[0]["separator"],
         "delimiter": correct.streams[0]["delimiter"],
