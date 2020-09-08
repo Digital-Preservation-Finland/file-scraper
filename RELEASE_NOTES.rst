@@ -1,6 +1,11 @@
 Release notes
 =============
 
+Version 0.24
+------------
+
+- Increase maximum CSV field size
+
 Version 0.23
 ------------
 
