@@ -70,6 +70,16 @@ ROOTPATH = os.path.abspath(os.path.join(
             "stdout_part": "Success",
             "stderr_part": ""},
          {"catalogs": False}),
+        ("valid_1.0_addml.xml", {
+            "purpose": "Test local XSD schema import and validation works",
+            "stdout_part": "Success",
+            "stderr_part": ""},
+         {"catalogs": False}),
+        ("valid_1.0_no_namespace_xsd.xml", {
+            "purpose": "Test local no namespace XSD",
+            "stdout_part": "Success",
+            "stderr_part": ""},
+         {"catalogs": False})
     ]
 )
 def test_scraper_valid(filename, result_dict, params, evaluate_scraper):

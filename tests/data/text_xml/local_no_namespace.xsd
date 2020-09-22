@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<xsi:schema xmlns:xsi="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified">
+    <xsi:element name="beginnersbook">
+        <xsi:complexType>
+            <xsi:sequence>
+                <xsi:element name="to" type="xsi:string"/>
+                <xsi:element name="from" type="xsi:string"/>
+                <xsi:element name="subject" type="xsi:string"/>
+                <xsi:element name="message" type="xsi:string"/>
+            </xsi:sequence>
+        </xsi:complexType>
+    </xsi:element>
+
+</xsi:schema>

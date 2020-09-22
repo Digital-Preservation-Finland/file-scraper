@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<beginnersbook xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:noNamespaceSchemaLocation="local_no_namespace.xsd">
+    <to>My Readers</to>
+    <from>Chaitanya</from>
+    <subject>A Message to my readers</subject>
+    <message>Welcome to beginnersbook.com</message>
+</beginnersbook>

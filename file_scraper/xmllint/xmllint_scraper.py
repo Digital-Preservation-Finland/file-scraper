@@ -17,7 +17,6 @@ try:
 except ImportError:
     pass
 
-
 XSI = "http://www.w3.org/2001/XMLSchema-instance"
 XS = "{http://www.w3.org/2001/XMLSchema}"
 
@@ -94,6 +93,30 @@ class XmllintScraper(BaseScraper):
                                                        check_wellformed,
                                                        params)
 
+    def _evaluate_xsd_location(self, location):
+        """Determine whether or not the XSD schema is a
+        local file in relation to the assigned XML file.
+
+        If local file is found, absolute path will be returned for
+        xsd-construction's import purpose. Otherwise return the location as-is.
+
+        Absolute path is required for construct_xsd-function as the temporary
+        file's location will differ a lot in related to the current
+        self.filename.
+
+        :param location: Given schema location in string.
+        :return: String of the XSD location. If it's local, absolute path.
+        """
+        # schemaLocation or noNamespaceSchemaLocation is always either
+        # direct path or relative path to the XML in question.
+        local_location = os.path.join(
+            os.path.dirname(self.filename),
+            encode_path(location)
+        )
+        if os.path.isfile(local_location):
+            return os.path.abspath(local_location)
+        return location
+
     def scrape_file(self):
         """
         Check XML file with Xmllint and return a tuple of results.
@@ -168,6 +191,8 @@ class XmllintScraper(BaseScraper):
         """
         Construct one schema file for the given document tree.
 
+        The schema file will be placed temporarily in a temporary directory.
+
         :returns: Path to the constructed XSD schema
         """
 
@@ -186,24 +211,17 @@ class XmllintScraper(BaseScraper):
             for namespace, location in zip(*[iter(namespaces_locations)] * 2):
                 xs_import = etree.Element(XS + "import")
                 xs_import.attrib["namespace"] = namespace
-                xs_import.attrib["schemaLocation"] = location
+                xs_import.attrib[
+                    "schemaLocation"] = self._evaluate_xsd_location(location)
                 schema_tree.append(xs_import)
 
         schema_locations = set(document_tree.xpath(
             "//*/@xsi:noNamespaceSchemaLocation", namespaces={"xsi": XSI}))
         for schema_location in schema_locations:
             xsd_exists = True
-
-            # Check if XSD file is included in SIP
-            local_schema_location = os.path.join(
-                os.path.dirname(self.filename),
-                encode_path(schema_location)
-            )
-            if os.path.isfile(local_schema_location):
-                schema_location = local_schema_location
-
             xs_import = etree.Element(XS + "import")
-            xs_import.attrib["schemaLocation"] = decode_path(schema_location)
+            xs_import.attrib["schemaLocation"] = decode_path(
+                self._evaluate_xsd_location(schema_location))
             schema_tree.append(xs_import)
         if xsd_exists:
             # Contstruct the schema

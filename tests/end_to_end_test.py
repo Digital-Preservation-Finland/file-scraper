@@ -123,6 +123,8 @@ IGNORE_VALID = [
     "tests/data/text_xml/valid_1.0_xsd.xml",
     "tests/data/text_xml/valid_1.0_local_xsd.xml",
     "tests/data/text_xml/valid_1.0_catalog.xml",
+    "tests/data/text_xml/valid_1.0_addml.xml",
+    "tests/data/text_xml/valid_1.0_no_namespace_xsd.xml",
 ]
 
 # Ignore these we know that warc, arc and dpx files are not currently
