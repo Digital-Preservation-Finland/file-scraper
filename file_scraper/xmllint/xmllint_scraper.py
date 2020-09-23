@@ -111,11 +111,11 @@ class XmllintScraper(BaseScraper):
         # direct path or relative path to the XML in question.
         local_location = os.path.join(
             os.path.dirname(self.filename),
-            encode_path(location)
+            location
         )
         if os.path.isfile(local_location):
-            return os.path.abspath(local_location)
-        return location
+            return encode_path(os.path.abspath(local_location))
+        return encode_path(location)
 
     def scrape_file(self):
         """
