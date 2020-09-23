@@ -141,6 +141,11 @@ def test_scraper_valid(filename, result_dict, params, evaluate_scraper):
             "stdout_part": "",
             "stderr_part": "does not follow the DTD"},
          {"catalogs": False}),
+        ("invalid_1.0_no_namespace_xsd.xml", {
+            "purpose": "Test invalid XML against local no namespace XSD",
+            "stdout_part": "",
+            "stderr_part": "Missing child element(s)"},
+         {"catalogs": False}),
         ("invalid__empty.xml", {
             "purpose": "Test empty xml.",
             "stdout_part": "",
