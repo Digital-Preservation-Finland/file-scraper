@@ -118,7 +118,8 @@ IGNORE_INVALID = [
     "tests/data/application_x-spss-por/invalid__pspp_header.por",
 
     # XML schema definitions should not be tested.
-    "tests/data/text_xml/invalid_1.0_no_namespace_xsd.xml"
+    "tests/data/text_xml/invalid_1.0_addml.xml",
+    "tests/data/text_xml/invalid_1.0_no_namespace_xsd.xml",
 ]
 
 # XML schema definitions should not be tested.
