@@ -110,12 +110,12 @@ class XmllintScraper(BaseScraper):
         # schemaLocation or noNamespaceSchemaLocation is always either
         # direct path or relative path to the XML in question.
         local_location = os.path.join(
-            os.path.dirname(self.filename),
-            location
+            os.path.dirname(encode_path(self.filename)),
+            encode_path(location)
         )
         if os.path.isfile(local_location):
-            return encode_path(os.path.abspath(local_location))
-        return encode_path(location)
+            return os.path.abspath(local_location)
+        return location
 
     def scrape_file(self):
         """
