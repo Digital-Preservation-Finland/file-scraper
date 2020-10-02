@@ -1,6 +1,11 @@
 Release notes
 =============
 
+Version 0.25
+------------
+
+- Support validation of XML files with relative path to local schemas
+
 Version 0.24
 ------------
 
