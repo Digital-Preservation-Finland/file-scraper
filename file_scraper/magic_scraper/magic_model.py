@@ -279,11 +279,14 @@ class JpegFileMagicMeta(BinaryMagicBaseMeta):
     def version(self):
         """Return JFIF version when available. Version is determined as in
         BaseMagicMeta version() unless the file has been identified as
-        Exif standard."""
+        Exif standard. The character case in the result is dependent on
+        the version of the magic library, and therefore we handle this
+        case-independently."""
 
-        exif_magic_line = "JPEG image data, Exif standard"
+        exif_magic_line = "jpeg image data, exif standard"
 
-        if self._magic_result['magic_none'].startswith(exif_magic_line):
+        if self._magic_result['magic_none'].lower().startswith(
+                exif_magic_line):
             return UNAV
         return super(JpegFileMagicMeta, self).version()
 

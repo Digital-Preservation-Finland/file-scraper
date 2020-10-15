@@ -35,6 +35,9 @@ This module tests that:
         - scraper errors contain "do not match"
         - file is not well-formed
 
+    - Character case of magic's result does not affect to (:unav) version
+      result for JPEG/EXIF images.
+
     - For text files actually containing binary data:
         - MIME type and version is "(:unav)"
         - scraper errors contains "do not match"
@@ -77,7 +80,8 @@ import pytest
 
 from file_scraper.defaults import UNAV
 from file_scraper.magic_scraper.magic_model import (HtmlFileMagicMeta,
-                                                    OfficeFileMagicMeta)
+                                                    OfficeFileMagicMeta,
+                                                    JpegFileMagicMeta)
 from file_scraper.magic_scraper.magic_scraper import (MagicTextScraper,
                                                       MagicBinaryScraper)
 from tests.common import (parse_results, partial_message_included)
@@ -262,6 +266,19 @@ def test_invalid_images(filename, mimetype):
     assert not scraper.well_formed
     assert partial_message_included(correct.stdout_part, scraper.messages())
     assert partial_message_included(correct.stderr_part, scraper.errors())
+
+
+def test_jpeg_exif_character_case():
+    """
+    Test that character case in magic's result does not affect to (:unav)
+    version result for JPEG/EXIF images.
+    """
+    jpeg_meta = JpegFileMagicMeta(
+        {"magic_none": "JPEG image data, EXIF standard"}, "image/jpeg")
+    assert jpeg_meta.version() == UNAV
+    jpeg_meta = JpegFileMagicMeta(
+        {"magic_none": "JPEG image data, Exif standard"}, "image/jpeg")
+    assert jpeg_meta.version() == UNAV
 
 
 @pytest.mark.parametrize(
