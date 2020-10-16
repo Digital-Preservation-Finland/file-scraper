@@ -1,6 +1,11 @@
 Release notes
 =============
 
+Version 0.26
+------------
+
+- Support for JPEG/EXIF files with older file magic library, tested with 5.11
+
 Version 0.25
 ------------
 
