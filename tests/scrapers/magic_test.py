@@ -35,7 +35,7 @@ This module tests that:
         - scraper errors contain "do not match"
         - file is not well-formed
 
-    - Character case of magic's result does not affect to (:unav) version
+    - Character case of magic's result does not affect (:unav) version
       result for JPEG/EXIF images.
 
     - For text files actually containing binary data:
@@ -270,7 +270,7 @@ def test_invalid_images(filename, mimetype):
 
 def test_jpeg_exif_character_case():
     """
-    Test that character case in magic's result does not affect to (:unav)
+    Test that character case in magic's result does not affect (:unav)
     version result for JPEG/EXIF images.
     """
     jpeg_meta = JpegFileMagicMeta(
