@@ -12,9 +12,12 @@ This module tests that:
 from __future__ import unicode_literals
 
 import pytest
-
-from file_scraper.detectors import (FidoDetector, MagicDetector,
-                                    VerapdfDetector, MagicCharset)
+from fido.fido import Fido
+from file_scraper.detectors import (_FidoReader,
+                                    FidoDetector,
+                                    MagicCharset,
+                                    MagicDetector,
+                                    VerapdfDetector)
 from tests.common import get_files, partial_message_included
 
 CHANGE_FIDO = {
@@ -97,6 +100,21 @@ CHANGE_MAGIC = {
     "application_gml+xml/valid_3.2_fmt-1047.xml": "text/xml",
     "video_dv/valid__pal_lossy.dv": "application/octet-stream"
 }
+
+
+def test_fido_format_caching():
+    """Tests that caching works as if no caching has been used."""
+    fido_object = Fido(quiet=True, format_files=["formats-v95.xml",
+                                                 "format_extensions.xml"])
+    for _ in range(2):
+        reader = _FidoReader('foo.xml')
+        # We're constraining to len to assert, because these three attributes
+        # would contain large amount of lxml element-objects and thus would
+        # make comparison very slow.
+        assert len(reader.puid_format_map) == len(fido_object.puid_format_map)
+        assert len(reader.formats) == len(fido_object.formats)
+        assert len(reader.puid_has_priority_over_map) == len(
+            fido_object.puid_has_priority_over_map)
 
 
 @pytest.mark.parametrize(
