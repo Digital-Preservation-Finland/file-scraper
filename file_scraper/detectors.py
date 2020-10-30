@@ -30,6 +30,7 @@ class _FidoCachedFormats(Fido):
     re-read the same format XML.
     """
 
+    _use_cached = False
     _cached_formats = None
     _cached_puid_format_map = None
     _cached_puid_has_priority_over_map = None
@@ -42,18 +43,25 @@ class _FidoCachedFormats(Fido):
 
         :param file: File that will be loaded.
         """
-        if not _FidoCachedFormats._cached_formats:
-            Fido.load_fido_xml(self, file=file)
-            _FidoCachedFormats._cached_formats = self.formats
-            _FidoCachedFormats._cached_puid_format_map = self.puid_format_map
-            _FidoCachedFormats._cached_puid_has_priority_over_map = \
-                self.puid_has_priority_over_map
-        else:
+        if _FidoCachedFormats._use_cached:
             self.formats = _FidoCachedFormats._cached_formats
             self.puid_format_map = _FidoCachedFormats._cached_puid_format_map
             self.puid_has_priority_over_map = \
                 _FidoCachedFormats._cached_puid_has_priority_over_map
+        else:
+            Fido.load_fido_xml(self, file=file)
+
         return self.formats
+
+    def setup_format_cache(self):
+        """Function to explicitly cache the current formats. If cache has
+        already been set, this function will not do anything."""
+        if not _FidoCachedFormats._use_cached:
+            _FidoCachedFormats._cached_formats = self.formats
+            _FidoCachedFormats._cached_puid_format_map = self.puid_format_map
+            _FidoCachedFormats._cached_puid_has_priority_over_map = \
+                self.puid_has_priority_over_map
+            _FidoCachedFormats._use_cached = True
 
 
 class _FidoReader(_FidoCachedFormats):
@@ -74,6 +82,7 @@ class _FidoReader(_FidoCachedFormats):
         self.version = None  # Identified file format version
         _FidoCachedFormats.__init__(self, quiet=True, format_files=[
             "formats-v95.xml", "format_extensions.xml"])
+        self.setup_format_cache()
 
     def identify(self):
         """Identify file format with using pronom registry."""
@@ -382,4 +391,4 @@ class MagicCharset(BaseDetector):
         self.info = {"class": self.__class__.__name__,
                      "messages": messages,
                      "errors": errors,
-                     "tools":  []}
+                     "tools": []}
