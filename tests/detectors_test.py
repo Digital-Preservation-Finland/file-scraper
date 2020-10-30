@@ -108,7 +108,7 @@ def test_fido_format_caching():
                                                  "format_extensions.xml"])
     start_time = time.time()
     for _ in range(200):
-        reader = _FidoReader('foo.xml')
+        reader = _FidoReader('non_existing_file.xml')
         # If caching works, the time spent to initialize the _FidoReader should
         # not take long so 30 seconds would be the absolute max.
         elapsed_time = time.time() - start_time
