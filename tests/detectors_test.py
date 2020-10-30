@@ -123,6 +123,24 @@ def test_fido_format_caching():
             fido_object.puid_has_priority_over_map)
 
 
+def test_fido_cache_halting_file(fido_cache_halting_file):
+    """Tests that time used between raw Fido usage and FidoDetector usage does
+    not provide big difference in processing time."""
+    fido_object = Fido(quiet=True, format_files=["formats-v95.xml",
+                                                 "format_extensions.xml"])
+    fido_start_time = time.time()
+    fido_object.identify_file(fido_cache_halting_file)
+    fido_elapsed_time = time.time() - fido_start_time
+
+    fido_reader_start_time = time.time()
+    fido_reader_object = FidoDetector(fido_cache_halting_file)
+    fido_reader_object.detect()
+    fido_reader_elapsed_time = time.time() - fido_reader_start_time
+
+    # 2 second difference is acceptable with the given test file.
+    assert abs(fido_elapsed_time - fido_reader_elapsed_time) < 2
+
+
 @pytest.mark.parametrize(
     ["filepath", "mimetype", "version"],
     [
