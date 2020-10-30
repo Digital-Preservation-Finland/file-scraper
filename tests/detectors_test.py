@@ -10,7 +10,7 @@ This module tests that:
     - Character encoding detection works properly.
 """
 from __future__ import unicode_literals
-
+import time
 import pytest
 from fido.fido import Fido
 from file_scraper.detectors import (_FidoReader,
@@ -106,10 +106,16 @@ def test_fido_format_caching():
     """Tests that caching works as if no caching has been used."""
     fido_object = Fido(quiet=True, format_files=["formats-v95.xml",
                                                  "format_extensions.xml"])
-    for _ in range(2):
+    start_time = time.time()
+    for _ in range(200):
         reader = _FidoReader('foo.xml')
-        # We're constraining to len to assert, because these three attributes
-        # would contain large amount of lxml element-objects and thus would
+        # If caching works, the time spent to initialize the _FidoReader should
+        # not take long so 30 seconds would be the absolute max.
+        elapsed_time = time.time() - start_time
+        assert elapsed_time < 30
+
+        # We're constraining to len for assert, because these three attributes
+        # contains large amount of lxml element-objects and thus would
         # make comparison very slow.
         assert len(reader.puid_format_map) == len(fido_object.puid_format_map)
         assert len(reader.formats) == len(fido_object.formats)
