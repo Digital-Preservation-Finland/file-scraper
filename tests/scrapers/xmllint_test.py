@@ -60,6 +60,13 @@ ROOTPATH = os.path.abspath(os.path.join(
             "stderr_part": ""},
          {"catalog_path": "tests/data/text_xml/test-catalog.xml",
           "catalogs": True}),
+        ("valid_1.0_no_namespace_catalog.xml", {
+            "purpose": "Test that catalog order takes priority over others.",
+            "stdout_part": "Success",
+            "stderr_part": ""},
+         {"catalog_path": ("tests/data/text_xml/test-catalog-2.xml:"
+                           "tests/data/text_xml/test-catalog.xml"),
+          "catalogs": True}),
         ("valid_1.0_dtd.xml", {
             "purpose": "Test valid xml with dtd.",
             "stdout_part": "Success",
@@ -141,6 +148,13 @@ def test_scraper_valid(filename, result_dict, params, evaluate_scraper):
             "stderr_part": "Missing child element(s)"},
          {"catalog_path": "tests/data/text_xml/test-catalog.xml",
           "catalogs": True}),
+        ("valid_1.0_no_namespace_catalog.xml", {
+            "purpose": "Test catalog takes priority over provided schemas.",
+            "stdout_part": "",
+            "stderr_part": "Schemas validity error"},
+         {"catalog_path": ("tests/data/text_xml/test-catalog.xml:"
+                           "tests/data/text_xml/test-catalog-2.xml"),
+          "catalogs": True}),
         ("invalid_1.0_dtd.xml", {
             "purpose": "Test invalid xml with dtd.",
             "stdout_part": "",
@@ -172,7 +186,10 @@ def test_scraper_invalid(filename, result_dict, params, evaluate_scraper):
                              mimetype="text/xml",
                              params=correct.params)
     scraper.scrape_file()
-    if "empty" in filename or "no_closing_tag" in filename:
+    if any(("empty" in filename,
+            "no_closing_tag" in filename,
+            "no_namespace_catalog" in filename)):
+        correct.well_formed = False
         correct.version = None
         correct.streams[0]["version"] = None
 
