@@ -62,12 +62,15 @@ class XmllintScraper(BaseScraper):
                              False will try to fetch schema files from
                              internet.
                  catalog_path: Path to XMLcatalog
+                 base_path: Base path that is being operated at. Default: "./"
                  additional_catalog_rewrites: Additional rewrite rules to
                     generate an extra temporary catalog from. Provided as
                     dictionary by { uriStartString: rewritePrefix }, where
                     uriStartString is the source and rewritePrefix is the
                     destination. These will not take priority over
                     file provided via catalog_path.
+
+                    base_path will be used as the catalog's base route.
         """
         super(XmllintScraper, self).__init__(
             filename=filename, mimetype=mimetype, version=version,
@@ -79,6 +82,7 @@ class XmllintScraper(BaseScraper):
         self._catalogs = params.get("catalogs", True)
         self._no_network = params.get("no_network", True)
         self._catalog_path = params.get("catalog_path", None)
+        self._base_path = params.get("base_path", "./")
         self._additional_catalog_rewrites = params.get(
             "additional_catalog_rewrites", None)
         self._temporary_catalog_path = None
@@ -192,12 +196,6 @@ class XmllintScraper(BaseScraper):
 
             (exitcode, stdout, stderr) = self.exec_xmllint(schema=self._schema)
 
-        # Clean up constructed files before evaluating the result.
-        if self._has_constructed_schema:
-            os.remove(self._schema)
-        if self._temporary_catalog_path:
-            os.remove(self._temporary_catalog_path)
-
         if exitcode == 0:
             self._messages.append(
                 "%s Success\n%s" % (decode_path(self.filename), stdout)
@@ -205,6 +203,12 @@ class XmllintScraper(BaseScraper):
         else:
             self._errors += stderr.splitlines()
             return
+
+        # Clean up constructed files before evaluating the result.
+        if self._has_constructed_schema:
+            os.remove(self._schema)
+        if self._temporary_catalog_path:
+            os.remove(self._temporary_catalog_path)
 
         self.streams = list(self.iterate_models(
             well_formed=self.well_formed, tree=tree))
@@ -232,6 +236,13 @@ class XmllintScraper(BaseScraper):
             entry_added = True
 
         if entry_added:
+            # We'll set absolute path to the catalog's xml:base and making sure
+            # that it'll end with one ending slash.
+            for key in catalog_tree.attrib:
+                if key.endswith('base'):
+                    catalog_tree.attrib[key] = os.path.abspath(
+                        self._base_path).rstrip('/') + '/'
+                    break
             _, schema = tempfile.mkstemp(prefix="file-scraper-catalog-",
                                          suffix=".tmp")
             elem_tree = etree.ElementTree(catalog_tree)

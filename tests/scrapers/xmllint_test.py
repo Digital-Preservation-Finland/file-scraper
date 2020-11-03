@@ -66,6 +66,7 @@ ROOTPATH = os.path.abspath(os.path.join(
             "stderr_part": ""},
          {"additional_catalog_rewrites":
               {"http://localhost/loucalll.xsd": "local_no_namespace.xsd"},
+          "base_path": "tests/data/text_xml",
           "catalog_path": "tests/data/text_xml/test-catalog.xml",
           "catalogs": True}),
         ("valid_1.0_no_namespace_catalog.xml", {
@@ -74,6 +75,7 @@ ROOTPATH = os.path.abspath(os.path.join(
             "stderr_part": ""},
          {"additional_catalog_rewrites":
               {"http://localhost/loucalll.xsd": "local_no_namespace.xsd"},
+          "base_path": "tests/data/text_xml",
           "catalogs": True}),
         ("valid_1.0_dtd.xml", {
             "purpose": "Test valid xml with dtd.",
@@ -162,6 +164,7 @@ def test_scraper_valid(filename, result_dict, params, evaluate_scraper):
             "stderr_part": "Schemas validity error"},
          {"additional_catalog_rewrites":
               {"http://localhost/loucalll.xsd": "local_no_namespace.xsd"},
+          "base_path": "tests/data/text_xml",
           "catalog_path": "tests/data/text_xml/test-catalog.xml:",
           "catalogs": True}),
         ("invalid_1.0_dtd.xml", {
