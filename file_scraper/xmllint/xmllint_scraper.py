@@ -20,6 +20,11 @@ except ImportError:
 XSI = "http://www.w3.org/2001/XMLSchema-instance"
 XS = "{http://www.w3.org/2001/XMLSchema}"
 
+CATALOG_TEMPLATE = b"""<!DOCTYPE catalog PUBLIC "-//OASIS//DTD XML Catalogs V1.0//EN" "catalog.dtd">
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="public" xml:base="./">
+</catalog>
+"""
+
 SCHEMA_TEMPLATE = b"""<?xml version = "1.0" encoding = "UTF-8"?>
 <xs:schema xmlns="http://dummy"
 targetNamespace="http://dummy"
@@ -57,6 +62,12 @@ class XmllintScraper(BaseScraper):
                              False will try to fetch schema files from
                              internet.
                  catalog_path: Path to XMLcatalog
+                 additional_catalog_rewrites: Additional rewrite rules to
+                    generate an extra temporary catalog from. Provided as
+                    dictionary by { uriStartString: rewritePrefix }, where
+                    uriStartString is the source and rewritePrefix is the
+                    destination. These will not take priority over
+                    file provided via catalog_path.
         """
         super(XmllintScraper, self).__init__(
             filename=filename, mimetype=mimetype, version=version,
@@ -68,6 +79,9 @@ class XmllintScraper(BaseScraper):
         self._catalogs = params.get("catalogs", True)
         self._no_network = params.get("no_network", True)
         self._catalog_path = params.get("catalog_path", None)
+        self._additional_catalog_rewrites = params.get(
+            "additional_catalog_rewrites", None)
+        self._temporary_catalog_path = None
 
     @classmethod
     def is_supported(cls, mimetype, version=None,
@@ -127,7 +141,11 @@ class XmllintScraper(BaseScraper):
             3) If there's no DTD and we have external XSD check againtst
                that.
             4) If there's no external XSD read schemas used in file and do
-               check againts them with schema catalog.
+               check against them with schema catalog.
+               4.a) If no additional catalog rewrites are provided, proceed.
+               4.b) If additional catalog rewrites are provided, create a
+                temporary catalog file that will be added as secondary catalog
+                to the default schema catalog.
 
         :returns: Tuple (status, report, errors) where
             status -- 0 is success, anything else failure
@@ -169,7 +187,16 @@ class XmllintScraper(BaseScraper):
                     self._check_supported()
                     return
 
+            if self._additional_catalog_rewrites:
+                self._construct_temporary_catalog_xml()
+
             (exitcode, stdout, stderr) = self.exec_xmllint(schema=self._schema)
+
+        # Clean up constructed files before evaluating the result.
+        if self._has_constructed_schema:
+            os.remove(self._schema)
+        if self._temporary_catalog_path:
+            os.remove(self._temporary_catalog_path)
 
         if exitcode == 0:
             self._messages.append(
@@ -179,13 +206,37 @@ class XmllintScraper(BaseScraper):
             self._errors += stderr.splitlines()
             return
 
-        # Clean up constructed schemas
-        if self._has_constructed_schema:
-            os.remove(self._schema)
-
         self.streams = list(self.iterate_models(
             well_formed=self.well_formed, tree=tree))
         self._check_supported()
+
+    def _construct_temporary_catalog_xml(self):
+        """Constructs a temporary catalog file filled with given rewrite
+        rules.
+
+        Additional rewrite rules are expected to be in dict format::
+
+            {
+                rewrite_uri_start_string: rewrite_uri_rewrite_prefix
+            }
+        """
+        parser = etree.XMLParser(dtd_validation=False, no_network=True)
+        catalog_tree = etree.XML(CATALOG_TEMPLATE, parser)
+        entry_added = False
+        for start_string in self._additional_catalog_rewrites:
+            rewrite_prefix = self._additional_catalog_rewrites[start_string]
+            rewrite_element = etree.Element("rewriteURI")
+            rewrite_element.attrib["uriStartString"] = start_string
+            rewrite_element.attrib["rewritePrefix"] = rewrite_prefix
+            catalog_tree.append(rewrite_element)
+            entry_added = True
+
+        if entry_added:
+            _, schema = tempfile.mkstemp(prefix="file-scraper-catalog-",
+                                         suffix=".tmp")
+            elem_tree = etree.ElementTree(catalog_tree)
+            elem_tree.write(schema)
+            self._temporary_catalog_path = schema
 
     def construct_xsd(self, document_tree):
         """
@@ -252,9 +303,17 @@ class XmllintScraper(BaseScraper):
         command += ["--schema", schema] if schema else []
         command += [encode_path(self.filename)]
 
+        # The order of catalog files matter. The first one has priority if
+        # there are rewrite uri duplicates.
+        catalog_files = []
         if self._catalog_path is not None:
+            catalog_files.append(self._catalog_path)
+        if self._temporary_catalog_path is not None:
+            catalog_files.append(self._temporary_catalog_path)
+
+        if catalog_files:
             environment = {
-                "SGML_CATALOG_FILES": self._catalog_path
+                "SGML_CATALOG_FILES": ':'.join(catalog_files)
             }
         else:
             environment = None

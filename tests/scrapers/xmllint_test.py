@@ -60,12 +60,20 @@ ROOTPATH = os.path.abspath(os.path.join(
             "stderr_part": ""},
          {"catalog_path": "tests/data/text_xml/test-catalog.xml",
           "catalogs": True}),
-        ("valid_1.0_no_namespace_catalog.xml", {
+        ("valid_1.0_catalog.xml", {
             "purpose": "Test that catalog order takes priority over others.",
             "stdout_part": "Success",
             "stderr_part": ""},
-         {"catalog_path": ("tests/data/text_xml/test-catalog-2.xml:"
-                           "tests/data/text_xml/test-catalog.xml"),
+         {"additional_catalog_rewrites":
+              {"http://localhost/loucalll.xsd": "local_no_namespace.xsd"},
+          "catalog_path": "tests/data/text_xml/test-catalog.xml",
+          "catalogs": True}),
+        ("valid_1.0_no_namespace_catalog.xml", {
+            "purpose": "Test that additional catalog rewrite works",
+            "stdout_part": "Success",
+            "stderr_part": ""},
+         {"additional_catalog_rewrites":
+              {"http://localhost/loucalll.xsd": "local_no_namespace.xsd"},
           "catalogs": True}),
         ("valid_1.0_dtd.xml", {
             "purpose": "Test valid xml with dtd.",
@@ -152,8 +160,9 @@ def test_scraper_valid(filename, result_dict, params, evaluate_scraper):
             "purpose": "Test catalog takes priority over provided schemas.",
             "stdout_part": "",
             "stderr_part": "Schemas validity error"},
-         {"catalog_path": ("tests/data/text_xml/test-catalog.xml:"
-                           "tests/data/text_xml/test-catalog-2.xml"),
+         {"additional_catalog_rewrites":
+              {"http://localhost/loucalll.xsd": "local_no_namespace.xsd"},
+          "catalog_path": "tests/data/text_xml/test-catalog.xml:",
           "catalogs": True}),
         ("invalid_1.0_dtd.xml", {
             "purpose": "Test invalid xml with dtd.",
