@@ -64,19 +64,15 @@ ROOTPATH = os.path.abspath(os.path.join(
             "purpose": "Test that catalog order takes priority over others.",
             "stdout_part": "Success",
             "stderr_part": ""},
-         {"additional_catalog_rewrites":
-              {"http://localhost/loucalll.xsd": "local_no_namespace.xsd"},
-          "base_path": "tests/data/text_xml",
-          "catalog_path": "tests/data/text_xml/test-catalog.xml",
-          "catalogs": True}),
+         {"catalog_path": "tests/data/text_xml/test-catalog.xml",
+          "catalogs": True,
+          "extra_catalogs": ["tests/data/text_xml/test-catalog-2.xml"]}),
         ("valid_1.0_no_namespace_catalog.xml", {
-            "purpose": "Test that additional catalog rewrite works",
+            "purpose": "Test that extra catalog works",
             "stdout_part": "Success",
             "stderr_part": ""},
-         {"additional_catalog_rewrites":
-              {"http://localhost/loucalll.xsd": "local_no_namespace.xsd"},
-          "base_path": "tests/data/text_xml",
-          "catalogs": True}),
+         {"catalogs": True,
+          "extra_catalogs": ["tests/data/text_xml/test-catalog-2.xml"]}),
         ("valid_1.0_dtd.xml", {
             "purpose": "Test valid xml with dtd.",
             "stdout_part": "Success",
@@ -162,11 +158,9 @@ def test_scraper_valid(filename, result_dict, params, evaluate_scraper):
             "purpose": "Test catalog takes priority over provided schemas.",
             "stdout_part": "",
             "stderr_part": "Schemas validity error"},
-         {"additional_catalog_rewrites":
-              {"http://localhost/loucalll.xsd": "local_no_namespace.xsd"},
-          "base_path": "tests/data/text_xml",
-          "catalog_path": "tests/data/text_xml/test-catalog.xml:",
-          "catalogs": True}),
+         {"catalog_path": "tests/data/text_xml/test-catalog.xml:",
+          "catalogs": True,
+          "extra_catalogs": ["tests/data/text_xml/test-catalog-2.xml"]}),
         ("invalid_1.0_dtd.xml", {
             "purpose": "Test invalid xml with dtd.",
             "stdout_part": "",
