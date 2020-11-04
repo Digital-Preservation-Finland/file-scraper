@@ -62,9 +62,6 @@ class XmllintScraper(BaseScraper):
                              False will try to fetch schema files from
                              internet.
                  catalog_path: Path to XMLcatalog
-                 extra_catalogs: Additional catalogs to be added in list form.
-                    The order in the list matters as first item gets priority
-                    if there are duplicate rewriteURI uriStartString entries.
         """
         super(XmllintScraper, self).__init__(
             filename=filename, mimetype=mimetype, version=version,
@@ -76,7 +73,6 @@ class XmllintScraper(BaseScraper):
         self._catalogs = params.get("catalogs", True)
         self._no_network = params.get("no_network", True)
         self._catalog_path = params.get("catalog_path", None)
-        self._extra_catalogs = params.get("extra_catalogs", None)
 
     @classmethod
     def is_supported(cls, mimetype, version=None,
@@ -184,7 +180,7 @@ class XmllintScraper(BaseScraper):
 
             (exitcode, stdout, stderr) = self.exec_xmllint(schema=self._schema)
 
-        # Clean up constructed file before evaluating the result.
+        # Clean up constructed file before evaluating the exitcode.
         if self._has_constructed_schema:
             os.remove(self._schema)
 
@@ -265,18 +261,9 @@ class XmllintScraper(BaseScraper):
         command += ["--schema", schema] if schema else []
         command += [encode_path(self.filename)]
 
-        # The order of catalog files matter. The first one has priority if
-        # there are rewrite uri duplicates.
-        catalog_files = []
-        if self._catalog_path is not None:
-            catalog_files.append(self._catalog_path)
-        if self._extra_catalogs is not None:
-            for item in self._extra_catalogs:
-                catalog_files.append(item)
-
-        if catalog_files:
+        if self._catalogs:
             environment = {
-                "SGML_CATALOG_FILES": ':'.join(catalog_files)
+                "SGML_CATALOG_FILES": self._catalog_path
             }
         else:
             environment = None
