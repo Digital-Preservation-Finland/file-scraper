@@ -133,10 +133,6 @@ class XmllintScraper(BaseScraper):
                that.
             4) If there's no external XSD read schemas used in file and do
                check against them with schema catalog.
-               4.a) If no additional catalog rewrites are provided, proceed.
-               4.b) If additional catalog rewrites are provided, create a
-                temporary catalog file that will be added as secondary catalog
-                to the default schema catalog.
 
         :returns: Tuple (status, report, errors) where
             status -- 0 is success, anything else failure
