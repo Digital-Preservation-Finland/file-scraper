@@ -257,7 +257,7 @@ class XmllintScraper(BaseScraper):
         command += ["--schema", schema] if schema else []
         command += [encode_path(self.filename)]
 
-        if self._catalogs:
+        if self._catalog_path is not None:
             environment = {
                 "SGML_CATALOG_FILES": self._catalog_path
             }
