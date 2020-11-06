@@ -20,11 +20,6 @@ except ImportError:
 XSI = "http://www.w3.org/2001/XMLSchema-instance"
 XS = "{http://www.w3.org/2001/XMLSchema}"
 
-CATALOG_TEMPLATE = b"""<!DOCTYPE catalog PUBLIC "-//OASIS//DTD XML Catalogs V1.0//EN" "catalog.dtd">
-<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="public" xml:base="./">
-</catalog>
-"""
-
 SCHEMA_TEMPLATE = b"""<?xml version = "1.0" encoding = "UTF-8"?>
 <xs:schema xmlns="http://dummy"
 targetNamespace="http://dummy"
