@@ -201,6 +201,10 @@ def combine_metadata(stream, indexed_metadata, lose=None, important=None):
             if key not in metadata_dict or metadata_dict[key] is None:
                 continue
 
+            # if we already have a value and are trying to update with an empty string, just leave it
+            if incomplete_stream[key] and incomplete_stream[key] != '' and not metadata_dict[key]:
+                continue
+
             if incomplete_stream[key] in lose:
                 incomplete_stream[key] = metadata_dict[key]
             elif key in important and important[key] not in lose:
