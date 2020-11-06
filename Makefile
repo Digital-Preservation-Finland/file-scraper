@@ -25,6 +25,13 @@ install: clean
 		cat INSTALLED_FILES
 		echo "--"
 
+install3: clean
+		python3 setup.py build ; python3 ./setup.py install -O1 --prefix="${PREFIX}" --root="${PYROOT}" --record=INSTALLED_FILES.in
+		cat INSTALLED_FILES.in | sed 's/^/\//g' >> INSTALLED_FILES
+		echo "-- INSTALLED_FILES"
+		cat INSTALLED_FILES
+		echo "--"
+
 test:
 		py.test -svvv --maxfail=9999 --junitprefix=file-scraper --junitxml=junit.xml tests
 
