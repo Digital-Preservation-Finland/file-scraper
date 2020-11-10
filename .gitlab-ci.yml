@@ -12,10 +12,17 @@ stages:
   - e2e-distributed
   - rpm-stable
 
-rpm-package:
+rpm-package-rhel7:
   stage: rpm-package
   script:
     - 'rpm-package.sh'
+  except:
+    - master
+
+rpm-package-rhel8:
+  stage: rpm-package
+  script:
+    - 'rpm-package.sh rhel8'
   except:
     - master
 
@@ -42,6 +49,7 @@ unit-test-python27:
     - docker
   script:
     - 'unit-test-virtualenv.sh'
+  allow_failure: true
   except:
     - master
 
@@ -51,6 +59,7 @@ unit-test-python36:
     - docker
   script:
     - 'unit-test-virtualenv.sh python36'
+  allow_failure: true
   except:
     - master
 
@@ -109,6 +118,3 @@ rpm-stable:
     - 'rpm-stable.sh'
   only:
     - tags
-
-variables:
-  ANSIBLE_REPOSITORY: 'ansible-preservation-system'
