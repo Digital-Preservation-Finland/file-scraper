@@ -112,9 +112,16 @@ e2e-distributed-preservation:
     - develop
     - tags
 
-rpm-stable:
+rpm-stable-rhel7:
   stage: rpm-stable
   script:
     - 'rpm-stable.sh'
+  only:
+    - tags
+
+rpm-stable-rhel8:
+  stage: rpm-stable
+  script:
+    - 'rpm-stable.sh rhel8'
   only:
     - tags
