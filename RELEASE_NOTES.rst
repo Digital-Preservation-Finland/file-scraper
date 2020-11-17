@@ -1,6 +1,12 @@
 Release notes
 =============
 
+Version 0.27
+------------
+
+- Build el8 rpms
+- Fix Fido caching bug
+
 Version 0.26
 ------------
 
