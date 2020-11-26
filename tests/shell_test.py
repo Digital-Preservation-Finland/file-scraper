@@ -27,7 +27,7 @@ from file_scraper.shell import Shell
     [
         (["echo", "testing"], 0, "testing\n", ""),
         (["seq", "5"], 0, "1\n2\n3\n4\n5\n", ""),
-        (["cd", "nonexistentdir"], 1, "",
+        (["/usr/bin/cd", "nonexistentdir"], 1, "",
          "/usr/bin/cd: line 2: cd: nonexistentdir: "
          "No such file or directory\n")
     ]
