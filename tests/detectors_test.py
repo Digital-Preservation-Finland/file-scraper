@@ -13,7 +13,6 @@ from __future__ import unicode_literals
 import time
 import pytest
 from fido.fido import Fido
-from file_scraper.defaults import PRONOM_DICT, VERSION_DICT
 from file_scraper.detectors import (_FidoReader,
                                     FidoDetector,
                                     MagicCharset,
@@ -140,22 +139,6 @@ def test_fido_cache_halting_file(fido_cache_halting_file):
 
     # 2 second difference is acceptable with the given test file.
     assert abs(fido_elapsed_time - fido_reader_elapsed_time) < 2
-
-
-@pytest.mark.parametrize('value', (PRONOM_DICT[key] for key in PRONOM_DICT))
-def test_defaults_pronom_dict(value):
-    """A simple test to ensure that PRONOM_DICT constant has tuple as their
-    value.
-    """
-    assert isinstance(value, tuple)
-
-
-@pytest.mark.parametrize('value', (VERSION_DICT[key] for key in VERSION_DICT))
-def test_defaults_version_dict(value):
-    """A simple test to ensure that VERSION_DICT constant has dictionary as
-    their value.
-    """
-    assert isinstance(value, dict)
 
 
 @pytest.mark.parametrize(
