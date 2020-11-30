@@ -39,7 +39,7 @@ VERSION_DICT = {
     ".wordprocessingml.document": {"2007 onwards": None},
     "application/vnd.ms-powerpoint": {"97-2003": None},
     "application/vnd.openxmlformats-officedocument"
-    ".presentationml.presentation": {"2007 onwards", None},
+    ".presentationml.presentation": {"2007 onwards": None},
     "application/vnd.ms-excel": {"8": None, "8X": None},
     "application/vnd.openxmlformats-officedocument"
     ".spreadsheetml.sheet": {"2007 onwards": None}
