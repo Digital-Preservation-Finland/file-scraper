@@ -4,7 +4,7 @@
 from file_scraper.defaults import PRONOM_DICT, VERSION_DICT
 
 
-def test_complicated_constants():
+def test_constants_syntax():
     """A simple test to ensure that the two complicated constants, PRONON_DICT
     and VERSION_DICT, will have appropriate type for their value.
     """
