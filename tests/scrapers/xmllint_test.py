@@ -190,9 +190,9 @@ def test_scraper_invalid(filename, result_dict, params, evaluate_scraper):
                              mimetype="text/xml",
                              params=correct.params)
     scraper.scrape_file()
-    if any(("empty" in filename,
-            "no_closing_tag" in filename,
-            "no_namespace_catalog" in filename)):
+    if any(item in filename for item in ["empty",
+                                         "no_closing_tag",
+                                         "no_namespace_catalog"]):
         correct.well_formed = False
         correct.version = None
         correct.streams[0]["version"] = None
