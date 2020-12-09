@@ -51,19 +51,19 @@ ROOTPATH = os.path.abspath(os.path.join(
             "stdout_part": "<svrl:schematron-output",
             "stderr_part": ""},
          {"schematron": os.path.join(
-             ROOTPATH, "tests/data/text_xml/local.sch"),
+             ROOTPATH, "tests/data/text_xml/supplementary/local.sch"),
           "cache": False}),
         ("invalid_1.0_local_xsd.xml", {
             "purpose": "Test invalid file",
             "stdout_part": "<svrl:schematron-output",
             "stderr_part": ""},
-         {"schematron": "tests/data/text_xml/local.sch",
+         {"schematron": "tests/data/text_xml/supplementary/local.sch",
           "verbose": True, "cache": False}),
         ("invalid__empty.xml", {
             "purpose": "Test invalid xml with given schema.",
             "stdout_part": "",
             "stderr_part": "Document is empty"},
-         {"schematron": "tests/data/text_xml/local.sch"}),
+         {"schematron": "tests/data/text_xml/supplementary/local.sch"}),
     ]
 )
 def test_scraper(filename, result_dict, params, evaluate_scraper):
@@ -134,7 +134,7 @@ def test_xslt_filename():
     """Test that checksum for xslt filename is calculated properly."""
     # pylint: disable=protected-access
     scraper = SchematronScraper("filename", "text/xml")
-    scraper._schematron_file = "tests/data/text_xml/local.sch"
+    scraper._schematron_file = "tests/data/text_xml/supplementary/local.sch"
     assert "76ed62" in scraper._generate_xslt_filename()
     scraper._verbose = True
     assert "ddb11a" in scraper._generate_xslt_filename()

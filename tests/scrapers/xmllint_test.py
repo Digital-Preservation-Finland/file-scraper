@@ -53,26 +53,28 @@ ROOTPATH = os.path.abspath(os.path.join(
             "stdout_part": "Success",
             "stderr_part": ""},
          {"catalogs": False,
-          "schema": os.path.join(ROOTPATH, "tests/data/text_xml/local.xsd")}),
+          "schema": os.path.join(
+              ROOTPATH,"tests/data/text_xml/supplementary/local.xsd")}),
         ("valid_1.0_catalog.xml", {
             "purpose": "Test valid file with local catalog.",
             "stdout_part": "Success",
             "stderr_part": ""},
-         {"catalog_path": "tests/data/text_xml/valid_1.0_catalog_file.xml",
+         {"catalog_path":
+              "tests/data/text_xml/supplementary/catalog_to_local_xsd.xml",
           "catalogs": True}),
         ("valid_1.0_catalog.xml", {
             "purpose": "Test catalog order priority.",
             "stdout_part": "Success",
             "stderr_part": ""},
          {"catalog_path":
-              "tests/data/text_xml/valid_1.0_next_catalog_file.xml",
+              "tests/data/text_xml/supplementary/catalog_with_catalogs.xml",
           "catalogs": True}),
         ("valid_1.0_no_namespace_catalog.xml", {
             "purpose": "Test that no-namespace catalog would work",
             "stdout_part": "Success",
             "stderr_part": ""},
-         {"catalog_path": ("tests/data/text_xml/"
-                           "valid_1.0_no_namespace_xsd_catalog_file.xml"),
+         {"catalog_path": ("tests/data/text_xml/supplementary/"
+                           "catalog_to_local_no_namespace_xsd.xml"),
           "catalogs": True}),
         ("valid_1.0_dtd.xml", {
             "purpose": "Test valid xml with dtd.",
@@ -136,7 +138,7 @@ def test_scraper_valid(filename, result_dict, params, evaluate_scraper):
             "stdout_part": "",
             "stderr_part": "Schemas validity error"},
          {"catalogs": False, "schema": os.path.join(
-             ROOTPATH, "tests/data/text_xml/local.xsd")}),
+             ROOTPATH, "tests/data/text_xml/supplementary/local.xsd")}),
         ("valid_1.0_local_xsd.xml", {
             "purpose": "Test valid xml with given invalid schema.",
             "inverse": True,
@@ -153,15 +155,16 @@ def test_scraper_valid(filename, result_dict, params, evaluate_scraper):
             "purpose": "Test invalid file with local catalog.",
             "stdout_part": "",
             "stderr_part": "Missing child element(s)"},
-         {"catalog_path": "tests/data/text_xml/valid_1.0_catalog_file.xml",
+         {"catalog_path":
+              "tests/data/text_xml/supplementary/catalog_to_local_xsd.xml",
           "catalogs": True}),
         ("valid_1.0_no_namespace_catalog.xml", {
             "purpose": "Test catalog priority.",
             "stdout_part": "",
             "stderr_part": "Schemas validity error"},
-         {
-             "catalog_path": "tests/data/text_xml/valid_1.0_next_catalog_file.xml",
-             "catalogs": True}),
+         {"catalog_path":
+              "tests/data/text_xml/supplementary/catalog_with_catalogs.xml",
+          "catalogs": True}),
         ("invalid_1.0_dtd.xml", {
             "purpose": "Test invalid xml with dtd.",
             "stdout_part": "",

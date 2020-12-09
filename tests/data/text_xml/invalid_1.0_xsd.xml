@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <note xmlns="http://localhost/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:noNamespaceSchemaLocation="local_nons.xsd">
+xsi:noNamespaceSchemaLocation="supplementary/local_nons.xsd">
   <name>John Smith</name>
   <date>Last Friday</date>
   <heading>Title</heading>

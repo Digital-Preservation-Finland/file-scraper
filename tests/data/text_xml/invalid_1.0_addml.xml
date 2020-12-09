@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addml:addml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://www.arkivverket.no/standarder/addml local_8.3_addml.xsd"
+             xsi:schemaLocation="http://www.arkivverket.no/standarder/addml supplementary/local_8.3_addml.xsd"
              xmlns:addml="http://www.arkivverket.no/standarder/addml">
     <addml:dataset name="Testdata">
         <addml:descriptionss>Testdata</addml:descriptionss>
