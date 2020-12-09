@@ -58,19 +58,21 @@ ROOTPATH = os.path.abspath(os.path.join(
             "purpose": "Test valid file with local catalog.",
             "stdout_part": "Success",
             "stderr_part": ""},
-         {"catalog_path": "tests/data/text_xml/test-catalog.xml",
+         {"catalog_path": "tests/data/text_xml/valid_1.0_catalog_file.xml",
           "catalogs": True}),
         ("valid_1.0_catalog.xml", {
             "purpose": "Test catalog order priority.",
             "stdout_part": "Success",
             "stderr_part": ""},
-         {"catalog_path": "tests/data/text_xml/test-catalog-next-catalog.xml",
+         {"catalog_path":
+              "tests/data/text_xml/valid_1.0_next_catalog_file.xml",
           "catalogs": True}),
         ("valid_1.0_no_namespace_catalog.xml", {
             "purpose": "Test that no-namespace catalog would work",
             "stdout_part": "Success",
             "stderr_part": ""},
-         {"catalog_path": "tests/data/text_xml/test-catalog-no-namespace.xml",
+         {"catalog_path": ("tests/data/text_xml/"
+                           "valid_1.0_no_namespace_xsd_catalog_file.xml"),
           "catalogs": True}),
         ("valid_1.0_dtd.xml", {
             "purpose": "Test valid xml with dtd.",
@@ -151,14 +153,15 @@ def test_scraper_valid(filename, result_dict, params, evaluate_scraper):
             "purpose": "Test invalid file with local catalog.",
             "stdout_part": "",
             "stderr_part": "Missing child element(s)"},
-         {"catalog_path": "tests/data/text_xml/test-catalog.xml",
+         {"catalog_path": "tests/data/text_xml/valid_1.0_catalog_file.xml",
           "catalogs": True}),
         ("valid_1.0_no_namespace_catalog.xml", {
             "purpose": "Test catalog priority.",
             "stdout_part": "",
             "stderr_part": "Schemas validity error"},
-         {"catalog_path": "tests/data/text_xml/test-catalog-next-catalog.xml",
-          "catalogs": True}),
+         {
+             "catalog_path": "tests/data/text_xml/valid_1.0_next_catalog_file.xml",
+             "catalogs": True}),
         ("invalid_1.0_dtd.xml", {
             "purpose": "Test invalid xml with dtd.",
             "stdout_part": "",
