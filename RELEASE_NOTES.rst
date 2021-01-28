@@ -1,6 +1,11 @@
 Release notes
 =============
 
+Version 0.28
+------------
+
+- Fix accidental set-type value
+
 Version 0.27
 ------------
 
