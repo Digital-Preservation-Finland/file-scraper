@@ -201,7 +201,8 @@ class TextEncodingScraper(BaseScraper):
             self._errors.append("Error when reading the file: " +
                                 six.text_type(err))
         except (ValueError, UnicodeDecodeError) as exception:
-            self._errors.append("Character decoding error: %s" % exception)
+            message = "Character decoding error: %s" % exception
+            self._errors.append(message.encode("unicode-escape"))
 
         self.streams = list(self.iterate_models(
             well_formed=self.well_formed, charset=self._charset,
