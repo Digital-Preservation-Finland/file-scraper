@@ -13,6 +13,9 @@ This module tests that:
     - Error message is given with missing character encoding
     - Limiting the decoding works as designed by reading the first 8 bytes
       and skipping the remainder
+    - If a checked file contains illegal control characters, the actual
+      characters are not printed in the error message, only their hex
+      representation.
 """
 from __future__ import unicode_literals
 
@@ -202,3 +205,19 @@ def test_decoding_limit(monkeypatch):
     scraper.scrape_file()
     assert partial_message_included(
         "First 8 bytes read, we skip the remainder", scraper.messages())
+
+
+def test_error_message_control_character():
+    """
+    Make sure that no actual illegal control characters are included
+    in the scraper error message, only their hex representation.
+    The error message may be printed into an XML file, and XML
+    files do not allow most control characters.
+    """
+    scraper = TextEncodingScraper(
+        filename="tests/data/text_plain/invalid__control_character.txt",
+        mimetype="text/plain", params={"charset": "UTF-8"})
+    scraper.scrape_file()
+    assert not partial_message_included("\x1f", scraper.errors())
+    assert partial_message_included(
+            "Illegal character '\\x1f' in position 4", scraper.errors())
