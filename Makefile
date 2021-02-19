@@ -14,7 +14,7 @@ info:
 		@echo "  make install           - Install file-scraper"
 		@echo
 
-clean:
+clean: clean-rpm
 		rm -f INSTALLED_FILES
 		rm -f INSTALLED_FILES.in
 
@@ -32,6 +32,18 @@ install3: clean
 		cat INSTALLED_FILES
 		echo "--"
 
-test:
-		py.test -svvv --maxfail=9999 --junitprefix=file-scraper --junitxml=junit.xml tests
+clean-rpm:
+	rm -rf rpmbuild
 
+rpm: clean
+	create-archive.sh
+	preprocess-spec-m4-macros.sh include/rhel7
+	build-rpm.sh
+
+rpm3: clean
+	create-archive.sh
+	preprocess-spec-m4-macros.sh include/rhel8
+	build-rpm.sh
+
+test:
+	py.test -svvv --maxfail=9999 --junitprefix=file-scraper --junitxml=junit.xml tests
