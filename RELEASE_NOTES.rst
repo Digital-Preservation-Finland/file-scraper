@@ -1,6 +1,12 @@
 Release notes
 =============
 
+Version 0.29
+------------
+
+- Fix illegal control characters being printed in scraper error messages
+- Minor fixes related to schema cleanup
+
 Version 0.28
 ------------
 
