@@ -24,3 +24,6 @@ Empty heading\.
 
 # Wonky tables don't invalidate the file
 ^A col element causes a span attribute with value .* to be ignored on the parent colgroup\.
+
+# Unicode normalization form C warnings must not invalidate the file
+^Text run is not in Unicode Normalization Form C\.$

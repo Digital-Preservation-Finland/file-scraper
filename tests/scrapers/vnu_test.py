@@ -49,6 +49,11 @@ MIMETYPE = "text/html"
             "purpose": "Test valid file.",
             "stdout_part": "valid_5.0_language_warning.html",
             "stderr_part": ""}),
+        ("valid_5.0_unicode_normalization_warning.html", {
+            "purpose": "Test that not using unicode normalization form C is "
+                       "not an error.",
+            "stdout_part": "valid_5.0_unicode_normalization_warning.html",
+            "stderr_part": ""}),
     ]
 )
 def test_scraper(filename, result_dict, evaluate_scraper):
