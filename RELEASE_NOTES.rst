@@ -1,6 +1,11 @@
 Release notes
 =============
 
+Version 0.30
+------------
+
+- Filter out unicode normalization warnings
+
 Version 0.29
 ------------
 
