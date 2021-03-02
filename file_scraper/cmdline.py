@@ -8,6 +8,7 @@ import json
 import click
 
 from file_scraper.scraper import Scraper
+from file_scraper.utils import ensure_text
 
 
 @click.group()
@@ -59,9 +60,9 @@ def scrape_file(ctx, filename, check_wellformed, tool_info, mimetype, version):
         raise click.ClickException(str(exception))
 
     results = {
-        "path": scraper.filename,
-        "MIME type": scraper.mimetype,
-        "version": scraper.version,
+        "path": ensure_text(scraper.filename),
+        "MIME type": ensure_text(scraper.mimetype),
+        "version": ensure_text(scraper.version),
         "metadata": scraper.streams,
         }
     if check_wellformed:
