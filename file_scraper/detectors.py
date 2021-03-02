@@ -317,14 +317,14 @@ class VerapdfDetector(BaseDetector):
         Set info to reflect the fact that the file was not a PDF/A.
 
         :error_shell: If a Shell instance is given, its stderr is
-                      set as 'errors' in the info.
+                      set as 'errors' in the info if it is not empty.
         """
         self.info = {"class": self.__class__.__name__,
-                     "messages": ["File is not PDF/A, veraPDF detection not "
-                                  "needed"],
+                     "messages": ["File is not PDF/A, it is not compliant "
+                                  "with PDF/A requirements"],
                      "errors": [],
                      "tools": []}
-        if error_shell:
+        if error_shell.stderr:
             self.info["errors"] = [error_shell.stderr]
 
     def get_important(self):

@@ -142,19 +142,21 @@ def test_fido_cache_halting_file(fido_cache_halting_file):
 
 
 @pytest.mark.parametrize(
-    ["filepath", "mimetype", "version"],
+    ["filepath", "mimetype", "version", "message"],
     [
-        ("application_pdf/valid_1.4.pdf", None, None),
+        ("application_pdf/valid_1.4.pdf", None, None,
+         "File is not PDF/A, it is not compliant with PDF/A requirements"),
         ("application_pdf/valid_A-1a.pdf", "application/pdf",
-         "A-1a"),
+         "A-1a", "PDF/A version detected by veraPDF."),
         ("application_pdf/valid_A-2b.pdf", "application/pdf",
-         "A-2b"),
+         "A-2b", "PDF/A version detected by veraPDF."),
         ("application_pdf/valid_A-3b.pdf", "application/pdf",
-         "A-3b"),
-        ("image_png/valid_1.2.png", None, None)
+         "A-3b", "PDF/A version detected by veraPDF."),
+        ("image_png/valid_1.2.png", None, None,
+         "File is not PDF/A, it is not compliant with PDF/A requirements")
     ]
 )
-def test_pdf_detector(filepath, mimetype, version):
+def test_pdf_detector(filepath, mimetype, version, message):
     """
     Test that VerapdfDetector works.
 
@@ -169,6 +171,7 @@ def test_pdf_detector(filepath, mimetype, version):
     detector.detect()
     assert detector.mimetype == mimetype
     assert detector.version == version
+    assert message in detector.info['messages']
 
 
 @pytest.mark.parametrize(

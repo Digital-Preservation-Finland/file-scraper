@@ -413,11 +413,11 @@ def test_coded_filename(testpath, fullname, mimetype, version):
          {"mimetype": "image/gif", "version": "1989a"},
          False, "image/gif", "1987a", None, False),
 
-        # Give the correct MIME type with another accepted version:
-        # file is reported as well-formed
+        # Give the correct MIME type with a supported but incorrect version:
+        # file is reported as not well-formed
         ("tests/data/application_pdf/valid_A-1a.pdf",
          {"mimetype": "application/pdf", "version": "1.4"},
-         True, "application/pdf", "1.4", None, None),
+         False, "application/pdf", "A-1a", None, False),
 
         # Give unsupported MIME type, resulting in not well-formed
         ("tests/data/image_tiff/valid_6.0.tif", {"mimetype": "audio/mpeg"},
