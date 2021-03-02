@@ -216,32 +216,6 @@ class OfficeFileMagicMeta(BinaryMagicBaseMeta):
         return UNAV
 
 
-class ArcFileMagicMeta(BinaryMagicBaseMeta):
-    """Metadata model for Arc files."""
-
-    # Supported mimetype
-    _supported = {"application/x-internet-archive": ["1.0", "1.1"]}
-    _allow_versions = True  # Allow any version
-
-    @metadata()
-    def mimetype(self):
-        """Return mimetype."""
-        magic_mimetype = super(ArcFileMagicMeta, self).mimetype()
-        if magic_mimetype == "application/x-ia-arc":
-            return "application/x-internet-archive"
-        return magic_mimetype
-
-    @metadata()
-    def version(self):
-        """Return version."""
-        if self.mimetype() not in self._supported:
-            return UNAV
-        version = super(ArcFileMagicMeta, self).version()
-        if version == "1":
-            version = "1.0"
-        return version
-
-
 class PngFileMagicMeta(BinaryMagicBaseMeta):
     """Metadata model for PNG files."""
 

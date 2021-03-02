@@ -33,8 +33,7 @@ from file_scraper.verapdf.verapdf_scraper import VerapdfScraper
 from file_scraper.vnu.vnu_scraper import VnuScraper
 from file_scraper.wand.wand_scraper import WandScraper
 from file_scraper.warctools.warctools_scraper import (
-    ArcWarctoolsScraper, GzipWarctoolsScraper, WarcWarctoolsFullScraper,
-    WarcWarctoolsScraper)
+    GzipWarctoolsScraper, WarcWarctoolsFullScraper, WarcWarctoolsScraper)
 from file_scraper.xmllint.xmllint_scraper import XmllintScraper
 
 
@@ -63,7 +62,7 @@ def iter_scrapers(mimetype, version, check_wellformed=True, params=None):
     scraper_found = False
 
     scrapers = [
-        WarcWarctoolsFullScraper, ArcWarctoolsScraper, GzipWarctoolsScraper,
+        WarcWarctoolsFullScraper, GzipWarctoolsScraper,
         WarcWarctoolsScraper, CsvScraper, DetectedMimeVersionMetadataScraper,
         DetectedMimeVersionScraper, DpxScraper, FFMpegScraper,
         GhostscriptScraper, JHoveGifScraper, JHoveHtmlScraper,

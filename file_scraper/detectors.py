@@ -219,15 +219,13 @@ class MagicDetector(BaseDetector):
 
         If user has not given a MIME type, we will prefer file detector with
         the following mimetypes:
-            - application/x-internet-archive
             - application/vnd.oasis.opendocument.formula
 
         :returns: A dict possibly containing key "mimetype"
         """
         important = {}
         if (not self._given_mimetype and self.mimetype in
-                ["application/x-internet-archive",
-                 "application/vnd.oasis.opendocument.formula"]):
+                ["application/vnd.oasis.opendocument.formula"]):
             important["mimetype"] = self.mimetype
         return important
 

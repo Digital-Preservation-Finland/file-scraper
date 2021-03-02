@@ -24,7 +24,6 @@ MIMETYPE_DICT = {
     "application/mp4": None,
     "application/vnd.ms-asf": "video/x-ms-asf",
     "video/x-msvideo": "video/avi",
-    "application/x-ia-arc": "application/x-internet-archive"
 }
 
 # Dict between detectors' results and known file format versions.
@@ -49,7 +48,6 @@ VERSION_DICT = {
 PRONOM_DICT = {
     "x-fmt/135": ("audio/x-aiff", "1.3"),
     "fmt/541": ("image/x-dpx", "2.0"),
-    "fmt/410": ("application/x-internet-archive", "1.1"),
     "fmt/289": ("application/warc", None),  # does not result version
     "fmt/244": ("application/vnd.google-earth.kml+xml", "2.3"),
     "fmt/997": ("application/x-spss-por", ""),

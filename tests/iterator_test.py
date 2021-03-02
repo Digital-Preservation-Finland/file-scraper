@@ -18,7 +18,7 @@ WELLFORMED_SCRAPERS = [
     "JHoveWavScraper", "JHoveUtf8Scraper", "LxmlScraper", "OfficeScraper",
     "PngcheckScraper", "PsppScraper", "SchematronScraper",
     "TextEncodingScraper", "VerapdfScraper", "VnuScraper",
-    "ArcWarctoolsScraper", "WarcWarctoolsFullScraper", "GzipWarctoolsScraper",
+    "WarcWarctoolsFullScraper", "GzipWarctoolsScraper",
     "XmllintScraper"
 ]
 
@@ -78,8 +78,6 @@ WELLFORMED_SCRAPERS = [
           "WandScraper"]),
         ("application/gzip", None, ["GzipWarctoolsScraper"]),
         ("application/warc", None, ["WarcWarctoolsFullScraper"]),
-        ("application/x-internet-archive", None,
-         ["MagicBinaryScraper", "ArcWarctoolsScraper"]),
         ("text/xml", "1.0", ["XmllintScraper",
                              "LxmlScraper", "MagicTextScraper",
                              "TextEncodingScraper"]),

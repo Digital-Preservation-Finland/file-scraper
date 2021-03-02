@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 
 import gzip
 import os.path
-import tempfile
 from io import open as io_open
 
 import six
@@ -11,9 +10,7 @@ import six
 from file_scraper.base import BaseScraper
 from file_scraper.defaults import UNAV
 from file_scraper.shell import Shell
-from file_scraper.utils import sanitize_bytestring, encode_path
-from file_scraper.warctools.warctools_model import (ArcWarctoolsMeta,
-                                                    GzipWarctoolsMeta,
+from file_scraper.warctools.warctools_model import (GzipWarctoolsMeta,
                                                     WarcWarctoolsMeta)
 
 
@@ -119,81 +116,42 @@ class WarcWarctoolsFullScraper(WarcWarctoolsScraper):
         super(WarcWarctoolsFullScraper, self).scrape_file()
 
 
-class ArcWarctoolsScraper(BaseScraper):
-    """Scraper for older arc files."""
-
-    _supported_metadata = [ArcWarctoolsMeta]
-    _only_wellformed = True  # Only well-formed check
-
-    def scrape_file(self):
-        """
-        Scrape ARC file by converting to WARC.
-
-        This is done using Warctools" arc2warc converter.
-        """
-        size = os.path.getsize(self.filename)
-        if size == 0:
-            self._errors.append("Empty file.")
-            return
-        with tempfile.NamedTemporaryFile(prefix="scraper-warctools.") \
-                as warcfile:
-            shell = Shell(
-                command=["arc2warc", encode_path(self.filename)],
-                stdout=warcfile)
-            if shell.returncode != 0:
-                self._errors.append("Failed: returncode %s" % shell.returncode)
-                self._errors.append(sanitize_bytestring(shell.stderr_raw))
-                return
-            self._messages.append("File was analyzed successfully.")
-            if shell.stdout:
-                self._messages.append(shell.stdout)
-        self.streams = list(self.iterate_models(
-            well_formed=self.well_formed))
-        self._check_supported(allow_unav_version=True)
-
-
 class GzipWarctoolsScraper(BaseScraper):
-    """Scraper for compressed Warcs and Arcs."""
+    """Scraper for compressed Warcs."""
 
     _supported_metadata = [GzipWarctoolsMeta]
     _only_wellformed = True  # Only well-formed check
     _scraper = None
 
-    _supported_scrapers = [WarcWarctoolsFullScraper, ArcWarctoolsScraper]
-
     def scrape_file(self):
-        """Scrape file. If Warc fails, try Arc."""
+        """Scrape file."""
         original_messages = self._messages
-        for class_ in self._supported_scrapers:
-            if class_ == WarcWarctoolsFullScraper:
-                mime = "application/warc"
-            else:
-                mime = "application/x-internet-archive"
-            self._scraper = class_(filename=self.filename, mimetype=mime)
-            self._scraper.scrape_file()
+        class_ = WarcWarctoolsFullScraper
+        mime = "application/warc"
+        self._scraper = class_(filename=self.filename, mimetype=mime)
+        self._scraper.scrape_file()
 
-            # pylint: disable=protected-access
-            if self._messages and not self._scraper.well_formed:
-                self._messages = self._messages + self._scraper._messages
-            else:
-                self._messages = original_messages + self._scraper._messages
-            if self._errors and not self._scraper.well_formed:
-                self._errors = self._errors + self._scraper._errors
-            else:
-                self._errors = self._scraper._errors
+        # pylint: disable=protected-access
+        if self._messages and not self._scraper.well_formed:
+            self._messages = self._messages + self._scraper._messages
+        else:
+            self._messages = original_messages + self._scraper._messages
+        if self._errors and not self._scraper.well_formed:
+            self._errors = self._errors + self._scraper._errors
+        else:
+            self._errors = self._scraper._errors
 
-            if self._scraper.well_formed:
-                self.streams = list(self.iterate_models(
-                    metadata_model=self._scraper.streams))
-                self._check_supported()
-                break
+        if self._scraper.well_formed:
+            self.streams = list(self.iterate_models(
+                metadata_model=self._scraper.streams))
+            self._check_supported()
 
     def info(self):
         """
         Return scraper info.
 
-        If either WarcWarctoolsScraper or ArcWarctoolsScraper could scrape the
-        gzip file, that class is reported as the scraper class. For failures,
+        If WarcWarctoolsScraper could scrape the gzip file,
+        that class is reported as the scraper class. For failures,
         the class is GzipWarctoolsScraper.
         """
         info = super(GzipWarctoolsScraper, self).info()
@@ -206,10 +164,10 @@ class GzipWarctoolsScraper(BaseScraper):
         """
         Check that the scraped MIME type and version are supported.
 
-        This scraper uses the two other scrapers to check the file and get the
+        This scraper uses the Warc scraper to check the file and get the
         metadata, so in addition to the normal metadata model check, it is also
-        sufficient if that at least one of the tried scrapers supports the MIME
-        type and version combination.
+        sufficient if the Warc scraper supports the MIME type and
+        version combination.
         """
         if not self.streams:
             self._errors.append("MIME type not supported by this scraper.")
@@ -225,11 +183,10 @@ class GzipWarctoolsScraper(BaseScraper):
             if mimetype in md_class.supported_mimetypes():
                 return
 
-        # also check the used scraper classes: final result of arc or warc,
+        # also check the used scraper class: final result of warc,
         # corresponding to the compressed file, is also ok
-        for scraper_class in self._supported_scrapers:
-            if scraper_class.is_supported(mimetype, version):
-                return
+        if WarcWarctoolsFullScraper.is_supported(mimetype, version):
+            return
 
         self._errors.append("MIME type {} with version {} is not "
                             "supported.".format(mimetype, version))

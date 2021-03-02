@@ -66,7 +66,6 @@ This module tests that:
         - application/xhtml+xml, 1.0
         - text/html, 4.01
         - application/pdf, 1.4
-        - application/x-internet-archive, 1.0
     - Any of these MIME types with version None is also supported,
       except text/html
     - Valid MIME type with made up version is supported, except for text files
@@ -135,8 +134,6 @@ from tests.common import (parse_results, partial_message_included)
         ("valid_4.01.html", "text/html", "UTF-8", MagicTextScraper),
         ("valid_5.0.html", "text/html", "UTF-8", MagicTextScraper),
         ("valid_1.4.pdf", "application/pdf", None, MagicBinaryScraper),
-        ("valid_1.0.arc", "application/x-internet-archive",
-         None, MagicBinaryScraper),
     ])
 def test_scraper_valid(filename, mimetype, charset, scraper_class,
                        evaluate_scraper):
@@ -215,12 +212,10 @@ def test_invalid_office(filename, mimetype):
         ("invalid_5.0_nodoctype.html", "text/html", MagicTextScraper),
         ("invalid_1.4_removed_xref.pdf", "application/pdf",
          MagicBinaryScraper),
-        ("invalid_1.0_missing_field.arc", "application/x-internet-archive",
-         MagicBinaryScraper),
     ])
-def test_invalid_markdown_pdf_arc(filename, mimetype, scraper_class,
-                                  evaluate_scraper):
-    """Test scrapers for invalid XML, XHTML, HTML, pdf and arc files."""
+def test_invalid_markdown_pdf(filename, mimetype, scraper_class,
+                              evaluate_scraper):
+    """Test scrapers for invalid XML, XHTML, HTML, and pdf files."""
     result_dict = {
         "purpose": "Test invalid file.",
         "stdout_part": "successfully",
@@ -311,7 +306,6 @@ def test_jpeg_exif_character_case():
         ("text/xml", "1.0", MagicTextScraper),
         ("application/xhtml+xml", "1.0", MagicTextScraper),
         ("application/pdf", "1.4", MagicBinaryScraper),
-        ("application/x-internet-archive", "1.0", MagicBinaryScraper),
     ]
 )
 # pylint: disable=invalid-name

@@ -1,4 +1,4 @@
-"""Metadata models for Warcs and Arcs."""
+"""Metadata model for Warcs."""
 from __future__ import unicode_literals
 
 from file_scraper.defaults import UNAV
@@ -8,7 +8,7 @@ from file_scraper.base import BaseMeta
 
 # pylint: disable=too-few-public-methods
 class BaseWarctoolsMeta(BaseMeta):
-    """Base metadata class for Warcs and Arcs."""
+    """Base metadata class for Warcs."""
 
     # pylint: disable=no-self-use
     @metadata()
@@ -18,7 +18,7 @@ class BaseWarctoolsMeta(BaseMeta):
 
 
 class GzipWarctoolsMeta(BaseWarctoolsMeta):
-    """Metadata model for compressed Warcs and Arcs."""
+    """Metadata model for compressed Warcs."""
 
     _supported = {"application/gzip": []}  # Supported mimetype
     _allow_versions = True  # Allow any version
@@ -27,8 +27,8 @@ class GzipWarctoolsMeta(BaseWarctoolsMeta):
         """
         Initialize the metadata model
 
-        :metadata_model: Either WarcWarctoolsMeta or ArcWarctoolsMeta object
-                         representing the extracted warc or arc.
+        :metadata_model: WarcWarctoolsMeta object representing
+                         the extracted warc.
         """
         self._metadata_model = metadata_model
 
@@ -79,30 +79,3 @@ class WarcWarctoolsMeta(BaseWarctoolsMeta):
             return ensure_text(
                 self._line.split(b"WARC/", 1)[1].split(b" ")[0].strip())
         return UNAV
-
-
-class ArcWarctoolsMeta(BaseWarctoolsMeta):
-    """Metadata model for Arcs."""
-
-    # Supported mimetype and varsions
-    _supported = {"application/x-internet-archive": ["1.0", "1.1"]}
-    _allow_versions = True  # Allow any version
-
-    def __init__(self, well_formed):
-        """
-        Initialize the metadata model.
-
-        :well_formed: Well-formed status from scraper
-        """
-        self._well_formed = well_formed
-
-    @metadata()
-    def mimetype(self):
-        """
-        Return mimetype.
-
-        If the well-formed status from scraper is False,
-        then we do not know the actual MIME type.
-        """
-        return "application/x-internet-archive" if self._well_formed \
-            else UNAV

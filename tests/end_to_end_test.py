@@ -25,7 +25,6 @@ from tests.common import get_files
 # We currently do not have capability to define the file format version
 # of these test files
 UNAV_VERSION = [
-    "tests/data/application_x-internet-archive/valid_1.0_.arc.gz",
     "tests/data/application_msword/valid_11.0.doc",
     "tests/data/application_vnd.ms-excel/valid_11.0.xls",
     "tests/data/application_vnd.ms-powerpoint/valid_11.0.ppt",
@@ -45,7 +44,6 @@ UNAV_VERSION = [
 # MPEG-TS file contains "menu" stream, where version is None.
 # Quicktime file contains a timecode track, where version is None.
 UNAV_ELEMENTS = {
-    "tests/data/application_x-internet-archive/valid_1.0_.arc.gz": ["version"],
     "tests/data/application_msword/valid_11.0.doc": ["version"],
     "tests/data/application_vnd.ms-excel/valid_11.0.xls": ["version"],
     "tests/data/application_vnd.ms-powerpoint/valid_11.0.ppt": ["version"],
@@ -132,22 +130,19 @@ IGNORE_VALID = [
     "tests/data/text_xml/valid_1.0_no_namespace_catalog.xml"
 ]
 
-# Ignore these we know that warc, arc and dpx files are not currently
+# Ignore these we know that warc and dpx files are not currently
 # supported for metadata scraping.
 # XML files without a header does not currently work when just metadata
 # scraping is done.
 IGNORE_FOR_METADATA = IGNORE_VALID + [
     "tests/data/image_x-dpx/valid_2.0.dpx",
     "tests/data/application_warc/valid_1.0_.warc.gz",
-    "tests/data/application_x-internet-archive/valid_1.0_.arc.gz",
     "tests/data/text_xml/valid_1.0_mets_noheader.xml"
 ]
 
 # These invalid files are recognized as application/gzip
 DIFFERENT_MIMETYPE_INVALID = {
     "tests/data/application_warc/invalid__missing_data.warc.gz":
-        "application/gzip",
-    "tests/data/application_x-internet-archive/invalid__missing_data.arc.gz":
         "application/gzip"}
 
 # Some MIME types can not be detected, either because of the file format
@@ -256,13 +251,6 @@ def test_valid_combined(fullname, mimetype, version):
     # Test that output does not change if MIME type and version are given
     # to be the ones scraper would determine them to be in any case.
 
-    # This cannot be done with compressed arcs, as WarctoolsScraper reports
-    # the MIME type of the compressed archive instead of application/gzip,
-    # so for those types, all required testing is already done here.
-    if (scraper.mimetype in ["application/x-internet-archive"] and
-            fullname[-3:] == ".gz"):
-        return
-
     given_scraper = Scraper(fullname, mimetype=scraper.mimetype,
                             version=scraper.version,
                             charset=scraper.streams[0].get("charset", None))
@@ -346,13 +334,6 @@ def test_without_wellformed(fullname, mimetype, version):
 
     # Test that output does not change if MIME type and version are given
     # to be the ones scraper would determine them to be in any case.
-
-    # This cannot be done with compressed arcs, as WarctoolsScraper reports
-    # the MIME type of the compressed archive instead of application/gzip,
-    # so for those types, all required testing is already done here.
-    if (scraper.mimetype in ["application/x-internet-archive"] and
-            fullname[-3:] == ".gz"):
-        return
 
     given_scraper = Scraper(fullname, mimetype=scraper.mimetype,
                             version=scraper.version,
@@ -465,11 +446,6 @@ def test_coded_filename(testpath, fullname, mimetype, version):
         # as not well-formed
         ("tests/data/image_gif/valid_1987a.gif", {"mimetype": "image/png"},
          False, "image/gif", UNAV, None, False),
-
-        # We assume that application/gzip is either gzipped ARC or WARC
-        ("tests/data/application_x-internet-archive/valid_1.0_.arc.gz",
-         {"mimetype": "application/gzip"}, True,
-         "application/x-internet-archive", UNAV, None, False),
     ]
 )
 def test_given_filetype(filepath, params, well_formed, expected_mimetype,
@@ -502,10 +478,6 @@ def test_given_filetype(filepath, params, well_formed, expected_mimetype,
     assert scraper.streams[0]["version"] == expected_version
 
     # Just collect metadata without well-formedness checking
-
-    # ARC files can not be scraped without well-formedness check
-    if expected_mimetype == "application/x-internet-archive":
-        return
 
     scraper = Scraper(filename=filepath, **params)
     scraper.scrape(False)

@@ -44,10 +44,7 @@ CHANGE_FIDO = {
     ".presentation/valid_15.0.pptx": None,
     "application_vnd.oasis.opendocument.formula/valid_1.0.odf":
         "application/zip",
-    "application_x-internet-archive/valid_1.0_.arc.gz":
-        "application/gzip",
     "application_warc/valid_1.0_.warc.gz": "application/gzip",
-    "application_x-internet-archive/valid_1.0.arc": "text/html",
     "application_mxf/valid__jpeg2000.mxf": None,
     "application_mxf/valid__jpeg2000_grayscale.mxf": None,
     "application_mxf/valid__jpeg2000_lossless.mxf": None,
@@ -82,8 +79,6 @@ CHANGE_MAGIC = {
     "text_plain/valid__utf32be_without_bom.txt":
         "application/octet-stream",
     "video_MP2T/valid__mpeg2_mp3.ts": "application/octet-stream",
-    "application_x-internet-archive/valid_1.0_.arc.gz":
-        "application/x-gzip",
     "application_xhtml+xml/valid_1.0.xhtml": "text/xml",
     "application_warc/valid_1.0_.warc.gz": "application/x-gzip",
     "application_x-spss-por/valid__spss24-dot.por": "text/plain",
@@ -233,8 +228,7 @@ def test_important_pdf(filepath, important):
     [
         (FidoDetector, "text/html"),
         (FidoDetector, "application/zip"),
-        (MagicDetector, "application/vnd.oasis.opendocument.formula"),
-        (MagicDetector, "application/x-internet-archive")
+        (MagicDetector, "application/vnd.oasis.opendocument.formula")
     ]
 )
 def test_important_other(detector_class, mimetype):

@@ -67,8 +67,7 @@ class MimeMatchScraper(BaseScraper):
     """
 
     _ALTERNATIVE_MIMETYPES = {
-        "application/gzip": ["application/warc",
-                             "application/x-internet-archive"]}
+        "application/gzip": ["application/warc"]}
     _MIMES_UNAV_VERSIONS = [
         "application/vnd.oasis.opendocument.text",
         "application/vnd.oasis.opendocument.spreadsheet",
@@ -83,8 +82,7 @@ class MimeMatchScraper(BaseScraper):
         "application/vnd.openxmlformats-officedocument."
         "spreadsheetml.sheet",
         "application/vnd.openxmlformats-officedocument.presentationml."
-        "presentation",
-        "application/x-internet-archive"
+        "presentation"
     ]
     _supported_metadata = [DummyMeta]
 
