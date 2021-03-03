@@ -18,7 +18,7 @@ WELLFORMED_SCRAPERS = [
     "JHoveWavScraper", "JHoveUtf8Scraper", "LxmlScraper", "OfficeScraper",
     "PngcheckScraper", "PsppScraper", "SchematronScraper",
     "TextEncodingScraper", "VerapdfScraper", "VnuScraper",
-    "WarcWarctoolsFullScraper", "GzipWarctoolsScraper",
+    "WarctoolsFullScraper", "GzipWarctoolsScraper",
     "XmllintScraper"
 ]
 
@@ -77,7 +77,7 @@ WELLFORMED_SCRAPERS = [
          ["PngcheckScraper", "MagicBinaryScraper", "PilScraper",
           "WandScraper"]),
         ("application/gzip", None, ["GzipWarctoolsScraper"]),
-        ("application/warc", None, ["WarcWarctoolsFullScraper"]),
+        ("application/warc", None, ["WarctoolsFullScraper"]),
         ("text/xml", "1.0", ["XmllintScraper",
                              "LxmlScraper", "MagicTextScraper",
                              "TextEncodingScraper"]),
@@ -130,7 +130,7 @@ def test_iter_scrapers(mimetype, version, scraper_classes):
         for x in scraper_classes
     ]
     scraper_classes = [
-        "WarcWarctoolsScraper" if x == "WarcWarctoolsFullScraper" else x
+        "WarctoolsScraper" if x == "WarctoolsFullScraper" else x
         for x in scraper_classes
     ]
     if mimetype in ["application/x-spss-por", "text/html", "text/xml"] or \

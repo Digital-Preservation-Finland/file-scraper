@@ -9,7 +9,7 @@ This module tests that:
         - For empty files, scraper errors contains "Empty file."
         - For files with missing data, scraper errors contains "unpack
           requires a string argument of length 4".
-    - When using WarcWarctoolsFullScraper:
+    - When using WarctoolsFullScraper:
         - For whiles where the reported content length is shorter than the
           actual content, scraper errors contains "warc errors at".
 
@@ -17,10 +17,10 @@ This module tests that:
       supported:
         - GzipWarctoolsScraper supports application/gzip with "", None or a
           made up string as a version.
-        - WarcWarctoolsScraper and WarcWarctoolsFullScraper support
+        - WarctoolsScraper and WarctoolsFullScraper support
           application/warc with "", None or a made up string as a version.
     - Without well-formedness check, these MIME types are supported only in
-      WarcWarctoolsScraper.
+      WarctoolsScraper.
     - None of these scrapers supports a made up MIME type.
 """
 from __future__ import unicode_literals
@@ -29,7 +29,7 @@ import pytest
 
 from file_scraper.defaults import UNAV
 from file_scraper.warctools.warctools_scraper import (
-    GzipWarctoolsScraper, WarcWarctoolsFullScraper, WarcWarctoolsScraper)
+    GzipWarctoolsScraper, WarctoolsFullScraper, WarctoolsScraper)
 from tests.common import (parse_results, partial_message_included)
 
 
@@ -59,7 +59,7 @@ def test_gzip_scraper(filename, result_dict, evaluate_scraper):
                   expected results of stdout and stderr
     """
     mime = "application/warc"
-    classname = "WarcWarctoolsFullScraper"
+    classname = "WarctoolsFullScraper"
     correct = parse_results(filename, mime,
                             result_dict, True)
     scraper = GzipWarctoolsScraper(filename=correct.filename,
@@ -123,7 +123,7 @@ def test_warc_scraper(filename, result_dict, evaluate_scraper):
     """
     correct = parse_results(filename, "application/warc",
                             result_dict, True)
-    scraper = WarcWarctoolsFullScraper(filename=correct.filename,
+    scraper = WarctoolsFullScraper(filename=correct.filename,
                                        mimetype="application/warc")
     scraper.scrape_file()
 
@@ -140,8 +140,8 @@ def test_warc_scraper(filename, result_dict, evaluate_scraper):
 @pytest.mark.parametrize(
     ["scraper_class", "mimetype", "version", "only_wellformed"],
     [(GzipWarctoolsScraper, "application/gzip", "", True),
-     (WarcWarctoolsFullScraper, "application/warc", "1.0", True),
-     (WarcWarctoolsScraper, "application/warc", "1.0", False)]
+     (WarctoolsFullScraper, "application/warc", "1.0", True),
+     (WarctoolsScraper, "application/warc", "1.0", False)]
 )
 def test_is_supported(scraper_class, mimetype, version, only_wellformed):
     """Test is_supported method."""

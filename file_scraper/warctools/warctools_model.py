@@ -27,7 +27,7 @@ class GzipWarctoolsMeta(BaseWarctoolsMeta):
         """
         Initialize the metadata model
 
-        :metadata_model: WarcWarctoolsMeta object representing
+        :metadata_model: WarctoolsMeta object representing
                          the extracted warc.
         """
         self._metadata_model = metadata_model
@@ -43,7 +43,7 @@ class GzipWarctoolsMeta(BaseWarctoolsMeta):
         return self._metadata_model[0].version()
 
 
-class WarcWarctoolsMeta(BaseWarctoolsMeta):
+class WarctoolsMeta(BaseWarctoolsMeta):
     """Metadata models for Warcs"""
 
     # Supported mimetype and versions

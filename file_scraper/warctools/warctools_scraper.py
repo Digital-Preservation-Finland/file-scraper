@@ -11,10 +11,10 @@ from file_scraper.base import BaseScraper
 from file_scraper.defaults import UNAV
 from file_scraper.shell import Shell
 from file_scraper.warctools.warctools_model import (GzipWarctoolsMeta,
-                                                    WarcWarctoolsMeta)
+                                                    WarctoolsMeta)
 
 
-class WarcWarctoolsScraper(BaseScraper):
+class WarctoolsScraper(BaseScraper):
     """
     Implements WARC file format scraper for metadata collecting.
 
@@ -23,7 +23,7 @@ class WarcWarctoolsScraper(BaseScraper):
     .. seealso:: https://github.com/internetarchive/warctools
     """
 
-    _supported_metadata = [WarcWarctoolsMeta]
+    _supported_metadata = [WarctoolsMeta]
 
     @classmethod
     def is_supported(cls, mimetype, version=None, check_wellformed=True,
@@ -40,7 +40,7 @@ class WarcWarctoolsScraper(BaseScraper):
         """
         if check_wellformed:
             return False
-        return super(WarcWarctoolsScraper, cls).is_supported(
+        return super(WarctoolsScraper, cls).is_supported(
             mimetype, version, check_wellformed, params)
 
     def scrape_file(self):
@@ -64,7 +64,7 @@ class WarcWarctoolsScraper(BaseScraper):
         self._check_supported()
 
 
-class WarcWarctoolsFullScraper(WarcWarctoolsScraper):
+class WarctoolsFullScraper(WarctoolsScraper):
     """
     Implements WARC file format scraper for validation.
 
@@ -73,7 +73,7 @@ class WarcWarctoolsFullScraper(WarcWarctoolsScraper):
     .. seealso:: https://github.com/internetarchive/warctools
     """
 
-    _supported_metadata = [WarcWarctoolsMeta]
+    _supported_metadata = [WarctoolsMeta]
     _only_wellformed = True  # Only well-formed check
 
     @classmethod
@@ -113,7 +113,7 @@ class WarcWarctoolsFullScraper(WarcWarctoolsScraper):
 
         self._messages.append(shell.stdout)
 
-        super(WarcWarctoolsFullScraper, self).scrape_file()
+        super(WarctoolsFullScraper, self).scrape_file()
 
 
 class GzipWarctoolsScraper(BaseScraper):
@@ -126,7 +126,7 @@ class GzipWarctoolsScraper(BaseScraper):
     def scrape_file(self):
         """Scrape file."""
         original_messages = self._messages
-        class_ = WarcWarctoolsFullScraper
+        class_ = WarctoolsFullScraper
         mime = "application/warc"
         self._scraper = class_(filename=self.filename, mimetype=mime)
         self._scraper.scrape_file()
@@ -150,7 +150,7 @@ class GzipWarctoolsScraper(BaseScraper):
         """
         Return scraper info.
 
-        If WarcWarctoolsScraper could scrape the gzip file,
+        If WarctoolsScraper could scrape the gzip file,
         that class is reported as the scraper class. For failures,
         the class is GzipWarctoolsScraper.
         """
@@ -185,7 +185,7 @@ class GzipWarctoolsScraper(BaseScraper):
 
         # also check the used scraper class: final result of warc,
         # corresponding to the compressed file, is also ok
-        if WarcWarctoolsFullScraper.is_supported(mimetype, version):
+        if WarctoolsFullScraper.is_supported(mimetype, version):
             return
 
         self._errors.append("MIME type {} with version {} is not "
