@@ -446,6 +446,11 @@ def test_coded_filename(testpath, fullname, mimetype, version):
         # as not well-formed
         ("tests/data/image_gif/valid_1987a.gif", {"mimetype": "image/png"},
          False, "image/gif", UNAV, None, False),
+
+        # We assume that application/gzip is gzipped WARC
+        ("tests/data/application_warc/valid_1.0_.warc.gz",
+         {"mimetype": "application/gzip"}, True,
+         "application/warc", "1.0", None, False),
     ]
 )
 def test_given_filetype(filepath, params, well_formed, expected_mimetype,
@@ -478,6 +483,10 @@ def test_given_filetype(filepath, params, well_formed, expected_mimetype,
     assert scraper.streams[0]["version"] == expected_version
 
     # Just collect metadata without well-formedness checking
+
+    # WARC files can not be scraped without well-formedness check
+    if expected_mimetype == "application/warc":
+        return
 
     scraper = Scraper(filename=filepath, **params)
     scraper.scrape(False)

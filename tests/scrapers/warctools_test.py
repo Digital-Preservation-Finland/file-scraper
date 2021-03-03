@@ -124,7 +124,7 @@ def test_warc_scraper(filename, result_dict, evaluate_scraper):
     correct = parse_results(filename, "application/warc",
                             result_dict, True)
     scraper = WarctoolsFullScraper(filename=correct.filename,
-                                       mimetype="application/warc")
+                                   mimetype="application/warc")
     scraper.scrape_file()
 
     if not correct.well_formed:

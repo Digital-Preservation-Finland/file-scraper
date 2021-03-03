@@ -82,7 +82,7 @@ class MimeMatchScraper(BaseScraper):
         "application/vnd.openxmlformats-officedocument."
         "spreadsheetml.sheet",
         "application/vnd.openxmlformats-officedocument.presentationml."
-        "presentation"
+        "presentation",
     ]
     _supported_metadata = [DummyMeta]
 
