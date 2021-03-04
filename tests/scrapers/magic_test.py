@@ -213,8 +213,8 @@ def test_invalid_office(filename, mimetype):
         ("invalid_1.4_removed_xref.pdf", "application/pdf",
          MagicBinaryScraper),
     ])
-def test_invalid_markdown_pdf(filename, mimetype, scraper_class,
-                              evaluate_scraper):
+def test_invalid_markup_pdf(filename, mimetype, scraper_class,
+                            evaluate_scraper):
     """Test scrapers for invalid XML, XHTML, HTML, and pdf files."""
     result_dict = {
         "purpose": "Test invalid file.",
