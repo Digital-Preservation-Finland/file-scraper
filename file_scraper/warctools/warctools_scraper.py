@@ -121,29 +121,19 @@ class GzipWarctoolsScraper(BaseScraper):
 
     _supported_metadata = [GzipWarctoolsMeta]
     _only_wellformed = True  # Only well-formed check
-    _scraper = None
 
     def scrape_file(self):
         """Scrape file."""
-        original_messages = self._messages
-        class_ = WarctoolsFullScraper
-        mime = "application/warc"
-        self._scraper = class_(filename=self.filename, mimetype=mime)
-        self._scraper.scrape_file()
+        scraper_ = WarctoolsFullScraper(filename=self.filename,
+                                        mimetype="application/warc")
+        scraper_.scrape_file()
 
-        # pylint: disable=protected-access
-        if self._messages and not self._scraper.well_formed:
-            self._messages = self._messages + self._scraper._messages
-        else:
-            self._messages = original_messages + self._scraper._messages
-        if self._errors and not self._scraper.well_formed:
-            self._errors = self._errors + self._scraper._errors
-        else:
-            self._errors = self._scraper._errors
+        self._messages = scraper_._messages
+        self._errors = scraper_._errors
 
-        if self._scraper.well_formed:
+        if scraper_.well_formed:
             self.streams = list(self.iterate_models(
-                metadata_model=self._scraper.streams))
+                metadata_model=scraper_.streams))
             self._check_supported()
 
     def info(self):
@@ -156,7 +146,7 @@ class GzipWarctoolsScraper(BaseScraper):
         """
         info = super(GzipWarctoolsScraper, self).info()
         if self.streams:
-            info["class"] = self._scraper.__class__.__name__
+            info["class"] = "WarctoolsFullScraper"
         return info
 
     def _check_supported(self, allow_unav_mime=False, allow_unav_version=False,
