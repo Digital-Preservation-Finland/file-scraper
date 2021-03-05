@@ -1,6 +1,12 @@
 Release notes
 =============
 
+Version 0.31
+------------
+
+- Build el7 python3 rpms
+- Fix scraper CLI in python3
+
 Version 0.30
 ------------
 
