@@ -17,32 +17,6 @@ class BaseWarctoolsMeta(BaseMeta):
         return "binary"
 
 
-class GzipWarctoolsMeta(BaseWarctoolsMeta):
-    """Metadata model for compressed Warcs."""
-
-    _supported = {"application/gzip": []}  # Supported mimetype
-    _allow_versions = True  # Allow any version
-
-    def __init__(self, metadata_model):
-        """
-        Initialize the metadata model
-
-        :metadata_model: WarctoolsMeta object representing
-                         the extracted warc.
-        """
-        self._metadata_model = metadata_model
-
-    @metadata()
-    def mimetype(self):
-        """Return MIME type."""
-        return self._metadata_model[0].mimetype()
-
-    @metadata()
-    def version(self):
-        """Return the version."""
-        return self._metadata_model[0].version()
-
-
 class WarctoolsMeta(BaseWarctoolsMeta):
     """Metadata models for Warcs"""
 
@@ -79,3 +53,10 @@ class WarctoolsMeta(BaseWarctoolsMeta):
             return ensure_text(
                 self._line.split(b"WARC/", 1)[1].split(b" ")[0].strip())
         return UNAV
+
+
+class GzipWarctoolsMeta(WarctoolsMeta):
+    """Metadata model for compressed Warcs."""
+
+    _supported = {"application/gzip": []}  # Supported mimetype
+    _allow_versions = True  # Allow any version

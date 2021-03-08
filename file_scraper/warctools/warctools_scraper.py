@@ -116,25 +116,11 @@ class WarctoolsFullScraper(WarctoolsScraper):
         super(WarctoolsFullScraper, self).scrape_file()
 
 
-class GzipWarctoolsScraper(BaseScraper):
+class GzipWarctoolsScraper(WarctoolsFullScraper):
     """Scraper for compressed Warcs."""
 
     _supported_metadata = [GzipWarctoolsMeta]
     _only_wellformed = True  # Only well-formed check
-
-    def scrape_file(self):
-        """Scrape file."""
-        scraper_ = WarctoolsFullScraper(filename=self.filename,
-                                        mimetype="application/warc")
-        scraper_.scrape_file()
-
-        self._messages = scraper_._messages
-        self._errors = scraper_._errors
-
-        if scraper_.well_formed:
-            self.streams = list(self.iterate_models(
-                metadata_model=scraper_.streams))
-            self._check_supported()
 
     def info(self):
         """
