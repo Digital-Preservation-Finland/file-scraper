@@ -9,7 +9,7 @@ from itertools import chain
 
 import six
 
-from file_scraper.exceptions import SkipElementException
+from file_scraper.exceptions import ConflictingValueError, SkipElementException
 
 
 def metadata(important=False):
@@ -319,7 +319,7 @@ def _fill_importants(scraper_results, lose):
     return importants
 
 
-def generate_metadata_dict(scraper_results, lose):
+def generate_metadata_dict(scraper_results, important_methods, lose):
     """
     Generate a metadata dict from the given scraper results.
 
@@ -327,10 +327,17 @@ def generate_metadata_dict(scraper_results, lose):
     retrievable by using the index of the stream as a key. The indexing starts
     from zero.
 
+    Important methods, like mimetype and file format version, will
+    raise an error that is handled by the proper scraper and resulting
+    in well-formedness being set to False.
+
     :scraper_results: A list containing lists of all metadata methods, methods
                       of a single scraper in a single list. E.g.
                       [[scraper1_stream1, scraper1_stream2],
                        [scraper2_stream1, scraper2_stream2]]
+    :important_methods: A list of methods that will raise
+                        ConflictingValueError in case of conflicting
+                        values between the results
     :lose: A list of values that can be overwritten.
     :returns: A dict containing the metadata of the file, metadata of each
               stream in its own dict. E.g.
@@ -338,6 +345,9 @@ def generate_metadata_dict(scraper_results, lose):
                    ...},
                1: {'mimetype': 'audio/mp4', 'index': 2,
                     'audio_data_encoding': 'AAC', ...}}
+    :raises: ValueError if conflicting values are found
+    :raises: ConflictingValueError: If conflicting values are found that
+             are to be handled by the scraper
     """
     # if there are no scraper results, return an empty dict
     if not any(scraper_results):
@@ -358,6 +368,11 @@ def generate_metadata_dict(scraper_results, lose):
             except SkipElementException:
                 # happens when the method is not to be indexed
                 continue
+            # In case of conflicting values, some methods raise an error that
+            # is ahandled by the scraper separately 
+            except ValueError as err:
+                if method.__name__ in important_methods:
+                    raise ConflictingValueError(err)
 
     return streams
 

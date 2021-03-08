@@ -3,11 +3,13 @@ from __future__ import unicode_literals
 
 from file_scraper.defaults import UNAV
 from file_scraper.detectors import VerapdfDetector, MagicCharset
-from file_scraper.dummy.dummy_scraper import FileExists, MimeMatchScraper
+from file_scraper.dummy.dummy_scraper import (FileExists,
+                                              MimeMatchScraper,
+                                              ResultsMergeScraper)
 from file_scraper.iterator import iter_detectors, iter_scrapers
 from file_scraper.jhove.jhove_scraper import JHoveUtf8Scraper
 from file_scraper.textfile.textfile_scraper import TextfileScraper
-from file_scraper.utils import encode_path, generate_metadata_dict, hexdigest
+from file_scraper.utils import encode_path, hexdigest
 
 LOSE = (None, UNAV, "")
 
@@ -142,6 +144,21 @@ class Scraper(object):
                     "well_formed": self.well_formed})
         self._scrape_file(scraper, check_wellformed)
 
+    def _merge_results(self, check_wellformed):
+        """
+        Merge scraper results into streams and handle possible
+        conflicts.
+
+        :check_wellformed: Whether full scraping is used or not.
+        """
+        scraper = ResultsMergeScraper(
+            filename=self.filename,
+            mimetype=self._predefined_mimetype,
+            version=self._predefined_version,
+            params=self._params)
+        self._scrape_file(scraper, check_wellformed)
+        self.streams = scraper.streams
+
     def scrape(self, check_wellformed=True):
         """Scrape file and collect metadata.
 
@@ -164,11 +181,14 @@ class Scraper(object):
                 version=self._predefined_version,
                 params=self._params)
             self._scrape_file(scraper, check_wellformed)
-        self.streams = generate_metadata_dict(self._scraper_results, LOSE)
+        self._params["scraper_results"] = self._scraper_results
+
+        self._merge_results(check_wellformed)
         self._check_utf8(check_wellformed)
 
         self.mimetype = self.streams[0]["mimetype"]
         self.version = self.streams[0]["version"]
+
         self._check_mime(check_wellformed)
 
     def detect_filetype(self):

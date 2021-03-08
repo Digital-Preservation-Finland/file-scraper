@@ -5,11 +5,14 @@ import os.path
 
 from file_scraper.base import BaseScraper
 from file_scraper.defaults import UNAV
-from file_scraper.utils import decode_path
+from file_scraper.exceptions import ConflictingValueError
+from file_scraper.utils import decode_path, generate_metadata_dict
 from file_scraper.dummy.dummy_model import (
     DummyMeta, DetectedMimeVersionMeta, DetectedTextVersionMeta,
     DetectedSpssVersionMeta, DetectedPdfaVersionMeta
 )
+
+LOSE = (None, UNAV, "")
 
 
 class ScraperNotFound(BaseScraper):
@@ -172,3 +175,45 @@ class DetectedMimeVersionMetadataScraper(DetectedMimeVersionScraper):
             return False
         return super(DetectedMimeVersionMetadataScraper, cls).is_supported(
             mimetype, version, check_wellformed, params)
+
+
+class ResultsMergeScraper(BaseScraper):
+    """
+    Scraper to merge the scraper results and handle possible conflicts
+    between the scraper tools.
+    """
+
+    _METHODS_TO_CHECK = ['mimetype', 'version']
+    _supported_metadata = [DummyMeta]
+
+    def __init__(self, filename, mimetype, version=None, params=None):
+        """
+        """
+        super(ResultsMergeScraper, self).__init__(
+            filename=filename, mimetype=mimetype, version=version,
+            params=params)
+        if params is None:
+            params = {}
+        self._scraper_results = params.get("scraper_results", None)
+
+    def scrape_file(self):
+        """
+        No need to scrape anything, just merge already collected metadata.
+        """
+        try:
+            self.streams = generate_metadata_dict(
+                self._scraper_results, self._METHODS_TO_CHECK, LOSE)
+            self._messages.append(
+                "MIME type and file format version information merged, "
+                "no conflicts detected between scraper results.")
+        except ConflictingValueError as err:
+            self._errors.append(str(err))
+            # Generate dummy streams as the dicts could not be merged properly
+            self.streams = {
+                0: {
+                    "index": 0,
+                    "mimetype": UNAV,
+                    "version": UNAV,
+                    "stream_type": UNAV
+                }
+            }
