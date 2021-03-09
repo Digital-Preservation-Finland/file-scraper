@@ -9,7 +9,8 @@ from itertools import chain
 
 import six
 
-from file_scraper.exceptions import ConflictingValueError, SkipElementException
+from file_scraper.defaults import UNAV
+from file_scraper.exceptions import SkipElementException
 
 
 def metadata(important=False):
@@ -282,8 +283,11 @@ def _merge_to_stream(stream, method, lose, importants):
     elif stream[method_name] in lose:
         stream[method_name] = method_value
     else:
+        # Set the value as UNAV and raise ValueError
+        existing_value = stream[method_name]
+        stream[method_name] = UNAV
         raise ValueError("Conflict with existing value '%s' and new value "
-                         "'%s' for '%s'." % (stream[method_name], method_value,
+                         "'%s' for '%s'." % (existing_value, method_value,
                                              method_name))
 
 
@@ -325,26 +329,30 @@ def generate_metadata_dict(scraper_results, lose):
 
     The resulting dict contains the metadata of each stream as a dict,
     retrievable by using the index of the stream as a key. The indexing
-    starts from zero. In case of conflicting values, an error is raised.
+    starts from zero. In case of conflicting values, the error messages
+    are reported back to the scraper.
 
     :scraper_results: A list containing lists of all metadata methods,
                       methods of a single scraper in a single list. E.g.
                       [[scraper1_stream1, scraper1_stream2],
                        [scraper2_stream1, scraper2_stream2]]
     :lose: A list of values that can be overwritten.
-    :returns: A dict containing the metadata of the file, metadata of
-              each stream in its own dict. E.g.
+    :returns: A tuple of (a dict containing the metadata of the file,
+              metadata of each stream in its own dict. E.g.
               {0: {'mimetype': 'video/mp4', 'index': 1,
                    'frame_rate': '30', ...},
                1: {'mimetype': 'audio/mp4', 'index': 2,
-                    'audio_data_encoding': 'AAC', ...}}
-    :raises: ConflictingValueError: If conflicting values are found
+                    'audio_data_encoding': 'AAC', ...}},
+              and a list of error messages due to conflicting values)
+
     """
     # if there are no scraper results, return an empty dict
     if not any(scraper_results):
         return {}
     streams = {}
     importants = _fill_importants(scraper_results, lose)
+
+    conflicts = []
 
     for model in chain.from_iterable(scraper_results):
         stream_index = model.index()
@@ -359,12 +367,11 @@ def generate_metadata_dict(scraper_results, lose):
             except SkipElementException:
                 # happens when the method is not to be indexed
                 continue
-            # In case of conflicting values, raise an error that is ahandled
-            # by the scraper
+            # In case of conflicting values, append the error message
             except ValueError as err:
-                raise ConflictingValueError(err)
+                conflicts.append(str(err))
 
-    return streams
+    return streams, conflicts
 
 
 def concat(lines, prefix=""):

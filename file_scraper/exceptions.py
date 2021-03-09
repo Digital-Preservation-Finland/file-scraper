@@ -1,12 +1,6 @@
 """Custom scraper-related exceptions."""
 
 
-class ConflictingValueError(Exception):
-    """Exception to tell that merging of important keys resulted in a
-    conflict between values.
-    """
-
-
 class ImportantMetadataAlreadyDefined(Exception):
     """Exception to tell that the given key has already been defined as
     important.

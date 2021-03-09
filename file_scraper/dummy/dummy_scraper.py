@@ -5,7 +5,6 @@ import os.path
 
 from file_scraper.base import BaseScraper
 from file_scraper.defaults import UNAV
-from file_scraper.exceptions import ConflictingValueError
 from file_scraper.utils import decode_path, generate_metadata_dict
 from file_scraper.dummy.dummy_model import (
     DummyMeta, DetectedMimeVersionMeta, DetectedTextVersionMeta,
@@ -199,19 +198,9 @@ class ResultsMergeScraper(BaseScraper):
         """
         No need to scrape anything, just merge already collected metadata.
         """
-        try:
-            self.streams = generate_metadata_dict(self._scraper_results, LOSE)
-            self._messages.append(
-                "MIME type and file format version information merged, "
-                "no conflicts detected between scraper results.")
-        except ConflictingValueError as err:
-            self._errors.append(str(err))
-            # Generate dummy streams as the dicts could not be merged properly
-            self.streams = {
-                0: {
-                    "index": 0,
-                    "mimetype": UNAV,
-                    "version": UNAV,
-                    "stream_type": UNAV
-                }
-            }
+        streams, conflicts = generate_metadata_dict(
+            self._scraper_results, LOSE)
+        self.streams = streams
+        for error_message in conflicts:
+            self._errors.append(error_message)
+        self._messages.append("Scraper results merged into streams")

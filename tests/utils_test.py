@@ -558,7 +558,7 @@ def test_generate_metadata_dict():
     """Test generating metadata dict using the metadata objects."""
     results = [[Meta1()], [Meta2()], [Meta3()]]
     lose = ["value2-1"]
-    metadata_dict = generate_metadata_dict(results, lose)
+    (metadata_dict, conflicts) = generate_metadata_dict(results, lose)
     assert metadata_dict == {0: {"index": 0, "key1": "value1-1",
                                  "key2": "value2", "key3": "key2-3",
                                  "key4": "importantvalue",
@@ -567,6 +567,7 @@ def test_generate_metadata_dict():
                              1: {"index": 1, "key1": "value1",
                                  "key2": "value2", "mimetype": "anothermime",
                                  "version": 2, "stream_type": "audio"}}
+    assert conflicts == []
 
 
 def test_concat():
