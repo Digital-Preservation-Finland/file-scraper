@@ -183,7 +183,6 @@ class ResultsMergeScraper(BaseScraper):
     between the scraper tools.
     """
 
-    _METHODS_TO_CHECK = ['mimetype', 'version']
     _supported_metadata = [DummyMeta]
 
     def __init__(self, filename, mimetype, version=None, params=None):
@@ -201,8 +200,7 @@ class ResultsMergeScraper(BaseScraper):
         No need to scrape anything, just merge already collected metadata.
         """
         try:
-            self.streams = generate_metadata_dict(
-                self._scraper_results, self._METHODS_TO_CHECK, LOSE)
+            self.streams = generate_metadata_dict(self._scraper_results, LOSE)
             self._messages.append(
                 "MIME type and file format version information merged, "
                 "no conflicts detected between scraper results.")
