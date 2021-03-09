@@ -34,7 +34,8 @@ import six
 from file_scraper.defaults import UNAV
 from file_scraper.dummy.dummy_scraper import (
     FileExists, ScraperNotFound, MimeMatchScraper,
-    DetectedMimeVersionScraper, DetectedMimeVersionMetadataScraper)
+    DetectedMimeVersionScraper, DetectedMimeVersionMetadataScraper,
+    ResultsMergeScraper)
 from tests.common import partial_message_included
 
 DEFAULTSTREAMS = {0: {"index": 0, "version": UNAV,
@@ -189,3 +190,23 @@ def test_detected_version_scraper():
     scraper.scrape_file()
     assert not scraper.well_formed
     assert scraper.streams[0].version() == "123"
+
+
+@pytest.mark.parametrize(('meta_classes', 'wellformed'), [
+    (['meta1', 'meta5'], True),
+    (['meta1', 'meta2'], False)
+])
+def test_results_merge_scraper(meta_class_fx, meta_classes, wellformed):
+    """Test scraper for merging scraper results. The test tests both
+    a successful case where metadata could be merged and a case with
+    conflicts in metadata resulting in the well-formedness being
+    false.
+    """
+    results = []
+    for meta_class in meta_classes:
+        results.append([meta_class_fx(meta_class)])
+    scraper = ResultsMergeScraper(
+        None, mimetype="expected_mime", version="expected_version",
+        params={"scraper_results": results})
+    scraper.scrape_file()
+    assert scraper.well_formed == wellformed

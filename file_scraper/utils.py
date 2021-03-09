@@ -286,9 +286,8 @@ def _merge_to_stream(stream, method, lose, importants):
         # Set the value as UNAV and raise ValueError
         existing_value = stream[method_name]
         stream[method_name] = UNAV
-        raise ValueError("Conflict with existing value '%s' and new value "
-                         "'%s' for '%s'." % (existing_value, method_value,
-                                             method_name))
+        raise ValueError("Conflict with values '%s' and '%s' for '%s'." % (
+            existing_value, method_value, method_name))
 
 
 def _fill_importants(scraper_results, lose):

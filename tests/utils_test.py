@@ -106,7 +106,6 @@ from __future__ import unicode_literals
 import six
 import pytest
 
-from file_scraper.base import BaseMeta
 from file_scraper.scraper import LOSE
 from file_scraper.utils import (_fill_importants,
                                 _merge_to_stream, concat,
@@ -362,178 +361,15 @@ def test_merge_normal_conflict():
         _merge_to_stream({"key_notimportant": "oldvalue"},
                          getattr(testclass, "key_notimportant"),
                          [], {})
-    assert ("Conflict with existing value 'oldvalue' and new value 'newvalue'"
+    assert ("Conflict with values 'oldvalue' and 'newvalue'"
             in six.text_type(error.value))
 
 
-class Meta1(BaseMeta):
-    """
-    Metadata class for testing generate_metadata_dict().
-
-    This metadata class is used to test merging two metadata models with
-    identical indices. This and Meta2 contain a variety of compatible and
-    conflicting metadata methods that allow testing both important values
-    and LOSE dict.
-    """
-    # pylint: disable=no-self-use
-
-    @metadata()
-    def index(self):
-        """Return 0: this metadata class will be merged with Meta2."""
-        return 0
-
-    @metadata()
-    def mimetype(self):
-        """Same MIME type as Meta2 has."""
-        return "mime"
-
-    @metadata()
-    def version(self):
-        """Same version as Meta2 has."""
-        return 1.0
-
-    @metadata()
-    def stream_type(self):
-        """Same stream type as Meta2 has."""
-        return "binary"
-
-    @metadata()
-    def key1(self):
-        """
-        This value conflicts with Meta2 and neither is important.
-
-        This method can be used to test the LOSE dict.
-        """
-        return "value1-1"
-
-    @metadata()
-    def key2(self):
-        """This value is compatible with Meta2."""
-        return "value2"
-
-    @metadata()
-    def key3(self):
-        """This value conflicts with Meta2 and the Meta2 value is important."""
-        return "key1-3"
-
-    @metadata(important=True)
-    def key4(self):
-        """This value conflicts with Meta2 and this value is important."""
-        return "importantvalue"
-
-
-class Meta2(BaseMeta):
-    """
-    Metadata class for testing generate_metadata_dict().
-
-    This metadata class is used to test merging two metadata models with
-    identical indices. This and Meta1 contain a variety of compatible and
-    conflicting metadata methods that allow testing both important values
-    and LOSE dict.
-    """
-    # pylint: disable=no-self-use
-
-    @metadata()
-    def index(self):
-        """Return 0: this metadata class will be merged with Meta1."""
-        return 0
-
-    @metadata()
-    def mimetype(self):
-        """Same MIME type as Meta1 has."""
-        return "mime"
-
-    @metadata()
-    def version(self):
-        """Same version as Meta1 has."""
-        return 1.0
-
-    @metadata()
-    def stream_type(self):
-        """Same stream type as Meta1 has."""
-        return "binary"
-
-    @metadata()
-    def key1(self):
-        """
-        This value conflicts with Meta1 and neither is important.
-
-        This method can be used to test the LOSE dict.
-        """
-        return "value2-1"
-
-    @metadata()
-    def key2(self):
-        """This value is compatible with Meta1."""
-        return "value2"
-
-    @metadata(important=True)
-    def key3(self):
-        """This value conflicts with Meta1 and this value is important."""
-        return "key2-3"
-
-    @metadata()
-    def key4(self):
-        """This value conflicts with Meta1 and the Meta1 value is important."""
-        return "unimportant value"
-
-
-class Meta3(BaseMeta):
-    """
-    Metadata class for testing generate_metadata_dict().
-
-    This metadata class is used to test that metadata models with different
-    indices yield different streams in the metadata dict. Values of MIME type,
-    version, stream_type or other metadata fields do not need to match the
-    other streams.
-    """
-    # pylint: disable=no-self-use
-
-    @metadata()
-    def index(self):
-        """Return stream index"""
-        return 1
-
-    @metadata()
-    def mimetype(self):
-        """Return MIME type"""
-        return "anothermime"
-
-    @metadata()
-    def version(self):
-        """Return version"""
-        return 2
-
-    @metadata()
-    def stream_type(self):
-        """Return stream type"""
-        return "audio"
-
-    @metadata()
-    def key1(self):
-        """Return metadata"""
-        return "value1"
-
-    @metadata()
-    def key2(self):
-        """Return metadata"""
-        return "value2"
-
-
-class Meta4(BaseMeta):
-    """
-    Conflicting important value with Meta1(), where key4() is also important.
-    """
-    # pylint: disable=no-self-use
-    @metadata(important=True)
-    def key4(self):
-        """Return metadata, which will conflict with Meta1()"""
-        return "conflictingvalue"
-
-
-def test_merge_important_conflict():
+def test_merge_important_conflict(meta_class_fx):
     """Test adding metadata to stream with conflicting important values."""
-    results = [[Meta1()], [Meta2()], [Meta4()]]
+    results = [[meta_class_fx('meta1')],
+               [meta_class_fx('meta2')],
+               [meta_class_fx('meta4')]]
     with pytest.raises(ValueError) as error:
         _fill_importants(results, [])
     assert (
@@ -542,9 +378,11 @@ def test_merge_important_conflict():
     )
 
 
-def test_fill_importants():
+def test_fill_importants(meta_class_fx):
     """Test filling the importants list"""
-    results = [[Meta1()], [Meta2()], [Meta3()]]
+    results = [[meta_class_fx('meta1')],
+               [meta_class_fx('meta2')],
+               [meta_class_fx('meta3')]]
     lose = []
     importants = _fill_importants(results, lose)
     assert importants == {"key4": "importantvalue", "key3": "key2-3"}
@@ -554,20 +392,32 @@ def test_fill_importants():
     assert importants == {"key4": "importantvalue"}
 
 
-def test_generate_metadata_dict():
-    """Test generating metadata dict using the metadata objects."""
-    results = [[Meta1()], [Meta2()], [Meta3()]]
-    lose = ["value2-1"]
+@pytest.mark.parametrize(('lose', 'valid_dict', 'expected_conflicts'), [
+    (["value2-1"], True, []),
+    ([None], False,
+     ["Conflict with values 'value1-1' and 'value2-1' for 'key1'."])
+])
+def test_generate_metadata_dict(
+        meta_class_fx, lose, valid_dict, expected_conflicts):
+    """Test generating metadata dict using the metadata objects.
+    Tests both a successful case and a case with conflicts in
+    metadata.
+    """
+    results = [[meta_class_fx('meta1')],
+               [meta_class_fx('meta2')],
+               [meta_class_fx('meta3')]]
     (metadata_dict, conflicts) = generate_metadata_dict(results, lose)
-    assert metadata_dict == {0: {"index": 0, "key1": "value1-1",
-                                 "key2": "value2", "key3": "key2-3",
-                                 "key4": "importantvalue",
-                                 "mimetype": "mime", "version": 1.0,
-                                 "stream_type": "binary"},
-                             1: {"index": 1, "key1": "value1",
-                                 "key2": "value2", "mimetype": "anothermime",
-                                 "version": 2, "stream_type": "audio"}}
-    assert conflicts == []
+    if valid_dict:
+        assert metadata_dict == {0: {"index": 0, "key1": "value1-1",
+                                     "key2": "value2", "key3": "key2-3",
+                                     "key4": "importantvalue",
+                                     "mimetype": "mime", "version": 1.0,
+                                     "stream_type": "binary"},
+                                 1: {"index": 1, "key1": "value1",
+                                     "key2": "value2",
+                                     "mimetype": "anothermime",
+                                     "version": 2, "stream_type": "audio"}}
+    assert conflicts == expected_conflicts
 
 
 def test_concat():
