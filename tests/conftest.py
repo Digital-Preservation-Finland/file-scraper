@@ -241,6 +241,22 @@ class Meta4(BaseMeta):
     Conflicting important value with Meta1(), where key4() is also important.
     """
     # pylint: disable=no-self-use
+
+    @metadata()
+    def mimetype(self):
+        """Same MIME type as Meta1 has."""
+        return "mime"
+
+    @metadata()
+    def version(self):
+        """Same version as Meta1 has."""
+        return 1.0
+
+    @metadata()
+    def stream_type(self):
+        """Same stream type as Meta1 has."""
+        return "binary"
+
     @metadata(important=True)
     def key4(self):
         """Return metadata, which will conflict with Meta1()"""

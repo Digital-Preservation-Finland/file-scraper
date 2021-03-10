@@ -242,36 +242,33 @@ def _merge_to_stream(stream, method, lose, importants):
             existing_value, method_value, method_name))
 
 
-def _fill_importants(scraper_results, lose):
+def _fill_importants(method, importants, lose):
     """
-    Find the important metadata values from scraper results.
+    Find the important metadata values for a method.
 
-    :scraper_results: A list of lists containing all metadata methods.
+    :method: A metadata method
+    :importants: A dictionary of important metadata values
     :lose: List of values which can not be important
     :returns: A dict of important metadata values,
               e.g. {"charset": "UTF-8", ...}
-    :raises: ValueError if two different important values collide in a method.
+    :raises: ValueError if two different important values collide in a
+             method.
     """
-    importants = {}
-    for model in chain.from_iterable(scraper_results):
-        for method in model.iterate_metadata_methods():
-            try:
-                method_name = method.__name__
-                method_value = method()
-                if method.is_important and method_value not in lose:
-                    if method_name in importants and \
-                            importants[method_name] != method_value:
-                        raise ValueError(
-                            "Conflict with values '%s' and '%s' for '%s': "
-                            "both are marked important." %
-                            (importants[method_name],
-                             method_value,
-                             method_name))
-                    importants[method_name] = method_value
-            except SkipElementException:
-                pass
-
-    return importants
+    try:
+        method_name = method.__name__
+        method_value = method()
+        if method.is_important and method_value not in lose:
+            if method_name in importants and \
+                    importants[method_name] != method_value:
+                raise ValueError(
+                    "Conflict with values '%s' and '%s' for '%s': "
+                    "both are marked important." %
+                    (importants[method_name],
+                     method_value,
+                     method_name))
+            importants[method_name] = method_value
+    except SkipElementException:
+        pass
 
 
 def generate_metadata_dict(scraper_results, lose):
@@ -301,10 +298,20 @@ def generate_metadata_dict(scraper_results, lose):
     if not any(scraper_results):
         return {}
     streams = {}
-    importants = _fill_importants(scraper_results, lose)
 
     conflicts = []
+    importants = {}
 
+    # First iterate methods to fill the importants dictionary with important
+    # metadata values from the scraper results
+    for model in chain.from_iterable(scraper_results):
+        for method in model.iterate_metadata_methods():
+            try:
+                _fill_importants(method, importants, lose)
+            except ValueError as err:
+                conflicts.append(str(err))
+
+    # Iterate methods to generate metadata dict
     for model in chain.from_iterable(scraper_results):
         stream_index = model.index()
 
