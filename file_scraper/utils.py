@@ -171,54 +171,6 @@ def strip_zeros(float_str):
     return float_str
 
 
-def combine_metadata(stream, indexed_metadata, lose=None, important=None):
-    """
-    Merge metadata dict to stream metadata dict.
-
-    :param stream: Metadata dict where the new metadata is merged.
-    :param metadata: Indexed metadata dict to be merged with.
-    :param lose: These are generic values that are allowed to be lost
-    :param important: Important values as dict, which will be used
-                in conflict situation, if given.
-    :returns: Merged metadata dict.
-    :raises: ValueError if two different values collide.
-    """
-    if not indexed_metadata:
-        return stream.copy()
-
-    stream = {} if stream is None else stream.copy()
-    important = {} if important is None else important
-    lose = [] if lose is None else lose
-
-    for stream_index, metadata_dict in six.iteritems(indexed_metadata):
-
-        if stream_index not in stream.keys():
-            stream[stream_index] = metadata_dict
-            continue
-
-        incomplete_stream = stream[stream_index]
-
-        for key in incomplete_stream.keys():
-            if key not in metadata_dict or metadata_dict[key] is None:
-                continue
-
-            if incomplete_stream[key] in lose:
-                incomplete_stream[key] = metadata_dict[key]
-            elif key in important and important[key] not in lose:
-                incomplete_stream[key] = important[key]
-            elif metadata_dict[key] not in [incomplete_stream[key]] + lose:
-                raise ValueError(
-                    "Conflict with existing value '%s' and new "
-                    "value '%s'." % (incomplete_stream[key],
-                                     metadata_dict[key]))
-
-        for key, value in six.iteritems(metadata_dict):
-            if key not in incomplete_stream:
-                incomplete_stream[key] = value
-
-    return stream
-
-
 def ensure_text(s, encoding="utf-8", errors="strict"):
     """Coerce *s* to six.text_type.
 
