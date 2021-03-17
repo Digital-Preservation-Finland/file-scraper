@@ -46,15 +46,14 @@ This module tests that:
     - The following MIME type and version pairs are supported when full
       scraping is performed:
         - application/vnd.oasis.opendocument.text, 1.1
-        - application/msword, 11.0
-        - application/vnd.openxmlformats-officedocument.wordprocessingml.document, 15.0
+        - application/msword, 97-2003
+        - application/vnd.openxmlformats-officedocument.wordprocessingml.document, 2007 onwards
         - application/vnd.oasis.opendocument.presentation, 1.1
-        - application/vnd.ms-powerpoint, 11.0
-        - application/vnd.openxmlformats-officedocument.presentationml.presentation, 15.0
+        - application/vnd.ms-powerpoint, 97-2003
+        - application/vnd.openxmlformats-officedocument.presentationml.presentation, 2007 onwards
         - application/vnd.oasis.opendocument.spreadsheet, 1.1
-        - application/vnd.ms-excel, 8.0
-        - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,
-          15.0
+        - application/vnd.ms-excel, 8X
+        - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, 2007 onwards
         - application/vnd.oasis.opendocument.graphics, 1.1
         - application/vnd.oasis.opendocument.formula, 1.0
         - image/png, 1.2
@@ -91,26 +90,26 @@ from tests.common import (parse_results, partial_message_included)
     [
         ("valid_1.1.odt",
          "application/vnd.oasis.opendocument.text", None, MagicBinaryScraper),
-        ("valid_11.0.doc",
+        ("valid_97-2003.doc",
          "application/msword", None, MagicBinaryScraper),
-        ("valid_15.0.docx",
+        ("valid_2007 onwards.docx",
          "application/vnd.openxmlformats-officedocument."
          "wordprocessingml.document", None, MagicBinaryScraper),
         ("valid_1.1.odp",
          "application/vnd.oasis.opendocument.presentation", None,
          MagicBinaryScraper),
-        ("valid_11.0.ppt",
+        ("valid_97-2003.ppt",
          "application/vnd.ms-powerpoint", None, MagicBinaryScraper),
-        ("valid_15.0.pptx",
+        ("valid_2007 onwards.pptx",
          "application/vnd.openxml"
          "formats-officedocument.presentationml.presentation", None,
          MagicBinaryScraper),
         ("valid_1.1.ods",
          "application/vnd.oasis.opendocument.spreadsheet", None,
          MagicBinaryScraper),
-        ("valid_11.0.xls",
+        ("valid_8X.xls",
          "application/vnd.ms-excel", None, MagicBinaryScraper),
-        ("valid_15.0.xlsx",
+        ("valid_2007 onwards.xlsx",
          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
          None, MagicBinaryScraper),
         ("valid_1.1.odg",
@@ -144,12 +143,21 @@ def test_scraper_valid(filename, mimetype, charset, scraper_class,
         "stderr_part": ""}
     correct = parse_results(filename, mimetype, result_dict, True,
                             {"charset": charset})
+
+    office_unav_version_mimes = [
+        "application/vnd.oasis.opendocument.text",
+        "application/vnd.oasis.opendocument.spreadsheet",
+        "application/vnd.oasis.opendocument.presentation",
+        "application/vnd.oasis.opendocument.graphics",
+        "application/vnd.oasis.opendocument.formula",
+    ]
+
     scraper = scraper_class(filename=correct.filename, mimetype=mimetype,
                             params={"charset": charset})
     scraper.scrape_file()
     if correct.streams[0]["mimetype"] == "application/xhtml+xml":
         correct.streams[0]["stream_type"] = "text"
-    if (OfficeFileMagicMeta.is_supported(correct.streams[0]["mimetype"]) or
+    if ((correct.streams[0]["mimetype"] in office_unav_version_mimes) or
             HtmlFileMagicMeta.is_supported(correct.streams[0]["mimetype"])):
         correct.streams[0]["version"] = UNAV
 
@@ -161,20 +169,20 @@ def test_scraper_valid(filename, mimetype, charset, scraper_class,
     [
         ("invalid_1.1_missing_data.odt",
          "application/vnd.oasis.opendocument.text"),
-        ("invalid_11.0_missing_data.doc", "application/msword"),
-        ("invalid_15.0_missing_data.docx",
+        ("invalid_97-2003_missing_data.doc", "application/msword"),
+        ("invalid_2007 onwards_missing_data.docx",
          "application/vnd.openxmlformats-"
          "officedocument.wordprocessingml.document"),
         ("invalid_1.1_missing_data.odp",
          "application/vnd.oasis.opendocument.presentation"),
-        ("invalid_11.0_missing_data.ppt", "application/vnd.ms-powerpoint"),
-        ("invalid_15.0_missing_data.pptx", "application/vnd.openxml"
+        ("invalid_97-2003_missing_data.ppt", "application/vnd.ms-powerpoint"),
+        ("invalid_2007 onwards_missing_data.pptx", "application/vnd.openxml"
                                            "formats-officedocument."
                                            "presentationml.presentation"),
         ("invalid_1.1_missing_data.ods",
          "application/vnd.oasis.opendocument.spreadsheet"),
-        ("invalid_11.0_missing_data.xls", "application/vnd.ms-excel"),
-        ("invalid_15.0_missing_data.xlsx",
+        ("invalid_8X_missing_data.xls", "application/vnd.ms-excel"),
+        ("invalid_2007 onwards_missing_data.xlsx",
          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
         ("invalid_1.1_missing_data.odg",
          "application/vnd.oasis.opendocument.graphics"),
@@ -281,19 +289,19 @@ def test_jpeg_exif_character_case():
     [
         ("application/vnd.oasis.opendocument.text", "1.1",
          MagicBinaryScraper),
-        ("application/msword", "11.0", MagicBinaryScraper),
+        ("application/msword", "97-2003", MagicBinaryScraper),
         ("application/vnd.openxmlformats-officedocument.wordprocessingml"
-         ".document", "15.0", MagicBinaryScraper),
+         ".document", "2007 onwards", MagicBinaryScraper),
         ("application/vnd.oasis.opendocument.presentation", "1.1",
          MagicBinaryScraper),
-        ("application/vnd.ms-powerpoint", "11.0", MagicBinaryScraper),
+        ("application/vnd.ms-powerpoint", "97-2003", MagicBinaryScraper),
         ("application/vnd.openxmlformats-officedocument.presentationml"
-         ".presentation", "15.0", MagicBinaryScraper),
+         ".presentation", "2007 onwards", MagicBinaryScraper),
         ("application/vnd.oasis.opendocument.spreadsheet", "1.1",
          MagicBinaryScraper),
-        ("application/vnd.ms-excel", "8.0", MagicBinaryScraper),
+        ("application/vnd.ms-excel", "8X", MagicBinaryScraper),
         ("application/vnd.openxmlformats-officedocument.spreadsheetml"
-         ".sheet", "15.0", MagicBinaryScraper),
+         ".sheet", "2007 onwards", MagicBinaryScraper),
         ("application/vnd.oasis.opendocument.graphics", "1.1",
          MagicBinaryScraper),
         ("application/vnd.oasis.opendocument.formula", "1.0",

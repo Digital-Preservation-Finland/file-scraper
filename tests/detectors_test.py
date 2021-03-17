@@ -37,11 +37,11 @@ CHANGE_FIDO = {
     "text_plain/valid__utf16be_multibyte.txt": None,
     "text_plain/valid__utf8_multibyte.txt": None,
     "video_mp4/valid__h264_aac.mp4": None,
-    "application_msword/valid_11.0.doc": None,
+    "application_msword/valid_97-2003.doc": None,
     "application_vnd.openxmlformats-officedocument.spreadsheetml"
-    ".sheet/valid_15.0.xlsx": None,
+    ".sheet/valid_2007 onwards.xlsx": None,
     "application_vnd.openxmlformats-officedocument.presentationml"
-    ".presentation/valid_15.0.pptx": None,
+    ".presentation/valid_2007 onwards.pptx": None,
     "application_vnd.oasis.opendocument.formula/valid_1.0.odf":
         "application/zip",
     "application_warc/valid_1.0_.warc.gz": "application/gzip",

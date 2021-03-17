@@ -101,17 +101,19 @@ WELLFORMED_SCRAPERS = [
         ("application/vnd.oasis.opendocument.formula", None,
          ["DetectedMimeVersionScraper", "OfficeScraper",
           "MagicBinaryScraper"]),
-        ("application/msword", None, ["OfficeScraper", "MagicBinaryScraper"]),
-        ("application/vnd.ms-excel", None, ["OfficeScraper",
+        ("application/msword", "97-2003", ["OfficeScraper",
+                                           "MagicBinaryScraper"]),
+        ("application/vnd.ms-excel", "8X", ["OfficeScraper",
                                             "MagicBinaryScraper"]),
-        ("application/vnd.ms-powerpoint", None,
+        ("application/vnd.ms-powerpoint", "97-2003",
          ["OfficeScraper", "MagicBinaryScraper"]),
         ("application/vnd.openxmlformats-officedocument.wordprocessingml."
-         "document", None, ["OfficeScraper", "MagicBinaryScraper"]),
+         "document", "2007 onwards", ["OfficeScraper", "MagicBinaryScraper"]),
         ("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-         None, ["OfficeScraper", "MagicBinaryScraper"]),
+         "2007 onwards", ["OfficeScraper", "MagicBinaryScraper"]),
         ("application/vnd.openxmlformats-officedocument.presentationml."
-         "presentation", None, ["OfficeScraper", "MagicBinaryScraper"]),
+         "presentation", "2007 onwards", ["OfficeScraper",
+                                          "MagicBinaryScraper"]),
         ("test/unknown", None, ["ScraperNotFound"])
     ])
 def test_iter_scrapers(mimetype, version, scraper_classes):

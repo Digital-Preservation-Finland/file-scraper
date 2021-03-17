@@ -11,17 +11,14 @@ This module tests that:
     - Scraper uses parallel instances of LibreOffice properly.
     - The following MIME type and version combinations are supported:
         - application/vnd.oasis.opendocument.text, 1.1
-        - application/msword, 11.0
-        - application/vnd.openxmlformats-officedocument.wordprocessingml.document,
-          15.0
+        - application/msword, 97-2003
+        - application/vnd.openxmlformats-officedocument.wordprocessingml.document, 2007 onwards
         - application/vnd.oasis.opendocument.presentation, 1.1
-        - application/vnd.ms-powerpoint, 11.0
-        - application/vnd.openxmlformats-officedocument.presentationml.presentation,
-          15.0
+        - application/vnd.ms-powerpoint, 97-2003
+        - application/vnd.openxmlformats-officedocument.presentationml.presentation, 2007 onwards
         - application/vnd.oasis.opendocument.spreadsheet, 1.1
-        - application/vnd.ms-excel, 11.0
-        - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,
-          15.0
+        - application/vnd.ms-excel, 8X
+        - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, 2007 onwards
         - application/vnd.oasis.opendocument.graphics, 1.1
         - application/vnd.oasis.opendocument.formula, 1.0
     - These MIME types are also supported with a made up version or None as
@@ -47,18 +44,18 @@ BASEPATH = "tests/data"
     ["filename", "mimetype"],
     [
         ("valid_1.1.odt", "application/vnd.oasis.opendocument.text"),
-        ("valid_11.0.doc", "application/msword"),
-        ("valid_15.0.docx", "application/vnd.openxmlformats-"
+        ("valid_97-2003.doc", "application/msword"),
+        ("valid_2007 onwards.docx", "application/vnd.openxmlformats-"
          "officedocument.wordprocessingml.document"),
         ("valid_1.1.odp",
          "application/vnd.oasis.opendocument.presentation"),
-        ("valid_11.0.ppt", "application/vnd.ms-powerpoint"),
-        ("valid_15.0.pptx", "application/vnd.openxml"
+        ("valid_97-2003.ppt", "application/vnd.ms-powerpoint"),
+        ("valid_2007 onwards.pptx", "application/vnd.openxml"
          "formats-officedocument.presentationml.presentation"),
         ("valid_1.1.ods",
          "application/vnd.oasis.opendocument.spreadsheet"),
-        ("valid_11.0.xls", "application/vnd.ms-excel"),
-        ("valid_15.0.xlsx", "application/vnd."
+        ("valid_8X.xls", "application/vnd.ms-excel"),
+        ("valid_2007 onwards.xlsx", "application/vnd."
          "openxmlformats-officedocument.spreadsheetml.sheet"),
         ("valid_1.1.odg", "application/vnd.oasis.opendocument.graphics"),
         ("valid_1.0.odf", "application/vnd.oasis.opendocument.formula"),
@@ -87,15 +84,15 @@ def test_scraper_valid_file(filename, mimetype, evaluate_scraper):
     [
         ("invalid_1.1_corrupted.odt", "application/vnd.oasis.opendocument"
          ".text"),
-        ("invalid_15.0_corrupted.docx", "application/vnd.openxmlformats-"
-         "officedocument.wordprocessingml.document"),
+        ("invalid_2007 onwards_corrupted.docx", "application/"
+         "vnd.openxmlformats-officedocument.wordprocessingml.document"),
         ("invalid_1.1_corrupted.odp",
          "application/vnd.oasis.opendocument.presentation"),
-        ("invalid_15.0_corrupted.pptx", "application/vnd.openxml"
+        ("invalid_2007 onwards_corrupted.pptx", "application/vnd.openxml"
          "formats-officedocument.presentationml.presentation"),
         ("invalid_1.1_corrupted.ods",
          "application/vnd.oasis.opendocument.spreadsheet"),
-        ("invalid_15.0_corrupted.xlsx", "application/vnd."
+        ("invalid_2007 onwards_corrupted.xlsx", "application/vnd."
          "openxmlformats-officedocument.spreadsheetml.sheet"),
         ("invalid_1.1_corrupted.odg", "application/vnd.oasis.opendocument"
          ".graphics"),
@@ -161,17 +158,17 @@ def test_parallel_validation(filename, mimetype):
     ["mime", "ver"],
     [
         ("application/vnd.oasis.opendocument.text", "1.1"),
-        ("application/msword", "11.0"),
+        ("application/msword", "97-2003"),
         ("application/vnd.openxmlformats-"
-         "officedocument.wordprocessingml.document", "15.0"),
+         "officedocument.wordprocessingml.document", "2007 onwards"),
         ("application/vnd.oasis.opendocument.presentation", "1.1"),
-        ("application/vnd.ms-powerpoint", "11.0"),
+        ("application/vnd.ms-powerpoint", "97-2003"),
         ("application/vnd.openxml"
-         "formats-officedocument.presentationml.presentation", "15.0"),
+         "formats-officedocument.presentationml.presentation", "2007 onwards"),
         ("application/vnd.oasis.opendocument.spreadsheet", "1.1"),
-        ("application/vnd.ms-excel", "11.0"),
+        ("application/vnd.ms-excel", "8X"),
         ("application/vnd."
-         "openxmlformats-officedocument.spreadsheetml.sheet", "15.0"),
+         "openxmlformats-officedocument.spreadsheetml.sheet", "2007 onwards"),
         ("application/vnd.oasis.opendocument.graphics", "1.1"),
         ("application/vnd.oasis.opendocument.formula", "1.0"),
     ]

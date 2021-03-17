@@ -25,16 +25,7 @@ from tests.common import get_files
 # We currently do not have capability to define the file format version
 # of these test files
 UNAV_VERSION = [
-    "tests/data/application_msword/valid_11.0.doc",
-    "tests/data/application_vnd.ms-excel/valid_11.0.xls",
-    "tests/data/application_vnd.ms-powerpoint/valid_11.0.ppt",
     "tests/data/application_vnd.oasis.opendocument.formula/valid_1.0.odf",
-    "tests/data/application_vnd.openxmlformats-officedocument.presentationml"
-    ".presentation/valid_15.0.pptx",
-    "tests/data/application_vnd.openxmlformats-officedocument.spreadsheetml"
-    ".sheet/valid_15.0.xlsx",
-    "tests/data/application_vnd.openxmlformats-officedocument.word"
-    "processingml.document/valid_15.0.docx",
 ]
 
 # These files will result (:unav) for some elements
@@ -44,17 +35,8 @@ UNAV_VERSION = [
 # MPEG-TS file contains "menu" stream, where version is None.
 # Quicktime file contains a timecode track, where version is None.
 UNAV_ELEMENTS = {
-    "tests/data/application_msword/valid_11.0.doc": ["version"],
-    "tests/data/application_vnd.ms-excel/valid_11.0.xls": ["version"],
-    "tests/data/application_vnd.ms-powerpoint/valid_11.0.ppt": ["version"],
     "tests/data/application_vnd.oasis.opendocument.formula/valid_1.0"
     ".odf": ["version"],
-    "tests/data/application_vnd.openxmlformats-officedocument.presentationml"
-    ".presentation/valid_15.0.pptx": ["version"],
-    "tests/data/application_vnd.openxmlformats-officedocument.spreadsheetml"
-    ".sheet/valid_15.0.xlsx": ["version"],
-    "tests/data/application_vnd.openxmlformats-officedocument.word"
-    "processingml.document/valid_15.0.docx": ["version"],
     "tests/data/image_gif/valid_1987a.gif": ["icc_profile_name"],
     "tests/data/image_gif/valid_1989a.gif": ["version", "version",
                                              "icc_profile_name",
