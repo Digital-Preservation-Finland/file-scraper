@@ -199,20 +199,32 @@ class OfficeFileMagicMeta(BinaryMagicBaseMeta):
                                                             "1.2"],
         "application/vnd.oasis.opendocument.graphics": ["1.0", "1.1", "1.2"],
         "application/vnd.oasis.opendocument.formula": ["1.0", "1.2"],
-        "application/msword": ["8.0", "8.5", "9.0", "10.0", "11.0"],
-        "application/vnd.ms-excel": ["8.0", "9.0", "10.0", "11.0"],
-        "application/vnd.ms-powerpoint": ["8.0", "9.0", "10.0", "11.0"],
+        "application/msword": ["97-2003"],
+        "application/vnd.ms-excel": ["8X"],
+        "application/vnd.ms-powerpoint": ["97-2003"],
         "application/vnd.openxmlformats-officedocument.wordprocessingml."
-        "document": ["12.0", "14.0", "15.0"],
+        "document": ["2007 onwards"],
         "application/vnd.openxmlformats-officedocument."
-        "spreadsheetml.sheet": ["12.0", "14.0", "15.0"],
+        "spreadsheetml.sheet": ["2007 onwards"],
         "application/vnd.openxmlformats-officedocument.presentationml."
-        "presentation": ["12.0", "14.0", "15.0"]}
+        "presentation": ["2007 onwards"]}
     _allow_versions = True  # Allow any version
+
+    _mimes_unav_versions = [
+        "application/vnd.oasis.opendocument.text",
+        "application/vnd.oasis.opendocument.spreadsheet",
+        "application/vnd.oasis.opendocument.presentation",
+        "application/vnd.oasis.opendocument.graphics",
+        "application/vnd.oasis.opendocument.formula",
+    ]
 
     @metadata()
     def version(self):
         """Return version."""
+        if self.mimetype() in self._supported:
+            if self.mimetype() in self._mimes_unav_versions:
+                return UNAV
+            return self._supported[self.mimetype()][0]
         return UNAV
 
 
