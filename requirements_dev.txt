@@ -6,7 +6,7 @@ six
 olefile
 file-magic
 pymediainfo
-Pillow==6.0  # Pinned due to 6.1 causing a test case to fail
+Pillow==7.1.0  # Pinned due to 6.1 causing a test case to fail
 wand==0.6.1
 lxml
 click
