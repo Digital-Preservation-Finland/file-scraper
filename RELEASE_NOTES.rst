@@ -1,6 +1,15 @@
 Release notes
 =============
 
+Version 0.32
+------------
+
+- Fix PDF version detection
+- Remove ARC file format support
+- Update PRONOM codes for file formats
+- Handle conflicts between scraper results in a new scraper
+- Update MS Office version handling
+
 Version 0.31
 ------------
 
