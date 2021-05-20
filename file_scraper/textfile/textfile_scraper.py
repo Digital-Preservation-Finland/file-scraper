@@ -200,7 +200,7 @@ class TextEncodingScraper(BaseScraper):
         except IOError as err:
             self._errors.append("Error when reading the file: " +
                                 six.text_type(err))
-        except (ValueError, UnicodeDecodeError) as exception:
+        except (LookupError, ValueError, UnicodeDecodeError) as exception:
             self._errors.append("Character decoding error: %s" % exception)
 
         self.streams = list(self.iterate_models(
@@ -222,7 +222,7 @@ class TextEncodingScraper(BaseScraper):
             try:
                 self._decode_chunk(chunk, "UTF-32BE", 0)
                 return "UTF-32BE"
-            except (ValueError, UnicodeError):
+            except (ValueError, UnicodeError, LookupError):
                 pass
         return self._charset
 
@@ -252,7 +252,7 @@ class TextEncodingScraper(BaseScraper):
                 # If ASCII works, then also ISO-8859-15 is OK
                 self._decode_chunk(chunk, "ASCII", position)
                 return False
-            except (ValueError, UnicodeError):
+            except (ValueError, UnicodeError, LookupError):
                 # If ASCII did not work, then charset can be (almost) anything
                 pass
 
@@ -260,7 +260,7 @@ class TextEncodingScraper(BaseScraper):
         # UTF-8.
         try:
             self._decode_chunk(chunk, "UTF-8", position)
-        except (ValueError, UnicodeDecodeError):
+        except (ValueError, UnicodeDecodeError, LookupError):
             # If it was not UTF-8, then we have to believe the given charset
             return False
         return True
@@ -277,8 +277,9 @@ class TextEncodingScraper(BaseScraper):
         :chunk: Byte chunk from a file
         :charset: Decoding charset
         :position: Chunk position in a file
-        :raises: UnicodeError or ValueError when decoding was unsuccessful or
-                 a forbidden character was found.
+        :raises: UnicodeError, LookupError or ValueError when decoding
+            was unsuccessful, the encoding is unknown or a forbidden
+            character was found.
         """
         decoded_chunk = chunk.decode(charset)
 

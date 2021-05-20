@@ -44,7 +44,8 @@ INVALID_MSG = "is not a text file"
         ("valid_1.4.pdf", "application/pdf", False),
         ("valid_1987a.gif", "image/gif", False),
         ("invalid_1987a_broken_header.gif", "image/gif", False),
-        ("invalid__empty.txt", "text/plain", False)
+        ("invalid__empty.txt", "text/plain", False),
+        ("invalid__unknown_encoding_cp437.txt", "text/plain", True),
     ]
 )
 def test_existing_files(filename, mimetype, is_textfile, evaluate_scraper):
@@ -138,6 +139,7 @@ def test_existing_files(filename, mimetype, is_textfile, evaluate_scraper):
         ("valid__utf16be_multibyte.txt", "UTF-16", True),
         ("valid__utf8_multibyte.txt", "UTF-8", True),
         ("invalid__utf8_just_c3.txt", "UTF-8", False),
+        ("invalid__unknown_encoding_cp437.txt", "UNKNOWN-8BIT", False),
     ]
 )
 def test_encoding_check(filename, charset, is_wellformed, evaluate_scraper):
