@@ -5,6 +5,8 @@ import io
 import six
 from file_scraper.base import BaseScraper
 from file_scraper.defaults import UNAV
+from file_scraper.exceptions import (ForbiddenCharacterError,
+                                     UnknownEncodingError)
 from file_scraper.magiclib import file_command
 from file_scraper.utils import iter_utf_bytes
 from file_scraper.textfile.textfile_model import (TextFileMeta,
@@ -200,7 +202,7 @@ class TextEncodingScraper(BaseScraper):
         except IOError as err:
             self._errors.append("Error when reading the file: " +
                                 six.text_type(err))
-        except (LookupError, ValueError, UnicodeDecodeError) as exception:
+        except (ForbiddenCharacterError, UnknownEncodingError) as exception:
             self._errors.append("Character decoding error: %s" % exception)
 
         self.streams = list(self.iterate_models(
@@ -222,7 +224,7 @@ class TextEncodingScraper(BaseScraper):
             try:
                 self._decode_chunk(chunk, "UTF-32BE", 0)
                 return "UTF-32BE"
-            except (ValueError, UnicodeError, LookupError):
+            except (ForbiddenCharacterError, UnknownEncodingError):
                 pass
         return self._charset
 
@@ -252,7 +254,7 @@ class TextEncodingScraper(BaseScraper):
                 # If ASCII works, then also ISO-8859-15 is OK
                 self._decode_chunk(chunk, "ASCII", position)
                 return False
-            except (ValueError, UnicodeError, LookupError):
+            except (ForbiddenCharacterError, UnknownEncodingError):
                 # If ASCII did not work, then charset can be (almost) anything
                 pass
 
@@ -260,7 +262,7 @@ class TextEncodingScraper(BaseScraper):
         # UTF-8.
         try:
             self._decode_chunk(chunk, "UTF-8", position)
-        except (ValueError, UnicodeDecodeError, LookupError):
+        except (ForbiddenCharacterError, UnknownEncodingError):
             # If it was not UTF-8, then we have to believe the given charset
             return False
         return True
@@ -271,17 +273,20 @@ class TextEncodingScraper(BaseScraper):
         Decode given chunk and check forbidden characters.
 
         The forbidden characters are the ASCII control characters, in
-        exception of horizontal tab, carriage return, and line feed, which are
-        allowed.
+        exception of horizontal tab, carriage return, and line feed,
+        which are allowed.
 
         :chunk: Byte chunk from a file
         :charset: Decoding charset
         :position: Chunk position in a file
-        :raises: UnicodeError, LookupError or ValueError when decoding
-            was unsuccessful, the encoding is unknown or a forbidden
-            character was found.
+        :raises UnknownEncodingError: When the decoding was unsuccessful
+        :raises ForbiddenCharacterError: When a forbidden character was
+            found.
         """
-        decoded_chunk = chunk.decode(charset)
+        try:
+            decoded_chunk = chunk.decode(charset)
+        except (UnicodeError, UnicodeDecodeError, LookupError) as err:
+            raise UnknownEncodingError(err)
 
         forbidden = ["\x00", "\x01", "\x02", "\x03", "\x04", "\x05", "\x06",
                      "\x07", "\x08", "\x0B", "\x0C", "\x0E", "\x0F", "\x10",
@@ -291,6 +296,6 @@ class TextEncodingScraper(BaseScraper):
         for forb_char in forbidden:
             index = decoded_chunk.find(forb_char)
             if index > -1:
-                raise ValueError(
+                raise ForbiddenCharacterError(
                     "Illegal character '%s' in position %s" % (
                         repr(str(forb_char))[1:-1], (position+index)))
