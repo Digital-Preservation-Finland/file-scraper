@@ -293,6 +293,17 @@ class TextEncodingScraper(BaseScraper):
                      "\x11", "\x12", "\x13", "\x14", "\x15", "\x16", "\x17",
                      "\x18", "\x19", "\x1A", "\x1B", "\x1C", "\x1D", "\x1E",
                      "\x1F", "\x7F"]
+
+        if charset == 'ISO-8859-15':
+            # Add ISO-8859-15 control characters to the list of forbidden
+            # characters
+            forbidden += ["\x80", "\x81", "\x82", "\x83", "\x84", "\x85",
+                          "\x86", "\x87", "\x88", "\x89", "\x8A", "\x8B",
+                          "\x8C", "\x8D", "\x8E", "\x8F", "\x90", "\x91",
+                          "\x92", "\x93", "\x94", "\x95", "\x96", "\x97",
+                          "\x98", "\x99", "\x9A", "\x9B", "\x9C", "\x9D",
+                          "\x9E", "\x9F"]
+
         for forb_char in forbidden:
             index = decoded_chunk.find(forb_char)
             if index > -1:
