@@ -106,7 +106,7 @@ MPEGTS_VIDEO = dict(MPEG1_VIDEO, **{
 MPEG1_AUDIO = {
     "mimetype": "audio/mpeg", "index": 0,
     "audio_data_encoding": "MPEG Audio", "bits_per_sample": UNAV,
-    "data_rate_mode": "Variable", "codec_quality": "lossy", "version": "1",
+    "data_rate_mode": "Fixed", "codec_quality": "lossy", "version": "1",
     "stream_type": "audio", "sampling_frequency": "44.1",
     "num_channels": "2", "codec_name": "MPEG Audio",
     "codec_creator_app_version": UNAV, "duration": "PT0.89S",
