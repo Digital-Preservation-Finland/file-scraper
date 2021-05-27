@@ -114,8 +114,8 @@ class XmllintScraper(BaseScraper):
             encode_path(location)
         )
         if os.path.isfile(local_location):
-            return os.path.abspath(local_location)
-        return location
+            return os.path.abspath(ensure_text(local_location))
+        return ensure_text(location)
 
     def scrape_file(self):
         """
