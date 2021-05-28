@@ -178,7 +178,16 @@ def test_scraper_valid(filename, result_dict, params, evaluate_scraper):
         ("invalid__empty.xml", {
             "purpose": "Test empty xml.",
             "stdout_part": "",
-            "stderr_part": "Document is empty"}, {})
+            "stderr_part": "Document is empty"}, {}),
+        ("invalid_1.0_diacritics_in_schema_path.xml", {
+            "purpose": ("Test invalid file due to diacritics in "
+                        "local schema path."),
+            "stdout_part": "",
+            "stderr_part": ("No matching global declaration available for "
+                            "the validation root.")},
+         {"catalog_path": ("tests/data/text_xml/supplementary/"
+                           "catalog_to_local_xsd_diacritics.xml"),
+          "catalogs": True}),
     ]
 )
 def test_scraper_invalid(filename, result_dict, params, evaluate_scraper):
@@ -198,7 +207,8 @@ def test_scraper_invalid(filename, result_dict, params, evaluate_scraper):
     scraper.scrape_file()
     if any(item in filename for item in ["empty",
                                          "no_closing_tag",
-                                         "no_namespace_catalog"]):
+                                         "no_namespace_catalog",
+                                         "diacritics"]):
         correct.well_formed = False
         correct.version = None
         correct.streams[0]["version"] = None
