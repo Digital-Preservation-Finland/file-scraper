@@ -140,6 +140,7 @@ def test_existing_files(filename, mimetype, is_textfile, evaluate_scraper):
         ("valid__utf8_multibyte.txt", "UTF-8", True),
         ("invalid__utf8_just_c3.txt", "UTF-8", False),
         ("invalid__unknown_encoding_cp437.txt", "UNKNOWN-8BIT", False),
+        ("invalid__unknown_encoding_cp437.txt", "ISO-8859-15", False),
     ]
 )
 def test_encoding_check(filename, charset, is_wellformed, evaluate_scraper):
