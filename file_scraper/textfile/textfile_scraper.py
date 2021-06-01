@@ -307,11 +307,6 @@ class TextEncodingScraper(BaseScraper):
         for forb_char in forbidden:
             index = decoded_chunk.find(forb_char)
             if index > -1:
-                try:
-                    raise ForbiddenCharacterError(
-                        "Illegal character '%s' in position %s" % (
-                            repr(str(forb_char))[1:-1], (position+index)))
-                except UnicodeEncodeError:
-                    raise ForbiddenCharacterError(
-                        "Illegal character found in position %s" % (
-                            position+index))
+                raise ForbiddenCharacterError(
+                    "Illegal character '%s' in position %s" % (
+                        repr(forb_char)[1:-1], (position+index)))

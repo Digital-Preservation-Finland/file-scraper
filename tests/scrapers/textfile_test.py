@@ -20,6 +20,7 @@ This module tests that:
 from __future__ import unicode_literals
 
 import pytest
+import six
 
 from file_scraper.defaults import UNAP, UNAV
 from file_scraper.textfile.textfile_scraper import (TextfileScraper,
@@ -222,5 +223,8 @@ def test_error_message_control_character():
         mimetype="text/plain", params={"charset": "UTF-8"})
     scraper.scrape_file()
     assert not partial_message_included("\x1f", scraper.errors())
+    character = "'\\x1f'"
+    if six.PY2:
+        character = "''\\x1f'"
     assert partial_message_included(
-            "Illegal character '\\x1f' in position 4", scraper.errors())
+            "Illegal character %s in position 4" % character, scraper.errors())
