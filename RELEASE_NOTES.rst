@@ -1,6 +1,13 @@
 Release notes
 =============
 
+Version 0.33
+------------
+
+- Unknown text encodings are processed without failing
+- Forbidden characters set is expanded for ISO-8859-15 charsets
+- Better handling of local XML schema file paths
+
 Version 0.32
 ------------
 
