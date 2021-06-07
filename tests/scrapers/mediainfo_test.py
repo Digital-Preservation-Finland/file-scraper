@@ -1,19 +1,20 @@
 """
 Test module for Mediainfo.
 
-NOTE: Mediainfo accepts practically any file. We use another scrapers for
-well-formed checks.
+NOTE: Mediainfo accepts practically any file. We use another scrapers
+for well-formed checks.
 
 This module tests that:
-    - MIME type, version, streams, and well-formedness are scraped correctly
-      for dv, wav, m1v, m2v, mp4, mp3 and ts files. Additionally, this is
-      scraped correctly to mov video container containing dv video and lpcm8
-      audio, and to mkv container containing ffv1 video without sound and with
-      lpcm8 and flac sound. For valid files scraper messages contains 'file
-      was analyzed successfully' and for empty file scraper errors contains
-      'No audio or video tracks found'.
-    - The following MIME type and version combinations are supported whether
-      well-formedness is checked or not:
+    - MIME type, version, streams, and well-formedness are scraped
+      correctly for dv, wav, m1v, m2v, mp4, mp3 and ts files.
+      Additionally, this is scraped correctly to mov video container
+      containing dv video and lpcm8 audio, and to mkv container
+      containing ffv1 video without sound and with lpcm8 and flac sound.
+      For valid files scraper messages contains 'file was analyzed
+      successfully' and for empty file scraper errors contains 'No audio
+      or video tracks found'.
+    - The following MIME type and version combinations are supported
+      whether well-formedness is checked or not:
         - audio/x-wav, '2'
         - video/mpeg, '1'
         - video/mp4, ''
@@ -27,7 +28,7 @@ from __future__ import unicode_literals
 
 import pytest
 
-from file_scraper.defaults import UNAP, UNAV
+from file_scraper.defaults import UNAP
 from file_scraper.mediainfo.mediainfo_scraper import MediainfoScraper
 from tests.common import (parse_results, partial_message_included)
 from tests.scrapers.stream_dicts import (DV_VIDEO,
@@ -93,8 +94,9 @@ def test_mediainfo_scraper_mov(filename, result_dict, mimetype,
     Test Quicktime and DV scraping with Mediainfo.
 
     :filename: Test file name
-    :result_dict: Result dict containing the test purpose, parts of expected
-                  results of stdout and stderr, and expected streams
+    :result_dict: Result dict containing the test purpose, parts of
+                  expected results of stdout and stderr, and expected
+                  streams
     :mimetype: File MIME type
     """
     correct = parse_results(filename, mimetype, result_dict, True)
@@ -153,7 +155,8 @@ def test_mediainfo_scraper_mkv(filename, result_dict, evaluate_scraper):
 
     :filename: Test file name
     :result_dict: Result dict containing the test purpose, parts of
-                  expected results of stdout and stderr, and expected streams
+                  expected results of stdout and stderr, and expected
+                  streams
     """
     mimetype = "video/x-matroska"
     correct = parse_results(filename, mimetype, result_dict, True)
@@ -197,7 +200,8 @@ def test_mediainfo_scraper_wav(filename, result_dict, evaluate_scraper):
 
     :filename: Test file name
     :result_dict: Result dict containing the test purpose, parts of
-                  expected results of stdout and stderr, and expected streams
+                  expected results of stdout and stderr, and expected
+                  streams
     """
     mimetype = "audio/x-wav"
     correct = parse_results(filename, mimetype, result_dict, True)
@@ -246,7 +250,8 @@ def test_mediainfo_scraper_mpeg(filename, result_dict, evaluate_scraper):
 
     :filename: Test file name
     :result_dict: Result dict containing the test purpose, parts of
-                  expected results of stdout and stderr, and expected streams
+                  expected results of stdout and stderr, and expected
+                  streams
     """
     mimetype = "video/mpeg"
     correct = parse_results(filename, mimetype, result_dict, True)
@@ -282,7 +287,8 @@ def test_mediainfo_scraper_mp4(filename, result_dict, evaluate_scraper):
 
     :filename: Test file name
     :result_dict: Result dict containing the test purpose, parts of
-                  expected results of stdout and stderr, and expected streams
+                  expected results of stdout and stderr, and expected
+                  streams
     """
     mimetype = "video/mp4"
     correct = parse_results(filename, mimetype, result_dict, True)
@@ -317,7 +323,8 @@ def test_mediainfo_scraper_mp3(filename, result_dict, evaluate_scraper):
 
     :filename: Test file name
     :result_dict: Result dict containing the test purpose, parts of
-                  expected results of stdout and stderr, and expected streams
+                  expected results of stdout and stderr, and expected
+                  streams
     """
     mimetype = "audio/mpeg"
     correct = parse_results(filename, mimetype, result_dict, True)
@@ -356,7 +363,8 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
 
     :filename: Test file name
     :result_dict: Result dict containing the test purpose, parts of
-                  expected results of stdout and stderr, and expected streams
+                  expected results of stdout and stderr, and expected
+                  streams
     """
     mimetype = "video/MP2T"
     correct = parse_results(filename, mimetype, result_dict, True)
@@ -387,9 +395,9 @@ def test_is_supported(mime, ver):
     """
     Test is_supported method for different file types.
 
-    AVI files are scraped using FFMpeg for easy colour information collection,
-    but Mediainfo is also needed for checking well-formedness, so AVI should be
-    supported.
+    AVI files are scraped using FFMpeg for easy colour information
+    collection, but Mediainfo is also needed for checking
+    well-formedness, so AVI should be supported.
 
     :mime: MIME type
     :ver: File format version

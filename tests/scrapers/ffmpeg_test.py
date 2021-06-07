@@ -1,28 +1,30 @@
 """
-Test module for ffmpeg.py
+Test module for ffmpeg.py.
 
 This module tests that:
-    - For valid audio and video files the scraping is reported as successful,
-      the file is well-formed and metadata is scraped correctly.
-    - For empty files the results are similar but file is not well-formed
-      and errors should contain an error message. The error message should
-      contain the following string:
-        - With video/x-matroska, video/mpeg, video/mp4, video/MP2T files:
-          "Invalid data found when processing input".
+    - For valid audio and video files the scraping is reported as
+      successful, the file is well-formed and metadata is scraped
+      correctly.
+    - For empty files the results are similar but file is not
+      well-formed and errors should contain an error message. The error
+      message should contain the following string:
+        - With video/x-matroska, video/mpeg, video/mp4, video/MP2T
+          files: "Invalid data found when processing input".
         - With audio/mpeg files: "could not find codec parameters"
         - With video/dv files: "Cannot find DV header"
-    - For invalid files the file is not well-formed and errors should contain
-      an error message. With the files with missing data the error message
-      should contain the following string:
+    - For invalid files the file is not well-formed and errors should
+      contain an error message. With the files with missing data the
+      error message should contain the following string:
         - With video/x-matroska files: "Truncating packet of size"
         - With video/mpeg and video/mp4 files: "end mismatch"
         - With video/MP2T files: "invalid new backstep"
         - With audio/mpeg files: "Error while decoding stream"
         - With video/dv files: "AC EOB marker is absent"
-    - The scraper should give an error if PCM stream is not LPCM. This is
-      tested with a WAV file which includes A-law PCM format.
-    - For mp3 files with wrong version reported in the header, the file is not
-      well-formed and errors should contain "Error while decoding stream".
+    - The scraper should give an error if PCM stream is not LPCM. This
+      is tested with a WAV file which includes A-law PCM format.
+    - For mp3 files with wrong version reported in the header, the file
+      is not well-formed and errors should contain "Error while decoding
+      stream".
     - The mimetypes tested are:
         - video/quicktime containing dv video and lpcm8 audio stream
         - video/x-matroska containing ffv1 video stream
@@ -33,16 +35,19 @@ This module tests that:
         - audio/mpeg version 1 file
         - application/mxf
         - audio/x-wav
-    - Whether well-formed check is performed or not, the scraper reports the
-      following combinations of mimetypes and versions as supported:
+    - Whether well-formed check is performed or not, the scraper reports
+      the following combinations of mimetypes and versions as supported:
         - video/mpeg, "1" or None
         - video/mp4, "" or None
         - video/MP1S, "" or None
         - video/MP2P, "" or None
         - video/MP2T, "" or None
-    - A made up version with supported MIME type is reported as supported.
-    - A made up MIME type with supported version is reported as not supported.
-    - Supported MIME type is supported when well-formedness is not checked.
+    - A made up version with supported MIME type is reported as
+      supported.
+    - A made up MIME type with supported version is reported as not
+      supported.
+    - Supported MIME type is supported when well-formedness is not
+      checked.
     - Scraping is done also when well-formedness is not checked.
 """
 from __future__ import unicode_literals

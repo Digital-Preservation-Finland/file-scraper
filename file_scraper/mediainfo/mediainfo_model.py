@@ -29,8 +29,8 @@ def pcm_mimetype(codec_name, bits_per_sample):
 
 
 class BaseMediainfoMeta(BaseMeta):
-    """Metadata models for files scraped using MediainfoScraper"""
     # pylint: disable=too-many-public-methods
+    """Metadata models for files scraped using MediainfoScraper."""
 
     container_stream = None
     _containers = []
@@ -63,7 +63,7 @@ class BaseMediainfoMeta(BaseMeta):
 
     @metadata()
     def mimetype(self):
-        """Returns mimetype for stream."""
+        """Return mimetype for stream."""
         try:
             return self._mime_dict[self.codec_name()]
         except (KeyError, SkipElementException):
@@ -96,8 +96,8 @@ class BaseMediainfoMeta(BaseMeta):
         """
         Return color information.
 
-        Only values from fixed list are allowed. Must be resolved, if returns
-        None.
+        Only values from fixed list are allowed. Must be resolved, if
+        returns None.
         """
         if self.stream_type() not in ["video"]:
             raise SkipElementException()
@@ -205,8 +205,8 @@ class BaseMediainfoMeta(BaseMeta):
         """
         Return codec quality.
 
-        Must be resolved, if returns None. Only values "lossy" or "lossless"
-        are allowed.
+        Must be resolved, if returns None. Only values "lossy" or
+        "lossless" are allowed.
         """
         if self.stream_type() not in ["video", "audio"]:
             raise SkipElementException()
@@ -219,8 +219,8 @@ class BaseMediainfoMeta(BaseMeta):
         """
         Return data rate mode.
 
-        Must be resolved, if returns None. The allowed values are "Fixed" and
-        "Variable".
+        Must be resolved, if returns None. The allowed values are
+        "Fixed" and "Variable".
         """
         if self.stream_type() not in ["video", "audio"]:
             raise SkipElementException()
@@ -260,7 +260,7 @@ class BaseMediainfoMeta(BaseMeta):
 
     @metadata()
     def codec_creator_app(self):
-        """Returns creator application."""
+        """Return creator application."""
         if self.stream_type() not in ["video", "audio", "videocontainer"]:
             raise SkipElementException()
         if self._tracks[0].writing_application is not None:
@@ -269,7 +269,7 @@ class BaseMediainfoMeta(BaseMeta):
 
     @metadata()
     def codec_creator_app_version(self):
-        """Returns creator application version."""
+        """Return creator application version."""
         if self.stream_type() not in ["video", "audio", "videocontainer"]:
             raise SkipElementException()
         if self._tracks[0].writing_application is not None:
@@ -281,7 +281,7 @@ class BaseMediainfoMeta(BaseMeta):
 
     @metadata()
     def codec_name(self):
-        """Returns codec name."""
+        """Return codec name."""
         if self.stream_type() not in ["video", "audio", "videocontainer"]:
             raise SkipElementException()
         if self._stream.format is not None:
@@ -309,7 +309,8 @@ class BaseMediainfoMeta(BaseMeta):
 
 
 class MovMediainfoMeta(BaseMediainfoMeta):
-    """Scraper for Quicktime Movie AV container and selected streams"""
+    """Scraper for Quicktime Movie AV container and selected streams."""
+
     _supported = {"video/quicktime": [""], "video/dv": [""]}
     _allow_versions = True  # Allow any version
     _containers = ["QuickTime"]
@@ -320,7 +321,7 @@ class MovMediainfoMeta(BaseMediainfoMeta):
 
     @metadata()
     def mimetype(self):
-        """Returns mimetype for stream."""
+        """Return mimetype for stream."""
         try:
             return pcm_mimetype(self.codec_name(), self.bits_per_sample())
         except (ValueError, SkipElementException):
@@ -336,8 +337,8 @@ class MovMediainfoMeta(BaseMediainfoMeta):
         """
         Return version.
 
-        Quicktime, DV, MP4, and PCM streams (audio/L*) do not have version,
-        and and therefore the result is unapplicable (:unap).
+        Quicktime, DV, MP4, and PCM streams (audio/L*) do not have
+        version, and and therefore the result is unapplicable (:unap).
         """
         if self.mimetype() in [
                 "audio/L8", "audio/L16", "audio/L20", "audio/24",
@@ -347,7 +348,7 @@ class MovMediainfoMeta(BaseMediainfoMeta):
 
     @metadata()
     def codec_quality(self):
-        """Returns codec quality."""
+        """Return codec quality."""
         if self.stream_type() not in ["video", "audio"]:
             raise SkipElementException()
         if self._stream.compression_mode is not None:
@@ -360,7 +361,7 @@ class MovMediainfoMeta(BaseMediainfoMeta):
 
     @metadata()
     def signal_format(self):
-        """Returns signal format (usually PAL of NTSC)."""
+        """Return signal format (usually PAL of NTSC)."""
         if self.stream_type() not in ["video"]:
             raise SkipElementException()
         if self._stream.standard is not None:
@@ -373,9 +374,9 @@ class MovMediainfoMeta(BaseMediainfoMeta):
         Return data rate mode if available.
 
         MP4 is assumed to always have variable bit rate, based on e.g.
-        https://slhck.info/video/2017/03/01/rate-control.html claiming that MP4
-        does not support NAL stuffing and thus it cannot be forced to have
-        constant bit rate.
+        https://slhck.info/video/2017/03/01/rate-control.html claiming
+        that MP4 does not support NAL stuffing and thus it cannot be
+        forced to have constant bit rate.
         """
         mode = super(MovMediainfoMeta, self).data_rate_mode()
         if mode not in [UNAV, None]:
@@ -397,7 +398,7 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
 
     @metadata()
     def mimetype(self):
-        """Returns mimetype for stream."""
+        """Return mimetype for stream."""
         try:
             return pcm_mimetype(self.codec_name(), self.bits_per_sample())
         except (ValueError, SkipElementException):
@@ -410,15 +411,16 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
         """
         Return version of stream.
 
-        The version number 1.2.1 of FLAC comes from PRONOM registry. This is
-        actually the version number of FLAC tools containing FLAC format
-        specification. Although the latest FLAC tools version is 1.3.3,
-        version 1.2.1 still includes the latest format change and was released
-        in 2007. There is no separate version numbering in FLAC format itself,
-        and therefore, there is no proper way to extract it.
+        The version number 1.2.1 of FLAC comes from PRONOM registry.
+        This is actually the version number of FLAC tools containing
+        FLAC format specification. Although the latest FLAC tools
+        version is 1.3.3, version 1.2.1 still includes the latest format
+        change and was released in 2007. There is no separate version
+        numbering in FLAC format itself, and therefore, there is no
+        proper way to extract it.
 
-        PCM audio streams (i.e. audio/L*) do not have version, and therefore
-        the result is unapplicable (:unap).
+        PCM audio streams (i.e. audio/L*) do not have version, and
+        therefore the result is unapplicable (:unap).
         """
         if self.mimetype() == "audio/flac":
             return "1.2.1"
@@ -433,14 +435,14 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
 
     @metadata()
     def signal_format(self):
-        """Returns signal format."""
+        """Return signal format."""
         if self.stream_type() not in ["video"]:
             raise SkipElementException()
         return UNAP
 
     @metadata()
     def codec_quality(self):
-        """Returns codec quality."""
+        """Return codec quality."""
         if self.stream_type() not in ["video", "audio"]:
             raise SkipElementException()
         if self._stream.compression_mode is not None:
@@ -457,13 +459,14 @@ class WavMediainfoMeta(BaseMediainfoMeta):
 
     @metadata()
     def mimetype(self):
+        """Return mimetype."""
         if self._tracks[0].format == "Wave":
             return "audio/x-wav"
         return UNAV
 
     @metadata()
     def version(self):
-        """Returns version."""
+        """Return version."""
         if self._tracks[0].bext_present is not None \
                 and self._tracks[0].bext_present == "Yes":
             return "2"
@@ -471,7 +474,7 @@ class WavMediainfoMeta(BaseMediainfoMeta):
 
     @metadata()
     def codec_quality(self):
-        """Returns codec quality."""
+        """Return codec quality."""
         if self.stream_type() == "audio":
             return "lossless"
         raise SkipElementException()
@@ -494,14 +497,14 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
 
     @metadata()
     def signal_format(self):
-        """Returns signal format."""
+        """Return signal format."""
         if self.stream_type() not in ["video"]:
             raise SkipElementException()
         return UNAP
 
     @metadata()
     def codec_quality(self):
-        """Returns codec quality."""
+        """Return codec quality."""
         if self.stream_type() not in ["video", "audio"]:
             raise SkipElementException()
         if self._stream.compression_mode is not None:
@@ -510,7 +513,7 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
 
     @metadata()
     def data_rate_mode(self):
-        """Returns data rate mode. Must be resolved."""
+        """Return data rate mode. Must be resolved."""
         if self.stream_type() not in ["video", "audio"]:
             raise SkipElementException()
         if self._stream.bit_rate_mode == "CBR":
@@ -519,7 +522,7 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
 
     @metadata()
     def mimetype(self):
-        """Returns mimetype for stream."""
+        """Return mimetype for stream."""
         try:
             return self._mime_dict[self.codec_name()]
         except SkipElementException:
@@ -541,8 +544,8 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
         """Return version of stream."""
         if self.mimetype() in ["video/MP2T", "video/mp4", "audio/mp4"]:
             return UNAP
-        # mp3 "container" does not know the version, so it has to be checked
-        # from the first stream
+        # mp3 "container" does not know the version, so it has to be
+        # checked from the first stream
         if (self.mimetype() == "audio/mpeg" and
                 self._stream.track_type == "General" and
                 len(self._tracks) >= 2):
@@ -566,7 +569,7 @@ class MpegPSMediainfoMeta(MpegMediainfoMeta):
 
     @metadata()
     def mimetype(self):
-        """Returns mimetype for stream."""
+        """Return mimetype for stream."""
         try:
             return self._mime_dict[self.codec_name()]
         except SkipElementException:

@@ -1,4 +1,4 @@
-""""Scraper for video and audio files scraped using MediaInfo."""
+"""Scraper for video and audio files scraped using MediaInfo."""
 from __future__ import unicode_literals
 
 import six
@@ -20,9 +20,7 @@ except ImportError:
 
 
 class MediainfoScraper(BaseScraper):
-    """
-    Scraper for scraping audio and video files using Mediainfo.
-    """
+    """Scraper for scraping audio and video files using Mediainfo."""
 
     _supported_metadata = [
         MkvMediainfoMeta,
@@ -44,8 +42,7 @@ class MediainfoScraper(BaseScraper):
 
         if not self._tracks_ok(mediainfo):
             return
-        else:
-            self._messages.append("The file was analyzed successfully.")
+        self._messages.append("The file was analyzed successfully.")
 
         for index in range(len(mediainfo.tracks)):
             self.streams += list(self.iterate_models(
@@ -54,9 +51,7 @@ class MediainfoScraper(BaseScraper):
         self._check_supported(allow_unav_version=True, allow_unap_version=True)
 
     def iterate_models(self, **kwargs):
-        """
-        Iterate metadata models.
-        """
+        """Iterate metadata models."""
         for md_class in self._supported_metadata:
             if md_class.is_supported(self._predefined_mimetype):
                 md_object = md_class(**kwargs)
@@ -64,11 +59,10 @@ class MediainfoScraper(BaseScraper):
                     yield md_object
 
     def _tracks_ok(self, mediainfo):
-        """
-        Check that the file is complete and contains audio and/or video tracks.
+        """Check that the file is complete and contains tracks.
 
-        Returns True if the file is not truncated and contains at least one
-        track. Otherwise returns False.
+        Returns True if the file is not truncated and contains at least
+        one audio or video track. Otherwise returns False.
 
         If problems are encountered, they are recorded in self.errors.
         Otherwise a success message is recorded in self.messages.

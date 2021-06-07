@@ -21,12 +21,12 @@ class FFMpegScraper(BaseScraper):
     Scraper using FFMpeg to check well-formedness / gather metadata.
 
     For most file types, no metadata is scraped: for those files
-    FFMpegSimpleMeta metadata model is used. This is done as both Mediainfo and
-    FFMpeg cannot be used simultaneously to scrape the metadata as reliable
-    matching of streams from two scrapers is not currently possible. For AVI
-    files, Mediainfo is not able to report all required metadata, so for those
-    files all metadata collection is done with FFMpegScraper, using FFMpegMeta
-    as the metadata model.
+    FFMpegSimpleMeta metadata model is used. This is done as both
+    Mediainfo and FFMpeg cannot be used simultaneously to scrape the
+    metadata as reliable matching of streams from two scrapers is not
+    currently possible. For AVI files, Mediainfo is not able to report
+    all required metadata, so for those files all metadata collection is
+    done with FFMpegScraper, using FFMpegMeta as the metadata model.
     """
 
     # Supported metadata models
@@ -56,10 +56,11 @@ class FFMpegScraper(BaseScraper):
             self._errors.append(shell.stderr)
             return
 
-        # We deny e.g. A-law PCM, mu-law PCM, DPCM and ADPCM and allow only
-        # signed/unsigned linear PCM. Note that we need this check only if
-        # PCM audio is present. This should not be given e.g. for video
-        # streams nor audio streams of another type (such as MPEG).
+        # We deny e.g. A-law PCM, mu-law PCM, DPCM and ADPCM and allow
+        # only signed/unsigned linear PCM. Note that we need this check
+        # only if PCM audio is present. This should not be given e.g.
+        # for video streams nor audio streams of another type (such as
+        # MPEG).
         for stream in streams:
             if "PCM" in stream.get("codec_long_name", UNAV) and not \
                     any(stream.get("codec_long_name", UNAV).startswith(x)
@@ -70,11 +71,12 @@ class FFMpegScraper(BaseScraper):
         container = False
         for index in range(len(streams)):
             # FFMpeg has separate "format" (relevant for containers) and
-            # "streams" (relevant for all files) elements in its output. We
-            # know whether we'll have streams + container or just streams only
-            # after scraping the first stream, so there's a risk of trying to
-            # add one too many streams. This check prevents constructing more
-            # metadata models than there are streams.
+            # "streams" (relevant for all files) elements in its output.
+            # We know whether we'll have streams + container or just
+            # streams only after scraping the first stream, so there's a
+            # risk of trying to add one too many streams. This check
+            # prevents constructing more metadata models than there are
+            # streams.
             if not container and index == len(streams) - 1:
                 break
 
@@ -91,9 +93,9 @@ class FFMpegScraper(BaseScraper):
         """
         Filter out "bpno became negative" and "Last message repeated".
 
-        Returns a new string, containing all lines in errors except those that
-        contain either "Last message repeated [number] times" or both
-        "jpeg2000" and "bpno became negative".
+        Returns a new string, containing all lines in errors except
+        those that contain either "Last message repeated [number] times"
+        or both "jpeg2000" and "bpno became negative".
 
         :errors: Stderr result from Shell in scraping
         :returns: Filtered error message result

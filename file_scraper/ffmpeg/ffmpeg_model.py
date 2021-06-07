@@ -34,13 +34,13 @@ class FFMpegSimpleMeta(BaseMeta):
         }
     _allow_versions = True   # Allow any version
 
-    # MIME types need to be decided based on format name. Some types, such as
-    # video/mp4, don't have format_long_name in ffprobe output, so they are not
-    # present in this dict. Their MIME type will be reported as (:unav), but
-    # this doesn't matter as all metadata for them will be scraped using
-    # MediaInfo anyway.
-    # The following do not always neatly correspond to one MIME type, so they
-    # should be left for other scrapers such as Mediainfo.
+    # MIME types need to be decided based on format name. Some types,
+    # such as video/mp4, don't have format_long_name in ffprobe output,
+    # so they are not present in this dict. Their MIME type will be
+    # reported as (:unav), but this doesn't matter as all metadata for
+    # them will be scraped using MediaInfo anyway.
+    # The following do not always neatly correspond to one MIME type, so
+    # they should be left for other scrapers such as Mediainfo.
     # - "QuickTime / MOV"
     # - "MP2/3 (MPEG audio layer 2/3)"
     _mimetype_dict = {
@@ -69,9 +69,7 @@ class FFMpegSimpleMeta(BaseMeta):
 
     @metadata()
     def mimetype(self):
-        """
-        Return MIME type based on format name.
-        """
+        """Return MIME type based on format name."""
         if "format_long_name" in self._ffmpeg_stream:
             return self._mimetype_dict.get(
                 self._ffmpeg_stream["format_long_name"], UNAV)
@@ -79,8 +77,9 @@ class FFMpegSimpleMeta(BaseMeta):
 
     @metadata()
     def stream_type(self):
-        """
-        This metadata model scrapes nothing, return (:unav).
+        """Return stream type.
+
+        This metadata model scrapes nothing, so (:unav) is returned.
         """
         # pylint: disable=no-self-use
         return UNAV
@@ -96,8 +95,8 @@ class FFMpegSimpleMeta(BaseMeta):
         """
         Return the container stream from the ffprobe results.
 
-        The stream is returned as a dict, in the format used by ffprobe. If the
-        file is not a container type, None is returned instead.
+        The stream is returned as a dict, in the format used by ffprobe.
+        If the file is not a container type, None is returned instead.
         """
         if self.hascontainer():
             return self._probe_results["format"]
@@ -107,12 +106,13 @@ class FFMpegSimpleMeta(BaseMeta):
         """
         Return the stream dict handled by this instance.
 
-        The constructor is given the full ffprobe output dict, but one metadata
-        model instance only handles a single stream. This method extracts the
-        relevant part of the dictionary and returns it. For non-container
-        formats the n'th stream is simply the n'th dict in the stream list, but
-        for containers the first stream is the format stream and then the
-        following streams are found at the (n-1)'th indices of the stream list.
+        The constructor is given the full ffprobe output dict, but one
+        metadata model instance only handles a single stream. This
+        method extracts the relevant part of the dictionary and returns
+        it. For non-container formats the n'th stream is simply the n'th
+        dict in the stream list, but for containers the first stream is
+        the format stream and then the following streams are found at
+        the (n-1)'th indices of the stream list.
         """
         if self.hascontainer():
             if self._index == 0:
@@ -125,16 +125,17 @@ class FFMpegMeta(FFMpegSimpleMeta):
     """
     Metadata model for application/mxf.
 
-    This metadata model is used only for a limited selection of video formats,
-    as the order of the reported streams from FFMpeg and MediaInfo do not
-    necessarily correspond, so scraping the metadata with both is not
-    practical due to difficulties in matching the metadata dicts representing
-    the same streams.
+    This metadata model is used only for a limited selection of video
+    formats, as the order of the reported streams from FFMpeg and
+    MediaInfo do not necessarily correspond, so scraping the metadata
+    with both is not practical due to difficulties in matching the
+    metadata dicts representing the same streams.
 
-    These file types are scraped using FFMpeg instead of MediaInfo due to
-    determining the color/grayscale status of JPEG2000 video streams from
-    MediaInfo output is difficult.
+    These file types are scraped using FFMpeg instead of MediaInfo due
+    to determining the color/grayscale status of JPEG2000 video streams
+    from MediaInfo output is difficult.
     """
+
     # pylint: disable=too-many-public-methods
 
     # Supported mimetypes
@@ -143,8 +144,9 @@ class FFMpegMeta(FFMpegSimpleMeta):
         }
     _allow_versions = True   # Allow any version
 
-    # Codec names returned by ffmpeg do not always correspond to ones from
-    # different scraper tools. This dict is used to unify the results.
+    # Codec names returned by ffmpeg do not always correspond to ones
+    # from different scraper tools. This dict is used to unify the
+    # results.
     _codec_names = {
         "MXF (Material eXchange Format)": "MXF",
         }
@@ -160,10 +162,10 @@ class FFMpegMeta(FFMpegSimpleMeta):
         """
         Return MIME type.
 
-        If the MIME type can be determined based on format name as is done in
-        the superclass, that result is returned. Otherwise, determining the
-        MIME type based on codec name is attempted. This is relevant for
-        JPEG2000 streams.
+        If the MIME type can be determined based on format name as is
+        done in the superclass, that result is returned. Otherwise,
+        determining the MIME type based on codec name is attempted. This
+        is relevant for JPEG2000 streams.
         """
         mime = super(FFMpegMeta, self).mimetype()
         if mime not in [UNAV, None]:
@@ -177,7 +179,11 @@ class FFMpegMeta(FFMpegSimpleMeta):
 
     @metadata()
     def version(self):
-        """Return (:unap) as supported types do not have different versions."""
+        """Return supported format versions.
+
+        Return (:unap) as supported types do not have different
+        versions.
+        """
         return UNAP if self.mimetype() != UNAV else UNAV
 
     @metadata()
@@ -185,7 +191,8 @@ class FFMpegMeta(FFMpegSimpleMeta):
         """
         Return codec quality.
 
-        This is based solely on the wavelet transform of JPEG2000 images.
+        This is based solely on the wavelet transform of JPEG2000
+        images.
         """
         if self.stream_type() not in ["video", "audio"]:
             raise SkipElementException()
@@ -202,8 +209,8 @@ class FFMpegMeta(FFMpegSimpleMeta):
         """
         Return data rate mode.
 
-        Must be resolved, if returns None. Only values "Fixed" or "Variable"
-        are allowed.
+        Must be resolved, if returns None. Only values "Fixed" or
+        "Variable" are allowed.
         """
         if self.stream_type() not in ["video", "audio"]:
             raise SkipElementException()
@@ -247,8 +254,8 @@ class FFMpegMeta(FFMpegSimpleMeta):
         """
         Return color information.
 
-        Only values from fixed list are allowed. Must be resolved, if returns
-        None.
+        Only values from fixed list are allowed. Must be resolved, if
+        returns None.
         """
         if self.stream_type() not in ["video"]:
             raise SkipElementException()
@@ -305,9 +312,9 @@ class FFMpegMeta(FFMpegSimpleMeta):
         """
         Return data rate (bit rate) in mbps.
 
-        VideoMD specification defines dataRate as "data rate of the audio".
-        This is a copy-paste error in the specification, and it should be
-        "data rate of the video".
+        VideoMD specification defines dataRate as "data rate of the
+        audio". This is a copy-paste error in the specification, and it
+        should be "data rate of the video".
         """
         if self.stream_type() not in ["video"]:
             raise SkipElementException()
@@ -351,8 +358,8 @@ class FFMpegMeta(FFMpegSimpleMeta):
             for sampling_code in ["444", "422", "420", "440", "411", "410"]:
                 if sampling_code in self._ffmpeg_stream["pix_fmt"]:
                     return ":".join(sampling_code)
-            # If pix_fmt is defined but none of the checks above apply, then
-            # chroma subsampling is not possible for this format.
+            # If pix_fmt is defined but none of the checks above apply,
+            # then chroma subsampling is not possible for this format.
             return UNAP
 
         return UNAV
@@ -399,7 +406,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
 
     @metadata()
     def codec_creator_app(self):
-        """Returns creator application."""
+        """Return creator application."""
         format_info = self._probe_results["format"]["tags"]
         if self.stream_type() not in ["audio", "video", "videocontainer"]:
             raise SkipElementException()
@@ -415,7 +422,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
 
     @metadata()
     def codec_creator_app_version(self):
-        """Returns creator application version."""
+        """Return creator application version."""
         if self.stream_type() not in ["audio", "video", "videocontainer"]:
             raise SkipElementException()
         if "encoder" in self._probe_results["format"]["tags"]:
@@ -429,7 +436,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
 
     @metadata()
     def codec_name(self):
-        """Returns codec name."""
+        """Return codec name."""
         if self.stream_type() not in ["audio", "video", "videocontainer"]:
             raise SkipElementException()
 
