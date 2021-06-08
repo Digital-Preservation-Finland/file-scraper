@@ -54,7 +54,10 @@ from tests.scrapers.stream_dicts import (DV_VIDEO,
                                          MPEGTS_OTHER,
                                          MPEGTS_VIDEO,
                                          LPCM8_AUDIO,
-                                         WAV_AUDIO)
+                                         WAV_AUDIO,
+                                         AVI_CONTAINER,
+                                         AVI_VIDEO,
+                                         AVI_AUDIO)
 
 
 @pytest.mark.parametrize(
@@ -380,9 +383,30 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
         evaluate_scraper(scraper, correct)
 
 
+def test_mediainfo_scraper_avi(evaluate_scraper):
+    """Test AVI scraping with MediainfoScraper."""
+    filename = "valid__mpeg2_mp3.avi"
+    mimetype = "video/avi"
+    result_dict = {
+        "purpose": "Test valid AVI.",
+        "stdout_part": "file was analyzed successfully",
+        "stderr_part": "",
+        "streams": {0: AVI_CONTAINER.copy(),
+                    1: AVI_VIDEO.copy(),
+                    2: AVI_AUDIO.copy()}
+    }
+
+    correct = parse_results(filename, mimetype, result_dict, True)
+    scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
+    scraper.scrape_file()
+
+    evaluate_scraper(scraper, correct)
+
+
 @pytest.mark.parametrize(
     ["mime", "ver"],
     [
+        ("video/avi", ""),
         ("video/mpeg", "1"),
         ("video/mp4", ""),
         ("video/MP1S", ""),

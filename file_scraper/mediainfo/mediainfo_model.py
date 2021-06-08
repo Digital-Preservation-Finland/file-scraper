@@ -595,3 +595,20 @@ class MpegPSMediainfoMeta(MpegMediainfoMeta):
             return UNAP
 
         return super(MpegPSMediainfoMeta, self).version()
+
+
+class AviMediainfoMeta(BaseMediainfoMeta):
+    """Scraper for Matroska AV container with selected streams."""
+
+    _supported = {"video/avi": [""]}
+    _allow_versions = True  # Allow any version
+    _containers = ["AVI"]
+    _mime_dict = {"AVI": "video/avi",
+                  "DV": "video/dv",
+                  "MPEG Video": "video/mpeg",
+                  "MPEG Audio": "audio/mpeg"}
+
+    @metadata()
+    def version(self):
+        """Return version of stream."""
+        return UNAP

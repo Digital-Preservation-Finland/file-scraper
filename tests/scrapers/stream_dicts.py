@@ -177,3 +177,55 @@ MXF_JPEG2000_VIDEO = dict(BASE_JPEG2000_VIDEO,
 
 MXF_TC = {"mimetype": "application/mxf", "index": 4, "version": UNAV,
           "stream_type": "other"}
+
+AVI_CONTAINER = {
+    "index": 0,
+    "mimetype": "video/avi",
+    "stream_type": "videocontainer",
+    "version": "(:unap)",
+    "codec_creator_app": "Lavf56.40.101",
+    "codec_creator_app_version": "56.40.101",
+    "codec_name": "AVI"
+}
+
+AVI_VIDEO = {
+    "bits_per_sample": "8",
+    "codec_creator_app": "Lavf56.40.101",
+    "codec_creator_app_version": "56.40.101",
+    "codec_name": "MPEG Video",
+    "codec_quality": "lossy",
+    "color": "Color",
+    "dar": "1.778",
+    "data_rate": "0.190368",
+    "data_rate_mode": "Variable",
+    "duration": "PT1S",
+    "frame_rate": "60",
+    "height": "180",
+    "index": 1,
+    "mimetype": "video/mpeg",
+    "par": "1",
+    "sampling": "4:2:0",
+    "signal_format": "(:unap)",
+    "sound": "Yes",
+    "stream_type": "video",
+    "version": "2",
+    "width": "320"
+}
+
+AVI_AUDIO = {
+    "audio_data_encoding": "MPEG Audio",
+    "bits_per_sample": "(:unav)",
+    "codec_creator_app": "Lavf56.40.101",
+    "codec_creator_app_version": "56.40.101",
+    "codec_name": "MPEG Audio",
+    "codec_quality": "lossy",
+    "data_rate": "128",
+    "data_rate_mode": "Fixed",
+    "duration": "PT1.07S",
+    "index": 2,
+    "mimetype": "audio/mpeg",
+    "num_channels": "2",
+    "sampling_frequency": "44.1",
+    "stream_type": "audio",
+    "version": "1"
+}

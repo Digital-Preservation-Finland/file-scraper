@@ -10,7 +10,8 @@ from file_scraper.mediainfo.mediainfo_model import (
     MpegMediainfoMeta,
     MpegPSMediainfoMeta,
     WavMediainfoMeta,
-    )
+    AviMediainfoMeta
+)
 from file_scraper.utils import decode_path
 
 try:
@@ -28,6 +29,7 @@ class MediainfoScraper(BaseScraper):
         MpegMediainfoMeta,
         MpegPSMediainfoMeta,
         WavMediainfoMeta,
+        AviMediainfoMeta
     ]
 
     def scrape_file(self):
