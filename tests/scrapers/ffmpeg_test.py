@@ -69,52 +69,98 @@ UNAV_MIME = []
 @pytest.mark.parametrize(
     ["filename", "result_dict", "mimetype"],
     [
-        ("valid__dv_lpcm8.mov", {
-            "purpose": "Test valid MOV with DV and LPCM8.",
-            "stdout_part": "file was analyzed successfully",
-            "stderr_part": ""},
-         "video/quicktime"),
-        ("valid__pal_lossy.dv", {
-            "purpose": "Test valid DV.",
-            "stdout_part": "file was analyzed successfully",
-            "stderr_part": ""},
-         "video/dv"),
-        ("valid_4_ffv1.mkv", {
-            "purpose": "Test valid MKV.",
-            "stdout_part": "file was analyzed successfully",
-            "stderr_part": ""},
-         "video/x-matroska"),
-        ("valid_1.m1v", {
-            "purpose": "Test valid MPEG-1.",
-            "stdout_part": "file was analyzed successfully",
-            "stderr_part": ""},
-         "video/mpeg"),
-        ("valid_2.m2v", {
-            "purpose": "Test valid MPEG-2.",
-            "stdout_part": "file was analyzed successfully",
-            "stderr_part": ""},
-         "video/mpeg"),
-        ("valid__h264_aac.mp4", {
-            "purpose": "Test valid mp4.",
-            "stdout_part": "file was analyzed successfully",
-            "stderr_part": ""},
-         "video/mp4"),
-        ("valid_1.mp3", {
-            "purpose": "Test valid mp3.",
-            "stdout_part": "file was analyzed successfully",
-            "stderr_part": ""},
-         "audio/mpeg"),
-        ("valid__mpeg2_mp3.ts", {
-            "purpose": "Test valid MPEG-TS.",
-            "stdout_part": "file was analyzed successfully",
-            "stderr_part": ""},
-         "video/MP2T"),
-        ("valid__wav.wav", {
-            "purpose": "Test valid WAV.",
-            "stdout_part": "file was analyzed successfully",
-            "stderr_part": ""},
-         "audio/x-wav"),
-    ])
+        (
+            "valid__mpeg2_mp3.avi",
+            {
+                "purpose": "Test valid AVI.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": "",
+            },
+            "video/avi"
+        ),
+        (
+            "valid__dv_lpcm8.mov",
+            {
+                "purpose": "Test valid MOV with DV and LPCM8.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": ""
+            },
+            "video/quicktime"
+        ),
+        (
+            "valid__pal_lossy.dv",
+            {
+                "purpose": "Test valid DV.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": ""
+            },
+            "video/dv"
+        ),
+        (
+            "valid_4_ffv1.mkv",
+            {
+                "purpose": "Test valid MKV.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": ""
+            },
+            "video/x-matroska"
+        ),
+        (
+            "valid_1.m1v",
+            {
+                "purpose": "Test valid MPEG-1.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": ""
+            },
+            "video/mpeg"
+        ),
+        (
+            "valid_2.m2v",
+            {
+                "purpose": "Test valid MPEG-2.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": ""
+            },
+            "video/mpeg"
+        ),
+        (
+            "valid__h264_aac.mp4",
+            {
+                "purpose": "Test valid mp4.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": ""
+            },
+            "video/mp4"
+        ),
+        (
+            "valid_1.mp3",
+            {
+                "purpose": "Test valid mp3.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": ""
+            },
+            "audio/mpeg"
+        ),
+        (
+            "valid__mpeg2_mp3.ts",
+            {
+                "purpose": "Test valid MPEG-TS.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": ""
+            },
+            "video/MP2T"
+        ),
+        (
+            "valid__wav.wav",
+            {
+                "purpose": "Test valid WAV.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": ""
+            },
+            "audio/x-wav"
+        ),
+    ]
+)
 def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
                              evaluate_scraper):
     """
@@ -138,45 +184,62 @@ def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
     ["filename", "result_dict", "mimetype"],
     [
         # TODO codec_quality testing for both mxf files
-        ("valid__jpeg2000_lossless-wavelet_lossy-subsampling.mxf", {
-            "purpose": ("Test valid MXF/JPEG2000 with lossless wavelet "
-                        "transform and chroma subsampling."),
-            "stdout_part": "file was analyzed successfully",
-            "stderr_part": "",
-            "streams": {0: MXF_CONTAINER.copy(),
-                        1: dict(MXF_JPEG2000_VIDEO.copy(),
-                                **{"data_rate": "3.683156",
-                                   "codec_quality": "lossless"})}},
-         "application/mxf"),
-        ("valid__jpeg2000_lossless.mxf", {
-            "purpose": ("Test valid MXF/JPEG2000 with lossless wavelet "
-                        "transform and no chroma subsampling."),
-            "stdout_part": "file was analyzed successfully",
-            "stderr_part": "",
-            "streams": {0: MXF_CONTAINER.copy(),
-                        1: dict(MXF_JPEG2000_VIDEO.copy(),
-                                **{"data_rate": "10.030892",
-                                   "sampling": UNAP,
-                                   "codec_quality": "lossless"})}},
-         "application/mxf"),
-        ("valid__jpeg2000.mxf", {
-            "purpose": "Test valid MXF.",
-            "stdout_part": "file was analyzed successfully",
-            "stderr_part": "",
-            "streams": {0: MXF_CONTAINER.copy(),
-                        1: MXF_JPEG2000_VIDEO.copy()}},
-         "application/mxf"),
-        ("valid__jpeg2000_grayscale.mxf", {
-            "purpose": "Test valid MXF.",
-            "stdout_part": "file was analyzed successfully",
-            "stderr_part": "",
-            "streams": {0: MXF_CONTAINER.copy(),
-                        1: dict(MXF_JPEG2000_VIDEO.copy(),
-                                **{"data_rate": "2.21007",
-                                   "color": "Grayscale",
-                                   "sampling": UNAP})}},
-         "application/mxf"),
-    ])
+        (
+            "valid__jpeg2000_lossless-wavelet_lossy-subsampling.mxf",
+            {
+                "purpose": ("Test valid MXF/JPEG2000 with lossless wavelet "
+                            "transform and chroma subsampling."),
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": "",
+                "streams": {0: MXF_CONTAINER.copy(),
+                            1: dict(MXF_JPEG2000_VIDEO.copy(),
+                                    **{"data_rate": "3.683156",
+                                       "codec_quality": "lossless"})}
+            },
+            "application/mxf"
+        ),
+        (
+            "valid__jpeg2000_lossless.mxf",
+            {
+                "purpose": ("Test valid MXF/JPEG2000 with lossless wavelet "
+                            "transform and no chroma subsampling."),
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": "",
+                "streams": {0: MXF_CONTAINER.copy(),
+                            1: dict(MXF_JPEG2000_VIDEO.copy(),
+                                    **{"data_rate": "10.030892",
+                                       "sampling": UNAP,
+                                       "codec_quality": "lossless"})}
+            },
+            "application/mxf"
+        ),
+        (
+            "valid__jpeg2000.mxf",
+            {
+                "purpose": "Test valid MXF.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": "",
+                "streams": {0: MXF_CONTAINER.copy(),
+                            1: MXF_JPEG2000_VIDEO.copy()}
+            },
+            "application/mxf"
+        ),
+        (
+            "valid__jpeg2000_grayscale.mxf",
+            {
+                "purpose": "Test valid MXF.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": "",
+                "streams": {0: MXF_CONTAINER.copy(),
+                            1: dict(MXF_JPEG2000_VIDEO.copy(),
+                                    **{"data_rate": "2.21007",
+                                       "color": "Grayscale",
+                                       "sampling": UNAP})}
+            },
+            "application/mxf"
+        ),
+    ]
+)
 def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
                               evaluate_scraper):
     """
@@ -198,89 +261,170 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
 @pytest.mark.parametrize(
     ["filename", "result_dict", "mimetype"],
     [
-        ("invalid_4_ffv1_missing_data.mkv", {
-            "purpose": "Test truncated MKV.",
-            "stdout_part": "",
-            "stderr_part": "Truncating packet of size"}, "video/x-matroska"),
-        ("invalid__empty.mkv", {
-            "purpose": "Test empty MKV.",
-            "stdout_part": "",
-            "stderr_part": "Invalid data found when processing input"},
-         "video/x-matroska"),
-        ("invalid__missing_data.dv", {
-            "purpose": "Test truncated DV.",
-            "stdout_part": "",
-            "stderr_part": "AC EOB marker is absent"},
-         "video/dv"),
-        ("invalid__empty.dv", {
-            "purpose": "Test empty DV.",
-            "stdout_part": "",
-            "stderr_part": "Cannot find DV header"},
-         "video/dv"),
-        ("invalid_1_missing_data.m1v", {
-            "purpose": "Test invalid MPEG-1.",
-            "stdout_part": "",
-            "stderr_part": "end mismatch"}, "video/mpeg"),
-        ("invalid_1_empty.m1v", {
-            "purpose": "Test empty MPEG-1.",
-            "stdout_part": "",
-            "stderr_part": "Invalid data found when processing input"},
-         "video/mpeg"),
-        ("invalid_2_missing_data.m2v", {
-            "purpose": "Test invalid MPEG-2.",
-            "stdout_part": "",
-            "stderr_part": "end mismatch"}, "video/mpeg"),
-        ("invalid_2_empty.m2v", {
-            "purpose": "Test empty MPEG-2.",
-            "stdout_part": "",
-            "stderr_part": "Invalid data found when processing input"},
-         "video/mpeg"),
-        ("invalid__h264_aac_missing_data.mp4", {
-            "purpose": "Test invalid MPEG-4.",
-            "stdout_part": "",
-            "stderr_part": "moov atom not found"}, "video/mp4"),
-        ("invalid__empty.mp4", {
-            "purpose": "Test invalid MPEG-4.",
-            "stdout_part": "",
-            "stderr_part": "Invalid data found when processing input"},
-         "video/mp4"),
-        ("invalid_1_missing_data.mp3", {
-            "purpose": "Test invalid mp3.",
-            "stdout_part": "",
-            "stderr_part": "Header missing"}, "audio/mpeg"),
-        ("invalid_1_wrong_version.mp3", {
-            "purpose": "Test invalid mp3.",
-            "stdout_part": "",
-            "stderr_part": "Error while decoding stream"}, "audio/mpeg"),
-        ("invalid__empty.mp3", {
-            "purpose": "Test empty mp3",
-            "stdout_part": "",
-            "stderr_part": "could not find codec parameters"}, "audio/mpeg"),
-        ("invalid__missing_data.ts", {
-            "purpose": "Test invalid MPEG-TS.",
-            "stdout_part": "",
-            "stderr_part": "invalid new backstep"}, "video/MP2T"),
-        ("invalid__empty.ts", {
-            "purpose": "Test empty MPEG-TS.",
-            "stdout_part": "",
-            "stderr_part": "Invalid data found when processing input"},
-         "video/MP2T"),
-        ("invalid__jpeg2000_wrong_signature.mxf", {
-            "purpose": "Test MXF with invalid header.",
-            "stdout_part": "",
-            "stderr_part": "Invalid data found when processing input"},
-         "application/mxf"),
-        ("invalid__jpeg2000_truncated.mxf", {
-            "purpose": "Test truncated MXF.",
-            "stdout_part": "",
-            "stderr_part": "IndexSID 0 segment at 0 missing"},
-         "application/mxf"),
-        ("invalid__pcm_alaw_format.wav", {
-            "purpose": "Test WAV file including A-law PCM.",
-            "stdout_part": "",
-            "stderr_part": "does not seem to be LPCM"},
-         "audio/x-wav"),
-    ])
+        (
+            "invalid_4_ffv1_missing_data.mkv",
+            {
+                "purpose": "Test truncated MKV.",
+                "stdout_part": "",
+                "stderr_part": "Truncating packet of size"
+            },
+            "video/x-matroska"
+        ),
+        (
+            "invalid__empty.mkv",
+            {
+                "purpose": "Test empty MKV.",
+                "stdout_part": "",
+                "stderr_part": "Invalid data found when processing input"
+            },
+            "video/x-matroska"
+        ),
+        (
+            "invalid__missing_data.dv",
+            {
+                "purpose": "Test truncated DV.",
+                "stdout_part": "",
+                "stderr_part": "AC EOB marker is absent"
+            },
+            "video/dv"
+        ),
+        (
+            "invalid__empty.dv",
+            {
+                "purpose": "Test empty DV.",
+                "stdout_part": "",
+                "stderr_part": "Cannot find DV header"
+            },
+            "video/dv"
+        ),
+        (
+            "invalid_1_missing_data.m1v",
+            {
+                "purpose": "Test invalid MPEG-1.",
+                "stdout_part": "",
+                "stderr_part": "end mismatch"
+            },
+            "video/mpeg"
+        ),
+        (
+            "invalid_1_empty.m1v",
+            {
+                "purpose": "Test empty MPEG-1.",
+                "stdout_part": "",
+                "stderr_part": "Invalid data found when processing input"
+            },
+            "video/mpeg"
+        ),
+        (
+            "invalid_2_missing_data.m2v",
+            {
+                "purpose": "Test invalid MPEG-2.",
+                "stdout_part": "",
+                "stderr_part": "end mismatch"
+            },
+            "video/mpeg"
+        ),
+        (
+            "invalid_2_empty.m2v",
+            {
+                "purpose": "Test empty MPEG-2.",
+                "stdout_part": "",
+                "stderr_part": "Invalid data found when processing input"
+            },
+            "video/mpeg"
+        ),
+        (
+            "invalid__h264_aac_missing_data.mp4",
+            {
+                "purpose": "Test invalid MPEG-4.",
+                "stdout_part": "",
+                "stderr_part": "moov atom not found"
+            },
+            "video/mp4"
+        ),
+        (
+            "invalid__empty.mp4",
+            {
+                "purpose": "Test invalid MPEG-4.",
+                "stdout_part": "",
+                "stderr_part": "Invalid data found when processing input"
+            },
+            "video/mp4"
+        ),
+        (
+            "invalid_1_missing_data.mp3",
+            {
+                "purpose": "Test invalid mp3.",
+                "stdout_part": "",
+                "stderr_part": "Header missing"
+            },
+            "audio/mpeg"
+        ),
+        (
+            "invalid_1_wrong_version.mp3",
+            {
+                "purpose": "Test invalid mp3.",
+                "stdout_part": "",
+                "stderr_part": "Error while decoding stream"
+            },
+            "audio/mpeg"
+        ),
+        (
+            "invalid__empty.mp3",
+            {
+                "purpose": "Test empty mp3",
+                "stdout_part": "",
+                "stderr_part": "could not find codec parameters"
+            },
+            "audio/mpeg"
+        ),
+        (
+            "invalid__missing_data.ts",
+            {
+                "purpose": "Test invalid MPEG-TS.",
+                "stdout_part": "",
+                "stderr_part": "invalid new backstep"
+            },
+            "video/MP2T"
+        ),
+        (
+            "invalid__empty.ts",
+            {
+                "purpose": "Test empty MPEG-TS.",
+                "stdout_part": "",
+                "stderr_part": "Invalid data found when processing input"
+            },
+            "video/MP2T"
+        ),
+        (
+            "invalid__jpeg2000_wrong_signature.mxf",
+            {
+                "purpose": "Test MXF with invalid header.",
+                "stdout_part": "",
+                "stderr_part": "Invalid data found when processing input"
+            },
+            "application/mxf"
+        ),
+        (
+            "invalid__jpeg2000_truncated.mxf",
+            {
+                "purpose": "Test truncated MXF.",
+                "stdout_part": "",
+                "stderr_part": "IndexSID 0 segment at 0 missing"
+            },
+            "application/mxf"
+        ),
+        (
+            "invalid__pcm_alaw_format.wav",
+            {
+                "purpose": "Test WAV file including A-law PCM.",
+                "stdout_part": "",
+                "stderr_part": "does not seem to be LPCM"
+            },
+            "audio/x-wav"
+        )
+    ]
+)
 def test_ffmpeg_scraper_invalid(filename, result_dict, mimetype,
                                 evaluate_scraper):
     """
@@ -302,8 +446,9 @@ def test_ffmpeg_scraper_invalid(filename, result_dict, mimetype,
 
 
 @pytest.mark.parametrize(
-    ["mime", "ver"],
+    ["mimetype", "version"],
     [
+        ("video/avi", ""),
         ("video/mpeg", "1"),
         ("video/mp4", ""),
         ("video/MP1S", ""),
@@ -312,15 +457,15 @@ def test_ffmpeg_scraper_invalid(filename, result_dict, mimetype,
         ("application/mxf", "")
     ]
 )
-def test_is_supported_mpeg(mime, ver):
+def test_is_supported(mimetype, version):
     """
     Test is_supported method.
 
     :mime: Predefined mimetype
     :ver: Predefined version
     """
-    assert FFMpegScraper.is_supported(mime, ver, True)
-    assert FFMpegScraper.is_supported(mime, None, True)
-    assert FFMpegScraper.is_supported(mime, ver, False)
-    assert FFMpegScraper.is_supported(mime, "foo", True)
-    assert not FFMpegScraper.is_supported("foo", ver, True)
+    assert FFMpegScraper.is_supported(mimetype, version, True)
+    assert FFMpegScraper.is_supported(mimetype, None, True)
+    assert FFMpegScraper.is_supported(mimetype, version, False)
+    assert FFMpegScraper.is_supported(mimetype, "foo", True)
+    assert not FFMpegScraper.is_supported("foo", version, True)

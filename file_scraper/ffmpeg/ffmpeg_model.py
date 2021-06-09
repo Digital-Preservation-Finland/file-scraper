@@ -20,6 +20,7 @@ class FFMpegSimpleMeta(BaseMeta):
 
     # Supported mimetypes
     _supported = {
+        "video/avi": [],
         "video/mpeg": [],
         "video/mp4": [],
         "audio/mpeg": [],
