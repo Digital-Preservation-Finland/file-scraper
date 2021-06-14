@@ -52,12 +52,9 @@ def scrape_file(ctx, filename, check_wellformed, tool_info, mimetype, version):
     :mimetype: Specified mimetype for the scraped file
     :version: Specified version for the scraped file
     """
-    try:
-        scraper = Scraper(filename, mimetype=mimetype, version=version,
-                          **_extra_options_to_dict(ctx.args))
-        scraper.scrape(check_wellformed=check_wellformed)
-    except Exception as exception:
-        raise click.ClickException(str(exception))
+    scraper = Scraper(filename, mimetype=mimetype, version=version,
+                      **_extra_options_to_dict(ctx.args))
+    scraper.scrape(check_wellformed=check_wellformed)
 
     results = {
         "path": ensure_text(scraper.filename),
