@@ -4,13 +4,17 @@ from __future__ import unicode_literals
 import six
 
 from file_scraper.base import BaseScraper
+import file_scraper.mediainfo
 from file_scraper.mediainfo.mediainfo_model import (
+    ContainerMediainfoMeta,
+    DvMediainfoMeta,
+    FfvMediainfoMeta,
+    FlacMediainfoMeta,
+    LpcmMediainfoMeta,
     MkvMediainfoMeta,
-    MovMediainfoMeta,
     MpegMediainfoMeta,
-    MpegPSMediainfoMeta,
-    WavMediainfoMeta,
-    AviMediainfoMeta
+    OtherMediainfoMeta,
+    WavMediainfoMeta
 )
 from file_scraper.utils import decode_path
 
@@ -24,12 +28,15 @@ class MediainfoScraper(BaseScraper):
     """Scraper for scraping audio and video files using Mediainfo."""
 
     _supported_metadata = [
+        ContainerMediainfoMeta,
+        DvMediainfoMeta,
+        FfvMediainfoMeta,
+        FlacMediainfoMeta,
+        LpcmMediainfoMeta,
         MkvMediainfoMeta,
-        MovMediainfoMeta,
         MpegMediainfoMeta,
-        MpegPSMediainfoMeta,
-        WavMediainfoMeta,
-        AviMediainfoMeta
+        OtherMediainfoMeta,
+        WavMediainfoMeta
     ]
 
     def scrape_file(self):
@@ -47,17 +54,43 @@ class MediainfoScraper(BaseScraper):
         self._messages.append("The file was analyzed successfully.")
 
         for index in range(len(mediainfo.tracks)):
-            self.streams += list(self.iterate_models(
-                tracks=mediainfo.tracks, index=index))
+
+            # Use predefined mimetype/version for first track, and
+            # detected mimetype for other tracks
+            if index > 0:
+                mimetype = file_scraper.mediainfo.track_mimetype(
+                    mediainfo.tracks[index]
+                )
+                version = None
+            else:
+                mimetype = self._predefined_mimetype
+                version = self._predefined_version
+
+            self.streams += list(
+                self.iterate_models(
+                    mimetype=mimetype,
+                    version=version,
+                    tracks=mediainfo.tracks,
+                    index=index
+                )
+            )
 
         self._check_supported(allow_unav_version=True, allow_unap_version=True)
 
     def iterate_models(self, **kwargs):
-        """Iterate metadata models."""
+        """Iterate metadata models.
+
+        :param kwargs: Model specific parameters. The dictionary should
+                       contain mimetype and version of stream format,
+                       list of all tracks in the file, and index of
+                       track.
+        :returns: Metadata model
+        """
         for md_class in self._supported_metadata:
-            if md_class.is_supported(self._predefined_mimetype):
-                md_object = md_class(**kwargs)
-                if md_object.hascontainer() or kwargs["index"] > 0:
+            if md_class.is_supported(kwargs['mimetype'], kwargs['version']):
+                md_object = md_class(kwargs['tracks'], kwargs['index'])
+                # Skip tracks that are not streams
+                if md_object.stream_type():
                     yield md_object
 
     def _tracks_ok(self, mediainfo):
