@@ -57,14 +57,22 @@ class MediainfoScraper(BaseScraper):
 
             # Use predefined mimetype/version for first track, and
             # detected mimetype for other tracks
-            if index > 0:
+            if index == 0:
+                mimetype = self._predefined_mimetype
+                version = self._predefined_version
+            # WAV is a special container format. For WAV files,
+            # no distinction between container and soundtrack needs to
+            # be made, as both are treated as one in the DPS.
+            elif (self._predefined_mimetype == 'audio/x-wav'
+                  or file_scraper.mediainfo.track_mimetype(mediainfo.tracks[0])
+                  == 'audio/x-wav'):
+                mimetype = 'audio/x-wav'
+                version = None
+            else:
                 mimetype = file_scraper.mediainfo.track_mimetype(
                     mediainfo.tracks[index]
                 )
                 version = None
-            else:
-                mimetype = self._predefined_mimetype
-                version = self._predefined_version
 
             self.streams += list(
                 self.iterate_models(

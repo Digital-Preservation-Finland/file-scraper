@@ -410,6 +410,21 @@ class WavMediainfoMeta(BaseMediainfoMeta):
     _supported = {"audio/x-wav": ["2", ""]}
     _allow_versions = True  # Allow any version
 
+    def __init__(self, tracks, index):
+        """Initialize the metadata model.
+
+        WAV is a special container format. For WAV files, no
+        distinction between container and soundtrack needs to be made,
+        as both are treated as one in the DPS.
+        """
+        super(WavMediainfoMeta, self).__init__(tracks, index)
+        self._container = None
+
+    @metadata()
+    def mimetype(self):
+        """Return mimetype."""
+        return 'audio/x-wav'
+
     @metadata()
     def version(self):
         """Return version."""
