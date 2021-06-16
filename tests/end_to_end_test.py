@@ -53,6 +53,7 @@ UNAV_ELEMENTS = {
     "tests/data/image_tiff/valid_6.0_multiple_tiffs.tif": [
         "version", "version", "icc_profile_name", "icc_profile_name",
         "icc_profile_name"],
+    "tests/data/video_avi/valid__mpeg2_mp3.avi": ["bits_per_sample"],
     "tests/data/video_MP2T/valid__mpeg2_mp3.ts": [
         "codec_creator_app_version", "codec_creator_app", "data_rate",
         "codec_creator_app_version", "codec_creator_app", "bits_per_sample",
