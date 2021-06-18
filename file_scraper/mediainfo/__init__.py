@@ -87,9 +87,9 @@ def track_mimetype(track):
     """
     candidates = []
     for format_ in FORMATS:
-        if all([track.to_data().get(property_, None)
-                == format_['properties'][property_]
-                for property_ in format_["properties"]]):
+        if all(track.to_data().get(property_, None)
+               == format_['properties'][property_]
+               for property_ in format_["properties"]):
             # Track has all properties of this format, choose this
             # mimetype
             candidates.append(format_['mimetype'])
