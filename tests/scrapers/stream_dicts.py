@@ -25,11 +25,6 @@ MOV_DV_VIDEO = dict(DV_VIDEO, **{
     "codec_creator_app": "Lavf56.40.101",
     "codec_creator_app_version": "56.40.101", "sound": "Yes"})
 
-MOV_TC = {
-    "index": 3, "mimetype": UNAV, "stream_type": "other",
-    "version": UNAV}
-
-
 MKV_CONTAINER = {
     "codec_creator_app": "Lavf56.40.101",
     "codec_creator_app_version": "56.40.101",
@@ -138,10 +133,6 @@ MPEGTS_CONTAINER = {
     "codec_creator_app_version": UNAV,
     "codec_name": "MPEG-TS", "index": 0, "mimetype": "video/MP2T",
     "stream_type": "videocontainer", "version": UNAP}
-
-MPEGTS_OTHER = {
-    "index": 3, "mimetype": UNAV, "stream_type": "menu",
-    "version": UNAV}
 
 BASE_JPEG2000_VIDEO = {
     "index": 1, "mimetype": "video/jpeg2000", "version": UNAP,

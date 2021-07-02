@@ -42,7 +42,6 @@ from tests.scrapers.stream_dicts import (DV_VIDEO,
                                          MOV_DV_VIDEO,
                                          MOV_MPEG4_VIDEO,
                                          MOV_MPEG4_AUDIO,
-                                         MOV_TC,
                                          MPEG1_AUDIO,
                                          MPEG1_VIDEO,
                                          MPEG2_VIDEO,
@@ -51,7 +50,6 @@ from tests.scrapers.stream_dicts import (DV_VIDEO,
                                          MPEG4_VIDEO,
                                          MPEGTS_AUDIO,
                                          MPEGTS_CONTAINER,
-                                         MPEGTS_OTHER,
                                          MPEGTS_VIDEO,
                                          LPCM8_AUDIO,
                                          WAV_AUDIO,
@@ -69,8 +67,8 @@ from tests.scrapers.stream_dicts import (DV_VIDEO,
             "stderr_part": "",
             "streams": {0: MOV_CONTAINER.copy(),
                         1: MOV_DV_VIDEO.copy(),
-                        2: LPCM8_AUDIO.copy(),
-                        3: MOV_TC.copy()}}, "video/quicktime"),
+                        2: LPCM8_AUDIO.copy()}},
+         "video/quicktime"),
         ("valid__h264_aac.mov", {
             "purpose": "Test valid MOV with AVC and AAC.",
             "stdout_part": "file was analyzed successfully",
@@ -272,18 +270,27 @@ def test_mediainfo_scraper_mpeg(filename, result_dict, evaluate_scraper):
 @pytest.mark.parametrize(
     ["filename", "result_dict"],
     [
-        ("valid__h264_aac.mp4", {
-            "purpose": "Test valid mp4.",
-            "stdout_part": "file was analyzed successfully",
-            "stderr_part": "",
-            "streams": {0: MPEG4_CONTAINER.copy(),
-                        1: MPEG4_VIDEO.copy(),
-                        2: MPEG4_AUDIO.copy()}}),
-        ("invalid__empty.mp4", {
-            "purpose": "Test invalid MPEG-4.",
-            "stdout_part": "",
-            "stderr_part": "No audio or video tracks found"})
-    ])
+        (
+            "valid__h264_aac.mp4",
+            {
+                "purpose": "Test valid mp4.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": "",
+                "streams": {0: MPEG4_CONTAINER.copy(),
+                            1: MPEG4_VIDEO.copy(),
+                            2: MPEG4_AUDIO.copy()}
+            }
+        ),
+        (
+            "invalid__empty.mp4",
+            {
+                "purpose": "Test invalid MPEG-4.",
+                "stdout_part": "",
+                "stderr_part": "No audio or video tracks found"
+            }
+        )
+    ]
+)
 def test_mediainfo_scraper_mp4(filename, result_dict, evaluate_scraper):
     """
     Test MP4 scraping with MediainfoScraper.
@@ -347,18 +354,25 @@ def test_mediainfo_scraper_mp3(filename, result_dict, evaluate_scraper):
 @pytest.mark.parametrize(
     ["filename", "result_dict"],
     [
-        ("valid__mpeg2_mp3.ts", {
-            "purpose": "Test valid MPEG-TS.",
-            "stdout_part": "file was analyzed successfully",
-            "stderr_part": "",
-            "streams": {0: MPEGTS_CONTAINER.copy(),
-                        1: MPEGTS_VIDEO.copy(),
-                        2: MPEGTS_AUDIO.copy(),
-                        3: MPEGTS_OTHER.copy()}}),
-        ("invalid__empty.ts", {
-            "purpose": "Test empty MPEG-TS.",
-            "stdout_part": "",
-            "stderr_part": "No audio or video tracks found"})
+        (
+            "valid__mpeg2_mp3.ts",
+            {
+                "purpose": "Test valid MPEG-TS.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": "",
+                "streams": {0: MPEGTS_CONTAINER.copy(),
+                            1: MPEGTS_VIDEO.copy(),
+                            2: MPEGTS_AUDIO.copy()}
+            }
+        ),
+        (
+            "invalid__empty.ts",
+            {
+                "purpose": "Test empty MPEG-TS.",
+                "stdout_part": "",
+                "stderr_part": "No audio or video tracks found"
+            }
+        )
     ])
 def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
     """

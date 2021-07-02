@@ -192,6 +192,7 @@ Misc notes
     * Metadata is not collected for DPX images, only well-formedness is checked.
     * Retrieving version number can not be done for MS-Office and ODF Formula formats.
     * Scraping XML files without XML header works correctly only when ``check_wellformed`` parameter is ``True``.
+    * Only audio and video stream metadata is collected for audio and video files. Other streams, such as menus and subtitles, are omitted.
     * The software may result arbitrary metadata values, if incorrect MIME type or version is given as a parameter. However, the file is also then denoted as invalid.
 
 Copyright

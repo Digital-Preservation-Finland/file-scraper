@@ -29,39 +29,43 @@ UNAV_VERSION = [
 ]
 
 # These files will result (:unav) for some elements
-# For GIFs and TIFFs with 3 images inside, the version is missing from the
-# second and third streams, but exists in the first one.
+# For GIFs and TIFFs with 3 images inside, the version is missing from
+# the second and third streams, but exists in the first one.
 # For all, but one valid images, icc_profile_name is missing.
-# MPEG-TS file contains "menu" stream, where version is None.
-# Quicktime file contains a timecode track, where version is None.
 UNAV_ELEMENTS = {
     "tests/data/application_vnd.oasis.opendocument.formula/valid_1.0"
     ".odf": ["version"],
     "tests/data/image_gif/valid_1987a.gif": ["icc_profile_name"],
-    "tests/data/image_gif/valid_1989a.gif": ["version", "version",
+    "tests/data/image_gif/valid_1989a.gif": ["version",
+                                             "version",
                                              "icc_profile_name",
                                              "icc_profile_name",
                                              "icc_profile_name"],
     "tests/data/image_jp2/valid__srgb.jp2": ["icc_profile_name"],
     "tests/data/image_jpeg/valid_1.01.jpg": ["icc_profile_name"],
-    "tests/data/image_jpeg/valid_2.2.1_exif_metadata.jpg": [
-        "icc_profile_name"],
+    "tests/data/image_jpeg/valid_2.2.1_exif_metadata.jpg":
+    ["icc_profile_name"],
     "tests/data/image_jpeg/valid_2.2.1_exif_no_jfif.jpg": ["icc_profile_name"],
     "tests/data/image_png/valid_1.2.png": ["icc_profile_name"],
     "tests/data/image_png/valid_1.2_LA.png": ["icc_profile_name"],
     "tests/data/image_tiff/valid_6.0.tif": ["icc_profile_name"],
-    "tests/data/image_tiff/valid_6.0_multiple_tiffs.tif": [
-        "version", "version", "icc_profile_name", "icc_profile_name",
-        "icc_profile_name"],
+    "tests/data/image_tiff/valid_6.0_multiple_tiffs.tif": ["version",
+                                                           "version",
+                                                           "icc_profile_name",
+                                                           "icc_profile_name",
+                                                           "icc_profile_name"],
     "tests/data/video_avi/valid__mpeg2_mp3.avi": ["bits_per_sample"],
     "tests/data/video_MP2T/valid__mpeg2_mp3.ts": [
-        "codec_creator_app_version", "codec_creator_app", "data_rate",
-        "codec_creator_app_version", "codec_creator_app", "bits_per_sample",
-        "codec_creator_app_version", "codec_creator_app", "mimetype",
-        "version"],
-    "tests/data/video_quicktime/valid__dv_lpcm8.mov": ["mimetype", "version"],
-    "tests/data/video_quicktime/valid__h264_aac.mov": ["bits_per_sample",
-                                                       "mimetype", "version"],
+        "codec_creator_app_version",
+        "codec_creator_app",
+        "data_rate",
+        "codec_creator_app_version",
+        "codec_creator_app",
+        "bits_per_sample",
+        "codec_creator_app_version",
+        "codec_creator_app"
+    ],
+    "tests/data/video_quicktime/valid__h264_aac.mov": ["bits_per_sample"],
     "tests/data/audio_mpeg/valid_1.mp3": ["bits_per_sample",
                                           "codec_creator_app_version",
                                           "codec_creator_app"],

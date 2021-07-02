@@ -502,10 +502,3 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
         if self._stream.format_version is not None:
             return six.text_type(self._stream.format_version)[-1]
         return UNAV
-
-
-class OtherMediainfoMeta(BaseMediainfoMeta):
-    """Scraper for other streams than video, audio or videocontainer."""
-
-    _supported = {None: [""]}
-    _allow_versions = True  # Allow any version
