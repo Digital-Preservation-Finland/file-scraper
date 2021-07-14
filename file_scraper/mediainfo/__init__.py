@@ -101,4 +101,4 @@ def track_mimetype(track):
         return candidates[0]
 
     raise ValueError("Could not detect track mimetype, track properties "
-                     "matches more than one format.")
+                     "match more than one format.")
