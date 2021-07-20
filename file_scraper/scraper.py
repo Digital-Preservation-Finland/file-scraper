@@ -1,7 +1,7 @@
 """File metadata scraper."""
 from __future__ import unicode_literals
 
-from file_scraper.defaults import UNAV
+from file_scraper.defaults import UNAV, FILE_FORMAT_GRADE, UNACCEPTABLE
 from file_scraper.detectors import VerapdfDetector, MagicCharset
 from file_scraper.dummy.dummy_scraper import (FileExists,
                                               MimeMatchScraper,
@@ -242,3 +242,16 @@ class Scraper(object):
         :returns: Calculated checksum
         """
         return hexdigest(self.filename, algorithm)
+
+    def grade(self):
+        """Return digital preservation grade."""
+        if not self.mimetype or self.mimetype == UNAV:
+            grade = UNAV
+
+        else:
+            try:
+                grade = FILE_FORMAT_GRADE[self.mimetype][self.version]
+            except KeyError:
+                grade = UNACCEPTABLE
+
+        return grade

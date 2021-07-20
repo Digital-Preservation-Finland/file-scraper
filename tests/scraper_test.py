@@ -142,3 +142,40 @@ def test_charset_parameter(charset):
     scraper.detect_filetype()
     # pylint: disable=protected-access
     assert scraper._params["charset"] == charset or "UTF-8"
+
+
+@pytest.mark.parametrize(
+    ("file_path", "expected_grade"),
+    [
+        # Recommended file format
+        (
+            "tests/data/text_plain/valid__ascii.txt",
+            "fi-preservation-recommended-file-format"
+        ),
+        # File that does not exist
+        (
+            "/this/path/does/not/exist",
+            "(:unav)"
+        ),
+        # Empty file
+        (
+            "tests/data/text_plain/invalid__empty.txt",
+            "(:unav)"
+        ),
+        # Format version not accepted according to specification
+        (
+            "tests/data/application_warc/valid_0.17.warc",
+            "fi-preservation-unacceptable-file-format"
+        ),
+    ]
+)
+def test_grade(file_path, expected_grade):
+    """Test that scraper returns correct digital preservation grade."""
+    scraper = Scraper(file_path)
+
+    # File can not be graded before scraping
+    assert scraper.grade() == "(:unav)"
+
+    # After scraping the file should have expected grade
+    scraper.scrape()
+    assert scraper.grade() == expected_grade

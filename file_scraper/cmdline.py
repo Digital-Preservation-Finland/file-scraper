@@ -61,7 +61,8 @@ def scrape_file(ctx, filename, check_wellformed, tool_info, mimetype, version):
         "MIME type": ensure_text(scraper.mimetype),
         "version": ensure_text(scraper.version),
         "metadata": scraper.streams,
-        }
+        "grade": scraper.grade()
+    }
     if check_wellformed:
         results["well-formed"] = scraper.well_formed
     if tool_info:

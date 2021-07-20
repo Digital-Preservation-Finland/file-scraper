@@ -18,7 +18,11 @@ import shutil
 import pytest
 from six import iteritems
 
-from file_scraper.defaults import UNAP, UNAV
+from file_scraper.defaults import (UNAP,
+                                   UNAV,
+                                   UNACCEPTABLE,
+                                   ACCEPTABLE,
+                                   RECOMMENDED)
 from file_scraper.scraper import Scraper
 from tests.common import get_files
 
@@ -171,6 +175,37 @@ GIVEN_CHARSETS = {
     "tests/data/text_plain/invalid__utf8_just_c3.txt": "UTF-8",
 }
 
+ACCEPTABLE_FILES = [
+    "tests/data/application_pdf/valid_1.7_jpeg2000.pdf",
+    "tests/data/application_pdf/valid_1.5.pdf",
+    "tests/data/application_pdf/valid_1.3.pdf",
+    "tests/data/application_pdf/valid_1.6.pdf",
+    "tests/data/application_pdf/valid_1.7.pdf",
+    "tests/data/application_pdf/valid_1.2.pdf",
+    "tests/data/application_pdf/valid_1.4.pdf",
+    "tests/data/application_vnd.openxmlformats-officedocument."
+    "presentationml.presentation/valid_2007 onwards.pptx",
+    "tests/data/application_vnd.ms-powerpoint/valid_97-2003.ppt",
+    "tests/data/application_vnd.ms-excel/valid_8X.xls",
+    "tests/data/application_vnd.openxmlformats-officedocument."
+    "wordprocessingml.document/valid_2007 onwards.docx",
+    "tests/data/application_vnd.openxmlformats-officedocument."
+    "spreadsheetml.sheet/valid_2007 onwards.xlsx",
+    "tests/data/application_msword/valid_97-2003.doc",
+    "tests/data/image_gif/valid_1989a.gif",
+    "tests/data/image_gif/valid_1987a.gif",
+    "tests/data/video_mpeg/valid_1.m1v",
+    "tests/data/video_mpeg/valid_2.m2v",
+    "tests/data/audio_mpeg/valid_1.mp3",
+    "tests/data/video_dv/valid__pal_lossy.dv",
+]
+
+UNACCEPTABLE_FILES = [
+    # WARC 0.17 and 0.18 are not accepted versions
+    "tests/data/application_warc/valid_0.17.warc",
+    "tests/data/application_warc/valid_0.18.warc"
+]
+
 
 def _assert_valid_scraper_result(scraper, fullname, mimetype, version,
                                  well_formed):
@@ -213,6 +248,7 @@ def _assert_valid_scraper_result(scraper, fullname, mimetype, version,
 def test_valid_combined(fullname, mimetype, version):
     """
     Integration test for valid files.
+
     - Test that mimetype and version matches.
     - Test Find out all None elements.
     - Test that errors are not given.
@@ -549,3 +585,34 @@ def test_charset(filepath, charset, well_formed):
 
     assert scraper.well_formed == well_formed
     assert scraper.streams[0]["charset"] == charset
+
+
+@pytest.mark.parametrize(
+    ("fullname", "mimetype", "version"),
+    get_files(well_formed=True)
+)
+def test_grading(fullname, mimetype, version):
+    """Test grading for a valid test file.
+
+    Test that file format is graded as recommended unless the file
+    is explicitly listed as acceptable of unacceptable.
+    """
+    if fullname in UNAV_VERSION:
+        pytest.skip("File format version of file {} can not be defined."
+                    .format(fullname))
+
+    charset = GIVEN_CHARSETS.get(fullname, None)
+    scraper = Scraper(fullname,
+                      mimetype=mimetype,
+                      version=version,
+                      charset=charset)
+    scraper.scrape()
+
+    if fullname in UNACCEPTABLE_FILES:
+        expected_grade = UNACCEPTABLE
+    elif fullname in ACCEPTABLE_FILES:
+        expected_grade = ACCEPTABLE
+    else:
+        expected_grade = RECOMMENDED
+
+    assert scraper.grade() == expected_grade

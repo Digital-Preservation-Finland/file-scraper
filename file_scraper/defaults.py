@@ -1,4 +1,4 @@
-"""Common constants and dictionaries"""
+"""Common constants and dictionaries."""
 from __future__ import unicode_literals
 
 # Prioritize these pronom codes in identification.
@@ -60,3 +60,248 @@ PRONOM_DICT = {
 # See: http://digitalpreservation.fi/specifications/vocabularies/unknown-values
 UNAP = "(:unap)"
 UNAV = "(:unav)"
+
+# Digital preservation grading
+RECOMMENDED = "fi-preservation-recommended-file-format"
+ACCEPTABLE = "fi-preservation-acceptable-file-format"
+BIT_LEVEL_WITH_RECOMMENDED \
+    = "fi-preservation-bit-level-file-format-with-recommended"
+BIT_LEVEL = "fi-preservation-bit-level-file-format"
+UNACCEPTABLE = "fi-preservation-unacceptable-file-format"
+
+
+FILE_FORMAT_GRADE = {
+    "text/csv": {
+        "(:unap)": RECOMMENDED
+    },
+    "application/epub+zip": {
+        "2.0.1": RECOMMENDED,
+        "3.0.0": RECOMMENDED,
+        "3.0.1": RECOMMENDED,
+        "3.2": RECOMMENDED
+    },
+    "application/xhtml+xml": {
+        "1.0": RECOMMENDED,
+        "1.1": RECOMMENDED,
+        "5.0": RECOMMENDED
+    },
+    "text/xml": {
+        "1.0": RECOMMENDED,
+        "1.1": RECOMMENDED
+    },
+    "text/html": {
+        "4.01": RECOMMENDED,
+        "5.0": RECOMMENDED,
+        "5.1": RECOMMENDED,
+        "5.2": RECOMMENDED
+    },
+    "application/vnd.oasis.opendocument.text": {
+        "1.0": RECOMMENDED,
+        "1.1": RECOMMENDED,
+        "1.2": RECOMMENDED,
+        "1.3": RECOMMENDED
+    },
+    "application/vnd.oasis.opendocument.spreadsheet": {
+        "1.0": RECOMMENDED,
+        "1.1": RECOMMENDED,
+        "1.2": RECOMMENDED,
+        "1.3": RECOMMENDED
+    },
+    "application/vnd.oasis.opendocument.presentation": {
+        "1.0": RECOMMENDED,
+        "1.1": RECOMMENDED,
+        "1.2": RECOMMENDED,
+        "1.3": RECOMMENDED
+    },
+    "application/vnd.oasis.opendocument.graphics": {
+        "1.0": RECOMMENDED,
+        "1.1": RECOMMENDED,
+        "1.2": RECOMMENDED,
+        "1.3": RECOMMENDED
+    },
+    "application/vnd.oasis.opendocument.formula": {
+        "1.0": RECOMMENDED,
+        "1.2": RECOMMENDED,
+        "1.3": RECOMMENDED
+    },
+    "application/pdf": {
+        "A-1a": RECOMMENDED,
+        "A-1b": RECOMMENDED,
+        "A-2a": RECOMMENDED,
+        "A-2b": RECOMMENDED,
+        "A-2u": RECOMMENDED,
+        "A-3a": RECOMMENDED,
+        "A-3b": RECOMMENDED,
+        "A-3u": RECOMMENDED,
+        "1.2": ACCEPTABLE,
+        "1.3": ACCEPTABLE,
+        "1.4": ACCEPTABLE,
+        "1.5": ACCEPTABLE,
+        "1.6": ACCEPTABLE,
+        "1.7": ACCEPTABLE
+    },
+    "text/plain": {
+        "(:unap)": RECOMMENDED
+    },
+    "audio/x-aiff": {
+        "(:unap)": ACCEPTABLE,  # AIFF-C
+        "1.3": RECOMMENDED  # AIFF
+    },
+    "audio/x-wav": {
+        "(:unap)": RECOMMENDED,  # WAV
+        "2": RECOMMENDED  # BWF
+    },
+    "audio/flac": {
+        "1.2.1": RECOMMENDED
+    },
+    "audio/L8": {
+        "(:unap)": RECOMMENDED
+    },
+    "audio/L16": {
+        "(:unap)": RECOMMENDED
+    },
+    "audio/L20": {
+        "(:unap)": RECOMMENDED
+    },
+    "audio/L24": {
+        "(:unap)": RECOMMENDED
+    },
+    "audio/mp4": {
+        "(:unap)": RECOMMENDED
+    },
+    "image/x-dpx": {
+        "2.0": RECOMMENDED
+    },
+    "video/x-ffv": {
+        "3": RECOMMENDED
+    },
+    "video/jpeg2000": {
+        "(:unap)": RECOMMENDED
+    },
+    "video/mp4": {
+        "(:unap)": RECOMMENDED
+    },
+    "image/tiff": {
+        "1.3": RECOMMENDED,  # DNG
+        "1.4": RECOMMENDED,  # DNG
+        "1.5": RECOMMENDED,  # DNG
+        "6.0": RECOMMENDED,  # TIFF
+        "1.0": RECOMMENDED,  # GeoTiff
+    },
+    "image/jpeg": {
+        "1.00": RECOMMENDED,
+        "1.01": RECOMMENDED,
+        "1.02": RECOMMENDED,
+        "2.0": RECOMMENDED,  # JPEG/EXIF
+        "2.1": RECOMMENDED,  # JPEG/EXIF
+        "2.2": RECOMMENDED,  # JPEG/EXIF
+        "2.2.1": RECOMMENDED,  # JPEG/EXIF
+        "2.3": RECOMMENDED,  # JPEG/EXIF
+        "2.3.1": RECOMMENDED,  # JPEG/EXIF
+        "2.3.2": RECOMMENDED,  # JPEG/EXIF
+    },
+    "image/jp2": {
+        "(:unap)": RECOMMENDED
+    },
+    "image/svg+xml": {
+        "1.1": RECOMMENDED
+    },
+    "image/png": {
+        "1.2": RECOMMENDED
+    },
+    "application/warc": {
+        "1.0": RECOMMENDED
+    },
+    "application/gml+xml": {
+        "3.2.1": RECOMMENDED,
+    },
+    "application/vnd.google-earth.kml+xml": {
+        "2.3": RECOMMENDED,
+    },
+    "application/x-siard": {
+        "2.0": RECOMMENDED,
+        "2.1": RECOMMENDED
+    },
+    "application/x-spss-por": {
+        "(:unap)": RECOMMENDED
+    },
+    "application/matlab": {
+        "7": RECOMMENDED,
+        "7.3": RECOMMENDED
+    },
+    "application/x-hdf5": {
+        "1.1": RECOMMENDED
+    },
+    "application/msword": {
+        "97-2003": ACCEPTABLE
+    },
+    "application/vnd.openxmlformats-officedocument.wordprocessingml."
+    "document": {
+        "2007 onwards": ACCEPTABLE
+    },
+    "application/vnd.ms-excel": {
+        "8": ACCEPTABLE,
+        "8X": ACCEPTABLE
+    },
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+        "2007 onwards": ACCEPTABLE
+    },
+    "application/vnd.ms-powerpoint": {
+        "97-2003": ACCEPTABLE
+    },
+    "application/vnd.openxmlformats-officedocument.presentationml."
+    "presentation": {
+        "2007 onwards": ACCEPTABLE
+    },
+    "audio/mpeg": {
+        "1": ACCEPTABLE,
+        "2": ACCEPTABLE
+    },
+    "audio/x-ms-wma": {
+        "9": ACCEPTABLE
+    },
+    "video/dv": {
+        "(:unap)": ACCEPTABLE
+    },
+    "video/mpeg": {
+        "1": ACCEPTABLE,
+        "2": ACCEPTABLE
+    },
+    "video/x-ms-wmv": {
+        "9": ACCEPTABLE
+    },
+    "application/postscript": {
+        "3.0": ACCEPTABLE
+    },
+    "image/gif": {
+        "1987a": ACCEPTABLE,
+        "1989a": ACCEPTABLE
+    },
+    "video/avi": {  # Container
+        "(:unap)": RECOMMENDED
+    },
+    "video/x-matroska": {  # Container
+        "4": RECOMMENDED
+    },
+    "video/MP2T": {  # Container
+        "(:unap)": RECOMMENDED
+    },
+    "application/mxf": {  # Container
+        "(:unap)": RECOMMENDED
+    },
+    "video/mj2": {  # Container
+        "(:unap)": RECOMMENDED
+    },
+    "video/quicktime": {  # Container
+        "(:unap)": RECOMMENDED
+    },
+    "video/x-ms-asf": {  # Container
+        "(:unap)": ACCEPTABLE
+    },
+    "video/MP1S": {  # Container
+        "(:unap)": ACCEPTABLE
+    },
+    "video/MP2P": {  # Container
+        "(:unap)": ACCEPTABLE
+    }
+}
