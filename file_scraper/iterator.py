@@ -11,6 +11,7 @@ from file_scraper.dummy.dummy_scraper import (
     DetectedMimeVersionMetadataScraper)
 from file_scraper.ffmpeg.ffmpeg_scraper import FFMpegScraper
 from file_scraper.ghostscript.ghostscript_scraper import GhostscriptScraper
+from file_scraper.graders import Grader, TextGrader
 from file_scraper.jhove.jhove_scraper import (JHoveGifScraper,
                                               JHoveHtmlScraper,
                                               JHoveJpegScraper,
@@ -45,6 +46,15 @@ def iter_detectors():
     :returns: detector class
     """
     for cls in [FidoDetector, MagicDetector, PredefinedDetector]:
+        yield cls
+
+
+def iter_graders():
+    """Iterate graders.
+
+    :returns: grader class
+    """
+    for cls in [Grader, TextGrader]:
         yield cls
 
 
