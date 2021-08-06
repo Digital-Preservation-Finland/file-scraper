@@ -167,6 +167,17 @@ def test_charset_parameter(charset):
             "tests/data/application_warc/valid_0.17.warc",
             "fi-preservation-unacceptable-file-format"
         ),
+        # Recommended container file format
+        (
+            "tests/data/video_x-matroska/valid_4_ffv1_flac.mkv",
+            "fi-preservation-recommended-file-format"
+        ),
+        # Unacceptable container file format due to containing
+        # an audio stream
+        (
+            "tests/data/video_MP2T/valid__mpeg2_mp3.ts",
+            "fi-preservation-unacceptable-file-format"
+        ),
     ]
 )
 def test_grade(file_path, expected_grade):
