@@ -6,12 +6,12 @@ from file_scraper.csv.csv_scraper import CsvScraper
 from file_scraper.detectors import (FidoDetector, MagicDetector,
                                     PredefinedDetector)
 from file_scraper.dpx.dpx_scraper import DpxScraper
-from file_scraper.dummy.dummy_scraper import (
-    ScraperNotFound, DetectedMimeVersionScraper,
-    DetectedMimeVersionMetadataScraper)
+from file_scraper.dummy.dummy_scraper import (DetectedMimeVersionMetadataScraper,
+                                              DetectedMimeVersionScraper,
+                                              ScraperNotFound)
 from file_scraper.ffmpeg.ffmpeg_scraper import FFMpegScraper
 from file_scraper.ghostscript.ghostscript_scraper import GhostscriptScraper
-from file_scraper.graders import Grader, TextGrader
+from file_scraper.graders import ContainerGrader, Grader, TextGrader
 from file_scraper.jhove.jhove_scraper import (JHoveGifScraper,
                                               JHoveHtmlScraper,
                                               JHoveJpegScraper,
@@ -19,22 +19,23 @@ from file_scraper.jhove.jhove_scraper import (JHoveGifScraper,
                                               JHoveTiffScraper,
                                               JHoveWavScraper)
 from file_scraper.lxml_scraper.lxml_scraper import LxmlScraper
-from file_scraper.magic_scraper.magic_scraper import (MagicTextScraper,
-                                                      MagicBinaryScraper)
+from file_scraper.magic_scraper.magic_scraper import (MagicBinaryScraper,
+                                                      MagicTextScraper)
 from file_scraper.mediainfo.mediainfo_scraper import MediainfoScraper
 from file_scraper.office.office_scraper import OfficeScraper
 from file_scraper.pil.pil_scraper import PilScraper
 from file_scraper.pngcheck.pngcheck_scraper import PngcheckScraper
 from file_scraper.pspp.pspp_scraper import PsppScraper
 from file_scraper.schematron.schematron_scraper import SchematronScraper
-from file_scraper.textfile.textfile_scraper import (TextEncodingScraper,
-                                                    TextEncodingMetaScraper,
+from file_scraper.textfile.textfile_scraper import (TextEncodingMetaScraper,
+                                                    TextEncodingScraper,
                                                     TextfileScraper)
 from file_scraper.verapdf.verapdf_scraper import VerapdfScraper
 from file_scraper.vnu.vnu_scraper import VnuScraper
 from file_scraper.wand.wand_scraper import WandScraper
-from file_scraper.warctools.warctools_scraper import (
-    GzipWarctoolsScraper, WarctoolsFullScraper, WarctoolsScraper)
+from file_scraper.warctools.warctools_scraper import (GzipWarctoolsScraper,
+                                                      WarctoolsFullScraper,
+                                                      WarctoolsScraper)
 from file_scraper.xmllint.xmllint_scraper import XmllintScraper
 
 
@@ -54,7 +55,7 @@ def iter_graders():
 
     :returns: grader class
     """
-    for cls in [Grader, TextGrader]:
+    for cls in [Grader, TextGrader, ContainerGrader]:
         yield cls
 
 

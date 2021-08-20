@@ -1,12 +1,11 @@
 """File metadata scraper."""
 from __future__ import unicode_literals
 
-from file_scraper.defaults import UNAV
-from file_scraper.detectors import VerapdfDetector, MagicCharset
-from file_scraper.dummy.dummy_scraper import (FileExists,
-                                              MimeMatchScraper,
+from file_scraper.defaults import ACCEPTABLE, RECOMMENDED, UNACCEPTABLE, UNAV
+from file_scraper.detectors import MagicCharset, VerapdfDetector
+from file_scraper.dummy.dummy_scraper import (FileExists, MimeMatchScraper,
                                               ResultsMergeScraper)
-from file_scraper.iterator import iter_detectors, iter_scrapers, iter_graders
+from file_scraper.iterator import iter_detectors, iter_graders, iter_scrapers
 from file_scraper.jhove.jhove_scraper import JHoveUtf8Scraper
 from file_scraper.textfile.textfile_scraper import TextfileScraper
 from file_scraper.utils import encode_path, hexdigest
@@ -249,10 +248,21 @@ class Scraper(object):
             grade = UNAV
 
         else:
-            for grader in iter_graders():
-                if grader.is_supported(self.mimetype):
-                    grade = grader(self.mimetype,
-                                   self.version,
-                                   self.streams).grade()
+            grades = [grader(self.mimetype, self.version, self.streams).grade()
+                      for grader in iter_graders()
+                      if grader.is_supported(self.mimetype)]
+
+            # Multiple grades might be returned. For example, Grader
+            # (which only performs a quick MIME type check)
+            # might grade the main file format as RECOMMENDED, while
+            # ContainerGrader might give it a lower grade because the contained
+            # streams do not fulfill the additional requirements.
+            #
+            # In such cases, pick the lowest assigned grade.
+            grade = next(
+                grade for grade in
+                (UNACCEPTABLE, ACCEPTABLE, RECOMMENDED)
+                if grade in grades
+            )
 
         return grade

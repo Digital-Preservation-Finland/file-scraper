@@ -289,3 +289,197 @@ class TextGrader(Grader):
                 grade = UNACCEPTABLE
 
         return grade
+
+
+class ContainerGrader(Grader):
+    """
+    Grade file based on container formats and what they're allowed to contain.
+
+    Requirements based on DPRES File Formats specification 1.9.0, section 6,
+    tables 2 and 3.
+    """
+    recommended_formats = {
+        # Recommended
+        "video/avi": {
+            # Audio
+            ("audio/L16", UNAP),
+            ("audio/L8", UNAP),
+            ("audio/L20", UNAP),
+            ("audio/L24", UNAP),
+            # AVI containers are only recommended if they contain no
+            # video streams according to spec
+        },
+        "video/dv": {
+            ("audio/L16", UNAP),
+            ("audio/L8", UNAP),
+            ("audio/L20", UNAP),
+            ("audio/L24", UNAP),
+            # DV containers are only recommended if they contain no
+            # video streams according to spec
+        },
+        "video/x-matroska": {
+            # Audio
+            ("audio/L16", UNAP),
+            ("audio/L8", UNAP),
+            ("audio/L20", UNAP),
+            ("audio/L24", UNAP),
+            ("audio/flac", "1.2.1"),
+
+            # Video
+            ("video/x-ffv", "3"),
+        },
+        "video/MP2T": {
+            # Audio
+            ("audio/mp4", UNAP),
+
+            # Video
+            ("video/mp4", UNAP)
+        },
+        "video/mp4": {
+            # Audio
+            ("audio/mp4", UNAP),
+
+            # Video
+            ("video/mp4", UNAP)
+        },
+        "application/mxf": {
+            # Audio
+            ("audio/mp4", UNAP),
+            ("audio/L16", UNAP),
+            ("audio/L8", UNAP),
+            ("audio/L20", UNAP),
+            ("audio/L24", UNAP),
+
+            # Video
+            ("video/mp4", UNAP),
+            ("video/jpeg2000", UNAP),
+        },
+        "video/mj2": {
+            # Audio
+            ("audio/L16", UNAP),
+            ("audio/L8", UNAP),
+            ("audio/L20", UNAP),
+            ("audio/L24", UNAP),
+
+            # Video
+            ("video/jpeg2000", UNAP)
+        },
+        "video/quicktime": {
+            # Audio
+            ("audio/mp4", UNAP),
+            ("audio/L16", UNAP),
+            ("audio/L8", UNAP),
+            ("audio/L20", UNAP),
+            ("audio/L24", UNAP),
+
+            # Video
+            ("video/mp4", UNAP),
+            ("video/jpeg2000", UNAP),
+        }
+    }
+    acceptable_formats = {
+        # Acceptable
+        "video/x-ms-asf": {
+            # Audio
+            ("audio/x-ms-wma", "9"),
+
+            # Video
+            ("video/x-ms-wmv", "9"),
+        },
+        "video/avi": {
+            # Audio
+            ("audio/mpeg", "1"),
+            ("audio/mpeg", "2"),
+
+            # Video
+            ("video/dv", UNAP),
+            ("video/mpeg", "2"),  # H262 only
+        },
+        "video/dv": {
+            ("video/dv", UNAP)
+        },
+        "video/MP1S": {
+            # Audio
+            ("audio/mpeg", "1"),
+            ("audio/mpeg", "2"),
+
+            # Video
+            ("video/mpeg", "2"),  # H262 only
+        },
+        "video/MP2P": {
+            # Audio
+            ("audio/mpeg", "1"),
+            ("audio/mpeg", "2"),
+
+            # Video
+            ("video/mpeg", "2"),  # H262 only
+        },
+        "video/MP2T": {
+            ("video/mpeg", "2"),  # H262 only
+        },
+        "video/mp4": {
+            # Audio
+            ("audio/mpeg", "1"),
+            ("audio/mpeg", "2"),
+
+            # Video
+            ("video/mpeg", "2"),  # H262 only
+        },
+        "application/mxf": {
+            # Audio
+            ("audio/mpeg", "1"),
+            ("audio/mpeg", "2"),
+
+            # Video
+            ("video/dv", UNAP),
+            ("video/mpeg", "2"),  # Must be H262 only
+        },
+        "video/quicktime": {
+            # Audio
+            ("audio/mpeg", "1"),
+            ("audio/mpeg", "2"),
+
+            # Video
+            ("video/dv", UNAP),
+            ("video/mpeg", "2"),  # Must be H262 only
+        }
+    }
+
+    @classmethod
+    def is_supported(cls, mimetype):
+        """Check whether grader is supported with given mimetype."""
+        return (
+            mimetype in cls.recommended_formats
+            or mimetype in cls.acceptable_formats
+        )
+
+    def grade(self):
+        """Return digital preservation grade."""
+        # First stream should be the container
+        container = self.streams[0]
+        container_mimetype = container["mimetype"]
+
+        # Create a set of (mime_type, version) tuples
+        # This makes it trivial to check which grade should be assigned
+        # using set operations.
+        contained_formats = set(
+            (stream["mimetype"], stream["version"])
+            for index, stream in self.streams.items()
+            if index != 0
+        )
+
+        recommended = self.recommended_formats.get(container_mimetype, set())
+        acceptable = self.acceptable_formats.get(container_mimetype, set())
+
+        if len(contained_formats - recommended) == 0:
+            # Only contains recommended formats or contains nothing
+            # at all
+            grade = RECOMMENDED
+        elif len(contained_formats - recommended - acceptable) == 0:
+            # Contains at least one acceptable format
+            grade = ACCEPTABLE
+        else:
+            # Contains at least one unacceptable format
+            grade = UNACCEPTABLE
+
+        return grade

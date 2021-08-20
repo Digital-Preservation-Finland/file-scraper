@@ -595,7 +595,7 @@ def test_grading(fullname, mimetype, version):
     """Test grading for a valid test file.
 
     Test that file format is graded as recommended unless the file
-    is explicitly listed as acceptable of unacceptable.
+    is explicitly listed as acceptable or unacceptable.
     """
     if fullname in UNAV_VERSION:
         pytest.skip("File format version of file {} can not be defined."
