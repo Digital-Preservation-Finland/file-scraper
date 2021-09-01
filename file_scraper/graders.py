@@ -272,11 +272,6 @@ class TextGrader(Grader):
 
     allowed_charsets = ['ISO-8859-15', 'UTF-8', 'UTF-16', 'UTF-32']
 
-    @classmethod
-    def is_supported(cls, mimetype):
-        """Check whether grader is supported with given mimetype."""
-        return mimetype in cls.formats
-
     def grade(self):
         """Return digital preservation grade."""
         try:
