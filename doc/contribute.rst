@@ -20,6 +20,20 @@ See ``<scraper info X>`` from `README.rst <../README.rst>`_ for the content of t
 
 .. image:: scraper_tree.png
 
+Graders
+-------
+
+Graders are used to assign a digital preservation grade for a file that has been scraped, and define if the file is suitable for digital preservation.
+Graders are defined in ``./file_scraper/graders.py``.
+
+The graders inherit ``BaseGrader``, which exposes the following methods:
+
+    * MUST call ``super()`` during initialization, if separate initialization method is created.
+    * MUST implement ``is_supported(mimetype)`` to determine whether to grade the given file based on its MIME type.
+    * MUST implement ``grade()`` to perform the actual grading and return the grade. The returned grade must be one of the grade constants defined in ``file_scraper.DEFAULTS``.
+
+Each grader instance contains the ``mimetype``, ``version``, ``streams`` and ``scraper`` attributes that can be used to inspect the file and perform the grading.
+
 Scraper tools
 -------------
 
@@ -52,11 +66,11 @@ The metadata is represented by metadata model objects, e.g. ``GhostscriptMeta`` 
         * The key of the metadata element in ``streams`` will be the method name, and value is the return value of the method.
         * Metadata method MAY raise ``SkipElement`` from ``file_scraper.base``, if the methods needs to be omitted in collection phase. This may become handy with files containing different kinds of streams. Value ``(:unav)`` is returned when a scraper cannot determine the value of a metadata element and ``(:unap)`` when the metadata element is not applicable to the stream type.
         * Example of a metadata method::
-        
+
             @metadata
             def width(self):
                 return self._width
-                
+
     * MUST implement metadata method ``stream_type()``, returning e.g. "text", "image", "audio", "video", "videocontainer", "binary", if not implemented in the already existing base class.
     * MUST crash or log an error in unexpected event, such as due to missing 3rd party tool.
     * Metadata keys that are needed to win in the combination phase are flagged by ``important`` as part of metadata-decorator.

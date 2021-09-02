@@ -1,35 +1,45 @@
 """Tests for graders."""
-import pytest
+from collections import namedtuple
 
+import pytest
 from file_scraper.defaults import ACCEPTABLE, RECOMMENDED, UNACCEPTABLE
-from file_scraper.graders import Grader, TextGrader
+from file_scraper.graders import MIMEGrader, TextGrader
+
+FakeScraper = namedtuple("FakeScraper", ["mimetype", "version", "streams"])
 
 
 @pytest.mark.parametrize(
-    ('mimetype', 'version', 'expected_grade'),
+    ('scraper', 'expected_grade'),
     [
-        ('application/pdf', 'A-1a', RECOMMENDED),
-        ('application/pdf', '1.2', ACCEPTABLE),
-        ('application/pdf', 'foo', UNACCEPTABLE)
+        (FakeScraper('application/pdf', 'A-1a', {}), RECOMMENDED),
+        (FakeScraper('application/pdf', '1.2', {}), ACCEPTABLE),
+        (FakeScraper('application/pdf', 'foo', {}), UNACCEPTABLE)
     ]
 )
-def test_grader(mimetype, version, expected_grade):
+def test_mime_grader(scraper, expected_grade):
     """Test that Grader gives expected grade for file."""
-    grader = Grader(mimetype, version, streams={})
+    grader = MIMEGrader(scraper)
     assert grader.grade() == expected_grade
 
 
 @pytest.mark.parametrize(
-    ('mimetype', 'version', 'charset', 'expected_grade'),
+    ('scraper', 'expected_grade'),
     [
-        ('text/csv', '(:unap)', 'UTF-8', RECOMMENDED),
-        ('text/csv', 'foo', 'UTF-8', UNACCEPTABLE),
-        ('text/csv', '(:unap)', 'foo', UNACCEPTABLE)
+        (
+            FakeScraper('text/csv', '(:unap)', {0: {"charset": 'UTF-8'}}),
+            RECOMMENDED
+        ),
+        (
+            FakeScraper('text/csv', 'foo', {0: {'charset': 'UTF-8'}}),
+            UNACCEPTABLE
+        ),
+        (
+            FakeScraper('text/csv', '(:unap)', {0: {'charset': 'foo'}}),
+            UNACCEPTABLE
+        )
     ]
 )
-def test_text_grader(mimetype, version, charset, expected_grade):
+def test_text_grader(scraper, expected_grade):
     """Test that TextGrader gives expected grade for file."""
-    grader = TextGrader(mimetype,
-                        version,
-                        streams={0: {'charset': charset}})
+    grader = TextGrader(scraper)
     assert grader.grade() == expected_grade

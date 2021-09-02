@@ -4,7 +4,38 @@
 from file_scraper.defaults import UNAP, RECOMMENDED, ACCEPTABLE, UNACCEPTABLE
 
 
-class Grader():
+class BaseGrader():
+    """Base class for graders."""
+    def __init__(self, scraper):
+        """Initialize grader."""
+        self.scraper = scraper
+
+    @property
+    def mimetype(self):
+        """MIME type of the file to grade"""
+        return self.scraper.mimetype
+
+    @property
+    def version(self):
+        """MIME version of the file to grade"""
+        return self.scraper.version
+
+    @property
+    def streams(self):
+        """List of streams of the file to grade"""
+        return self.scraper.streams
+
+    @classmethod
+    def is_supported(cls, mimetype):
+        """Check whether grader is supported with given mimetype."""
+        raise NotImplementedError
+
+    def grade(self):
+        """Determine and return digital preservation grade for the file."""
+        raise NotImplementedError
+
+
+class MIMEGrader(BaseGrader):
     """Grade file based on mimetype and version."""
 
     formats = {
@@ -216,12 +247,6 @@ class Grader():
         }
     }
 
-    def __init__(self, mimetype, version, streams):
-        """Initialize grader."""
-        self.mimetype = mimetype
-        self.version = version
-        self.streams = streams
-
     @classmethod
     def is_supported(cls, mimetype):
         """Check whether grader is supported with given mimetype."""
@@ -237,7 +262,7 @@ class Grader():
         return grade
 
 
-class TextGrader(Grader):
+class TextGrader(BaseGrader):
     """Grade file based on mimetype, version and charset."""
 
     formats = {
@@ -272,6 +297,11 @@ class TextGrader(Grader):
 
     allowed_charsets = ['ISO-8859-15', 'UTF-8', 'UTF-16', 'UTF-32']
 
+    @classmethod
+    def is_supported(cls, mimetype):
+        """Check whether grader is supported with given mimetype."""
+        return mimetype in cls.formats
+
     def grade(self):
         """Return digital preservation grade."""
         try:
@@ -286,7 +316,7 @@ class TextGrader(Grader):
         return grade
 
 
-class ContainerGrader(Grader):
+class ContainerGrader(BaseGrader):
     """
     Grade file based on container formats and what they're allowed to contain.
 
