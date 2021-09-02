@@ -136,6 +136,11 @@ The following additional arguments for the Scraper are also possible:
         * Version: ``version=<version>``. If both MIME type and version are given, the normal version detection results are also ignored, and the user-supplied version is used and reported instead. Providing a version without MIME type has no effect.
         * Character encoding: ``charset=<charset>``. If the file is a text file, the file is validated using the given character encoding. Supported values are ``UTF-8``, ``UTF-16``, ``UTF-32`` and ``ISO-8859-15``. By default, the character encoding is detected. The detection is always a statistics-based evaluation and therefore it may sometimes give false results.
 
+File scraper can grade the file to determine how suitable it is for digital preservation.
+Possible values include ``fi-preservation-recommended-file-format``, ``fi-preservation-acceptable-file-format``, ``fi-preservation-bit-level-file-format-with-recommended``, ``fi-preservation-bit-level-file-format`` and ``fi-preservation-unacceptable-file-format``::
+
+    scraper.grade()
+
 Additionally, the following returns a boolean value True, if the file is a text file, and False otherwise::
 
     scraper.is_textfile()
