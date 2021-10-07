@@ -62,9 +62,9 @@ UNAP = "(:unap)"
 UNAV = "(:unav)"
 
 # Digital preservation grading
-RECOMMENDED = "fi-preservation-recommended-file-format"
-ACCEPTABLE = "fi-preservation-acceptable-file-format"
+RECOMMENDED = "fi-dpres-recommended-file-format"
+ACCEPTABLE = "fi-dpres-acceptable-file-format"
 BIT_LEVEL_WITH_RECOMMENDED \
-    = "fi-preservation-bit-level-file-format-with-recommended"
-BIT_LEVEL = "fi-preservation-bit-level-file-format"
-UNACCEPTABLE = "fi-preservation-unacceptable-file-format"
+    = "fi-dpres-bit-level-file-format-with-recommended"
+BIT_LEVEL = "fi-dpres-bit-level-file-format"
+UNACCEPTABLE = "fi-dpres-unacceptable-file-format"

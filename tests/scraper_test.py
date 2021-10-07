@@ -150,7 +150,7 @@ def test_charset_parameter(charset):
         # Recommended file format
         (
             "tests/data/text_plain/valid__ascii.txt",
-            "fi-preservation-recommended-file-format"
+            "fi-dpres-recommended-file-format"
         ),
         # File that does not exist
         (
@@ -165,18 +165,18 @@ def test_charset_parameter(charset):
         # Format version not accepted according to specification
         (
             "tests/data/application_warc/valid_0.17.warc",
-            "fi-preservation-unacceptable-file-format"
+            "fi-dpres-unacceptable-file-format"
         ),
         # Recommended container file format
         (
             "tests/data/video_x-matroska/valid_4_ffv1_flac.mkv",
-            "fi-preservation-recommended-file-format"
+            "fi-dpres-recommended-file-format"
         ),
         # Unacceptable container file format due to containing
         # an audio stream
         (
             "tests/data/video_MP2T/valid__mpeg2_mp3.ts",
-            "fi-preservation-unacceptable-file-format"
+            "fi-dpres-unacceptable-file-format"
         ),
     ]
 )
