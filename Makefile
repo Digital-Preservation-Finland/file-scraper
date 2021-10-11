@@ -6,8 +6,6 @@ all: info
 
 info:
 		@echo
-		@echo "PAS contract database"
-		@echo
 		@echo "Usage:"
 		@echo "  make clean             - Clean some temporary file"
 		@echo "  make test              - Run all unit tests"
