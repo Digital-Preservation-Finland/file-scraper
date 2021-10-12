@@ -508,28 +508,27 @@ class ContainerGrader(BaseGrader):
             if index != 0
         )
 
-        all_recommended = self.recommended_formats.get(
-            container_mimetype, set()
-        )
-        all_acceptable = self.acceptable_formats.get(
-            container_mimetype, set()
-        )
-        all_bit_level_recommended = self.bit_level_recommended_formats.get(
+        recommended = self.recommended_formats.get(container_mimetype, set())
+        acceptable = self.acceptable_formats.get(container_mimetype, set())
+        bit_level_recommended = self.bit_level_recommended_formats.get(
             container_mimetype, set()
         )
 
-        acceptable = contained_formats - all_recommended
-        bit_level_recommended = acceptable - all_acceptable
-        bit_level = bit_level_recommended - all_bit_level_recommended
+        formats_left_after_recommended = contained_formats - recommended
+        formats_left_after_acceptable = (
+            formats_left_after_recommended - acceptable
+        )
+        formats_left_after_bit_level_recommended = (
+            formats_left_after_acceptable - bit_level_recommended
+        )
 
-        if len(acceptable) == 0:
-            # Only contains recommended formats or contains nothing
-            # at all
+        if not formats_left_after_recommended:
+            # Only contains recommended formats or contains nothing at all
             grade = RECOMMENDED
-        elif len(bit_level_recommended) == 0:
+        elif not formats_left_after_acceptable:
             # Contains at least one acceptable format
             grade = ACCEPTABLE
-        elif len(bit_level) == 0:
+        elif not formats_left_after_bit_level_recommended:
             # Contains at least one bit_level_with_recommended format
             grade = BIT_LEVEL_WITH_RECOMMENDED
         else:
