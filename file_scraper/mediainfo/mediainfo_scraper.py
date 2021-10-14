@@ -74,6 +74,12 @@ class MediainfoScraper(BaseScraper):
                 mimetype = file_scraper.mediainfo.track_mimetype(track)
                 version = None
 
+            track_type = mediainfo.tracks[index].track_type.lower()
+            if track_type in ["audio", "video"] and not mimetype:
+                self._errors.append(
+                    "Could not identify {} stream mimetype".format(track_type)
+                )
+
             # Add track as stream
             self.streams += list(
                 self.iterate_models(
