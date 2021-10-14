@@ -13,7 +13,8 @@ from file_scraper.mediainfo.mediainfo_model import (
     LpcmMediainfoMeta,
     MkvMediainfoMeta,
     MpegMediainfoMeta,
-    WavMediainfoMeta
+    WavMediainfoMeta,
+    UnknownStreamFormatMeta
 )
 from file_scraper.utils import decode_path
 
@@ -34,7 +35,8 @@ class MediainfoScraper(BaseScraper):
         LpcmMediainfoMeta,
         MkvMediainfoMeta,
         MpegMediainfoMeta,
-        WavMediainfoMeta
+        WavMediainfoMeta,
+        UnknownStreamFormatMeta
     ]
 
     def scrape_file(self):
@@ -72,17 +74,15 @@ class MediainfoScraper(BaseScraper):
                 mimetype = file_scraper.mediainfo.track_mimetype(track)
                 version = None
 
-            # Add stream if track was detected as a format that has a
-            # mimetype
-            if mimetype:
-                self.streams += list(
-                    self.iterate_models(
-                        mimetype=mimetype,
-                        version=version,
-                        tracks=mediainfo.tracks,
-                        index=index
-                    )
+            # Add track as stream
+            self.streams += list(
+                self.iterate_models(
+                    mimetype=mimetype,
+                    version=version,
+                    tracks=mediainfo.tracks,
+                    index=index
                 )
+            )
 
         self._check_supported(allow_unav_version=True, allow_unap_version=True)
 

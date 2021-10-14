@@ -50,12 +50,15 @@ class BaseMediainfoMeta(BaseMeta):
         if self._container and self._stream == self._container:
             return "videocontainer"
 
-        if self._stream.track_type == "General":
-            # General tracks are not streams, unless they are
-            # videocontainers
-            return None
+        if self._stream.track_type == "Audio":
+            return 'audio'
 
-        return self._stream.track_type.lower()
+        if self._stream.track_type == "Video":
+            return 'video'
+
+        # For example "General" tracks are not streams, unless they are
+        # videocontainers
+        return None
 
     @metadata()
     def index(self):
@@ -502,3 +505,10 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
         if self._stream.format_version is not None:
             return six.text_type(self._stream.format_version)[-1]
         return UNAV
+
+
+class UnknownStreamFormatMeta(BaseMediainfoMeta):
+    """Scraper for streams that were not detected."""
+
+    _supported = {None: [""]}
+    _allow_versions = True  # Allow any version
