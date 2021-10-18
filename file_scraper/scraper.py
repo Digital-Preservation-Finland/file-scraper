@@ -1,7 +1,13 @@
 """File metadata scraper."""
 from __future__ import unicode_literals
 
-from file_scraper.defaults import ACCEPTABLE, RECOMMENDED, UNACCEPTABLE, UNAV
+from file_scraper.defaults import (
+    ACCEPTABLE,
+    BIT_LEVEL_WITH_RECOMMENDED,
+    RECOMMENDED,
+    UNACCEPTABLE,
+    UNAV
+)
 from file_scraper.detectors import MagicCharset, VerapdfDetector
 from file_scraper.dummy.dummy_scraper import (FileExists, MimeMatchScraper,
                                               ResultsMergeScraper)
@@ -261,7 +267,12 @@ class Scraper(object):
             # In such cases, pick the lowest assigned grade.
             grade = next(
                 grade for grade in
-                (UNACCEPTABLE, ACCEPTABLE, RECOMMENDED)
+                (
+                    UNACCEPTABLE,
+                    BIT_LEVEL_WITH_RECOMMENDED,
+                    ACCEPTABLE,
+                    RECOMMENDED
+                )
                 if grade in grades
             )
 

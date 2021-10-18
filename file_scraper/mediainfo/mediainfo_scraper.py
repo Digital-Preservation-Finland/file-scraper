@@ -14,6 +14,7 @@ from file_scraper.mediainfo.mediainfo_model import (
     MkvMediainfoMeta,
     MpegMediainfoMeta,
     WavMediainfoMeta,
+    ProResMediainfoMeta,
     UnknownStreamFormatMeta
 )
 from file_scraper.utils import decode_path
@@ -36,6 +37,7 @@ class MediainfoScraper(BaseScraper):
         MkvMediainfoMeta,
         MpegMediainfoMeta,
         WavMediainfoMeta,
+        ProResMediainfoMeta,
         UnknownStreamFormatMeta
     ]
 
@@ -74,7 +76,7 @@ class MediainfoScraper(BaseScraper):
                 mimetype = file_scraper.mediainfo.track_mimetype(track)
                 version = None
 
-            track_type = mediainfo.tracks[index].track_type.lower()
+            track_type = track.track_type.lower()
             if track_type in ["audio", "video"] and not mimetype:
                 self._errors.append(
                     "Could not identify {} stream mimetype".format(track_type)

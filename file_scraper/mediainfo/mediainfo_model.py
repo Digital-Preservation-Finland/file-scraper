@@ -507,6 +507,22 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
         return UNAV
 
 
+class ProResMediainfoMeta(BaseMediainfoMeta):
+    """Scraper for ProRes streams."""
+
+    _supported = {"video/x.fi-dpres.prores": [""]}
+    _allow_versions = True  # Allow any version
+
+    @metadata()
+    def version(self):
+        """Return version of stream.
+
+        ProRes streams do not have version, and therefore the result is
+        unapplicable (:unap).
+        """
+        return UNAP
+
+
 class UnknownStreamFormatMeta(BaseMediainfoMeta):
     """Scraper for streams that were not detected."""
 

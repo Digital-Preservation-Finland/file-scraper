@@ -75,7 +75,11 @@ FORMATS = [
     {
         "mimetype": "video/x-ffv",
         "properties": {"format": "FFV1"}
-    }
+    },
+    {
+        "mimetype": "video/x.fi-dpres.prores",
+        "properties": {"format": "ProRes"}
+    },
 ]
 
 
