@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from file_scraper.defaults import (
     ACCEPTABLE,
+    BIT_LEVEL,
     BIT_LEVEL_WITH_RECOMMENDED,
     RECOMMENDED,
     UNACCEPTABLE,
@@ -195,6 +196,14 @@ class Scraper(object):
         self.version = self.streams[0]["version"]
 
         self._check_mime(check_wellformed)
+
+        # Unacceptable or bit-level grades should never be marked well-formed
+        if self.well_formed and self.grade() in [
+            UNACCEPTABLE,
+            BIT_LEVEL,
+            BIT_LEVEL_WITH_RECOMMENDED
+        ]:
+            self.well_formed = None
 
     def detect_filetype(self):
         """
