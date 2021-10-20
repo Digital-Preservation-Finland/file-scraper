@@ -289,7 +289,7 @@ class BaseMediainfoMeta(BaseMeta):
 
 
 class ContainerMediainfoMeta(BaseMediainfoMeta):
-    """Scraper for container streams."""
+    """Metadata model for container streams."""
 
     _supported = {"video/quicktime": [""],
                   "video/MP1S": [""],
@@ -309,7 +309,7 @@ class ContainerMediainfoMeta(BaseMediainfoMeta):
 
 
 class MkvMediainfoMeta(BaseMediainfoMeta):
-    """Scraper for Matroska AV container."""
+    """Metadata model for Matroska AV container."""
 
     _supported = {"video/x-matroska": ["4"]}
     _allow_versions = True  # Allow any version
@@ -324,7 +324,7 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
 
 
 class FfvMediainfoMeta(BaseMediainfoMeta):
-    """Scraper for FF Video Codec 1."""
+    """Metadata model for FF Video Codec 1."""
 
     _supported = {"video/x-ffv": [""]}
     _allow_versions = True  # Allow any version
@@ -344,7 +344,7 @@ class FfvMediainfoMeta(BaseMediainfoMeta):
 
 
 class DvMediainfoMeta(BaseMediainfoMeta):
-    """Scraper for Digital Video."""
+    """Metadata model for Digital Video."""
 
     _supported = {"video/dv": [""]}
     _allow_versions = True  # Allow any version
@@ -360,7 +360,7 @@ class DvMediainfoMeta(BaseMediainfoMeta):
 
 
 class LpcmMediainfoMeta(BaseMediainfoMeta):
-    """Scraper for Linear Pulse-Code Modulation audio."""
+    """Metadata model for Linear Pulse-Code Modulation audio."""
 
     _supported = {"audio/L8": [""],
                   "audio/L16": [""],
@@ -387,7 +387,7 @@ class LpcmMediainfoMeta(BaseMediainfoMeta):
 
 
 class FlacMediainfoMeta(BaseMediainfoMeta):
-    """Scraper for FLAC audio."""
+    """Metadata model for FLAC audio."""
 
     _supported = {"audio/flac": ["1.2.1"]}
     _allow_versions = True  # Allow any version
@@ -408,7 +408,7 @@ class FlacMediainfoMeta(BaseMediainfoMeta):
 
 
 class WavMediainfoMeta(BaseMediainfoMeta):
-    """Scraper for WAV audio."""
+    """Metadata model for WAV audio."""
 
     _supported = {"audio/x-wav": ["2", ""]}
     _allow_versions = True  # Allow any version
@@ -443,7 +443,7 @@ class WavMediainfoMeta(BaseMediainfoMeta):
 
 
 class MpegMediainfoMeta(BaseMediainfoMeta):
-    """Scraper for MPEG audio."""
+    """Metadata model for MPEG audio."""
 
     # Supported mimetypes
     _supported = {"audio/mpeg": ["1", "2"],
@@ -507,8 +507,9 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
         return UNAV
 
 
-class ProResMediainfoMeta(BaseMediainfoMeta):
-    """Scraper for ProRes streams."""
+class VersionlessFormatMeta(BaseMediainfoMeta):
+    """Generic metadata model for stream formats, which do not have a version.
+    """
 
     _supported = {"video/x.fi-dpres.prores": [""]}
     _allow_versions = True  # Allow any version
@@ -517,14 +518,14 @@ class ProResMediainfoMeta(BaseMediainfoMeta):
     def version(self):
         """Return version of stream.
 
-        ProRes streams do not have version, and therefore the result is
-        unapplicable (:unap).
+        Result is always unapplicable (:unap), because these formats do not
+        have a version.
         """
         return UNAP
 
 
 class UnknownStreamFormatMeta(BaseMediainfoMeta):
-    """Scraper for streams that were not detected."""
+    """Metadata model for streams that were not detected."""
 
     _supported = {None: [""]}
     _allow_versions = True  # Allow any version

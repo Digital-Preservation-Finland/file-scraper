@@ -14,7 +14,7 @@ from file_scraper.mediainfo.mediainfo_model import (
     MkvMediainfoMeta,
     MpegMediainfoMeta,
     WavMediainfoMeta,
-    ProResMediainfoMeta,
+    VersionlessFormatMeta,
     UnknownStreamFormatMeta
 )
 from file_scraper.utils import decode_path
@@ -37,7 +37,7 @@ class MediainfoScraper(BaseScraper):
         MkvMediainfoMeta,
         MpegMediainfoMeta,
         WavMediainfoMeta,
-        ProResMediainfoMeta,
+        VersionlessFormatMeta,
         UnknownStreamFormatMeta
     ]
 
