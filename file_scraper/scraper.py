@@ -278,6 +278,7 @@ class Scraper(object):
                 grade for grade in
                 (
                     UNACCEPTABLE,
+                    BIT_LEVEL,
                     BIT_LEVEL_WITH_RECOMMENDED,
                     ACCEPTABLE,
                     RECOMMENDED
