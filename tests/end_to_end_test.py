@@ -21,6 +21,8 @@ from six import iteritems
 from file_scraper.defaults import (UNAP,
                                    UNAV,
                                    UNACCEPTABLE,
+                                   BIT_LEVEL,
+                                   BIT_LEVEL_WITH_RECOMMENDED,
                                    ACCEPTABLE,
                                    RECOMMENDED)
 from file_scraper.scraper import Scraper
@@ -202,13 +204,22 @@ ACCEPTABLE_FILES = [
     "tests/data/video_avi/valid__mpeg2_mp3.avi",
 ]
 
+BIT_LEVEL_WITH_RECOMMENDED_FILES = [
+    "tests/data/video_quicktime/valid__prores_lpcm8.mov"
+]
+
+BIT_LEVEL_FILES = []
+
 UNACCEPTABLE_FILES = [
     # WARC 0.17 and 0.18 are not accepted versions
     "tests/data/application_warc/valid_0.17.warc",
     "tests/data/application_warc/valid_0.18.warc",
 
     # MP2T container is not allowed to contain an audio stream
-    "tests/data/video_MP2T/valid__mpeg2_mp3.ts"
+    "tests/data/video_MP2T/valid__mpeg2_mp3.ts",
+
+    # Acceptable container with a cinepak stream, which is not supported
+    "tests/data/video_quicktime/invalid__cinepak_lpcm8.mov"
 ]
 
 
@@ -318,7 +329,7 @@ def test_invalid_combined(fullname, mimetype, version):
             pytest.skip(("[%s] mimetype mismatches with scraper "
                          "and scraper not found") % fullname)
 
-    assert scraper.well_formed is False  # Could be also None (wrong)
+    assert not scraper.well_formed # Should return either False or None
     assert scraper.mimetype in [mimetype, UNAV] or (
             fullname in DIFFERENT_MIMETYPE_INVALID)
 
@@ -615,6 +626,10 @@ def test_grading(fullname, mimetype, version):
 
     if fullname in UNACCEPTABLE_FILES:
         expected_grade = UNACCEPTABLE
+    elif fullname in BIT_LEVEL_FILES:
+        expected_grade = BIT_LEVEL
+    elif fullname in BIT_LEVEL_WITH_RECOMMENDED_FILES:
+        expected_grade = BIT_LEVEL_WITH_RECOMMENDED
     elif fullname in ACCEPTABLE_FILES:
         expected_grade = ACCEPTABLE
     else:
