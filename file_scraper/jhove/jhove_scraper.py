@@ -134,9 +134,9 @@ class JHovePdfScraper(JHoveScraperBase):
             self._messages = ["JHove does not support PDF 1.7: "
                               "All errors and messages ignored."]
         else:
-            super()._check_supported(allow_unav_mime,
-                                   allow_unav_version,
-                                   allow_unap_version)
+            super(JHovePdfScraper, self)._check_supported(allow_unav_mime,
+                                                          allow_unav_version,
+                                                          allow_unap_version)
 
 
 class JHoveWavScraper(JHoveScraperBase):
