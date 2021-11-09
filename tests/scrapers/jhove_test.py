@@ -259,20 +259,29 @@ def test_scraper_pdf(filename, result_dict, evaluate_scraper):
         evaluate_scraper(scraper, correct)
 
 
-def test_scraper_invalid_pdfversion():
-    """Test that wrong version is detected."""
-    for ver in ["1.2", "1.3", "1.4", "1.5", "1.6", "A-1a"]:
-        scraper = JHovePdfScraper(
-            filename="tests/data/application_pdf/invalid_X_wrong_version"
-                     ".pdf".replace("X", ver),
-            mimetype="application/pdf")
-        scraper.scrape_file()
-        found_ver = {"1.2": "1.0", "1.3": "1.0", "1.4": "1.7", "1.5": "1.1",
-                     "1.6": "1.1", "A-1a": "1.0"}
-        assert partial_message_included(
-            "MIME type application/pdf with version {} is not "
-            "supported.".format(found_ver[ver]), scraper.errors())
-        assert not scraper.well_formed
+@pytest.mark.parametrize(
+    ["version_in_filename", "found_version"],
+    [
+        ["1.2", "1.0"],
+        ["1.3", "1.0"],
+        ["1.4", "1.7"],
+        ["1.5", "1.1"],
+        ["1.6", "1.1"],
+        ["A-1a", "1.0"],
+    ])
+def test_scraper_invalid_pdfversion(version_in_filename, found_version):
+    """
+    Test that unsupported version is detected.
+    """
+    scraper = JHovePdfScraper(
+        filename="tests/data/application_pdf/invalid_X_wrong_version"
+                 ".pdf".replace("X", version_in_filename),
+        mimetype="application/pdf")
+    scraper.scrape_file()
+    assert partial_message_included(
+        "MIME type application/pdf with version {} is not "
+        "supported.".format(found_version), scraper.errors())
+    assert not scraper.well_formed
 
 
 @pytest.mark.parametrize(
