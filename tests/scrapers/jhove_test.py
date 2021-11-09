@@ -259,12 +259,29 @@ def test_scraper_pdf(filename, result_dict, evaluate_scraper):
         evaluate_scraper(scraper, correct)
 
 
+def test_pdf_17_scraping_result_ignored():
+    """
+    Test that JHovePdfScraper ignores pdf 1.7 scraping results.
+
+    JHove does not support PDF version 1.7, but before running the scrapers, we
+    don't know what the exact version is. Thus, in case we encounter a PDF 1.7,
+    we must ignore the error messages normally produced by JHove and instead
+    log a message letting the user know that the scraping result from JHove was
+    ignored.
+    """
+    scraper = JHovePdfScraper(
+        filename="tests/data/application_pdf/valid_1.7.pdf",
+        mimetype="application/pdf")
+    scraper.scrape_file()
+    assert ("JHove does not support PDF 1.7: All errors and messages ignored."
+            in scraper.messages())
+
+
 @pytest.mark.parametrize(
     ["version_in_filename", "found_version"],
     [
         ["1.2", "1.0"],
         ["1.3", "1.0"],
-        ["1.4", "1.7"],
         ["1.5", "1.1"],
         ["1.6", "1.1"],
         ["A-1a", "1.0"],
