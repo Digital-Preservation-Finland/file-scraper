@@ -122,6 +122,22 @@ class JHovePdfScraper(JHoveScraperBase):
     _jhove_module = "PDF-hul"
     _supported_metadata = [JHovePdfMeta]
 
+    def _check_supported(self, allow_unav_mime=False,
+                         allow_unav_version=False,
+                         allow_unap_version=False):
+
+        mimetype = self.streams[0].mimetype()
+        version = self.streams[0].version()
+
+        if mimetype == "application/pdf" and version == "1.7":
+            self._errors = []
+            self._messages = ["JHove does not support PDF 1.7: "
+                              "All errors and messages ignored."]
+        else:
+            super()._check_supported(allow_unav_mime,
+                                   allow_unav_version,
+                                   allow_unap_version)
+
 
 class JHoveWavScraper(JHoveScraperBase):
     """Variables for scraping wav files."""
