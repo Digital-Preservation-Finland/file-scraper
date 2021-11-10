@@ -19,6 +19,7 @@ class SkipElementException(Exception):
     other purposes already.
     """
 
+
 class UnknownEncodingError(Exception):
     """Exception to tell that the used text encoding is unknown
     or that the decoding of a text was otherwise unsuccessful.

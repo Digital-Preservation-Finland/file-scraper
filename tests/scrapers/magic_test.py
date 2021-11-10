@@ -71,14 +71,14 @@ This module tests that:
     - Made up MIME type with any version is not supported
     - When full scraping is not done, these combinations are supported only
       for text files.
-"""
+"""  # noqa  (it's neater to have long lines than to break mimetypes)
+
 from __future__ import unicode_literals
 
 import pytest
 
 from file_scraper.defaults import UNAV
 from file_scraper.magic_scraper.magic_model import (HtmlFileMagicMeta,
-                                                    OfficeFileMagicMeta,
                                                     JpegFileMagicMeta)
 from file_scraper.magic_scraper.magic_scraper import (MagicTextScraper,
                                                       MagicBinaryScraper)
@@ -176,9 +176,9 @@ def test_scraper_valid(filename, mimetype, charset, scraper_class,
         ("invalid_1.1_missing_data.odp",
          "application/vnd.oasis.opendocument.presentation"),
         ("invalid_97-2003_missing_data.ppt", "application/vnd.ms-powerpoint"),
-        ("invalid_2007 onwards_missing_data.pptx", "application/vnd.openxml"
-                                           "formats-officedocument."
-                                           "presentationml.presentation"),
+        ("invalid_2007 onwards_missing_data.pptx",
+         "application/vnd.openxmlformats-officedocument.presentationml."
+         "presentation"),
         ("invalid_1.1_missing_data.ods",
          "application/vnd.oasis.opendocument.spreadsheet"),
         ("invalid_8X_missing_data.xls", "application/vnd.ms-excel"),

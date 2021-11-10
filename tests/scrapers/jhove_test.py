@@ -528,14 +528,15 @@ def test_is_supported_utf8(mime, ver, class_):
 
 @pytest.mark.parametrize(
     ["filename", "mimetype", "charset", "well_formed"],
-    [("tests/data/application_xhtml+xml/valid_1.0.xhtml",
-      "application/xhtml+xml", "UTF-8", True),
-     ("tests/data/application_xhtml+xml/valid_1.0.xhtml",
-      "application/xhtml+xml", "ISO-8859-15", False),
-     ("tests/data/text_html/valid_4.01.html", "text/html", "UTF-8", True),
-     ("tests/data/text_html/valid_4.01.html", "text/html", "ISO-8859-15",
-      False),
-     ("tests/data/text_html/valid_4.01.html", "text/html", None, False)
+    [
+        ("tests/data/application_xhtml+xml/valid_1.0.xhtml",
+         "application/xhtml+xml", "UTF-8", True),
+        ("tests/data/application_xhtml+xml/valid_1.0.xhtml",
+         "application/xhtml+xml", "ISO-8859-15", False),
+        ("tests/data/text_html/valid_4.01.html", "text/html", "UTF-8", True),
+        ("tests/data/text_html/valid_4.01.html", "text/html", "ISO-8859-15",
+         False),
+        ("tests/data/text_html/valid_4.01.html", "text/html", None, False),
     ]
 )
 def test_charset(filename, mimetype, charset, well_formed):

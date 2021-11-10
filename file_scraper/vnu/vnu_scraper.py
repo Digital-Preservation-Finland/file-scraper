@@ -17,7 +17,8 @@ class VnuScraper(BaseScraper):
 
     def scrape_file(self):
         """Scrape file using vnu.jar."""
-        filterfile = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'vnu_filters.txt')
+        filterfile = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                  'vnu_filters.txt')
         shell = Shell([
             "java", "-jar", VNU_PATH, "--verbose",
             "--filterfile", filterfile,

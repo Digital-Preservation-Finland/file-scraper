@@ -81,13 +81,14 @@ def test_is_supported_deny():
 
 @pytest.mark.parametrize(
     ["filename", "mimetype", "charset", "well_formed"],
-    [("tests/data/text_xml/valid_1.0_xsd.xml", "text/xml", "UTF-8", True),
-     ("tests/data/text_xml/valid_1.0_xsd.xml", "text/xml", "ISO-8859-15",
-      False),
-     ("tests/data/text_html/valid_5.0.html", "text/html", "UTF-8", True),
-     ("tests/data/text_html/valid_5.0.html", "text/html", "ISO-8859-15",
-      False),
-     ("tests/data/text_xml/valid_1.0_xsd.xml", "text/xml", None, False)
+    [
+        ("tests/data/text_xml/valid_1.0_xsd.xml", "text/xml", "UTF-8", True),
+        ("tests/data/text_xml/valid_1.0_xsd.xml", "text/xml", "ISO-8859-15",
+         False),
+        ("tests/data/text_html/valid_5.0.html", "text/html", "UTF-8", True),
+        ("tests/data/text_html/valid_5.0.html", "text/html", "ISO-8859-15",
+         False),
+        ("tests/data/text_xml/valid_1.0_xsd.xml", "text/xml", None, False),
     ]
 )
 def test_charset(filename, mimetype, charset, well_formed):

@@ -25,7 +25,8 @@ This module tests that:
       the version.
     - A made up MIME type is not supported.
     - Without well-formedness check, none of these MIME types are supported.
-"""
+"""  # noqa  (it's neater to have long lines than to break mimetypes)
+
 from __future__ import unicode_literals
 
 import os

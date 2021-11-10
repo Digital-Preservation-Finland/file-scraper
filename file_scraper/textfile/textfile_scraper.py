@@ -137,9 +137,9 @@ class TextEncodingScraper(BaseScraper):
     """
     _supported_metadata = [TextEncodingMeta]
     _only_wellformed = True
-    _chunksize = 20*1024**2  # chunk size
-    _limit = 100*1024**2  # Limit file read in MB, 0 = unlimited
-                          # _limit must be divisible with _chunksize
+    _chunksize = 20*1024**2
+    # Limit file read in MB, 0 = unlimited. Must be divisible by _chunksize
+    _limit = 100*1024**2
 
     def __init__(self, filename, mimetype, version=None, params=None):
         """
