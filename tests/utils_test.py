@@ -236,7 +236,7 @@ def test_strip_zeros(float_str, expected_output):
     assert strip_zeros(float_str) == expected_output
 
 
-class MetaTest(object):
+class MetaTest():
     """A collection of metadata methods for testing purposes."""
 
     def __init__(self, value):

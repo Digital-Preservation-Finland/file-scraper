@@ -6,6 +6,10 @@ import abc
 from file_scraper.defaults import UNAP, UNAV
 from file_scraper.utils import metadata, is_metadata
 
+# Object inheritance is needed as long as we support Python 2 to explicitly use
+# new-style classes.
+# pylint: disable=useless-object-inheritance
+
 
 class BaseScraper(object):
     """Base scraper implements common methods for all scrapers."""
