@@ -139,7 +139,7 @@ class TextEncodingScraper(BaseScraper):
     _only_wellformed = True
     _chunksize = 20*1024**2
     # Limit file read in MB, 0 = unlimited. Must be divisible by _chunksize
-    _limit = 100*1024**2
+    _limit = 5*_chunksize
 
     def __init__(self, filename, mimetype, version=None, params=None):
         """
