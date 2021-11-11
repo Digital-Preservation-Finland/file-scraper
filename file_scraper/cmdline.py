@@ -14,7 +14,6 @@ from file_scraper.utils import ensure_text
 @click.group()
 def cli():
     """Scrape files"""
-    pass
 
 
 # pylint: disable=too-many-arguments
@@ -120,6 +119,10 @@ def _extra_options_to_dict(args):
             try:
                 value = args[next_option_index + 1]
             except IndexError:
+                # ClickException is a special type of exception that signals to
+                # the user that not everything went well. No need for the
+                # enhanced stack trace there.
+                # pylint: disable=raise-missing-from
                 raise click.ClickException(
                     "No value found for parameter '{}'".format(key))
 
