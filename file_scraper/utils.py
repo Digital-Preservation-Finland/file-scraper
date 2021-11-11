@@ -394,13 +394,15 @@ def iter_utf_bytes(file_handle, chunksize, charset):
         for params in sequence_params:
 
             for index in params["indexes"]:
+
+                if len(chunk) < index:
+                    continue
+
                 try:
                     sequence_char = ord(chunk[-index])
                 except TypeError:
                     sequence_char = chunk[-index]
-                if len(chunk) >= index and \
-                        sequence_char >= params["smallest"] and \
-                        sequence_char <= params["largest"]:
+                if params["smallest"] <= sequence_char <= params["largest"]:
                     if possible_le and index == 1:
                         index = index + 1  # Move index left for little endian
                     return chunk[:-index], chunk[-index:]
