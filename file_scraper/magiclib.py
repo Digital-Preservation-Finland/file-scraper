@@ -59,7 +59,8 @@ def magiclib():
               "file command library is older." % MAGIC_LIBRARY,
               file=sys.stderr)
     try:
-        import magic as magic
+        # pylint: disable=import-outside-toplevel
+        import magic
         return magic
     except ImportError:
         pass
