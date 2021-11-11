@@ -1,0 +1,10 @@
+[MESSAGES CONTROL]
+
+# Explanations for the ignored messages:
+# consider-using-f-string:
+# As long as we support Python 2, we cannot use f-strings. This can be removed
+# when Python 2 support is dropped.
+#
+# duplicate-code:
+# Scraper contains pretty much intentional boilerplate.
+disable=consider-using-f-string, duplicate-code
