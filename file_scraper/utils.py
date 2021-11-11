@@ -46,7 +46,7 @@ def encode_path(filename):
     """
     if isinstance(filename, six.text_type):
         return filename.encode(encoding=sys.getfilesystemencoding())
-    elif isinstance(filename, six.binary_type):
+    if isinstance(filename, six.binary_type):
         return filename
 
     raise TypeError("Value is not a (byte) string")
@@ -191,10 +191,10 @@ def ensure_text(s, encoding="utf-8", errors="strict"):
     # pylint: disable=invalid-name
     if isinstance(s, six.binary_type):
         return s.decode(encoding, errors)
-    elif isinstance(s, six.text_type):
+    if isinstance(s, six.text_type):
         return s
-    else:
-        raise TypeError("not expecting type '{}'".format(type(s)))
+
+    raise TypeError("not expecting type '{}'".format(type(s)))
 
 
 def _merge_to_stream(stream, method, lose, importants):
@@ -223,7 +223,7 @@ def _merge_to_stream(stream, method, lose, importants):
     if method_name not in stream:
         stream[method_name] = method_value
         return
-    elif method_value in lose:
+    if method_value in lose:
         return
     if stream[method_name] == method_value:
         return

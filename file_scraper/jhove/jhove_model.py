@@ -280,9 +280,9 @@ class JHoveWavMeta(JHoveBaseMeta):
             return UNAV
         if "RF64" in get_field(self._report, "profile"):
             return UNAV
-        elif "BWF" in get_field(self._report, "profile"):
+        if "BWF" in get_field(self._report, "profile"):
             return "2"
-        elif "PCMWAVEFORMAT" in get_field(self._report, "profile"):
+        if "PCMWAVEFORMAT" in get_field(self._report, "profile"):
             return UNAP
 
         return UNAV

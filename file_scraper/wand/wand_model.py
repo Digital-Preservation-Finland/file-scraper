@@ -133,7 +133,7 @@ class WandTiffMeta(WandImageMeta):
             if key.startswith("tiff:endian"):
                 if value == "msb":
                     return "big endian"
-                elif value == "lsb":
+                if value == "lsb":
                     return "little endian"
 
         raise ValueError("Unsupported byte order reported by Wand.")

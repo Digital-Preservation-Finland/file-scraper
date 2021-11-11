@@ -82,8 +82,8 @@ class TextEncodingMeta(BaseMeta):
         """
         if self._predefined_mimetype == "text/plain" and self._well_formed:
             return "text/plain"
-        else:
-            return UNAV
+
+        return UNAV
 
     @metadata()
     def version(self):
