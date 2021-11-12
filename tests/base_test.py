@@ -71,7 +71,6 @@ class BaseDetectorBasic(BaseDetector):
     # pylint: disable=too-few-public-methods
     def detect(self):
         """Do not detect anything"""
-        pass
 
 
 @pytest.mark.parametrize(
@@ -224,6 +223,8 @@ def test_tools(tools_given, tools_expected):
     """Tests that self.tools outputs the expected sring for
     given tools.
     """
+    # We are intentionally altering the private property in this test.
+    # pylint: disable=protected-access
     scraper = BaseScraperBasic("testfilename", "test/mimetype")
     if tools_given:
         for tool in tools_given:

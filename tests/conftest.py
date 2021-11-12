@@ -10,6 +10,9 @@ from tests.common import partial_message_included
 from file_scraper.base import BaseMeta
 from file_scraper.utils import metadata
 
+# Pylint does not understand pytest fixtures
+# pylint: disable=redefined-outer-name
+
 
 @pytest.yield_fixture(scope="function")
 def testpath():
