@@ -51,7 +51,7 @@ class MediainfoScraper(BaseScraper):
             return
         self._messages.append("The file was analyzed successfully.")
 
-        for index in range(len(mediainfo.tracks)):
+        for index, track in enumerate(mediainfo.tracks):
 
             # Use predefined mimetype/version for first stream, and
             # detected mimetype for other streams
@@ -69,9 +69,7 @@ class MediainfoScraper(BaseScraper):
                 version = None
 
             else:
-                mimetype = file_scraper.mediainfo.track_mimetype(
-                    mediainfo.tracks[index]
-                )
+                mimetype = file_scraper.mediainfo.track_mimetype(track)
                 version = None
 
             # Add stream if track was detected as a format that has a
