@@ -134,7 +134,7 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
     """
     correct = parse_results(filename, "image/tiff",
                             result_dict, True)
-    for index in range(0, len(correct.streams)):
+    for index, _ in enumerate(correct.streams):
         correct.streams[index]["compression"] = "zip"
         correct.streams[index]["byte_order"] = "little endian"
         correct.streams[index]["mimetype"] = \

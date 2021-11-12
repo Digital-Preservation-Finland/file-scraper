@@ -104,7 +104,7 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
     scraper.scrape_file()
 
     if correct.well_formed:
-        for index in range(0, len(correct.streams)):
+        for index, _ in enumerate(correct.streams):
             correct.streams[index]["version"] = UNAV
         evaluate_scraper(scraper, correct)
     else:

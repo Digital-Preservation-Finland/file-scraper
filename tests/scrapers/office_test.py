@@ -147,12 +147,12 @@ def test_parallel_validation(filename, mimetype):
     """
 
     number = 3
-    pool = Pool(number)
-    results = [pool.apply_async(_scrape, (filename, mimetype))
-               for _ in range(number)]
+    with Pool(number) as pool:
+        results = [pool.apply_async(_scrape, (filename, mimetype))
+                   for _ in range(number)]
 
-    for result in results:
-        assert result.get(timeout=5)
+        for result in results:
+            assert result.get(timeout=5)
 
 
 @pytest.mark.parametrize(

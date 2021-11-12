@@ -141,7 +141,7 @@ def test_charset_parameter(charset):
                       charset=charset)
     scraper.detect_filetype()
     # pylint: disable=protected-access
-    assert scraper._params["charset"] == charset or "UTF-8"
+    assert scraper._params["charset"] in [charset, "UTF-8"]
 
 
 @pytest.mark.parametrize(
