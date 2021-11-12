@@ -1,14 +1,13 @@
 """Metadata models for JHove"""
 from __future__ import unicode_literals
 
-from file_scraper.defaults import UNAP, UNAV
-
 try:
     import mimeparse
 except ImportError:
     pass
 
 from file_scraper.base import BaseMeta
+from file_scraper.defaults import UNAP, UNAV
 from file_scraper.utils import metadata
 
 NAMESPACES = {"j": "http://hul.harvard.edu/ois/xml/ns/jhove",
