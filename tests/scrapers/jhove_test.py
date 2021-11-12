@@ -259,6 +259,27 @@ def test_scraper_pdf(filename, result_dict, evaluate_scraper):
         evaluate_scraper(scraper, correct)
 
 
+@pytest.mark.parametrize(
+    ["filename", "version"],
+    [
+        ["tests/data/application_pdf/valid_1.4.pdf", "1.4"],
+        ["tests/data/application_pdf/valid_A-1a_root_1.6.pdf", "1.6"],
+        ["tests/data/application_pdf/valid_A-1a_root_1.7.pdf", "1.7"],
+        ["tests/data/application_pdf/valid_A-1b_root_1.7.pdf", "1.7"],
+        ["tests/data/application_pdf/valid_A-2u_root_1.5.pdf", "1.5"]
+    ]
+)
+def test_pdf_root_version_in_results(filename, version):
+    """
+    Test that the root version of a PDF is reported in messages.
+    """
+    scraper = JHovePdfScraper(
+        filename=filename,
+        mimetype="application/pdf")
+    scraper.scrape_file()
+    assert "PDF root version is {}".format(version) in scraper.messages()
+
+
 def test_pdf_17_scraping_result_ignored():
     """
     Test that JHovePdfScraper ignores pdf 1.7 scraping results.
