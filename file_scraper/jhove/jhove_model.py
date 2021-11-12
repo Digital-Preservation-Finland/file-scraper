@@ -253,13 +253,21 @@ class JHoveWavMeta(JHoveBaseMeta):
         """
         Return mimetype.
 
+        The mimeType element for WAV files can also include other information,
+        separated from the actual mimetype by a semicolon. This extra
+        information is ignored.
+
         If the MIME type is a WAV type, audio/vnd.wave is returned, otherwise
         the same method from the superclass is called.
         """
-        if get_field(self._report, "mimeType") is not None and \
-                (get_field(self._report, "mimeType").split(";")[0]
-                 == "audio/vnd.wave"):
-            return "audio/x-wav"
+        mimetype_element = get_field(self._report, "mimeType")
+        if mimetype_element:
+            # There's a maximum of one semicolon and the string is short, so we
+            # wouldn't really get a performance boost.
+            # pylint: disable=use-maxsplit-arg
+            reported_mimetype = mimetype_element.split(";")[0]
+            if reported_mimetype == "audio/vnd.wave":
+                return "audio/x-wav"
 
         return super(JHoveWavMeta, self).mimetype()
 
