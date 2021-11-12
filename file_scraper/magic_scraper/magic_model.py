@@ -22,10 +22,14 @@ class BaseMagicMeta(BaseMeta):
 
     @metadata()
     def mimetype(self):
-        """Return MIME type."""
+        """
+        Return MIME type.
+
+        If the mimetype returned by magic is present as a key in MIMETYPE_DICT,
+        its value is returned instead of that reported by magic.
+        """
         mimetype = self._magic_result['magic_mime_type']
-        if mimetype in MIMETYPE_DICT:
-            mimetype = MIMETYPE_DICT[mimetype]
+        mimetype = MIMETYPE_DICT.get(mimetype, mimetype)
         if mimetype == self._predefined_mimetype:
             return mimetype
         return UNAV
