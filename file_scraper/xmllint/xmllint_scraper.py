@@ -138,10 +138,9 @@ class XmllintScraper(BaseScraper):
         """
         # Try to check syntax by opening file in XML parser
         try:
-            file_ = io_open(self.filename, "rb")
-            parser = etree.XMLParser(dtd_validation=False, no_network=True)
-            tree = etree.parse(file_, parser=parser)
-            file_.close()
+            with io_open(self.filename, "rb") as file_:
+                parser = etree.XMLParser(dtd_validation=False, no_network=True)
+                tree = etree.parse(file_, parser=parser)
         except etree.XMLSyntaxError as exception:
             self._errors.append("Failed: document is not well-formed.")
             self._errors.append(six.text_type(exception))
