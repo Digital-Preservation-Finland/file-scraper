@@ -92,14 +92,18 @@ class Shell():
 
         if self._returncode is None:
 
-            with subprocess.Popen(args=self.command,
-                                  stdout=self.stdout_file,
-                                  stderr=self.stderr_file,
-                                  shell=False,
-                                  env=self._env) as proc:
+            # A context manager would be nice, but Python 2 version of
+            # subprocess does not support it.
+            # pylint: disable=consider-using-with
+            proc = subprocess.Popen(
+                args=self.command,
+                stdout=self.stdout_file,
+                stderr=self.stderr_file,
+                shell=False,
+                env=self._env)
 
-                (self._stdout, self._stderr) = proc.communicate()
-                self._returncode = proc.returncode
+            (self._stdout, self._stderr) = proc.communicate()
+            self._returncode = proc.returncode
 
         return {
             "returncode": self._returncode,
