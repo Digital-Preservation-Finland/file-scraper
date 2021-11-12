@@ -12,3 +12,5 @@
 # As long as we support Python 2, the arguments are needed. This can be removed
 # when Python 2 support is dropped.
 disable=consider-using-f-string, duplicate-code, super-with-arguments
+
+extension-pkg-whitelist=lxml
