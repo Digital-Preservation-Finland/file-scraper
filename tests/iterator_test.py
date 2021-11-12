@@ -125,7 +125,7 @@ def test_iter_scrapers(mimetype, version, scraper_classes):
     :scraper_classes: Expected Scraper classes which are run
     """
     scrapers = iter_scrapers(mimetype, version)
-    assert set([x.__name__ for x in scrapers]) == set(scraper_classes)
+    assert {x.__name__ for x in scrapers} == set(scraper_classes)
 
     scraper_classes = [
         "TextEncodingMetaScraper" if x == "TextEncodingScraper" else x
@@ -144,12 +144,12 @@ def test_iter_scrapers(mimetype, version, scraper_classes):
     scraper_set = set(scraper_classes).difference(set(WELLFORMED_SCRAPERS))
     if mimetype in ["application/gzip", "image/x-dpx"]:
         scraper_set = set(["ScraperNotFound"])
-    assert set([x.__name__ for x in scrapers]) == scraper_set
+    assert {x.__name__ for x in scrapers} == scraper_set
 
 
 def test_iter_detectors():
     """Test detector discovery."""
     detectors = iter_detectors()
-    assert set([x.__name__ for x in detectors]) == set(["FidoDetector",
-                                                        "MagicDetector",
-                                                        "PredefinedDetector"])
+    assert {x.__name__ for x in detectors} == set(["FidoDetector",
+                                                   "MagicDetector",
+                                                   "PredefinedDetector"])
