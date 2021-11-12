@@ -5,7 +5,8 @@ import os
 import shutil
 import tempfile
 
-import lxml.etree as etree
+from lxml import etree
+
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.config import SCHEMATRON_DIRNAME
@@ -230,4 +231,3 @@ class SchematronScraper(BaseScraper):
 
 class SchematronValidatorError(Exception):
     """Throw error in case of a compilation failure."""
-
