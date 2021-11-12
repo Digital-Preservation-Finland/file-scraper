@@ -126,17 +126,21 @@ class JHovePdfScraper(JHoveScraperBase):
                          allow_unav_version=False,
                          allow_unap_version=False):
 
-        mimetype = self.streams[0].mimetype()
-        version = self.streams[0].version()
+        if self.streams:
+            mimetype = self.streams[0].mimetype()
+            version = self.streams[0].version()
 
-        if mimetype == "application/pdf" and version == "1.7":
-            self._errors = []
-            self._messages = ["JHove does not support PDF 1.7: "
-                              "All errors and messages ignored."]
-        else:
-            super(JHovePdfScraper, self)._check_supported(allow_unav_mime,
-                                                          allow_unav_version,
-                                                          allow_unap_version)
+            if mimetype == "application/pdf":
+                if version == "1.7":
+                    self._errors = []
+                    self._messages = ["JHove does not support PDF 1.7: "
+                                      "All errors and messages ignored."]
+
+                self._messages.append("PDF root version is {}".format(version))
+
+        super(JHovePdfScraper, self)._check_supported(allow_unav_mime,
+                                                      allow_unav_version,
+                                                      allow_unap_version)
 
 
 class JHoveWavScraper(JHoveScraperBase):
