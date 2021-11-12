@@ -231,4 +231,3 @@ class SchematronScraper(BaseScraper):
 class SchematronValidatorError(Exception):
     """Throw error in case of a compilation failure."""
 
-    pass

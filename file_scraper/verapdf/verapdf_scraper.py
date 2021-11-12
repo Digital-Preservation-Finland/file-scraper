@@ -70,4 +70,3 @@ class VeraPDFError(Exception):
 
     Raised if VeraPDF does not run successfully.
     """
-    pass

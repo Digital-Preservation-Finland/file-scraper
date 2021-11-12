@@ -154,7 +154,6 @@ class JHoveUtf8Scraper(JHoveScraperBase):
                          allow_unav_version=False,
                          allow_unap_version=False):
         """Do nothing: we dont care about the mimetype or version."""
-        pass
 
     def iterate_models(self, **kwargs):
         """
