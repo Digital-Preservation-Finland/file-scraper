@@ -103,9 +103,9 @@ requirements:
 """
 from __future__ import unicode_literals
 
+from itertools import chain
 import six
 import pytest
-from itertools import chain
 
 from file_scraper.scraper import LOSE
 from file_scraper.utils import (_fill_importants,
@@ -470,18 +470,18 @@ def test_iter_utf_bytes(filename, charset):
     :filename: Test file name
     :charset: Character encoding
     """
-    infile = open("tests/data/text_plain/" + filename, "rb")
-    original_bytes = infile.read()
-    original_text = original_bytes.decode(charset)
-    for chunksize in range(4, 40):
-        infile.seek(0)
-        chunks = b""
-        for chunk in iter_utf_bytes(infile, chunksize, charset):
-            assert chunk.decode(charset)
-            chunks += chunk
-        assert chunks.decode(charset)
-        assert original_text == chunks.decode(charset)
-        assert original_bytes == chunks
+    with open("tests/data/text_plain/" + filename, "rb") as infile:
+        original_bytes = infile.read()
+        original_text = original_bytes.decode(charset)
+        for chunksize in range(4, 40):
+            infile.seek(0)
+            chunks = b""
+            for chunk in iter_utf_bytes(infile, chunksize, charset):
+                assert chunk.decode(charset)
+                chunks += chunk
+            assert chunks.decode(charset)
+            assert original_text == chunks.decode(charset)
+            assert original_bytes == chunks
 
 
 def test_iter_utf_bytes_trivial():
@@ -489,10 +489,11 @@ def test_iter_utf_bytes_trivial():
     Test that the iterator ends also in trivial case.
     The test file contains just 0xc3 which can not be decoded.
     """
-    infile = open("tests/data/text_plain/invalid__utf8_just_c3.txt", "rb")
-    original_bytes = infile.read()
-    infile.seek(0)
-    chunks = b""
-    for chunk in iter_utf_bytes(infile, 4, "UTF-8"):
-        chunks += chunk
-    assert original_bytes == chunks
+    with open("tests/data/text_plain/invalid__utf8_just_c3.txt",
+              "rb") as infile:
+        original_bytes = infile.read()
+        infile.seek(0)
+        chunks = b""
+        for chunk in iter_utf_bytes(infile, 4, "UTF-8"):
+            chunks += chunk
+        assert original_bytes == chunks
