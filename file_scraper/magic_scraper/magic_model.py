@@ -107,14 +107,14 @@ class XmlFileMagicMeta(TextMagicBaseMeta):
     _allow_versions = True         # Allow any version
 
     @classmethod
-    def is_supported(cls, magic_result, version=None,
+    def is_supported(cls, mimetype, version=None,
                      params=None):
         """
         Return True if given MIME type and version are supported.
 
         This is not a Schematron scraper, skip this in such case.
 
-        :magic_result: Values resulted from magic module as dict
+        :mimetype: Identified mimetype
         :version: Identified version (if needed)
         :params: Extra parameters needed for the scraper
         :returns: True if scraper is supported
@@ -123,7 +123,7 @@ class XmlFileMagicMeta(TextMagicBaseMeta):
             params = {}
         if "schematron" in params:
             return False
-        return super(XmlFileMagicMeta, cls).is_supported(magic_result, version,
+        return super(XmlFileMagicMeta, cls).is_supported(mimetype, version,
                                                          params)
 
     @metadata()

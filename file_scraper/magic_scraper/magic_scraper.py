@@ -39,8 +39,8 @@ class MagicBaseScraper(BaseScraper):
         }
 
         magic_result = {}
-        for key in magicdict:
-            magic_result[key] = magic_analyze(MAGIC_LIB, magicdict[key],
+        for key, value in magicdict.items():
+            magic_result[key] = magic_analyze(MAGIC_LIB, value,
                                               self.filename)
         return magic_result
 
