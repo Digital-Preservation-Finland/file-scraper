@@ -29,6 +29,7 @@ This module tests that:
 """
 from __future__ import unicode_literals
 
+from io import open
 import os
 import pytest
 import six
