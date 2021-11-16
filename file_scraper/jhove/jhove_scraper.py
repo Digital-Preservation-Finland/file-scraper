@@ -117,22 +117,22 @@ class JHoveTiffScraper(JHoveScraperBase):
 
 
 class JHovePdfScraper(JHoveScraperBase):
-    """Variables for scraping pdf files."""
+    """PDF scraper using JHove."""
 
     _jhove_module = "PDF-hul"
     _supported_metadata = [JHovePdfMeta]
 
-    def _check_supported(self, allow_unav_mime=False,
-                         allow_unav_version=False,
-                         allow_unap_version=False):
+    def scrape_file(self):
         """
-        Check and log PDF root version.
+        Scrape the file, and check and log PDF root version.
 
         JHove does not support PDF 1.7, but it can detect it. Thus if PDF 1.7
         is detected, any possible errors JHove might detect will be
         disregarded. Regardless of what version is detected, the PDF root
         version is logged in messages, which is useful for PDF-A file scraping.
         """
+
+        super(JHovePdfScraper, self).scrape_file()
 
         if self.streams:
             mimetype = self.streams[0].mimetype()
@@ -145,10 +145,6 @@ class JHovePdfScraper(JHoveScraperBase):
                                       "All errors and messages ignored."]
 
                 self._messages.append("PDF root version is {}".format(version))
-
-        super(JHovePdfScraper, self)._check_supported(allow_unav_mime,
-                                                      allow_unav_version,
-                                                      allow_unap_version)
 
 
 class JHoveWavScraper(JHoveScraperBase):
