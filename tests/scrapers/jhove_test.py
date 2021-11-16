@@ -299,6 +299,7 @@ def test_pdf_17_scraping_result_ignored():
         filename="tests/data/application_pdf/valid_1.7.pdf",
         mimetype="application/pdf")
     scraper.scrape_file()
+    assert not scraper.errors()
     assert ("JHove does not support PDF 1.7: All errors and messages ignored."
             in scraper.messages())
 
