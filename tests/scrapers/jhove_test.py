@@ -35,6 +35,11 @@ This module tests that:
           "Improperly nested dictionary delimiters".
         - For files with wrong version in header, scraper errors contains
           "Version 1.0 is not supported."
+    - Possible errors with scraping pdf 1.7 files are ignored, as that
+      version is not supported JHove. Scraping 1.7 files should not fail,
+      since JHove is used for determining the root version for all pdf files.
+    - The scraper reports the root version of archive and non-archive pdf
+      files.
     - MIME type, version, streams and well-formedness of jpeg 1.01 files is
       tested correctly
         - For valid files, scraper messages contains "Well-formed and valid".
