@@ -25,8 +25,8 @@ class CsvMeta(BaseMeta):
                  first_line: contents of the first line
         """
         # Check that a proper parameter dict was supplied
-        if any((key not in params for key in ["delimiter", "separator",
-                                              "fields", "first_line"])):
+        if any(key not in params for key in ["delimiter", "separator",
+                                              "fields", "first_line"]):
             raise ValueError("CsvMeta must be given a dict containing keys "
                              "'delimiter', 'separator', 'fields' and "
                              "'first_line' as a parameter.")
