@@ -27,7 +27,7 @@ def get_files(well_formed):
                 yield fullname, mimetype, version
 
 
-class Correct():
+class Correct(object):
     """Class for the correct results."""
 
     # pylint: disable=too-few-public-methods, too-many-instance-attributes

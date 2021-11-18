@@ -13,7 +13,7 @@ from file_scraper.utils import encode_path, hexdigest
 LOSE = (None, UNAV, "")
 
 
-class Scraper():
+class Scraper(object):
     """File indentifier and scraper."""
 
     # pylint: disable=no-member, too-many-instance-attributes

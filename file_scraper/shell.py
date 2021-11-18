@@ -7,7 +7,7 @@ import six
 from file_scraper.utils import ensure_text
 
 
-class Shell():
+class Shell(object):
     """Shell command handler for non-Python 3rd party software."""
 
     def __init__(self, command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,

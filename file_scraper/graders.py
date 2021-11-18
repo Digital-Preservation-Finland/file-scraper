@@ -4,7 +4,7 @@
 from file_scraper.defaults import UNAP, RECOMMENDED, ACCEPTABLE, UNACCEPTABLE
 
 
-class BaseGrader():
+class BaseGrader(object):
     """Base class for graders."""
     def __init__(self, scraper):
         """Initialize grader."""
