@@ -284,14 +284,14 @@ class JHoveWavMeta(JHoveBaseMeta):
         if not self._well_formed:
             return UNAV
 
-        field = get_field(self._report, "profile")
-        if field is None:
+        profile = get_field(self._report, "profile")
+        if profile is None:
             return UNAV
-        if "RF64" in field:
+        if "RF64" in profile:
             return UNAV
-        if "BWF" in field:
+        if "BWF" in profile:
             return "2"
-        if "PCMWAVEFORMAT" in field:
+        if "PCMWAVEFORMAT" in profile:
             return UNAP
 
         return UNAV
