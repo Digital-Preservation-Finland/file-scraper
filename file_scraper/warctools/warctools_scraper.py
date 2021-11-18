@@ -93,7 +93,7 @@ class WarctoolsFullScraper(WarctoolsScraper):
         if cls._only_wellformed and not check_wellformed:
             return False
         return any(x.is_supported(mimetype, version) for x in
-                    cls._supported_metadata)
+                   cls._supported_metadata)
 
     def scrape_file(self):
         """Scrape WARC file."""

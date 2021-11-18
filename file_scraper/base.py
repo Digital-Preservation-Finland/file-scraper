@@ -72,7 +72,7 @@ class BaseScraper(object):
         if cls._only_wellformed and not check_wellformed:
             return False
         return any(x.is_supported(mimetype, version) for x in
-                    cls._supported_metadata)
+                   cls._supported_metadata)
 
     def _check_supported(self, allow_unav_mime=False,
                          allow_unav_version=False,
