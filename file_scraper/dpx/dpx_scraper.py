@@ -24,7 +24,7 @@ class DpxScraper(BaseScraper):
 
         """
         if sys.version_info >= (3, 0):
-            return "/ur/bin/dpxv-3"
+            return "/usr/bin/dpxv-3"
         return "/usr/bin/dpxv"
 
     def scrape_file(self):
@@ -50,4 +50,3 @@ class DpxScraper(BaseScraper):
 
 class DPXvError(Exception):
     """DPX scraper error."""
-    pass
