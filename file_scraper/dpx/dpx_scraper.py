@@ -2,6 +2,8 @@
 
 from __future__ import unicode_literals
 
+import sys
+
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.dpx.dpx_model import DpxMeta
@@ -14,9 +16,21 @@ class DpxScraper(BaseScraper):
     _supported_metadata = [DpxMeta]
     _only_wellformed = True
 
+    @property
+    def _dpxv(self):
+        """Return matching dpxv command current Python version.
+
+        :returns: Path to dpxv command
+
+        """
+        if sys.version_info >= (3, 0):
+            return "/ur/bin/dpxv-3"
+        return "/usr/bin/dpxv"
+
     def scrape_file(self):
         """Scrape DPX."""
-        shell = Shell(["dpxv", encode_path(self.filename)])
+
+        shell = Shell([self._dpxv, encode_path(self.filename)])
 
         if shell.returncode != 0:
             raise DPXvError(shell.stderr)
