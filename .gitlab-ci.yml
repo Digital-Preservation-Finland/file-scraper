@@ -2,7 +2,6 @@
 
 variables:
   CI_PYTHON_UNIVERSAL: "yes"
-  CI_SKIP_STATIC_ANALYSIS: "yes"
 
 include:
   - project: 'dpres/gitlab-ci-pipeline'
