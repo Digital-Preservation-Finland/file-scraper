@@ -44,6 +44,3 @@ rpm3: clean
 	create-archive.sh
 	preprocess-spec-m4-macros.sh include/rhel8
 	build-rpm.sh
-
-test:
-	py.test -svvv --maxfail=9999 --junitprefix=file-scraper --junitxml=junit.xml tests
