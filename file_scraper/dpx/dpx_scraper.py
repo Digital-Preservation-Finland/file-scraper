@@ -2,7 +2,7 @@
 
 from __future__ import unicode_literals
 
-import sys
+import six
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
@@ -23,7 +23,7 @@ class DpxScraper(BaseScraper):
         :returns: Path to dpxv command
 
         """
-        if sys.version_info >= (3, 0):
+        if six.PY3:
             return "/usr/bin/dpxv-3"
         return "/usr/bin/dpxv"
 
