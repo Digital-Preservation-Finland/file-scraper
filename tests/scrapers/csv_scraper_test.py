@@ -29,7 +29,7 @@ This module tests that:
 """
 from __future__ import unicode_literals
 
-from io import open
+import io
 import os
 import pytest
 import six
@@ -215,7 +215,7 @@ def test_large_field(filename, result_dict, header,
     tempdatapath = os.path.join(testpath, "text_csv")
     os.makedirs(tempdatapath)
     tempfilepath = os.path.join(tempdatapath, filename)
-    with open(tempfilepath, 'w', encoding='utf8') as tempfile:
+    with io.open(tempfilepath, 'w', encoding='utf8') as tempfile:
         tempfile.write("test1,test2\ntest3,")
         tempfile.write(size*"a")
 
