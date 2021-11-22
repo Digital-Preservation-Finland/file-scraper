@@ -8,6 +8,7 @@ from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.office.office_model import OfficeMeta
 from file_scraper.utils import encode_path
+from file_scraper.config import SOFFICE_PATH
 
 
 class OfficeScraper(BaseScraper):
@@ -22,7 +23,7 @@ class OfficeScraper(BaseScraper):
         try:
             env = {"HOME": temp_dir}
             shell = Shell([
-                "soffice", "--convert-to", "pdf", "--outdir", temp_dir,
+                SOFFICE_PATH, "--convert-to", "pdf", "--outdir", temp_dir,
                 encode_path(self.filename)], env=env)
             if shell.stderr:
                 self._errors.append(shell.stderr)
