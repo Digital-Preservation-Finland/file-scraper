@@ -231,9 +231,7 @@ class JHovePdfMeta(JHoveBaseMeta):
         If the well-formed status from scraper is False,
         then we do not know the actual version.
         """
-        if self._well_formed:
-            return get_field(self._report, "version")
-        return UNAV
+        return get_field(self._report, "version")
 
     @metadata()
     def stream_type(self):
