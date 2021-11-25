@@ -1,6 +1,19 @@
 Release notes
 =============
 
+Version 0.34
+------------
+
+- Changes in PDF scraping:
+  - Both JHove and Ghostscript are now run for all PDF files, but the scraping
+    results are ignored if the file is not supported by the tool.
+  - Added PDF root version reporting to JHove scraper output
+- Select Python 2/3 version of dpx-validator depending on the current
+  environment.
+- Added grades for files into the scraper output. The grade defines
+  whether a file is recommended or suitable for digital preservation.
+- Added video/avi support.
+
 Version 0.33
 ------------
 
