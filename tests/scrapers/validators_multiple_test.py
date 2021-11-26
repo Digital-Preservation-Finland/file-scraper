@@ -5,7 +5,7 @@ File-scraper.
 This module tests that:
     - For a well-formed odt file, all scrapers supporting
       application/vnd.oasis.opendocument.text version 1.1 report it as
-      well-formed.
+      well-formed or None.
     - For a corrupted odt file, at least one scraper supporting
       application/vnd.oasis.opendocument.text reports it as not well-formed.
     - When a valid odt file is scraped with scrapers selected using wrong MIME
@@ -41,7 +41,7 @@ def test_scrape_valid_file(filename, mimetype):
                                   filename),
             mimetype=mimetype)
         scraper.scrape_file()
-        assert scraper.well_formed
+        assert scraper.well_formed in [True, None]
 
 
 # Test invalid files

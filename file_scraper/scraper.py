@@ -113,8 +113,8 @@ class Scraper(object):
         if scraper.streams:
             self._scraper_results.append(scraper.streams)
         self.info[len(self.info)] = scraper.info()
-        if self.well_formed in [None, True] and \
-                (check_wellformed or not scraper.well_formed):
+        if (self.well_formed is None and check_wellformed) or \
+                scraper.well_formed is False:
             self.well_formed = scraper.well_formed
 
     def _check_utf8(self, check_wellformed):
@@ -196,14 +196,6 @@ class Scraper(object):
         self.version = self.streams[0]["version"]
 
         self._check_mime(check_wellformed)
-
-        # Unacceptable or bit-level grades should never be marked well-formed
-        if self.well_formed and self.grade() in [
-            UNACCEPTABLE,
-            BIT_LEVEL,
-            BIT_LEVEL_WITH_RECOMMENDED
-        ]:
-            self.well_formed = None
 
     def detect_filetype(self):
         """

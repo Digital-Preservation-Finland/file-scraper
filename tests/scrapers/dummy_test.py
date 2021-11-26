@@ -18,7 +18,7 @@ This module tests the following scraper classes:
         - Streams contain only one dict with version and stream_type as None
           and MIME type as what was given to the scraper.
     - MimeMatchScraper
-        - well_formed is True if predefined file type (mimetype and version)
+        - well_formed is None if predefined file type (mimetype and version)
           and given file type match
         - well_formed is False if predefined filetype and given file type
           conflicts
@@ -85,7 +85,7 @@ def test_nonexistent_files(filepath):
     scraper = FileExists(filepath, None)
     scraper.scrape_file()
 
-    assert not scraper.well_formed
+    assert scraper.well_formed is False
     assert partial_message_included("does not exist", scraper.errors())
 
 
@@ -94,7 +94,7 @@ def test_none_filename():
     scraper = FileExists(None, None)
     scraper.scrape_file()
 
-    assert not scraper.well_formed
+    assert scraper.well_formed is False
     assert partial_message_included("No filename given.", scraper.errors())
 
 
@@ -131,19 +131,19 @@ def test_mime_match_scraper():
         None, mimetype="expected_mime", version="expected_version",
         params={"mimetype": "expected_mime", "version": "expected_version"})
     scraper.scrape_file()
-    assert scraper.well_formed
+    assert scraper.well_formed is None
 
     scraper = MimeMatchScraper(
         None, mimetype="mismatch", version="expected_version",
         params={"mimetype": "expected_mime", "version": "expected_version"})
     scraper.scrape_file()
-    assert not scraper.well_formed
+    assert scraper.well_formed is False
 
     scraper = MimeMatchScraper(
         None, mimetype="expected_mime", version="mismatch",
         params={"mimetype": "expected_mime", "version": "expected_version"})
     scraper.scrape_file()
-    assert not scraper.well_formed
+    assert scraper.well_formed is False
 
     scraper = MimeMatchScraper(
         None, mimetype="expected_mime", version="some_version",
@@ -151,7 +151,7 @@ def test_mime_match_scraper():
     scraper.scrape_file()
     assert partial_message_included(
         "File format version is not supported", scraper.errors())
-    assert not scraper.well_formed
+    assert scraper.well_formed is False
 
     scraper = MimeMatchScraper(
         None, mimetype="application/vnd.oasis.opendocument.text",
@@ -161,7 +161,7 @@ def test_mime_match_scraper():
     scraper.scrape_file()
     assert partial_message_included(
         "File format version can not be resolved", scraper.messages())
-    assert scraper.well_formed
+    assert scraper.well_formed is None
 
 
 def test_detected_version_scraper():
@@ -169,13 +169,13 @@ def test_detected_version_scraper():
     scraper = DetectedMimeVersionMetadataScraper(
         None, "text/xml", params={"detected_version": "123"})
     scraper.scrape_file()
-    assert not scraper.well_formed
+    assert scraper.well_formed is False
     assert scraper.streams[0].version() == "123"
 
     scraper = DetectedMimeVersionMetadataScraper(
         None, "text/xml", params=None)
     scraper.scrape_file()
-    assert scraper.well_formed
+    assert scraper.well_formed is None
     assert scraper.streams[0].version() == "1.0"
 
     scraper = DetectedMimeVersionMetadataScraper(
@@ -188,12 +188,12 @@ def test_detected_version_scraper():
         None, "application/vnd.oasis.opendocument.text",
         params={"detected_version": "123"})
     scraper.scrape_file()
-    assert not scraper.well_formed
+    assert scraper.well_formed is False
     assert scraper.streams[0].version() == "123"
 
 
 @pytest.mark.parametrize(('meta_classes', 'wellformed'), [
-    (['meta1', 'meta5'], True),
+    (['meta1', 'meta5'], None),
     (['meta1', 'meta2'], False)
 ])
 def test_results_merge_scraper(meta_class_fx, meta_classes, wellformed):

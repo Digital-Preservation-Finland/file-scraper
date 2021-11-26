@@ -41,6 +41,21 @@ class MediainfoScraper(BaseScraper):
         UnknownStreamFormatMeta
     ]
 
+    @property
+    def well_formed(self):
+        """
+        Return well-formedness status of the scraped file.
+
+        :returns: None if scraper does not check well-formedness, True if the
+                  file has been scraped without errors and otherwise False
+        """
+        valid = super(MediainfoScraper, self).well_formed
+        if not valid:
+            return valid
+
+        return None
+
+
     def scrape_file(self):
         """Populate streams with supported metadata objects."""
         try:

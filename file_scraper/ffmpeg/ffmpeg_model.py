@@ -25,37 +25,50 @@ class FFMpegSimpleMeta(BaseMeta):
         "video/mp4": [],
         "audio/mpeg": [],
         "audio/mp4": [],
-        "video/MP1S": [],
-        "video/MP2P": [],
         "video/MP2T": [],
         "audio/x-wav": [],
         "video/x-matroska": [],
         "video/quicktime": [],
         "video/dv": [],
+        "audio/L8": [],
+        "audio/L16": [],
+        "audio/L24": [],
+        "video/x-ffv": [],
+        "audio/flac": []
         }
     _allow_versions = True   # Allow any version
 
-    # MIME types need to be decided based on format name. Some types,
-    # such as video/mp4, don't have format_long_name in ffprobe output,
-    # so they are not present in this dict. Their MIME type will be
-    # reported as (:unav), but this doesn't matter as all metadata for
-    # them will be scraped using MediaInfo anyway.
-    # The following do not always neatly correspond to one MIME type, so
-    # they should be left for other scrapers such as Mediainfo.
-    # - "QuickTime / MOV"
-    # - "MP2/3 (MPEG audio layer 2/3)"
-    _mimetype_dict = {
-        "DV (Digital Video)": "video/dv",
-        "Matroska / WebM": "video/x-matroska",
-        "raw MPEG video": "video/mpeg",
-        "MPEG-TS (MPEG-2 Transport Stream)": "video/MP2T",
-        "MXF (Material eXchange Format)": "application/mxf",
-        "AVI (Audio Video Interleaved)": "video/avi",
-        "JPEG 2000": "video/jpeg2000",
-        "WAV / WAVE (Waveform Audio)": "audio/x-wav",
-        "QuickTime / MOV": UNAV,
-        "MP2/3 (MPEG audio layer 2/3)": UNAV,
-        }
+    _supported_formats = [
+        "DV (Digital Video)",
+        "Matroska / WebM",
+        "MPEG-1 video",
+        "MPEG-2 video",
+        "raw MPEG video",
+        "MPEG-TS (MPEG-2 Transport Stream)",
+        "MXF (Material eXchange Format)",
+        "FFmpeg video codec #1",
+        "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
+        "raw H.264 video",
+        "MP3 (MPEG audio layer 3)",
+        "AAC (Advanced Audio Coding)",
+        "AVI (Audio Video Interleaved)",
+        "JPEG 2000",
+        "WAV / WAVE (Waveform Audio)",
+        "PCM unsigned 16-bit big-endian",
+        "PCM unsigned 16-bit little-endian",
+        "PCM unsigned 24-bit big-endian",
+        "PCM unsigned 24-bit little-endian",
+        "PCM unsigned 8-bit",
+        "PCM signed 16-bit big-endian",
+        "PCM signed 16-bit little-endian",
+        "PCM signed 24-bit big-endian",
+        "PCM signed 24-bit little-endian",
+        "PCM signed 8-bit",
+        "FLAC (Free Lossless Audio Codec)",
+        "raw FLAC",
+        "QuickTime / MOV",
+        "MP2/3 (MPEG audio layer 2/3)"
+        ]
 
     def __init__(self, probe_results, index):
         """
@@ -68,28 +81,50 @@ class FFMpegSimpleMeta(BaseMeta):
         self._index = index
         self._ffmpeg_stream = self._current_stream()
 
-    @metadata()
-    def mimetype(self):
-        """Return MIME type based on format name."""
-        if "format_long_name" in self._ffmpeg_stream:
-            return self._mimetype_dict.get(
-                self._ffmpeg_stream["format_long_name"], UNAV)
-        return UNAV
+    def format_supported(self):
+        """Return value whether the format is supported or not.
 
-    @metadata()
-    def stream_type(self):
-        """Return stream type.
-
-        This metadata model scrapes nothing, so (:unav) is returned.
+        None - Stream type is not known
+        False - Stream type is known, but format is not supported
+        True - Supported
         """
-        # pylint: disable=no-self-use
-        return UNAV
+        supported = False
+        if "codec_type" not in self._ffmpeg_stream and \
+                self.index() > 0:
+            return None
+        if not self.hascontainer() or self.index() > 0:
+            if self._ffmpeg_stream["codec_type"] not in ["video", "audio"]:
+                return None
+
+        if "format_long_name" in self._ffmpeg_stream:
+            supported = self._ffmpeg_stream["format_long_name"] in \
+                self._supported_formats
+
+        if not supported and "codec_long_name" in self._ffmpeg_stream:
+            supported = self._ffmpeg_stream["codec_long_name"] in \
+                self._supported_formats
+
+        return supported
 
     def hascontainer(self):
         """Check if file has a video container."""
-        return ("codec_type" not in self._probe_results["format"]
-                and self._probe_results["format"]["format_name"] not in
-                ["mp3", "mpegvideo", "wav"])
+        is_cont = ("codec_type" not in self._probe_results["format"]
+                   and self._probe_results["format"]["format_name"] not in
+                   ["mp3", "mpegvideo", "wav", "h264", "flac"])
+        if is_cont and not(len(self._probe_results["streams"]) == 1 and
+                self._probe_results["format"]["format_name"] in ["dv"]):
+            return True
+
+        return False
+
+    @metadata()
+    def index(self):
+        """Return stream index."""
+        if "index" not in self._ffmpeg_stream:
+            return 0
+        if self.hascontainer():
+            return self._ffmpeg_stream["index"]
+        return self._ffmpeg_stream["index"] - 1
 
     @property
     def _container_stream(self):
@@ -142,15 +177,9 @@ class FFMpegMeta(FFMpegSimpleMeta):
     # Supported mimetypes
     _supported = {
         "application/mxf": [],
+        "video/jpeg2000": []
         }
     _allow_versions = True   # Allow any version
-
-    # Codec names returned by ffmpeg do not always correspond to ones
-    # from different scraper tools. This dict is used to unify the
-    # results.
-    _codec_names = {
-        "MXF (Material eXchange Format)": "MXF",
-        }
 
     # Some MIME types need to be decided based on codec name
     _codec_mimetype_dict = {
@@ -160,15 +189,11 @@ class FFMpegMeta(FFMpegSimpleMeta):
 
     @metadata()
     def mimetype(self):
-        """
-        Return MIME type.
-
-        If the MIME type can be determined based on format name as is
-        done in the superclass, that result is returned. Otherwise,
-        determining the MIME type based on codec name is attempted. This
-        is relevant for JPEG2000 streams.
-        """
-        mime = super(FFMpegMeta, self).mimetype()
+        """Return MIME type."""
+        mime = UNAV
+        if "format_long_name" in self._ffmpeg_stream:
+            return self._codec_mimetype_dict.get(
+                self._ffmpeg_stream["format_long_name"], UNAV)
         if mime not in [UNAV, None]:
             return mime
 
@@ -234,21 +259,12 @@ class FFMpegMeta(FFMpegSimpleMeta):
         """Return stream type."""
         if "codec_type" not in self._ffmpeg_stream and \
                 self.index() > 0:
-            return "other"
+            return UNAV
         if self.hascontainer() and self.index() == 0:
             return "videocontainer"
         if self._ffmpeg_stream["codec_type"] == "data":
-            return "other"
+            return UNAV
         return self._ffmpeg_stream["codec_type"]
-
-    @metadata()
-    def index(self):
-        """Return stream index."""
-        if "index" not in self._ffmpeg_stream:
-            return 0
-        if self.hascontainer():
-            return self._ffmpeg_stream["index"]
-        return self._ffmpeg_stream["index"] - 1
 
     @metadata()
     def color(self):
@@ -447,8 +463,6 @@ class FFMpegMeta(FFMpegSimpleMeta):
         if "format_long_name" in self._ffmpeg_stream:
             codec = self._ffmpeg_stream["format_long_name"]
 
-        if codec in self._codec_names:
-            return self._codec_names[codec]
         return codec
 
     @metadata()

@@ -100,7 +100,7 @@ def test_mediainfo_scraper_mov(filename, result_dict, mimetype,
                   streams
     :mimetype: File MIME type
     """
-    correct = parse_results(filename, mimetype, result_dict, True)
+    correct = parse_results(filename, mimetype, result_dict, False)
     scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
 
@@ -160,7 +160,7 @@ def test_mediainfo_scraper_mkv(filename, result_dict, evaluate_scraper):
                   streams
     """
     mimetype = "video/x-matroska"
-    correct = parse_results(filename, mimetype, result_dict, True)
+    correct = parse_results(filename, mimetype, result_dict, False)
     scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
     if "empty" in filename:
@@ -205,7 +205,7 @@ def test_mediainfo_scraper_wav(filename, result_dict, evaluate_scraper):
                   streams
     """
     mimetype = "audio/x-wav"
-    correct = parse_results(filename, mimetype, result_dict, True)
+    correct = parse_results(filename, mimetype, result_dict, False)
     if "2" in filename:
         correct.streams[0]["version"] = "2"
     else:
@@ -255,7 +255,7 @@ def test_mediainfo_scraper_mpeg(filename, result_dict, evaluate_scraper):
                   streams
     """
     mimetype = "video/mpeg"
-    correct = parse_results(filename, mimetype, result_dict, True)
+    correct = parse_results(filename, mimetype, result_dict, False)
     scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
     if "empty" in filename:
@@ -301,7 +301,7 @@ def test_mediainfo_scraper_mp4(filename, result_dict, evaluate_scraper):
                   streams
     """
     mimetype = "video/mp4"
-    correct = parse_results(filename, mimetype, result_dict, True)
+    correct = parse_results(filename, mimetype, result_dict, False)
     scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
 
@@ -337,7 +337,7 @@ def test_mediainfo_scraper_mp3(filename, result_dict, evaluate_scraper):
                   streams
     """
     mimetype = "audio/mpeg"
-    correct = parse_results(filename, mimetype, result_dict, True)
+    correct = parse_results(filename, mimetype, result_dict, False)
     scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
 
@@ -384,7 +384,7 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
                   streams
     """
     mimetype = "video/MP2T"
-    correct = parse_results(filename, mimetype, result_dict, True)
+    correct = parse_results(filename, mimetype, result_dict, False)
     scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
 
@@ -410,7 +410,7 @@ def test_mediainfo_scraper_avi(evaluate_scraper):
                     2: AVI_AUDIO.copy()}
     }
 
-    correct = parse_results(filename, mimetype, result_dict, True)
+    correct = parse_results(filename, mimetype, result_dict, False)
     scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
 

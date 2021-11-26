@@ -86,6 +86,7 @@ def parse_results(filename, mimetype, results, check_wellformed,
     """
     # pylint: disable=too-many-locals, too-many-arguments, too-many-branches
     well_dict = {"valid": True, "invalid": False}
+    well_dict_no_check = {"valid": None, "invalid": False}
     path = os.path.join(basepath, mimetype.replace("/", "_"))
     words = filename.rsplit(".", 1)[0].split("_", 2)
     well_formed = words[0]
@@ -136,6 +137,8 @@ def parse_results(filename, mimetype, results, check_wellformed,
 
     if check_wellformed:
         correct.well_formed = well_dict[well_formed]
+    else:
+        correct.well_formed = well_dict_no_check[well_formed]
 
     if "inverse" in results and correct.well_formed is not None:
         correct.well_formed = not correct.well_formed

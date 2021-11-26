@@ -150,7 +150,8 @@ BASE_JPEG2000_VIDEO = {
 
 MXF_CONTAINER = {
     "index": 0, "mimetype": "video/avi", "version": UNAP,
-    "stream_type": "videocontainer", "codec_name": "MXF",
+    "stream_type": "videocontainer",
+    "codec_name": "MXF (Material eXchange Format)",
     "codec_creator_app_version": "56.40.101",
     "codec_creator_app": "FFmpeg OP1a Muxer",
     "duration": u"PT1.03S",

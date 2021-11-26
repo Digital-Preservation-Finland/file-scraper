@@ -439,7 +439,7 @@ def test_ffmpeg_scraper_invalid(filename, result_dict, mimetype,
     correct.streams = {}
 
     scraper = FFMpegScraper(filename=correct.filename,
-                            mimetype="audio/mpeg")
+                            mimetype=mimetype)
     scraper.scrape_file()
 
     evaluate_scraper(scraper, correct)
@@ -451,8 +451,6 @@ def test_ffmpeg_scraper_invalid(filename, result_dict, mimetype,
         ("video/avi", ""),
         ("video/mpeg", "1"),
         ("video/mp4", ""),
-        ("video/MP1S", ""),
-        ("video/MP2P", ""),
         ("video/MP2T", ""),
         ("application/mxf", "")
     ]

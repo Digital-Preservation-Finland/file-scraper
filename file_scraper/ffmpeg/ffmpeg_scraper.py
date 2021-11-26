@@ -5,10 +5,10 @@ import re
 import six
 
 from file_scraper.base import BaseScraper
-from file_scraper.defaults import UNAV
 from file_scraper.shell import Shell
 from file_scraper.ffmpeg.ffmpeg_model import FFMpegSimpleMeta, FFMpegMeta
 from file_scraper.utils import ensure_text, encode_path
+from file_scraper.defaults import UNAP, UNAV
 
 try:
     import ffmpeg
@@ -31,6 +31,25 @@ class FFMpegScraper(BaseScraper):
 
     # Supported metadata models
     _supported_metadata = [FFMpegSimpleMeta, FFMpegMeta]
+
+    @property
+    def well_formed(self):
+        """
+        Return well-formedness status of the scraped file.
+        If file contains streams that can not be identified, the scraper can
+        not check well-formedness.
+
+        :returns: None if scraper does not check well-formedness, True if the
+                  file has been scraped without errors and otherwise False
+        """
+        valid = super(FFMpegScraper, self).well_formed
+
+        if valid and \
+                any([stream.format_supported() is False for stream in
+                     self.streams]):
+            return None
+
+        return valid
 
     def scrape_file(self):
         """Scrape A/V files."""
@@ -88,6 +107,20 @@ class FFMpegScraper(BaseScraper):
                     container = True
 
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)
+
+    def iterate_models(self, **kwargs):
+        """
+        Iterate Scraper models.
+
+        :kwargs: FFProbe results and index
+        :returns: Metadata model
+        """
+        for md_class in self._supported_metadata:
+            if md_class.is_supported(self._predefined_mimetype,
+                                     self._predefined_version, self._params):
+                md_object = md_class(**kwargs)
+                if md_object.format_supported() is not None:
+                    yield md_object
 
     def _filter_stderr(self, errors):
         """

@@ -33,7 +33,22 @@ class ScraperNotFound(BaseScraper):
         return False
 
 
-class FileExists(BaseScraper):
+class DummyScraper(BaseScraper):
+    """Result None as well-formed, if there are no errors"""
+
+    @property
+    def well_formed(self):
+        """
+        Return False if there are errors, otherwise None.
+
+        This is done as well-formedness of the file is not really known.
+        """
+        valid = super(DummyScraper, self).well_formed
+
+        return None if valid else valid
+
+
+class FileExists(DummyScraper):
     """Scraper for the case where file was not found."""
 
     def scrape_file(self):
@@ -50,19 +65,8 @@ class FileExists(BaseScraper):
             )
         self.streams.append(DummyMeta())
 
-    @property
-    def well_formed(self):
-        """
-        Return False if there are errors, otherwise None.
 
-        This is done as well-formedness of the file is not really known.
-        """
-        if self._errors:
-            return False
-        return None
-
-
-class MimeMatchScraper(BaseScraper):
+class MimeMatchScraper(DummyScraper):
     """
     Scraper to check if the predefined mimetype and version match with the
     resulted ones.
@@ -115,7 +119,7 @@ class MimeMatchScraper(BaseScraper):
                               allow_unap_version=True)
 
 
-class DetectedMimeVersionScraper(BaseScraper):
+class DetectedMimeVersionScraper(DummyScraper):
     """
     Use the detected file format version for some file formats.
     Support in metadata scraping and well-formedness checking.
@@ -167,7 +171,7 @@ class DetectedMimeVersionMetadataScraper(DetectedMimeVersionScraper):
             mimetype, version, check_wellformed, params)
 
 
-class ResultsMergeScraper(BaseScraper):
+class ResultsMergeScraper(DummyScraper):
     """
     Scraper to merge the scraper results and handle possible conflicts
     between the scraper tools.
