@@ -8,7 +8,7 @@ from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.ffmpeg.ffmpeg_model import FFMpegSimpleMeta, FFMpegMeta
 from file_scraper.utils import ensure_text, encode_path
-from file_scraper.defaults import UNAP, UNAV
+from file_scraper.defaults import UNAV
 
 try:
     import ffmpeg
@@ -43,10 +43,10 @@ class FFMpegScraper(BaseScraper):
                   file has been scraped without errors and otherwise False
         """
         valid = super(FFMpegScraper, self).well_formed
+        unidentified_format_found = any(
+            stream.format_supported() is False for stream in self.streams)
 
-        if valid and \
-                any([stream.format_supported() is False for stream in
-                     self.streams]):
+        if valid and unidentified_format_found:
             return None
 
         return valid

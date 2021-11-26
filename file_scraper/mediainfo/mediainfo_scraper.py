@@ -55,7 +55,6 @@ class MediainfoScraper(BaseScraper):
 
         return None
 
-
     def scrape_file(self):
         """Populate streams with supported metadata objects."""
         try:

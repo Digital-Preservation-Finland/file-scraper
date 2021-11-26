@@ -111,7 +111,8 @@ class FFMpegSimpleMeta(BaseMeta):
         is_cont = ("codec_type" not in self._probe_results["format"]
                    and self._probe_results["format"]["format_name"] not in
                    ["mp3", "mpegvideo", "wav", "h264", "flac"])
-        if is_cont and not(len(self._probe_results["streams"]) == 1 and
+        if is_cont and not(
+                len(self._probe_results["streams"]) == 1 and
                 self._probe_results["format"]["format_name"] in ["dv"]):
             return True
 
