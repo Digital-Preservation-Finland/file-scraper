@@ -33,8 +33,10 @@ Conflicts:      %{name} < %{version}-%{release}, %{name} > %{version}-%{release}
 Requires:       %{name} = %{version}-%{release}
 Requires:       ghostscript jhove python-lxml dpx-validator dpres-xml-schemas
 Requires:       warc-tools >= 4.8.3
-Requires:       pngcheck libreoffice pspp xhtml1-dtds vnu iso-schematron-xslt1
+Requires:       pngcheck pspp xhtml1-dtds vnu iso-schematron-xslt1
 Requires:       python2-mimeparse
+Requires:       libreoffice7.2 libreoffice7.2-ure libobasis7.2-core libobasis7.2-en-US libobasis7.2-images libobasis7.2-ooofonts
+Requires:       libobasis7.2-writer libreoffice7.2-writer libobasis7.2-calc libreoffice7.2-calc libobasis7.2-impress libreoffice7.2-impress libobasis7.2-math libreoffice7.2-math libobasis7.2-draw libreoffice7.2-draw
 
 %description
 File scraper: Basic file detector and metadata collector tools
