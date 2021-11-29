@@ -123,13 +123,13 @@ class FFMpegSimpleMeta(BaseMeta):
         For example, DV might be either a container or just a raw DV video
         stream.
         """
+        format_name = self._probe_results["format"]["format_long_name"]
+
         is_container = (
-            self._probe_results["format"]["format_long_name"] in
-            self._supported_containers and
+            format_name in self._supported_containers and
             "codec_type" not in self._probe_results["format"])
 
-        if self._probe_results["format"]["format_long_name"] == \
-                "DV (Digital Video)":
+        if is_container and format_name == "DV (Digital Video)":
             is_container = len(self._probe_results["streams"]) > 1
 
         return is_container
