@@ -38,20 +38,24 @@ class FFMpegSimpleMeta(BaseMeta):
         }
     _allow_versions = True   # Allow any version
 
-    _supported_formats = [
+    _supported_containers = [
         "DV (Digital Video)",
         "Matroska / WebM",
+        "MPEG-TS (MPEG-2 Transport Stream)",
+        "MXF (Material eXchange Format)",
+        "QuickTime / MOV",
+        "AVI (Audio Video Interleaved)",
+    ]
+
+    _supported_formats = _supported_containers + [
         "MPEG-1 video",
         "MPEG-2 video",
         "raw MPEG video",
-        "MPEG-TS (MPEG-2 Transport Stream)",
-        "MXF (Material eXchange Format)",
         "FFmpeg video codec #1",
         "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
         "raw H.264 video",
         "MP3 (MPEG audio layer 3)",
         "AAC (Advanced Audio Coding)",
-        "AVI (Audio Video Interleaved)",
         "JPEG 2000",
         "WAV / WAVE (Waveform Audio)",
         "PCM unsigned 16-bit big-endian",
@@ -66,7 +70,6 @@ class FFMpegSimpleMeta(BaseMeta):
         "PCM signed 8-bit",
         "FLAC (Free Lossless Audio Codec)",
         "raw FLAC",
-        "QuickTime / MOV",
         "MP2/3 (MPEG audio layer 2/3)"
         ]
 
@@ -81,11 +84,18 @@ class FFMpegSimpleMeta(BaseMeta):
         self._index = index
         self._ffmpeg_stream = self._current_stream()
 
-    def format_supported(self):
-        """Return value whether the format is supported or not.
+    def av_format_supported(self):
+        """Return value whether the audio/video format is supported or not.
 
-        None - Stream type is not known
-        False - Stream type is known, but format is not supported
+        The stream type may be a video container, video, audio or other kind
+        of stream, such as timetracker data for syncronizing audio/video
+        streams or subtitles. Here we check if the file has any audio or
+        video stream (or a video container) which is not listed in the model.
+        The other stream types (i.e. subtitles or timetrackers) result None.
+
+        None - Stream type is not a video container, video nor audio format
+        False - Stream type is video container, video or audio, but the
+                format is not supported
         True - Supported
         """
         supported = False
@@ -107,16 +117,22 @@ class FFMpegSimpleMeta(BaseMeta):
         return supported
 
     def hascontainer(self):
-        """Check if file has a video container."""
-        is_cont = ("codec_type" not in self._probe_results["format"]
-                   and self._probe_results["format"]["format_name"] not in
-                   ["mp3", "mpegvideo", "wav", "h264", "flac"])
-        if is_cont and not(
-                len(self._probe_results["streams"]) == 1 and
-                self._probe_results["format"]["format_name"] in ["dv"]):
-            return True
+        """Check if file has a video container.
 
-        return False
+        We have to check a little bit more than just the container name.
+        For example, DV might be either a container or just a raw DV video
+        stream.
+        """
+        is_container = (
+            self._probe_results["format"]["format_long_name"] in
+            self._supported_containers and
+            "codec_type" not in self._probe_results["format"])
+
+        if self._probe_results["format"]["format_long_name"] == \
+                "DV (Digital Video)":
+            is_container = len(self._probe_results["streams"]) > 1
+
+        return is_container
 
     @metadata()
     def index(self):

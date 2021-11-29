@@ -43,10 +43,10 @@ class FFMpegScraper(BaseScraper):
                   file has been scraped without errors and otherwise False
         """
         valid = super(FFMpegScraper, self).well_formed
-        unidentified_format_found = any(
-            stream.format_supported() is False for stream in self.streams)
+        unsupported_av_format_found = any(
+            stream.av_format_supported() is False for stream in self.streams)
 
-        if valid and unidentified_format_found:
+        if valid and unsupported_av_format_found:
             return None
 
         return valid
@@ -119,7 +119,7 @@ class FFMpegScraper(BaseScraper):
             if md_class.is_supported(self._predefined_mimetype,
                                      self._predefined_version, self._params):
                 md_object = md_class(**kwargs)
-                if md_object.format_supported() is not None:
+                if md_object.av_format_supported() is not None:
                     yield md_object
 
     def _filter_stderr(self, errors):

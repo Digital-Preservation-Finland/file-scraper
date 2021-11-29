@@ -307,7 +307,7 @@ def test_valid_combined(fullname, mimetype, version):
 def test_invalid_combined(fullname, mimetype, version):
     """
     Integration test for all invalid files.
-    - Test that well_formed is False and mimetype is expected.
+    - Test that well_formed is False or None and mimetype is expected.
     - If well_formed is None, check that Scraper was not found.
     - Skip files that are known cases where it is identified
       differently (but yet correctly) than expected and would be
