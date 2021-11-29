@@ -33,22 +33,27 @@ class ScraperNotFound(BaseScraper):
         return False
 
 
-class DummyScraper(BaseScraper):
-    """Result None as well-formed, if there are no errors"""
+class NoWellformednessBaseScraper(BaseScraper):
+    """
+    The scrapers in this module do not check well-formedness of the file.
+    """
 
     @property
     def well_formed(self):
         """
-        Return False if there are errors, otherwise None.
+        The scrapers in this module do not check well-formedness of the file.
+        Therefore, None is returned as well-formedness, unless an error is
+        found. True is never returned.
 
-        This is done as well-formedness of the file is not really known.
+        None - Well-formedness is unknown
+        False - File is not well-formed (errors found)
         """
-        valid = super(DummyScraper, self).well_formed
+        valid = super(NoWellformednessBaseScraper, self).well_formed
 
         return None if valid else valid
 
 
-class FileExists(DummyScraper):
+class FileExists(NoWellformednessBaseScraper):
     """Scraper for the case where file was not found."""
 
     def scrape_file(self):
@@ -66,7 +71,7 @@ class FileExists(DummyScraper):
         self.streams.append(DummyMeta())
 
 
-class MimeMatchScraper(DummyScraper):
+class MimeMatchScraper(NoWellformednessBaseScraper):
     """
     Scraper to check if the predefined mimetype and version match with the
     resulted ones.
@@ -119,7 +124,7 @@ class MimeMatchScraper(DummyScraper):
                               allow_unap_version=True)
 
 
-class DetectedMimeVersionScraper(DummyScraper):
+class DetectedMimeVersionScraper(NoWellformednessBaseScraper):
     """
     Use the detected file format version for some file formats.
     Support in metadata scraping and well-formedness checking.
@@ -171,7 +176,7 @@ class DetectedMimeVersionMetadataScraper(DetectedMimeVersionScraper):
             mimetype, version, check_wellformed, params)
 
 
-class ResultsMergeScraper(DummyScraper):
+class ResultsMergeScraper(NoWellformednessBaseScraper):
     """
     Scraper to merge the scraper results and handle possible conflicts
     between the scraper tools.
