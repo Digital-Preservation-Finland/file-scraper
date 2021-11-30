@@ -36,7 +36,7 @@ import pytest
 
 from file_scraper.defaults import UNAV
 from file_scraper.office.office_scraper import OfficeScraper
-from tests.common import parse_results
+from tests.common import parse_results, partial_message_included
 
 BASEPATH = "tests/data"
 
@@ -78,6 +78,48 @@ def test_scraper_valid_file(filename, mimetype, evaluate_scraper):
     evaluate_scraper(scraper, correct, False)
     assert scraper.messages()
     assert not scraper.errors()
+
+
+@pytest.mark.parametrize(
+    ["filename", "mimetype", "application"],
+    [
+        ("valid_1.1.odt", "application/vnd.oasis.opendocument.text",
+         "writer"),
+        ("valid_97-2003.doc", "application/msword", "writer"),
+        ("valid_2007 onwards.docx", "application/vnd.openxmlformats-"
+         "officedocument.wordprocessingml.document", "writer"),
+        ("valid_1.1.odp",
+         "application/vnd.oasis.opendocument.presentation", "impress"),
+        ("valid_97-2003.ppt", "application/vnd.ms-powerpoint", "impress"),
+        ("valid_2007 onwards.pptx", "application/vnd.openxml"
+         "formats-officedocument.presentationml.presentation", "impress"),
+        ("valid_1.1.ods",
+         "application/vnd.oasis.opendocument.spreadsheet", "calc"),
+        ("valid_8X.xls", "application/vnd.ms-excel", "calc"),
+        ("valid_2007 onwards.xlsx", "application/vnd."
+         "openxmlformats-officedocument.spreadsheetml.sheet", "calc"),
+        ("valid_1.1.odg", "application/vnd.oasis.opendocument.graphics",
+         "draw"),
+        ("valid_1.0.odf", "application/vnd.oasis.opendocument.formula",
+         "math"),
+    ]
+)
+def test_scraper_correct_application(filename, mimetype, application):
+    """
+    Test that the correct LibreOffice application is selected.
+
+    :filename: Test file name
+    :mimetype: File MIME type
+    :application: Correct office application
+    """
+    testfile = os.path.join("tests/data", mimetype.replace("/", "_"),
+                            filename)
+
+    scraper = OfficeScraper(filename=testfile, mimetype=mimetype)
+    scraper.scrape_file()
+
+    assert partial_message_included("using filter : {}".format(application),
+                                    scraper.messages())
 
 
 @pytest.mark.parametrize(
