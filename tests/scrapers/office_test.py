@@ -111,6 +111,12 @@ def test_scraper_correct_application(filename, mimetype, application):
     """
     Test that the correct LibreOffice application is selected.
 
+    If all necessary LibreOffice components are not installed, some files may
+    be scraped with a different application than intended (e.g. using Impress
+    for ODG files), and this may work, but it should not be relied on. This
+    test makes sure that all components are present and they are used for the
+    correct files.
+
     :filename: Test file name
     :mimetype: File MIME type
     :application: Correct office application
