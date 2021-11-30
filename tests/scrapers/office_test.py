@@ -86,18 +86,21 @@ def test_scraper_valid_file(filename, mimetype, evaluate_scraper):
         ("valid_1.1.odt", "application/vnd.oasis.opendocument.text",
          "writer"),
         ("valid_97-2003.doc", "application/msword", "writer"),
-        ("valid_2007 onwards.docx", "application/vnd.openxmlformats-"
-         "officedocument.wordprocessingml.document", "writer"),
+        ("valid_2007 onwards.docx",
+         "application/vnd.openxmlformats-officedocument.wordprocessingml.document", # noqa
+         "writer"),
         ("valid_1.1.odp",
          "application/vnd.oasis.opendocument.presentation", "impress"),
         ("valid_97-2003.ppt", "application/vnd.ms-powerpoint", "impress"),
-        ("valid_2007 onwards.pptx", "application/vnd.openxml"
-         "formats-officedocument.presentationml.presentation", "impress"),
+        ("valid_2007 onwards.pptx",
+         "application/vnd.openxmlformats-officedocument.presentationml.presentation", # noqa
+         "impress"),
         ("valid_1.1.ods",
          "application/vnd.oasis.opendocument.spreadsheet", "calc"),
         ("valid_8X.xls", "application/vnd.ms-excel", "calc"),
-        ("valid_2007 onwards.xlsx", "application/vnd."
-         "openxmlformats-officedocument.spreadsheetml.sheet", "calc"),
+        ("valid_2007 onwards.xlsx",
+         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+         "calc"),
         ("valid_1.1.odg", "application/vnd.oasis.opendocument.graphics",
          "draw"),
         ("valid_1.0.odf", "application/vnd.oasis.opendocument.formula",
