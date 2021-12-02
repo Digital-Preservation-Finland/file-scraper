@@ -160,7 +160,7 @@ def test_charset_parameter(charset):
         # Empty file
         (
             "tests/data/text_plain/invalid__empty.txt",
-            "(:unav)"
+            "fi-dpres-unacceptable-file-format"
         ),
         # Format version not accepted according to specification
         (

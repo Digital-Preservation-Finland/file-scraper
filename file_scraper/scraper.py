@@ -259,6 +259,11 @@ class Scraper(object):
                       for grader in iter_graders()
                       if grader.is_supported(self.mimetype)]
 
+            # If no graders support the MIME type, we don't know anything
+            # about the MIME type and therefore can not accept it
+            if not grades:
+                return UNACCEPTABLE
+
             # Multiple grades might be returned. For example, Grader
             # (which only performs a quick MIME type check)
             # might grade the main file format as RECOMMENDED, while
