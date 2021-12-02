@@ -13,10 +13,10 @@ This module tests the following scraper classes:
         - Giving None as file path results in 'No filename given' being
           reported in the scraper errors and well_formed is False.
     - ScraperNotFound
-        - version and well_formed are None.
-        - MIME type is what is given to the scraper.
-        - Streams contain only one dict with version and stream_type as None
-          and MIME type as what was given to the scraper.
+        - well_formed is None.
+        - MIME type and version are what is given to the scraper.
+        - Streams contain only one dict with stream_type as None
+          and MIME type and version as what was given to the scraper.
     - MimeMatchScraper
         - well_formed is None if predefined file type (mimetype and version)
           and given file type match
@@ -123,6 +123,22 @@ def test_scraper_not_found(filepath):
         scraped_metadata = scraper.streams[stream_index]
         for key, value in six.iteritems(stream_metadata):
             assert getattr(scraped_metadata, key)() == value
+
+
+def test_scraper_not_found_with_given_mimetype_and_version():
+    """
+    Test that ScraperNotFound retains the MIME type that is given to it
+    when scraping the file.
+    """
+    expected_mimetype = "expected_mimetype"
+    expected_version = "expected_version"
+    scraper = ScraperNotFound(
+        None, mimetype=expected_mimetype, version=expected_version)
+    scraper.scrape_file()
+    stream = scraper.streams[0]
+
+    assert stream.mimetype() == expected_mimetype
+    assert stream.version() == expected_version
 
 
 def test_mime_match_scraper():
