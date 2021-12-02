@@ -7,8 +7,8 @@ from file_scraper.base import BaseScraper
 from file_scraper.defaults import UNAV
 from file_scraper.utils import decode_path, generate_metadata_dict
 from file_scraper.dummy.dummy_model import (
-    DummyMeta, DetectedMimeVersionMeta, DetectedTextVersionMeta,
-    DetectedSpssVersionMeta, DetectedPdfaVersionMeta
+    DummyMeta, ScraperNotFoundMeta, DetectedMimeVersionMeta,
+    DetectedTextVersionMeta, DetectedSpssVersionMeta, DetectedPdfaVersionMeta
 )
 
 LOSE = (None, UNAV, "")
@@ -21,7 +21,12 @@ class ScraperNotFound(BaseScraper):
         """No need to scrape anything, just collect."""
         self._errors.append("Proper scraper was not found. "
                             "The file was not analyzed.")
-        self.streams.append(DummyMeta())
+        self.streams.append(
+            ScraperNotFoundMeta(
+                mimetype=self._predefined_mimetype,
+                version=self._predefined_version
+            )
+        )
 
     @property
     def well_formed(self):

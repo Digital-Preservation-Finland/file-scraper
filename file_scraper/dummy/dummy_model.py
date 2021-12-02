@@ -16,6 +16,37 @@ class DummyMeta(BaseMeta):
         return UNAV
 
 
+class ScraperNotFoundMeta(BaseMeta):
+    """
+    Metadata model for ScraperNotFound scraper. Otherwise minimal model,
+    but allows setting mimetype and version, if detected.
+    """
+
+    def __init__(self, mimetype=None, version=None):
+        """
+        Initialize with given mimetype and version.
+
+        :mimetype: File MIME type
+        :version: File format version
+        """
+        self._mimetype = mimetype
+        self._version = version
+
+    @metadata()
+    def mimetype(self):
+        """Return MIME type"""
+        if self._mimetype:
+            return self._mimetype
+        return UNAV
+
+    @metadata()
+    def version(self):
+        """Return the file format version"""
+        if self._version:
+            return self._version
+        return UNAV
+
+
 class DetectedMimeVersionMeta(BaseMeta):
     """
     This model results the given file format MIME type and version for some
