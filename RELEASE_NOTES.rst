@@ -1,6 +1,11 @@
 Release notes
 =============
 
+Version 0.35-0.36
+-----------------
+
+- Minor fix in e2e tests.
+
 Version 0.34
 ------------
 
