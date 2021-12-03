@@ -75,7 +75,7 @@ As a result the collected metadata and results are in the following instance var
     * Format version: ``scraper.version``
     * Metadata of the streams: ``scraper.streams``
     * Detector and scraper class names, used software, messages and errors: ``scraper.info``
-    * Result of the well-formed check: ``scraper.well_formed``: True: File is well-formed; False: File is not well-formed; None: The file format well-formed check was not done.
+    * Result of the well-formed check: ``scraper.well_formed``: True: File is well-formed; False: File is not well-formed; None: The file format well-formed check was not done or the file/stream format is not supported.
 
 The ``scraper.streams`` includes a following kind of dict::
 
@@ -195,7 +195,7 @@ Misc notes
 
     * Gzipped WARC files are scraped correctly only when ``check_wellformed`` parameter is ``True``.
     * Metadata is not collected for DPX images, only well-formedness is checked.
-    * Retrieving version number can not be done for MS-Office and ODF Formula formats.
+    * Retrieving version number can not be done for ODF Formula formats.
     * Scraping XML files without XML header works correctly only when ``check_wellformed`` parameter is ``True``.
     * Only audio and video stream metadata is collected for audio and video files. Other streams, such as menus and subtitles, are omitted.
     * The software may result arbitrary metadata values, if incorrect MIME type or version is given as a parameter. However, the file is also then denoted as invalid.

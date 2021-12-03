@@ -12,6 +12,9 @@ Version 0.34
   environment.
 - Added grades for files into the scraper output. The grade defines
   whether a file is recommended or suitable for digital preservation.
+- Well-formed result is unknown for non-supported file or stream formats.
+- MIME type is (usually) given even if there is no scraper implementation.
+- Added ProRes grading as bit-level format with recommended format.
 - Added video/avi support.
 
 Version 0.33
