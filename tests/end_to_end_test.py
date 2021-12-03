@@ -216,7 +216,7 @@ ACCEPTABLE_FILES = [
 ]
 
 BIT_LEVEL_WITH_RECOMMENDED_FILES = [
-    "tests/data/video_quicktime/valid__prores_lpcm8.mov"
+    "tests/data/video_quicktime/invalid__prores_lpcm8.mov"
 ]
 
 BIT_LEVEL_FILES = []
