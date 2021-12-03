@@ -133,24 +133,21 @@ IGNORE_FOR_METADATA = IGNORE_VALID + [
     "tests/data/text_xml/valid_1.0_mets_noheader.xml"
 ]
 
-# These invalid files are not recognized or are recognized with different
-# mimetype
-DIFFERENT_MIMETYPE_INVALID = {
-    "tests/data/application_warc/invalid__missing_data.warc.gz": UNAV,
-    "tests/data/application_mxf/invalid__jpeg2000_truncated.mxf": UNAV,
-    "tests/data/application_warc/invalid_0.17_too_short_content_length.warc":
-        UNAV,
-    "tests/data/application_warc/invalid_0.18_too_short_content_length.warc":
-        UNAV,
-    "tests/data/application_warc/invalid_1.0_wrong_version.warc": UNAV,
-    "tests/data/image_x-dpx/invalid_2.0_file_size_error.dpx": UNAV,
-    "tests/data/image_x-dpx/invalid_2.0_missing_data.dpx": UNAV,
-    "tests/data/image_x-dpx/invalid_2.0_wrong_endian.dpx": UNAV,
-    "tests/data/text_csv/invalid__missing_end_quote.csv": UNAV,
-    "tests/data/text_plain/invalid__utf8_just_c3.txt": UNAV,
-    "tests/data/video_mp4/invalid__h264_aac_missing_data.mp4": UNAV,
-    "tests/data/video_x-matroska/invalid_4_ffv1_missing_data.mkv":
-        UNAV}
+# These invalid files are not recognized
+UNAV_MIMETYPE_INVALID = [
+    "tests/data/application_warc/invalid__missing_data.warc.gz",
+    "tests/data/application_mxf/invalid__jpeg2000_truncated.mxf",
+    "tests/data/application_warc/invalid_0.17_too_short_content_length.warc",
+    "tests/data/application_warc/invalid_0.18_too_short_content_length.warc",
+    "tests/data/application_warc/invalid_1.0_wrong_version.warc",
+    "tests/data/image_x-dpx/invalid_2.0_file_size_error.dpx",
+    "tests/data/image_x-dpx/invalid_2.0_missing_data.dpx",
+    "tests/data/image_x-dpx/invalid_2.0_wrong_endian.dpx",
+    "tests/data/text_csv/invalid__missing_end_quote.csv",
+    "tests/data/text_plain/invalid__utf8_just_c3.txt",
+    "tests/data/video_mp4/invalid__h264_aac_missing_data.mp4",
+    "tests/data/video_x-matroska/invalid_4_ffv1_missing_data.mkv"
+]
 
 # Some MIME types can not be detected, either because of the file format
 # itself (eg. text/csv), or because of the used character encoding
@@ -345,8 +342,7 @@ def test_invalid_combined(fullname, mimetype, version):
 
     assert not scraper.well_formed # Should return either False or None
     assert scraper.mimetype == mimetype or (
-            fullname in DIFFERENT_MIMETYPE_INVALID
-            and scraper.mimetype == DIFFERENT_MIMETYPE_INVALID[fullname])
+        fullname in UNAV_MIMETYPE_INVALID and scraper.mimetype == UNAV)
 
 
 @pytest.mark.parametrize(("fullname", "mimetype", "version"),
@@ -507,6 +503,7 @@ def test_coded_filename(testpath, fullname, mimetype, version):
          "application/warc", "1.0", None, False),
     ]
 )
+# pylint: disable=too-many-arguments
 def test_given_filetype(filepath, params, well_formed, expected_mimetype,
                         expected_version, expected_charset, meta_well_formed):
     """
