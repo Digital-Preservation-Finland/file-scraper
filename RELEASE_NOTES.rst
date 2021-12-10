@@ -1,6 +1,12 @@
 Release notes
 =============
 
+Version 0.37
+------------
+
+- Use LibreOffice 7.2 to scrape MS Office formats. This fixes stuck processes
+  with certain MS Excel files.
+
 Version 0.35-0.36
 -----------------
 
