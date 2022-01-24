@@ -172,7 +172,8 @@ class Scraper(object):
         """
         self.detect_filetype()
 
-        # MIME type could not be determined or an error occured while detection process
+        # MIME type could not be determined
+        # or an error occured while detection process
         if not self._predefined_mimetype or self.well_formed is False:
             self.streams = {}
             return

@@ -63,11 +63,11 @@ def test_empty_file():
 
 def test_missing_file():
     """Test missing file."""
-    scraper = Scraper("missing_file")
+    scraper = Scraper("missing_file", mimetype="application/pdf")
     scraper.scrape()
     assert not scraper.well_formed
 
-    scraper = Scraper(None)
+    scraper = Scraper(None, mimetype="application/pdf")
     scraper.scrape()
     assert not scraper.well_formed
 
@@ -88,6 +88,14 @@ def test_missing_file():
          {"mimetype": "video/mpeg"},
          {"_predefined_mimetype": "video/mpeg", "_predefined_version": None,
           "well_formed": None}),
+        ("tests/data/application_pdf/valid_A-1a.pdf",
+         {"mimetype": "application/pdf"},
+         {"_predefined_mimetype": "application/pdf",
+          "_predefined_version": "A-1a", "well_formed": None}),
+        ("missing_file",
+         {"mimetype": "application/pdf"},
+         {"_predefined_mimetype": "application/pdf",
+          "_predefined_version": None, "well_formed": False}),
     ]
 )
 def test_detect_filetype(filename, params, expected_results):
