@@ -66,10 +66,12 @@ def test_missing_file():
     scraper = Scraper("missing_file", mimetype="application/pdf")
     scraper.scrape()
     assert not scraper.well_formed
+    assert len(scraper.info) == 1 and scraper.info[0]["class"] == "FileExists"
 
     scraper = Scraper(None, mimetype="application/pdf")
     scraper.scrape()
     assert not scraper.well_formed
+    assert len(scraper.info) == 1 and scraper.info[0]["class"] == "FileExists"
 
 
 @pytest.mark.parametrize(
