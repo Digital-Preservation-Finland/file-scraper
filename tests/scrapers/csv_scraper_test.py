@@ -34,8 +34,8 @@ import os
 import pytest
 import six
 
-from file_scraper.csv.csv_model import CsvMeta
-from file_scraper.csv.csv_scraper import CsvScraper
+from file_scraper.csv_scraper.csv_model import CsvMeta
+from file_scraper.csv_scraper.csv_scraper import CsvScraper
 from file_scraper.defaults import UNAP, UNAV
 from tests.common import parse_results, partial_message_included
 
@@ -61,10 +61,26 @@ TEST_DATA_PATH = "tests/data/text_csv"
                             "version": UNAP,
                             "delimiter": ",",
                             "separator": "\n",
+                            "quotechar": "\"",
                             "first_line": ["1997", "Ford", "E350",
                                            "ac, abs, moon",
                                            "3000.00"]}}},
          None, {}),
+        ("valid__quotechar.csv", {
+            "purpose": "Test different quote character.",
+            "stdout_part": "successfully",
+            "stderr_part": "",
+            "streams": {0: {"stream_type": "text",
+                            "index": 0,
+                            "mimetype": MIMETYPE,
+                            "version": UNAP,
+                            "delimiter": ",",
+                            "separator": "\n",
+                            "quotechar": "|",
+                            "first_line": ["1997", "Ford", "E350",
+                                           "ac, abs, moon",
+                                           "3000.00"]}}},
+         None, {"quotechar": "|"}),
         ("valid__ascii_header.csv", {
             "purpose": "Test valid file with header.",
             "stdout_part": "successfully",
@@ -75,6 +91,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
                             "version": UNAP,
                             "delimiter": ",",
                             "separator": "\n",
+                            "quotechar": "\"",
                             "first_line": ["year", "brand", "model", "detail",
                                            "other"]}}},
          ["year", "brand", "model", "detail", "other"], {}),
@@ -88,6 +105,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
                             "version": UNAV,
                             "delimiter": ",",
                             "separator": "\n",
+                            "quotechar": "\"",
                             "first_line": ["1997", "Ford", "E350",
                                            "ac, abs, moon",
                                            "3000.00"]}}},
@@ -102,6 +120,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
                             "version": UNAP,
                             "delimiter": ";",
                             "separator": "\n",
+                            "quotechar": "\"",
                             "first_line": ["year,brand,model,detail,other"]}}},
          ["year,brand,model,detail,other"], {}),
         ("valid__ascii_header.csv", {
@@ -115,6 +134,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
                             "version": UNAV,
                             "delimiter": ";",
                             "separator": "\n",
+                            "quotechar": "\"",
                             "first_line": ["year,brand,model,detail,other"]}}},
          ["year", "brand", "model", "detail", "other"], {}),
         ("valid__iso8859-15.csv", {
@@ -127,6 +147,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
                             "version": UNAP,
                             "delimiter": ";",
                             "separator": "\n",
+                            "quotechar": "\"",
                             "first_line": ["year,brand,model,detail,other"]}}},
          ["year,brand,model,detail,other"], {"charset": "iso8859-15"}),
         ("valid__utf8.csv", {
@@ -139,6 +160,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
                             "version": UNAP,
                             "delimiter": ";",
                             "separator": "\n",
+                            "quotechar": "\"",
                             "first_line": ["year,brand,model,detail,other"]}}},
          ["year,brand,model,detail,other"], {"charset": "utf-8"})
     ]
@@ -160,7 +182,7 @@ def test_scraper(filename, result_dict, header,
         "separator": correct.streams[0]["separator"],
         "delimiter": correct.streams[0]["delimiter"],
         "fields": header,
-        "mimetype": "text/csv"}
+        "mimetype": MIMETYPE}
     params.update(extra_params)
     scraper = CsvScraper(filename=correct.filename, mimetype=MIMETYPE,
                          params=params)
@@ -182,6 +204,7 @@ def test_scraper(filename, result_dict, header,
                             "version": UNAP,
                             "delimiter": ",",
                             "separator": "\n",
+                            "quotechar": "\"",
                             "first_line": ["test1", "test2"]}}},
          None, {}, 1048500),
         ("invalid__too_large_field.csv", {
@@ -194,6 +217,7 @@ def test_scraper(filename, result_dict, header,
                             "version": UNAV,
                             "delimiter": ",",
                             "separator": "\n",
+                            "quotechar": "\"",
                             "first_line": ["test1", "test2"]}}},
          None, {}, 1048600),
     ]
@@ -289,6 +313,7 @@ def test_no_parameters(filename, evaluate_scraper):
                                   "version": UNAP,
                                   "delimiter": ",",
                                   "separator": "\r\n",
+                                  "quotechar": "\"",
                                   "first_line": ["year", "brand", "model",
                                                  "detail", "other"]}}},
                             True)

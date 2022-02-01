@@ -2,7 +2,7 @@
 # flake8: noqa
 from __future__ import unicode_literals
 
-from file_scraper.csv.csv_scraper import CsvScraper
+from file_scraper.csv_scraper.csv_scraper import CsvScraper
 from file_scraper.detectors import (FidoDetector, MagicDetector,
                                     PredefinedDetector)
 from file_scraper.dpx.dpx_scraper import DpxScraper

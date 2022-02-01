@@ -34,6 +34,7 @@ class CsvMeta(BaseMeta):
         self._well_formed = well_formed
         self._csv_delimiter = params["delimiter"]
         self._csv_separator = params["separator"]
+        self._csv_quotechar = params["quotechar"]
         self._csv_fields = params["fields"]
         self._csv_first_line = params["first_line"]
 
@@ -66,6 +67,11 @@ class CsvMeta(BaseMeta):
     def separator(self):
         """Return separator."""
         return self._csv_separator
+
+    @metadata()
+    def quotechar(self):
+        """Return quotechar"""
+        return self._csv_quotechar
 
     @metadata()
     def first_line(self):

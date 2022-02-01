@@ -51,6 +51,7 @@ CHANGE_FIDO = {
     "application_mxf/valid__jpeg2000_lossless-wavelet_lossy-"
     "subsampling.mxf": None,
     "text_csv/valid__ascii.csv": None,
+    "text_csv/valid__quotechar.csv": None,
     "text_csv/valid__ascii_header.csv": None,
     "text_csv/valid__header_only.csv": None,
     "text_csv/valid__iso8859-15.csv": None,
@@ -84,6 +85,7 @@ CHANGE_MAGIC = {
     "application_x-spss-por/valid__spss24-dot.por": "text/plain",
     "application_x-spss-por/valid__spss24-dates.por": "text/plain",
     "text_csv/valid__ascii.csv": "text/plain",
+    "text_csv/valid__quotechar.csv": "text/plain",
     "text_csv/valid__ascii_header.csv": "text/plain",
     "text_csv/valid__header_only.csv": "text/plain",
     "text_csv/valid__iso8859-15.csv": "text/plain",

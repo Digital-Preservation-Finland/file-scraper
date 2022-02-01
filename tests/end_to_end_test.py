@@ -154,6 +154,7 @@ UNAV_MIMETYPE_INVALID = [
 # (e.g. UTF-32). The MIME type of these files must be given as a parameter.
 GIVEN_MIMETYPES = {
     "tests/data/text_csv/valid__ascii.csv": "text/csv",
+    "tests/data/text_csv/valid__quotechar.csv": "text/csv",
     "tests/data/text_csv/valid__ascii_header.csv": "text/csv",
     "tests/data/text_csv/valid__header_only.csv": "text/csv",
     "tests/data/text_csv/valid__iso8859-15.csv": "text/csv",

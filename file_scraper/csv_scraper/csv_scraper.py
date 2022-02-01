@@ -7,7 +7,7 @@ from io import open as io_open
 import six
 
 from file_scraper.base import BaseScraper
-from file_scraper.csv.csv_model import CsvMeta
+from file_scraper.csv_scraper.csv_model import CsvMeta
 
 
 class CsvScraper(BaseScraper):
@@ -30,6 +30,7 @@ class CsvScraper(BaseScraper):
         first_line = None
         delimiter = None
         separator = None
+        quotechar = None
         reader = None
 
         try:
@@ -37,6 +38,7 @@ class CsvScraper(BaseScraper):
 
             delimiter = self._params.get("delimiter", None)
             separator = self._params.get("separator", None)
+            quotechar = self._params.get("quotechar", None)
 
             if delimiter is None or separator is None:
                 # Sniffer may not be able to find any delimiter or separator
@@ -48,13 +50,20 @@ class CsvScraper(BaseScraper):
                     delimiter = dialect.delimiter
                 if separator is None:
                     separator = dialect.lineterminator
+                if quotechar is None:
+                    quotechar = dialect.quotechar
+
+            # Default quotechar according to csv module documentation is '"'.
+            if quotechar is None:
+                quotechar = "\""
 
             csv.register_dialect(
                 "new_dialect",
-                # 'delimiter' accepts only byte strings on Python 2 and
-                # only Unicode strings on Python 3
+                # 'delimiter' and 'quotechar' accepts only byte strings on
+                # Python 2 and only Unicode strings on Python 3
                 delimiter=str(delimiter),
                 lineterminator=separator,
+                quotechar=str(quotechar),
                 strict=True,
                 doublequote=True)
 
@@ -102,6 +111,7 @@ class CsvScraper(BaseScraper):
         self.streams = list(self.iterate_models(
             well_formed=self.well_formed, params={"delimiter": delimiter,
                                                   "separator": separator,
+                                                  "quotechar": quotechar,
                                                   "fields": fields,
                                                   "first_line": first_line}))
         self._check_supported(allow_unap_version=True)

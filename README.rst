@@ -108,6 +108,7 @@ The following additional arguments for the Scraper are also possible:
 
         * Delimiter between elements: ``delimiter=<element delimiter>``
         * Record separator (line terminator): ``separator=<record separator>``
+        * Quote character: ``quotechar=<quote character>``
         * Header field names as list of strings: ``fields=[<field1>, <field2>, ...]``
         * NOTE: If these arguments are not given, the scraper tries to find out the delimiter and separator from the CSV, but may give false results.
         * NOTE: See giving MIME type and character encoding below. CSV files are typically detected as text/plain by default.
