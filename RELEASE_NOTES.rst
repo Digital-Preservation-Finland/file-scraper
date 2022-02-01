@@ -1,6 +1,11 @@
 Release notes
 =============
 
+Version 0.38
+------------
+
+- Fix bug in detecting missing files when mimetype option was given
+
 Version 0.37
 ------------
 
