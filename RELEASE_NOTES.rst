@@ -1,6 +1,11 @@
 Release notes
 =============
 
+Version 0.39
+------------
+
+- Update version number in file_scraper/__init__.py
+
 Version 0.38
 ------------
 
