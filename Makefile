@@ -8,7 +8,6 @@ info:
 		@echo
 		@echo "Usage:"
 		@echo "  make clean             - Clean some temporary file"
-		@echo "  make test              - Run all unit tests"
 		@echo "  make install           - Install file-scraper"
 		@echo
 
