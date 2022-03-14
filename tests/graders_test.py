@@ -2,8 +2,9 @@
 from collections import namedtuple
 
 import pytest
-from file_scraper.defaults import ACCEPTABLE, RECOMMENDED, UNACCEPTABLE
-from file_scraper.graders import MIMEGrader, TextGrader
+from file_scraper.defaults import (
+    ACCEPTABLE, RECOMMENDED, UNACCEPTABLE, BIT_LEVEL_WITH_RECOMMENDED)
+from file_scraper.graders import MIMEGrader, TextGrader, ContainerGrader
 
 FakeScraper = namedtuple("FakeScraper", ["mimetype", "version", "streams"])
 
@@ -42,4 +43,63 @@ def test_mime_grader(scraper, expected_grade):
 def test_text_grader(scraper, expected_grade):
     """Test that TextGrader gives expected grade for file."""
     grader = TextGrader(scraper)
+    assert grader.grade() == expected_grade
+
+
+@pytest.mark.parametrize(
+    ('scraper', 'expected_grade'),
+    [
+        # All streams recommended
+        (
+            FakeScraper(
+                'video/MP2T', '(:unap)',
+                {
+                    0: {'mimetype': 'video/MP2T', 'version': '(:unap)'},
+                    1: {'mimetype': 'audio/mp4', 'version': '(:unap)'},
+                    2: {'mimetype': 'video/mp4', 'version': '(:unap)'}
+                }
+            ),
+            RECOMMENDED
+        ),
+        # Otherwise recommended but one acceptable stream
+        (
+            FakeScraper(
+                'video/mp4', '(:unap)',
+                {
+                    0: {'mimetype': 'video/mp4', 'version': '(:unap)'},
+                    1: {'mimetype': 'video/mp4', 'version': '(:unap)'},
+                    2: {'mimetype': 'audio/mpeg', 'version': '2'}
+                }
+            ),
+            ACCEPTABLE
+        ),
+        # Contains a stream that is only accepted to bit-level preservation
+        (
+            FakeScraper(
+                'video/quicktime', '(:unap)',
+                {
+                    0: {'mimetype': 'video/quicktime', 'version': '(:unap)'},
+                    1: {'mimetype': 'audio/mp4', 'version': '(:unap)'},
+                    2: {'mimetype': 'video/x.fi-dpres.prores',
+                        'version': '(:unap)'}
+                }
+            ),
+            BIT_LEVEL_WITH_RECOMMENDED
+        ),
+        # Contains unacceptable stream
+        (
+            FakeScraper(
+                'video/mj2', '(:unap)',
+                {
+                    0: {'mimetype': 'video/mj2', 'version': '(:unap)'},
+                    1: {'mimetype': 'audio/unacceptable', 'version': '0'},
+                }
+            ),
+            UNACCEPTABLE
+        ),
+    ]
+)
+def test_container_grader(scraper, expected_grade):
+    """Test that ContainerGrader gives expected grade for file."""
+    grader = ContainerGrader(scraper)
     assert grader.grade() == expected_grade
