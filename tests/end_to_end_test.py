@@ -213,6 +213,7 @@ ACCEPTABLE_FILES = [
     "tests/data/video_dv/valid__pal_lossy.dv",
     "tests/data/video_quicktime/valid__dv_lpcm8.mov",
     "tests/data/video_avi/valid__mpeg2_mp3.avi",
+    "tests/data/video_MP2T/valid__mpeg2_mp3.ts",
 ]
 
 BIT_LEVEL_WITH_RECOMMENDED_FILES = [
@@ -225,9 +226,6 @@ UNACCEPTABLE_FILES = [
     # WARC 0.17 and 0.18 are not accepted versions
     "tests/data/application_warc/valid_0.17.warc",
     "tests/data/application_warc/valid_0.18.warc",
-
-    # MP2T container is not allowed to contain an audio stream
-    "tests/data/video_MP2T/valid__mpeg2_mp3.ts",
 
     # Acceptable container with a cinepak stream, which is not supported
     "tests/data/video_quicktime/invalid__cinepak_lpcm8.mov"

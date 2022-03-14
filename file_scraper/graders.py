@@ -166,8 +166,8 @@ class MIMEGrader(BaseGrader):
             "1.0": RECOMMENDED
         },
         "application/x-siard": {
-            "2.0": RECOMMENDED,
-            "2.1": RECOMMENDED
+            "2.1.1": RECOMMENDED,
+            "2.2": RECOMMENDED
         },
         "application/x-spss-por": {
             UNAP: RECOMMENDED
@@ -177,7 +177,7 @@ class MIMEGrader(BaseGrader):
             "7.3": RECOMMENDED
         },
         "application/x-hdf5": {
-            "1.1": RECOMMENDED
+            "1.10": RECOMMENDED
         },
         "application/msword": {
             "97-2003": ACCEPTABLE
@@ -225,7 +225,7 @@ class MIMEGrader(BaseGrader):
             "1989a": ACCEPTABLE
         },
         "video/avi": {  # Container
-            UNAP: RECOMMENDED
+            UNAP: ACCEPTABLE
         },
         "video/x-matroska": {  # Container
             "4": RECOMMENDED
@@ -281,7 +281,9 @@ class TextGrader(BaseGrader):
         "application/xhtml+xml": {
             "1.0": RECOMMENDED,
             "1.1": RECOMMENDED,
-            "5.0": RECOMMENDED
+            "5.0": RECOMMENDED,
+            "5.1": RECOMMENDED,
+            "5.2": RECOMMENDED
         },
         "text/xml": {
             "1.0": RECOMMENDED,
@@ -297,7 +299,7 @@ class TextGrader(BaseGrader):
             UNAP: RECOMMENDED
         },
         "application/gml+xml": {
-            "3.2.1": RECOMMENDED,
+            "3.2.2": RECOMMENDED,
         },
         "application/vnd.google-earth.kml+xml": {
             "2.3": RECOMMENDED,
@@ -329,28 +331,11 @@ class ContainerGrader(BaseGrader):
     """
     Grade file based on container formats and what they're allowed to contain.
 
-    Requirements based on DPRES File Formats specification 1.9.0, section 6,
+    Requirements based on DPRES File Formats specification 1.10.0, section 6,
     tables 2 and 3.
     """
     recommended_formats = {
         # Recommended
-        "video/avi": {
-            # Audio
-            ("audio/L16", UNAP),
-            ("audio/L8", UNAP),
-            ("audio/L20", UNAP),
-            ("audio/L24", UNAP),
-            # AVI containers are only recommended if they contain no
-            # video streams according to spec
-        },
-        "video/dv": {
-            ("audio/L16", UNAP),
-            ("audio/L8", UNAP),
-            ("audio/L20", UNAP),
-            ("audio/L24", UNAP),
-            # DV containers are only recommended if they contain no
-            # video streams according to spec
-        },
         "video/x-matroska": {
             # Audio
             ("audio/L16", UNAP),
@@ -396,7 +381,7 @@ class ContainerGrader(BaseGrader):
             ("audio/L24", UNAP),
 
             # Video
-            ("video/jpeg2000", UNAP)
+            ("video/jpeg2000", UNAP),
         },
         "video/quicktime": {
             # Audio
@@ -424,12 +409,24 @@ class ContainerGrader(BaseGrader):
             # Audio
             ("audio/mpeg", "1"),
             ("audio/mpeg", "2"),
+            ("audio/L16", UNAP),
+            ("audio/L8", UNAP),
+            ("audio/L20", UNAP),
+            ("audio/L24", UNAP),
 
             # Video
             ("video/dv", UNAP),
-            ("video/mpeg", "2"),  # H262 only
+            ("video/mpeg", "1"),
+            ("video/mpeg", "2"),
         },
         "video/dv": {
+            # Audio
+            ("audio/L16", UNAP),
+            ("audio/L8", UNAP),
+            ("audio/L20", UNAP),
+            ("audio/L24", UNAP),
+
+            # Video
             ("video/dv", UNAP)
         },
         "video/MP1S": {
@@ -438,7 +435,8 @@ class ContainerGrader(BaseGrader):
             ("audio/mpeg", "2"),
 
             # Video
-            ("video/mpeg", "2"),  # H262 only
+            ("video/mpeg", "1"),
+            ("video/mpeg", "2"),
         },
         "video/MP2P": {
             # Audio
@@ -446,10 +444,17 @@ class ContainerGrader(BaseGrader):
             ("audio/mpeg", "2"),
 
             # Video
-            ("video/mpeg", "2"),  # H262 only
+            ("video/mpeg", "1"),
+            ("video/mpeg", "2"),
         },
         "video/MP2T": {
-            ("video/mpeg", "2"),  # H262 only
+            # Audio
+            ("audio/mpeg", "1"),
+            ("audio/mpeg", "2"),
+
+            # Video
+            ("video/mpeg", "1"),
+            ("video/mpeg", "2"),
         },
         "video/mp4": {
             # Audio
@@ -457,7 +462,8 @@ class ContainerGrader(BaseGrader):
             ("audio/mpeg", "2"),
 
             # Video
-            ("video/mpeg", "2"),  # H262 only
+            ("video/mpeg", "1"),
+            ("video/mpeg", "2"),
         },
         "application/mxf": {
             # Audio
@@ -466,7 +472,8 @@ class ContainerGrader(BaseGrader):
 
             # Video
             ("video/dv", UNAP),
-            ("video/mpeg", "2"),  # Must be H262 only
+            ("video/mpeg", "1"),
+            ("video/mpeg", "2"),
         },
         "video/quicktime": {
             # Audio
@@ -475,7 +482,8 @@ class ContainerGrader(BaseGrader):
 
             # Video
             ("video/dv", UNAP),
-            ("video/mpeg", "2"),  # Must be H262 only
+            ("video/mpeg", "1"),
+            ("video/mpeg", "2"),
         }
     }
     bit_level_recommended_formats = {

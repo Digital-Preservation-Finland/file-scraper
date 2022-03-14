@@ -1,6 +1,12 @@
 Release notes
 =============
 
+Unreleased
+-----------
+
+- Changed grading according to version 1.10.0 of DPS File Formats
+  specifications
+
 Version 0.39
 ------------
 

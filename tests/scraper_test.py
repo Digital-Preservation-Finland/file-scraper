@@ -182,11 +182,11 @@ def test_charset_parameter(charset):
             "tests/data/video_x-matroska/valid_4_ffv1_flac.mkv",
             "fi-dpres-recommended-file-format"
         ),
-        # Unacceptable container file format due to containing
-        # an audio stream
+        # Acceptable container file format due to containing acceptable audio
+        # and video streams
         (
             "tests/data/video_MP2T/valid__mpeg2_mp3.ts",
-            "fi-dpres-unacceptable-file-format"
+            "fi-dpres-acceptable-file-format"
         ),
     ]
 )
