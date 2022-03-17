@@ -126,7 +126,7 @@ from tests.common import (parse_results, partial_message_included)
         ("invalid__empty.gif", {
             "purpose": "Test empty file.",
             "stdout_part": "",
-            "stderr_part": "Invalid GIF header"})
+            "stderr_part": "Wrong Application Extension block size"})
     ]
 )
 def test_scraper_gif(filename, result_dict, evaluate_scraper):
@@ -478,7 +478,8 @@ def test_scraper_html(filename, result_dict, mimetype, charset,
         ("invalid_2_bwf_data_bytes_missing.wav", {
             "purpose": "Test data bytes missing.",
             "stdout_part": "",
-            "stderr_part": "Invalid character in Chunk ID"}),
+            "stderr_part": "Chunk ID character outside printable "
+                           "ASCII range"}),
         ("invalid_2_bwf_RIFF_edited.wav", {
             "purpose": "Test edited RIFF.",
             "stdout_part": "",
