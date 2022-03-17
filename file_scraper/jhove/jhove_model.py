@@ -10,7 +10,8 @@ from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAP, UNAV
 from file_scraper.utils import metadata
 
-NAMESPACES = {"j": "http://hul.harvard.edu/ois/xml/ns/jhove",
+NAMESPACES = {"j_harvard": "http://hul.harvard.edu/ois/xml/ns/jhove",
+              "j_opf": "http://schema.openpreservation.org/ois/xml/ns/jhove",
               "aes": "http://www.aes.org/audioObject"}
 
 
@@ -25,7 +26,7 @@ def get_field(report, field):
     """
     if report is None:
         return UNAV
-    query = "//j:%s/text()" % field
+    query = "(//j_harvard:%s | //j_opf:%s)/text()" % (field, field)
     results = report.xpath(query, namespaces=NAMESPACES)
     if not results:
         return UNAV
@@ -114,7 +115,9 @@ class JHoveHtmlMeta(JHoveBaseMeta):
 
     def _get_charset_html(self):
         """Get the charset from the JHove report for HTML files."""
-        query = '//j:property[j:name="Content"]//j:value/text()'
+        query = ('(//j_harvard:property[j_harvard:name="Content"]//j_harvard:'
+                 'value | //j_opf:property[j_opf:name="Content"]//j_opf:'
+                 'value)/text()')
         results = self._report.xpath(query, namespaces=NAMESPACES)
         try:
             result_mimetype = mimeparse.parse_mime_type(results[0])
@@ -125,7 +128,9 @@ class JHoveHtmlMeta(JHoveBaseMeta):
 
     def _get_charset_xml(self):
         """Get the charset from the JHove report for XHTML files."""
-        query = '//j:property[j:name="Encoding"]//j:value/text()'
+        query = ('(//j_harvard:property[j_harvard:name="Encoding"]//j_harvard:'
+                 'value | //j_opf:property[j_opf:name="Encoding"]//j_opf:'
+                 'value)/text()')
         results = self._report.xpath(query, namespaces=NAMESPACES)
         try:
             return results[0]
