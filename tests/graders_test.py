@@ -4,7 +4,7 @@ from collections import namedtuple
 import pytest
 from file_scraper.defaults import (
     ACCEPTABLE, RECOMMENDED, UNACCEPTABLE, BIT_LEVEL_WITH_RECOMMENDED)
-from file_scraper.graders import MIMEGrader, TextGrader, ContainerGrader
+from file_scraper.graders import MIMEGrader, TextGrader, ContainerStreamsGrader
 
 FakeScraper = namedtuple("FakeScraper", ["mimetype", "version", "streams"])
 
@@ -99,7 +99,7 @@ def test_text_grader(scraper, expected_grade):
         ),
     ]
 )
-def test_container_grader(scraper, expected_grade):
-    """Test that ContainerGrader gives expected grade for file."""
-    grader = ContainerGrader(scraper)
+def test_container_streams_grader(scraper, expected_grade):
+    """Test that ContainerStreamsGrader gives expected grade for file."""
+    grader = ContainerStreamsGrader(scraper)
     assert grader.grade() == expected_grade

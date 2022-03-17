@@ -265,11 +265,11 @@ class Scraper(object):
             if not grades:
                 return UNACCEPTABLE
 
-            # Multiple grades might be returned. For example, Grader
-            # (which only performs a quick MIME type check)
-            # might grade the main file format as RECOMMENDED, while
-            # ContainerGrader might give it a lower grade because the contained
-            # streams do not fulfill the additional requirements.
+            # Multiple grades might be returned. For example, Grader (which
+            # only performs a quick MIME type check) might grade the main file
+            # format as RECOMMENDED, while ContainerStreamsGrader might give it
+            # a lower grade because the contained streams do not fulfill the
+            # additional requirements.
             #
             # In such cases, pick the lowest assigned grade.
             grade = next(

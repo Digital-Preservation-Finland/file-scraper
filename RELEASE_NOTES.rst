@@ -6,6 +6,8 @@ Unreleased
 
 - Changed grading according to version 1.10.0 of DPS File Formats
   specifications
+- Changed the name ``ContainerGrader`` to a more precise
+  ``ContainerStreamsGrader``
 
 Version 0.39
 ------------

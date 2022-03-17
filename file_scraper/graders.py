@@ -327,9 +327,11 @@ class TextGrader(BaseGrader):
         return grade
 
 
-class ContainerGrader(BaseGrader):
+class ContainerStreamsGrader(BaseGrader):
     """
-    Grade file based on container formats and what they're allowed to contain.
+    Grade file based on what certain containers are allowed to contain.
+    This grader does not check the grade of the container itself, the grade
+    of the container should be evaluated by MIMEGrader.
 
     Requirements based on DPRES File Formats specification 1.10.0, section 6,
     tables 2 and 3.
