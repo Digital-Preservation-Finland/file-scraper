@@ -10,7 +10,12 @@ This module tests that:
           header".
         - For truncated files, scraper errors contains "Unknown data block
           type".
-        - For empty files, scraper errors contains "Invalid GIF header".
+        - For empty files, scraper errors contains "Wrong Application Extension
+          block size".
+    - The scraper can handle output from old versions of JHove. JHove's
+      namespaces were updated between versions 1.20 and 1.24, from the old
+      Harvard namespace to the new OPF namespace. Scraper should function with
+      both versions.
     - MIME type, version, streams and well-formedness of tiff files is tested
       correctly.
         - For well-formed files, scraper messages contains "Well-Formed and
@@ -66,8 +71,8 @@ This module tests that:
     - MIME type, version, streams and well-formedness of bwf and wav files is
       tested correctly
         - For valid files, scraper messages contains "Well-formed and valid".
-        - For bwf files with missing bytes, scraper messages contains "Invalid
-          character in Chunk ID".
+        - For bwf files with missing bytes, scraper messages contains "Chunk ID
+          character outside printable ASCII range".
         - For bwf and wav files with bytes removed from the RIFF tag, scraper
           errors contains "Invalid chunk size".
         - For empty files, scraper errors contains "Unexpected end of file".
