@@ -97,6 +97,7 @@ from __future__ import unicode_literals
 
 import pytest
 
+from file_scraper.shell import Shell
 from file_scraper.defaults import UNAV
 from file_scraper.jhove.jhove_scraper import (JHoveGifScraper,
                                               JHoveHtmlScraper,
@@ -137,6 +138,65 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
     :result_dict: Result dict containing test purpose, and parts of
                   expected results of stdout and stderr
     """
+    for version in ["1987", "1989"]:
+        filename = filename.replace("XXXX", version)
+        correct = parse_results(filename, "image/gif",
+                                result_dict, True)
+        correct.update_mimetype("image/gif")
+        scraper = JHoveGifScraper(filename=correct.filename,
+                                  mimetype="image/gif")
+        scraper.scrape_file()
+
+        evaluate_scraper(scraper, correct)
+
+
+@pytest.mark.parametrize(
+    ["filename", "result_dict"],
+    [
+        ("valid_XXXXa.gif", {
+            "purpose": "Test valid file.",
+            "stdout_part": "Well-Formed and valid",
+            "stderr_part": ""}),
+        ("invalid_XXXXa_broken_header.gif", {
+            "purpose": "Test invalid header.",
+            "stdout_part": "",
+            "stderr_part": "Invalid GIF header"}),
+        ("invalid_XXXXa_truncated.gif", {
+            "purpose": "Test truncated file.",
+            "stdout_part": "",
+            "stderr_part": "Unknown data block type"}),
+        ("invalid__empty.gif", {
+            "purpose": "Test empty file.",
+            "stdout_part": "",
+            "stderr_part": "Wrong Application Extension block size"})
+    ]
+)
+def test_old_namespace(filename, result_dict, evaluate_scraper, monkeypatch):
+    """
+    Test that scraper works as expected even if it were to be run with old
+    version of JHove. I.e. if the namespace is the old Harvard variant.
+
+    Mocks the results of Shell stdout to edit the XML output.
+    """
+    @property
+    def _mock_stdout_raw(self):
+        """
+        Standard output from command.
+        Replace new OPF namespace with old Harvard one.
+        """
+        mock_output = self.popen()["stdout"]
+        assert (b"http://schema.openpreservation.org/ois/xml/ns/jhove" in
+                mock_output)
+        mock_output = mock_output.replace(
+                b"http://schema.openpreservation.org/ois/xml/ns/jhove",
+                b"http://hul.harvard.edu/ois/xml/ns/jhove")
+        mock_output = mock_output.replace(
+                b"https://schema.openpreservation.org/ois/xml/xsd/jhove/"
+                b"1.8/jhove.xsd",
+                b"http://hul.harvard.edu/ois/xml/xsd/jhove/1.6/jhove.xsd")
+        return mock_output
+
+    monkeypatch.setattr(Shell, "stdout_raw", _mock_stdout_raw)
     for version in ["1987", "1989"]:
         filename = filename.replace("XXXX", version)
         correct = parse_results(filename, "image/gif",
