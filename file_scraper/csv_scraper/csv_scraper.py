@@ -59,7 +59,7 @@ class CsvScraper(BaseScraper):
 
             csv.register_dialect(
                 "new_dialect",
-                # 'delimiter' and 'quotechar' accepts only byte strings on
+                # 'delimiter' and 'quotechar' accept only byte strings on
                 # Python 2 and only Unicode strings on Python 3
                 delimiter=str(delimiter),
                 lineterminator=separator,
