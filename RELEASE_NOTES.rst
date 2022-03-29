@@ -1,13 +1,14 @@
 Release notes
 =============
 
-Unreleased
------------
+Version 0.40
+------------
 
 - Changed grading according to version 1.10.0 of DPS File Formats
   specifications
 - Changed the name ``ContainerGrader`` to a more precise
   ``ContainerStreamsGrader``
+- Addeed quote character support for CSV files.
 
 Version 0.39
 ------------
