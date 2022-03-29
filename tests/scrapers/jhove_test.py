@@ -210,6 +210,7 @@ def test_old_namespace(filename, result_dict, evaluate_scraper, monkeypatch):
         scraper = JHoveGifScraper(filename=correct.filename,
                                   mimetype="image/gif")
         scraper.scrape_file()
+        assert "hul.harvard.edu" in scraper._report.values()[0]
 
         evaluate_scraper(scraper, correct)
 
