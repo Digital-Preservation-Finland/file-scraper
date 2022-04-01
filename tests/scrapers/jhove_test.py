@@ -113,7 +113,8 @@ from file_scraper.jhove.jhove_scraper import (JHoveGifScraper,
                                               JHovePdfScraper,
                                               JHoveTiffScraper,
                                               JHoveUtf8Scraper,
-                                              JHoveWavScraper)
+                                              JHoveWavScraper,
+                                              JHoveEpubScraper)
 from tests.common import (parse_results, partial_message_included)
 
 
@@ -717,3 +718,30 @@ def test_charset(filename, mimetype, charset, well_formed):
     else:
         assert partial_message_included("encoding not defined",
                                         scraper.errors())
+
+
+@pytest.mark.parametrize(
+    ["filename", "result_dict"],
+    [
+        ("valid_3.2.epub", {
+            "purpose": "Test valid file.",
+            "stdout_part": "Well-Formed and valid",
+            "stderr_part": ""}),
+    ]
+)
+def test_scraper_epub(filename, result_dict, evaluate_scraper):
+    """
+    Test EPUB scraping.
+
+    :filename: Test file name
+    :result_dict: Result dict containing test purpose, and parts of
+                  expected results of stdout and stderr
+    """
+    correct = parse_results(filename, "application/epub+zip",
+                            result_dict, True)
+    correct.update_mimetype("application/epub+zip")
+    scraper = JHoveEpubScraper(filename=correct.filename,
+                               mimetype="application/epub+zip")
+    scraper.scrape_file()
+
+    evaluate_scraper(scraper, correct)
