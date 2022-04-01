@@ -355,3 +355,25 @@ class JHoveUtf8Meta(JHoveBaseMeta):
     def version(self):
         """We don't know the version."""
         return UNAV
+
+
+class JHoveEpubMeta(JHoveBaseMeta):
+    """Metadata model for EPUB files scraped with JHove"""
+    # pylint: disable=no-self-use
+
+    _supported = {"application/epub+zip": ["2.0.1", "3.2"]}
+
+    @metadata()
+    def version(self):
+        """
+        Return version.
+
+        If the well-formed status from scraper is False,
+        then we do not know the actual version.
+        """
+        return get_field(self._report, "version")
+
+    @metadata()
+    def stream_type(self):
+        """Return file type."""
+        return "binary"

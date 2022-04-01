@@ -11,7 +11,8 @@ from file_scraper.shell import Shell
 from file_scraper.jhove.jhove_model import (JHoveGifMeta, JHoveHtmlMeta,
                                             JHoveJpegMeta, JHoveTiffMeta,
                                             JHovePdfMeta, JHoveWavMeta,
-                                            JHoveUtf8Meta, get_field)
+                                            JHoveUtf8Meta, JHoveEpubMeta,
+                                            get_field)
 
 
 class JHoveScraperBase(BaseScraper):
@@ -187,3 +188,10 @@ class JHoveUtf8Scraper(JHoveScraperBase):
         the scraper is run differenty.
         """
         yield self._supported_metadata[0](**kwargs)
+
+
+class JHoveEpubScraper(JHoveScraperBase):
+    """Variables for scraping EPUB files."""
+
+    _jhove_module = "EPUB-ptc"
+    _supported_metadata = [JHoveEpubMeta]
