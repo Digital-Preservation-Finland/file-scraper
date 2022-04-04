@@ -727,6 +727,22 @@ def test_charset(filename, mimetype, charset, well_formed):
             "purpose": "Test valid file.",
             "stdout_part": "Well-Formed and valid",
             "stderr_part": ""}),
+        ("valid_3.2_calibre.epub", {
+            "purpose": "Test valid file made with calibre.",
+            "stdout_part": "Well-Formed and valid",
+            "stderr_part": ""}),
+        ("valid_2.0.1_calibre.epub", {
+            "purpose": "Test valid file made with calibre.",
+            "stdout_part": "Well-Formed and valid",
+            "stderr_part": ""}),
+        ("valid_3.2_libreoffice_writer2epub.epub", {
+            "purpose": "Test valid file made with libreoffice extension.",
+            "stdout_part": "Well-Formed and valid",
+            "stderr_part": ""}),
+        ("invalid_3.2_mimetype_not_first.epub", {
+            "purpose": "Test invalid epub where mimetype is not first.",
+            "stdout_part": "",
+            "stderr_part": "Mimetype file entry is missing"}),
     ]
 )
 def test_scraper_epub(filename, result_dict, evaluate_scraper):
