@@ -34,12 +34,15 @@ This module tests that:
     - MIME type, version, streams and well-formedness of pdf 1.2, 1.3, 1.4,
       1.5, 1.6 and A-1a files is tested correctly.
         - For valid files, scraper messages contains "Well-formed and valid".
-        - For files with altered payload, scraper errors contains "Invalid
-          object definition".
+        - For files with altered payload, scraper errors contains "catalog
+          dictionary". This is a bit short since the error message is slightly
+          differently worded for different versions, but this bit is common for
+          all.
         - For files with removed xref entry, scraper errors contains
           "Improperly nested dictionary delimiters".
         - For files with wrong version in header, scraper errors contains
-          "Version 1.0 is not supported."
+          "MIME type application/pdf with version X is not supported", where X
+          is the tested version number.
     - Possible errors with scraping pdf 1.7 files are ignored, as that
       version is not supported JHove. Scraping 1.7 files should not fail,
       since JHove is used for determining the root version for all pdf files.
@@ -144,8 +147,8 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
                   expected results of stdout and stderr
     """
     for version in ["1987", "1989"]:
-        filename = filename.replace("XXXX", version)
-        correct = parse_results(filename, "image/gif",
+        current_filename = filename.replace("XXXX", version)
+        correct = parse_results(current_filename, "image/gif",
                                 result_dict, True)
         correct.update_mimetype("image/gif")
         scraper = JHoveGifScraper(filename=correct.filename,
@@ -203,8 +206,8 @@ def test_old_namespace(filename, result_dict, evaluate_scraper, monkeypatch):
 
     monkeypatch.setattr(Shell, "stdout_raw", _mock_stdout_raw)
     for version in ["1987", "1989"]:
-        filename = filename.replace("XXXX", version)
-        correct = parse_results(filename, "image/gif",
+        current_filename = filename.replace("XXXX", version)
+        correct = parse_results(current_filename, "image/gif",
                                 result_dict, True)
         correct.update_mimetype("image/gif")
         scraper = JHoveGifScraper(filename=correct.filename,
@@ -300,27 +303,59 @@ def test_scraper_utf8(filename, result_dict, evaluate_scraper):
             "purpose": "Test valid file.",
             "stdout_part": "Well-Formed and valid",
             "stderr_part": ""}),
-        ("invalid_X_payload_altered.pdf", {
-            "purpose": "Test payload altered file.",
-            "stdout_part": "",
-            "stderr_part": "Invalid object definition"}),
-        ("invalid_X_removed_xref.pdf", {
-            "purpose": "Test xref change.",
-            "stdout_part": "",
-            "stderr_part": "Improperly nested dictionary delimiters"}),
     ]
 )
-def test_scraper_pdf(filename, result_dict, evaluate_scraper):
+def test_scraper_pdf_valid(filename, result_dict, evaluate_scraper):
     """
-    Test pdf scraping.
+    Test pdf scraping for valid files.
+
+    JHove detects the root version of PDF/A files in its `version` field, but
+    `parse_results` gets the expected version from the filename. Thus the
+    correct version has to be updated for the test to work correctly for
+    version A-1a.
 
     :filename: Test file name
     :result_dict: Result dict containing test purpose, and parts of
                   expected results of stdout and stderr
     """
     for ver in ["1.2", "1.3", "1.4", "1.5", "1.6", "A-1a"]:
-        filename = filename.replace("X", ver)
-        correct = parse_results(filename, "application/pdf",
+        current_filename = filename.replace("X", ver)
+        correct = parse_results(current_filename, "application/pdf",
+                                result_dict, True)
+        correct.update_mimetype("application/pdf")
+        if ver == "A-1a":
+            correct.update_version("1.4")
+        scraper = JHovePdfScraper(filename=correct.filename,
+                                  mimetype="application/pdf")
+        scraper.scrape_file()
+
+        evaluate_scraper(scraper, correct)
+
+
+@pytest.mark.parametrize(
+    ["filename", "result_dict"],
+    [
+        ("invalid_X_payload_altered.pdf", {
+            "purpose": "Test payload altered file.",
+            "stdout_part": "",
+            "stderr_part": "catalog dictionary"}),
+        ("invalid_X_removed_xref.pdf", {
+            "purpose": "Test xref change.",
+            "stdout_part": "",
+            "stderr_part": "Improperly nested dictionary delimiters"}),
+    ]
+)
+def test_scraper_pdf_invalid(filename, result_dict, evaluate_scraper):
+    """
+    Test pdf scraping for invalid files.
+
+    :filename: Test file name
+    :result_dict: Result dict containing test purpose, and parts of
+                  expected results of stdout and stderr
+    """
+    for ver in ["1.2", "1.3", "1.4", "1.5", "1.6", "A-1a"]:
+        current_filename = filename.replace("X", ver)
+        correct = parse_results(current_filename, "application/pdf",
                                 result_dict, True)
         correct.update_mimetype("application/pdf")
         scraper = JHovePdfScraper(filename=correct.filename,

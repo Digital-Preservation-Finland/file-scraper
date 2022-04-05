@@ -233,8 +233,11 @@ class JHovePdfMeta(JHoveBaseMeta):
         """
         Return version.
 
-        If the well-formed status from scraper is False,
-        then we do not know the actual version.
+        We want to always return the version, since JHove can read the version
+        number even from PDF versions it does not fully support and thus might
+        erroneously claim are not well-formed. Actually invalid files have
+        their version marked as UNAV since the field is missing from the JHove
+        report.
         """
         return get_field(self._report, "version")
 
