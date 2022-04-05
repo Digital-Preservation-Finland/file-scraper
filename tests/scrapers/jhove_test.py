@@ -81,7 +81,6 @@ This module tests that:
         - For empty files, scraper errors contains "Unexpected end of file".
         - For files with missing data bytes, scraper errors contains "Bytes
           missing".
-
     - The following MIME-type and version pairs are supported by their
       respective scrapers when well-formedness is checked, in addition to
       which these MIME types are also supported with None or a made up version.
@@ -100,6 +99,16 @@ This module tests that:
       as not supported, as well as a made up MIME type.
     - JHove scarper works as designed when charset parameter for (X)HTML files
       is given
+    - MIME type, version, streams and well-formedness of EPUB files is tested
+      correctly
+        - For valid files, scraper messages contains "Well-formed and valid".
+        - For EPUB files where mimetype is not located first in the package,
+          scraper errors contains "Mimetype file entry is missing".
+        - For EPUB 3 files created with LibreOffice's built-in export function,
+          scraper errors contains "The 'head' element should have a 'title'
+          child element".
+        - For EPUB 2 files created with LibreOffice's built-in export function,
+          scraper errors contains "element \"title\" not allowed here".
 """
 from __future__ import unicode_literals
 
@@ -743,6 +752,15 @@ def test_charset(filename, mimetype, charset, well_formed):
             "purpose": "Test invalid epub where mimetype is not first.",
             "stdout_part": "",
             "stderr_part": "Mimetype file entry is missing"}),
+        ("invalid_3.2_libreoffice.epub", {
+            "purpose": "Test invalid epub made by LibreOffice export.",
+            "stdout_part": "",
+            "stderr_part": "The 'head' element should have a 'title' child "
+                           "element"}),
+        ("invalid_2.0.1_libreoffice.epub", {
+            "purpose": "Test invalid epub made by LibreOffice export.",
+            "stdout_part": "",
+            "stderr_part": "element \"title\" not allowed here"}),
     ]
 )
 def test_scraper_epub(filename, result_dict, evaluate_scraper):

@@ -371,7 +371,9 @@ class JHoveEpubMeta(JHoveBaseMeta):
         If the well-formed status from scraper is False,
         then we do not know the actual version.
         """
-        return get_field(self._report, "version")
+        if self._well_formed:
+            return get_field(self._report, "version")
+        return UNAV
 
     @metadata()
     def stream_type(self):
