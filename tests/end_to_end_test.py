@@ -55,6 +55,9 @@ UNAV_ELEMENTS = {
     "tests/data/image_png/valid_1.2.png": ["icc_profile_name"],
     "tests/data/image_png/valid_1.2_LA.png": ["icc_profile_name"],
     "tests/data/image_tiff/valid_6.0.tif": ["icc_profile_name"],
+    "tests/data/image_tiff/valid_6.0_latin1_exif_field.tif": [
+        "icc_profile_name"
+    ],
     "tests/data/image_tiff/valid_6.0_multiple_tiffs.tif": ["version",
                                                            "version",
                                                            "icc_profile_name",
