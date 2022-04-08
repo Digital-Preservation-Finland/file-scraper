@@ -129,8 +129,9 @@ class WandTiffMeta(WandImageMeta):
         if not self._image:
             return UNAV
 
-        for key, value in self._image.container.metadata.items():
+        for key in self._image.container.metadata:
             if key.startswith("tiff:endian"):
+                value = self._image.container.metadata[key]
                 if value == "msb":
                     return "big endian"
                 if value == "lsb":
