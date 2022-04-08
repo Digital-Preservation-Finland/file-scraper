@@ -1,6 +1,12 @@
 Release notes
 =============
 
+Version 0.41
+------------
+
+- Fix bug caused by wand trying to UTF-8 decode latin-1 Exif field values.
+  WandScraper will not try to handle Exif field values that it does not use.
+
 Version 0.40
 ------------
 
