@@ -17,7 +17,8 @@ from file_scraper.jhove.jhove_scraper import (JHoveGifScraper,
                                               JHoveJpegScraper,
                                               JHovePdfScraper,
                                               JHoveTiffScraper,
-                                              JHoveWavScraper)
+                                              JHoveWavScraper,
+                                              JHoveEpubScraper)
 from file_scraper.lxml_scraper.lxml_scraper import LxmlScraper
 from file_scraper.magic_scraper.magic_scraper import (MagicBinaryScraper,
                                                       MagicTextScraper)
@@ -78,11 +79,11 @@ def iter_scrapers(mimetype, version, check_wellformed=True, params=None):
         DetectedMimeVersionScraper, DpxScraper, FFMpegScraper,
         GhostscriptScraper, JHoveGifScraper, JHoveHtmlScraper,
         JHoveJpegScraper, JHovePdfScraper, JHoveTiffScraper,
-        JHoveWavScraper, LxmlScraper, MagicTextScraper, MagicBinaryScraper,
-        MediainfoScraper, OfficeScraper, PilScraper, PngcheckScraper,
-        PsppScraper, SchematronScraper, TextfileScraper, TextEncodingScraper,
-        TextEncodingMetaScraper, VerapdfScraper, VnuScraper, WandScraper,
-        XmllintScraper]
+        JHoveWavScraper, JHoveEpubScraper, LxmlScraper, MagicTextScraper,
+        MagicBinaryScraper, MediainfoScraper, OfficeScraper, PilScraper,
+        PngcheckScraper, PsppScraper, SchematronScraper, TextfileScraper,
+        TextEncodingScraper, TextEncodingMetaScraper, VerapdfScraper,
+        VnuScraper, WandScraper, XmllintScraper]
 
     for scraper in scrapers:
         if scraper.is_supported(mimetype, version, check_wellformed, params):
