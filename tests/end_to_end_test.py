@@ -132,10 +132,15 @@ IGNORE_VALID = [
 # supported for metadata scraping.
 # XML files without a header does not currently work when just metadata
 # scraping is done.
+# EPUB version can't be determined with just metadata scraping.
 IGNORE_FOR_METADATA = IGNORE_VALID + [
     "tests/data/image_x-dpx/valid_2.0.dpx",
     "tests/data/application_warc/valid_1.0_.warc.gz",
-    "tests/data/text_xml/valid_1.0_mets_noheader.xml"
+    "tests/data/text_xml/valid_1.0_mets_noheader.xml",
+    "tests/data/application_epub+zip/valid_2.0.1_calibre.epub",
+    "tests/data/application_epub+zip/valid_3.2_calibre.epub",
+    "tests/data/application_epub+zip/valid_3.2.epub",
+    "tests/data/application_epub+zip/valid_3.2_libreoffice_writer2epub.epub"
 ]
 
 # These invalid files are not recognized
