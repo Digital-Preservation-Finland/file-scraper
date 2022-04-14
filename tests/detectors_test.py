@@ -95,7 +95,9 @@ CHANGE_MAGIC = {
     "text_xml/valid_1.0_mets_noheader.xml": "text/plain",
     "application_gml+xml/valid__x-fmt-227.xml": "text/xml",
     "application_gml+xml/valid_3.2_fmt-1047.xml": "text/xml",
-    "video_dv/valid__pal_lossy.dv": "application/octet-stream"
+    "video_dv/valid__pal_lossy.dv": "application/octet-stream",
+    "video_quicktime/valid__h264_aac_no_ftyp_atom.mov":
+        "application/octet-stream"
 }
 
 
