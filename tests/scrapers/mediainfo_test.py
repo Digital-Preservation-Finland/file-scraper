@@ -77,6 +77,14 @@ from tests.scrapers.stream_dicts import (DV_VIDEO,
                         1: MOV_MPEG4_VIDEO.copy(),
                         2: MOV_MPEG4_AUDIO.copy()}},
          "video/quicktime"),
+        ("valid__h264_aac_no_ftyp_atom.mov", {
+            "purpose": "Test valid MOV which does not have ftyp atom.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": "",
+            "streams": {0: MOV_CONTAINER.copy(),
+                        1: MOV_MPEG4_VIDEO.copy(),
+                        2: MOV_MPEG4_AUDIO.copy()}},
+         "video/quicktime"),
         ("valid__pal_lossy.dv", {
             "purpose": "Test valid DV.",
             "stdout_part": "file was analyzed successfully",
@@ -104,6 +112,8 @@ def test_mediainfo_scraper_mov(filename, result_dict, mimetype,
     scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
 
+    if filename == "valid__h264_aac_no_ftyp_atom.mov":
+        correct.streams[0]["codec_name"] = "QuickTime"
     if ".dv" in filename:
         correct.streams[0].pop("stream_type", None)
 

@@ -75,6 +75,8 @@ UNAV_ELEMENTS = {
         "codec_creator_app"
     ],
     "tests/data/video_quicktime/valid__h264_aac.mov": ["bits_per_sample"],
+    "tests/data/video_quicktime/valid__h264_aac_no_ftyp_atom.mov": [
+        "bits_per_sample"],
     "tests/data/audio_mpeg/valid_1.mp3": ["bits_per_sample",
                                           "codec_creator_app_version",
                                           "codec_creator_app"],

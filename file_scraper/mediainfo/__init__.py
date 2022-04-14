@@ -25,6 +25,11 @@ FORMATS = [
         "properties": {"format": "MPEG-4", "format_profile": "QuickTime"}
     },
     {
+        "mimetype": "video/quicktime",
+        "properties": {"format": "QuickTime",
+                       "format_info": "Original Apple specifications"}
+    },
+    {
         "mimetype": "video/dv",
         "properties": {"format": "DV"}
     },
