@@ -732,7 +732,7 @@ def test_charset(filename, mimetype, charset, well_formed):
 @pytest.mark.parametrize(
     ["filename", "result_dict"],
     [
-        ("valid_3.2.epub", {
+        ("valid_3.2_pages.epub", {
             "purpose": "Test valid file.",
             "stdout_part": "Well-Formed and valid",
             "stderr_part": ""}),

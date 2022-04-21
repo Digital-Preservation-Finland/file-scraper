@@ -139,7 +139,7 @@ IGNORE_FOR_METADATA = IGNORE_VALID + [
     "tests/data/text_xml/valid_1.0_mets_noheader.xml",
     "tests/data/application_epub+zip/valid_2.0.1_calibre.epub",
     "tests/data/application_epub+zip/valid_3.2_calibre.epub",
-    "tests/data/application_epub+zip/valid_3.2.epub",
+    "tests/data/application_epub+zip/valid_3.2_pages.epub",
     "tests/data/application_epub+zip/valid_3.2_libreoffice_writer2epub.epub"
 ]
 
