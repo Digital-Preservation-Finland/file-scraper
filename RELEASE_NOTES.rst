@@ -1,6 +1,13 @@
 Release notes
 =============
 
+Version 0.42
+------------
+
+- Add support for JHove 1.24.1.
+- Fix bug in quicktime identification.
+- Add EPUB support to file scraper.
+
 Version 0.41
 ------------
 
