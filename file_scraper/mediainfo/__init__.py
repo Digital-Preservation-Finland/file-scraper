@@ -46,6 +46,13 @@ FORMATS = [
         "properties": {"format": "MPEG-4", "format_profile": "Base Media"}
     },
     {
+        "mimetype": "video/mp4",
+        "properties": {
+            "format": "MPEG-4",
+            "format_profile": "Base Media / Version 2"
+        }
+    },
+    {
         "mimetype": "video/mpeg",
         "properties": {"format": "MPEG Video"}
     },
