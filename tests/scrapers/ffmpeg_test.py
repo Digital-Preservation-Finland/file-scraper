@@ -133,6 +133,15 @@ UNAV_MIME = []
             "video/mp4"
         ),
         (
+            "valid__h264_aac_mp42.mp4",
+            {
+                "purpose": "Test valid mp4.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": ""
+            },
+            "video/mp4"
+        ),
+        (
             "valid_1.mp3",
             {
                 "purpose": "Test valid mp3.",

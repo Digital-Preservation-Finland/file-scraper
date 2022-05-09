@@ -81,6 +81,7 @@ UNAV_ELEMENTS = {
                                           "codec_creator_app_version",
                                           "codec_creator_app"],
     "tests/data/video_mp4/valid__h264_aac.mp4": ["bits_per_sample"],
+    "tests/data/video_mp4/valid__h264_aac_mp42.mp4": ["bits_per_sample"],
     "tests/data/video_mpeg/valid_1.m1v": ["codec_creator_app_version",
                                           "codec_creator_app"],
     "tests/data/video_mpeg/valid_2.m2v": ["codec_creator_app_version",
