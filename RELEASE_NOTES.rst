@@ -1,6 +1,11 @@
 Release notes
 =============
 
+Version 0.43
+------------
+
+- Add MPEG-4 version 2 (ISO/IEC 14496-14) video container support.
+
 Version 0.42
 ------------
 
