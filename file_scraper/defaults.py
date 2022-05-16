@@ -27,6 +27,7 @@ MIMETYPE_DICT = {
     "application/mp4": None,
     "application/vnd.ms-asf": "video/x-ms-asf",
     "video/x-msvideo": "video/avi",
+    "video/x-dv": "video/dv",
 }
 
 # Dict between detectors' results and known file format versions.
