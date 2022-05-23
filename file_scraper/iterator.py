@@ -38,6 +38,8 @@ from file_scraper.warctools.warctools_scraper import (GzipWarctoolsScraper,
                                                       WarctoolsFullScraper,
                                                       WarctoolsScraper)
 from file_scraper.xmllint.xmllint_scraper import XmllintScraper
+from file_scraper.exiftool.exiftool_scraper import (ExifToolDngScraper,
+                                                    ExifToolTiffDngScraper)
 
 
 def iter_detectors():
@@ -83,7 +85,8 @@ def iter_scrapers(mimetype, version, check_wellformed=True, params=None):
         MagicBinaryScraper, MediainfoScraper, OfficeScraper, PilScraper,
         PngcheckScraper, PsppScraper, SchematronScraper, TextfileScraper,
         TextEncodingScraper, TextEncodingMetaScraper, VerapdfScraper,
-        VnuScraper, WandScraper, XmllintScraper]
+        VnuScraper, WandScraper, XmllintScraper, ExifToolDngScraper,
+        ExifToolTiffDngScraper]
 
     for scraper in scrapers:
         if scraper.is_supported(mimetype, version, check_wellformed, params):
