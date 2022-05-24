@@ -3,8 +3,7 @@
 from __future__ import unicode_literals
 
 from file_scraper.base import BaseScraper
-from file_scraper.exiftool.exiftool_model import (ExifToolDngMeta,
-                                                  ExifToolTiffDngMeta)
+from file_scraper.exiftool.exiftool_model import ExifToolDngMeta
 import exiftool
 
 
@@ -29,6 +28,7 @@ class ExifToolScraperBase(BaseScraper):
             metadata = et.get_metadata(self.filename)
 
         self.streams = list(self.iterate_models(metadata=metadata))
+        self._check_supported(allow_unav_version=True)
 
 
 class ExifToolDngScraper(ExifToolScraperBase):
@@ -36,7 +36,3 @@ class ExifToolDngScraper(ExifToolScraperBase):
 
     _supported_metadata = [ExifToolDngMeta]
 
-
-class ExifToolTiffDngScraper(ExifToolScraperBase):
-    """ """
-    _supported_metadata = [ExifToolTiffDngMeta]

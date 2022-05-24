@@ -16,9 +16,7 @@ class ExifToolBaseMeta(BaseMeta):
 
     @metadata()
     def mimetype(self):
-        if "File:MIMEType" in self._metadata:
-            return self._metadata["File:MIMEType"]
-        return UNAV
+        return self._metadata.get("File:MIMEType", UNAV)
 
 
 class ExifToolDngMeta(ExifToolBaseMeta):
@@ -42,10 +40,3 @@ class ExifToolDngMeta(ExifToolBaseMeta):
     def stream_type(self):
         return "image"
 
-
-class ExifToolTiffDngMeta(ExifToolDngMeta):
-    """
-
-    """
-    _supported = {"image/tiff": []}
-    _allow_versions = True
