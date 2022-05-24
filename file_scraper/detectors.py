@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 import lxml.etree as ET
 import six
+import exiftool
 
 from fido.fido import Fido, defaults
 from fido.pronomutils import get_local_pronom_versions
@@ -403,3 +404,25 @@ class MagicCharset(BaseDetector):
                      "messages": messages,
                      "errors": errors,
                      "tools": []}
+
+
+class ExifToolDetector(BaseDetector):
+    """ """
+
+    def detect(self):
+        """ """
+        with exiftool.ExifTool() as et:
+            metadata = et.get_metadata(self.filename)
+        self.mimetype = metadata.get("File:MIMEType", None)
+        self.info = {"class": self.__class__.__name__,
+                     "messages": [],
+                     "errors": [],
+                     "tools": []}
+
+    def get_important(self):
+        """ """
+        important = {}
+        if (not self._given_mimetype and self.mimetype in
+                ["image/x-adobe-dng"]):
+            important["mimetype"] = self.mimetype
+        return important

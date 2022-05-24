@@ -9,7 +9,8 @@ from file_scraper.defaults import (
     UNACCEPTABLE,
     UNAV
 )
-from file_scraper.detectors import MagicCharset, VerapdfDetector
+from file_scraper.detectors import (MagicCharset, VerapdfDetector,
+                                    ExifToolDetector)
 from file_scraper.dummy.dummy_scraper import (FileExists, MimeMatchScraper,
                                               ResultsMergeScraper)
 from file_scraper.iterator import iter_detectors, iter_graders, iter_scrapers
@@ -70,6 +71,10 @@ class Scraper(object):
             charset_detector = MagicCharset(self.filename)
             charset_detector.detect()
             self._params["charset"] = charset_detector.charset
+
+        if self._predefined_mimetype == "image/tiff":
+            exiftool_detector = ExifToolDetector(self.filename)
+            self._update_filetype(exiftool_detector)
 
     def _update_filetype(self, tool):
         """
