@@ -60,7 +60,8 @@ CHANGE_FIDO = {
     "text_csv/valid__utf8_header.csv": None,
     "text_csv/valid__iso8859-15_header.csv": None,
     "text_xml/valid_1.0_mets_noheader.xml": None,
-    "video_dv/valid__pal_lossy.dv": None
+    "video_dv/valid__pal_lossy.dv": None,
+    "image_x-adobe-dng/valid_1.4.dng": "image/tiff"
 }
 
 CHANGE_MAGIC = {
@@ -98,7 +99,8 @@ CHANGE_MAGIC = {
     "application_gml+xml/valid_3.2_fmt-1047.xml": "text/xml",
     "video_dv/valid__pal_lossy.dv": "video/dv",
     "video_quicktime/valid__h264_aac_no_ftyp_atom.mov":
-        "application/octet-stream"
+        "application/octet-stream",
+    "image_x-adobe-dng/valid_1.4.dng": "image/tiff"
 }
 
 
