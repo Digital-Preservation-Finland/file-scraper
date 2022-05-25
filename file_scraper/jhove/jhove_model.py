@@ -379,3 +379,14 @@ class JHoveEpubMeta(JHoveBaseMeta):
     def stream_type(self):
         """Return file type."""
         return "binary"
+
+
+class JHoveDngMeta(JHoveBaseMeta):
+    """ """
+
+    _supported = {"image/x-adobe-dng": []}
+    _allow_versions = True
+
+    @metadata()
+    def mimetype(self):
+        return "image/x-adobe-dng"

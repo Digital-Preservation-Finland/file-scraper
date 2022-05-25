@@ -29,6 +29,7 @@ class ExifToolScraperBase(BaseScraper):
 
         self.streams = list(self.iterate_models(metadata=metadata))
         self._check_supported(allow_unav_version=True)
+        self._messages.append("The file was analyzed successfully.")
 
 
 class ExifToolDngScraper(ExifToolScraperBase):

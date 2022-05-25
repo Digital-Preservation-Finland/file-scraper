@@ -12,7 +12,7 @@ from file_scraper.jhove.jhove_model import (JHoveGifMeta, JHoveHtmlMeta,
                                             JHoveJpegMeta, JHoveTiffMeta,
                                             JHovePdfMeta, JHoveWavMeta,
                                             JHoveUtf8Meta, JHoveEpubMeta,
-                                            get_field)
+                                            JHoveDngMeta, get_field)
 
 
 class JHoveScraperBase(BaseScraper):
@@ -195,3 +195,10 @@ class JHoveEpubScraper(JHoveScraperBase):
 
     _jhove_module = "EPUB-ptc"
     _supported_metadata = [JHoveEpubMeta]
+
+
+class JHoveDngScraper(JHoveScraperBase):
+    """Variables for scraping dng files."""
+
+    _jhove_module = "TIFF-hul"
+    _supported_metadata = [JHoveDngMeta]
