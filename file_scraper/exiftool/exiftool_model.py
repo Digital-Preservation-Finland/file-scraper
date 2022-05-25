@@ -24,7 +24,8 @@ class ExifToolDngMeta(ExifToolBaseMeta):
     Metadata models for dng files scraped with ExifTool.
     """
 
-    _supported = {"image/x-adobe-dng": ["1.3.0.0", "1.4.0.0", "1.5.0.0"]}
+    _supported = {"image/x-adobe-dng": ["1.3", "1.4", "1.5"]}
+    _allow_versions = True
 
     @metadata(important=True)
     def mimetype(self):
@@ -33,10 +34,23 @@ class ExifToolDngMeta(ExifToolBaseMeta):
     @metadata(important=True)
     def version(self):
         if "EXIF:DNGVersion" in self._metadata:
-            return self._metadata["EXIF:DNGVersion"].replace(" ", ".")
+            version = self._metadata["EXIF:DNGVersion"].replace(" ", ".")
+            return version[:3]
         return UNAV
 
     @metadata()
-    def stream_type(self):
-        return "image"
+    def byte_order(self):
+        """
+        Return the byte order of the image.
 
+        :returns: "big endian or "little endian" for images, (:unav) if there
+                   is no image.
+        :raises: ValueError if ExifTool reports a value other than "MM" or
+                 "II".
+        """
+        value = self._metadata.get("File:ExifByteOrder", UNAV)
+        if value == "II":
+            return "little endian"
+        if value == "MM":
+            return "big endian"
+        raise ValueError("Unsupported byte order reported by ExifTool")

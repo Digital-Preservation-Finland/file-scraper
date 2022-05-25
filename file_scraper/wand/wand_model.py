@@ -140,6 +140,13 @@ class WandTiffMeta(WandImageMeta):
         raise ValueError("Unsupported byte order reported by Wand.")
 
 
+class WandDngMeta(WandImageMeta):
+    """ """
+
+    _supported = {"image/x-adobe-dng": []}
+    _allow_versions = True
+
+
 class WandExifMeta(WandImageMeta):
     """Metadata models for JPEG files with EXIF metadata scraped with Wand"""
 

@@ -17,7 +17,7 @@ import six
 
 from file_scraper.base import BaseScraper
 from file_scraper.wand.wand_model import (WandImageMeta, WandTiffMeta,
-                                          WandExifMeta)
+                                          WandExifMeta, WandDngMeta)
 
 try:
     import wand.image
@@ -28,7 +28,8 @@ except ImportError:
 class WandScraper(BaseScraper):
     """Scraper for the Wand/ImageMagick library."""
 
-    _supported_metadata = [WandExifMeta, WandTiffMeta, WandImageMeta]
+    _supported_metadata = [WandExifMeta, WandTiffMeta, WandImageMeta,
+                           WandDngMeta]
 
     def __init__(self, *args, **kwargs):
         """
