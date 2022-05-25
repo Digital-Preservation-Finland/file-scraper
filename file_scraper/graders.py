@@ -135,11 +135,13 @@ class MIMEGrader(BaseGrader):
             UNAP: RECOMMENDED
         },
         "image/tiff": {
-            "1.3": RECOMMENDED,  # DNG
-            "1.4": RECOMMENDED,  # DNG
-            "1.5": RECOMMENDED,  # DNG
             "6.0": RECOMMENDED,  # TIFF
             "1.0": RECOMMENDED,  # GeoTiff
+        },
+        "image/x-adobe-dng": {
+            "1.3": RECOMMENDED,
+            "1.4": RECOMMENDED,
+            "1.5": RECOMMENDED
         },
         "image/jpeg": {
             "1.00": RECOMMENDED,
