@@ -17,7 +17,8 @@ from file_scraper.detectors import (_FidoReader,
                                     FidoDetector,
                                     MagicCharset,
                                     MagicDetector,
-                                    VerapdfDetector)
+                                    VerapdfDetector,
+                                    ExifToolDetector)
 from tests.common import get_files, partial_message_included
 
 CHANGE_FIDO = {
@@ -177,6 +178,27 @@ def test_pdf_detector(filepath, mimetype, version, message):
 
 
 @pytest.mark.parametrize(
+        ["filepath", "mimetype"],
+        [
+            ("image_x-adobe-dng/valid_1.4.dng", "image/x-adobe-dng"),
+            ("image_tiff/valid_6.0.tif", "image/tiff"),
+        ]
+)
+def test_dng_detector(filepath, mimetype):
+    """
+    Test that ExifToolDetector works with dng and tiff files. ExifToolDetector
+    should detect the mimetype of a file and distinct dng files from tiff
+    files.
+
+    :filepath: Test file
+    :mimetype: Expected mimetype
+    """
+    detector = ExifToolDetector('tests/data/' + filepath)
+    detector.detect()
+    assert detector.mimetype == mimetype
+
+
+@pytest.mark.parametrize(
     ["detector_class", "change_dict"],
     [
         (FidoDetector, CHANGE_FIDO),
@@ -226,6 +248,28 @@ def test_important_pdf(filepath, important):
     if important:
         assert "mimetype" in detector.get_important()
         assert "version" in detector.get_important()
+    else:
+        assert detector.get_important() == {}
+
+
+@pytest.mark.parametrize(
+    ["filepath", "important"],
+    [
+        ("tests/data/image_x-adobe-dng/valid_1.4.dng", True),
+        ("tests/data/image_tiff/valid_6.0.tif", False)
+    ]
+)
+def test_important_dng(filepath, important):
+    """
+    Test that ExifToolDetector results are important for dng files only.
+
+    :filepath: Test file
+    :important: Expected boolean result of important
+    """
+    detector = ExifToolDetector(filepath)
+    detector.detect()
+    if important:
+        assert "mimetype" in detector.get_important()
     else:
         assert detector.get_important() == {}
 
