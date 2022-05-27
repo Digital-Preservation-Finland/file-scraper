@@ -72,6 +72,8 @@ class Scraper(object):
             charset_detector.detect()
             self._params["charset"] = charset_detector.charset
 
+        # Files predefined as tiff will be scrutinized further to check if they
+        # are dng files in order to return the correct mimetype and version
         if self._predefined_mimetype == "image/tiff":
             exiftool_detector = ExifToolDetector(self.filename)
             self._update_filetype(exiftool_detector)

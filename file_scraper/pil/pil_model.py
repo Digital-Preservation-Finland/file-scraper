@@ -130,6 +130,12 @@ class TiffPilMeta(BasePilMeta):
         return super(TiffPilMeta, self).samples_per_pixel()
 
 
+class DngPilMeta(TiffPilMeta):
+    """ """
+    _supported = {"image/x-adobe-dng": []}
+    _allow_versions = True
+
+
 class ImagePilMeta(BasePilMeta):
     """Collect image image metadata."""
 

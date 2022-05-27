@@ -39,6 +39,10 @@ class ExifToolDngMeta(ExifToolBaseMeta):
         return UNAV
 
     @metadata()
+    def stream_type(self):
+        return "image"
+
+    @metadata()
     def byte_order(self):
         """
         Return the byte order of the image.
@@ -54,8 +58,3 @@ class ExifToolDngMeta(ExifToolBaseMeta):
         if value == "MM":
             return "big endian"
         raise ValueError("Unsupported byte order reported by ExifTool")
-
-    @metadata()
-    def samples_per_pixel(self):
-        """ """
-        return self._metadata.get("EXIF:SamplesPerPixel", UNAV)

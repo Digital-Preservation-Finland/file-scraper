@@ -5,7 +5,7 @@ import six
 
 from file_scraper.base import BaseScraper
 from file_scraper.pil.pil_model import ImagePilMeta, JpegPilMeta, \
-    TiffPilMeta, Jp2PilMeta
+    TiffPilMeta, DngPilMeta, Jp2PilMeta
 
 try:
     import PIL.Image
@@ -16,8 +16,9 @@ except ImportError:
 class PilScraper(BaseScraper):
     """Scraper that uses PIL to scrape tiff, png, jpeg and gif images."""
 
-    _supported_metadata = [TiffPilMeta, ImagePilMeta,
-                           JpegPilMeta, Jp2PilMeta]
+    _supported_metadata = [TiffPilMeta, DngPilMeta,
+                           ImagePilMeta, JpegPilMeta,
+                           Jp2PilMeta]
 
     def scrape_file(self):
         """Scrape data from file."""
