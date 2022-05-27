@@ -407,10 +407,15 @@ class MagicCharset(BaseDetector):
 
 
 class ExifToolDetector(BaseDetector):
-    """ """
+    """
+    Detector used with tiff files. Will tell dng files apart from ordinary tiff
+    files.
+    """
 
     def detect(self):
-        """ """
+        """
+        Run ExifToolDetector to find out the mimetype of a file
+        """
         with exiftool.ExifTool() as et:
             metadata = et.get_metadata(self.filename)
         self.mimetype = metadata.get("File:MIMEType", None)
@@ -420,7 +425,11 @@ class ExifToolDetector(BaseDetector):
                      "tools": []}
 
     def get_important(self):
-        """ """
+        """
+        If ExifTool detector determines the mimetype as dng, it is marked as
+        important. This is to make sure that this result overrides other
+        detectors, which would detect dng files as tiff files.
+        """
         important = {}
         if (not self._given_mimetype and self.mimetype in
                 ["image/x-adobe-dng"]):
