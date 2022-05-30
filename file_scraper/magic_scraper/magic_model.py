@@ -29,6 +29,14 @@ class BaseMagicMeta(BaseMeta):
         its value is returned instead of that reported by magic.
         """
         mimetype = self._magic_result['magic_mime_type']
+
+        # DV detection with unpatched file library
+        mime_check = mimetype == "application/octet-stream"
+        dv_magic_result = "DIF (DV) movie file (PAL)"
+        magic_check = self._magic_result['magic_none'] == dv_magic_result
+        if mime_check and magic_check:
+            mimetype = "video/x-dv"
+
         mimetype = MIMETYPE_DICT.get(mimetype, mimetype)
         if mimetype == self._predefined_mimetype:
             return mimetype

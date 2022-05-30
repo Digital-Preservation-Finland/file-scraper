@@ -208,6 +208,19 @@ class MagicDetector(BaseDetector):
             self.mimetype = MIMETYPE_DICT[mimetype]
         else:
             self.mimetype = six.text_type(mimetype)
+
+        # DV detection with unpatched file library
+        mime_check = mimetype == "application/octet-stream"
+        file_extension_check = decode_path(self.filename).endswith(".dv")
+        if mime_check and file_extension_check:
+            analyze = magic_analyze(
+                MAGIC_LIB,
+                MAGIC_LIB.MAGIC_NONE,
+                self.filename
+            )
+            if analyze == "DIF (DV) movie file (PAL)":
+                self.mimetype = "video/dv"
+
         self.info = {"class": self.__class__.__name__,
                      "messages": [],
                      "errors": [],
