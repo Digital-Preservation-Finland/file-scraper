@@ -6,17 +6,30 @@ This software identifies files, collects metadata from them, and checks well-for
 Installation
 ------------
 
-This software is tested with Python 2.7 with Centos 7.x / RHEL 7.x releases.
+Installation and usage requires Python 2.7, or 3.6 or newer.
+The software is tested with Python 3.6 on Centos 7.x release. Python 2.7 support will be removed in the future.
+
+For Python 3.6 or newer, create a virtual environment::
+    
+    python3 -m venv venv
+
+For Python 2.7, get python-virtualenv software and create a virtual environment::
+
+    sudo yum install python-virtualenv
+    virtualenv venv
+
+Run the following to activate the virtual environment::
+
+    source venv/bin/activate
 
 Install the required software with commands::
 
-    sudo pip install virtualenv
-    virtualenv .venv
-    source ./.venv/bin/activate
     pip install -r requirements_github.txt
     pip install .
 
-This will install virtualenv virtual environment with the following packages, but this is NOT enough for the usage:
+To deactivate the virtual environment, run ``deactivate``. To reactivate it, run the ``source`` command above.
+
+Installing this software will install virtualenv virtual environment with the following packages, but this is NOT enough for the usage:
 
     * pytest, coverage, pytest-cov, Fido, file-magic, pymediainfo, ffmpeg-python, Pillow, python-wand, python-lxml, python-mimeparse
 
