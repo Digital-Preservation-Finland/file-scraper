@@ -1,4 +1,4 @@
-""" """
+"""Scraper for dng files using ExifTool """
 
 from __future__ import unicode_literals
 
@@ -14,6 +14,12 @@ class ExifToolScraperBase(BaseScraper):
 
     def __init__(self, filename, mimetype, version=None, params=None):
         """
+        Initialize ExifTool base scraper.
+
+        :filename: File path
+        :mimetype: Predefined mimetype
+        :version: Predefined file format version
+        :params: Extra parameters needed for the scraper
         """
         super(ExifToolScraperBase, self).__init__(
             filename=filename, mimetype=mimetype, version=version,
@@ -21,7 +27,7 @@ class ExifToolScraperBase(BaseScraper):
 
     def scrape_file(self):
         """
-
+        Scrape data from file.
         """
 
         with exiftool.ExifTool() as et:

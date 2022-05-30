@@ -1,4 +1,4 @@
-""" """
+"""Metadata models for ExifTool"""
 
 from __future__ import unicode_literals
 
@@ -29,10 +29,24 @@ class ExifToolDngMeta(ExifToolBaseMeta):
 
     @metadata(important=True)
     def mimetype(self):
+        """
+        Return mimetype.
+
+        Decorator is marked as important because other scrapers may not
+        recognize the mimetype of a dng file as dng, but tiff. This way a
+        conflict can be avoided and the mimetype of dng files will be scraped
+        correctly when merging the results from different scrapers.
+        """
         return super(ExifToolDngMeta, self).mimetype()
 
     @metadata(important=True)
     def version(self):
+        """
+        Return version with one decimal digit, eg. "1.3".
+
+        Decorator is marked as important because other scrapers may not
+        recognize the version of a dng file correctly.
+        """
         if "EXIF:DNGVersion" in self._metadata:
             version = self._metadata["EXIF:DNGVersion"].replace(" ", ".")
             return version[:3]
@@ -40,6 +54,7 @@ class ExifToolDngMeta(ExifToolBaseMeta):
 
     @metadata()
     def stream_type(self):
+        """Return file type."""
         return "image"
 
     @metadata()
