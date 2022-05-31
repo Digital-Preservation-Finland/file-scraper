@@ -30,7 +30,7 @@ This module tests that:
         - For well-formed files, scraper messages contains "Well-Formed and
           valid".
         - For invalid files with corrupted headers, scraper errors contain
-          "Unknown data type".
+          "Value offset not word-aligned".
         -For empty files, scraper error contains "File is too short".
     - MIME type, version, streams and well-formedness of UTF-8 text files is
       tested correctly.
@@ -280,16 +280,12 @@ def test_scraper_tiff(filename, result_dict, evaluate_scraper):
     [
         ("valid_1.4.dng", {
             "purpose": "Test valid file.",
-            "streams": {0: {
-                        "version": UNAV,
-                        "stream_type": UNAV}
-                        },
             "stdout_part": "Well-Formed and valid",
             "stderr_part": ""}),
         ("invalid_1.4_edited_header.dng", {
             "purpose": "Test invalid file with edited header.",
             "stdout_part": "",
-            "stderr_part": "Unknown data type"}),
+            "stderr_part": "Value offset not word-aligned"}),
         ("invalid__empty.dng", {
             "purpose": "Test empty file",
             "stdout_part": "",
@@ -306,6 +302,7 @@ def test_scraper_dng(filename, result_dict, evaluate_scraper):
     """
     correct = parse_results(filename, "image/x-adobe-dng", result_dict, True)
     correct.update_mimetype("image/x-adobe-dng")
+    correct.update_version(UNAV)
     scraper = JHoveDngScraper(filename=correct.filename,
                               mimetype="image/x-adobe-dng")
     scraper.scrape_file()

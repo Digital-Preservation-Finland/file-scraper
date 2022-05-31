@@ -382,7 +382,7 @@ class JHoveEpubMeta(JHoveBaseMeta):
 
 
 class JHoveDngMeta(JHoveBaseMeta):
-    """ """
+    """Metadata model for dng files scraped with JHove"""
 
     _supported = {"image/x-adobe-dng": []}
     _allow_versions = True
@@ -390,3 +390,8 @@ class JHoveDngMeta(JHoveBaseMeta):
     @metadata()
     def mimetype(self):
         return "image/x-adobe-dng"
+
+    @metadata()
+    def stream_type(self):
+        """Return stream type"""
+        return "image" if self._well_formed else UNAV
