@@ -11,6 +11,11 @@ This module tests that:
         - For file with wrong byte order reported in the header, scraper errors
           contain "Not a TIFF file, bad version number 10752".
         - For an empty file, scraper errors contain "Cannot read TIFF header."
+    - streams and well-formedness are scraped correctly for dng files.
+        - For valid files, scraper messages contain "successfully".
+        - For invalid file with edited header, scraper errors contain "unable
+          to open image".
+        - For empty file, scraper errors contain "unable to open image".
     - streams and well-formedness are scraped correctly for jpeg files.
         - For well-formed files, scraper messages contain "successfully".
         - For file with altered payload, scraper errors contain "Bogus marker
@@ -144,6 +149,39 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
         correct.streams[index]["version"] = UNAV
 
     scraper = WandScraper(filename=correct.filename, mimetype="image/tiff")
+    scraper.scrape_file()
+    evaluate_scraper(scraper, correct)
+
+
+@pytest.mark.parametrize(
+        ["filename", "result_dict"],
+        [
+            ("valid_1.4.dng", {
+                "purpose": "Test valid file",
+                "streams": {0:
+                            {"version": UNAV,
+                             "bps_unit": UNAV,
+                             "bps_value": "16",
+                             "colorspace": "rgb",
+                             "height": "1154",
+                             "width": "866",
+                             "samples_per_pixel": UNAV}},
+                "stdout_part": "successfully",
+                "stderr_part": ""
+                })
+        ]
+)
+def test_scraper_dng(filename, result_dict, evaluate_scraper):
+    """
+    Test scraper with a valid dng file.
+
+    :filename: Test file name
+    :result_dict: Result dict containing test purpose, and parts of expected
+              results of stdout and stderr
+    """
+    correct = parse_results(filename, "image/x-adobe-dng", result_dict, True)
+    scraper = WandScraper(filename=correct.filename,
+                          mimetype="image/x-adobe-dng")
     scraper.scrape_file()
     evaluate_scraper(scraper, correct)
 
@@ -353,7 +391,11 @@ def test_scraper_colorspace(mimetype, filename, expected):
         ("invalid_1989a_truncated.gif", "image/gif",
          "negative or zero image size"),
         ("invalid__empty.gif", "image/gif",
-         "improper image header")
+         "improper image header"),
+        ("invalid_1.4_edited_header.dng", "image/x-adobe-dng",
+         "unable to open image"),
+        ("invalid__empty.dng", "image/x-adobe-dng",
+         "unable to open image")
     ]
 )
 def test_scraper_invalid(filename, mimetype, stderr_part):
