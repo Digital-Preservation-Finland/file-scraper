@@ -25,6 +25,13 @@ This module tests that:
         - For files with wrong byte order reported, scraper messages contains
           "No TIFF magic number".
         - For empty files, scraper errors contains "File is too short".
+    - MIME type, version, streams and well-formedness of dng files is tested
+      correctly.
+        - For well-formed files, scraper messages contains "Well-Formed and
+          valid".
+        - For invalid files with corrupted headers, scraper errors contain
+          "Unknown data type".
+        -For empty files, scraper error contains "File is too short".
     - MIME type, version, streams and well-formedness of UTF-8 text files is
       tested correctly.
         - For files with UTF-8 and ASCII (backwards compatibility) encodings
@@ -121,6 +128,7 @@ from file_scraper.jhove.jhove_scraper import (JHoveGifScraper,
                                               JHoveJpegScraper,
                                               JHovePdfScraper,
                                               JHoveTiffScraper,
+                                              JHoveDngScraper,
                                               JHoveUtf8Scraper,
                                               JHoveWavScraper,
                                               JHoveEpubScraper)
@@ -262,6 +270,44 @@ def test_scraper_tiff(filename, result_dict, evaluate_scraper):
     correct.update_mimetype("image/tiff")
     scraper = JHoveTiffScraper(filename=correct.filename,
                                mimetype="image/tiff")
+    scraper.scrape_file()
+
+    evaluate_scraper(scraper, correct)
+
+
+@pytest.mark.parametrize(
+    ["filename", "result_dict"],
+    [
+        ("valid_1.4.dng", {
+            "purpose": "Test valid file.",
+            "streams": {0: {
+                        "version": UNAV,
+                        "stream_type": UNAV}
+                        },
+            "stdout_part": "Well-Formed and valid",
+            "stderr_part": ""}),
+        ("invalid_1.4_edited_header.dng", {
+            "purpose": "Test invalid file with edited header.",
+            "stdout_part": "",
+            "stderr_part": "Unknown data type"}),
+        ("invalid__empty.dng", {
+            "purpose": "Test empty file",
+            "stdout_part": "",
+            "stderr_part": "File is too short"})
+    ]
+)
+def test_scraper_dng(filename, result_dict, evaluate_scraper):
+    """
+    Test dng scraping.
+
+    :filename: Test file name
+    :result_dict: Result dict containing test purpose, and parts of expected
+                  results of streams, stdout and stderr
+    """
+    correct = parse_results(filename, "image/x-adobe-dng", result_dict, True)
+    correct.update_mimetype("image/x-adobe-dng")
+    scraper = JHoveDngScraper(filename=correct.filename,
+                              mimetype="image/x-adobe-dng")
     scraper.scrape_file()
 
     evaluate_scraper(scraper, correct)
