@@ -119,6 +119,51 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
 @pytest.mark.parametrize(
     ["filename", "result_dict"],
     [
+        ("valid_1.4.dng", {
+            "purpose": "Test valid file.",
+            "streams": {0: STREAM_VALID.copy()}}),
+        ("invalid_1.4_edited_header.dng", {
+            "purpose": "Test invalid file with corrupted header.",
+            "streams": {0: STREAM_INVALID.copy()}}),
+        ("invalid__empty.dng", {
+            "purpose": "Test empty file.",
+            "streams": {0: STREAM_INVALID.copy()}})
+    ]
+)
+def test_scraper_dng(filename, result_dict, evaluate_scraper):
+    """
+    Test scraper with dng files.
+
+    :filename: Test file name
+    :result_dict: Result dict containing the test purpose and expected streams"
+
+    """
+    correct = parse_results(filename, "image/x-adobe-dng", result_dict, True)
+
+    if correct.well_formed:
+        correct.stdout_part = VALID_MSG
+        correct.stderr_part = ""
+    else:
+        correct.stdout_part = ""
+        correct.stderr_part = INVALID_MSG
+    correct.streams[0]["version"] = UNAV
+    scraper = PilScraper(filename=correct.filename,
+                         mimetype="image/x-adobe-dng")
+    scraper.scrape_file()
+    if correct.well_formed:
+        evaluate_scraper(scraper, correct)
+    else:
+        assert not scraper.well_formed
+        assert partial_message_included(correct.stdout_part,
+                                        scraper.messages())
+        assert partial_message_included(correct.stderr_part,
+                                        scraper.errors())
+        assert not scraper.streams
+
+
+@pytest.mark.parametrize(
+    ["filename", "result_dict"],
+    [
         ("valid_1.01.jpg", {
             "purpose": "Test valid file.",
             "streams": {0: STREAM_VALID.copy()}}),
