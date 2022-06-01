@@ -2,7 +2,9 @@
 Tests for ExifTool scraper.
 
 This module tests that:
-    - MIME type and version of dng files is tested correctly.
+    - MIME type and version of dng files is scraped correctly.
+    - For valid files scraper messages contain "successfully".
+    - For an empty file, scraper errors contain "File is empty".
 
 """
 
@@ -11,7 +13,7 @@ from __future__ import unicode_literals
 import pytest
 
 from file_scraper.exiftool.exiftool_scraper import ExifToolDngScraper
-from tests.common import parse_results
+from tests.common import (parse_results, partial_message_included)
 
 
 @pytest.mark.parametrize(
@@ -21,12 +23,17 @@ from tests.common import parse_results
             "purpose": "Test valid file",
             "stdout_part": "successfully",
             "stderr_part": ""
+            }),
+        ("invalid__empty.dng", {
+            "purpose": "Test empty file",
+            "stdout_part": "",
+            "stderr_part": "File is empty"
             })
     ]
 )
-def test_scraper(filename, result_dict, evaluate_scraper):
+def test_scraper_dng(filename, result_dict, evaluate_scraper):
     """
-    Test scraper with valid dng files.
+    Test scraper with dng files.
 
     :filename: Test file name
     :result_dict: Result dict containing test purpose, and parts of expected
@@ -37,4 +44,12 @@ def test_scraper(filename, result_dict, evaluate_scraper):
     scraper = ExifToolDngScraper(filename=correct.filename,
                                  mimetype="image/x-adobe-dng")
     scraper.scrape_file()
-    evaluate_scraper(scraper, correct)
+
+    if correct.well_formed:
+        evaluate_scraper(scraper, correct)
+    else:
+        assert not scraper.well_formed
+        assert partial_message_included(correct.stdout_part,
+                                        scraper.messages())
+        assert partial_message_included(correct.stderr_part,
+                                        scraper.errors())

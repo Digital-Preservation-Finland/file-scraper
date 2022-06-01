@@ -33,13 +33,16 @@ class ExifToolScraperBase(BaseScraper):
         with exiftool.ExifTool() as et:
             metadata = et.get_metadata(self.filename)
 
+        if "ExifTool:Error" in metadata:
+            self._errors.append(metadata["ExifTool:Error"])
+        else:
+            self._messages.append("The file was analyzed successfully.")
+
         self.streams = list(self.iterate_models(metadata=metadata))
         self._check_supported(allow_unav_version=True)
-        self._messages.append("The file was analyzed successfully.")
 
 
 class ExifToolDngScraper(ExifToolScraperBase):
     """Variables for scraping dng files."""
 
     _supported_metadata = [ExifToolDngMeta]
-
