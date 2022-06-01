@@ -141,7 +141,7 @@ class WandTiffMeta(WandImageMeta):
 
 
 class WandDngMeta(WandImageMeta):
-    """ """
+    """Metadata models for dng files scraped with Wand"""
 
     _supported = {"image/x-adobe-dng": []}
     _allow_versions = True

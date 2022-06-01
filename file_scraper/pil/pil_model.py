@@ -131,7 +131,7 @@ class TiffPilMeta(BasePilMeta):
 
 
 class DngPilMeta(TiffPilMeta):
-    """ """
+    """Metadata model for Dng images."""
     _supported = {"image/x-adobe-dng": []}
     _allow_versions = True
 

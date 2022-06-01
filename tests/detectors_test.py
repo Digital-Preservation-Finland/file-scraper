@@ -7,6 +7,8 @@ This module tests that:
       certain mimetypes and MagicDetector returns certain mimetypes.
     - VerapdfDetector detects PDF/A MIME types and versions but no others.
     - VerapdfDetector results are important for PDF/A files.
+    - ExifToolDetector detects the MIME types correctly for tiff and dng files.
+    - ExifToolDetector results are important only for dng files.
     - Character encoding detection works properly.
 """
 from __future__ import unicode_literals

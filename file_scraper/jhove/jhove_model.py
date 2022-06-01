@@ -389,9 +389,10 @@ class JHoveDngMeta(JHoveBaseMeta):
 
     @metadata()
     def mimetype(self):
+        """Return mimetype"""
         return "image/x-adobe-dng"
 
     @metadata()
     def stream_type(self):
-        """Return stream type"""
+        """Return stream type."""
         return "image" if self._well_formed else UNAV
