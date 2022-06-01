@@ -50,14 +50,15 @@ This module tests that:
         - For truncated version 1989a file, scraper errors contains "negative
           or zero image size".
         - For empty file, scraper errors contains "improper image header".
-    - WandTiffMeta model is supported for TIFF files, WandExifMeta for JPEG
-      files and  WandImageMeta for other image files
+    - WandTiffMeta model is supported for TIFF files, WandDngMeta for Dng files
+      WandExifMeta for JPEG files and  WandImageMeta for other image files
     - Image colorspace detected as "sRGB" will be detected as "RGB" unless
       explicitly expressed by a metadata for colorspace to be sRGB.
     - With or without well-formedness check, the following MIME type and
       version pairs are supported by both WandScraper and their corresponding
       metadata models:
         - image/tiff, 6.0
+        - image/x-adobe-dng, ''
         - image/jpeg, ''
         - image/jp2, ''
         - image/png, 1.2
@@ -74,7 +75,7 @@ import pytest
 
 from file_scraper.defaults import UNAV
 from file_scraper.wand.wand_model import (WandImageMeta, WandTiffMeta,
-                                          WandExifMeta)
+                                          WandDngMeta, WandExifMeta)
 from file_scraper.wand.wand_scraper import WandScraper
 from tests.common import (parse_results, partial_message_included)
 
@@ -423,6 +424,7 @@ def test_scraper_invalid(filename, mimetype, stderr_part):
     ["mime", "ver", "class_"],
     [
         ("image/tiff", "6.0", WandTiffMeta),
+        ("image/x-adobe-dng", "", WandDngMeta),
         ("image/jpeg", "", WandExifMeta),
         ("image/jp2", "", WandImageMeta),
         ("image/png", "1.2", WandImageMeta),
@@ -431,7 +433,8 @@ def test_scraper_invalid(filename, mimetype, stderr_part):
 )
 def test_model_is_supported(mime, ver, class_):
     """
-    Test is_supported method for WandTiffMeta and WandImageMeta.
+    Test is_supported method for WandTiffMeta, WandDngMeta,
+    WandExifMeta and WandImageMeta.
 
     :mime: MIME type
     :ver: File format version
@@ -447,6 +450,7 @@ def test_model_is_supported(mime, ver, class_):
     ["mime", "ver"],
     [
         ("image/tiff", "6.0"),
+        ("image/x-adobe-dng", ""),
         ("image/jpeg", ""),
         ("image/jp2", ""),
         ("image/png", "1.2"),
