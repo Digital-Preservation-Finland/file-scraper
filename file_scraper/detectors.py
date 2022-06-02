@@ -1,6 +1,6 @@
 """File format detectors."""
 # pylint: disable=ungrouped-imports
-from __future__ import unicode_literals
+from __future__ import unicode_literals, absolute_import
 
 import lxml.etree as ET
 import six

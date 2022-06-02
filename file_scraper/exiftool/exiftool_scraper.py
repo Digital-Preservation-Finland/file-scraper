@@ -2,9 +2,10 @@
 
 from __future__ import unicode_literals
 
+import exiftool
+
 from file_scraper.base import BaseScraper
 from file_scraper.exiftool.exiftool_model import ExifToolDngMeta
-import exiftool
 
 
 class ExifToolScraperBase(BaseScraper):
