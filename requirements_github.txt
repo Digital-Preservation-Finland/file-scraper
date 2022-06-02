@@ -10,6 +10,7 @@ Pillow==6.0  # Pinned due to 6.1 causing a test case to fail
 wand==0.6.1
 lxml
 click
+pyexiftool==0.1
 # Temporary patch for ffmpeg-python / jpeg2000 lossless detection
 git+https://github.com/Digital-Preservation-Finland/ffmpeg-python.git#egg=ffmpeg_python
 # Get our newest format string changes not yet present in official Fido repository

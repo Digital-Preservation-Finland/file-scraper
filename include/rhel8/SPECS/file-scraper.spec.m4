@@ -24,6 +24,7 @@ Requires:       python3-ffmpeg-python ffmpeg python3-click
 Requires:       file >= 5.30
 Requires:       python3-wand >= 0.6.1
 Requires:       python3-pillow >= 6.0, python3-pillow < 6.1
+Requires:       python3-pyexiftool perl-Image-ExifTool ufraw
 BuildRequires:  python3-setuptools ImageMagick libmediainfo
 Conflicts:      file-scraper-full < %{version}-%{release}, file-scraper-full > %{version}-%{release}
 

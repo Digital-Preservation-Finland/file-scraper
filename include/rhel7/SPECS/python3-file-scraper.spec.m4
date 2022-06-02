@@ -23,6 +23,7 @@ Requires:       python3 python3-pymediainfo python3-magic python3-opf-fido veraP
 Requires:       python3-ffmpeg-python ffmpeg file-5.30 python36-click
 Requires:       python3-wand >= 0.6.1
 Requires:       python3-pillow >= 6.0, python3-pillow < 6.1
+Requires:       python3-pyexiftool perl-Image-ExifTool ufraw
 BuildRequires:  python3-setuptools ImageMagick libmediainfo
 Conflicts:      python3-file-scraper-full < %{version}-%{release}, python3-file-scraper-full > %{version}-%{release}
 
