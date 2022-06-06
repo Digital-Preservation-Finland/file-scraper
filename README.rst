@@ -32,12 +32,12 @@ To deactivate the virtual environment, run ``deactivate``. To reactivate it, run
 
 Installing this software will install virtualenv virtual environment with the following packages, but this is NOT enough for the usage:
 
-    * pytest, coverage, pytest-cov, Fido, file-magic, pymediainfo, ffmpeg-python, Pillow, python-wand, python-lxml, python-mimeparse
+    * pytest, coverage, pytest-cov, Fido, file-magic, pymediainfo, ffmpeg-python, Pillow, python-wand, python-lxml, python-mimeparse, pyexiftool
 
 The following software is required for minimal usage without file format well-formed check. Supported versions of the software is mentioned for some packages. The bolded software are NOT included in the pip installation script:
 
     * For all files: opf-fido 1.4.0 (patched by dpres), file-magic, **file-5.30**
-    * Additionally, for image files: Pillow 6.0, python-wand 0.6.1, **ImageMagick 6.9.10.68**
+    * Additionally, for image files: Pillow 6.0, python-wand 0.6.1, pyexiftool 0.1, **ImageMagick 6.9.10.68**, **ExifTool**, **ufraw**
     * Additionally, for audio/video files: pymediainfo, ffmpeg-python 0.1.16-2 (patched by dpres), **MediaInfo**, **FFMpeg 2.8.15**
     * Additionally, for pdf files: **veraPDF**
 
