@@ -137,6 +137,7 @@ class DngPilMeta(TiffPilMeta):
 
     @metadata()
     def mimetype(self):
+        """Return mimetype."""
         return "image/x-adobe-dng"
 
 
