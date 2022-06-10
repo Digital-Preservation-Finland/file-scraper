@@ -7,6 +7,7 @@ Version 0.44
 - Update installation guide for Python 3.6 in README.rst.
 - Add DNG file format support.
 - Fix DV file format detection.
+- Update requirements in setup file.
 
 Version 0.43
 ------------
