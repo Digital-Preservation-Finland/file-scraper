@@ -63,13 +63,11 @@ class ExifToolDngMeta(ExifToolBaseMeta):
         Return the byte order of the image.
 
         :returns: "big endian or "little endian" for images, (:unav) if there
-                   is no image.
-        :raises: ValueError if ExifTool reports a value other than "MM" or
-                 "II".
+                   is no image or if the byte order is unknown/unsupported.
         """
         value = self._metadata.get("File:ExifByteOrder", UNAV)
         if value == "II":
             return "little endian"
         if value == "MM":
             return "big endian"
-        raise ValueError("Unsupported byte order reported by ExifTool")
+        return UNAV

@@ -123,8 +123,8 @@ class WandTiffMeta(WandImageMeta):
         If image exists, return the byte order of the image, otherwise (:unav).
 
         :returns: "big endian" or "little endian" for existent images, (:unav)
-                  if there is no image.
-        :raises: ValueError if Wand reports a value other than "msb" or "lsb".
+                  if there is no image or if Wand reports a value other than
+                  "msb" or "lsb".
         """
         if not self._image:
             return UNAV
@@ -136,8 +136,7 @@ class WandTiffMeta(WandImageMeta):
                     return "big endian"
                 if value == "lsb":
                     return "little endian"
-
-        raise ValueError("Unsupported byte order reported by Wand.")
+        return UNAV
 
 
 class WandDngMeta(WandImageMeta):
