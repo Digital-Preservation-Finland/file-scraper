@@ -18,9 +18,9 @@ setup(
         "wand==0.6.1",
         "lxml",
         "pyexiftool==0.1",
-        "git+https://gitlab.ci.csc.fi/dpres/ffmpeg-python.git"
-        "@develop#egg=ffmpeg_python",
-        "git+https://gitlab.ci.csc.fi/dpres/fido.git"
+        "ffmpeg_python@git+https://gitlab.ci.csc.fi/dpres/ffmpeg-python.git"
+        "#egg=ffmpeg_python",
+        "opf_fido@git+https://gitlab.ci.csc.fi/dpres/fido.git"
         "@develop#egg=opf_fido"
     ],
     entry_points={'console_scripts': [
