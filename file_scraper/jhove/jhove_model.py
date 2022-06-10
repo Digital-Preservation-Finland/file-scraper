@@ -389,8 +389,11 @@ class JHoveDngMeta(JHoveBaseMeta):
 
     @metadata()
     def mimetype(self):
-        """Return mimetype"""
-        return "image/x-adobe-dng"
+        """Return mimetype."""
+        mime = super(JHoveDngMeta, self).mimetype()
+        if mime == "image/tiff":
+            return "image/x-adobe-dng"
+        return mime
 
     @metadata()
     def stream_type(self):
