@@ -1,6 +1,12 @@
 Release notes
 =============
 
+Unreleased
+----------
+
+- Fix scraper not being able to scrape PDF files that do not have ``.pdf`` file
+  extension.
+
 Version 0.44
 ------------
 

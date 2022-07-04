@@ -113,6 +113,22 @@ def test_scraper_invalid_pdfa(filename, result_dict, evaluate_scraper):
         evaluate_scraper(scraper, correct)
 
 
+def test_scraper_no_file_extension(evaluate_scraper):
+    """Test scraper with a PDF file that doesn't have a file extension."""
+    filename = "valid_A-3b_no_file_extension"
+    result_dict = {
+        "purpose": "Test valid file without file extension.",
+        "stdout_part": "PDF file is compliant with Validation Profile "
+                       "requirements.",
+        "stderr_part": ""
+    }
+    correct = parse_results(filename, MIMETYPE, result_dict, True)
+    scraper = VerapdfScraper(filename=correct.filename, mimetype=MIMETYPE)
+    scraper.scrape_file()
+
+    evaluate_scraper(scraper, correct)
+
+
 def test_is_supported():
     """Test is_supported method."""
     mime = MIMETYPE

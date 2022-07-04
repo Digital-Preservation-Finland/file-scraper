@@ -157,6 +157,8 @@ def test_fido_cache_halting_file(fido_cache_halting_file):
          "A-2b", "PDF/A version detected by veraPDF."),
         ("application_pdf/valid_A-3b.pdf", "application/pdf",
          "A-3b", "PDF/A version detected by veraPDF."),
+        ("application_pdf/valid_A-3b_no_file_extension", "application/pdf",
+         "A-3b", "PDF/A version detected by veraPDF."),
         ("image_png/valid_1.2.png", None, None,
          "File is not PDF/A, it is not compliant with PDF/A requirements")
     ]

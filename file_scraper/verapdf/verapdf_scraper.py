@@ -35,7 +35,8 @@ class VerapdfScraper(BaseScraper):
 
         :raises: VeraPDFError
         """
-        cmd = [VERAPDF_PATH, encode_path(self.filename)]
+        # --nonpdfext flag allows also files without the .pdf extension
+        cmd = [VERAPDF_PATH, encode_path(self.filename), "--nonpdfext"]
 
         shell = Shell(cmd)
         if shell.returncode not in OK_CODES:

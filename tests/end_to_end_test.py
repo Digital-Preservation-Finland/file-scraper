@@ -421,8 +421,8 @@ def test_coded_filename(testpath, fullname, mimetype, version):
 
     predefined_mimetype = GIVEN_MIMETYPES.get(fullname, None)
     predefined_charset = GIVEN_CHARSETS.get(fullname, None)
-    ext = fullname.rsplit(".", 1)[-1]
-    unicode_name = os.path.join(testpath, "äöå.%s" % ext)
+    ext = os.path.splitext(fullname)[1]
+    unicode_name = os.path.join(testpath, "äöå" + ext)
     shutil.copy(fullname, unicode_name)
     scraper = Scraper(unicode_name, mimetype=predefined_mimetype,
                       charset=predefined_charset)

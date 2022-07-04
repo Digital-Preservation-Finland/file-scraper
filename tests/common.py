@@ -88,7 +88,7 @@ def parse_results(filename, mimetype, results, check_wellformed,
     well_dict = {"valid": True, "invalid": False}
     well_dict_no_check = {"valid": None, "invalid": False}
     path = os.path.join(basepath, mimetype.replace("/", "_"))
-    words = filename.rsplit(".", 1)[0].split("_", 2)
+    words = os.path.splitext(filename)[0].split("_", 2)
     well_formed = words[0]
     if "streams" in results and "version" in results["streams"][0]:
         version = results["streams"][0]["version"]

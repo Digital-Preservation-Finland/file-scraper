@@ -290,7 +290,8 @@ class VerapdfDetector(BaseDetector):
 
         If the file is not a PDF/A, the MIME type and version are left as None.
         """
-        cmd = [VERAPDF_PATH, encode_path(self.filename)]
+        # --nonpdfext flag allows also files without the .pdf extension
+        cmd = [VERAPDF_PATH, encode_path(self.filename), "--nonpdfext"]
         shell = Shell(cmd)
 
         # Test if the file is a PDF/A
