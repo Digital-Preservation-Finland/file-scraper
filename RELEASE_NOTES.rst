@@ -1,8 +1,8 @@
 Release notes
 =============
 
-Unreleased
-----------
+Version 0.45
+------------
 
 - Fix scraper not being able to scrape PDF files that do not have ``.pdf`` file
   extension.
