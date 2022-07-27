@@ -1,6 +1,11 @@
 Release notes
 =============
 
+Version 0.46
+------------
+
+- Improve LxmlScraper's error handling.
+
 Version 0.45
 ------------
 
