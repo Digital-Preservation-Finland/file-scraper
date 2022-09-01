@@ -1,6 +1,11 @@
 Release notes
 =============
 
+Version 0.47
+------------
+
+- Add test case for file-5.30 recursion bug
+
 Version 0.46
 ------------
 
