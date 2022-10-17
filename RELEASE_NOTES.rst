@@ -1,6 +1,12 @@
 Release notes
 =============
 
+Version 0.48
+------------
+
+- Make scraper functional with veraPDF older than 1.18. In older versions, ``.pdf``
+  file extension is required for the PDF files.
+
 Version 0.47
 ------------
 
@@ -15,7 +21,7 @@ Version 0.45
 ------------
 
 - Fix scraper not being able to scrape PDF files that do not have ``.pdf`` file
-  extension.
+  extension. This requires veraPDF 1.18 or newer.
 
 Version 0.44
 ------------

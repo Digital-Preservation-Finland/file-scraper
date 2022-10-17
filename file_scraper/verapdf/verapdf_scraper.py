@@ -31,16 +31,28 @@ class VerapdfScraper(BaseScraper):
 
     def scrape_file(self):
         """
-        Scrape file.
+        Scrape file. The verapdf command is dependent on the version.
 
         :raises: VeraPDFError
         """
         # --nonpdfext flag allows also files without the .pdf extension
         cmd = [VERAPDF_PATH, encode_path(self.filename), "--nonpdfext"]
-
         shell = Shell(cmd)
+
+        # Filter error about --nonpdfext flag not being supported
+        errors = filter_errors(shell.stderr)
+
+        # If --nonpdfext flag is not supported, it does not affect to
+        # returncode
         if shell.returncode not in OK_CODES:
-            raise VeraPDFError(shell.stderr)
+            self._errors.append("Return code: %s" % shell.returncode)
+            self._errors.append(errors)
+            self._check_supported()
+            return
+
+        if errors:
+            self._errors.append(errors)
+
         profile = None
 
         try:
@@ -57,7 +69,7 @@ class VerapdfScraper(BaseScraper):
             else:
                 self._errors.append(shell.stdout)
         except ET.XMLSyntaxError:
-            self._errors.append(shell.stderr)
+            pass
 
         self.streams = list(self.iterate_models(
             well_formed=self.well_formed, profile=profile))
@@ -65,9 +77,22 @@ class VerapdfScraper(BaseScraper):
         self._check_supported()
 
 
-class VeraPDFError(Exception):
-    """
-    VeraPDF Error.
+def filter_errors(stderr):
+    """Filter errors for the case where --nonpdfext flag is not supported.
 
-    Raised if VeraPDF does not run successfully.
+    :stderr: stderr from veraPDF
+    :returns: Filtered errors
     """
+    if stderr:
+        error_list = []
+        for err_line in stderr.splitlines(True):
+            if "--nonpdfext doesn't exist." in err_line:
+                header = "org.verapdf.apps.utils.ApplicationUtils "\
+                    "filterPdfFiles"
+                if error_list and header in error_list[-1]:
+                    error_list.pop()  # Remove already added error header
+            else:
+                error_list.append(err_line)
+        return "".join(error_list)
+    else:
+        return None

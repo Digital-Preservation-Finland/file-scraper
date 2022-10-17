@@ -294,7 +294,8 @@ class VerapdfDetector(BaseDetector):
         cmd = [VERAPDF_PATH, encode_path(self.filename), "--nonpdfext"]
         shell = Shell(cmd)
 
-        # Test if the file is a PDF/A
+        # Test if the file is a PDF/A. If --nonpdfext flag is not supported,
+        # it does not affect to the return code.
         if shell.returncode != 0:
             self._set_info_not_pdf_a(shell)
             return
