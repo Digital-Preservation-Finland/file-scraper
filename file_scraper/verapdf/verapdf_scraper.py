@@ -31,7 +31,7 @@ class VerapdfScraper(BaseScraper):
 
     def scrape_file(self):
         """
-        Scrape file. The verapdf command is dependent on the version.
+        Scrape file.
 
         :raises: VeraPDFError
         """
