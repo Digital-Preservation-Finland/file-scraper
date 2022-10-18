@@ -93,7 +93,7 @@ def filter_errors(stderr):
                 header = "org.verapdf.apps.utils.ApplicationUtils "\
                     "filterPdfFiles"
                 if error_list and header in error_list[-1]:
-                    error_list.pop()  # Remove already added error header
+                    error_list.pop()  # Each error has it's own header line
             else:
                 error_list.append(err_line)
         return "".join(error_list)

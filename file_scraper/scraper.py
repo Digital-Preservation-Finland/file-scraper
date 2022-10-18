@@ -43,6 +43,7 @@ class Scraper(object):
         self._scraper_results = []
         self._predefined_mimetype = None
         self._predefined_version = None
+        self._file_exists = None
         if self._params.get("mimetype", None) not in LOSE:
             self._predefined_mimetype = self._params.get("mimetype", None)
         if self._params.get("version", None) not in LOSE:
@@ -90,6 +91,8 @@ class Scraper(object):
         :tool: Detector tool
         """
         tool.detect()
+        if tool.well_formed is False:
+            self.well_formed = False
         self.info[len(self.info)] = tool.info
         important = tool.get_important()
         if self._predefined_mimetype in LOSE:
@@ -180,9 +183,8 @@ class Scraper(object):
         """
         self.detect_filetype()
 
-        # MIME type could not be determined
-        # or an error occured while detection process
-        if not self._predefined_mimetype or self.well_formed is False:
+        # MIME type could not be determined or file was not found.
+        if not self._predefined_mimetype or not self._file_exists:
             self.streams = {}
             self.mimetype = "(:unav)"
             self.version = "(:unav)"
@@ -234,19 +236,12 @@ class Scraper(object):
 
         file_exists = FileExists(self.filename, None)
         self._scrape_file(file_exists, True)
-
         if file_exists.well_formed is False:
-            self._predefined_mimetype = None
-            self._predefined_version = None
+            self._file_exists = False
             return
 
+        self._file_exists = True
         self._identify()
-
-        for index in self.info:
-            if self.info[index]["errors"]:
-                self._predefined_mimetype = None
-                self._predefined_version = None
-                return
 
     def is_textfile(self):
         """

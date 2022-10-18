@@ -137,8 +137,13 @@ def test_error_filtering():
         "Oct 17, 2022 3:32:30 PM org.verapdf.apps.utils." \
         "ApplicationUtils filterPdfFiles\n" \
         "SEVERE: File /mypath/--nonpdfext doesn't exist.\n" \
-        "SEVERE: A real error not to be removed."
-    assert filter_errors(error) == "SEVERE: A real error not to be removed."
+        "Oct 17, 2022 3:32:31 PM org.verapdf.apps.utils." \
+        "ApplicationUtils anotherError\n" \
+        "SEVERE: An error not to be removed."
+    assert filter_errors(error) == \
+        "Oct 17, 2022 3:32:31 PM org.verapdf.apps.utils." \
+        "ApplicationUtils anotherError\n" \
+        "SEVERE: An error not to be removed."
 
 
 def test_is_supported():

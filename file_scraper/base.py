@@ -281,6 +281,16 @@ class BaseDetector(object):
         self._given_mimetype = mimetype
         self._given_version = version
 
+    @property
+    def well_formed(self):
+        """
+        Return well-formedness status of the detected file.
+        This can be either None or False, because detectors do not validate.
+
+        :returns: False if errors in detection, None otherwise.
+        """
+        return False if self.info and self.info["errors"] else None
+
     @abc.abstractmethod
     def detect(self):
         """Detect file. Must be implemented in detectors."""
