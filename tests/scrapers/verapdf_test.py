@@ -127,9 +127,6 @@ def test_scraper_no_file_extension(evaluate_scraper):
     correct = parse_results(filename, MIMETYPE, result_dict, True)
     scraper = VerapdfScraper(filename=correct.filename, mimetype=MIMETYPE)
     scraper.scrape_file()
-    if len(scraper.errors()) > 1 and \
-            "--nonpdfext doesn't exist." in scraper.errors()[1]:
-        pytest.skip("--nonpdfext parameter is not supported.")
 
     evaluate_scraper(scraper, correct)
 
