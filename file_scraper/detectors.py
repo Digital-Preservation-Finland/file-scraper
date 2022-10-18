@@ -2,6 +2,7 @@
 # pylint: disable=ungrouped-imports
 from __future__ import unicode_literals, absolute_import
 
+import distutils.spawn
 import lxml.etree as ET
 import six
 import exiftool
@@ -15,6 +16,7 @@ from file_scraper.defaults import (MIMETYPE_DICT, PRIORITY_PRONOM, PRONOM_DICT,
                                    VERSION_DICT)
 from file_scraper.utils import encode_path, decode_path
 from file_scraper.magiclib import magiclib, magic_analyze
+from file_scraper.verapdf.verapdf_scraper import filter_errors, OK_CODES
 
 MAGIC_LIB = magiclib()
 
@@ -290,8 +292,11 @@ class VerapdfDetector(BaseDetector):
 
         If the file is not a PDF/A, the MIME type and version are left as None.
         """
+        verapdf_loc = VERAPDF_PATH
+        if distutils.spawn.find_executable("verapdf") is not None:
+            verapdf_loc = "verapdf"
         # --nonpdfext flag allows also files without the .pdf extension
-        cmd = [VERAPDF_PATH, encode_path(self.filename), "--nonpdfext"]
+        cmd = [verapdf_loc, encode_path(self.filename), "--nonpdfext"]
         shell = Shell(cmd)
 
         # Test if the file is a PDF/A. If --nonpdfext flag is not supported,
@@ -338,8 +343,12 @@ class VerapdfDetector(BaseDetector):
                                   "with PDF/A requirements"],
                      "errors": [],
                      "tools": []}
-        if error_shell.stderr:
-            self.info["errors"] = [error_shell.stderr]
+
+        errors = error_shell.stderr
+        if error_shell.returncode in OK_CODES:
+            errors = filter_errors(error_shell.stderr)
+        if errors:
+            self.info["errors"] = [errors]
 
     def get_important(self):
         """

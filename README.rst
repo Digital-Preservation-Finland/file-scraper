@@ -55,16 +55,16 @@ See also:
     
 Where file-scraper needs to know a path to an executable or other resource, it is specified in ``file_scraper/config.py``. They correspond to the paths used by the Finnish national Digital Preservation Services, but they can be edited to match the installation locations on another system.
 
-JHove Installation Notes
-------------------------
+JHove and veraPDF Installation Notes
+------------------------------------
 
-By default, the JHove is installed to the home directory of the current user, and thus the executable is not found by the default executable search of Unix-like systems. In order for JHove to be usable by file-scraper, one of the following must be done:
+By default, the JHove/veraPDF is installed to the home directory of the current user, and thus the executable is not found by the default executable search of Unix-like systems. In order for JHove/veraPDF to be usable by file-scraper, one of the following must be done:
 
 * install the software in a directory included in ``$PATH`` when the installer prompts for installation location,
 * add the installation location to ``$PATH``,
 or
 
-* create a symbolic link between a directory listed in ``$PATH`` and the executable, e.g. ``ln -s /home/username/jhove/jhove /usr/bin/jhove``.
+* create a symbolic link between a directory listed in ``$PATH`` and the executable, e.g. ``ln -s /home/username/jhove/jhove /usr/bin/jhove`` and ``ln -s /home/username/verapdf/verapdf /usr/bin/verapdf``.
 
 Wand Usage Notes
 ----------------

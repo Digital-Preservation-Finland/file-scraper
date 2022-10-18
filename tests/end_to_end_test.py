@@ -281,6 +281,21 @@ def _assert_valid_scraper_result(scraper, fullname, mimetype, version,
         assert not unavs
 
 
+def _skip_based_on_result(filename, info):
+    """Skip a file based on the validation result.
+
+    :fullname: Name of the file
+    :info: Scarper info result
+    :returns: Reason to skip, or None if there is no reason.
+    """
+    if "valid_A-3b_no_file_extension" in filename:
+        for index in info:
+            if info[index]["errors"] and \
+                    "--nonpdfext doesn't exist." in info[index]["errors"][0]:
+                return "--nonpdfext parameter is not supported."
+    return None
+
+
 @pytest.mark.parametrize(("fullname", "mimetype", "version"),
                          get_files(well_formed=True))
 def test_valid_combined(fullname, mimetype, version):
@@ -303,6 +318,10 @@ def test_valid_combined(fullname, mimetype, version):
     scraper = Scraper(fullname, mimetype=predefined_mimetype,
                       charset=predefined_charset)
     scraper.scrape()
+
+    skip_reason = _skip_based_on_result(fullname, scraper.info)
+    if skip_reason is not None:
+        pytest.skip(skip_reason)
 
     for _, info in iteritems(scraper.info):
         assert not info["errors"]
@@ -378,6 +397,10 @@ def test_without_wellformed(fullname, mimetype, version):
                       charset=predefined_charset)
     scraper.scrape(False)
 
+    skip_reason = _skip_based_on_result(fullname, scraper.info)
+    if skip_reason is not None:
+        pytest.skip(skip_reason)
+
     _assert_valid_scraper_result(scraper, fullname, mimetype, version, None)
 
     mimepart = mimetype.split("/")[0]
@@ -427,6 +450,11 @@ def test_coded_filename(testpath, fullname, mimetype, version):
     scraper = Scraper(unicode_name, mimetype=predefined_mimetype,
                       charset=predefined_charset)
     scraper.scrape()
+
+    skip_reason = _skip_based_on_result(fullname, scraper.info)
+    if skip_reason is not None:
+        pytest.skip(skip_reason)
+
     assert scraper.well_formed
     scraper = Scraper(unicode_name.encode("utf-8"),
                       mimetype=predefined_mimetype,
@@ -646,6 +674,10 @@ def test_grading(fullname, mimetype, version):
                       version=version,
                       charset=charset)
     scraper.scrape()
+
+    skip_reason = _skip_based_on_result(fullname, scraper.info)
+    if skip_reason is not None:
+        pytest.skip(skip_reason)
 
     if fullname in UNACCEPTABLE_FILES:
         expected_grade = UNACCEPTABLE

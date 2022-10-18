@@ -127,6 +127,9 @@ def test_scraper_no_file_extension(evaluate_scraper):
     correct = parse_results(filename, MIMETYPE, result_dict, True)
     scraper = VerapdfScraper(filename=correct.filename, mimetype=MIMETYPE)
     scraper.scrape_file()
+    if len(scraper.errors()) > 1 and \
+            "--nonpdfext doesn't exist." in scraper.errors()[1]:
+        pytest.skip("--nonpdfext parameter is not supported.")
 
     evaluate_scraper(scraper, correct)
 
@@ -137,8 +140,8 @@ def test_error_filtering():
         "Oct 17, 2022 3:32:30 PM org.verapdf.apps.utils." \
         "ApplicationUtils filterPdfFiles\n" \
         "SEVERE: File /mypath/--nonpdfext doesn't exist.\n" \
-        "ERROR: A real error not to be removed."
-    assert filter_errors(error) == "ERROR: A real error not to be removed."
+        "SEVERE: A real error not to be removed."
+    assert filter_errors(error) == "SEVERE: A real error not to be removed."
 
 
 def test_is_supported():

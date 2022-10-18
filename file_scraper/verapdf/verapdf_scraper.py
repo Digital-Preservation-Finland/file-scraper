@@ -6,6 +6,7 @@ try:
 except ImportError:
     pass
 
+import distutils.spawn
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.config import VERAPDF_PATH
@@ -35,21 +36,23 @@ class VerapdfScraper(BaseScraper):
 
         :raises: VeraPDFError
         """
+        verapdf_loc = VERAPDF_PATH
+        if distutils.spawn.find_executable("verapdf") is not None:
+            verapdf_loc = "verapdf"
         # --nonpdfext flag allows also files without the .pdf extension
-        cmd = [VERAPDF_PATH, encode_path(self.filename), "--nonpdfext"]
+        cmd = [verapdf_loc, encode_path(self.filename), "--nonpdfext"]
         shell = Shell(cmd)
-
-        # Filter error about --nonpdfext flag not being supported
-        errors = filter_errors(shell.stderr)
 
         # If --nonpdfext flag is not supported, it does not affect to
         # returncode
         if shell.returncode not in OK_CODES:
             self._errors.append("Return code: %s" % shell.returncode)
-            self._errors.append(errors)
+            self._errors.append(shell.stderr)
             self._check_supported()
             return
 
+        # Filter error about --nonpdfext flag not being supported
+        errors = filter_errors(shell.stderr)
         if errors:
             self._errors.append(errors)
 
@@ -69,7 +72,7 @@ class VerapdfScraper(BaseScraper):
             else:
                 self._errors.append(shell.stdout)
         except ET.XMLSyntaxError:
-            pass
+            pass  # XML is empty. We already added all errors.
 
         self.streams = list(self.iterate_models(
             well_formed=self.well_formed, profile=profile))

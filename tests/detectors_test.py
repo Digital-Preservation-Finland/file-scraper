@@ -176,6 +176,10 @@ def test_pdf_detector(filepath, mimetype, version, message):
     """
     detector = VerapdfDetector('tests/data/' + filepath)
     detector.detect()
+    if detector.info["errors"] and \
+            filepath == "application_pdf/valid_A-3b_no_file_extension" and \
+            "--nonpdfext doesn't exist." in detector.info["errors"][0]:
+        pytest.skip("--nonpdfext parameter is not supported.")
     assert detector.mimetype == mimetype
     assert detector.version == version
     assert message in detector.info['messages']
