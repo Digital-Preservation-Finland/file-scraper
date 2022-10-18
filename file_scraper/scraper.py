@@ -221,6 +221,8 @@ class Scraper(object):
         Please note that using only detectors can result in a file type result
         that differs from the one obtained by the full scraper due to full
         scraping using a more comprehensive set of tools.
+
+        :returns: Predefined mimetype and version
         """
         self.mimetype = None
         self.version = None
@@ -238,10 +240,11 @@ class Scraper(object):
         self._scrape_file(file_exists, True)
         if file_exists.well_formed is False:
             self._file_exists = False
-            return
+            return (None, None)
 
         self._file_exists = True
         self._identify()
+        return (self._predefined_mimetype, self._predefined_version)
 
     def is_textfile(self):
         """
