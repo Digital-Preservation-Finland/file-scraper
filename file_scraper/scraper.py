@@ -56,6 +56,7 @@ class Scraper(object):
         _version = self._predefined_version
         self._params["detected_mimetype"] = UNAV
         self._params["detected_version"] = UNAV
+
         for detector in iter_detectors():
             tool = detector(self.filename, _mime, _version)
             self._update_filetype(tool)
@@ -183,6 +184,8 @@ class Scraper(object):
         # or an error occured while detection process
         if not self._predefined_mimetype or self.well_formed is False:
             self.streams = {}
+            self.mimetype = "(:unav)"
+            self.version = "(:unav)"
             return
 
         for scraper_class in iter_scrapers(
@@ -233,10 +236,17 @@ class Scraper(object):
         self._scrape_file(file_exists, True)
 
         if file_exists.well_formed is False:
-            return (None, None)
+            self._predefined_mimetype = None
+            self._predefined_version = None
+            return
 
         self._identify()
-        return (self._predefined_mimetype, self._predefined_version)
+
+        for index in self.info:
+            if self.info[index]["errors"]:
+                self._predefined_mimetype = None
+                self._predefined_version = None
+                return
 
     def is_textfile(self):
         """
