@@ -97,5 +97,5 @@ def filter_errors(stderr):
             else:
                 error_list.append(err_line)
         return "".join(error_list)
-    else:
-        return None
+
+    return None

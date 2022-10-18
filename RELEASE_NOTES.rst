@@ -6,6 +6,8 @@ Version 0.48
 
 - Make scraper functional with veraPDF older than 1.18. In older versions, ``.pdf``
   file extension is required for the PDF files.
+- Fix veraPDF command similar to JHOVE command.
+- Handle possible errors found in file format detection properly.
 
 Version 0.47
 ------------
