@@ -167,18 +167,23 @@ def format_exif_version(wand_exif_version):
     """Construct version numbering conforming to versions for Exchangeable
     Image File Format (Compressed) in PRONOM registry.
 
-    Wand library extracts Exif version from metadata as a string. The string is
-    in form of '48, 50, 50, 48' for 0220, 2.20 or 2.2 and is passed in that
-    form to this format function. First two bytes form the major version
-    number, third byte the minor and the last (optional) byte is the patch
-    number of the version.
+    Wand library extracts Exif version from metadata as a string. Depending
+    on library version the resulted string is
+        (1) in form of '48, 50, 50, 48' (in older ImageMagick), or
+        (2) directly in form of '0220' (in newer ImageMagick)
+    for 0220, 2.20 or 2.2 and is passed in that form to this format function.
+    First two bytes form the major version number, third byte the minor and
+    the last (optional) byte is the patch number of the version.
 
     :wand_exif_version: Version bytes string
     :return: Formatted version string
 
     """
-
-    version_bytes = [chr(int(byte)) for byte in wand_exif_version.split(', ')]
+    if len(wand_exif_version.split(", ")) == 4:
+        version_bytes = [chr(int(byte)) for byte in
+                         wand_exif_version.split(', ')]
+    else:
+        version_bytes = [byte for byte in wand_exif_version]
 
     version_bytes[0] += version_bytes.pop(1)
 

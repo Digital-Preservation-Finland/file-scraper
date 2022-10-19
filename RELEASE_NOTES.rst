@@ -8,6 +8,7 @@ Version 0.48
   file extension is required for the PDF files.
 - Fix veraPDF command similar to JHOVE command.
 - Handle possible errors found in file format detection properly.
+- Allow wand to deliver EXIF version as ASCII codes or plain text.
 
 Version 0.47
 ------------
