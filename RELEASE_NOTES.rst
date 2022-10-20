@@ -1,6 +1,12 @@
 Release notes
 =============
 
+Version 0.49
+------------
+
+- Pin file-magic version 0.4.0 since newer version requires a newer libmagic
+  that CentOS 7 ships by default.
+
 Version 0.48
 ------------
 
