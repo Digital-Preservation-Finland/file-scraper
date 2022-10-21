@@ -12,7 +12,7 @@ setup(
         "python-mimeparse",
         "six",
         "olefile",
-        "file-magic==0.4.0",
+        "file-magic<=0.4.0",
         "pymediainfo",
         "Pillow==6.0",
         "wand==0.6.1",
