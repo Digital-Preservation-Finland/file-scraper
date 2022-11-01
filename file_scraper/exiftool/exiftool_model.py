@@ -24,7 +24,7 @@ class ExifToolDngMeta(ExifToolBaseMeta):
     Metadata models for dng files scraped with ExifTool.
     """
 
-    _supported = {"image/x-adobe-dng": ["1.3", "1.4", "1.5"]}
+    _supported = {"image/x-adobe-dng": ["1.1", "1.2", "1.3", "1.4", "1.5"]}
     _allow_versions = True
 
     @metadata(important=True)

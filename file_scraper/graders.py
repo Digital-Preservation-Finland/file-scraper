@@ -139,6 +139,8 @@ class MIMEGrader(BaseGrader):
             "1.0": RECOMMENDED,  # GeoTiff
         },
         "image/x-adobe-dng": {
+            "1.1": RECOMMENDED,
+            "1.2": RECOMMENDED,
             "1.3": RECOMMENDED,
             "1.4": RECOMMENDED,
             "1.5": RECOMMENDED

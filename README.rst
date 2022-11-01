@@ -152,7 +152,7 @@ The following additional arguments for the Scraper are also possible:
         * Character encoding: ``charset=<charset>``. If the file is a text file, the file is validated using the given character encoding. Supported values are ``UTF-8``, ``UTF-16``, ``UTF-32`` and ``ISO-8859-15``. By default, the character encoding is detected. The detection is always a statistics-based evaluation and therefore it may sometimes give false results.
 
 File scraper can grade the file to determine how suitable it is for digital preservation.
-Possible values include ``fi-preservation-recommended-file-format``, ``fi-preservation-acceptable-file-format``, ``fi-preservation-bit-level-file-format-with-recommended``, ``fi-preservation-bit-level-file-format`` and ``fi-preservation-unacceptable-file-format``::
+Possible values include ``fi-dpres-recommended-file-format``, ``fi-dpres-acceptable-file-format``, ``fi-dpres-bit-level-file-format-with-recommended``, ``fi-dpres-bit-level-file-format`` and ``fi-dpres-unacceptable-file-format``::
 
     scraper.grade()
 
