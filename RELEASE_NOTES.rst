@@ -1,6 +1,11 @@
 Release notes
 =============
 
+Version 0.51
+------------
+
+- Add support for DNG file format versions 1.1 and 1.2.
+
 Version 0.49-0.50
 -----------------
 
