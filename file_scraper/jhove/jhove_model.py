@@ -399,3 +399,38 @@ class JHoveDngMeta(JHoveBaseMeta):
     def stream_type(self):
         """Return stream type."""
         return "image" if self._well_formed else UNAV
+
+
+class JHoveAiffMeta(JHoveBaseMeta):
+    """Metadata model for AIFF files scraped with JHove"""
+
+    _supported = {"audio/x-aiff": ["", "1.3"]}
+    _allow_versions = True
+
+    @metadata()
+    def stream_type(self):
+        """
+        Return file type.
+
+        If the well-formed status from scraper is False,
+        then we do not know the actual stream type.
+        """
+        return "audio" if self._well_formed else UNAV
+
+    @metadata()
+    def version(self):
+        """
+        Set version as "1.3" or "(:unap)" if profile is AIFF or AIFF-C
+        respectively.
+
+        If the well-formed status from scraper is False,
+        then we do not know the actual version.
+        """
+        profile = get_field(self._report, "profile")
+        if profile is None:
+            return UNAV
+        if "AIFF-C" in profile:
+            return UNAP
+        if "AIFF" in profile:
+            return "1.3"
+        return UNAV

@@ -8,11 +8,12 @@ except ImportError:
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
-from file_scraper.jhove.jhove_model import (JHoveGifMeta, JHoveHtmlMeta,
-                                            JHoveJpegMeta, JHoveTiffMeta,
-                                            JHovePdfMeta, JHoveWavMeta,
-                                            JHoveUtf8Meta, JHoveEpubMeta,
-                                            JHoveDngMeta, get_field)
+from file_scraper.jhove.jhove_model import (JHoveAiffMeta, JHoveDngMeta,
+                                            JHoveEpubMeta, JHoveGifMeta,
+                                            JHoveHtmlMeta, JHoveJpegMeta,
+                                            JHovePdfMeta, JHoveTiffMeta,
+                                            JHoveUtf8Meta, JHoveWavMeta,
+                                            get_field)
 
 
 class JHoveScraperBase(BaseScraper):
@@ -202,3 +203,10 @@ class JHoveDngScraper(JHoveScraperBase):
 
     _jhove_module = "TIFF-hul"
     _supported_metadata = [JHoveDngMeta]
+
+
+class JHoveAiffScraper(JHoveScraperBase):
+    """Variables for scraping AIFF files."""
+
+    _jhove_module = "AIFF-hul"
+    _supported_metadata = [JHoveAiffMeta]

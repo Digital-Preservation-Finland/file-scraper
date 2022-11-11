@@ -12,14 +12,15 @@ from file_scraper.dummy.dummy_scraper import (DetectedMimeVersionMetadataScraper
 from file_scraper.ffmpeg.ffmpeg_scraper import FFMpegScraper
 from file_scraper.ghostscript.ghostscript_scraper import GhostscriptScraper
 from file_scraper.graders import ContainerStreamsGrader, MIMEGrader, TextGrader
-from file_scraper.jhove.jhove_scraper import (JHoveGifScraper,
+from file_scraper.jhove.jhove_scraper import (JHoveAiffScraper,
+                                              JHoveDngScraper,
+                                              JHoveEpubScraper,
+                                              JHoveGifScraper,
                                               JHoveHtmlScraper,
                                               JHoveJpegScraper,
                                               JHovePdfScraper,
                                               JHoveTiffScraper,
-                                              JHoveWavScraper,
-                                              JHoveEpubScraper,
-                                              JHoveDngScraper)
+                                              JHoveWavScraper)
 from file_scraper.lxml_scraper.lxml_scraper import LxmlScraper
 from file_scraper.magic_scraper.magic_scraper import (MagicBinaryScraper,
                                                       MagicTextScraper)
@@ -79,13 +80,13 @@ def iter_scrapers(mimetype, version, check_wellformed=True, params=None):
         WarctoolsFullScraper, GzipWarctoolsScraper, WarctoolsScraper,
         CsvScraper, DetectedMimeVersionMetadataScraper,
         DetectedMimeVersionScraper, DpxScraper, ExifToolDngScraper,
-        FFMpegScraper, GhostscriptScraper, JHoveGifScraper, JHoveHtmlScraper,
-        JHoveJpegScraper, JHovePdfScraper, JHoveTiffScraper, JHoveWavScraper,
-        JHoveEpubScraper, JHoveDngScraper, LxmlScraper, MagicTextScraper,
-        MagicBinaryScraper, MediainfoScraper, OfficeScraper, PilScraper,
-        PngcheckScraper, PsppScraper, SchematronScraper, TextfileScraper,
-        TextEncodingScraper, TextEncodingMetaScraper, VerapdfScraper,
-        VnuScraper, WandScraper, XmllintScraper]
+        FFMpegScraper, GhostscriptScraper, JHoveAiffScraper, JHoveDngScraper,
+        JHoveEpubScraper, JHoveGifScraper, JHoveHtmlScraper, JHoveJpegScraper,
+        JHovePdfScraper, JHoveTiffScraper, JHoveWavScraper, LxmlScraper,
+        MagicTextScraper, MagicBinaryScraper, MediainfoScraper, OfficeScraper,
+        PilScraper, PngcheckScraper, PsppScraper, SchematronScraper,
+        TextfileScraper, TextEncodingScraper, TextEncodingMetaScraper,
+        VerapdfScraper, VnuScraper, WandScraper, XmllintScraper]
 
     for scraper in scrapers:
         if scraper.is_supported(mimetype, version, check_wellformed, params):
