@@ -259,6 +259,37 @@ class PngFileMagicMeta(BinaryMagicBaseMeta):
         return "image"
 
 
+class AiffFileMagicMeta(BinaryMagicBaseMeta):
+    """Metadata model for AIFF files."""
+
+    _supported = {"audio/x-aiff": ["", "1.3"]}  # Supported mimetype
+    _allow_versions = True   # Allow any version
+
+    @metadata()
+    def stream_type(self):
+        """Return stream type."""
+        return "audio"
+
+    @metadata()
+    def version(self):
+        """Return version based on if the data is an AIFF audio type
+        or an AIFF-C compressed audio type.
+
+        AIFF audio format version is hard coded to 1.3, since earlier
+        format versions relate to the Apple II file type note
+        implementation and were deprecated almost immediately in favor
+        of version 1.3.
+
+        AIFF-C compressed audio format
+        """
+
+        if 'aiff-c' in self._magic_result['magic_none'].lower():
+            return UNAP
+        if 'aiff audio' in self._magic_result['magic_none'].lower():
+            return '1.3'
+        return UNAV
+
+
 class JpegFileMagicMeta(BinaryMagicBaseMeta):
     """Metadata model for JPEG files."""
 

@@ -81,6 +81,10 @@ FORMATS = [
         "properties": {"format": "Matroska"}
     },
     {
+        "mimetype": "audio/x-aiff",
+        "properties": {"format": "AIFF"}
+    },
+    {
         "mimetype": "audio/flac",
         "properties": {"format": "FLAC"}
     },

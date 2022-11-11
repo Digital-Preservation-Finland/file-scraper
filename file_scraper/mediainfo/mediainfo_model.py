@@ -386,6 +386,28 @@ class LpcmMediainfoMeta(BaseMediainfoMeta):
         return "lossless"
 
 
+class AiffMediainfoMeta(BaseMediainfoMeta):
+    """Metadata model for AIFF audio."""
+
+    _supported = {"audio/x-aiff": ["", "1.3"]}
+    _allow_versions = True  # Allow any version
+
+    def __init__(self, tracks, index):
+        """Initialize the metadata model.
+
+        AIFF is a special container format. For AIFF files, no
+        distinction between container and soundtrack needs to be made,
+        as both are treated as one in the DPS.
+        """
+        super(AiffMediainfoMeta, self).__init__(tracks, index)
+        self._container = None
+
+    @metadata()
+    def mimetype(self):
+        """Return mimetype."""
+        return 'audio/x-aiff'
+
+
 class FlacMediainfoMeta(BaseMediainfoMeta):
     """Metadata model for FLAC audio."""
 

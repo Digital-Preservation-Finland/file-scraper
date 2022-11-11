@@ -34,7 +34,8 @@ class FFMpegSimpleMeta(BaseMeta):
         "audio/L16": [],
         "audio/L24": [],
         "video/x-ffv": [],
-        "audio/flac": []
+        "audio/flac": [],
+        "audio/x-aiff": []
         }
     _allow_versions = True   # Allow any version
 
@@ -70,7 +71,8 @@ class FFMpegSimpleMeta(BaseMeta):
         "PCM signed 8-bit",
         "FLAC (Free Lossless Audio Codec)",
         "raw FLAC",
-        "MP2/3 (MPEG audio layer 2/3)"
+        "MP2/3 (MPEG audio layer 2/3)",
+        "Audio IFF"
         ]
 
     def __init__(self, probe_results, index):
