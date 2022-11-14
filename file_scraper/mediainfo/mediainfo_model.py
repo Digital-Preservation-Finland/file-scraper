@@ -407,6 +407,14 @@ class AiffMediainfoMeta(BaseMediainfoMeta):
         """Return mimetype."""
         return 'audio/x-aiff'
 
+    @metadata()
+    def codec_quality(self):
+        """Return codec quality."""
+        if self._stream.compression_mode is not None:
+            return self._stream.compression_mode.lower()
+
+        return "lossless"
+
 
 class FlacMediainfoMeta(BaseMediainfoMeta):
     """Metadata model for FLAC audio."""
