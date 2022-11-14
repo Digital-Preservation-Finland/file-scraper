@@ -133,6 +133,7 @@ from tests.common import (parse_results, partial_message_included)
         ("valid_4.01.html", "text/html", "UTF-8", MagicTextScraper),
         ("valid_5.0.html", "text/html", "UTF-8", MagicTextScraper),
         ("valid_1.4.pdf", "application/pdf", None, MagicBinaryScraper),
+        ("valid_1.3.aiff", "audio/x-aiff", None, MagicBinaryScraper),
     ])
 def test_scraper_valid(filename, mimetype, charset, scraper_class,
                        evaluate_scraper):
@@ -314,6 +315,7 @@ def test_jpeg_exif_character_case():
         ("text/xml", "1.0", MagicTextScraper),
         ("application/xhtml+xml", "1.0", MagicTextScraper),
         ("application/pdf", "1.4", MagicBinaryScraper),
+        ("audio/x-aiff", "1.3", MagicBinaryScraper),
     ]
 )
 # pylint: disable=invalid-name
