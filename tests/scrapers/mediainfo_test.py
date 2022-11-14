@@ -28,10 +28,11 @@ from __future__ import unicode_literals
 
 import pytest
 
-from file_scraper.defaults import UNAP
+from file_scraper.defaults import UNAP, UNAV
 from file_scraper.mediainfo.mediainfo_scraper import MediainfoScraper
 from tests.common import (parse_results, partial_message_included)
-from tests.scrapers.stream_dicts import (DV_VIDEO,
+from tests.scrapers.stream_dicts import (AIFF_AUDIO,
+                                         DV_VIDEO,
                                          FFV_VIDEO,
                                          FFV_VIDEO_TRUNCATED,
                                          FFV_VIDEO_SOUND,
@@ -231,6 +232,34 @@ def test_mediainfo_scraper_wav(filename, result_dict, evaluate_scraper):
         assert not scraper.streams
     else:
         evaluate_scraper(scraper, correct)
+
+
+@pytest.mark.parametrize(
+    ["filename", "result_dict"],
+    [
+        ("valid_1.3.aiff", {
+            "purpose": "Test valid AIFF.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": "",
+            "streams": {0: AIFF_AUDIO.copy()}}),
+    ])
+def test_mediainfo_scraper_aiff(filename, result_dict, evaluate_scraper):
+    """
+    Test AIFF scraping with Mediainfo.
+
+    :filename: Test file name
+    :result_dict: Result dict containing the test purpose, parts of
+                  expected results of stdout and stderr, and expected
+                  streams
+    """
+    mimetype = "audio/x-aiff"
+    correct = parse_results(filename, mimetype, result_dict, False)
+    correct.streams[0]["version"] = UNAV
+
+    scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
+    scraper.scrape_file()
+
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(

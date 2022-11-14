@@ -90,7 +90,9 @@ UNAV_ELEMENTS = {
                                                 "codec_creator_app"],
     "tests/data/video_x-matroska/valid_4_ffv1_flac.mkv": ["data_rate",
                                                           "data_rate"],
-    "tests/data/image_x-adobe-dng/valid_1.4.dng": ["icc_profile_name"]
+    "tests/data/image_x-adobe-dng/valid_1.4.dng": ["icc_profile_name"],
+    "tests/data/audio_x-aiff/valid_1.3.aiff": ["codec_creator_app_version",
+                                               "codec_creator_app"]
 }
 
 # These are actually valid with another mimetype or version
