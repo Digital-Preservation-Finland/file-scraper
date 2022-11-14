@@ -242,6 +242,11 @@ def test_mediainfo_scraper_wav(filename, result_dict, evaluate_scraper):
             "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
             "streams": {0: AIFF_AUDIO.copy()}}),
+        ("invalid_1.3_data_bytes_missing.aiff", {
+            "purpose": "Test invalid AIFF.",
+            "stdout_part": "",
+            "stderr_part": "File contains a truncated track",
+            "streams": {0: AIFF_AUDIO.copy()}}),
     ])
 def test_mediainfo_scraper_aiff(filename, result_dict, evaluate_scraper):
     """
@@ -259,7 +264,13 @@ def test_mediainfo_scraper_aiff(filename, result_dict, evaluate_scraper):
     scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
 
-    evaluate_scraper(scraper, correct)
+    if "data_bytes_missing" in filename:
+        assert partial_message_included(correct.stdout_part,
+                                        scraper.messages())
+        assert partial_message_included(correct.stderr_part, scraper.errors())
+        assert not scraper.streams
+    else:
+        evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
