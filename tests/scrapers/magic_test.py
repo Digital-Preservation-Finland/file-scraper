@@ -134,6 +134,7 @@ from tests.common import (parse_results, partial_message_included)
         ("valid_5.0.html", "text/html", "UTF-8", MagicTextScraper),
         ("valid_1.4.pdf", "application/pdf", None, MagicBinaryScraper),
         ("valid_1.3.aiff", "audio/x-aiff", None, MagicBinaryScraper),
+        ("valid__aiff-c.aiff", "audio/x-aiff", None, MagicBinaryScraper),
     ])
 def test_scraper_valid(filename, mimetype, charset, scraper_class,
                        evaluate_scraper):

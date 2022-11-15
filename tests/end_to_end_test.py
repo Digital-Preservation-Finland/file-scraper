@@ -92,7 +92,9 @@ UNAV_ELEMENTS = {
                                                           "data_rate"],
     "tests/data/image_x-adobe-dng/valid_1.4.dng": ["icc_profile_name"],
     "tests/data/audio_x-aiff/valid_1.3.aiff": ["codec_creator_app_version",
-                                               "codec_creator_app"]
+                                               "codec_creator_app"],
+    "tests/data/audio_x-aiff/valid__aiff-c.aiff": ["codec_creator_app_version",
+                                                   "codec_creator_app"]
 }
 
 # These are actually valid with another mimetype or version
@@ -229,6 +231,7 @@ ACCEPTABLE_FILES = [
     "tests/data/video_quicktime/valid__dv_lpcm8.mov",
     "tests/data/video_avi/valid__mpeg2_mp3.avi",
     "tests/data/video_MP2T/valid__mpeg2_mp3.ts",
+    "tests/data/audio_x-aiff/valid__aiff-c.aiff",
 ]
 
 BIT_LEVEL_WITH_RECOMMENDED_FILES = [

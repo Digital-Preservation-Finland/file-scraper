@@ -32,6 +32,7 @@ from file_scraper.defaults import UNAP, UNAV
 from file_scraper.mediainfo.mediainfo_scraper import MediainfoScraper
 from tests.common import (parse_results, partial_message_included)
 from tests.scrapers.stream_dicts import (AIFF_AUDIO,
+                                         AIFF_C_AUDIO,
                                          DV_VIDEO,
                                          FFV_VIDEO,
                                          FFV_VIDEO_TRUNCATED,
@@ -242,6 +243,11 @@ def test_mediainfo_scraper_wav(filename, result_dict, evaluate_scraper):
             "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
             "streams": {0: AIFF_AUDIO.copy()}}),
+        ("valid__aiff-c.aiff", {
+            "purpose": "Test valid AIFF-C.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": "",
+            "streams": {0: AIFF_C_AUDIO.copy()}}),
         ("invalid_1.3_data_bytes_missing.aiff", {
             "purpose": "Test invalid AIFF.",
             "stdout_part": "",

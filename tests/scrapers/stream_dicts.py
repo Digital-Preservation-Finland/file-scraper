@@ -79,6 +79,15 @@ AIFF_AUDIO = {
     "num_channels": "2", "sampling_frequency": "44.1",
     "stream_type": "audio", "version": "1.3"}
 
+AIFF_C_AUDIO = {
+    "audio_data_encoding": "PCM", "bits_per_sample": "4",
+    "codec_creator_app": UNAV, "codec_creator_app_version": UNAV,
+    "codec_name": "ima4", "codec_quality": "lossless",
+    "data_rate": "24772.923076923074", "data_rate_mode": "Fixed",
+    "duration": "PT0.01S", "index": 0, "mimetype": "audio/aiff",
+    "num_channels": "2", "sampling_frequency": "44.1",
+    "stream_type": "audio", "version": UNAP}
+
 MPEG1_VIDEO = {
     "mimetype": "video/mpeg", "index": 0, "par": "1", "frame_rate": "30",
     "data_rate": "0.171304", "bits_per_sample": "8",

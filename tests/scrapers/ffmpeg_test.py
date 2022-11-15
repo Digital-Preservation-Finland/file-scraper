@@ -431,6 +431,17 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
                 "stderr_part": "does not seem to be LPCM"
             },
             "audio/x-wav"
+        ),
+        (
+            "invalid_1.3_data_bytes_missing.aiff",
+            {
+                "purpose": "Test invalid AIFF.",
+                "stdout_part": "",
+                "stderr_part": (
+                    "Invalid PCM packet, data has size 3 but at least a size "
+                    "of 4 was expected")
+            },
+            "audio/x-aiff"
         )
     ]
 )
