@@ -83,12 +83,13 @@ class FFMpegScraper(BaseScraper):
         # The exception is AIFF-C, where all kinds of PCM is allowed
         probe_format_name = probe_results["format"].get("format_name", UNAV)
         for stream in streams:
-            if probe_format_name != "aiff":
-                if "PCM" in stream.get("codec_long_name", UNAV) and not \
-                        any(stream.get("codec_long_name", UNAV).startswith(x)
-                            for x in ["PCM signed", "PCM unsigned"]):
-                    self._errors.append("%s does not seem to be LPCM format."
-                                        % stream["codec_long_name"])
+            if probe_format_name == "aiff":
+                continue
+            if "PCM" in stream.get("codec_long_name", UNAV) and not \
+                    any(stream.get("codec_long_name", UNAV).startswith(x)
+                        for x in ["PCM signed", "PCM unsigned"]):
+                self._errors.append("%s does not seem to be LPCM format."
+                                    % stream["codec_long_name"])
 
         container = False
         for index in range(len(streams)):
