@@ -408,6 +408,21 @@ class AiffMediainfoMeta(BaseMediainfoMeta):
         return 'audio/x-aiff'
 
     @metadata()
+    def codec_name(self):
+        """Return codec name.
+
+        The codec name for AIFF-C files is ready from the codec_id
+        key. AIFF files should have PCM in the format key.
+        """
+        if self._stream.codec_id is not None:
+            return self._stream.codec_id.lower()
+
+        if self._stream.format is not None:
+            return self._stream.format
+
+        return UNAV
+
+    @metadata()
     def codec_quality(self):
         """Return codec quality."""
         if self._stream.compression_mode is not None:
