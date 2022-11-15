@@ -268,6 +268,9 @@ def test_mediainfo_scraper_aiff(filename, result_dict, evaluate_scraper):
     correct = parse_results(filename, mimetype, result_dict, False)
     correct.streams[0]["version"] = UNAV
 
+    if "aiff-c" in filename:
+        correct.streams[0].pop("data_rate", None)
+
     scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
 
