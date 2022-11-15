@@ -35,6 +35,7 @@ This module tests that:
         - audio/mpeg version 1 file
         - application/mxf
         - audio/x-wav
+        - audio/x-aiff
     - Whether well-formed check is performed or not, the scraper reports
       the following combinations of mimetypes and versions as supported:
         - video/mpeg, "1" or None
@@ -167,6 +168,15 @@ UNAV_MIME = []
                 "stderr_part": ""
             },
             "audio/x-wav"
+        ),
+        (
+            "valid_1.3.aiff",
+            {
+                "purpose": "Test valid AIFF.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": ""
+            },
+            "audio/x-aiff"
         ),
     ]
 )

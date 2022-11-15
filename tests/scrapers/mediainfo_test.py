@@ -6,7 +6,7 @@ for well-formed checks.
 
 This module tests that:
     - MIME type, version, streams, and well-formedness are scraped
-      correctly for dv, wav, m1v, m2v, mp4, mp3 and ts files.
+      correctly for aiff, dv, wav, m1v, m2v, mp4, mp3 and ts files.
       Additionally, this is scraped correctly to mov video container
       containing dv video and lpcm8 audio, and to mkv container
       containing ffv1 video without sound and with lpcm8 and flac sound.
@@ -16,6 +16,7 @@ This module tests that:
     - The following MIME type and version combinations are supported
       whether well-formedness is checked or not:
         - audio/x-wav, '2'
+        - audio/x-aiff, '1.3'
         - video/mpeg, '1'
         - video/mp4, ''
         - video/MP1S, ''

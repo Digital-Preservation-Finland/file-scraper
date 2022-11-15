@@ -88,6 +88,9 @@ This module tests that:
         - For empty files, scraper errors contains "Unexpected end of file".
         - For files with missing data bytes, scraper errors contains "Bytes
           missing".
+    - MIME type, version, streams and well-formedness of aiff and aiff-c
+      files is tested correctly
+        - For valid files, scraper messages contains "Well-formed and valid".
     - The following MIME-type and version pairs are supported by their
       respective scrapers when well-formedness is checked, in addition to
       which these MIME types are also supported with None or a made up version.
@@ -123,15 +126,16 @@ import pytest
 
 from file_scraper.shell import Shell
 from file_scraper.defaults import UNAV
-from file_scraper.jhove.jhove_scraper import (JHoveGifScraper,
+from file_scraper.jhove.jhove_scraper import (JHoveAiffScraper,
+                                              JHoveDngScraper,
+                                              JHoveEpubScraper,
+                                              JHoveGifScraper,
                                               JHoveHtmlScraper,
                                               JHoveJpegScraper,
                                               JHovePdfScraper,
                                               JHoveTiffScraper,
-                                              JHoveDngScraper,
                                               JHoveUtf8Scraper,
-                                              JHoveWavScraper,
-                                              JHoveEpubScraper)
+                                              JHoveWavScraper)
 from tests.common import (parse_results, partial_message_included)
 
 
@@ -661,6 +665,39 @@ def test_scraper_wav(filename, result_dict, evaluate_scraper):
     correct.update_mimetype("audio/x-wav")
     scraper = JHoveWavScraper(filename=correct.filename,
                               mimetype="audio/x-wav")
+    scraper.scrape_file()
+
+    evaluate_scraper(scraper, correct)
+
+
+@pytest.mark.parametrize(
+    ["filename", "result_dict"],
+    [
+        ("valid_1.3.aiff", {
+            "purpose": "Test valid AIFF file.",
+            "stdout_part": "Well-Formed and valid",
+            "stderr_part": ""}),
+        ("valid__aiff-c.aiff", {
+            "purpose": "Test valid AIFF-C file.",
+            "stdout_part": "Well-Formed and valid",
+            "stderr_part": ""})
+    ]
+)
+def test_scraper_aiff(filename, result_dict, evaluate_scraper):
+    """
+    Test AIFF and AIFF-C scraping.
+
+    :filename: Test file name
+    :result_dict: Result dict containing test purpose, and parts of
+                  expected results of stdout and stderr
+    """
+    correct = parse_results(filename, "audio/x-aiff",
+                            result_dict, True)
+    correct.update_mimetype("audio/x-aiff")
+    if "1.3" in filename:
+        correct.update_version("1.3")
+    scraper = JHoveAiffScraper(filename=correct.filename,
+                               mimetype="audio/x-aiff")
     scraper.scrape_file()
 
     evaluate_scraper(scraper, correct)

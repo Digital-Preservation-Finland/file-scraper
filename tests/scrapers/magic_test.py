@@ -65,6 +65,7 @@ This module tests that:
         - application/xhtml+xml, 1.0
         - text/html, 4.01
         - application/pdf, 1.4
+        - audio/x-aiff, 1.3
     - Any of these MIME types with version None is also supported,
       except text/html
     - Valid MIME type with made up version is supported, except for text files
