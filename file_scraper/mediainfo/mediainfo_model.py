@@ -424,9 +424,18 @@ class AiffMediainfoMeta(BaseMediainfoMeta):
 
     @metadata()
     def codec_quality(self):
-        """Return codec quality."""
+        """Return codec quality.
+
+        AIFF-C can contain lossless or lossy compression. We'll set the
+        codec quality based on the codec ID.
+        """
         if self._stream.compression_mode is not None:
             return self._stream.compression_mode.lower()
+
+        if self._stream.codec_id is not None:
+            if self._stream.codec_id not in [
+                    "raw", "twos", "swot", "fl32", "fl64", "in24", "in32"]:
+                return "lossy"
 
         return "lossless"
 

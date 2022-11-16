@@ -82,8 +82,8 @@ AIFF_AUDIO = {
 AIFF_C_AUDIO = {
     "audio_data_encoding": "PCM", "bits_per_sample": "4",
     "codec_creator_app": UNAV, "codec_creator_app_version": UNAV,
-    "codec_name": "ima4", "codec_quality": "lossless",
-    "data_rate": "24772.923076923074", "data_rate_mode": "Fixed",
+    "codec_name": "ima4", "codec_quality": "lossy",
+    "data_rate": "24772.9230769", "data_rate_mode": "Fixed",
     "duration": "PT0.01S", "index": 0, "mimetype": "audio/aiff",
     "num_channels": "2", "sampling_frequency": "44.1",
     "stream_type": "audio", "version": UNAP}
