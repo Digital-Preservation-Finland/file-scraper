@@ -35,7 +35,9 @@ class FFMpegSimpleMeta(BaseMeta):
         "audio/L24": [],
         "video/x-ffv": [],
         "audio/flac": [],
-        "audio/x-aiff": []
+        "audio/x-aiff": [],
+        "audio/x-ms-wma": [],
+        "video/x-ms-asf": []
         }
     _allow_versions = True   # Allow any version
 
@@ -46,6 +48,7 @@ class FFMpegSimpleMeta(BaseMeta):
         "MXF (Material eXchange Format)",
         "QuickTime / MOV",
         "AVI (Audio Video Interleaved)",
+        "ASF (Advanced / Active Streaming Format)"
     ]
 
     _supported_formats = _supported_containers + [
@@ -72,7 +75,8 @@ class FFMpegSimpleMeta(BaseMeta):
         "FLAC (Free Lossless Audio Codec)",
         "raw FLAC",
         "MP2/3 (MPEG audio layer 2/3)",
-        "Audio IFF"
+        "Audio IFF",
+        "Windows Media Audio 1"
         ]
 
     def __init__(self, probe_results, index):

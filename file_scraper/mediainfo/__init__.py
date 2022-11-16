@@ -96,6 +96,14 @@ FORMATS = [
         "mimetype": "video/x.fi-dpres.prores",
         "properties": {"format": "ProRes"}
     },
+    {
+        "mimetype": "audio/x-ms-wma",
+        "properties": {"format": "WMA"}
+    },
+    {
+        "mimetype": "video/x-ms-asf",
+        "properties": {"format": "Windows Media"}
+    },
 ]
 
 

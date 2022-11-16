@@ -295,7 +295,8 @@ class ContainerMediainfoMeta(BaseMediainfoMeta):
                   "video/MP1S": [""],
                   "video/MP2P": [""],
                   "video/MP2T": [""],
-                  "video/avi": [""]}
+                  "video/avi": [""],
+                  "video/x-ms-asf": [""]}
     _allow_versions = True  # Allow any version
 
     @metadata()
@@ -438,6 +439,28 @@ class AiffMediainfoMeta(BaseMediainfoMeta):
                 return "lossy"
 
         return "lossless"
+
+
+class WmaMediainfoMeta(BaseMediainfoMeta):
+    """Metadata model for WMA audio."""
+
+    _supported = {"audio/x-ms-wma": ["9"]}
+    _allow_versions = True  # Allow any version
+
+    @metadata()
+    def mimetype(self):
+        """Return mimetype."""
+        return 'audio/x-ms-wma'
+
+    @metadata()
+    def version(self):
+        """Return version of stream."""
+        return "9"
+
+    @metadata()
+    def codec_quality(self):
+        """Return codec quality."""
+        return "lossy"
 
 
 class FlacMediainfoMeta(BaseMediainfoMeta):
