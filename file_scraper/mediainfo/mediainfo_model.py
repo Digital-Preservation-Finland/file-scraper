@@ -454,12 +454,23 @@ class WmaMediainfoMeta(BaseMediainfoMeta):
 
     @metadata()
     def version(self):
-        """Return version of stream."""
+        """Return version of stream.
+
+        WMA codec versions 7, 8 and 9 can be considered the same with
+        backwards compability.
+        """
         return "9"
 
     @metadata()
     def codec_quality(self):
-        """Return codec quality."""
+        """Return codec quality.
+
+        Most common WMA codecs are lossy, but some WMA files can use
+        the Windows Media Audio Lossless codec.
+        """
+        if self._stream.codec_id_info is not None \
+                and "Lossless" in self._stream.codec_id_info:
+            return "lossless"
         return "lossy"
 
 
