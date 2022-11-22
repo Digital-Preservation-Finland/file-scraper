@@ -14,7 +14,7 @@ setup(
         "olefile",
         "file-magic<=0.4.0",
         "pymediainfo",
-        "Pillow==6.0",
+        "Pillow==9.3.0",
         "wand==0.6.1",
         "lxml",
         "pyexiftool==0.1",
