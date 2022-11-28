@@ -36,6 +36,7 @@ This module tests that:
         - application/mxf
         - audio/x-wav
         - audio/x-aiff
+        - video/x-ms-asf
     - Whether well-formed check is performed or not, the scraper reports
       the following combinations of mimetypes and versions as supported:
         - video/mpeg, "1" or None
@@ -178,6 +179,15 @@ UNAV_MIME = []
                 "stderr_part": ""
             },
             "audio/x-aiff"
+        ),
+        (
+            "valid__wma_9.wma",
+            {
+                "purpose": "Test valid WMA.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": ""
+            },
+            "video/x-ms-asf"
         ),
     ]
 )

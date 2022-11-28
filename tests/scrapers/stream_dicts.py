@@ -88,6 +88,20 @@ AIFF_C_AUDIO = {
     "num_channels": "2", "sampling_frequency": "44.1",
     "stream_type": "audio", "version": UNAP}
 
+ASF_CONTAINER = {
+    "codec_creator_app": UNAV, "codec_creator_app_version": UNAV,
+    "codec_name": "Windows Media", "index": 0, "mimetype": "video/x-ms-asf",
+    "stream_type": "videocontainer", "version": UNAP}
+
+WMA_AUDIO = {
+    "audio_data_encoding": "WMA", "bits_per_sample": "16",
+    "codec_creator_app": UNAV, "codec_creator_app_version": UNAV,
+    "codec_name": "WMA", "codec_quality": "lossy",
+    "data_rate": "192", "data_rate_mode": UNAV,
+    "duration": "PT0.85S", "index": 1, "mimetype": "audio/x-ms-wma",
+    "num_channels": "2", "sampling_frequency": "48",
+    "stream_type": "audio", "version": "9"}
+
 MPEG1_VIDEO = {
     "mimetype": "video/mpeg", "index": 0, "par": "1", "frame_rate": "30",
     "data_rate": "0.171304", "bits_per_sample": "8",

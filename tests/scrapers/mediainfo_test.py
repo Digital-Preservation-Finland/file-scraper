@@ -6,7 +6,7 @@ for well-formed checks.
 
 This module tests that:
     - MIME type, version, streams, and well-formedness are scraped
-      correctly for aiff, dv, wav, m1v, m2v, mp4, mp3 and ts files.
+      correctly for aiff, dv, wav, wma, m1v, m2v, mp4, mp3 and ts files.
       Additionally, this is scraped correctly to mov video container
       containing dv video and lpcm8 audio, and to mkv container
       containing ffv1 video without sound and with lpcm8 and flac sound.
@@ -17,6 +17,7 @@ This module tests that:
       whether well-formedness is checked or not:
         - audio/x-wav, '2'
         - audio/x-aiff, '1.3'
+        - video/x-ms-asf, ''
         - video/mpeg, '1'
         - video/mp4, ''
         - video/MP1S, ''
@@ -34,17 +35,22 @@ from file_scraper.mediainfo.mediainfo_scraper import MediainfoScraper
 from tests.common import (parse_results, partial_message_included)
 from tests.scrapers.stream_dicts import (AIFF_AUDIO,
                                          AIFF_C_AUDIO,
+                                         ASF_CONTAINER,
+                                         AVI_AUDIO,
+                                         AVI_CONTAINER,
+                                         AVI_VIDEO,
                                          DV_VIDEO,
                                          FFV_VIDEO,
-                                         FFV_VIDEO_TRUNCATED,
                                          FFV_VIDEO_SOUND,
                                          FFV_VIDEO_SOUND_DATARATE,
+                                         FFV_VIDEO_TRUNCATED,
                                          FLAC_AUDIO,
+                                         LPCM8_AUDIO,
                                          MKV_CONTAINER,
                                          MOV_CONTAINER,
                                          MOV_DV_VIDEO,
-                                         MOV_MPEG4_VIDEO,
                                          MOV_MPEG4_AUDIO,
+                                         MOV_MPEG4_VIDEO,
                                          MPEG1_AUDIO,
                                          MPEG1_VIDEO,
                                          MPEG2_VIDEO,
@@ -54,11 +60,8 @@ from tests.scrapers.stream_dicts import (AIFF_AUDIO,
                                          MPEGTS_AUDIO,
                                          MPEGTS_CONTAINER,
                                          MPEGTS_VIDEO,
-                                         LPCM8_AUDIO,
                                          WAV_AUDIO,
-                                         AVI_CONTAINER,
-                                         AVI_VIDEO,
-                                         AVI_AUDIO)
+                                         WMA_AUDIO)
 
 
 @pytest.mark.parametrize(
@@ -281,6 +284,34 @@ def test_mediainfo_scraper_aiff(filename, result_dict, evaluate_scraper):
         assert not scraper.streams
     else:
         evaluate_scraper(scraper, correct)
+
+
+@pytest.mark.parametrize(
+    ["filename", "result_dict"],
+    [
+        ("valid__wma_9.wma", {
+            "purpose": "Test valid WMA.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": "",
+            "streams": {0: ASF_CONTAINER.copy(),
+                        1: WMA_AUDIO.copy()}}),
+    ])
+def test_mediainfo_scraper_wma(filename, result_dict, evaluate_scraper):
+    """
+    Test WMA scraping with Mediainfo.
+
+    :filename: Test file name
+    :result_dict: Result dict containing the test purpose, parts of
+                  expected results of stdout and stderr, and expected
+                  streams
+    """
+    mimetype = "video/x-ms-asf"
+    correct = parse_results(filename, mimetype, result_dict, False)
+
+    scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
+    scraper.scrape_file()
+
+    evaluate_scraper(scraper, correct)
 
 
 @pytest.mark.parametrize(
