@@ -1,4 +1,14 @@
-"""FFMpeg wellformed scraper."""
+"""
+FFMpeg scraper for gathering metadata and well-formed checking.
+
+For most file types, no metadata is scraped: for those files
+FFMpegSimpleMeta metadata model is used. This is done as both
+Mediainfo and FFMpeg cannot be used simultaneously to scrape the
+metadata as reliable matching of streams from two scrapers is not
+currently possible. For AVI files, Mediainfo is not able to report
+all required metadata, so for those files all metadata collection is
+done with FFMpegScraper, using FFMpegMeta as the metadata model.
+"""
 from __future__ import unicode_literals
 
 import re
@@ -18,19 +28,14 @@ except ImportError:
 
 class FFMpegScraper(BaseScraper):
     """
-    Scraper using FFMpeg to check well-formedness / gather metadata.
-
-    For most file types, no metadata is scraped: for those files
-    FFMpegSimpleMeta metadata model is used. This is done as both
-    Mediainfo and FFMpeg cannot be used simultaneously to scrape the
-    metadata as reliable matching of streams from two scrapers is not
-    currently possible. For AVI files, Mediainfo is not able to report
-    all required metadata, so for those files all metadata collection is
-    done with FFMpegScraper, using FFMpegMeta as the metadata model.
+    Scraper using FFMpeg to check well-formedness and gather metadata.
     """
 
     # Supported metadata models
     _supported_metadata = [FFMpegSimpleMeta, FFMpegMeta]
+    # Run only when checking well-formedness. There is another scraper for
+    # the case without checking.
+    _only_wellformed = True
 
     @property
     def well_formed(self):
@@ -39,8 +44,9 @@ class FFMpegScraper(BaseScraper):
         If file contains streams that can not be identified, the scraper can
         not check well-formedness.
 
-        :returns: None if scraper does not check well-formedness, True if the
-                  file has been scraped without errors and otherwise False
+        :returns: None if there were no errors but a stream was not
+                  identified, True if the file has been scraped without errors
+                  and otherwise False
         """
         valid = super(FFMpegScraper, self).well_formed
         unsupported_av_format_found = any(
@@ -53,6 +59,7 @@ class FFMpegScraper(BaseScraper):
 
     def scrape_file(self):
         """Scrape A/V files."""
+        _has_meta = False
         try:
             probe_results = ffmpeg.probe(encode_path(self.filename))
             streams = [probe_results["format"]] + probe_results["streams"]
@@ -61,18 +68,30 @@ class FFMpegScraper(BaseScraper):
                     stream["index"] = 0
                 else:
                     stream["index"] = stream["index"] + 1
+            _has_meta = True
         except ffmpeg.Error as err:
             self._errors.append("Error in analyzing file.")
             self._errors.append(ensure_text(err.stderr))
 
-        shell = Shell(["ffmpeg", "-v", "error", "-i",
-                       encode_path(self.filename), "-f", "null", "-"])
+        if self._only_wellformed:
 
-        if shell.returncode == 0:
+            shell = Shell(["ffmpeg", "-v", "error", "-i",
+                           encode_path(self.filename), "-f", "null", "-"])
+
+            if shell.returncode == 0:
+                self._messages.append("The file was analyzed successfully.")
+
+            # Do not add errors, if only errors to be filtered exist,
+            # otherwise add all errors without filtering
+            if _filter_stderr(shell.stderr):
+                self._errors.append(shell.stderr)
+
+        elif _has_meta:
+            # Scraping is successful only with a message output
             self._messages.append("The file was analyzed successfully.")
 
-        if self._filter_stderr(shell.stderr):
-            self._errors.append(shell.stderr)
+        if not _has_meta:
+            # We most likely have no proper streams
             return
 
         # We deny e.g. A-law PCM, mu-law PCM, DPCM and ADPCM and allow
@@ -124,26 +143,68 @@ class FFMpegScraper(BaseScraper):
                 if md_object.av_format_supported() is not None:
                     yield md_object
 
-    def _filter_stderr(self, errors):
-        """
-        Filter out "bpno became negative" and "Last message repeated".
 
-        Returns a new string, containing all lines in errors except
-        those that contain either "Last message repeated [number] times"
-        or both "jpeg2000" and "bpno became negative".
+class FFMpegMetaScraper(FFMpegScraper):
+    """
+    Scraper using FFMpeg to gather metadata without well-formed check.
+    """
 
-        :errors: Stderr result from Shell in scraping
-        :returns: Filtered error message result
+    # Supported metadata models
+    _supported_metadata = [FFMpegMeta]
+    _only_wellformed = False
+
+    @property
+    def well_formed(self):
         """
-        # pylint: disable=no-self-use
-        constructed_string = ""
-        repeat = re.compile("Last message repeated [0-9]+ times")
-        for line in six.text_type(errors).split("\n"):
-            if not line:
-                continue
-            if "jpeg2000" in line and "bpno became negative" in line:
-                continue
-            if repeat.match(line.strip()):
-                continue
-            constructed_string = constructed_string + line + "\n"
-        return constructed_string
+        Do not check well-formedness.
+
+        :returns: False if errors found, None otherwise.
+        """
+        valid = super(FFMpegScraper, self).well_formed
+
+        return None if valid else valid
+
+    @classmethod
+    def is_supported(cls, mimetype, version=None, check_wellformed=True,
+                     params=None):  # pylint: disable=unused-argument
+        """
+        Metadata gathering is needed also in well-formed check, so and the
+        superclass handles it, it is not necessary to run this scraper with
+        well-formed check.
+        """
+        if check_wellformed:
+            return False
+
+        return super(FFMpegMetaScraper, cls).is_supported(
+            mimetype=mimetype, version=version,
+            check_wellformed=check_wellformed, params=params)
+
+
+def _filter_stderr(errors):
+    """
+    Filter out "bpno became negative" and "Last message repeated".
+
+    Message "bpno became negative" is not considered as error, see e.g.:
+    http://ffmpeg.org/pipermail/ffmpeg-devel/2020-April/259454.html
+
+    Returns a new string, containing all lines in errors except
+    those that contain either "Last message repeated [number] times"
+    or both "jpeg2000" and "bpno became negative".
+
+    Note: Message "Last message repeated" may be targeted also
+    to another (valid) error message. It will still be filtered.
+
+    :errors: Stderr result from Shell in scraping
+    :returns: Filtered error message result
+    """
+    constructed_string = ""
+    repeat = re.compile("Last message repeated [0-9]+ times")
+    for line in six.text_type(errors).split("\n"):
+        if not line:
+            continue
+        if "jpeg2000" in line and "bpno became negative" in line:
+            continue
+        if repeat.match(line.strip()):
+            continue
+        constructed_string = constructed_string + line + "\n"
+    return constructed_string

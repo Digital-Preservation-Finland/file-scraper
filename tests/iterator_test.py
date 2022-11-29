@@ -13,10 +13,10 @@ from file_scraper.iterator import iter_scrapers, iter_detectors
 
 
 WELLFORMED_SCRAPERS = [
-    "DpxScraper", "GhostscriptScraper", "JHoveGifScraper", "JHoveHtmlScraper",
-    "JHoveJpegScraper", "JHoveTiffScraper", "JHovePdfScraper",
-    "JHoveWavScraper", "JHoveUtf8Scraper", "LxmlScraper", "OfficeScraper",
-    "PngcheckScraper", "PsppScraper", "SchematronScraper",
+    "DpxScraper", "FFMpegScraper", "GhostscriptScraper", "JHoveGifScraper",
+    "JHoveHtmlScraper", "JHoveJpegScraper", "JHoveTiffScraper",
+    "JHovePdfScraper", "JHoveWavScraper", "JHoveUtf8Scraper", "LxmlScraper",
+    "OfficeScraper", "PngcheckScraper", "PsppScraper", "SchematronScraper",
     "TextEncodingScraper", "VerapdfScraper", "VnuScraper",
     "WarctoolsFullScraper", "GzipWarctoolsScraper",
     "XmllintScraper"
@@ -38,6 +38,7 @@ WELLFORMED_SCRAPERS = [
         ("video/x-matroska", None, ["MediainfoScraper", "FFMpegScraper"]),
         ("video/dv", None, ["MediainfoScraper", "FFMpegScraper"]),
         ("video/quicktime", None, ["MediainfoScraper", "FFMpegScraper"]),
+        ("application/mxf", None, ["FFMpegScraper"]),
         ("application/pdf", "1.2", ["MagicBinaryScraper", "JHovePdfScraper",
                                     "GhostscriptScraper"]),
         ("application/pdf", "1.3", ["MagicBinaryScraper", "JHovePdfScraper",
@@ -140,6 +141,8 @@ def test_iter_scrapers(mimetype, version, scraper_classes):
         "WarctoolsScraper" if x == "WarctoolsFullScraper" else x
         for x in scraper_classes
     ]
+    if mimetype == "application/mxf":
+        scraper_classes = ["FFMpegMetaScraper"]
     if mimetype in ["application/x-spss-por", "text/html", "text/xml"] or \
             mimetype == "application/pdf" and version in \
             ["A-1a", "A-1b", "A-2a", "A-2b", "A-2u", "A-3a", "A-3b", "A-3u"]:

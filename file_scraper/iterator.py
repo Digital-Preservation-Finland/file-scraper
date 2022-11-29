@@ -12,7 +12,7 @@ from file_scraper.dpx.dpx_scraper import DpxScraper
 from file_scraper.dummy.dummy_scraper import (DetectedMimeVersionMetadataScraper,
                                               DetectedMimeVersionScraper,
                                               ScraperNotFound)
-from file_scraper.ffmpeg.ffmpeg_scraper import FFMpegScraper
+from file_scraper.ffmpeg.ffmpeg_scraper import FFMpegMetaScraper, FFMpegScraper
 from file_scraper.ghostscript.ghostscript_scraper import GhostscriptScraper
 from file_scraper.graders import ContainerStreamsGrader, MIMEGrader, TextGrader
 from file_scraper.jhove.jhove_scraper import (JHoveAiffScraper,
@@ -85,8 +85,9 @@ def iter_scrapers(mimetype, version, check_wellformed=True, params=None):
     scrapers = [
         WarctoolsFullScraper, GzipWarctoolsScraper, WarctoolsScraper,
         CsvScraper, DetectedMimeVersionMetadataScraper,
-        DetectedMimeVersionScraper, DbptkScraper, DpxScraper, ExifToolDngScraper,
-        FFMpegScraper, GhostscriptScraper, JHoveAiffScraper, JHoveDngScraper,
+        DetectedMimeVersionScraper, DbptkScraper, DpxScraper,
+        ExifToolDngScraper, FFMpegMetaScraper, FFMpegScraper,
+        GhostscriptScraper, JHoveAiffScraper, JHoveDngScraper,
         JHoveEpubScraper, JHoveGifScraper, JHoveHtmlScraper, JHoveJpegScraper,
         JHovePdfScraper, JHoveTiffScraper, JHoveWavScraper, LxmlScraper,
         MagicTextScraper, MagicBinaryScraper, MediainfoScraper, OfficeScraper,

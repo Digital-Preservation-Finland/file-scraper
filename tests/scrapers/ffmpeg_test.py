@@ -56,7 +56,8 @@ from __future__ import unicode_literals
 import pytest
 
 from file_scraper.defaults import UNAP, UNAV
-from file_scraper.ffmpeg.ffmpeg_scraper import FFMpegScraper
+from file_scraper.ffmpeg.ffmpeg_scraper import (FFMpegScraper,
+                                                FFMpegMetaScraper)
 from tests.common import parse_results
 from tests.scrapers.stream_dicts import (
     MXF_CONTAINER,
@@ -262,7 +263,8 @@ def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
 def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
                               evaluate_scraper):
     """
-    Test FFMpegScraper with valid files when metadata is scraped.
+    Test FFMpegScraper and FFMpegMetaScraper with valid files when metadata
+    is scraped.
 
     :filename: Test file name
     :result_dict: Result dict containing, test purpose, and parts of
@@ -275,6 +277,14 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
     scraper.scrape_file()
 
     evaluate_scraper(scraper, correct)
+
+    correct_meta = parse_results(filename, mimetype, result_dict, False)
+
+    scraper_meta = FFMpegMetaScraper(filename=correct_meta.filename,
+                                     mimetype=mimetype)
+    scraper_meta.scrape_file()
+
+    evaluate_scraper(scraper_meta, correct_meta)
 
 
 @pytest.mark.parametrize(
@@ -494,6 +504,14 @@ def test_is_supported(mimetype, version):
     """
     assert FFMpegScraper.is_supported(mimetype, version, True)
     assert FFMpegScraper.is_supported(mimetype, None, True)
-    assert FFMpegScraper.is_supported(mimetype, version, False)
+    assert not FFMpegScraper.is_supported(mimetype, version, False)
     assert FFMpegScraper.is_supported(mimetype, "foo", True)
     assert not FFMpegScraper.is_supported("foo", version, True)
+
+    assert not FFMpegMetaScraper.is_supported(mimetype, version, True)
+
+    # Metadata gathering supported only for MXF
+    if mimetype == "application/mxf":
+        assert FFMpegMetaScraper.is_supported(mimetype, version, False)
+    else:
+        assert not FFMpegMetaScraper.is_supported(mimetype, version, False)
