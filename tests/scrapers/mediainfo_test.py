@@ -61,7 +61,8 @@ from tests.scrapers.stream_dicts import (AIFF_AUDIO,
                                          MPEGTS_CONTAINER,
                                          MPEGTS_VIDEO,
                                          WAV_AUDIO,
-                                         WMA_AUDIO)
+                                         WMA_AUDIO,
+                                         WMA_7_AUDIO)
 
 
 @pytest.mark.parametrize(
@@ -295,6 +296,12 @@ def test_mediainfo_scraper_aiff(filename, result_dict, evaluate_scraper):
             "stderr_part": "",
             "streams": {0: ASF_CONTAINER.copy(),
                         1: WMA_AUDIO.copy()}}),
+        ("invalid__wma_7.wma", {
+            "purpose": "Test invalid WMA.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": "",
+            "streams": {0: ASF_CONTAINER.copy(),
+                        1: WMA_7_AUDIO.copy()}}),
     ])
 def test_mediainfo_scraper_wma(filename, result_dict, evaluate_scraper):
     """
@@ -307,6 +314,13 @@ def test_mediainfo_scraper_wma(filename, result_dict, evaluate_scraper):
     """
     mimetype = "video/x-ms-asf"
     correct = parse_results(filename, mimetype, result_dict, False)
+
+    # ASF container is identified but no well_formedness is given for
+    # WMA7 data
+    if "7" in filename:
+        correct.streams[0]["mimetype"] = "video/x-ms-asf"
+        correct.streams[0]["version"] = UNAP
+        correct.well_formed = None
 
     scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()

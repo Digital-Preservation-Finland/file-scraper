@@ -76,10 +76,7 @@ class FFMpegSimpleMeta(BaseMeta):
         "raw FLAC",
         "MP2/3 (MPEG audio layer 2/3)",
         "Audio IFF",
-        "Windows Media Audio 1",
-        "Windows Media Audio 2",
         "Windows Media Audio Lossless",
-        "Windows Media Audio Voice",
         "Windows Media Audio 9 Professional",
         ]
 
