@@ -62,7 +62,9 @@ from tests.scrapers.stream_dicts import (AIFF_AUDIO,
                                          MPEGTS_VIDEO,
                                          WAV_AUDIO,
                                          WMA_AUDIO,
-                                         WMA_7_AUDIO)
+                                         WMA_7_AUDIO,
+                                         WMV_AUDIO,
+                                         WMV_VIDEO)
 
 
 @pytest.mark.parametrize(
@@ -321,6 +323,35 @@ def test_mediainfo_scraper_wma(filename, result_dict, evaluate_scraper):
         correct.streams[0]["mimetype"] = "video/x-ms-asf"
         correct.streams[0]["version"] = UNAP
         correct.well_formed = None
+
+    scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
+    scraper.scrape_file()
+
+    evaluate_scraper(scraper, correct)
+
+
+@pytest.mark.parametrize(
+    ["filename", "result_dict"],
+    [
+        ("valid__vc_1_wma_9.wmv", {
+            "purpose": "Test valid WMV and WMA.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": "",
+            "streams": {0: ASF_CONTAINER.copy(),
+                        1: WMV_VIDEO.copy(),
+                        2: WMV_AUDIO.copy()}}),
+    ])
+def test_mediainfo_scraper_wmv(filename, result_dict, evaluate_scraper):
+    """
+    Test WMV scraping with Mediainfo.
+
+    :filename: Test file name
+    :result_dict: Result dict containing the test purpose, parts of
+                  expected results of stdout and stderr, and expected
+                  streams
+    """
+    mimetype = "video/x-ms-asf"
+    correct = parse_results(filename, mimetype, result_dict, False)
 
     scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()

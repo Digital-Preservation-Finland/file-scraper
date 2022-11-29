@@ -99,7 +99,15 @@ UNAV_ELEMENTS = {
                                                    "codec_creator_app",
                                                    "codec_creator_app_version",
                                                    "codec_creator_app",
-                                                   "data_rate_mode"]
+                                                   "data_rate_mode"],
+    "tests/data/video_x-ms-asf/valid__vc_1_wma_9.wmv": [
+        "codec_creator_app_version",
+        "codec_creator_app",
+        "codec_creator_app_version",
+        "codec_creator_app",
+        "codec_creator_app_version",
+        "codec_creator_app"
+    ]
 }
 
 # These are actually valid with another mimetype or version
@@ -238,6 +246,7 @@ ACCEPTABLE_FILES = [
     "tests/data/video_MP2T/valid__mpeg2_mp3.ts",
     "tests/data/audio_x-aiff/valid__aiff-c.aiff",
     "tests/data/video_x-ms-asf/valid__wma_9.wma",
+    "tests/data/video_x-ms-asf/valid__vc_1_wma_9.wmv",
 ]
 
 BIT_LEVEL_WITH_RECOMMENDED_FILES = [

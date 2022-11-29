@@ -189,6 +189,15 @@ UNAV_MIME = []
             },
             "video/x-ms-asf"
         ),
+        (
+            "valid__vc_1_wma_9.wmv",
+            {
+                "purpose": "Test valid WMV and WMA.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": ""
+            },
+            "video/x-ms-asf"
+        ),
     ]
 )
 def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
