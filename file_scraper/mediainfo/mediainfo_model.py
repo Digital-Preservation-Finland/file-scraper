@@ -487,6 +487,45 @@ class WmaMediainfoMeta(BaseMediainfoMeta):
         return "lossy"
 
 
+class WmvMediainfoMeta(BaseMediainfoMeta):
+    """Metadata model for WMV video."""
+
+    _supported = {"video/x-ms-wmv": ["9"]}
+    _allow_versions = True  # Allow any version
+
+    @metadata()
+    def mimetype(self):
+        """Return mimetype."""
+        return 'video/x-ms-wmv'
+
+    @metadata()
+    def version(self):
+        """Return version of stream."""
+        if self._stream.codec_id is not None and \
+                self._stream.codec_id == 'WMV1':
+            return "7"
+        if self._stream.codec_id is not None and \
+                self._stream.codec_id == 'WMV2':
+            return "8"
+        if self._stream.codec_id is not None and \
+                self._stream.codec_id in ['WVC1', 'WMV3', 'WMVA', 'WMVP']:
+            return "9"
+        return UNAV
+
+    @metadata()
+    def codec_quality(self):
+        """Return codec quality.
+
+        WMV codecs are lossy codecs.
+        """
+        return "lossy"
+
+    @metadata()
+    def signal_format(self):
+        """Return signal format."""
+        return UNAP
+
+
 class FlacMediainfoMeta(BaseMediainfoMeta):
     """Metadata model for FLAC audio."""
 

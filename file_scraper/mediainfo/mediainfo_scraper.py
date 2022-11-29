@@ -17,6 +17,7 @@ from file_scraper.mediainfo.mediainfo_model import (
     WavMediainfoMeta,
     VersionlessFormatMeta,
     WmaMediainfoMeta,
+    WmvMediainfoMeta,
     UnknownStreamFormatMeta
 )
 from file_scraper.utils import decode_path
@@ -41,6 +42,7 @@ class MediainfoScraper(BaseScraper):
         MpegMediainfoMeta,
         WavMediainfoMeta,
         WmaMediainfoMeta,
+        WmvMediainfoMeta,
         VersionlessFormatMeta,
         UnknownStreamFormatMeta
     ]

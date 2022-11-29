@@ -101,6 +101,22 @@ FORMATS = [
         "properties": {"format": "WMA"}
     },
     {
+        "mimetype": "video/x-ms-wmv",
+        "properties": {"format": "VC-1"}
+    },
+    {
+        "mimetype": "video/x-ms-wmv",
+        "properties": {"format": "WMV1"}
+    },
+    {
+        "mimetype": "video/x-ms-wmv",
+        "properties": {"format": "WMV2"}
+    },
+    {
+        "mimetype": "video/x-ms-wmv",
+        "properties": {"format": "WMV3"}
+    },
+    {
         "mimetype": "video/x-ms-asf",
         "properties": {"format": "Windows Media"}
     },

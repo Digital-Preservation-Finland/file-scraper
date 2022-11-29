@@ -78,6 +78,8 @@ class FFMpegSimpleMeta(BaseMeta):
         "Audio IFF",
         "Windows Media Audio Lossless",
         "Windows Media Audio 9 Professional",
+        "Windows Media Video 9",
+        "SMPTE VC-1"
         ]
 
     def __init__(self, probe_results, index):
