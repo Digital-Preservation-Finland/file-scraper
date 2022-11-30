@@ -13,13 +13,13 @@ from file_scraper.iterator import iter_scrapers, iter_detectors
 
 
 WELLFORMED_SCRAPERS = [
-    "DpxScraper", "FFMpegScraper", "GhostscriptScraper", "JHoveGifScraper",
-    "JHoveHtmlScraper", "JHoveJpegScraper", "JHoveTiffScraper",
-    "JHovePdfScraper", "JHoveWavScraper", "JHoveUtf8Scraper", "LxmlScraper",
-    "OfficeScraper", "PngcheckScraper", "PsppScraper", "SchematronScraper",
-    "TextEncodingScraper", "VerapdfScraper", "VnuScraper",
-    "WarctoolsFullScraper", "GzipWarctoolsScraper",
-    "XmllintScraper"
+    "DpxScraper", "FFMpegScraper", "GhostscriptScraper", "JHoveAiffScraper",
+    "JHoveGifScraper", "JHoveHtmlScraper", "JHoveJpegScraper",
+    "JHoveTiffScraper", "JHovePdfScraper", "JHoveWavScraper",
+    "JHoveUtf8Scraper", "LxmlScraper", "OfficeScraper", "PngcheckScraper",
+    "PsppScraper", "SchematronScraper", "TextEncodingScraper",
+    "VerapdfScraper", "VnuScraper", "WarctoolsFullScraper",
+    "GzipWarctoolsScraper", "XmllintScraper"
 ]
 
 
@@ -120,6 +120,10 @@ WELLFORMED_SCRAPERS = [
         ("application/vnd.openxmlformats-officedocument.presentationml."
          "presentation", "2007 onwards", ["OfficeScraper",
                                           "MagicBinaryScraper"]),
+        ("audio/x-aiff", "1.3", ["FFMpegScraper", "JHoveAiffScraper",
+                                 "MagicBinaryScraper", "MediainfoScraper"]),
+        ("audio/x-ms-wma", "9", ["FFMpegScraper", "MediainfoScraper"]),
+        ("video/x-ms-wmv", "9", ["FFMpegScraper", "MediainfoScraper"]),
         ("test/unknown", None, ["ScraperNotFound"])
     ])
 def test_iter_scrapers(mimetype, version, scraper_classes):

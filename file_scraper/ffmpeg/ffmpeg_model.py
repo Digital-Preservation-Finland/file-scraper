@@ -37,6 +37,7 @@ class FFMpegSimpleMeta(BaseMeta):
         "audio/flac": [],
         "audio/x-aiff": [],
         "audio/x-ms-wma": [],
+        "video/x-ms-wmv": [],
         "video/x-ms-asf": []
         }
     _allow_versions = True   # Allow any version
