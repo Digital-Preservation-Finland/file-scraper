@@ -67,7 +67,8 @@ CHANGE_FIDO = {
     "video_dv/valid__pal_lossy.dv": None,
     "image_x-adobe-dng/valid_1.4.dng": "image/tiff",
     "audio_x-aiff/valid_1.3.aiff": None,
-    "application_x-siard/valid_2.1.1.siard": "application/zip"
+    "application_x-siard/valid_2.1.1.siard": "application/zip",
+    "video_x-ms-asf/valid__vc_1_wma_9.wmv": None
 }
 
 CHANGE_MAGIC = {
