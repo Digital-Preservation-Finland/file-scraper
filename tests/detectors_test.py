@@ -101,11 +101,9 @@ CHANGE_MAGIC = {
     "text_xml/valid_1.0_mets_noheader.xml": "text/plain",
     "application_gml+xml/valid__x-fmt-227.xml": "text/xml",
     "application_gml+xml/valid_3.2_fmt-1047.xml": "text/xml",
-    "video_dv/valid__pal_lossy.dv": "video/dv",
     "video_quicktime/valid__h264_aac_no_ftyp_atom.mov":
         "application/octet-stream",
-    "image_x-adobe-dng/valid_1.4.dng": "image/tiff",
-    "audio_x-aiff/valid_1.3.aiff": "audio/x-aiff"
+    "image_x-adobe-dng/valid_1.4.dng": "image/tiff"
 }
 
 
