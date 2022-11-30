@@ -190,6 +190,15 @@ UNAV_MIME = []
             "video/x-ms-asf"
         ),
         (
+            "valid__vc1.wmv",
+            {
+                "purpose": "Test valid WMV.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": ""
+            },
+            "video/x-ms-asf"
+        ),
+        (
             "valid__vc1_wma9.wmv",
             {
                 "purpose": "Test valid WMV and WMA.",
