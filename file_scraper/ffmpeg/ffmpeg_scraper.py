@@ -69,6 +69,8 @@ class FFMpegScraper(BaseScraper):
                 else:
                     stream["index"] = stream["index"] + 1
             _has_meta = True
+            if not self._only_wellformed:
+                self._messages.append("The file was analyzed successfully.")
         except ffmpeg.Error as err:
             self._errors.append("Error in analyzing file.")
             self._errors.append(ensure_text(err.stderr))
@@ -85,10 +87,6 @@ class FFMpegScraper(BaseScraper):
             # otherwise add all errors without filtering
             if _filter_stderr(shell.stderr):
                 self._errors.append(shell.stderr)
-
-        elif _has_meta:
-            # Scraping is successful only with a message output
-            self._messages.append("The file was analyzed successfully.")
 
         if not _has_meta:
             # We most likely have no proper streams
