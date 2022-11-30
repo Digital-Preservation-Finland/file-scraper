@@ -6,7 +6,8 @@ for well-formed checks.
 
 This module tests that:
     - MIME type, version, streams, and well-formedness are scraped
-      correctly for aiff, dv, wav, wma, m1v, m2v, mp4, mp3 and ts files.
+      correctly for aiff, dv, wav, m1v, m2v, mp4, mp3, ts, wma and wmv
+      files.
       Additionally, this is scraped correctly to mov video container
       containing dv video and lpcm8 audio, and to mkv container
       containing ffv1 video without sound and with lpcm8 and flac sound.
@@ -63,8 +64,9 @@ from tests.scrapers.stream_dicts import (AIFF_AUDIO,
                                          WAV_AUDIO,
                                          WMA_AUDIO,
                                          WMA_7_AUDIO,
-                                         WMV_AUDIO,
-                                         WMV_VIDEO)
+                                         WMV_WMA_AUDIO,
+                                         WMV_VIDEO,
+                                         WMV_VIDEO_NO_SOUND)
 
 
 @pytest.mark.parametrize(
@@ -292,13 +294,13 @@ def test_mediainfo_scraper_aiff(filename, result_dict, evaluate_scraper):
 @pytest.mark.parametrize(
     ["filename", "result_dict"],
     [
-        ("valid__wma_9.wma", {
+        ("valid__wma9.wma", {
             "purpose": "Test valid WMA.",
             "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
             "streams": {0: ASF_CONTAINER.copy(),
                         1: WMA_AUDIO.copy()}}),
-        ("invalid__wma_7.wma", {
+        ("invalid__wma7.wma", {
             "purpose": "Test invalid WMA.",
             "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
@@ -333,13 +335,19 @@ def test_mediainfo_scraper_wma(filename, result_dict, evaluate_scraper):
 @pytest.mark.parametrize(
     ["filename", "result_dict"],
     [
-        ("valid__vc_1_wma_9.wmv", {
-            "purpose": "Test valid WMV and WMA.",
+        ("valid__vc1.wmv", {
+            "purpose": "Test valid WMV.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": "",
+            "streams": {0: ASF_CONTAINER.copy(),
+                        1: WMV_VIDEO_NO_SOUND.copy()}}),
+        ("valid__vc1_wma9.wmv", {
+            "purpose": "Test valid WMV with WMA audio.",
             "stdout_part": "file was analyzed successfully",
             "stderr_part": "",
             "streams": {0: ASF_CONTAINER.copy(),
                         1: WMV_VIDEO.copy(),
-                        2: WMV_AUDIO.copy()}}),
+                        2: WMV_WMA_AUDIO.copy()}}),
     ])
 def test_mediainfo_scraper_wmv(filename, result_dict, evaluate_scraper):
     """

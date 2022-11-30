@@ -181,7 +181,7 @@ UNAV_MIME = []
             "audio/x-aiff"
         ),
         (
-            "valid__wma_9.wma",
+            "valid__wma9.wma",
             {
                 "purpose": "Test valid WMA.",
                 "stdout_part": "file was analyzed successfully",
@@ -190,7 +190,7 @@ UNAV_MIME = []
             "video/x-ms-asf"
         ),
         (
-            "valid__vc_1_wma_9.wmv",
+            "valid__vc1_wma9.wmv",
             {
                 "purpose": "Test valid WMV and WMA.",
                 "stdout_part": "file was analyzed successfully",
@@ -481,6 +481,17 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
                     "of 4 was expected")
             },
             "audio/x-aiff"
+        ),
+        (
+            "invalid__vc1_missing_data.wmv",
+            {
+                "purpose": "Test invalid WMV.",
+                "stdout_part": "",
+                "stderr_part": (
+                    "Application provided invalid, non monotonically "
+                    "increasing dts to muxer")
+            },
+            "video/x-ms-asf"
         )
     ]
 )
