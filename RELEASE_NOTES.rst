@@ -1,6 +1,11 @@
 Release notes
 =============
 
+Version 0.52
+------------
+
+- Add support for AIFF file format.
+
 Version 0.51
 ------------
 
