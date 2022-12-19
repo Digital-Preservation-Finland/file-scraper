@@ -3,6 +3,8 @@
 from __future__ import unicode_literals, absolute_import
 
 import distutils.spawn
+import os
+import zipfile
 import lxml.etree as ET
 import six
 import exiftool
@@ -445,4 +447,60 @@ class ExifToolDetector(BaseDetector):
         if (not self._given_mimetype and self.mimetype in
                 ["image/x-adobe-dng"]):
             important["mimetype"] = self.mimetype
+        return important
+
+
+class SiardDetector(BaseDetector):
+    """
+    Detector used with SIARD files. Will identify SIARD files and their
+    file format version.
+    """
+
+    def detect(self):
+        """
+        Run SiardDetector to find out the mimetype and file format
+        version of a file. The detector checks::
+
+            1) The file must have a file extension ".siard"
+            2) The file must be a ZIP archive file
+
+        The file format version is present in the following path within
+        a valid SIARD file: "header/siardversion/<version>/"
+        """
+        version_folders = []
+        # The zipfile module prefer filepaths as strings
+        filename = decode_path(self.filename)
+        if all((os.path.splitext(filename)[1] == ".siard",
+                zipfile.is_zipfile(filename))):
+            with zipfile.ZipFile(filename) as zipf:
+                version_folders = [
+                    x for x in zipf.namelist() if "header/siardversion" in x]
+
+        if version_folders:
+            self.mimetype = "application/x-siard"
+            for version_folder in version_folders:
+                # Get version from siardversion path
+                if not version_folder.endswith("siardversion/"):
+                    self.version = version_folder.strip("/").split("/")[-1]
+                    break
+
+        self.info = {"class": self.__class__.__name__,
+                     "messages": [],
+                     "errors": [],
+                     "tools": []}
+
+    def get_important(self):
+        """
+        If SiardDetector determines the mimetype as SIARD, the mimetype
+        and version are marked as important. This is to make sure that
+        this result overrides other detectors, which would detect SIARD
+        files as zip archive files.
+        """
+        important = {}
+        if (not self._given_mimetype and self.mimetype in
+                ["application/x-siard"]):
+            important["mimetype"] = self.mimetype
+        if (not self._given_version and self.mimetype in
+                ["application/x-siard"]):
+            important["version"] = self.version
         return important
