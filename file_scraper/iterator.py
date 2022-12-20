@@ -7,6 +7,7 @@ from file_scraper.detectors import (FidoDetector,
                                     MagicDetector,
                                     PredefinedDetector,
                                     SiardDetector)
+from file_scraper.dbptk.dbptk_scraper import DbptkScraper
 from file_scraper.dpx.dpx_scraper import DpxScraper
 from file_scraper.dummy.dummy_scraper import (DetectedMimeVersionMetadataScraper,
                                               DetectedMimeVersionScraper,
@@ -84,7 +85,7 @@ def iter_scrapers(mimetype, version, check_wellformed=True, params=None):
     scrapers = [
         WarctoolsFullScraper, GzipWarctoolsScraper, WarctoolsScraper,
         CsvScraper, DetectedMimeVersionMetadataScraper,
-        DetectedMimeVersionScraper, DpxScraper, ExifToolDngScraper,
+        DetectedMimeVersionScraper, DbptkScraper, DpxScraper, ExifToolDngScraper,
         FFMpegScraper, GhostscriptScraper, JHoveAiffScraper, JHoveDngScraper,
         JHoveEpubScraper, JHoveGifScraper, JHoveHtmlScraper, JHoveJpegScraper,
         JHovePdfScraper, JHoveTiffScraper, JHoveWavScraper, LxmlScraper,
