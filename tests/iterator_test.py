@@ -157,4 +157,5 @@ def test_iter_detectors():
     detectors = iter_detectors()
     assert {x.__name__ for x in detectors} == set(["FidoDetector",
                                                    "MagicDetector",
-                                                   "PredefinedDetector"])
+                                                   "PredefinedDetector",
+                                                   "SiardDetector"])

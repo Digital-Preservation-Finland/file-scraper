@@ -481,7 +481,11 @@ class SiardDetector(BaseDetector):
             for version_folder in version_folders:
                 # Get version from siardversion path
                 if not version_folder.endswith("siardversion/"):
-                    self.version = version_folder.strip("/").split("/")[-1]
+                    version = version_folder.strip("/").split("/")[-1]
+                    # Version 2.1 is identical to version 2.1.1
+                    if version == "2.1":
+                        version = "2.1.1"
+                    self.version = version
                     break
 
         self.info = {"class": self.__class__.__name__,
