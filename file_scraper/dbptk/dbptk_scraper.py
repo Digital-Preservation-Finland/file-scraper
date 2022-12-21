@@ -31,7 +31,9 @@ class DbptkScraper(BaseScraper):
             params=params)
 
     def scrape_file(self):
-        """Scrape file using dbptk-app.jar."""
+        """Scrape file using dbptk-app.jar and check version within
+        the file itself using zipfile.
+        """
         shell = Shell([
             "java",
             "-jar",
@@ -67,7 +69,6 @@ class DbptkScraper(BaseScraper):
                 self._version = version
                 break
 
-        if self.well_formed:
-            self.streams = list(self.iterate_models(
-                well_formed=self.well_formed, version=self._version))
+        self.streams = list(self.iterate_models(
+            well_formed=self.well_formed, version=self._version))
         self._check_supported()

@@ -20,7 +20,8 @@ from file_scraper.detectors import (_FidoReader,
                                     MagicCharset,
                                     MagicDetector,
                                     VerapdfDetector,
-                                    ExifToolDetector)
+                                    ExifToolDetector,
+                                    SiardDetector)
 from tests.common import get_files, partial_message_included
 
 CHANGE_FIDO = {
@@ -65,7 +66,8 @@ CHANGE_FIDO = {
     "text_xml/valid_1.0_mets_noheader.xml": None,
     "video_dv/valid__pal_lossy.dv": None,
     "image_x-adobe-dng/valid_1.4.dng": "image/tiff",
-    "audio_x-aiff/valid_1.3.aiff": None
+    "audio_x-aiff/valid_1.3.aiff": None,
+    "application_x-siard/valid_2.1.1.siard": "application/zip"
 }
 
 CHANGE_MAGIC = {
@@ -103,7 +105,8 @@ CHANGE_MAGIC = {
     "application_gml+xml/valid_3.2_fmt-1047.xml": "text/xml",
     "video_quicktime/valid__h264_aac_no_ftyp_atom.mov":
         "application/octet-stream",
-    "image_x-adobe-dng/valid_1.4.dng": "image/tiff"
+    "image_x-adobe-dng/valid_1.4.dng": "image/tiff",
+    "application_x-siard/valid_2.1.1.siard": "application/zip"
 }
 
 
@@ -325,3 +328,25 @@ def test_magic_charset(filename, charset):
     else:
         assert partial_message_included(
             "Unable to detect character encoding", detector.info["errors"])
+
+
+@pytest.mark.parametrize(
+        ["filepath", "mimetype", "version"],
+        [
+            ("application_x-siard/valid_2.1.1.siard",
+             "application/x-siard",
+             "2.1.1"),
+        ]
+)
+def test_siard_detector(filepath, mimetype, version):
+    """
+    Test that works with SIARD files. SiardDetector
+    should detect the mimetype and version of a SIARD file.
+
+    :filepath: Test file
+    :mimetype: Expected mimetype
+    """
+    detector = SiardDetector('tests/data/' + filepath)
+    detector.detect()
+    assert detector.mimetype == mimetype
+    assert detector.version == version
