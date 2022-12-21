@@ -200,6 +200,13 @@ def test_detected_version_scraper():
     assert partial_message_included(
         "MIME type not supported", scraper.errors())
 
+    scraper = DetectedMimeVersionMetadataScraper(
+        None, "application/x-siard", params={"detected_version": "2.1.1"})
+    scraper.scrape_file()
+    assert scraper.well_formed is None
+    assert scraper.streams[0].version() == "2.1.1"
+    assert scraper.streams[0].stream_type() == "binary"
+
     scraper = DetectedMimeVersionScraper(
         None, "application/vnd.oasis.opendocument.text",
         params={"detected_version": "123"})

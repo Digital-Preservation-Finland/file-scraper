@@ -115,6 +115,39 @@ class DetectedSpssVersionMeta(DetectedMimeVersionMeta):
         return UNAP
 
 
+class DetectedSiardVersionMeta(DetectedMimeVersionMeta):
+    """
+    Variation of DetectedMimeVersionMeta model for SIARD files.
+
+    We allow all versions.
+
+    Full scraping actually is able to result the same, but this is needed
+    when Scraper is used for metadata collecting.
+
+    """
+    _supported = {
+        "application/x-siard": []
+    }
+    _allow_versions = True
+
+    @metadata()
+    def mimetype(self):
+        """Return MIME type"""
+        if self._mimetype:
+            return self._mimetype
+        return UNAV
+
+    @metadata()
+    def version(self):
+        """Return the file format version"""
+        return self._version if self._version is not None else UNAV
+
+    @metadata()
+    def stream_type(self):
+        """Return stream type."""
+        return "binary" if self.mimetype() != UNAV else UNAV
+
+
 class DetectedTextVersionMeta(DetectedMimeVersionMeta):
     """
     Variation of DetectedMimeVersionMeta model for some text files.

@@ -7,8 +7,13 @@ from file_scraper.base import BaseScraper
 from file_scraper.defaults import UNAV
 from file_scraper.utils import decode_path, generate_metadata_dict
 from file_scraper.dummy.dummy_model import (
-    DummyMeta, ScraperNotFoundMeta, DetectedMimeVersionMeta,
-    DetectedTextVersionMeta, DetectedSpssVersionMeta, DetectedPdfaVersionMeta
+    DetectedMimeVersionMeta,
+    DetectedPdfaVersionMeta,
+    DetectedSiardVersionMeta,
+    DetectedSpssVersionMeta,
+    DetectedTextVersionMeta,
+    DummyMeta,
+    ScraperNotFoundMeta
 )
 
 LOSE = (None, UNAV, "")
@@ -154,13 +159,14 @@ class DetectedMimeVersionScraper(NoWellformednessBaseScraper):
 
 class DetectedMimeVersionMetadataScraper(DetectedMimeVersionScraper):
     """
-    Variation of DetectedMimeVersionScraper for SPSS Portable, text and PDF
-    files. Support only in metadata scraping.
+    Variation of DetectedMimeVersionScraper for SPSS Portable, text, PDF
+    and SIARD files. Support only in metadata scraping.
     """
 
-    _supported_metadata = [DetectedSpssVersionMeta,
-                           DetectedTextVersionMeta,
-                           DetectedPdfaVersionMeta]
+    _supported_metadata = [DetectedPdfaVersionMeta,
+                           DetectedSiardVersionMeta,
+                           DetectedSpssVersionMeta,
+                           DetectedTextVersionMeta]
 
     @classmethod
     def is_supported(cls, mimetype, version=None, check_wellformed=True,
