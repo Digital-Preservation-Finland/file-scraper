@@ -119,11 +119,12 @@ class DetectedSiardVersionMeta(DetectedMimeVersionMeta):
     """
     Variation of DetectedMimeVersionMeta model for SIARD files.
 
+    This scraper collects MIME type, file format version and stream type
+    for SIARD files. It is used both when detecting file formats and in
+    full scraping, as the DBPTK-scraper for SIARD files does not provide
+    file format version or stream type.
+
     We allow all versions.
-
-    Full scraping actually is able to result the same, but this is needed
-    when Scraper is used for metadata collecting.
-
     """
     _supported = {
         "application/x-siard": []

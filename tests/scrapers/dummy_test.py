@@ -200,7 +200,7 @@ def test_detected_version_scraper():
     assert partial_message_included(
         "MIME type not supported", scraper.errors())
 
-    scraper = DetectedMimeVersionMetadataScraper(
+    scraper = DetectedMimeVersionScraper(
         None, "application/x-siard", params={"detected_version": "2.1.1"})
     scraper.scrape_file()
     assert scraper.well_formed is None

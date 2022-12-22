@@ -140,7 +140,8 @@ class DetectedMimeVersionScraper(NoWellformednessBaseScraper):
     Support in metadata scraping and well-formedness checking.
     """
 
-    _supported_metadata = [DetectedMimeVersionMeta]
+    _supported_metadata = [DetectedMimeVersionMeta,
+                           DetectedSiardVersionMeta]
 
     def scrape_file(self):
         """
@@ -164,7 +165,6 @@ class DetectedMimeVersionMetadataScraper(DetectedMimeVersionScraper):
     """
 
     _supported_metadata = [DetectedPdfaVersionMeta,
-                           DetectedSiardVersionMeta,
                            DetectedSpssVersionMeta,
                            DetectedTextVersionMeta]
 

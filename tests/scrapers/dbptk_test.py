@@ -17,6 +17,7 @@ from __future__ import unicode_literals
 
 import pytest
 
+from file_scraper.defaults import UNAV
 from file_scraper.dbptk.dbptk_scraper import DbptkScraper
 from tests.common import (parse_results, partial_message_included)
 
@@ -56,6 +57,7 @@ def test_scraper(filename, result_dict, evaluate_scraper):
     """
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
+    correct.streams[0]["version"] = UNAV
     scraper = DbptkScraper(filename=correct.filename, mimetype=MIMETYPE)
     scraper.scrape_file()
 
