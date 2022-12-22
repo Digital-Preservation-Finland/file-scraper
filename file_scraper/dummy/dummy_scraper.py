@@ -160,8 +160,8 @@ class DetectedMimeVersionScraper(NoWellformednessBaseScraper):
 
 class DetectedMimeVersionMetadataScraper(DetectedMimeVersionScraper):
     """
-    Variation of DetectedMimeVersionScraper for SPSS Portable, text, PDF
-    and SIARD files. Support only in metadata scraping.
+    Variation of DetectedMimeVersionScraper for SPSS Portable, text,
+    and PDF files. Support only in metadata scraping.
     """
 
     _supported_metadata = [DetectedPdfaVersionMeta,

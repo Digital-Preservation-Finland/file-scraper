@@ -463,12 +463,14 @@ class SiardDetector(BaseDetector):
 
             1) The file must have a file extension ".siard"
             2) The file must be a ZIP archive file
+            3) The ZIP archive file must contain a folder
+               "header/siardversion/XX"
 
         The file format version is present in the following path within
         a valid SIARD file: "header/siardversion/<version>/"
         """
         version_folders = []
-        # The zipfile module prefer filepaths as strings
+        # The zipfile module prefers filepaths as strings
         filename = decode_path(self.filename)
         if all((os.path.splitext(filename)[1] == ".siard",
                 zipfile.is_zipfile(filename))):
@@ -479,7 +481,7 @@ class SiardDetector(BaseDetector):
         if version_folders:
             self.mimetype = "application/x-siard"
             for version_folder in version_folders:
-                # Get version from siardversion path
+                # Get version from header/siardversion path
                 if not version_folder.endswith("siardversion/"):
                     version = version_folder.strip("/").split("/")[-1]
                     # Version 2.1 is identical to version 2.1.1
@@ -498,7 +500,7 @@ class SiardDetector(BaseDetector):
         If SiardDetector determines the mimetype as SIARD, the mimetype
         and version are marked as important. This is to make sure that
         this result overrides other detectors, which would detect SIARD
-        files as zip archive files.
+        files as ZIP archive files.
         """
         important = {}
         if (not self._given_mimetype and self.mimetype in
