@@ -10,7 +10,7 @@ Installation and usage requires Python 2.7, or 3.6 or newer.
 The software is tested with Python 3.6 on Centos 7.x release. Python 2.7 support will be removed in the future.
 
 For Python 3.6 or newer, create a virtual environment::
-    
+
     python3 -m venv venv
 
 For Python 2.7, get python-virtualenv software and create a virtual environment::
@@ -52,7 +52,7 @@ See also:
 
     * https://github.com/Digital-Preservation-Finland/dpx-validator
     * https://github.com/Digital-Preservation-Finland/iso-schematron-xslt1
-    
+
 Where file-scraper needs to know a path to an executable or other resource, it is specified in ``file_scraper/config.py``. They correspond to the paths used by the Finnish national Digital Preservation Services, but they can be edited to match the installation locations on another system.
 
 JHove and veraPDF Installation Notes
@@ -65,6 +65,23 @@ By default, the JHove/veraPDF is installed to the home directory of the current 
 or
 
 * create a symbolic link between a directory listed in ``$PATH`` and the executable, e.g. ``ln -s /home/username/jhove/jhove /usr/bin/jhove`` and ``ln -s /home/username/verapdf/verapdf /usr/bin/verapdf``.
+
+DBPTK-Developer installation notes
+----------------------------------
+
+By default, there is no DBPTK-Developer tool installation package. Installation
+requires download from https://github.com/keeps/dbptk-developer/releases and
+setting up the correct executable file.
+
+* Download JAR file from https://github.com/keeps/dbptk-developer/releases
+* Place downloaded JAR file to desired ``$PATH`` (ie */home/username/dbptk/dbptk-app-2.10.3.jar*)
+* Create an executable **dbptk** (ie */home/username/dbptk/dbptk*) with following content::
+
+    #!/bin/sh
+    DBPTK_JAR_PATH="/home/username/dbptk/dbptk-app-2.10.3.jar"
+    exec java -jar "$DBPTK_JAR_PATH" "$@"
+
+* Create a symbolic link for the executable ``ln -s /home/username/dbptk/dbptk /usr/bin/dbptk``
 
 Wand Usage Notes
 ----------------
@@ -146,7 +163,7 @@ The following additional arguments for the Scraper are also possible:
         * See giving the character encoding below.
 
     * Give a specific type for scraping of a file:
-    
+
         * MIME type: ``mimetype=<mimetype>``. If MIME type is given, the file is scraped as this MIME type and the normal MIME type detection result is ignored. This makes it possible to e.g. scrape a file containing HTML as a plaintext file and thus not produce errors for problems like invalid HTML tags, which one might want to preserve as-is.
         * Version: ``version=<version>``. If both MIME type and version are given, the normal version detection results are also ignored, and the user-supplied version is used and reported instead. Providing a version without MIME type has no effect.
         * Character encoding: ``charset=<charset>``. If the file is a text file, the file is validated using the given character encoding. Supported values are ``UTF-8``, ``UTF-16``, ``UTF-32`` and ``ISO-8859-15``. By default, the character encoding is detected. The detection is always a statistics-based evaluation and therefore it may sometimes give false results.
@@ -192,6 +209,7 @@ In some cases the full metadata information may not be of interest, and only a q
     from file_scraper.scraper import Scraper
     scraper = Scraper(filename)
     scraper.detect_filetype()
+
 after which the type of the file can be addressed via ``scraper.mimetype`` and ``scraper.version``.
 
 If full scraping has been run previously, its results are erased. ``detect_filetype`` always leaves ``scraper.streams`` as ``None`` and ``scraper.well_formed`` either as ``False`` (file could not be found or read) or ``None``. Detector information is logged in ``scraper.info`` as with normal scraping.
