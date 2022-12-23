@@ -1,7 +1,7 @@
 """
 FFMpeg scraper for gathering metadata and well-formed checking.
 
-For most file types, no metadata is scraped: for those files
+For most file types, no real metadata is scraped: for those files
 FFMpegSimpleMeta metadata model is used. This is done as both
 Mediainfo and FFMpeg cannot be used simultaneously to scrape the
 metadata as reliable matching of streams from two scrapers is not
@@ -26,88 +26,94 @@ except ImportError:
     pass
 
 
-class FFMpegScraper(BaseScraper):
+class FFMpegMetaScraper(BaseScraper):
     """
-    Scraper using FFMpeg to check well-formedness and gather metadata.
+    Scraper using FFMpeg to gather metadata without well-formed check.
     """
 
     # Supported metadata models
-    _supported_metadata = [FFMpegSimpleMeta, FFMpegMeta]
-    # Run only when checking well-formedness. There is another scraper for
-    # the case without checking.
-    _only_wellformed = True
+    _supported_metadata = [FFMpegMeta]
 
     @property
     def well_formed(self):
         """
-        Return well-formedness status of the scraped file.
-        If file contains streams that can not be identified, the scraper can
-        not check well-formedness.
+        Do not check well-formedness.
 
-        :returns: None if there were no errors but a stream was not
-                  identified, True if the file has been scraped without errors
-                  and otherwise False
+        :returns: False if errors found, None otherwise.
         """
-        valid = super(FFMpegScraper, self).well_formed
-        unsupported_av_format_found = any(
-            stream.av_format_supported() is False for stream in self.streams)
+        valid = super(FFMpegMetaScraper, self).well_formed
 
-        if valid and unsupported_av_format_found:
-            return None
+        return None if valid else valid
 
-        return valid
+    @classmethod
+    def is_supported(cls, mimetype, version=None, check_wellformed=True,
+                     params=None):
+        """
+        Metadata gathering is needed also in well-formed check, so it is not
+        necessary to run this scraper with well-formed check.
+        """
+        if check_wellformed:
+            return False
+
+        return super(FFMpegMetaScraper, cls).is_supported(
+            mimetype=mimetype, version=version,
+            check_wellformed=check_wellformed, params=params)
 
     def scrape_file(self):
         """Scrape A/V files."""
-        _has_meta = False
+        probe_results = self._gather_metadata()
+        self._normalize_metadata(probe_results)
+        self._check_supported(allow_unav_mime=True,
+                              allow_unav_version=True)
+
+    def _gather_metadata(self):
+        """Gather video and audio stream metadata with FFProbe.
+
+        :returns: Metadata results from FFProbe
+        """
+        probe_results = None
         try:
             probe_results = ffmpeg.probe(encode_path(self.filename))
-            streams = [probe_results["format"]] + probe_results["streams"]
-            for stream in streams:
+            probe_results["format"]["index"] = 0
+            for stream in probe_results["streams"]:
                 if "index" not in stream:
                     stream["index"] = 0
                 else:
                     stream["index"] = stream["index"] + 1
-            _has_meta = True
-            if not self._only_wellformed:
-                self._messages.append("The file was analyzed successfully.")
+            self._messages.append(
+                "The file was analyzed successfully with FFProbe.")
         except ffmpeg.Error as err:
-            self._errors.append("Error in analyzing file.")
+            self._errors.append("Error in analyzing file with FFProbe.")
             self._errors.append(ensure_text(err.stderr))
 
-        if self._only_wellformed:
-
-            shell = Shell(["ffmpeg", "-v", "error", "-i",
-                           encode_path(self.filename), "-f", "null", "-"])
-
-            if shell.returncode == 0:
-                self._messages.append("The file was analyzed successfully.")
-
-            # Do not add errors, if only errors to be filtered exist,
-            # otherwise add all errors without filtering
-            if _filter_stderr(shell.stderr):
-                self._errors.append(shell.stderr)
-
-        if not _has_meta:
-            # We most likely have no proper streams
-            return
+        if not probe_results:
+            return None
 
         # We deny e.g. A-law PCM, mu-law PCM, DPCM and ADPCM and allow
         # only signed/unsigned linear PCM. Note that we need this check
         # only if PCM audio is present. This should not be given e.g.
         # for video streams nor audio streams of another type (such as
-        # MPEG).
-        # The exception is AIFF-C, where all kinds of PCM is allowed
+        # MPEG). For AIFF-C, all kinds of PCM is allowed.
         if probe_results["format"].get("format_name", UNAV) != "aiff":
-            for stream in streams:
+            for stream in probe_results["streams"]:
                 if "PCM" in stream.get("codec_long_name", UNAV) and not \
                         any(stream.get("codec_long_name", UNAV).startswith(x)
                             for x in ["PCM signed", "PCM unsigned"]):
                     self._errors.append("%s does not seem to be LPCM format."
                                         % stream["codec_long_name"])
 
+        return probe_results
+
+    def _normalize_metadata(self, probe_results):
+        """Normalize gathered FFProbe metadata with Scraper metadata models.
+
+        :probe_results: Results from FFProbe
+        """
+        if not probe_results:
+            return
+
         container = False
-        for index in range(len(streams)):
+        for index in range(len(probe_results["streams"]) + 1):
             # FFMpeg has separate "format" (relevant for containers) and
             # "streams" (relevant for all files) elements in its output.
             # We know whether we'll have streams + container or just
@@ -115,7 +121,7 @@ class FFMpegScraper(BaseScraper):
             # risk of trying to add one too many streams. This check
             # prevents constructing more metadata models than there are
             # streams.
-            if not container and index == len(streams) - 1:
+            if not container and index == len(probe_results["streams"]):
                 break
 
             self.streams += list(self.iterate_models(
@@ -124,8 +130,6 @@ class FFMpegScraper(BaseScraper):
             for stream in self.streams:
                 if stream.hascontainer():
                     container = True
-
-        self._check_supported(allow_unav_mime=True, allow_unav_version=True)
 
     def iterate_models(self, **kwargs):
         """
@@ -142,40 +146,74 @@ class FFMpegScraper(BaseScraper):
                     yield md_object
 
 
-class FFMpegMetaScraper(FFMpegScraper):
+class FFMpegScraper(FFMpegMetaScraper):
     """
-    Scraper using FFMpeg to gather metadata without well-formed check.
+    Scraper using FFMpeg to check well-formedness and gather metadata.
     """
 
     # Supported metadata models
-    _supported_metadata = [FFMpegMeta]
-    _only_wellformed = False
+    _supported_metadata = [FFMpegSimpleMeta, FFMpegMeta]
+    # Run only when checking well-formedness. There is another scraper for
+    # the case without checking. The proper metadata is still gathered.
+    _only_wellformed = True
+
+    @classmethod
+    def is_supported(cls, mimetype, version=None, check_wellformed=True,
+                     params=None):
+        """
+        Report whether the scraper supports the given MIME type and version.
+
+        Use super class of super class, i.e. BaseScraper.
+        """
+        return super(FFMpegMetaScraper, cls).is_supported(
+            mimetype=mimetype, version=version,
+            check_wellformed=check_wellformed, params=params)
 
     @property
     def well_formed(self):
         """
-        Do not check well-formedness.
+        Return well-formedness status of the scraped file.
+        If file contains streams that can not be identified, the scraper can
+        not check well-formedness.
 
-        :returns: False if errors found, None otherwise.
+        :returns: None if there were no errors but a stream was not
+                  identified, True if the file has been scraped without errors
+                  and otherwise False
         """
-        valid = super(FFMpegScraper, self).well_formed
+        # Use super class of super class, i.e. BaseScraper for initial result.
+        valid = super(FFMpegMetaScraper, self).well_formed
+        unsupported_av_format_found = any(
+            stream.av_format_supported() is False for stream in self.streams)
 
-        return None if valid else valid
+        if valid and unsupported_av_format_found:
+            return None
 
-    @classmethod
-    def is_supported(cls, mimetype, version=None, check_wellformed=True,
-                     params=None):  # pylint: disable=unused-argument
+        return valid
+
+    def scrape_file(self):
+        """Scrape A/V files.
+
+        We need to probe streams also for checking well-formedness, because
+        otherwise we don't know if the MIME types of streams are supported by
+        Scraper or not. If the a stream can not be identified by Scraper, then
+        well-formedness can not be True.
         """
-        Metadata gathering is needed also in well-formed check, so and the
-        superclass handles it, it is not necessary to run this scraper with
-        well-formed check.
-        """
-        if check_wellformed:
-            return False
+        super(FFMpegScraper, self).scrape_file()
+        self._validate_file()
 
-        return super(FFMpegMetaScraper, cls).is_supported(
-            mimetype=mimetype, version=version,
-            check_wellformed=check_wellformed, params=params)
+    def _validate_file(self):
+        """Validate A/V file"""
+        shell = Shell(["ffmpeg", "-v", "error", "-i",
+                       encode_path(self.filename), "-f", "null", "-"])
+
+        if shell.returncode == 0:
+            self._messages.append(
+                "The file was analyzed successfully with FFMpeg.")
+
+        # Do not add errors, if only errors to be filtered exist,
+        # otherwise add all errors without filtering
+        if _filter_stderr(shell.stderr):
+            self._errors.append(shell.stderr)
 
 
 def _filter_stderr(errors):
