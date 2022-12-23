@@ -131,23 +131,6 @@ class DetectedSiardVersionMeta(DetectedMimeVersionMeta):
     }
     _allow_versions = True
 
-    @metadata()
-    def mimetype(self):
-        """Return MIME type"""
-        if self._mimetype:
-            return self._mimetype
-        return UNAV
-
-    @metadata()
-    def version(self):
-        """Return the file format version"""
-        return self._version if self._version is not None else UNAV
-
-    @metadata()
-    def stream_type(self):
-        """Return stream type."""
-        return "binary" if self.mimetype() != UNAV else UNAV
-
 
 class DetectedTextVersionMeta(DetectedMimeVersionMeta):
     """
