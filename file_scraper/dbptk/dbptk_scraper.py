@@ -7,7 +7,6 @@ from __future__ import unicode_literals
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
-from file_scraper.config import DBPTK_PATH
 from file_scraper.dbptk.dbptk_model import DbptkMeta
 
 
@@ -20,9 +19,7 @@ class DbptkScraper(BaseScraper):
     def scrape_file(self):
         """Scrape file using dbptk."""
         shell = Shell([
-            "java",
-            "-jar",
-            DBPTK_PATH,
+            "dbptk",
             "validate",
             "-if",
             self.filename])
