@@ -61,17 +61,13 @@ class FFMpegMetaScraper(BaseScraper):
 
     def scrape_file(self):
         """Scrape A/V files."""
-        probe_results = self._gather_metadata()
-        self._normalize_metadata(probe_results)
+        self._gather_metadata()
         self._check_supported(allow_unav_mime=True,
                               allow_unav_version=True)
 
     def _gather_metadata(self):
         """Gather video and audio stream metadata with FFProbe.
-
-        :returns: Metadata results from FFProbe
         """
-        probe_results = None
         try:
             probe_results = ffmpeg.probe(encode_path(self.filename))
             probe_results["format"]["index"] = 0
@@ -82,54 +78,49 @@ class FFMpegMetaScraper(BaseScraper):
                     stream["index"] = stream["index"] + 1
             self._messages.append(
                 "The file was analyzed successfully with FFProbe.")
+
+            # We deny e.g. A-law PCM, mu-law PCM, DPCM and ADPCM and allow
+            # only signed/unsigned linear PCM. Note that we need this check
+            # only if PCM audio is present. This should not be given e.g.
+            # for video streams nor audio streams of another type (such as
+            # MPEG). For AIFF-C, all kinds of PCM is allowed.
+
+            if probe_results["format"].get("format_name", UNAV) != "aiff":
+
+                for stream in probe_results["streams"]:
+
+                    if "PCM" not in stream.get("codec_long_name", UNAV):
+                        continue
+
+                    if not any(
+                            stream.get("codec_long_name", UNAV).startswith(x)
+                            for x in ["PCM signed", "PCM unsigned"]):
+                        self._errors.append(
+                            "%s does not seem to be LPCM format."
+                            % stream["codec_long_name"])
+
+            container = False
+            for index in range(len(probe_results["streams"]) + 1):
+                # FFMpeg has separate "format" (relevant for containers) and
+                # "streams" (relevant for all files) elements in its output.
+                # We know whether we'll have streams + container or just
+                # streams only after scraping the first stream, so there's a
+                # risk of trying to add one too many streams. This check
+                # prevents constructing more metadata models than there are
+                # streams.
+                if not container and index == len(probe_results["streams"]):
+                    break
+
+                self.streams += list(self.iterate_models(
+                    probe_results=probe_results, index=index))
+
+                for stream in self.streams:
+                    if stream.hascontainer():
+                        container = True
+
         except ffmpeg.Error as err:
             self._errors.append("Error in analyzing file with FFProbe.")
             self._errors.append(ensure_text(err.stderr))
-
-        if not probe_results:
-            return None
-
-        # We deny e.g. A-law PCM, mu-law PCM, DPCM and ADPCM and allow
-        # only signed/unsigned linear PCM. Note that we need this check
-        # only if PCM audio is present. This should not be given e.g.
-        # for video streams nor audio streams of another type (such as
-        # MPEG). For AIFF-C, all kinds of PCM is allowed.
-        if probe_results["format"].get("format_name", UNAV) != "aiff":
-            for stream in probe_results["streams"]:
-                if "PCM" in stream.get("codec_long_name", UNAV) and not \
-                        any(stream.get("codec_long_name", UNAV).startswith(x)
-                            for x in ["PCM signed", "PCM unsigned"]):
-                    self._errors.append("%s does not seem to be LPCM format."
-                                        % stream["codec_long_name"])
-
-        return probe_results
-
-    def _normalize_metadata(self, probe_results):
-        """Normalize gathered FFProbe metadata with Scraper metadata models.
-
-        :probe_results: Results from FFProbe
-        """
-        if not probe_results:
-            return
-
-        container = False
-        for index in range(len(probe_results["streams"]) + 1):
-            # FFMpeg has separate "format" (relevant for containers) and
-            # "streams" (relevant for all files) elements in its output.
-            # We know whether we'll have streams + container or just
-            # streams only after scraping the first stream, so there's a
-            # risk of trying to add one too many streams. This check
-            # prevents constructing more metadata models than there are
-            # streams.
-            if not container and index == len(probe_results["streams"]):
-                break
-
-            self.streams += list(self.iterate_models(
-                probe_results=probe_results, index=index))
-
-            for stream in self.streams:
-                if stream.hascontainer():
-                    container = True
 
     def iterate_models(self, **kwargs):
         """
