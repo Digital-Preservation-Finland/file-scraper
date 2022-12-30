@@ -46,7 +46,7 @@ Additionally, the following software is required for complete well-formed check.
     * For text and xml files: python-lxml, python-mimeparse, **JHove 1.24.1**, **v.Nu 17.7**, **iso-schematron-xslt1**
     * For image files: **JHove 1.24.1**, **dpx-validator**, **pngcheck 2.3**
     * For audio/video files: **JHove 1.24.1** (for WAVE audio files)
-    * For other files: **JHove 1.24.1**, **LibreOffice 7.2**,  **GhostScript 9.20**, **warc-tools >= 4.8.3**, **pspp 1.2.0-2** (patched by dpres)
+    * For other files: **JHove 1.24.1**, **LibreOffice 7.2**,  **GhostScript 9.20**, **warc-tools >= 4.8.3**, **pspp 1.2.0-2** (patched by dpres), **dbptk-developer >= 2.10.3**
 
 See also:
 
