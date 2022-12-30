@@ -37,6 +37,7 @@ Requires:       warc-tools >= 4.8.3
 Requires:       pngcheck pspp xhtml1-dtds vnu iso-schematron-xslt1
 Requires:       python2-mimeparse
 Requires:       libreoffice7.2-full
+Requires:       dbptk-developer
 
 %description
 File scraper: Basic file detector and metadata collector tools

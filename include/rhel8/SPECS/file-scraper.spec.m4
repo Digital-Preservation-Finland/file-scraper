@@ -39,6 +39,7 @@ Requires:       pngcheck
 Requires:       pspp xhtml1-dtds vnu iso-schematron-xslt1
 Requires:       python3-mimeparse
 Requires:       libreoffice7.2-full
+Requires:       dbptk-developer
 
 %description
 File scraper: Basic file detector and metadata collector tools
