@@ -431,7 +431,7 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
             {
                 "purpose": "Test empty mp3",
                 "stdout_part": "",
-                "stderr_part": "could not find codec parameters"
+                "stderr_part": "Failed to read frame size"
             },
             "audio/mpeg"
         ),
