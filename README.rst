@@ -38,7 +38,7 @@ The following software is required for minimal usage without file format well-fo
 
     * For all files: opf-fido 1.4.0 (patched by dpres), file-magic, **file-5.30**
     * Additionally, for image files: Pillow 6.0, python-wand 0.6.1, pyexiftool 0.1, **ImageMagick 6.9.10.68**, **ExifTool**, **ufraw**
-    * Additionally, for audio/video files: pymediainfo, ffmpeg-python 0.1.16-2 (patched by dpres), **MediaInfo**, **FFMpeg 2.8.15**
+    * Additionally, for audio/video files: pymediainfo, ffmpeg-python 0.1.16-2 (patched by dpres), **MediaInfo**, **FFMpeg 3.3.6**
     * Additionally, for pdf files: **veraPDF 1.20**
 
 Additionally, the following software is required for complete well-formed check. The bolded software are NOT included in the pip installation script. Where the version supplied by the CentOS repositories differs from the one file-scraper uses, the version has been marked after the software name. It is possible that other versions work too, but file-scraper has only been tested using the marked versions.
