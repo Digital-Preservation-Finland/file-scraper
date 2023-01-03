@@ -1,6 +1,14 @@
 Release notes
 =============
 
+Version 0.53
+------------
+
+- Add support for SIARD file format.
+- Add support for WMA and WMV file formats.
+- Fix issue where FFmpeg was run even though file format well-formed check was
+  skipped.
+
 Version 0.52
 ------------
 
