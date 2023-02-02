@@ -22,8 +22,8 @@ class PngcheckScraper(BaseScraper):
         shell = Shell(["pngcheck", encode_path(self.filename)])
 
         if shell.returncode != 0:
-            self._errors.append("Failed: returncode %s" % shell.returncode)
-            self._errors.append(shell.stderr)
+            self._errors.append("Pngcheck returned invalid return code: %s\n%s"
+                                % (shell.returncode, shell.stderr))
 
         self._messages.append(shell.stdout)
 

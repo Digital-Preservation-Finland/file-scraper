@@ -104,7 +104,9 @@ class WarctoolsFullScraper(WarctoolsScraper):
         shell = Shell(["warcvalid", self.filename])
 
         if shell.returncode != 0:
-            self._errors.append("Failed: returncode %s" % shell.returncode)
+            self._errors.append(
+                "Warctools returned invalid return code: %s\n%s"
+                % (shell.returncode, shell.stderr))
             # Filter some trash printed by warcvalid.
             filtered_errors = [line for line in shell.stderr.split("\n")
                                if u"ignored line" not in line]

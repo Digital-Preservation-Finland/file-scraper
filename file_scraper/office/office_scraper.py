@@ -33,6 +33,10 @@ class OfficeScraper(BaseScraper):
                 encode_path(self.filename)], env=env)
             if shell.stderr:
                 self._errors.append(shell.stderr)
+            if shell.returncode != 0:
+                self._errors.append(
+                    "Office returned invalid return code: %s\n%s"
+                    % (shell.returncode, shell.stderr))
             self._messages.append(shell.stdout)
         except OSError as error:
             self._errors.append("Error handling file: {}".format(error))

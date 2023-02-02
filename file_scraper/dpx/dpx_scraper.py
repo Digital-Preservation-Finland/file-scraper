@@ -33,7 +33,8 @@ class DpxScraper(BaseScraper):
         shell = Shell([self._dpxv, encode_path(self.filename)])
 
         if shell.returncode != 0:
-            raise DPXvError(shell.stderr)
+            self._errors.append("DPX returned invalid return code: %s\n%s" %
+                                (shell.returncode, shell.stderr))
 
         if shell.stderr:
             self._errors += list(shell.stderr.splitlines())
@@ -46,7 +47,3 @@ class DpxScraper(BaseScraper):
             filename=self.filename))
 
         self._check_supported()
-
-
-class DPXvError(Exception):
-    """DPX scraper error."""

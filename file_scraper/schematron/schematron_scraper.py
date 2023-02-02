@@ -96,8 +96,13 @@ class SchematronScraper(BaseScraper):
         self._returncode = shell.returncode
         if shell.stderr:
             self._errors.append(shell.stderr)
+        if self._returncode != 0:
+            self._errors.append(
+                "Schematron returned invalid return code: %s\n%s"
+                % (shell.returncode, shell.stderr)
+                )
 
-        if not self._verbose and shell.returncode == 0:
+        if not self._verbose:
             self._messages.append(ensure_text(
                 self._filter_duplicate_elements(shell.stdout_raw)))
         else:

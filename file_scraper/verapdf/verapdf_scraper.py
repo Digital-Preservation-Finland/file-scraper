@@ -46,7 +46,8 @@ class VerapdfScraper(BaseScraper):
         # If --nonpdfext flag is not supported, it does not affect to
         # returncode
         if shell.returncode not in OK_CODES:
-            self._errors.append("Return code: %s" % shell.returncode)
+            self._errors.append("VeraPDF returned invalid return code: %s"
+                                % shell.returncode)
             self._errors.append(shell.stderr)
             self._check_supported()
             return

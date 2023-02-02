@@ -36,8 +36,8 @@ class GhostscriptScraper(BaseScraper):
         if stderr_message:
             self._errors.append(stderr_message)
         elif shell.returncode != 0:
-            self._errors.append("Ghostscript returned return code: %s"
-                                % shell.returncode)
+            self._errors.append("Ghostscript returned return code: %s\n%s" %
+                                (shell.returncode, shell.stderr))
 
         # If no errors have been logged, the file is valid.
         else:
