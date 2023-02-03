@@ -60,7 +60,7 @@ def test_scraper(filename, result_dict, evaluate_scraper):
         correct.stderr_part = ""
     else:
         correct.stdout_part = ""
-        correct.stderr_part = "Failed:"
+        correct.stderr_part = "Pngcheck returned invalid return code: 2\n"
 
     evaluate_scraper(scraper, correct)
 
