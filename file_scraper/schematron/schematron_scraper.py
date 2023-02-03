@@ -102,7 +102,7 @@ class SchematronScraper(BaseScraper):
                 % (shell.returncode, shell.stderr)
                 )
 
-        if not self._verbose:
+        if not self._verbose and shell.returncode == 0:
             self._messages.append(ensure_text(
                 self._filter_duplicate_elements(shell.stdout_raw)))
         else:
