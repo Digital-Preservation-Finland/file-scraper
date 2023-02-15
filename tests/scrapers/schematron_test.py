@@ -75,6 +75,10 @@ def test_scraper(filename, result_dict, params, evaluate_scraper):
                   expected results of stdout and stderr
     :params: schematron file as extra parameter
     """
+    
+    # TODO: check that wrong return code is handled correctly
+    # mock the return code Shell gives
+    # example: test_old_namespace in jhove_test.py
 
     correct = parse_results(filename, "text/xml",
                             result_dict, True, params)
