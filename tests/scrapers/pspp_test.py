@@ -17,9 +17,11 @@ This module tests that:
     - When well-formedness is checked, a made up MIME type is not supported.
 """
 from __future__ import unicode_literals
+import os
 
 import pytest
 
+from file_scraper.shell import Shell
 from file_scraper.defaults import UNAP, UNAV
 from file_scraper.pspp.pspp_scraper import PsppScraper
 from tests.common import parse_results
@@ -83,6 +85,20 @@ def test_scraper(filename, result_dict, evaluate_scraper):
     scraper.scrape_file()
 
     evaluate_scraper(scraper, correct)
+
+
+def test_pspp_returns_invalid_return_code(monkeypatch):
+    """TODO: docstring"""
+    path = os.path.join("tests/data", MIMETYPE.replace("/", "_"))
+    testfile = os.path.join(path, "valid__spss24-dot.por")
+
+    scraper = PsppScraper(filename=testfile,
+                          mimetype=MIMETYPE)
+
+    monkeypatch.setattr(Shell, "returncode", -1)
+    scraper.scrape_file()
+
+    assert scraper.errors() == ["PSPP returned invalid return code: -1\n"]
 
 
 def test_is_supported():
