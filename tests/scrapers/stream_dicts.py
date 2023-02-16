@@ -97,14 +97,14 @@ WMA_AUDIO = {
     "audio_data_encoding": "WMA", "bits_per_sample": "16",
     "codec_creator_app": UNAV, "codec_creator_app_version": UNAV,
     "codec_name": "WMA", "codec_quality": "lossy",
-    "data_rate": "192", "data_rate_mode": UNAV,
+    "data_rate": "192", "data_rate_mode": "Fixed",
     "duration": "PT0.85S", "index": 1, "mimetype": "audio/x-ms-wma",
     "num_channels": "2", "sampling_frequency": "48",
     "stream_type": "audio", "version": "9"}
 
 WMA_7_AUDIO = dict(WMA_AUDIO, **{
-    "data_rate": "128", "duration": "PT0.88S", "sampling_frequency": "44.1",
-    "version": "7"})
+    "data_rate": "128", "data_rate_mode": UNAV, "duration": "PT0.88S",
+    "sampling_frequency": "44.1", "version": "7"})
 
 WMV_WMA_AUDIO = dict(WMA_AUDIO, **{
     "data_rate_mode": "Fixed", "duration": "PT1.04S", "index": 2})
@@ -120,7 +120,7 @@ WMV_VIDEO = {
     "sound": "Yes", "stream_type": "video", "version": "9", "width": "1280"}
 
 WMV_VIDEO_NO_SOUND = dict(WMV_VIDEO, **{
-    "data_rate": UNAV, "data_rate_mode": UNAV,
+    "data_rate": UNAV, "data_rate_mode": "Fixed",
     "duration": "PT0.97S", "sound": "No"})
 
 MPEG1_VIDEO = {

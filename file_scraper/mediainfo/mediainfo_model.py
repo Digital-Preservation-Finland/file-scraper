@@ -486,6 +486,27 @@ class WmaMediainfoMeta(BaseMediainfoMeta):
             return "lossless"
         return "lossy"
 
+    @metadata()
+    def data_rate_mode(self):
+        """Return data rate mode.
+
+        WMA supports both fixed and variable bit rates. Variable
+        bit rate mode was officially introduced in WMA9.
+        """
+        mode = super(WmaMediainfoMeta, self).data_rate_mode()
+        if mode not in [UNAV, None]:
+            return mode
+
+        # Overall data rate mode is reported in the container stream.
+        # If can be used if the file contains max. two tracks (General
+        # + Audio)
+        if len(self._tracks) <= 2:
+            if self._tracks[0].overall_bit_rate_mode == "CBR":
+                return "Fixed"
+            if self._tracks[0].overall_bit_rate_mode is not None:
+                return "Variable"
+        return UNAV
+
 
 class WmvMediainfoMeta(BaseMediainfoMeta):
     """Metadata model for WMV video."""
@@ -524,6 +545,26 @@ class WmvMediainfoMeta(BaseMediainfoMeta):
     def signal_format(self):
         """Return signal format."""
         return UNAP
+
+    @metadata()
+    def data_rate_mode(self):
+        """Return data rate mode.
+
+        WMV supports both fixed and variable bit rates.
+        """
+        mode = super(WmvMediainfoMeta, self).data_rate_mode()
+        if mode not in [UNAV, None]:
+            return mode
+
+        # Overall bit rate mode is reported in the container stream
+        # If can be used if the file contains max. two tracks (General
+        # + Video)
+        if len(self._tracks) <= 2:
+            if self._tracks[0].overall_bit_rate_mode == "CBR":
+                return "Fixed"
+            if self._tracks[0].overall_bit_rate_mode is not None:
+                return "Variable"
+        return UNAV
 
 
 class FlacMediainfoMeta(BaseMediainfoMeta):
