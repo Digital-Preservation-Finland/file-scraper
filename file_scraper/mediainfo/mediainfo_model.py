@@ -498,7 +498,7 @@ class WmaMediainfoMeta(BaseMediainfoMeta):
             return mode
 
         # Overall data rate mode is reported in the container stream.
-        # If can be used if the file contains max. two tracks (General
+        # It can be used if the file contains max. two tracks (General
         # + Audio)
         if len(self._tracks) <= 2:
             if self._tracks[0].overall_bit_rate_mode == "CBR":
@@ -557,7 +557,7 @@ class WmvMediainfoMeta(BaseMediainfoMeta):
             return mode
 
         # Overall bit rate mode is reported in the container stream
-        # If can be used if the file contains max. two tracks (General
+        # It can be used if the file contains max. two tracks (General
         # + Video)
         if len(self._tracks) <= 2:
             if self._tracks[0].overall_bit_rate_mode == "CBR":
