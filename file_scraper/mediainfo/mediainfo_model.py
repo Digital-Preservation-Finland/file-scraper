@@ -566,6 +566,24 @@ class WmvMediainfoMeta(BaseMediainfoMeta):
                 return "Variable"
         return UNAV
 
+    @metadata()
+    def color(self):
+        """Return color information.
+
+        WMV files are by default based on the YUV 4:2:0 color
+        sampling.
+
+        NOTE: FFMpeg can detect the color in the "pix_fmt" metadata.
+        However, combining MediaInfo and FFMpeg is difficult and since
+        WMV files are by default in color, we can just use it as a
+        default value if no other value is found.
+        """
+        mode = super(WmvMediainfoMeta, self).color()
+        if mode not in [UNAV, None]:
+            return mode
+
+        return "Color"
+
 
 class FlacMediainfoMeta(BaseMediainfoMeta):
     """Metadata model for FLAC audio."""
