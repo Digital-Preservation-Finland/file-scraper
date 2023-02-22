@@ -7,6 +7,7 @@ import shutil
 
 import pytest
 from tests.common import partial_message_included
+from file_scraper.shell import Shell
 from file_scraper.base import BaseMeta
 from file_scraper.utils import metadata
 
@@ -83,6 +84,12 @@ def evaluate_scraper():
                                             scraper.errors())
 
     return _func
+
+
+@pytest.fixture(scope="function")
+def shell_returncode(monkeypatch):
+    """Monkeypatch Shell returncode"""
+    monkeypatch.setattr(Shell, "returncode", -1)
 
 
 class Meta1(BaseMeta):

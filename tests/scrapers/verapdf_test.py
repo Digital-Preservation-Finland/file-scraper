@@ -23,6 +23,7 @@ This module tests that:
       up MIME types or versions.
 """
 from __future__ import unicode_literals
+import os
 
 import pytest
 
@@ -144,6 +145,20 @@ def test_error_filtering():
         "Oct 17, 2022 3:32:31 PM org.verapdf.apps.utils." \
         "ApplicationUtils anotherError\n" \
         "SEVERE: An error not to be removed."
+
+
+def test_verapdf_returns_invalid_return_code(shell_returncode):
+    """Test that a correct error message is given
+    when the tool gives an invalid return code"""
+    path = os.path.join("tests/data", MIMETYPE.replace("/", "_"))
+    testfile = os.path.join(path, "valid_X.pdf")
+
+    scraper = VerapdfScraper(filename=testfile,
+                          mimetype=MIMETYPE)
+
+    scraper.scrape_file()
+
+    assert "VeraPDF returned invalid return code: -1" in scraper.errors()
 
 
 def test_is_supported():
