@@ -86,7 +86,8 @@ def test_scraper(filename, result_dict, evaluate_scraper):
     evaluate_scraper(scraper, correct)
 
 
-def test_pspp_returns_invalid_return_code(shell_returncode):
+@pytest.mark.usefixtures("patch_shell_returncode_fx")
+def test_pspp_returns_invalid_return_code():
     """Test that a correct error message is given
     when the tool gives an invalid return code"""
     path = os.path.join("tests/data", MIMETYPE.replace("/", "_"))

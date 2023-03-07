@@ -87,7 +87,7 @@ def evaluate_scraper():
 
 
 @pytest.fixture(scope="function")
-def shell_returncode(monkeypatch):
+def patch_shell_returncode_fx(monkeypatch):
     """Monkeypatch Shell returncode"""
     monkeypatch.setattr(Shell, "returncode", -1)
 
