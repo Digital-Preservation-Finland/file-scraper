@@ -18,6 +18,7 @@ This module tests that:
       supported when only well-formed check is performed
 """
 from __future__ import unicode_literals
+import os
 
 import pytest
 from tests.common import parse_results
@@ -65,6 +66,21 @@ def test_scraper(filename, result_dict, evaluate_scraper):
     scraper.scrape_file()
 
     evaluate_scraper(scraper, correct)
+
+
+@pytest.mark.usefixtures("patch_shell_returncode_fx")
+def test_dpx_returns_invalid_return_code():
+    """Test that a correct error message is given
+    when the tool gives an invalid return code"""
+    path = os.path.join("tests/data", MIMETYPE.replace("/", "_"))
+    testfile = os.path.join(path, "valid_2.0.dpx")
+
+    scraper = DpxScraper(filename=testfile,
+                          mimetype=MIMETYPE)
+
+    scraper.scrape_file()
+
+    assert "DPX returned invalid return code: -1\n" in scraper.errors()
 
 
 def test_is_supported():

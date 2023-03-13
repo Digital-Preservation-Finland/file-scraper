@@ -25,6 +25,12 @@ class GhostscriptScraper(BaseScraper):
             "gs", "-o", "/dev/null", "-sDEVICE=nullpage",
             encode_path(self.filename)])
 
+        if shell.returncode != 0:
+            self._errors.append(
+                "Ghostscript returned invalid return code: %s\n%s"
+                % (shell.returncode, shell.stderr)
+                )
+
         # Ghostscript may print characters which cannot be converted to UTF-8
         stdout_message = ensure_text(shell.stdout_raw, errors='replace')
         stderr_message = ensure_text(shell.stderr_raw, errors='replace')
@@ -35,11 +41,6 @@ class GhostscriptScraper(BaseScraper):
         # _messages. This case should be handled as well-formed failure.
         if stderr_message:
             self._errors.append(stderr_message)
-        elif shell.returncode != 0:
-            self._errors.append(
-                "Ghostscript returned invalid return code: %s\n%s"
-                % (shell.returncode, shell.stderr)
-                )
 
         # If no errors have been logged, the file is valid.
         else:
