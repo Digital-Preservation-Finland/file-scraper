@@ -51,6 +51,9 @@ class MIMEGrader(BaseGrader):
             "3.0.1": RECOMMENDED,
             "3.2": RECOMMENDED
         },
+        "model/step": {
+            "4.0.2.1": RECOMMENDED
+        },
         "application/vnd.oasis.opendocument.text": {
             "1.0": RECOMMENDED,
             "1.1": RECOMMENDED,
@@ -160,14 +163,19 @@ class MIMEGrader(BaseGrader):
         "image/jp2": {
             UNAP: RECOMMENDED
         },
-        "image/svg+xml": {
-            "1.1": RECOMMENDED
-        },
         "image/png": {
             "1.2": RECOMMENDED
         },
+        "image/svg+xml": {
+            "1.1": RECOMMENDED
+        },
         "application/warc": {
-            "1.0": RECOMMENDED
+            "1.0": RECOMMENDED,
+            "1.1": RECOMMENDED
+        },
+        "application/geopackage+sqlite3": {
+            "1.3.0": RECOMMENDED,
+            "1.3.1": RECOMMENDED
         },
         "application/x-siard": {
             "2.1.1": RECOMMENDED,
@@ -228,9 +236,6 @@ class MIMEGrader(BaseGrader):
             "1987a": ACCEPTABLE,
             "1989a": ACCEPTABLE
         },
-        "video/avi": {  # Container
-            UNAP: ACCEPTABLE
-        },
         "video/x-matroska": {  # Container
             "4": RECOMMENDED
         },
@@ -247,6 +252,9 @@ class MIMEGrader(BaseGrader):
             UNAP: RECOMMENDED
         },
         "video/x-ms-asf": {  # Container
+            UNAP: ACCEPTABLE
+        },
+        "video/avi": {  # Container
             UNAP: ACCEPTABLE
         },
         "video/MP1S": {  # Container
@@ -337,7 +345,7 @@ class ContainerStreamsGrader(BaseGrader):
     This grader does not check the grade of the container itself, the grade
     of the container should be evaluated by MIMEGrader.
 
-    Requirements based on DPRES File Formats specification 1.10.0, section 6,
+    Requirements based on DPRES File Formats specification 1.11.0, section 6,
     tables 2 and 3.
     """
     recommended_formats = {
