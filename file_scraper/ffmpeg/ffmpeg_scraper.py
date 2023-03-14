@@ -200,6 +200,9 @@ class FFMpegScraper(FFMpegMetaScraper):
         if shell.returncode == 0:
             self._messages.append(
                 "The file was analyzed successfully with FFMpeg.")
+        else:
+            self._errors.append("FFMpeg returned invalid return code: %s\n%s" %
+                                (shell.returncode, shell.stderr))
 
         # Do not add errors, if only errors to be filtered exist,
         # otherwise add all errors without filtering
