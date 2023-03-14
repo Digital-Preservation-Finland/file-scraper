@@ -17,6 +17,7 @@ This module tests that:
     - A made up MIME type or version is not supported.
 """
 from __future__ import unicode_literals
+import os
 
 import pytest
 
@@ -78,6 +79,21 @@ def test_scraper(filename, result_dict, evaluate_scraper):
                                         scraper.errors())
     else:
         evaluate_scraper(scraper, correct)
+
+
+@pytest.mark.usefixtures("patch_shell_attributes_fx")
+def test_vnu_returns_invalid_return_code():
+    """Test that a correct error message is given
+    when the tool gives an invalid return code"""
+    path = os.path.join("tests/data", MIMETYPE.replace("/", "_"))
+    testfile = os.path.join(path, "valid_5.0.html")
+
+    scraper = VnuScraper(filename=testfile,
+                         mimetype=MIMETYPE)
+
+    scraper.scrape_file()
+
+    assert "Vnu returned invalid return code: -1\n" in scraper.errors()
 
 
 def test_is_supported():
