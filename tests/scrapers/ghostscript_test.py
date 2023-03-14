@@ -103,7 +103,7 @@ def test_jpeg2000_inside_pdf(evaluate_scraper):
     evaluate_scraper(scraper, correct, eval_output=False)
 
 
-@pytest.mark.usefixtures("patch_shell_returncode_fx")
+@pytest.mark.usefixtures("patch_shell_attributes_fx")
 def test_ghostscript_returns_invalid_return_code():
     """Test that a correct error message is given
     when the tool gives an invalid return code"""

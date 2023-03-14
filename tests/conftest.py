@@ -7,7 +7,7 @@ import shutil
 
 import pytest
 from tests.common import partial_message_included
-from file_scraper.shell import Shell
+import file_scraper.shell
 from file_scraper.base import BaseMeta
 from file_scraper.utils import metadata
 
@@ -87,9 +87,13 @@ def evaluate_scraper():
 
 
 @pytest.fixture(scope="function")
-def patch_shell_returncode_fx(monkeypatch):
+def patch_shell_attributes_fx(monkeypatch):
     """Monkeypatch Shell returncode"""
-    monkeypatch.setattr(Shell, "returncode", -1)
+    monkeypatch.setattr(file_scraper.shell.Shell, "returncode", -1)
+    monkeypatch.setattr(file_scraper.shell.Shell, "stdout", "")
+    monkeypatch.setattr(file_scraper.shell.Shell, "stderr", "")
+    monkeypatch.setattr(file_scraper.shell.Shell, "stdout_raw", "")
+    monkeypatch.setattr(file_scraper.shell.Shell, "stderr_raw", "")
 
 
 class Meta1(BaseMeta):
