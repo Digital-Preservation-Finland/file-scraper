@@ -36,7 +36,8 @@ from __future__ import unicode_literals
 import os
 import pytest
 
-from file_scraper.schematron.schematron_scraper import SchematronScraper
+from file_scraper.schematron.schematron_scraper import (SchematronScraper,
+                                                        SchematronValidatorError)
 from tests.common import (parse_results, partial_message_included)
 
 ROOTPATH = os.path.abspath(os.path.join(
@@ -75,11 +76,6 @@ def test_scraper(filename, result_dict, params, evaluate_scraper):
                   expected results of stdout and stderr
     :params: schematron file as extra parameter
     """
-    
-    # TODO: check that wrong return code is handled correctly
-    # mock the return code Shell gives
-    # example: test_old_namespace in jhove_test.py
-
     correct = parse_results(filename, "text/xml",
                             result_dict, True, params)
     scraper = SchematronScraper(filename=correct.filename,
@@ -95,6 +91,29 @@ def test_scraper(filename, result_dict, params, evaluate_scraper):
     elif scraper.messages():
         assert partial_message_included("have been suppressed",
                                         scraper.messages())
+
+
+@pytest.mark.usefixtures("patch_shell_attributes_fx")
+def test_schematron_returns_invalid_return_code():
+    """Test that a correct error message is given
+    when the tool gives an invalid return code"""
+    mimetype = "text/xml"
+    params = {"schematron": os.path.join(
+        ROOTPATH,
+        "tests/data/text_xml/supplementary/local.sch"
+        ), "cache": False}
+    path = os.path.join("tests/data", mimetype.replace("/", "_"))
+    testfile = os.path.join(path, "valid_1.0_well_formed.xml")
+
+    scraper = SchematronScraper(filename=testfile,
+                                mimetype=mimetype,
+                                params=params)
+
+    with pytest.raises(SchematronValidatorError) as err:
+        scraper.scrape_file()
+
+    assert str(err.value) == ("Schematron returned invalid return code -1\n"
+                              "stdout:\n\nstderr:\n")
 
 
 def test_is_supported():

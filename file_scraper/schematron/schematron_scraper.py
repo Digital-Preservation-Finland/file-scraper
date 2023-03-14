@@ -96,11 +96,6 @@ class SchematronScraper(BaseScraper):
         self._returncode = shell.returncode
         if shell.stderr:
             self._errors.append(shell.stderr)
-        if self._returncode != 0:
-            self._errors.append(
-                "Schematron returned invalid return code: %s\n%s"
-                % (shell.returncode, shell.stderr)
-                )
 
         if not self._verbose and shell.returncode == 0:
             self._messages.append(ensure_text(
@@ -161,7 +156,8 @@ class SchematronScraper(BaseScraper):
         shell = Shell(cmd)
         if shell.returncode not in allowed_codes:
             raise SchematronValidatorError(
-                "Error {}\nstdout:\n{}\nstderr:\n{}".format(
+                "Schematron returned invalid return code {}\n"
+                "stdout:\n{}\nstderr:\n{}".format(
                     shell.returncode, shell.stdout,
                     shell.stderr)
             )

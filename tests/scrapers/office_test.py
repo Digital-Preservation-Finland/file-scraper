@@ -211,6 +211,22 @@ def test_parallel_validation(filename, mimetype):
         assert result.get(timeout=5)
 
 
+@pytest.mark.usefixtures("patch_shell_attributes_fx")
+def test_office_returns_invalid_return_code():
+    """Test that a correct error message is given
+    when the tool gives an invalid return code"""
+    mimetype = "application/vnd.oasis.opendocument.text"
+    path = os.path.join("tests/data", mimetype.replace("/", "_"))
+    testfile = os.path.join(path, "valid_1.1.odt")
+
+    scraper = OfficeScraper(filename=testfile,
+                            mimetype=mimetype)
+
+    scraper.scrape_file()
+
+    assert "Office returned invalid return code: -1\n" in scraper.errors()
+
+
 @pytest.mark.parametrize(
     ["mime", "ver"],
     [
