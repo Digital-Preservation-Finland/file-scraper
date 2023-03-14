@@ -155,7 +155,7 @@ def test_verapdf_returns_invalid_return_code():
     testfile = os.path.join(path, "valid_X.pdf")
 
     scraper = VerapdfScraper(filename=testfile,
-                          mimetype=MIMETYPE)
+                             mimetype=MIMETYPE)
 
     scraper.scrape_file()
 

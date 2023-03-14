@@ -112,7 +112,7 @@ def test_ghostscript_returns_invalid_return_code():
     testfile = os.path.join(path, "valid_X.pdf")
 
     scraper = GhostscriptScraper(filename=testfile,
-                          mimetype=mimetype)
+                                 mimetype=mimetype)
 
     scraper.scrape_file()
 

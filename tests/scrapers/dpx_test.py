@@ -76,7 +76,7 @@ def test_dpx_returns_invalid_return_code():
     testfile = os.path.join(path, "valid_2.0.dpx")
 
     scraper = DpxScraper(filename=testfile,
-                          mimetype=MIMETYPE)
+                         mimetype=MIMETYPE)
 
     scraper.scrape_file()
 
