@@ -25,6 +25,10 @@ def file_command(filename, parameters=None):
     if os.path.isfile(FILECMD_PATH) and os.path.isdir(LD_LIBRARY_PATH):
         cmd = FILECMD_PATH
         env = {"LD_LIBRARY_PATH": LD_LIBRARY_PATH}
+    elif os.path.isfile(FILECMD_PATH.replace("lib64", "lib")) and \
+            os.path.isdir(LD_LIBRARY_PATH.replace("lib64", "lib")):
+        cmd = FILECMD_PATH.replace("lib64", "lib")
+        env = {"LD_LIBRARY_PATH": LD_LIBRARY_PATH.replace("lib64", "lib")}
 
     if parameters is None:
         parameters = []
@@ -53,11 +57,15 @@ def magiclib():
     :returns: Magic module
     """
     try:
-        ctypes.cdll.LoadLibrary(MAGIC_LIBRARY)
+        if os.path.isfile(MAGIC_LIBRARY):
+            ctypes.cdll.LoadLibrary(MAGIC_LIBRARY)
+        else:
+            ctypes.cdll.LoadLibrary(MAGIC_LIBRARY.replace("lib64", "lib"))
     except OSError:
         print("%s not found, MS Office detection may not work properly if "
               "file command library is older." % MAGIC_LIBRARY,
               file=sys.stderr)
+
     try:
         # pylint: disable=import-outside-toplevel
         import magic

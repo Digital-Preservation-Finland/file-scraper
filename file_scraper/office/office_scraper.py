@@ -1,6 +1,7 @@
 """Office file scraper."""
 from __future__ import unicode_literals
 
+import os.path
 import shutil
 import tempfile
 
@@ -20,10 +21,15 @@ class OfficeScraper(BaseScraper):
     def scrape_file(self):
         """Scrape file."""
         temp_dir = tempfile.mkdtemp()
+
+        cmd = "soffice"
+        if os.path.isfile(SOFFICE_PATH):
+            cmd = SOFFICE_PATH
+
         try:
             env = {"HOME": temp_dir}
             shell = Shell([
-                SOFFICE_PATH, "--convert-to", "pdf", "--outdir", temp_dir,
+                cmd, "--convert-to", "pdf", "--outdir", temp_dir,
                 encode_path(self.filename)], env=env)
             if shell.stderr:
                 self._errors.append(shell.stderr)
