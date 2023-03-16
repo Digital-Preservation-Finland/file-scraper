@@ -88,12 +88,10 @@ def evaluate_scraper():
 
 @pytest.fixture(scope="function")
 def patch_shell_attributes_fx(monkeypatch):
-    """Monkeypatch Shell returncode"""
+    """Monkeypatch Shell attributes"""
     monkeypatch.setattr(file_scraper.shell.Shell, "returncode", -1)
     monkeypatch.setattr(file_scraper.shell.Shell, "stdout", "")
     monkeypatch.setattr(file_scraper.shell.Shell, "stderr", "")
-    monkeypatch.setattr(file_scraper.shell.Shell, "stdout_raw", "")
-    monkeypatch.setattr(file_scraper.shell.Shell, "stderr_raw", "")
 
 
 class Meta1(BaseMeta):

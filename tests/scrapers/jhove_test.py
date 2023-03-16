@@ -121,6 +121,7 @@ This module tests that:
           scraper errors contains "element \"title\" not allowed here".
 """
 from __future__ import unicode_literals
+import os
 
 import pytest
 
@@ -859,3 +860,19 @@ def test_scraper_epub(filename, result_dict, evaluate_scraper):
     scraper.scrape_file()
 
     evaluate_scraper(scraper, correct)
+
+
+@pytest.mark.usefixtures("patch_shell_attributes_fx")
+def test_jhove_returns_invalid_return_code():
+    """Test that a correct error message is given
+    when the tool gives an invalid return code"""
+    mimetype = "application/pdf"
+    path = os.path.join("tests/data", mimetype.replace("/", "_"))
+    testfile = os.path.join(path, "valid_1.2.pdf")
+
+    scraper = JHovePdfScraper(filename=testfile,
+                              mimetype=mimetype)
+
+    scraper.scrape_file()
+
+    assert "JHove returned invalid return code: -1\n" in scraper.errors()

@@ -44,9 +44,8 @@ class JHoveScraperBase(BaseScraper):
         shell = Shell(exec_cmd)
 
         if shell.returncode != 0:
-            self._errors.append("JHove returned error: %s\n%s" % (
-                shell.returncode, shell.stderr))
-
+            self._errors.append("JHove returned invalid return code: %s\n%s" %
+                                (shell.returncode, shell.stderr))
         self._report = lxml.etree.fromstring(shell.stdout_raw)
 
         status = get_field(self._report, "status")
