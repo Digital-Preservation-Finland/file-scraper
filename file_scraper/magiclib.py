@@ -6,11 +6,10 @@
 """
 from __future__ import print_function
 import sys
-import os.path
 import ctypes
 from file_scraper.shell import Shell
 from file_scraper.utils import encode_path
-from file_scraper.config import FILECMD_PATH, LD_LIBRARY_PATH, MAGIC_LIBRARY
+from file_scraper.config import config_filecmd_env, magic_library_path
 
 
 def file_command(filename, parameters=None):
@@ -20,19 +19,11 @@ def file_command(filename, parameters=None):
     :parameters: Parameter list for the file command.
     :returns: Shell class
     """
-    cmd = "file"
-    env = {}
-    if os.path.isfile(FILECMD_PATH) and os.path.isdir(LD_LIBRARY_PATH):
-        cmd = FILECMD_PATH
-        env = {"LD_LIBRARY_PATH": LD_LIBRARY_PATH}
-    elif os.path.isfile(FILECMD_PATH.replace("lib64", "lib")) and \
-            os.path.isdir(LD_LIBRARY_PATH.replace("lib64", "lib")):
-        cmd = FILECMD_PATH.replace("lib64", "lib")
-        env = {"LD_LIBRARY_PATH": LD_LIBRARY_PATH.replace("lib64", "lib")}
-
     if parameters is None:
         parameters = []
-    return Shell([cmd] + parameters + [encode_path(filename)], env=env)
+    (filecmd_path, magic_env) = config_filecmd_env()
+    return Shell([filecmd_path] + parameters + [encode_path(filename)],
+                 env=magic_env)
 
 
 def magic_analyze(magic_lib, magic_type, path):
@@ -56,14 +47,12 @@ def magiclib():
 
     :returns: Magic module
     """
+    magic_file = magic_library_path()
     try:
-        if os.path.isfile(MAGIC_LIBRARY):
-            ctypes.cdll.LoadLibrary(MAGIC_LIBRARY)
-        else:
-            ctypes.cdll.LoadLibrary(MAGIC_LIBRARY.replace("lib64", "lib"))
+        ctypes.cdll.LoadLibrary(magic_file)
     except OSError:
         print("%s not found, MS Office detection may not work properly if "
-              "file command library is older." % MAGIC_LIBRARY,
+              "file command library is older." % magic_file,
               file=sys.stderr)
 
     try:
