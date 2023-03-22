@@ -42,6 +42,7 @@ class PilScraper(BaseScraper):
             n_frames = 1
 
         for pil_index in range(0, n_frames):
+            pil.seek(pil_index)
             self.streams += list(
                 self.iterate_models(pil=pil, index=pil_index))
 
