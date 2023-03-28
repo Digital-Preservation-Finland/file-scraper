@@ -1,11 +1,15 @@
 Release notes
 =============
 
-Unreleased
-----------
+Version 0.54
+------------
 
+- Fix WMA and WMV file date rate detection.
 - Changed grading according to version 1.11.0 of DPS File Formats
-  specifications
+  specifications.
+- Fix wrong script paths.
+- Add missing return code handling to multiple scrapers.
+- Fix color detection for specific WMV files.
 
 Version 0.53
 ------------
