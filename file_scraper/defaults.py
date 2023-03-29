@@ -63,6 +63,7 @@ PRONOM_DICT = {
 # See: http://digitalpreservation.fi/specifications/vocabularies/unknown-values
 UNAP = "(:unap)"
 UNAV = "(:unav)"
+UNKN = "(:unkn)"
 
 # Digital preservation grading
 RECOMMENDED = "fi-dpres-recommended-file-format"

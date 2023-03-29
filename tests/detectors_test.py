@@ -23,7 +23,7 @@ from file_scraper.detectors import (_FidoReader,
                                     ExifToolDetector,
                                     SegYDetector,
                                     SiardDetector)
-from file_scraper.defaults import UNAV
+from file_scraper.defaults import UNKN
 from tests.common import get_files, partial_message_included
 
 CHANGE_FIDO = {
@@ -339,7 +339,7 @@ def test_magic_charset(filename, charset):
         [
             ("application_x.fi-dpres.segy/invalid__ascii_header.sgy",
              "application/x.fi-dpres.segy",
-             UNAV),
+             UNKN),
             ("application_x.fi-dpres.segy/invalid_1.0_ascii_header.sgy",
              "application/x.fi-dpres.segy",
              "1.0"),
@@ -348,7 +348,7 @@ def test_magic_charset(filename, charset):
              "2.0"),
             ("application_x.fi-dpres.segy/invalid__ebcdic_header.sgy",
              "application/x.fi-dpres.segy",
-             UNAV),
+             UNKN),
             ("application_x.fi-dpres.segy/invalid_1.0_ebcdic_header.sgy",
              "application/x.fi-dpres.segy",
              "1.0"),
@@ -369,7 +369,7 @@ def test_segy_detector(filepath, mimetype, version):
     detector.detect()
     assert detector.mimetype == mimetype
     assert detector.version == version
-    if version == UNAV:
+    if version == UNKN:
         assert partial_message_included(
             "SEG-Y signature is missing", detector.info["messages"])
 

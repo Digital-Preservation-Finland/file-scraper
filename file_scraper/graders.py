@@ -3,7 +3,7 @@
 
 from file_scraper.defaults import (
     UNAP,
-    UNAV,
+    UNKN,
     RECOMMENDED,
     ACCEPTABLE,
     BIT_LEVEL_WITH_RECOMMENDED,
@@ -271,7 +271,7 @@ class MIMEGrader(BaseGrader):
         "application/x.fi-dpres.segy": {
             "1.0": BIT_LEVEL,
             "2.0": BIT_LEVEL,
-            UNAV: BIT_LEVEL
+            UNKN: BIT_LEVEL
         },
     }
 

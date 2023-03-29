@@ -15,7 +15,7 @@ from file_scraper.base import BaseDetector
 from file_scraper.shell import Shell
 from file_scraper.config import VERAPDF_PATH
 from file_scraper.defaults import (MIMETYPE_DICT, PRIORITY_PRONOM, PRONOM_DICT,
-                                   VERSION_DICT, UNAV)
+                                   VERSION_DICT, UNKN)
 from file_scraper.utils import encode_path, decode_path
 from file_scraper.magiclib import magiclib, magic_analyze
 from file_scraper.verapdf.verapdf_scraper import filter_errors, OK_CODES
@@ -458,7 +458,9 @@ class SegYDetector(BaseDetector):
     def _analyze_version(self, content):
         """
         Analyze if the content is SEG-Y textual header.
-        :returns: "1.0", "2.0" or "(:unav)" as file format version, and
+        We use UNKN instead of UNAV, because the value is known to be unknown.
+        UNAV is used for missing (incomplete) value.
+        :returns: "1.0", "2.0" or "(:unap)" as file format version, and
                   None if the file is not SEG-Y file
         """
         if len(content) < 3200:
@@ -473,7 +475,7 @@ class SegYDetector(BaseDetector):
                 if content[index*80:index*80+4] != "C%2d " % (index + 1):
                     return None
 
-            return UNAV
+            return UNKN
 
         return None
 
@@ -501,7 +503,7 @@ class SegYDetector(BaseDetector):
             self.version = version
 
         messages = []
-        if version == UNAV:
+        if version == UNKN:
             messages.append("SEG-Y signature is missing, but file most"
                             "likely is a SEG-Y file. File format version can "
                             "not be detected.")
