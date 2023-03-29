@@ -6,7 +6,8 @@ from file_scraper.csv_scraper.csv_scraper import CsvScraper
 from file_scraper.detectors import (FidoDetector,
                                     MagicDetector,
                                     PredefinedDetector,
-                                    SiardDetector)
+                                    SiardDetector,
+                                    SegYDetector)
 from file_scraper.dbptk.dbptk_scraper import DbptkScraper
 from file_scraper.dpx.dpx_scraper import DpxScraper
 from file_scraper.dummy.dummy_scraper import (DetectedMimeVersionMetadataScraper,
@@ -56,7 +57,8 @@ def iter_detectors():
     for cls in [FidoDetector,
                 MagicDetector,
                 PredefinedDetector,
-                SiardDetector]:
+                SiardDetector,
+                SegYDetector]:
         yield cls
 
 

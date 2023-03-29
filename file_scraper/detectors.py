@@ -15,7 +15,7 @@ from file_scraper.base import BaseDetector
 from file_scraper.shell import Shell
 from file_scraper.config import VERAPDF_PATH
 from file_scraper.defaults import (MIMETYPE_DICT, PRIORITY_PRONOM, PRONOM_DICT,
-                                   VERSION_DICT)
+                                   VERSION_DICT, UNAV)
 from file_scraper.utils import encode_path, decode_path
 from file_scraper.magiclib import magiclib, magic_analyze
 from file_scraper.verapdf.verapdf_scraper import filter_errors, OK_CODES
@@ -447,6 +447,84 @@ class ExifToolDetector(BaseDetector):
         if (not self._given_mimetype and self.mimetype in
                 ["image/x-adobe-dng"]):
             important["mimetype"] = self.mimetype
+        return important
+
+
+class SegYDetector(BaseDetector):
+    """
+    Detector used with SEG-Y files. Identifies SEG-Y files and, if possible,
+    their file format version.
+    """
+    def _analyze_version(self, content):
+        """
+        Analyze if the content is SEG-Y textual header.
+        :returns: "1.0", "2.0" or "(:unav)" as file format version, and
+                  None if the file is not SEG-Y file
+        """
+        if len(content) < 3200:
+            return None
+        if content[3040:3054] == "C39 SEG Y REV1":
+            return "1.0"
+        if content[3040:3053] == "C39 SEG-Y 2.0":
+            return "2.0"
+        if content[3120:3143] == "C40 END TEXTUAL HEADER " or \
+                content[3120:3135] == "C40 END EBCDIC ":
+            for index in range(0, 40):
+                if content[index*80:index*80+4] != "C%2d " % (index + 1):
+                    return None
+
+            return UNAV
+
+        return None
+
+    def detect(self):
+        """
+        Run detection to find MIME type and version.
+        """
+        with open(self.filename, "rb") as fhandler:
+            byte_content = fhandler.read(3200)
+        try:
+            if byte_content[0] == 0x43:
+                content = byte_content.decode('ascii')
+            else:
+                content = byte_content.decode('cp500')  # EBCDIC coding
+        except (UnicodeDecodeError, IndexError):
+            self.info = {"class": self.__class__.__name__,
+                         "messages": [],
+                         "errors": [],
+                         "tools": []}
+            return
+
+        version = self._analyze_version(content)
+        if version is not None:
+            self.mimetype = "application/x.fi-dpres.segy"
+            self.version = version
+
+        messages = []
+        if version == UNAV:
+            messages.append("SEG-Y signature is missing, but file most"
+                            "likely is a SEG-Y file. File format version can "
+                            "not be detected.")
+
+        self.info = {"class": self.__class__.__name__,
+                     "messages": messages,
+                     "errors": [],
+                     "tools": []}
+
+    def get_important(self):
+        """
+        If SegYDetector determines the mimetype as SEG-Y, the mimetype
+        and version are marked as important. This is to make sure that
+        this result overrides other detectors, which would detect SEG-Y
+        files as plain text files.
+        """
+        important = {}
+        if (not self._given_mimetype and self.mimetype in
+                ["application/x.fi-dpres.segy"]):
+            important["mimetype"] = self.mimetype
+        if (not self._given_version and self.mimetype in
+                ["application/x.fi-dpres.segy"]):
+            important["version"] = self.version
         return important
 
 

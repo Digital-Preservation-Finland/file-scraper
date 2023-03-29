@@ -3,9 +3,11 @@
 
 from file_scraper.defaults import (
     UNAP,
+    UNAV,
     RECOMMENDED,
     ACCEPTABLE,
     BIT_LEVEL_WITH_RECOMMENDED,
+    BIT_LEVEL,
     UNACCEPTABLE
 )
 
@@ -265,6 +267,11 @@ class MIMEGrader(BaseGrader):
         },
         "video/x.fi-dpres.prores": {
             UNAP: BIT_LEVEL_WITH_RECOMMENDED
+        },
+        "application/x.fi-dpres.segy": {
+            "1.0": BIT_LEVEL,
+            "2.0": BIT_LEVEL,
+            UNAV: BIT_LEVEL
         },
     }
 

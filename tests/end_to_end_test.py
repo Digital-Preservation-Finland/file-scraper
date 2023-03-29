@@ -258,7 +258,14 @@ BIT_LEVEL_WITH_RECOMMENDED_FILES = [
     "tests/data/video_quicktime/invalid__prores_lpcm8.mov"
 ]
 
-BIT_LEVEL_FILES = []
+BIT_LEVEL_FILES = [
+    "tests/data/application_x.fi-dpres.segy/invalid__ascii_header.sgy",
+    "tests/data/application_x.fi-dpres.segy/invalid_2.0_ascii_header.sgy",
+    "tests/data/application_x.fi-dpres.segy/invalid_1.0_ascii_header.sgy",
+    "tests/data/application_x.fi-dpres.segy/invalid__ebcdic_header.sgy",
+    "tests/data/application_x.fi-dpres.segy/invalid_2.0_ebcdic_header.sgy",
+    "tests/data/application_x.fi-dpres.segy/invalid_1.0_ebcdic_header.sgy",
+]
 
 UNACCEPTABLE_FILES = [
     # WARC 0.17 and 0.18 are not accepted versions

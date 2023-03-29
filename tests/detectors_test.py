@@ -21,7 +21,9 @@ from file_scraper.detectors import (_FidoReader,
                                     MagicDetector,
                                     VerapdfDetector,
                                     ExifToolDetector,
+                                    SegYDetector,
                                     SiardDetector)
+from file_scraper.defaults import UNAV
 from tests.common import get_files, partial_message_included
 
 CHANGE_FIDO = {
@@ -330,6 +332,46 @@ def test_magic_charset(filename, charset):
     else:
         assert partial_message_included(
             "Unable to detect character encoding", detector.info["errors"])
+
+
+@pytest.mark.parametrize(
+        ["filepath", "mimetype", "version"],
+        [
+            ("application_x.fi-dpres.segy/invalid__ascii_header.sgy",
+             "application/x.fi-dpres.segy",
+             UNAV),
+            ("application_x.fi-dpres.segy/invalid_1.0_ascii_header.sgy",
+             "application/x.fi-dpres.segy",
+             "1.0"),
+            ("application_x.fi-dpres.segy/invalid_2.0_ascii_header.sgy",
+             "application/x.fi-dpres.segy",
+             "2.0"),
+            ("application_x.fi-dpres.segy/invalid__ebcdic_header.sgy",
+             "application/x.fi-dpres.segy",
+             UNAV),
+            ("application_x.fi-dpres.segy/invalid_1.0_ebcdic_header.sgy",
+             "application/x.fi-dpres.segy",
+             "1.0"),
+            ("application_x.fi-dpres.segy/invalid_2.0_ebcdic_header.sgy",
+             "application/x.fi-dpres.segy",
+             "2.0"),
+        ]
+)
+def test_segy_detector(filepath, mimetype, version):
+    """
+    Test that works with SEG-Y files. SegYDetector
+    should detect the mimetype and, if possible, version of a SEG-Y file.
+
+    :filepath: Test file
+    :mimetype: Expected mimetype
+    """
+    detector = SegYDetector('tests/data/' + filepath)
+    detector.detect()
+    assert detector.mimetype == mimetype
+    assert detector.version == version
+    if version == UNAV:
+        assert partial_message_included(
+            "SEG-Y signature is missing", detector.info["messages"])
 
 
 @pytest.mark.parametrize(
