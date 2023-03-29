@@ -467,7 +467,7 @@ class SegYDetector(BaseDetector):
             return None
         if content[3040:3054] == "C39 SEG Y REV1":
             return "1.0"
-        if content[3040:3053] == "C39 SEG-Y 2.0":
+        if content[3040:3056] == "C39 SEG-Y REV2.0":
             return "2.0"
         if content[3120:3143] == "C40 END TEXTUAL HEADER " or \
                 content[3120:3135] == "C40 END EBCDIC ":
