@@ -460,7 +460,7 @@ class SegYDetector(BaseDetector):
         Analyze if the content is SEG-Y textual header.
         We use UNKN instead of UNAV, because the value is known to be unknown.
         UNAV is used for missing (incomplete) value.
-        :returns: "1.0", "2.0" or "(:unap)" as file format version, and
+        :returns: "1.0", "2.0" or "(:unkn)" as file format version, and
                   None if the file is not SEG-Y file
         """
         if len(content) < 3200:
