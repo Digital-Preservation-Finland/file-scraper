@@ -1,6 +1,11 @@
 Release notes
 =============
 
+Version 0.55
+------------
+
+- Python 2.7 support officially removed.
+
 Version 0.54
 ------------
 
