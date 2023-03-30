@@ -469,6 +469,10 @@ class SegYDetector(BaseDetector):
             return "1.0"
         if content[3040:3056] == "C39 SEG-Y REV2.0":
             return "2.0"
+
+        # In case the SEG-Y declaration is missing, we follow the structure.
+        # Header contains 40 "cards". Each of them are 80 characters long
+        # and begin with a card number "C 1 " ... "C40 ".
         if content[3120:3143] == "C40 END TEXTUAL HEADER " or \
                 content[3120:3135] == "C40 END EBCDIC ":
             for index in range(0, 40):
@@ -486,11 +490,14 @@ class SegYDetector(BaseDetector):
         with open(self.filename, "rb") as fhandler:
             byte_content = fhandler.read(3200)
         try:
+            # The first character has to be "C", with ASCII or EBCDIC encoding
             if byte_content[0] == 0x43:
                 content = byte_content.decode('ascii')
-            else:
+            elif byte_content[0] == 0xC3:
                 content = byte_content.decode('cp500')  # EBCDIC coding
-        except (UnicodeDecodeError, IndexError):
+            else:
+                raise ValueError
+        except (UnicodeDecodeError, IndexError, ValueError):
             self.info = {"class": self.__class__.__name__,
                          "messages": [],
                          "errors": [],
