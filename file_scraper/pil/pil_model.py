@@ -26,11 +26,16 @@ class BasePilMeta(BaseMeta):
         """
         Initialize scraper.
 
-        :pil: PIL image
+        :pil_class: PIL image
         :index: Index of the current frame
         """
-        self._pil = pil
+        self._pil_class = pil
         self._pil_index = index
+
+    @property
+    def _pil(self):
+        self._pil_class.seek(self._pil_index)
+        return self._pil_class
 
     @metadata()
     def mimetype(self):

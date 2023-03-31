@@ -47,6 +47,15 @@ STREAM_VALID_LA = {
     "samples_per_pixel": "2",
     "compression": UNAV}
 
+STREAM_VALID_RGBA = {
+    "bps_unit": "integer",
+    "bps_value": UNAV,
+    "colorspace": UNAV,
+    "height": UNAV,
+    "width": UNAV,
+    "samples_per_pixel": "4",
+    "compression": UNAV}
+
 GIF_APPEND = {
     "bps_unit": "integer",
     "bps_value": UNAV,
@@ -68,11 +77,11 @@ STREAM_INVALID = {}
         ("valid_6.0.tif", {
             "purpose": "Test valid file.",
             "streams": {0: STREAM_VALID.copy()}}),
-        ("valid_6.0_multiple_tiffs.tif", {
+        ("valid_6.0_multiple_tiffs2.tif", {
             "purpose": "Test valid multiple tiff file.",
-            "streams": {0: STREAM_VALID.copy(),
-                        1: STREAM_VALID.copy(),
-                        2: STREAM_VALID.copy()}}),
+            "streams": {0: STREAM_VALID_RGBA.copy(),
+                        1: STREAM_VALID_LA.copy(),
+                        2: STREAM_VALID_LA.copy()}}),
         ("invalid_6.0_payload_altered.tif", {
             "purpose": "Test payload altered in file.",
             "streams": {0: STREAM_INVALID.copy()}}),
