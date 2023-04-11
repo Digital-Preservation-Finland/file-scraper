@@ -472,11 +472,13 @@ class SegYDetector(BaseDetector):
 
         # In case the SEG-Y declaration is missing, we follow the structure.
         # Header contains 40 "cards". Each of them are 80 characters long
-        # and begin with a card number "C 1 " ... "C40 ".
+        # and begin with a card number "C 1 " ... "C40 ". Here we also allow
+        # left-justified card numbering, i.e. "C1  " instead of "C 1 ".
         if content[3120:3143] == "C40 END TEXTUAL HEADER " or \
                 content[3120:3135] == "C40 END EBCDIC ":
             for index in range(0, 40):
-                if content[index*80:index*80+4] != "C%2d " % (index + 1):
+                if content[index*80:index*80+4] not in [
+                        "C%2d " % (index + 1), "C%-2d " % (index + 1)]:
                     return None
 
             return UNKN
