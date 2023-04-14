@@ -355,6 +355,9 @@ def test_magic_charset(filename, charset):
             ("application_x.fi-dpres.segy/invalid_2.0_ebcdic_header.sgy",
              "application/x.fi-dpres.segy",
              "2.0"),
+            ("application_x.fi-dpres.segy/invalid__ebcdic_ljust.sgy",
+             "application/x.fi-dpres.segy",
+             UNKN),
         ]
 )
 def test_segy_detector(filepath, mimetype, version):

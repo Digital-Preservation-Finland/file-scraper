@@ -265,6 +265,7 @@ BIT_LEVEL_FILES = [
     "tests/data/application_x.fi-dpres.segy/invalid__ebcdic_header.sgy",
     "tests/data/application_x.fi-dpres.segy/invalid_2.0_ebcdic_header.sgy",
     "tests/data/application_x.fi-dpres.segy/invalid_1.0_ebcdic_header.sgy",
+    "tests/data/application_x.fi-dpres.segy/invalid__ebcdic_ljust.sgy",
 ]
 
 UNACCEPTABLE_FILES = [
