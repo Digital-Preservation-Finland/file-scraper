@@ -55,6 +55,9 @@ class DetectedMimeVersionMeta(BaseMeta):
 
     We don't currently know any other constructive way to get file format
     version for a few formats.
+
+    We also use this model for file formats for bit-level preservation,
+    to avoid message about missing scraper.
     """
 
     _supported = {
@@ -65,6 +68,7 @@ class DetectedMimeVersionMeta(BaseMeta):
             "1.0", "1.1", "1.2"],
         "application/vnd.oasis.opendocument.graphics": ["1.0", "1.1", "1.2"],
         "application/vnd.oasis.opendocument.formula": ["1.0", "1.2"],
+        "application/x.fi-dpres.segy": ["(:unkn)", "1.0", "2.0"]
     }
 
     def __init__(self, mimetype, version):

@@ -545,6 +545,10 @@ def test_coded_filename(testpath, fullname, mimetype, version):
         ("tests/data/application_warc/valid_1.0_.warc.gz",
          {"mimetype": "application/gzip"}, True,
          "application/warc", "1.0", None, False),
+
+        # Bit-level preservation file format
+        ("tests/data/application_x.fi-dpres.segy/invalid__ascii_header.sgy",
+         {}, None, "application/x.fi-dpres.segy", "(:unkn)", None, None)
     ]
 )
 # pylint: disable=too-many-arguments

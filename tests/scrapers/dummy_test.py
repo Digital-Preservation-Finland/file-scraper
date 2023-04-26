@@ -214,6 +214,16 @@ def test_detected_version_scraper():
     assert scraper.well_formed is False
     assert scraper.streams[0].version() == "123"
 
+    # File format for bit-level preservation
+    scraper = DetectedMimeVersionScraper(
+        None, "application/x.fi-dpres.segy",
+        params={"detected_version": "(:unkn)"})
+    scraper.scrape_file()
+    assert scraper.well_formed is None
+    assert scraper.streams[0].mimetype() == "application/x.fi-dpres.segy"
+    assert scraper.streams[0].version() == "(:unkn)"
+    assert scraper.streams[0].stream_type() == "binary"
+
 
 @pytest.mark.parametrize(('meta_classes', 'wellformed'), [
     (['meta1', 'meta5'], None),
