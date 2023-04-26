@@ -337,6 +337,9 @@ def test_magic_charset(filename, charset):
 @pytest.mark.parametrize(
         ["filepath", "mimetype", "version"],
         [
+            # The SEG-Y test files only contain the bare minimum data
+            # (i.e. SEG-Y magic number and file format version) in order
+            # to be detected by SegYDetector.
             ("application_x.fi-dpres.segy/invalid__ascii_header.sgy",
              "application/x.fi-dpres.segy",
              UNKN),
