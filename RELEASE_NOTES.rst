@@ -1,6 +1,11 @@
 Release notes
 =============
 
+Version 0.56
+------------
+
+- Add SEG-Y file format detection and grade it as bit-level file format.
+
 Version 0.55
 ------------
 
