@@ -62,11 +62,13 @@ FORMATS = [
     },
     {
         "mimetype": "video/MP1S",
-        "properties": {"format": "MPEG-PS", "format_version": "Version 1"}
+        "properties": {"format": "MPEG-PS",
+                       "internet_media_type": "video/mpeg"}
     },
     {
         "mimetype": "video/MP2P",
-        "properties": {"format": "MPEG-PS", "format_version": "Version 2"}
+        "properties": {"format": "MPEG-PS",
+                       "internet_media_type": "video/MP2P"}
     },
     {
         "mimetype": "audio/mpeg",
