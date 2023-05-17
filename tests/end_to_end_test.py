@@ -64,6 +64,24 @@ UNAV_ELEMENTS = {
                                                            "icc_profile_name",
                                                            "icc_profile_name"],
     "tests/data/video_avi/valid__mpeg2_mp3.avi": ["bits_per_sample"],
+    "tests/data/video_MP1S/valid__ps1.mpg": [
+        "codec_creator_app",
+        "codec_creator_app_version",
+        "codec_creator_app",
+        "codec_creator_app_version",
+        "bits_per_sample",
+        "codec_creator_app",
+        "codec_creator_app_version"
+    ],
+    "tests/data/video_MP2P/valid__ps2.mpg": [
+        "codec_creator_app",
+        "codec_creator_app_version",
+        "codec_creator_app",
+        "codec_creator_app_version",
+        "bits_per_sample",
+        "codec_creator_app",
+        "codec_creator_app_version"
+    ],
     "tests/data/video_MP2T/valid__mpeg2_mp3.ts": [
         "codec_creator_app_version",
         "codec_creator_app",
@@ -247,6 +265,8 @@ ACCEPTABLE_FILES = [
     "tests/data/video_dv/valid__pal_lossy.dv",
     "tests/data/video_quicktime/valid__dv_lpcm8.mov",
     "tests/data/video_avi/valid__mpeg2_mp3.avi",
+    "tests/data/video_MP1S/valid__ps1.mpg",
+    "tests/data/video_MP2P/valid__ps2.mpg",
     "tests/data/video_MP2T/valid__mpeg2_mp3.ts",
     "tests/data/audio_x-aiff/valid__aiff-c.aiff",
     "tests/data/video_x-ms-asf/valid__wma9.wma",
