@@ -58,6 +58,9 @@ from tests.scrapers.stream_dicts import (AIFF_AUDIO,
                                          MPEG4_AUDIO,
                                          MPEG4_CONTAINER,
                                          MPEG4_VIDEO,
+                                         MPEG1PS_AUDIO,
+                                         MPEG1PS_CONTAINER,
+                                         MPEG1PS_VIDEO,
                                          MPEGTS_AUDIO,
                                          MPEGTS_CONTAINER,
                                          MPEGTS_VIDEO,
@@ -539,6 +542,29 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
         assert not scraper.streams
     else:
         evaluate_scraper(scraper, correct)
+
+
+@pytest.mark.parametrize(
+        ["filename", "result_dict", "mimetype"],
+        [
+            ("valid__ps1.mpg", {
+                "purpose": "Test valid MPEG1-PS.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": "",
+                "streams": {0: MPEG1PS_CONTAINER.copy(),
+                            1: MPEG1PS_VIDEO.copy(),
+                            2: MPEG1PS_AUDIO.copy()}},
+                "video/MP1S")
+            # Add ps2 & empty files here
+        ])
+def test_mediainfo_scraper_mpegps(filename, result_dict,
+                                  mimetype, evaluate_scraper):
+    """TODO"""
+    correct = parse_results(filename, mimetype, result_dict, False)
+    scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
+    scraper.scrape_file()
+
+    evaluate_scraper(scraper, correct)
 
 
 def test_mediainfo_scraper_avi(evaluate_scraper):

@@ -187,6 +187,23 @@ MPEGTS_CONTAINER = {
     "codec_name": "MPEG-TS", "index": 0, "mimetype": "video/MP2T",
     "stream_type": "videocontainer", "version": UNAP}
 
+MPEG1PS_CONTAINER = {
+    "index": 0, "mimetype": "video/MP1S",
+    "stream_type": "videocontainer", "version": UNAP,
+    "codec_creator_app": UNAV,
+    "codec_creator_app_version": UNAV,
+    "codec_name": "MPEG-PS"}
+
+MPEG1PS_VIDEO = dict(MPEG1_VIDEO, **{
+    "index": 1, "par": "0.999",
+    "data_rate": "2.431719", "dar": "0.562",
+    "height": "1920", "sound": "Yes",
+    "duration": "PT1.1S", "width": "1080"})
+
+MPEG1PS_AUDIO = dict(MPEG1_AUDIO, **{
+    "index": 2, "sampling_frequency": "48",
+    "duration": "PT1.15S", "data_rate": "384"})
+
 BASE_JPEG2000_VIDEO = {
     "index": 1, "mimetype": "video/jpeg2000", "version": UNAP,
     "par": "1",
