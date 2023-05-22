@@ -58,9 +58,11 @@ from tests.scrapers.stream_dicts import (AIFF_AUDIO,
                                          MPEG4_AUDIO,
                                          MPEG4_CONTAINER,
                                          MPEG4_VIDEO,
-                                         MPEG1PS_AUDIO,
+                                         MPEGPS_AUDIO,
                                          MPEG1PS_CONTAINER,
+                                         MPEG2PS_CONTAINER,
                                          MPEG1PS_VIDEO,
+                                         MPEG2PS_VIDEO,
                                          MPEGTS_AUDIO,
                                          MPEGTS_CONTAINER,
                                          MPEGTS_VIDEO,
@@ -553,18 +555,43 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
                 "stderr_part": "",
                 "streams": {0: MPEG1PS_CONTAINER.copy(),
                             1: MPEG1PS_VIDEO.copy(),
-                            2: MPEG1PS_AUDIO.copy()}},
-                "video/MP1S")
-            # Add ps2 & empty files here
+                            2: MPEGPS_AUDIO.copy()}},
+                "video/MP1S"),
+            ("valid__ps2.mpg", {
+                "purpose": "Test valid MPEG2-PS.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": "",
+                "streams": {0: MPEG2PS_CONTAINER.copy(),
+                            1: MPEG2PS_VIDEO.copy(),
+                            2: MPEGPS_AUDIO.copy()}},
+             "video/MP2P"),
+            ("invalid__empty.mpg", {
+                "purpose": "Test empty MPEG-PS",
+                "stdout_part": "",
+                "stderr_part": "No audio or video tracks found."},
+             "video/MP1S")
         ])
 def test_mediainfo_scraper_mpegps(filename, result_dict,
                                   mimetype, evaluate_scraper):
-    """TODO"""
+    """
+    Test MPEG Program Stream scraping with MediainfoScraper.
+
+    :filename: Test file name
+    :result_dict: Result dict containing the test purpose, parts of
+                  expected results of stdout and stderr, and expected
+                  streams
+    """
     correct = parse_results(filename, mimetype, result_dict, False)
     scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
 
-    evaluate_scraper(scraper, correct)
+    if "empty" in filename:
+        assert partial_message_included(correct.stdout_part,
+                                        scraper.messages())
+        assert partial_message_included(correct.stderr_part, scraper.errors())
+        assert not scraper.streams
+    else:
+        evaluate_scraper(scraper, correct)
 
 
 def test_mediainfo_scraper_avi(evaluate_scraper):
