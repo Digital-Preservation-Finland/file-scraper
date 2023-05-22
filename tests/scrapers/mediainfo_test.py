@@ -556,7 +556,7 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
                 "streams": {0: MPEG1PS_CONTAINER.copy(),
                             1: MPEG1PS_VIDEO.copy(),
                             2: MPEGPS_AUDIO.copy()}},
-                "video/MP1S"),
+             "video/MP1S"),
             ("valid__ps2.mpg", {
                 "purpose": "Test valid MPEG2-PS.",
                 "stdout_part": "file was analyzed successfully",
