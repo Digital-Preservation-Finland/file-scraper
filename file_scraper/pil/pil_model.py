@@ -1,6 +1,8 @@
 """Metadata model for image file formats scraped using PIL."""
 from __future__ import unicode_literals
 
+from copy import copy, deepcopy
+
 import six
 
 from file_scraper.base import BaseMeta
@@ -29,13 +31,24 @@ class BasePilMeta(BaseMeta):
         :pil: PIL image
         :index: Index of the current frame
         """
-        self._pil = pil
         self._pil_index = index
 
+        # Copy required data from PIL.Image to allow PilScraper to close
+        # filehandle in PIL.Image. This allows scraping more than 1024 files in
+        # one process (default max filehandle limt"
+
+        self._pil_mimetype = PIL.Image.MIME[pil.format]
+        self._pil_height = copy(getattr(pil, "height", UNAV))
+        self._pil_width = copy(getattr(pil, "width", UNAV))
+        self._pil_mode = copy(getattr(pil, "mode", UNAV))
+        self._pil_tag_v2 = copy(getattr(pil, "tag_v2", UNAV))
+        # pylint: disable=protected-access
+        if hasattr(pil, "_getexif"):
+            self._pil_getexif = deepcopy(pil._getexif())
 
     @metadata()
     def mimetype(self):
-        return PIL.Image.MIME[self._pil.format]
+        return self._pil_mimetype
 
     # pylint: disable=no-self-use
     @metadata()
@@ -61,17 +74,12 @@ class BasePilMeta(BaseMeta):
     @metadata()
     def width(self):
         """Return image width."""
-        if self._pil.width is not None:
-            return six.text_type(self._pil.width)
-        return UNAV
+        return six.text_type(self._pil_width)
 
     @metadata()
     def height(self):
         """Return image height."""
-        if self._pil is not None and \
-                self._pil.height is not None:
-            return six.text_type(self._pil.height)
-        return UNAV
+        return six.text_type(self._pil_height)
 
     @metadata()
     def bps_value(self):
@@ -81,9 +89,8 @@ class BasePilMeta(BaseMeta):
     @metadata()
     def bps_unit(self):
         """Return sample unit."""
-        if self._pil is None:
-            return UNAV
-        if self._pil.mode == "F":
+
+        if self._pil_mode == "F":
             return "floating point"
 
         return "integer"
@@ -96,7 +103,7 @@ class BasePilMeta(BaseMeta):
     @metadata()
     def samples_per_pixel(self):
         """Return samples per pixel."""
-        return SAMPLES_PER_PIXEL[self._pil.mode]
+        return SAMPLES_PER_PIXEL[self._pil_mode]
 
 
 class TiffPilMeta(BasePilMeta):
@@ -123,9 +130,7 @@ class TiffPilMeta(BasePilMeta):
     @metadata()
     def samples_per_pixel(self):
         """Return samples per pixel."""
-        if self._pil is None:
-            return UNAV
-        tag_info = self._pil.tag_v2
+        tag_info = self._pil_tag_v2
         if tag_info and SAMPLES_PER_PIXEL_TAG in tag_info.keys():
             return six.text_type(tag_info[SAMPLES_PER_PIXEL_TAG])
         return super(TiffPilMeta, self).samples_per_pixel()
@@ -226,7 +231,7 @@ class JpegPilMeta(BasePilMeta):
     @metadata()
     def samples_per_pixel(self):
         """Return samples per pixel."""
-        exif_info = self._pil._getexif()  # pylint: disable=protected-access
+        exif_info = self._pil_getexif
         if exif_info and SAMPLES_PER_PIXEL_TAG in exif_info.keys():
             return six.text_type(exif_info[SAMPLES_PER_PIXEL_TAG])
         return super(JpegPilMeta, self).samples_per_pixel()
