@@ -12,16 +12,13 @@ setup(
         "python-mimeparse",
         "six",
         "olefile",
-        "file-magic<=0.4.0",
+        "file-magic<=0.4.0;python_version == '3.6'",
+        "file-magic;python_version > '3.6'",
         "pymediainfo",
-        "Pillow==6.0",
-        "wand==0.6.1",
+        "Pillow",
+        "wand",
         "lxml",
-        "pyexiftool==0.1",
-        "ffmpeg_python@git+https://gitlab.ci.csc.fi/dpres/ffmpeg-python.git"
-        "#egg=ffmpeg_python",
-        "opf_fido@git+https://gitlab.ci.csc.fi/dpres/fido.git"
-        "@develop#egg=opf_fido"
+        "pyexiftool<0.5",
     ],
     entry_points={'console_scripts': [
         'scraper=file_scraper.cmdline:cli']},
