@@ -42,6 +42,8 @@ class PilScraper(BaseScraper):
             n_frames = 1
 
         for pil_index in range(0, n_frames):
+            # Create new Image instance for each frame to prevent seek()
+            # modifying previous PilModel instances
             pil = PIL.Image.open(self.filename)
             pil.seek(pil_index)
             self.streams += list(
