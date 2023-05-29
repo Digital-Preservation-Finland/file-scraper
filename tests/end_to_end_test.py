@@ -63,6 +63,10 @@ UNAV_ELEMENTS = {
                                                            "icc_profile_name",
                                                            "icc_profile_name",
                                                            "icc_profile_name"],
+    "tests/data/image_tiff/valid_6.0_multiple_pages_and_modes.tif": [
+        "version",
+        "version",
+        "version"],
     "tests/data/video_avi/valid__mpeg2_mp3.avi": ["bits_per_sample"],
     "tests/data/video_MP1S/valid__ps1.mpg": [
         "codec_creator_app",

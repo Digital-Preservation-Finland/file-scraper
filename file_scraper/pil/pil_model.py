@@ -43,6 +43,7 @@ class BasePilMeta(BaseMeta):
         self._pil_mode = copy(getattr(pil, "mode", UNAV))
         self._pil_tag_v2 = copy(getattr(pil, "tag_v2", UNAV))
         # pylint: disable=protected-access
+        self._pil_getexif = None
         if hasattr(pil, "_getexif"):
             self._pil_getexif = deepcopy(pil._getexif())
 
