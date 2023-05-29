@@ -29,13 +29,13 @@ from tests.common import (parse_results, partial_message_included)
 VALID_MSG = "successfully"
 INVALID_MSG = "Error in analyzing file."
 
-STREAM_VALID = {
+STREAM_VALID_L = {
     "bps_unit": "integer",
     "bps_value": UNAV,
     "colorspace": UNAV,
     "height": UNAV,
     "width": UNAV,
-    "samples_per_pixel": "3",
+    "samples_per_pixel": "1",
     "compression": UNAV}
 
 STREAM_VALID_LA = {
@@ -45,6 +45,15 @@ STREAM_VALID_LA = {
     "height": UNAV,
     "width": UNAV,
     "samples_per_pixel": "2",
+    "compression": UNAV}
+
+STREAM_VALID_RGB = {
+    "bps_unit": "integer",
+    "bps_value": UNAV,
+    "colorspace": UNAV,
+    "height": UNAV,
+    "width": UNAV,
+    "samples_per_pixel": "3",
     "compression": UNAV}
 
 STREAM_VALID_RGBA = {
@@ -76,12 +85,13 @@ STREAM_INVALID = {}
     [
         ("valid_6.0.tif", {
             "purpose": "Test valid file.",
-            "streams": {0: STREAM_VALID.copy()}}),
-        ("valid_6.0_multiple_tiffs2.tif", {
+            "streams": {0: STREAM_VALID_RGB.copy()}}),
+        ("valid_6.0_multiple_pages_and_modes.tif", {
             "purpose": "Test valid multiple tiff file.",
-            "streams": {0: STREAM_VALID_RGBA.copy(),
+            "streams": {0: STREAM_VALID_L.copy(),
                         1: STREAM_VALID_LA.copy(),
-                        2: STREAM_VALID_LA.copy()}}),
+                        2: STREAM_VALID_RGB.copy(),
+                        3: STREAM_VALID_RGBA.copy()}}),
         ("invalid_6.0_payload_altered.tif", {
             "purpose": "Test payload altered in file.",
             "streams": {0: STREAM_INVALID.copy()}}),
@@ -130,7 +140,7 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
     [
         ("valid_1.4.dng", {
             "purpose": "Test valid file.",
-            "streams": {0: STREAM_VALID.copy()}}),
+            "streams": {0: STREAM_VALID_RGB.copy()}}),
         ("invalid_1.4_edited_header.dng", {
             "purpose": "Test invalid file with corrupted header.",
             "streams": {0: STREAM_INVALID.copy()}}),
@@ -175,15 +185,15 @@ def test_scraper_dng(filename, result_dict, evaluate_scraper):
     [
         ("valid_1.01.jpg", {
             "purpose": "Test valid file.",
-            "streams": {0: STREAM_VALID.copy()}}),
+            "streams": {0: STREAM_VALID_RGB.copy()}}),
         ("invalid_1.01_data_changed.jpg", {
             "purpose": "Test image data change in file.",
             "inverse": True,
-            "streams": {0: STREAM_VALID.copy()}}),
+            "streams": {0: STREAM_VALID_RGB.copy()}}),
         ("invalid_1.01_no_start_marker.jpg", {
             "purpose": "Test start marker change in file.",
             "inverse": True,
-            "streams": {0: STREAM_VALID.copy()}}),
+            "streams": {0: STREAM_VALID_RGB.copy()}}),
         ("invalid__empty.jpg", {
             "purpose": "Test empty file.",
             "streams": {0: STREAM_INVALID.copy()}}),
@@ -226,7 +236,7 @@ def test_scraper_jpg(filename, result_dict, evaluate_scraper):
     [
         ("valid__srgb.jp2", {
             "purpose": "Test valid file.",
-            "streams": {0: STREAM_VALID.copy()}}),
+            "streams": {0: STREAM_VALID_RGB.copy()}}),
         ("invalid__data_missing.jp2", {
             "purpose": "Test data missing file.",
             "streams": {0: STREAM_INVALID.copy()}}),
@@ -270,14 +280,14 @@ def test_scraper_jp2(filename, result_dict, evaluate_scraper):
     [
         ("valid_1.2.png", {
             "purpose": "Test valid file.",
-            "streams": {0: STREAM_VALID.copy()}}),
+            "streams": {0: STREAM_VALID_RGB.copy()}}),
         ("valid_1.2_LA.png", {
             "purpose": "Test valid gray+alpha file.",
             "streams": {0: STREAM_VALID_LA.copy()}}),
         ("invalid_1.2_no_IEND.png", {
             "purpose": "Test without IEND.",
             "inverse": True,
-            "streams": {0: STREAM_VALID.copy()}}),
+            "streams": {0: STREAM_VALID_RGB.copy()}}),
         ("invalid_1.2_no_IHDR.png", {
             "purpose": "Test without IHDR.",
             "streams": {0: STREAM_INVALID.copy()}}),
@@ -327,10 +337,10 @@ def test_scraper_png(filename, result_dict, evaluate_scraper):
     [
         ("valid_1987a.gif", {
             "purpose": "Test valid file.",
-            "streams": {0: STREAM_VALID.copy()}}),
+            "streams": {0: STREAM_VALID_RGB.copy()}}),
         ("valid_1989a.gif", {
             "purpose": "Test valid file.",
-            "streams": {0: STREAM_VALID.copy(),
+            "streams": {0: STREAM_VALID_RGB.copy(),
                         1: GIF_APPEND.copy(),
                         2: GIF_APPEND.copy()}}),
         ("invalid_1987a_broken_header.gif", {
@@ -339,7 +349,7 @@ def test_scraper_png(filename, result_dict, evaluate_scraper):
         ("invalid_1987a_truncated.gif", {
             "purpose": "Test truncated file.",
             "inverse": True,
-            "streams": {0: STREAM_VALID.copy()}}),
+            "streams": {0: STREAM_VALID_RGB.copy()}}),
         ("invalid_1989a_broken_header.gif", {
             "purpose": "Test invalid header.",
             "streams": {0: STREAM_INVALID.copy()}}),
