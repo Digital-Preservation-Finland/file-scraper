@@ -27,7 +27,6 @@ class PilScraper(BaseScraper):
             PIL.Image.MAX_IMAGE_PIXELS = int(1024 * 1024 * 1024 // 3)
 
             with PIL.Image.open(self.filename) as pil:
-
                 try:
                     n_frames = pil.n_frames
                 except (AttributeError, ValueError):
@@ -35,16 +34,17 @@ class PilScraper(BaseScraper):
                     # the tile tries to extend outside of image.
                     n_frames = 1
 
-                for pil_index in range(0, n_frames):
-                    pil.seek(pil_index)
-                    self.streams += list(
-                        self.iterate_models(pil=pil, index=pil_index))
-
         except Exception as e:  # pylint: disable=invalid-name, broad-except
             self._errors.append("Error in analyzing file.")
             self._errors.append(six.text_type(e))
             return
         else:
-            self._messages.append("The file was analyzed successfully.")
+            with PIL.Image.open(self.filename) as pil:
+                for pil_index in range(0, n_frames):
+                    pil.seek(pil_index)
+                    self.streams += list(
+                        self.iterate_models(pil=pil, index=pil_index))
 
-        self._check_supported(allow_unav_version=True)
+            self._check_supported(allow_unav_version=True)
+
+            self._messages.append("The file was analyzed successfully.")
