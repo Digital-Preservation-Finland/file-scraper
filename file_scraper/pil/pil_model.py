@@ -26,10 +26,12 @@ class BasePilMeta(BaseMeta):
 
     def __init__(self, pil, index):
         """
-        Initialize scraper.
+        Initialize scraper. Copies metadata from PIL image frame to static
+        variables.
 
-        :pil: PIL image
+        :pil: PIL image frame to extract metadata from
         :index: Index of the current frame
+
         """
         self._pil_index = index
 
