@@ -64,6 +64,10 @@ UNAV_ELEMENTS = {
                                                            "icc_profile_name",
                                                            "icc_profile_name"],
     "tests/data/image_tiff/valid_6.0_multiple_pages_and_modes.tif": [
+        "icc_profile_name",
+        "icc_profile_name",
+        "icc_profile_name",
+        "icc_profile_name",
         "version",
         "version",
         "version"],
