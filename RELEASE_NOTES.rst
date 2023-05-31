@@ -1,6 +1,12 @@
 Release notes
 =============
 
+Version 0.57
+------------
+
+- Differentiate MPEG-1 PS and MPEG-2 PS containers.
+- Add support for multi-frame TIFF/PNG images.
+
 Version 0.56
 ------------
 
