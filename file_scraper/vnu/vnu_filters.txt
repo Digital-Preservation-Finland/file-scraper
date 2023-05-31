@@ -1,5 +1,6 @@
 # Filter out language warnings
 .*This document appears to be written in.*
+.*declare the language of this document.*
 
 # It's ok to use features that some browsers don't support
 .* is not supported in all browsers\. Please be sure to test, and consider.*
