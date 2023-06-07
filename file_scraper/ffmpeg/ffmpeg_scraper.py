@@ -217,9 +217,13 @@ def _filter_stderr(errors):
     Message "bpno became negative" is not considered as error, see e.g.:
     http://ffmpeg.org/pipermail/ffmpeg-devel/2020-April/259454.html
 
+    Message "bpno became invalid" is not considered as error, see:
+    https://trac.ffmpeg.org/ticket/5360
+
     Returns a new string, containing all lines in errors except
     those that contain either "Last message repeated [number] times"
-    or both "jpeg2000" and "bpno became negative".
+    or both "jpeg2000" and "bpno became negative" or both "jpeg2000" and "bpno
+    became invalid".
 
     Note: Message "Last message repeated" may be targeted also
     to another (valid) error message. It will still be filtered.
@@ -233,6 +237,8 @@ def _filter_stderr(errors):
         if not line:
             continue
         if "jpeg2000" in line and "bpno became negative" in line:
+            continue
+        if "jpeg2000" in line and "bpno became invalid" in line:
             continue
         if repeat.match(line.strip()):
             continue
