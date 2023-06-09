@@ -1,5 +1,6 @@
 """Metadata models for files scraped using magic."""
 from __future__ import unicode_literals
+import re
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import MIMETYPE_DICT, UNAP, UNAV
@@ -197,6 +198,18 @@ class PdfFileMagicMeta(BinaryMagicBaseMeta):
                                       "1.7", "A-1a", "A-1b", "A-2a", "A-2b",
                                       "A-2u", "A-3a", "A-3b", "A-3u"]}
     _allow_versions = True  # Allow any version
+
+    @metadata()
+    def version(self):
+        """Return PDF file format version."""
+        # In EL9 "file" can return (password protected) for a valid A-1a even
+        # though the file is not password protected. What it should return is
+        # that the file uses deflate. See
+        # https://bugzilla.redhat.com/show_bug.cgi?id=2213761
+        # After EL9, "file" will also list the amount of pages for the PDF.
+        # This regex will return only the version number without any of the
+        # extra information that "file" gives.
+        return re.match(r'([\d+\.\d]+).*', super().version()).group(1)
 
 
 class OfficeFileMagicMeta(BinaryMagicBaseMeta):
