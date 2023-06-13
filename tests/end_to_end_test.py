@@ -184,6 +184,7 @@ IGNORE_VALID = [
 # EPUB version can't be determined with just metadata scraping.
 IGNORE_FOR_METADATA = IGNORE_VALID + [
     "tests/data/image_x-dpx/valid_2.0.dpx",
+    "tests/data/image_x-dpx/valid_1.0_just_version_change_from_2.0.dpx",
     "tests/data/application_warc/valid_1.0_.warc.gz",
     "tests/data/text_xml/valid_1.0_mets_noheader.xml",
     "tests/data/application_epub+zip/valid_2.0.1_calibre.epub",
@@ -280,6 +281,7 @@ ACCEPTABLE_FILES = [
     "tests/data/video_x-ms-asf/valid__wma9.wma",
     "tests/data/video_x-ms-asf/valid__vc1.wmv",
     "tests/data/video_x-ms-asf/valid__vc1_wma9.wmv",
+    "tests/data/image_x-dpx/valid_1.0_just_version_change_from_2.0.dpx"
 ]
 
 BIT_LEVEL_WITH_RECOMMENDED_FILES = [

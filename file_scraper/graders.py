@@ -128,6 +128,7 @@ class MIMEGrader(BaseGrader):
             UNAP: RECOMMENDED
         },
         "image/x-dpx": {
+            "1.0": ACCEPTABLE,  # Allowed for special case
             "2.0": RECOMMENDED
         },
         "video/x-ffv": {
