@@ -1,6 +1,11 @@
 Release notes
 =============
 
+Version 0.58
+------------
+
+- Add grade for DPX version 1.0.
+
 Version 0.57
 ------------
 
