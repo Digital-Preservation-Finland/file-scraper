@@ -137,7 +137,12 @@ UNAV_ELEMENTS = {
         "codec_creator_app",
         "codec_creator_app_version",
         "codec_creator_app"
-    ]
+    ],
+    "tests/data/application_mxf/valid__jpeg2000.mxf": ["dar", "par"],
+    "tests/data/application_mxf/valid__jpeg2000_grayscale.mxf": ["dar", "par"],
+    "tests/data/application_mxf/valid__jpeg2000_lossless.mxf": ["dar", "par"],
+    "tests/data/application_mxf/valid__jpeg2000_lossless-wavelet_lossy-subsampling.mxf":
+        ["dar", "par"]
 }
 
 # These are actually valid with another mimetype or version

@@ -213,9 +213,9 @@ MPEG2PS_VIDEO = dict(MPEG1PS_VIDEO, **{
 
 BASE_JPEG2000_VIDEO = {
     "index": 1, "mimetype": "video/jpeg2000", "version": UNAP,
-    "par": "1",
+    "par": UNAV,
     "data_rate_mode": "Variable",
-    "dar": "1.778",
+    "dar": UNAV,
     "height": "180", "sound": "No", "codec_name": "JPEG 2000",
     "codec_creator_app_version": "56.40.101", "duration": "PT1.03S",
     "sampling": "4:2:0", "stream_type": "video", "width": "320",
@@ -240,8 +240,6 @@ MXF_JPEG2000_VIDEO = dict(BASE_JPEG2000_VIDEO,
                               "bits_per_sample": "8",
                               "frame_rate": "29.97",
                               "codec_creator_app": "FFmpeg OP1a Muxer",
-                              "dar": "0",
-                              "par": "0",
                               })
 
 MXF_TC = {"mimetype": "application/mxf", "index": 4, "version": UNAV,

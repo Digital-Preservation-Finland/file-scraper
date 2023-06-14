@@ -338,7 +338,10 @@ class FFMpegMeta(FFMpegSimpleMeta):
         """Return pixel aspect ratio."""
         if self.stream_type() not in ["video"]:
             raise SkipElementException()
-        if "sample_aspect_ratio" in self._ffmpeg_stream:
+        # ffmpeg-python in EL7 may return 0:1 for sar, which is an invalid
+        # value. In that case, return UNAV.
+        sar = self._ffmpeg_stream.get("sample_aspect_ratio")
+        if sar and sar[0] != "0":
             return strip_zeros("%.3f" % float(Fraction(
                 self._ffmpeg_stream["sample_aspect_ratio"].replace(":", "/"))))
 
@@ -349,7 +352,10 @@ class FFMpegMeta(FFMpegSimpleMeta):
         """Return display aspect ratio."""
         if self.stream_type() not in ["video"]:
             raise SkipElementException()
-        if "display_aspect_ratio" in self._ffmpeg_stream:
+        # ffmpeg-python in EL7 may return 0:1 for dar, which is an invalid
+        # value. In that case, return UNAV.
+        dar = self._ffmpeg_stream.get("display_aspect_ratio")
+        if dar and dar[0] != "0":
             return strip_zeros("%.3f" % float(Fraction(
                 self._ffmpeg_stream["display_aspect_ratio"].replace(
                     ":", "/"))))
