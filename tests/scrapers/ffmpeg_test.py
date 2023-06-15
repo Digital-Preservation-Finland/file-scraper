@@ -468,7 +468,7 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
             {
                 "purpose": "Test truncated MXF.",
                 "stdout_part": "",
-                "stderr_part": "IndexSID 0 segment at 0 missing"
+                "stderr_part": "local tag 0x3c0a with 0 size"
             },
             "application/mxf"
         ),
