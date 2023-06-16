@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 import pytest
 import six
+import platform
 
 from file_scraper.defaults import UNAP, UNAV
 from file_scraper.textfile.textfile_scraper import (TextfileScraper,
@@ -32,24 +33,25 @@ INVALID_MSG = "is not a text file"
 
 
 @pytest.mark.parametrize(
-    ["filename", "mimetype", "is_textfile"],
+    ["filename", "mimetype", "is_textfile", "special_handling"],
     [
-        ("valid__utf8_without_bom.txt", "text/plain", True),
-        ("valid__utf16le_bom.txt", "text/plain", True),
-        ("valid__iso8859.txt", "text/plain", True),
-        ("valid__utf16be_without_bom.txt", "text/plain", False),
-        ("valid__utf32le_bom.txt", "text/plain", False),
-        ("valid_1.0_well_formed.xml", "text/xml", True),
-        ("valid_4.01.html", "text/html", True),
-        ("invalid_4.01_illegal_tags.html", "text/html", True),
-        ("valid_1.4.pdf", "application/pdf", False),
-        ("valid_1987a.gif", "image/gif", False),
-        ("invalid_1987a_broken_header.gif", "image/gif", False),
-        ("invalid__empty.txt", "text/plain", False),
-        ("invalid__unknown_encoding_cp437.txt", "text/plain", True),
+        ("valid__utf8_without_bom.txt", "text/plain", True, False),
+        ("valid__utf16le_bom.txt", "text/plain", True, False),
+        ("valid__iso8859.txt", "text/plain", True, False),
+        ("valid__utf16be_without_bom.txt", "text/plain", False, False),
+        ("valid__utf32le_bom.txt", "text/plain", True, True),
+        ("valid_1.0_well_formed.xml", "text/xml", True, False),
+        ("valid_4.01.html", "text/html", True, False),
+        ("invalid_4.01_illegal_tags.html", "text/html", True, False),
+        ("valid_1.4.pdf", "application/pdf", False, False),
+        ("valid_1987a.gif", "image/gif", False, False),
+        ("invalid_1987a_broken_header.gif", "image/gif", False, False),
+        ("invalid__empty.txt", "text/plain", False, False),
+        ("invalid__unknown_encoding_cp437.txt", "text/plain", True, False),
     ]
 )
-def test_existing_files(filename, mimetype, is_textfile, evaluate_scraper):
+def test_existing_files(filename, mimetype, is_textfile, special_handling,
+                        evaluate_scraper):
     """
     Test detecting whether file is a textfile.
     The scraper tool is not able to detect UTF-16 files without BOM or
@@ -59,6 +61,7 @@ def test_existing_files(filename, mimetype, is_textfile, evaluate_scraper):
     :mimetype: File MIME type
     :is_textfile: Expected result whether a file is a text file or not
     """
+    special_handling = special_handling and "el7" in platform.platform()
     correct = parse_results(filename, mimetype, {}, True)
     scraper = TextfileScraper(filename=correct.filename,
                               mimetype="text/plain")
@@ -73,7 +76,14 @@ def test_existing_files(filename, mimetype, is_textfile, evaluate_scraper):
         correct.update_mimetype(UNAV)
         correct.streams[0]["version"] = UNAV
 
-    correct.well_formed = is_textfile
+    # In EL7 is_textfile should be False for valid__utf32le_bom.txt. The reason
+    # is that the "file" command returns incorrect values.
+    if special_handling:
+        correct.streams[0]["stream_type"] = UNAV
+        correct.update_mimetype(UNAV)
+        correct.streams[0]["version"] = UNAV
+
+    correct.well_formed = (is_textfile and not special_handling)
     if correct.well_formed:
         correct.stdout_part = VALID_MSG
         correct.stderr_part = ""
