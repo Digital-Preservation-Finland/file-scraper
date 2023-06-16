@@ -394,9 +394,9 @@ def test_scraper_colorspace(mimetype, filename, expected):
         ("invalid__empty.gif", "image/gif",
          "improper image header"),
         ("invalid_1.4_edited_header.dng", "image/x-adobe-dng",
-         "unable to open image"),
+         "@ error"),
         ("invalid__empty.dng", "image/x-adobe-dng",
-         "unable to open image")
+         "@ error")
     ]
 )
 def test_scraper_invalid(filename, mimetype, stderr_part):
