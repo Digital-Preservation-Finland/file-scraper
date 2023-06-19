@@ -33,7 +33,7 @@ Group:          Applications/Archiving
 Conflicts:      %{name} < %{version}-%{release}, %{name} > %{version}-%{release}
 Requires:       %{name} = %{version}-%{release}
 Requires:       ghostscript jhove python36-lxml python3-dpx-validator dpres-xml-schemas
-Requires:       warc-tools >= 4.8.3
+Requires:       python3-warc-tools >= 4.8.3
 Requires:       pngcheck
 Requires:       pspp xhtml1-dtds vnu iso-schematron-xslt1
 Requires:       python36-mimeparse
