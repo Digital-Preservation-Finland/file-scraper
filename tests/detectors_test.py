@@ -160,7 +160,7 @@ def test_fido_cache_halting_file(fido_cache_halting_file):
     ["filepath", "mimetype", "version", "message"],
     [
         ("application_pdf/valid_1.4.pdf", None, None,
-         "File is not PDF/A, it is not compliant with PDF/A requirements"),
+         "INFO: File is not PDF/A, so PDF/A validation is not performed"),
         ("application_pdf/valid_A-1a.pdf", "application/pdf",
          "A-1a", "PDF/A version detected by veraPDF."),
         ("application_pdf/valid_A-2b.pdf", "application/pdf",
@@ -170,7 +170,7 @@ def test_fido_cache_halting_file(fido_cache_halting_file):
         ("application_pdf/valid_A-3b_no_file_extension", "application/pdf",
          "A-3b", "PDF/A version detected by veraPDF."),
         ("image_png/valid_1.2.png", None, None,
-         "File is not PDF/A, it is not compliant with PDF/A requirements")
+         "INFO: File is not PDF/A, so PDF/A validation is not performed")
     ]
 )
 def test_pdf_detector(filepath, mimetype, version, message):

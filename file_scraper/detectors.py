@@ -335,14 +335,15 @@ class VerapdfDetector(BaseDetector):
 
     def _set_info_not_pdf_a(self, error_shell=None):
         """
-        Set info to reflect the fact that the file was not a PDF/A.
+        Set info to reflect the fact that the file was not a PDF/A
+        and thus PDF/A validation isn't performed.
 
         :error_shell: If a Shell instance is given, its stderr is
                       set as 'errors' in the info if it is not empty.
         """
         self.info = {"class": self.__class__.__name__,
-                     "messages": ["File is not PDF/A, it is not compliant "
-                                  "with PDF/A requirements"],
+                     "messages": ["INFO: File is not PDF/A, "
+                                  "so PDF/A validation is not performed"],
                      "errors": [],
                      "tools": []}
 
