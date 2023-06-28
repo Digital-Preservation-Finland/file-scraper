@@ -48,7 +48,8 @@ from tests.common import (parse_results, partial_message_included)
         ("invalid__missing_data.warc.gz", {
             "purpose": "Test invalid warc gzip.",
             "stdout_part": "",
-            "stderr_part": "unpack requires a string argument of length 4"}),
+            "stderr_part": "Compressed file ended before the end-of-stream"
+                           " marker was reached"}),
     ]
 )
 def test_gzip_scraper(filename, result_dict, evaluate_scraper):
