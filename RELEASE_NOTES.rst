@@ -1,6 +1,12 @@
 Release notes
 =============
 
+Version 0.59
+------------
+
+- Update info message regarding PDF files.
+- Fix python2 warc-tools requirement in python3 spec file.
+
 Version 0.58
 ------------
 
