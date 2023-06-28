@@ -3,6 +3,8 @@
 from __future__ import unicode_literals
 
 import exiftool
+from exiftool.exceptions import ExifToolExecuteError
+import json
 
 from file_scraper.base import BaseScraper
 from file_scraper.exiftool.exiftool_model import ExifToolDngMeta
@@ -31,13 +33,22 @@ class ExifToolScraperBase(BaseScraper):
         Scrape data from file.
         """
 
-        with exiftool.ExifTool() as et:
-            metadata = et.get_metadata(self.filename)
-
-        if "ExifTool:Error" in metadata:
-            self._errors.append(metadata["ExifTool:Error"])
-        else:
-            self._messages.append("The file was analyzed successfully.")
+        try:
+            with exiftool.ExifTool() as et:
+                metadata = et.get_metadata(self.filename)
+            if "ExifTool:Error" in metadata:
+                self._errors.append(metadata["ExifTool:Error"])
+            else:
+                self._messages.append("The file was analyzed successfully.")
+        except AttributeError:
+            with exiftool.ExifToolHelper() as et:
+                try:
+                    metadata = et.get_metadata(self.filename)[0]
+                except ExifToolExecuteError as eee:
+                    metadata = json.loads(eee.stdout)[0]
+                    self._errors.append(metadata["ExifTool:Error"])
+                else:
+                    self._messages.append("The file was analyzed successfully.")
 
         self.streams = list(self.iterate_models(metadata=metadata))
         self._check_supported(allow_unav_version=True)

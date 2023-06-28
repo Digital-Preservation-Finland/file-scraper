@@ -430,9 +430,14 @@ class ExifToolDetector(BaseDetector):
         """
         Run ExifToolDetector to find out the mimetype of a file
         """
-        with exiftool.ExifTool() as et:
-            metadata = et.get_metadata(self.filename)
-        self.mimetype = metadata.get("File:MIMEType", None)
+        try:
+            with exiftool.ExifTool() as et:
+                metadata = et.get_metadata(self.filename)
+                self.mimetype = metadata.get("File:MIMEType", None)
+        except AttributeError:
+            with exiftool.ExifToolHelper() as et:
+                metadata = et.get_metadata(self.filename)
+                self.mimetype = metadata[0].get("File:MIMEType", None)
         self.info = {"class": self.__class__.__name__,
                      "messages": [],
                      "errors": [],
