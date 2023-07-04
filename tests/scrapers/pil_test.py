@@ -20,6 +20,7 @@ This module tests that:
 """
 from __future__ import unicode_literals
 
+import PIL
 import pytest
 
 from file_scraper.defaults import UNAV
@@ -80,6 +81,13 @@ GIF_APPEND = {
 STREAM_INVALID = {}
 
 
+def _new_pil_version(version):
+    """Check whether PIL version is given version or newer.
+    """
+    ver = float(".".join(PIL.__version__.split(".", 2)[:2]))
+    return True if ver >= version else False
+
+
 @pytest.mark.parametrize(
     ["filename", "result_dict"],
     [
@@ -112,8 +120,8 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
                   expected results of stdout and stderr, and expected streams
     """
     correct = parse_results(filename, "image/tiff",
-                            result_dict, True)
-    if correct.well_formed:
+                            result_dict, False)
+    if correct.well_formed is not False:
         correct.stdout_part = VALID_MSG
         correct.stderr_part = ""
     else:
@@ -122,12 +130,12 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
     scraper = PilScraper(filename=correct.filename, mimetype="image/tiff")
     scraper.scrape_file()
 
-    if correct.well_formed:
+    if correct.well_formed is not False:
         for index, _ in enumerate(correct.streams):
             correct.streams[index]["version"] = UNAV
         evaluate_scraper(scraper, correct)
     else:
-        assert not scraper.well_formed
+        assert scraper.well_formed is False
         assert partial_message_included(correct.stdout_part,
                                         scraper.messages())
         assert partial_message_included(correct.stderr_part,
@@ -157,9 +165,9 @@ def test_scraper_dng(filename, result_dict, evaluate_scraper):
     :result_dict: Result dict containing the test purpose and expected streams"
 
     """
-    correct = parse_results(filename, "image/x-adobe-dng", result_dict, True)
+    correct = parse_results(filename, "image/x-adobe-dng", result_dict, False)
 
-    if correct.well_formed:
+    if correct.well_formed is not False:
         correct.stdout_part = VALID_MSG
         correct.stderr_part = ""
     else:
@@ -169,10 +177,10 @@ def test_scraper_dng(filename, result_dict, evaluate_scraper):
     scraper = PilScraper(filename=correct.filename,
                          mimetype="image/x-adobe-dng")
     scraper.scrape_file()
-    if correct.well_formed:
+    if correct.well_formed is not False:
         evaluate_scraper(scraper, correct)
     else:
-        assert not scraper.well_formed
+        assert scraper.well_formed is False
         assert partial_message_included(correct.stdout_part,
                                         scraper.messages())
         assert partial_message_included(correct.stderr_part,
@@ -209,21 +217,27 @@ def test_scraper_jpg(filename, result_dict, evaluate_scraper):
     """
     correct = parse_results(filename, "image/jpeg",
                             result_dict, False)
-    correct.streams[0]["mimetype"] = "image/jpeg"
     correct.streams[0]["version"] = UNAV
-    if correct.well_formed:
+    if correct.well_formed is not False:
         correct.stdout_part = VALID_MSG
         correct.stderr_part = ""
     else:
         correct.stdout_part = ""
         correct.stderr_part = INVALID_MSG
+
+    # Newer PIL versions can not open some invalid JPEG files.
+    # Older PIL versions open some invalid JPEG files successfully.
+    # However, PIL does not validate images.
+    if result_dict.get("inverse") and _new_pil_version(8.2):
+        correct.well_formed = False
+
     scraper = PilScraper(filename=correct.filename, mimetype="image/jpeg")
     scraper.scrape_file()
 
-    if correct.well_formed:
+    if correct.well_formed is not False:
         evaluate_scraper(scraper, correct)
     else:
-        assert not scraper.well_formed
+        assert scraper.well_formed is False
         assert partial_message_included(correct.stdout_part,
                                         scraper.messages())
         assert partial_message_included(correct.stderr_part,
@@ -254,8 +268,8 @@ def test_scraper_jp2(filename, result_dict, evaluate_scraper):
                   expected results of stdout and stderr, and expected streams
     """
     correct = parse_results(filename, "image/jp2",
-                            result_dict, True)
-    if correct.well_formed:
+                            result_dict, False)
+    if correct.well_formed is not False:
         correct.stdout_part = VALID_MSG
         correct.stderr_part = ""
     else:
@@ -264,10 +278,10 @@ def test_scraper_jp2(filename, result_dict, evaluate_scraper):
     scraper = PilScraper(filename=correct.filename, mimetype="image/jp2")
     scraper.scrape_file()
 
-    if correct.well_formed:
+    if correct.well_formed is not False:
         evaluate_scraper(scraper, correct)
     else:
-        assert not scraper.well_formed
+        assert scraper.well_formed is False
         assert partial_message_included(correct.stdout_part,
                                         scraper.messages())
         assert partial_message_included(correct.stderr_part,
@@ -311,9 +325,9 @@ def test_scraper_png(filename, result_dict, evaluate_scraper):
                   expected results of stdout and stderr, and expected streams
     """
     correct = parse_results(filename, "image/png",
-                            result_dict, True)
+                            result_dict, False)
     correct.streams[0]["version"] = UNAV
-    if correct.well_formed:
+    if correct.well_formed is not False:
         correct.stdout_part = VALID_MSG
         correct.stderr_part = ""
     else:
@@ -322,10 +336,10 @@ def test_scraper_png(filename, result_dict, evaluate_scraper):
     scraper = PilScraper(filename=correct.filename, mimetype="image/png")
     scraper.scrape_file()
 
-    if correct.well_formed:
+    if correct.well_formed is not False:
         evaluate_scraper(scraper, correct)
     else:
-        assert not scraper.well_formed
+        assert scraper.well_formed is False
         assert partial_message_included(correct.stdout_part,
                                         scraper.messages())
         assert partial_message_included(correct.stderr_part, scraper.errors())
@@ -369,25 +383,31 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
     :result_dict: Result dict containing the test purpose, parts of
                   expected results of stdout and stderr, and expected streams
     """
-    correct = parse_results(filename, "image/gif", result_dict, True)
-    # GIF is an index image
-    if correct.well_formed:
-        correct.streams[0]["samples_per_pixel"] = "1"
+    correct = parse_results(filename, "image/gif", result_dict, False)
+    # GIF is always a palette index image.
+    correct.streams[0]["samples_per_pixel"] = "1"
     for stream in correct.streams.values():
         stream["version"] = UNAV
-    if correct.well_formed:
+
+    if correct.well_formed is not False:
         correct.stdout_part = VALID_MSG
         correct.stderr_part = ""
     else:
         correct.stdout_part = ""
         correct.stderr_part = INVALID_MSG
+
+    # Newer PIL versions can not open some invalid GIF files.
+    # Older PIL versions open some invalid GIF files successfully.
+    # However, PIL does not validate images.
+    if result_dict.get("inverse") and _new_pil_version(6.1):
+        correct.well_formed = False
     scraper = PilScraper(filename=correct.filename, mimetype="image/gif")
     scraper.scrape_file()
 
-    if correct.well_formed:
+    if correct.well_formed is not False:
         evaluate_scraper(scraper, correct)
     else:
-        assert not scraper.well_formed
+        assert scraper.well_formed is False
         assert partial_message_included(correct.stdout_part,
                                         scraper.messages())
         assert partial_message_included(correct.stderr_part,
