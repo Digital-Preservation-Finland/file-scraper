@@ -137,11 +137,14 @@ def parse_results(filename, mimetype, results, check_wellformed,
 
     if check_wellformed:
         correct.well_formed = well_dict[well_formed]
+        if results.get("inverse") is True:
+            correct.well_formed = not correct.well_formed
     else:
         correct.well_formed = well_dict_no_check[well_formed]
-
-    if "inverse" in results and correct.well_formed is not None:
-        correct.well_formed = not correct.well_formed
+        if results.get("inverse") is True:
+            correct.well_formed = not correct.well_formed
+            if correct.well_formed:
+                correct.well_formed = None
 
     if params is not None:
         correct.params = params
