@@ -4,8 +4,8 @@ from __future__ import unicode_literals
 import six
 
 from file_scraper.base import BaseScraper
-from file_scraper.pil.pil_model import ImagePilMeta, JpegPilMeta, \
-    TiffPilMeta, DngPilMeta, Jp2PilMeta
+from file_scraper.pil.pil_model import PngPilMeta, JpegPilMeta, \
+    TiffPilMeta, DngPilMeta, Jp2PilMeta, GifPilMeta
 
 try:
     import PIL.Image
@@ -16,9 +16,8 @@ except ImportError:
 class PilScraper(BaseScraper):
     """Scraper that uses PIL to scrape tiff, png, jpeg and gif images."""
 
-    _supported_metadata = [TiffPilMeta, DngPilMeta,
-                           ImagePilMeta, JpegPilMeta,
-                           Jp2PilMeta]
+    _supported_metadata = [TiffPilMeta, DngPilMeta, PngPilMeta,
+                           GifPilMeta, JpegPilMeta, Jp2PilMeta]
 
     @property
     def well_formed(self):

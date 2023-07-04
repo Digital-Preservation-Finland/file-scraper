@@ -150,12 +150,11 @@ class DngPilMeta(TiffPilMeta):
         return "image/x-adobe-dng"
 
 
-class ImagePilMeta(BasePilMeta):
+class PngPilMeta(BasePilMeta):
     """Collect image image metadata."""
 
     # Supported mimetypes
-    _supported = {"image/png": [],
-                  "image/gif": []}
+    _supported = {"image/png": []}
     _allow_versions = True  # Allow any version
 
     @metadata()
@@ -172,6 +171,16 @@ class ImagePilMeta(BasePilMeta):
     def colorspace(self):
         """Return (:unav): we will get colorspace from another scraper."""
         return UNAV
+
+class GifPilMeta(PngPilMeta):
+
+    # Supported mimetypes
+    _supported = {"image/gif": []}
+
+    @metadata()
+    def samples_per_pixel(self):
+        """GIF is always a palette index image"""
+        return "1" if self._pil_mode in SAMPLES_PER_PIXEL else UNAV
 
 
 class Jp2PilMeta(BasePilMeta):
