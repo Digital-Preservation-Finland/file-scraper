@@ -211,12 +211,7 @@ def test_scraper_jpg(filename, result_dict, evaluate_scraper):
                             result_dict, False)
     correct.streams[0]["mimetype"] = "image/jpeg"
     correct.streams[0]["version"] = UNAV
-    correct.streams[0]["stream_type"] = "image"
-    # With PIL well_formed can never be true, because PIL can't check for
-    # well-formedness. But parse_results bases the well_formed value on the file
-    # name, so fix it here.
     if correct.well_formed:
-        correct.well_formed = None
         correct.stdout_part = VALID_MSG
         correct.stderr_part = ""
     else:
@@ -226,13 +221,7 @@ def test_scraper_jpg(filename, result_dict, evaluate_scraper):
     scraper.scrape_file()
 
     if correct.well_formed:
-        evaluate_scraper(scraper, correct, eval_output=True)
-    # In EL7 scraper might return None for well_formed, while correct returns
-    # False
-    elif correct.well_formed is None or scraper.well_formed is None:
-        evaluate_scraper(scraper, correct, eval_output=False)
-        assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
+        evaluate_scraper(scraper, correct)
     else:
         assert not scraper.well_formed
         assert partial_message_included(correct.stdout_part,
