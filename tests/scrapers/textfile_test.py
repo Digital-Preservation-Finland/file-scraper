@@ -21,15 +21,23 @@ from __future__ import unicode_literals
 
 import pytest
 import six
-import platform
 
 from file_scraper.defaults import UNAP, UNAV
+from file_scraper.magiclib import file_command
 from file_scraper.textfile.textfile_scraper import (TextfileScraper,
                                                     TextEncodingScraper)
 from tests.common import parse_results, partial_message_included
 
 VALID_MSG = "is a text file"
 INVALID_MSG = "is not a text file"
+
+
+def _new_file_version(version):
+    """Check whether version of file command is given version or newer.
+    """
+    shell = file_command("", ["--version"])
+    ver = float(shell.stdout.split("\n")[0][len("file-"):])
+    return True if ver >= version else False
 
 
 @pytest.mark.parametrize(
@@ -61,7 +69,7 @@ def test_existing_files(filename, mimetype, is_textfile, special_handling,
     :mimetype: File MIME type
     :is_textfile: Expected result whether a file is a text file or not
     """
-    special_handling = special_handling and "el7" in platform.platform()
+    special_handling = special_handling and not _new_file_version(5.36)
     correct = parse_results(filename, mimetype, {}, True)
     scraper = TextfileScraper(filename=correct.filename,
                               mimetype="text/plain")
@@ -76,8 +84,9 @@ def test_existing_files(filename, mimetype, is_textfile, special_handling,
         correct.update_mimetype(UNAV)
         correct.streams[0]["version"] = UNAV
 
-    # In EL7 is_textfile should be False for valid__utf32le_bom.txt. The reason
-    # is that the "file" command returns incorrect values.
+    # UTF32 support for "file" command has existed since version 5.36.
+    # With older version of "file" command, we can not handle UTF32 and
+    # therefore is_textfile should be False for valid__utf32le_bom.txt.
     if special_handling:
         correct.streams[0]["stream_type"] = UNAV
         correct.update_mimetype(UNAV)
