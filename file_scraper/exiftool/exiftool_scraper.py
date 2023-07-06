@@ -48,7 +48,8 @@ class ExifToolScraperBase(BaseScraper):
                     metadata = json.loads(eee.stdout)[0]
                     self._errors.append(metadata["ExifTool:Error"])
                 else:
-                    self._messages.append("The file was analyzed successfully.")
+                    self._messages.append(
+                        "The file was analyzed successfully.")
 
         self.streams = list(self.iterate_models(metadata=metadata))
         self._check_supported(allow_unav_version=True)

@@ -172,6 +172,7 @@ class PngPilMeta(BasePilMeta):
         """Return (:unav): we will get colorspace from another scraper."""
         return UNAV
 
+
 class GifPilMeta(PngPilMeta):
 
     # Supported mimetypes
