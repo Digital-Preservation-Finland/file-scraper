@@ -218,18 +218,19 @@ def test_scraper_jpg(filename, result_dict, evaluate_scraper):
     correct = parse_results(filename, "image/jpeg",
                             result_dict, False)
     correct.streams[0]["version"] = UNAV
-    if correct.well_formed is not False:
-        correct.stdout_part = VALID_MSG
-        correct.stderr_part = ""
-    else:
-        correct.stdout_part = ""
-        correct.stderr_part = INVALID_MSG
 
     # Newer PIL versions can not open some invalid JPEG files.
     # Older PIL versions open some invalid JPEG files successfully.
     # However, PIL does not validate images.
     if result_dict.get("inverse") and _new_pil_version(8.2):
         correct.well_formed = False
+
+    if correct.well_formed is not False:
+        correct.stdout_part = VALID_MSG
+        correct.stderr_part = ""
+    else:
+        correct.stdout_part = ""
+        correct.stderr_part = INVALID_MSG
 
     scraper = PilScraper(filename=correct.filename, mimetype="image/jpeg")
     scraper.scrape_file()
@@ -389,6 +390,12 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
     for stream in correct.streams.values():
         stream["version"] = UNAV
 
+    # Newer PIL versions can not open some invalid GIF files.
+    # Older PIL versions open some invalid GIF files successfully.
+    # However, PIL does not validate images.
+    if result_dict.get("inverse") and _new_pil_version(6.1):
+        correct.well_formed = False
+
     if correct.well_formed is not False:
         correct.stdout_part = VALID_MSG
         correct.stderr_part = ""
@@ -396,11 +403,6 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
         correct.stdout_part = ""
         correct.stderr_part = INVALID_MSG
 
-    # Newer PIL versions can not open some invalid GIF files.
-    # Older PIL versions open some invalid GIF files successfully.
-    # However, PIL does not validate images.
-    if result_dict.get("inverse") and _new_pil_version(6.1):
-        correct.well_formed = False
     scraper = PilScraper(filename=correct.filename, mimetype="image/gif")
     scraper.scrape_file()
 
