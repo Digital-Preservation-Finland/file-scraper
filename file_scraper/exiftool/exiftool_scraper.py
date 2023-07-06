@@ -3,7 +3,6 @@
 from __future__ import unicode_literals
 
 import exiftool
-from exiftool.exceptions import ExifToolExecuteError
 import json
 
 from file_scraper.base import BaseScraper
@@ -42,6 +41,7 @@ class ExifToolScraperBase(BaseScraper):
                 self._messages.append("The file was analyzed successfully.")
         except AttributeError:
             with exiftool.ExifToolHelper() as et:
+                from exiftool.exceptions import ExifToolExecuteError
                 try:
                     metadata = et.get_metadata(self.filename)[0]
                 except ExifToolExecuteError as eee:
