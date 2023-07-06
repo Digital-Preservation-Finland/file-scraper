@@ -209,7 +209,12 @@ class PdfFileMagicMeta(BinaryMagicBaseMeta):
         # After EL9, "file" will also list the amount of pages for the PDF.
         # This regex will return only the version number without any of the
         # extra information that "file" gives.
-        return re.match(r'([\d+\.\d]+).*', super().version()).group(1)
+        orig_version = super().version()
+        filtered_version = re.match(r'([\d+\.\d]+).*', orig_version)
+        if filtered_version is not None:
+            return filtered_version.group(1)
+
+        return orig_version
 
 
 class OfficeFileMagicMeta(BinaryMagicBaseMeta):
