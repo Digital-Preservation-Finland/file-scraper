@@ -22,10 +22,10 @@ class PilScraper(BaseScraper):
     @property
     def well_formed(self):
         """
-        Return well-formedness status of the scraped file.
+        PIL is not able to check well-formedness.
 
-        :returns: None if scraper does not check well-formedness, True if the
-                  file has been scraped without errors and otherwise False
+        :returns: False if PIL can not open or handle the file,
+                  None otherwise.
         """
         valid = super(PilScraper, self).well_formed
         if not valid:
