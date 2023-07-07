@@ -18,7 +18,7 @@ setup(
         "Pillow",
         "wand",
         "lxml",
-        "pyexiftool<0.5",
+        "pyexiftool",
     ],
     entry_points={'console_scripts': [
         'scraper=file_scraper.cmdline:cli']},
