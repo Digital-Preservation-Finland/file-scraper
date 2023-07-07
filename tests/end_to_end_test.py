@@ -170,6 +170,18 @@ IGNORE_INVALID = [
     # XML schema definitions should not be tested.
     "tests/data/text_xml/invalid_1.0_addml.xml",
     "tests/data/text_xml/invalid_1.0_no_namespace_xsd.xml",
+
+    # TODO: The validity of this file is ambiguous.
+    # - ffmpeg no longer throws an error in version 5.1.3, which is in EL9. If
+    #   you set the log level to warning, it will print "File extends beyond
+    #   end of segment."
+    # - mediaconch 23.03 says the file is valid
+    # - mkvalidator 0.6.0 says the file is valid (but it might not care about
+    #   the ffv1 stream)
+    # - mediainfo 23.04 marks the ffv1 as version 0, which should not be
+    #   possible.
+    "tests/data/video_x-matroska/invalid_4_ffv1_wrong_duration.mkv"
+
 ]
 
 # XML schema definitions should not be tested.
