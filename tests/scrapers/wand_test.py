@@ -139,7 +139,7 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
                   expected results of stdout and stderr, and expected streams
     """
     correct = parse_results(filename, "image/tiff",
-                            result_dict, True)
+                            result_dict, False)
     for index, _ in enumerate(correct.streams):
         correct.streams[index]["compression"] = "zip"
         correct.streams[index]["byte_order"] = "little endian"
@@ -180,7 +180,7 @@ def test_scraper_dng(filename, result_dict, evaluate_scraper):
     :result_dict: Result dict containing test purpose, and parts of expected
               results of stdout and stderr
     """
-    correct = parse_results(filename, "image/x-adobe-dng", result_dict, True)
+    correct = parse_results(filename, "image/x-adobe-dng", result_dict, False)
     scraper = WandScraper(filename=correct.filename,
                           mimetype="image/x-adobe-dng")
     scraper.scrape_file()
@@ -221,8 +221,8 @@ def test_scraper_jpg(filename, result_dict, evaluate_scraper):
                   expected results of stdout and stderr, and expected streams
     """
     correct = parse_results(filename, "image/jpeg",
-                            result_dict, True)
-    if correct.well_formed:
+                            result_dict, False)
+    if correct.well_formed is not False:
         correct.streams[0]["compression"] = "jpeg"
 
     scraper = WandScraper(filename=correct.filename, mimetype="image/jpeg")
@@ -249,8 +249,8 @@ def test_scraper_jp2(filename, result_dict, evaluate_scraper):
                   expected results of stdout and stderr, and expected streams
     """
     correct = parse_results(filename, "image/jp2",
-                            result_dict, True)
-    if correct.well_formed:
+                            result_dict, False)
+    if correct.well_formed is not False:
         correct.streams[0]["compression"] = "jpeg2000"
         correct.streams[0]["colorspace"] = "rgb"
         correct.streams[0]["version"] = UNAV
@@ -279,8 +279,8 @@ def test_scraper_png(filename, result_dict, evaluate_scraper):
                   expected results of stdout and stderr, and expected streams
     """
     correct = parse_results(filename, "image/png",
-                            result_dict, True)
-    if correct.well_formed:
+                            result_dict, False)
+    if correct.well_formed is not False:
         correct.streams[0]["compression"] = "zip"
     correct.streams[0]["version"] = UNAV
 
@@ -315,8 +315,8 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
                   expected results of stdout and stderr, and expected streams
     """
     correct = parse_results(filename, "image/gif",
-                            result_dict, True)
-    if correct.well_formed:
+                            result_dict, False)
+    if correct.well_formed is not False:
         correct.streams[0]["compression"] = "lzw"
     for stream in correct.streams.values():
         stream["version"] = UNAV

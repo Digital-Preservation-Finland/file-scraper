@@ -4,7 +4,7 @@ Wand is a ctypes-based simple ImageMagick binding for Python.
 
 http://docs.wand-py.org/en/0.5.2/
 
-Collects metadata from JPEG, PNG, JPEG2000, GIF and TIFF files.
+Collects metadata from JPEG, PNG, JPEG2000, GIF, TIFF and DNG files.
 
 Checks well-formedess by testing if ImageMagick can open and read then
 file. More complete well-formedness test is required by specific validator
@@ -43,6 +43,19 @@ class WandScraper(BaseScraper):
         """
         super(WandScraper, self).__init__(*args, **kwargs)
         self._wandresults = None
+
+    @property
+    def well_formed(self):
+        """Wand is not able to check well-formedness.
+
+        :returns: False if Wand can not open or handle the file,
+                  None otherwise.
+        """
+        valid = super(WandScraper, self).well_formed
+        if not valid:
+            return valid
+
+        return None
 
     def scrape_file(self):
         """
