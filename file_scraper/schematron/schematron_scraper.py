@@ -146,7 +146,7 @@ class SchematronScraper(BaseScraper):
         :outputfilter: Use outputfilter parameter with value only_messages
         :return: Shell instance
         """
-        cmd = ["xsltproc"]
+        cmd = ["xsltproc", "--maxdepth", "20000"]
         if outputfile:
             cmd = cmd + ["-o", outputfile]
         if outputfilter and not self._verbose:
