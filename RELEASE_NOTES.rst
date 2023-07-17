@@ -1,6 +1,19 @@
 Release notes
 =============
 
+Version 0.61
+------------
+
+- Change well-formedness result of Wand Scraper, because it does not validate.
+- Increase stack size for Schematron compilation.
+- File magic version fix for CentOS7 installation.
+
+Version 0.60
+------------
+
+- Add RHEL9 compatibility.
+- Change well-formedness result of PIL Scraper, because it does not validate.
+
 Version 0.59
 ------------
 
