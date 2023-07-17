@@ -417,7 +417,7 @@ def test_scraper_invalid(filename, mimetype, stderr_part):
     assert scraper.info()["class"] == "WandScraper"
     assert not scraper.messages()
     assert partial_message_included(stderr_part, scraper.errors())
-    assert not scraper.well_formed
+    assert scraper.well_formed is False
 
 
 @pytest.mark.parametrize(
