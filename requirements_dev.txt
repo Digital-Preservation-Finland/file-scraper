@@ -6,7 +6,7 @@ six
 olefile
 # file-magic 0.4.1 is broken, since it requires a newer libmagic that CentOS 7
 # ships by default.
-file-magic==0.4.0; python_version < '3.7'
+file-magic<=0.4.0; python_version < '3.7'
 file-magic; python_version >= '3.7'
 pymediainfo
 Pillow==6.0; python_version < '3.7'  # Pinned due to 6.1 causing a test case to fail

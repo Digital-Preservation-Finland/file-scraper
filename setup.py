@@ -12,7 +12,7 @@ setup(
         "python-mimeparse",
         "six",
         "olefile",
-        "file-magic==0.4.0;python_version < '3.7'",
+        "file-magic<=0.4.0;python_version < '3.7'",
         "file-magic;python_version >= '3.7'",
         "pymediainfo",
         "Pillow==6.0;python_version < '3.7'",
