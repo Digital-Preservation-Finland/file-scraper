@@ -144,7 +144,7 @@ def test_scraper_valid(filename, mimetype, charset, scraper_class,
         "purpose": "Test valid file.",
         "stdout_part": "successfully",
         "stderr_part": ""}
-    correct = parse_results(filename, mimetype, result_dict, True,
+    correct = parse_results(filename, mimetype, result_dict, False,
                             {"charset": charset})
 
     office_unav_version_mimes = [
@@ -202,13 +202,13 @@ def test_invalid_office(filename, mimetype):
                        "supported." % (UNAV, UNAV)}
 
     correct = parse_results(filename, mimetype,
-                            result_dict, True)
+                            result_dict, False)
     correct.update_mimetype(mimetype)
     correct.update_version(filename.split("_")[1])
     scraper = MagicBinaryScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
 
-    assert not scraper.well_formed
+    assert scraper.well_formed is False
     assert partial_message_included(correct.stdout_part, scraper.messages())
     assert partial_message_included(correct.stderr_part, scraper.errors())
 
@@ -231,7 +231,7 @@ def test_invalid_markup_pdf(filename, mimetype, scraper_class,
         "purpose": "Test invalid file.",
         "stdout_part": "successfully",
         "stderr_part": ""}
-    correct = parse_results(filename, mimetype, result_dict, True)
+    correct = parse_results(filename, mimetype, result_dict, False)
     correct.update_mimetype(mimetype)
     if correct.streams[0]["stream_type"] == UNAV:
         correct.streams[0]["stream_type"] = "text"
@@ -240,7 +240,7 @@ def test_invalid_markup_pdf(filename, mimetype, scraper_class,
     scraper = scraper_class(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
 
-    correct.well_formed = True
+    correct.well_formed = None
 
     if correct.streams[0]["mimetype"] == "application/xhtml+xml":
         correct.streams[0]["stream_type"] = "text"
@@ -263,13 +263,13 @@ def test_invalid_images(filename, mimetype):
         "stdout_part": "",
         "stderr_part": "MIME type %s with version %s is not "
                        "supported." % (UNAV, UNAV)}
-    correct = parse_results(filename, mimetype, result_dict, True)
+    correct = parse_results(filename, mimetype, result_dict, False)
     correct.update_mimetype(mimetype)
     correct.update_version(filename.split("_")[1])
     scraper = MagicBinaryScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
 
-    assert not scraper.well_formed
+    assert scraper.well_formed is False
     assert partial_message_included(correct.stdout_part, scraper.messages())
     assert partial_message_included(correct.stderr_part, scraper.errors())
 

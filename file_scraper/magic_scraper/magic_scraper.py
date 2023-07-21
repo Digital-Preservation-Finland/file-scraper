@@ -27,6 +27,19 @@ class MagicBaseScraper(BaseScraper):
     _allow_unav_mime = False
     _supported_metadata = []
 
+    @property
+    def well_formed(self):
+        """Magic is not able to check well-formedness.
+
+        :returns: False if magic can not open or handle the file,
+                  None otherwise.
+        """
+        valid = super(MagicBaseScraper, self).well_formed
+        if not valid:
+            return valid
+
+        return None
+
     def _magic_call(self):
         """Fetch three values from file with using magic.
         These are: mimetype, info line (for version) and encoding.
