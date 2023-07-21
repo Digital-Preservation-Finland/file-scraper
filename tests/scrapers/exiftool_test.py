@@ -39,13 +39,13 @@ def test_scraper_dng(filename, result_dict, evaluate_scraper):
     :result_dict: Result dict containing test purpose, and parts of expected
                   results of stdout and stderr
     """
-    correct = parse_results(filename, "image/x-adobe-dng", result_dict, True)
+    correct = parse_results(filename, "image/x-adobe-dng", result_dict, False)
 
     scraper = ExifToolDngScraper(filename=correct.filename,
                                  mimetype="image/x-adobe-dng")
     scraper.scrape_file()
 
-    if correct.well_formed:
+    if correct.well_formed is not False:
         evaluate_scraper(scraper, correct)
     else:
         assert not scraper.well_formed

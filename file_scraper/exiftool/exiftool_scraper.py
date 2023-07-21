@@ -27,6 +27,19 @@ class ExifToolScraperBase(BaseScraper):
             filename=filename, mimetype=mimetype, version=version,
             params=params)
 
+    @property
+    def well_formed(self):
+        """ExifTool is not able to check well-formedness.
+
+        :returns: False if ExifTool can not open or handle the file,
+                  None otherwise.
+        """
+        valid = super(ExifToolScraperBase, self).well_formed
+        if not valid:
+            return valid
+
+        return None
+
     def scrape_file(self):
         """
         Scrape data from file.
