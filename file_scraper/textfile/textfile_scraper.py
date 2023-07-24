@@ -1,4 +1,4 @@
-"""Module for checking if the file is uitable as text file or not."""
+"""Module for checking if the file is suitable as text file or not."""
 from __future__ import unicode_literals
 
 import io
@@ -24,6 +24,19 @@ class TextfileScraper(BaseScraper):
     """
 
     _supported_metadata = [TextFileMeta]
+
+    @property
+    def well_formed(self):
+        """TextfileScraper is not able to check well-formedness.
+
+        :returns: False if TextfileScraper can not open or handle the file,
+                  None otherwise.
+        """
+        valid = super(TextfileScraper, self).well_formed
+        if not valid:
+            return valid
+
+        return None
 
     def _file_mimetype(self):
         """
@@ -85,6 +98,20 @@ class TextEncodingMetaScraper(BaseScraper):
             filename=filename, mimetype=mimetype, version=version,
             params=params)
         self._charset = self._params.get("charset", UNAV)
+
+    @property
+    def well_formed(self):
+        """TextEncodingMetaScraper is not able to check well-formedness.
+
+        :returns: False if TextEncodingMetaScraper can not open or handle
+                  the file,
+                  None otherwise.
+        """
+        valid = super(TextEncodingMetaScraper, self).well_formed
+        if not valid:
+            return valid
+
+        return None
 
     @classmethod
     def is_supported(cls, mimetype, version=None, check_wellformed=True,

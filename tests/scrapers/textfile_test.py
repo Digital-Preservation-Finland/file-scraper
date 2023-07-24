@@ -68,39 +68,32 @@ def test_existing_files(filename, mimetype, is_textfile, special_handling,
     :filename: Test file name
     :mimetype: File MIME type
     :is_textfile: Expected result whether a file is a text file or not
+    :special_handling: True for UTF-32 encoded files, False for others
     """
+    # UTF32 support for "file" command has existed since version 5.36.
+    # With older version of "file" command, we can not handle UTF32 and
+    # therefore valid__utf32le_bom.txt needs special handling.
     special_handling = special_handling and not _new_file_version(5.36)
-    correct = parse_results(filename, mimetype, {}, True)
+    correct = parse_results(filename, mimetype, {}, False)
     scraper = TextfileScraper(filename=correct.filename,
                               mimetype="text/plain")
     scraper.scrape_file()
 
-    if is_textfile:
-        correct.streams[0]["stream_type"] = "text"
-        correct.update_mimetype("text/plain")
-        correct.streams[0]["version"] = UNAP
-    else:
-        correct.streams[0]["stream_type"] = UNAV
-        correct.update_mimetype(UNAV)
-        correct.streams[0]["version"] = UNAV
+    correct.streams[0]["stream_type"] = UNAV
+    correct.update_mimetype(UNAV)
+    correct.streams[0]["version"] = UNAV
 
-    # UTF32 support for "file" command has existed since version 5.36.
-    # With older version of "file" command, we can not handle UTF32 and
-    # therefore is_textfile should be False for valid__utf32le_bom.txt.
-    if special_handling:
-        correct.streams[0]["stream_type"] = UNAV
-        correct.update_mimetype(UNAV)
-        correct.streams[0]["version"] = UNAV
+    correct.well_formed = (False if special_handling or not is_textfile
+                           else None)
 
-    correct.well_formed = (is_textfile and not special_handling)
-    if correct.well_formed:
+    if correct.well_formed is False:
+        assert partial_message_included(INVALID_MSG, scraper.errors())
+        assert scraper.errors()
+        assert scraper.well_formed is False
+    elif correct.well_formed is None:
         correct.stdout_part = VALID_MSG
         correct.stderr_part = ""
         evaluate_scraper(scraper, correct)
-    else:
-        assert partial_message_included(INVALID_MSG, scraper.errors())
-        assert scraper.errors()
-        assert not scraper.well_formed
 
 
 @pytest.mark.parametrize(
