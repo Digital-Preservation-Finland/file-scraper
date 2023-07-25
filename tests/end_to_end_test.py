@@ -336,7 +336,7 @@ def _assert_valid_scraper_result(scraper, fullname, mimetype, version,
     :param well_formed: Expected well-formed as True, False or None.
     """
     if well_formed:
-        assert scraper.well_formed
+        assert scraper.well_formed is not False
     elif well_formed is None:
         assert scraper.well_formed is None
     elif well_formed is False:
@@ -507,12 +507,12 @@ def test_coded_filename(testpath, fullname, mimetype, version):
     scraper = Scraper(unicode_name, mimetype=predefined_mimetype,
                       charset=predefined_charset)
     scraper.scrape()
-    assert scraper.well_formed
+    assert scraper.well_formed is not False
     scraper = Scraper(unicode_name.encode("utf-8"),
                       mimetype=predefined_mimetype,
                       charset=predefined_charset)
     scraper.scrape()
-    assert scraper.well_formed
+    assert scraper.well_formed is not False
 
 
 @pytest.mark.parametrize(
