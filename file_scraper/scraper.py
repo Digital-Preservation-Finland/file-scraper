@@ -254,7 +254,9 @@ class Scraper(object):
         """
         scraper = TextfileScraper(self.filename, "text/plain")
         scraper.scrape_file()
-        return scraper.well_formed
+        if scraper.well_formed is False:
+            return False
+        return True
 
     def checksum(self, algorithm="MD5"):
         """
