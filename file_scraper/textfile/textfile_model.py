@@ -28,7 +28,7 @@ class TextFileMeta(BaseMeta):
         If the well-formed status from scraper is False,
         then we do not know the actual MIME type.
         """
-        return "text/plain" if self._well_formed else UNAV
+        return "text/plain" if self._well_formed is not False else UNAV
 
     @metadata()
     def version(self):
@@ -37,7 +37,7 @@ class TextFileMeta(BaseMeta):
         If the well-formed status from scraper is False,
         then we do not know the actual version.
         """
-        return UNAP if self._well_formed else UNAV
+        return UNAP if self._well_formed is not False else UNAV
 
     @metadata()
     def stream_type(self):
@@ -47,7 +47,7 @@ class TextFileMeta(BaseMeta):
         If the well-formed status from scraper is False,
         then we do not know the actual stream type.
         """
-        return "text" if self._well_formed else UNAV
+        return "text" if self._well_formed is not False else UNAV
 
 
 class TextEncodingMeta(BaseMeta):
@@ -80,7 +80,8 @@ class TextEncodingMeta(BaseMeta):
         Other scrapers are not able to figure out the mimetype for plain text
         files with some encodings, such as UTF-16 without BOM or UTF-32.
         """
-        if self._predefined_mimetype == "text/plain" and self._well_formed:
+        if (self._predefined_mimetype == "text/plain" and
+                self._well_formed is not False):
             return "text/plain"
 
         return UNAV
@@ -93,7 +94,8 @@ class TextEncodingMeta(BaseMeta):
         Other scrapers are not able to figure out the mimetype for plain text
         files with some encodings, such as UTF-16 without BOM or UTF-32.
         """
-        if self._predefined_mimetype == "text/plain" and self._well_formed:
+        if (self._predefined_mimetype == "text/plain" and
+                self._well_formed is not False):
             return UNAP
         return UNAV
 
