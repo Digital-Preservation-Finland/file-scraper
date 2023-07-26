@@ -79,9 +79,14 @@ def test_existing_files(filename, mimetype, is_textfile, special_handling,
                               mimetype="text/plain")
     scraper.scrape_file()
 
-    correct.streams[0]["stream_type"] = UNAV
-    correct.update_mimetype(UNAV)
-    correct.streams[0]["version"] = UNAV
+    if is_textfile:
+        correct.streams[0]["stream_type"] = "text"
+        correct.update_mimetype("text/plain")
+        correct.streams[0]["version"] = UNAP
+    else:
+        correct.streams[0]["stream_type"] = UNAV
+        correct.update_mimetype(UNAV)
+        correct.streams[0]["version"] = UNAV
 
     correct.well_formed = (False if special_handling or not is_textfile
                            else None)
