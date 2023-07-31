@@ -1,17 +1,54 @@
 """
-This file contains a centralized collection of configuration settings.
-
-The default values correspond to the installation paths used by the Finnish
-national Digital Preservation Services, but installing the tools to other
-locations is possible by editing this file.
+TODO
 """
-import os.path
+import os
+import click
+import configparser
 
-PSPP_PATH = "/usr/bin/pspp-convert"
-SCHEMATRON_DIRNAME = "/usr/share/iso_schematron_xslt1"
-VERAPDF_PATH = "/usr/share/java/verapdf/verapdf"
-VNU_PATH = "/usr/share/java/vnu/vnu.jar"
-SOFFICE_PATH = "/opt/libreoffice7.2/program/soffice"
+DEFAULT_PATHS = {
+                 "PSPP_PATH": "/usr/bin/pspp-convert",
+                 "SCHEMATRON_DIRNAME": "/usr/share/iso_schematron_xslt1",
+                 "VERAPDF_PATH": "/usr/share/java/verapdf/verapdf",
+                 "VNU_PATH": "/usr/share/java/vnu/vnu.jar",
+                 "SOFFICE_PATH": "/opt/libreoffice7.2/program/soffice"
+                 }
+
+
+def get_value(key, configfile=None):
+    # check if user provided a configfile
+    if configfile:
+        config = read_config(configfile)
+        return config["PATHS"][key]
+
+    # check for a config file in the default path
+    config_in_default = check_configfile_in_default_location()
+    if config_in_default:
+        config = read_config(config_in_default)
+        return config["PATHS"][key]
+
+    # return default values
+    return DEFAULT_PATHS[key.upper()]
+
+
+def get_default_configfile_path():
+    return click.get_app_dir("file_scraper")
+
+
+def read_config(configfile):
+    if not os.path.isfile(configfile):
+        raise FileNotFoundError("Invalid config file path")
+    config = configparser.ConfigParser()
+    config.read(configfile)
+    return config
+
+
+def check_configfile_in_default_location():
+    conf_default_location = os.path.join(
+                                get_default_configfile_path(),
+                                "config.conf")
+    if os.path.isfile(conf_default_location):
+        return conf_default_location
+    return None
 
 
 def config_filecmd_env():
