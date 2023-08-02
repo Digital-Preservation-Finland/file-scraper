@@ -13,7 +13,7 @@ from fido.fido import Fido, defaults
 from fido.pronomutils import get_local_pronom_versions
 from file_scraper.base import BaseDetector
 from file_scraper.shell import Shell
-from file_scraper.config import VERAPDF_PATH
+from file_scraper.config import get_value
 from file_scraper.defaults import (MIMETYPE_DICT, PRIORITY_PRONOM, PRONOM_DICT,
                                    VERSION_DICT, UNKN)
 from file_scraper.utils import encode_path, decode_path
@@ -294,7 +294,7 @@ class VerapdfDetector(BaseDetector):
 
         If the file is not a PDF/A, the MIME type and version are left as None.
         """
-        verapdf_loc = VERAPDF_PATH
+        verapdf_loc = get_value("VERAPDF_PATH")
         if distutils.spawn.find_executable("verapdf") is not None:
             verapdf_loc = "verapdf"
         # --nonpdfext flag allows also files without the .pdf extension

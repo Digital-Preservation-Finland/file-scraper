@@ -9,7 +9,7 @@ from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.office.office_model import OfficeMeta
 from file_scraper.utils import encode_path
-from file_scraper.config import SOFFICE_PATH
+from file_scraper.config import get_value
 
 
 class OfficeScraper(BaseScraper):
@@ -23,8 +23,8 @@ class OfficeScraper(BaseScraper):
         temp_dir = tempfile.mkdtemp()
 
         cmd = "soffice"
-        if os.path.isfile(SOFFICE_PATH):
-            cmd = SOFFICE_PATH
+        if os.path.isfile(get_value("SOFFICE_PATH")):
+            cmd = get_value("SOFFICE_PATH")
 
         try:
             env = {"HOME": temp_dir}

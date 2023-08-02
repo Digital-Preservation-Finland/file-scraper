@@ -5,7 +5,7 @@ import os
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
-from file_scraper.config import VNU_PATH
+from file_scraper.config import get_value
 from file_scraper.vnu.vnu_model import VnuMeta
 
 
@@ -20,7 +20,7 @@ class VnuScraper(BaseScraper):
         filterfile = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                   'vnu_filters.txt')
         shell = Shell([
-            "java", "-jar", VNU_PATH, "--verbose",
+            "java", "-jar", get_value("VNU_PATH"), "--verbose",
             "--filterfile", filterfile,
             self.filename])
 

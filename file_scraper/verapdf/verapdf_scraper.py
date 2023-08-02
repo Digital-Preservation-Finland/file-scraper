@@ -9,7 +9,7 @@ except ImportError:
 import distutils.spawn
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
-from file_scraper.config import VERAPDF_PATH
+from file_scraper.config import get_value
 from file_scraper.verapdf.verapdf_model import VerapdfMeta
 from file_scraper.utils import encode_path
 
@@ -36,7 +36,7 @@ class VerapdfScraper(BaseScraper):
 
         :raises: VeraPDFError
         """
-        verapdf_loc = VERAPDF_PATH
+        verapdf_loc = get_value("VERAPDF_PATH")
         if distutils.spawn.find_executable("verapdf") is not None:
             verapdf_loc = "verapdf"
         # --nonpdfext flag allows also files without the .pdf extension

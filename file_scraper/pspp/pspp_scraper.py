@@ -8,7 +8,7 @@ from io import open as io_open
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
-from file_scraper.config import PSPP_PATH
+from file_scraper.config import get_value
 from file_scraper.pspp.pspp_model import PsppMeta
 
 SPSS_PORTABLE_HEADER = b"SPSS PORT FILE"
@@ -35,7 +35,7 @@ class PsppScraper(BaseScraper):
 
         try:
             shell = Shell([
-                PSPP_PATH,
+                get_value("PSPP_PATH"),
                 self.filename,
                 temp_file
             ])
