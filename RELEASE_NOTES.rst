@@ -1,6 +1,14 @@
 Release notes
 =============
 
+Version 0.62
+------------
+
+- Change well-formedness results of the following scrapers, because they do not validate:
+    - ExifTool Scraper
+    - Magic Scraper
+    - Textfile Scraper: TextfileScraper and TextEncodingMetaScraper
+
 Version 0.61
 ------------
 
