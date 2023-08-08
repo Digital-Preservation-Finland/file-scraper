@@ -1,9 +1,8 @@
 """
 TODO
 """
-import os
-import click
 import configparser
+import os
 
 DEFAULT_PATHS = {
                  "PSPP_PATH": "/usr/bin/pspp-convert",
@@ -14,41 +13,33 @@ DEFAULT_PATHS = {
                  }
 
 
-def get_value(key, configfile=None):
-    # check if user provided a configfile
-    if configfile:
-        config = read_config(configfile)
-        return config["PATHS"][key]
-
-    # check for a config file in the default path
-    config_in_default = check_configfile_in_default_location()
-    if config_in_default:
-        config = read_config(config_in_default)
-        return config["PATHS"][key]
-
-    # return default values
-    return DEFAULT_PATHS[key.upper()]
+def get_value(key):
+    return get_config_values()[key.upper()]
 
 
-def get_default_configfile_path():
-    return click.get_app_dir("file_scraper")
+def get_config_values():
+    paths = DEFAULT_PATHS
+    config = read_config()
+    if "PATHS" in config:
+        for key, value in config["PATHS"]:
+            paths[key.upper()] = value
+    return paths
 
 
-def read_config(configfile):
-    if not os.path.isfile(configfile):
-        raise FileNotFoundError("Invalid config file path")
+def read_config():
+    if hasattr(read_config, "_config_dict"):
+        return read_config._config_dict
     config = configparser.ConfigParser()
-    config.read(configfile)
-    return config
+    configfile_path = get_configfile_path()
+    config.read(configfile_path)
+    read_config._config_dict = config
+    return read_config._config_dict
 
 
-def check_configfile_in_default_location():
-    conf_default_location = os.path.join(
-                                get_default_configfile_path(),
-                                "config.conf")
-    if os.path.isfile(conf_default_location):
-        return conf_default_location
-    return None
+def get_configfile_path():
+    configfile_path = os.getenv("FILE_SCRAPER_CONFIG",
+                                "/etc/file-scraper/file-scraper.conf")
+    return configfile_path
 
 
 def config_filecmd_env():
