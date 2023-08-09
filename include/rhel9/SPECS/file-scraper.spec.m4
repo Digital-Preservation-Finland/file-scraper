@@ -21,6 +21,7 @@ Summary:        File scraper analysis tool
 License:        LGPLv3+
 URL:            https://www.digitalpreservation.fi
 Source0:        %{file_prefix}-v%{file_version}%{?file_release_tag}-%{file_build_number}-g%{file_commit_ref}.%{file_ext}
+Source1:        file-scraper.conf
 BuildArch:      noarch
 BuildRequires:  python3-devel
 BuildRequires:  pyproject-rpm-macros
@@ -79,12 +80,16 @@ File scraper full: File detector, metadata collector and well-formed checker too
 %pyproject_install
 %pyproject_save_files file_scraper
 
+mkdir -p %{buildroot}/etc/file-scraper
+install -m 644 %{SOURCE1} %{buildroot}/etc/file-scraper/file-scraper.conf
+
 # TODO: executables with "-3" suffix are added to maintain compatibility with our systems.
 # executables with "-3" suffix should be deprecated.
 cp %{buildroot}%{_bindir}/scraper %{buildroot}%{_bindir}/scraper-3
 
 %files -n %{core_sp_name} -f %{pyproject_files}
 %{_bindir}/scraper*
+%config(noreplace) /etc/file-scraper/file-scraper.conf
 
 # 'full' only contains dependencies and is thus empty
 %files -n %{full_sp_name}

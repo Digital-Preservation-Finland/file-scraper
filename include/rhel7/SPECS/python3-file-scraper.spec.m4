@@ -17,6 +17,7 @@ Group:          Applications/Archiving
 License:        LGPLv3+
 URL:            https://www.digitalpreservation.fi
 Source0:        %{file_prefix}-v%{file_version}%{?file_release_tag}-%{file_build_number}-g%{file_commit_ref}.%{file_ext}
+Source1:        file-scraper.conf
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 Requires:       python3 python3-pymediainfo python3-magic python3-opf-fido veraPDF
@@ -55,6 +56,9 @@ File scraper full: File detector, metadata collector and well-formed checker too
 rm -rf $RPM_BUILD_ROOT
 make install3 PREFIX="%{_prefix}" ROOT="%{buildroot}"
 
+mkdir -p %{buildroot}/etc/file-scraper
+install -m 644 %{SOURCE1} %{buildroot}/etc/file-scraper/file-scraper.conf
+
 # Rename executable to prevent naming collision with Python 2 RPM
 sed -i 's/\/bin\/scraper$/\/bin\/scraper-3/g' INSTALLED_FILES
 mv %{buildroot}%{_bindir}/scraper %{buildroot}%{_bindir}/scraper-3
@@ -64,6 +68,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -f INSTALLED_FILES
 %defattr(-,root,root,-)
+%config(noreplace) /etc/file-scraper/file-scraper.conf
 
 # 'full' only contains dependencies and is thus empty
 %files -n python3-file-scraper-full
