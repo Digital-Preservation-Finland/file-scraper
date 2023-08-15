@@ -48,7 +48,10 @@ See also:
     * https://github.com/Digital-Preservation-Finland/dpx-validator
     * https://github.com/Digital-Preservation-Finland/iso-schematron-xslt1
 
-Where file-scraper needs to know a path to an executable or other resource, it is specified in ``file_scraper/config.py``. They correspond to the paths used by the Finnish national Digital Preservation Services, but they can be edited to match the installation locations on another system.
+File-scraper uses default paths for necessary executables and other resources.
+These paths can be changed by editing the configuration file
+``/etc/file-scraper/file-scraper.conf``. It is also possible to use another
+configuration file by setting the environment variable ``FILE_SCRAPER_CONFIG``.
 
 JHove and veraPDF Installation Notes
 ------------------------------------
