@@ -1,5 +1,11 @@
 """
-TODO
+Configuration settings of file-scraper.
+
+The default values correspond to the installation paths used by the Finnish
+national Digital Preservation Services. Installing the tools to other locations
+is possible by editing the configuration file
+'/etc/file-scraper/file-scraper.conf'. It is also possible to use another
+configuration file by setting the environment variable 'FILE_SCRAPER_CONFIG'.
 """
 import configparser
 import os
@@ -14,19 +20,22 @@ DEFAULT_PATHS = {
 
 
 def get_value(key):
+    """Get a configuration value for a specific key."""
     return get_config_values()[key.upper()]
 
 
 def get_config_values():
+    """Get all the configuration keys and values."""
     paths = DEFAULT_PATHS
     config = read_config()
     if "PATHS" in config:
-        for key, value in config["PATHS"]:
+        for key, value in config["PATHS"].items():
             paths[key.upper()] = value
     return paths
 
 
 def read_config():
+    """Read a configuration file."""
     if hasattr(read_config, "_config_dict"):
         return read_config._config_dict
     config = configparser.ConfigParser()
@@ -37,6 +46,7 @@ def read_config():
 
 
 def get_configfile_path():
+    """Get path to the configuration file."""
     configfile_path = os.getenv("FILE_SCRAPER_CONFIG",
                                 "/etc/file-scraper/file-scraper.conf")
     return configfile_path
