@@ -26,7 +26,7 @@ def get_value(key):
 
 def get_config_values():
     """Get all the configuration keys and values."""
-    paths = DEFAULT_PATHS
+    paths = DEFAULT_PATHS.copy()
     config = read_config()
     if "PATHS" in config:
         for key, value in config["PATHS"].items():
