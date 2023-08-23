@@ -122,13 +122,9 @@ class MimeMatchScraper(NoWellformednessBaseScraper):
             else:
                 self._errors.append("File format version is not supported.")
         elif self._predefined_version not in [ver, None]:
-            if mime == "text/plain":
-                self._errors.append("Element 'formatVersion' is not supported with mimetype '{}'."
-                                    .format(mime))
-            else:
-                self._errors.append(
-                    "Predefined version '{}' and resulted version '{}' "
-                    "mismatch.".format(self._predefined_version, ver))
+            self._errors.append(
+                "Predefined version '{}' and resulted version '{}' "
+                "mismatch.".format(self._predefined_version, ver))
 
         self._messages.append("MIME type and file format version checked.")
 
