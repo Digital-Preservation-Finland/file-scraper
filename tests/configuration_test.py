@@ -21,9 +21,15 @@ def cleanup_config_dict_fx():
 
 @pytest.mark.usefixtures("config_file_fx", "cleanup_config_dict_fx")
 def test_get_value_edited_configfile():
-    """Test 'get_value' function with an edited configuration file."""
+    """Test 'get_value' function with an edited configuration file. If a new
+    value is set in the configuration file, 'get_value' returns it. Otherwise
+    it returns the default value.
+    """
     pspp_value = get_value("pspp_path")
     assert pspp_value == "/test/path/test/path"
+
+    schematron_value = get_value("schematron_dirname")
+    assert schematron_value == "/usr/share/iso_schematron_xslt1"
 
 
 @pytest.mark.usefixtures("cleanup_config_dict_fx")
