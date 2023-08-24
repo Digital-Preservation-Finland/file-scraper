@@ -53,10 +53,11 @@ class TextfileScraper(BaseScraper):
 
     def scrape_file(self):
         """Check MIME type determined by libmagic."""
-        
+
         if self._file_mimetype() == "text/plain" and self._predefined_version:
-            self._errors.append("Format text/plain should be scraped without predefined version.")
-        
+            self._errors.append("Format text/plain should be "
+                                "scraped without predefined version.")
+
         charset = self._params.get("charset", None)
         if charset is not None and charset.upper() in ["UTF-32", "UTF-16"]:
             self._messages.append(
