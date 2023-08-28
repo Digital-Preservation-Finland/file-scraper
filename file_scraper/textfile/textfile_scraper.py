@@ -67,7 +67,7 @@ class TextfileScraper(BaseScraper):
             self._messages.append("Trying text detection...")
 
             mimetype = self._file_mimetype()
-            if mimetype == "text/plain":
+            if mimetype in ["text/plain", "application/json"]:
                 self._messages.append("File is a text file.")
             else:
                 self._errors.append(

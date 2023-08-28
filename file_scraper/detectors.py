@@ -213,6 +213,8 @@ class MagicDetector(BaseDetector):
             self.mimetype = MIMETYPE_DICT[mimetype]
         else:
             self.mimetype = six.text_type(mimetype)
+        if mimetype == "application/json":
+            self.mimetype = "text/plain"
 
         # DV detection with unpatched file library
         mime_check = mimetype == "application/octet-stream"
