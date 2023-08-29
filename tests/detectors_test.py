@@ -73,7 +73,7 @@ CHANGE_FIDO = {
     "video_x-ms-asf/valid__vc1.wmv": None,
     "video_x-ms-asf/valid__vc1_wma9.wmv": None,
     "image_x-dpx/valid_1.0_just_version_change_from_2.0.dpx": None,
-    "application_json/valid__1.json": None
+    "text_plain/valid__1.json": None
 }
 
 CHANGE_MAGIC = {
@@ -115,8 +115,7 @@ CHANGE_MAGIC = {
     "video_quicktime/valid__h264_aac_no_ftyp_atom.mov":
         "application/octet-stream",
     "image_x-adobe-dng/valid_1.4.dng": "image/tiff",
-    "application_x-siard/valid_2.1.1.siard": "application/zip",
-    "application_json/valid__1.json": "text/plain"
+    "application_x-siard/valid_2.1.1.siard": "application/zip"
 }
 
 
