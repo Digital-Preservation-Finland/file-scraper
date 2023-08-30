@@ -73,7 +73,7 @@ CHANGE_FIDO = {
     "video_x-ms-asf/valid__vc1.wmv": None,
     "video_x-ms-asf/valid__vc1_wma9.wmv": None,
     "image_x-dpx/valid_1.0_just_version_change_from_2.0.dpx": None,
-    "text_plain/valid__1.json": None
+    "text_plain/valid__should_scrape_as_plain_text.json": None
 }
 
 CHANGE_MAGIC = {
