@@ -1,6 +1,14 @@
 Release notes
 =============
 
+Version 0.63
+------------
+
+- Make config file for excecutable paths
+- Json files are now detected as plain text
+- Add note to dummy_scraper.py on formatVersion not being
+supported with mimetype text/plain
+
 Version 0.62
 ------------
 
