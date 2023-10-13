@@ -5,8 +5,6 @@ import os
 import tempfile
 from io import open as io_open
 
-import six
-
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.utils import ensure_text, decode_path, encode_path
@@ -143,11 +141,11 @@ class XmllintScraper(BaseScraper):
                 tree = etree.parse(file_, parser=parser)
         except etree.XMLSyntaxError as exception:
             self._errors.append("Failed: document is not well-formed.")
-            self._errors.append(six.text_type(exception))
+            self._errors.append(str(exception))
             return
         except IOError as exception:
             self._errors.append("Failed: missing file.")
-            self._errors.append(six.text_type(exception))
+            self._errors.append(str(exception))
             return
 
         # Try check against DTD

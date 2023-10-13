@@ -3,8 +3,6 @@ from __future__ import unicode_literals
 
 from copy import copy, deepcopy
 
-import six
-
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAP, UNAV
 from file_scraper.utils import metadata
@@ -77,12 +75,12 @@ class BasePilMeta(BaseMeta):
     @metadata()
     def width(self):
         """Return image width."""
-        return six.text_type(self._pil_width)
+        return str(self._pil_width)
 
     @metadata()
     def height(self):
         """Return image height."""
-        return six.text_type(self._pil_height)
+        return str(self._pil_height)
 
     @metadata()
     def bps_value(self):
@@ -135,7 +133,7 @@ class TiffPilMeta(BasePilMeta):
         """Return samples per pixel."""
         tag_info = self._pil_tag_v2
         if tag_info and SAMPLES_PER_PIXEL_TAG in tag_info.keys():
-            return six.text_type(tag_info[SAMPLES_PER_PIXEL_TAG])
+            return str(tag_info[SAMPLES_PER_PIXEL_TAG])
         return super(TiffPilMeta, self).samples_per_pixel()
 
 
@@ -246,5 +244,5 @@ class JpegPilMeta(BasePilMeta):
         """Return samples per pixel."""
         exif_info = self._pil_getexif
         if exif_info and SAMPLES_PER_PIXEL_TAG in exif_info.keys():
-            return six.text_type(exif_info[SAMPLES_PER_PIXEL_TAG])
+            return str(exif_info[SAMPLES_PER_PIXEL_TAG])
         return super(JpegPilMeta, self).samples_per_pixel()

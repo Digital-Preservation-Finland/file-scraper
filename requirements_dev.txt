@@ -2,7 +2,6 @@ pytest
 coverage
 pytest-cov
 python-mimeparse
-six
 olefile
 # file-magic 0.4.1 is broken, since it requires a newer libmagic that CentOS 7
 # ships by default.

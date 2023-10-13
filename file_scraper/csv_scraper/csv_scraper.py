@@ -4,8 +4,6 @@ from __future__ import unicode_literals
 import csv
 from io import open as io_open
 
-import six
-
 from file_scraper.base import BaseScraper
 from file_scraper.csv_scraper.csv_model import CsvMeta
 
@@ -71,7 +69,7 @@ class CsvScraper(BaseScraper):
             reader = csv.reader(csvfile, dialect="new_dialect")
 
             first_row = next(reader)
-            if six.PY2 and charset is not None:
+            if charset is not None:
                 first_line = [item.decode(charset) for item in first_row]
             else:
                 first_line = first_row
@@ -90,7 +88,7 @@ class CsvScraper(BaseScraper):
 
         except IOError as err:
             self._errors.append("Error when reading the file: " +
-                                six.text_type(err))
+                                str(err))
         except csv.Error as exception:
             if reader is not None:
                 self._errors.append("CSV error on line %s: %s" %
@@ -124,6 +122,4 @@ class CsvScraper(BaseScraper):
         :returns: handle to the newly-opened file
         :raises: IOError if the file cannot be read
         """
-        if six.PY2:
-            return io_open(self.filename, "rb")
         return io_open(self.filename, "rt", encoding=charset)

@@ -16,7 +16,6 @@ import os
 import shutil
 
 import pytest
-from six import iteritems
 
 from file_scraper.defaults import (UNAP,
                                    UNAV,
@@ -348,8 +347,8 @@ def _assert_valid_scraper_result(scraper, fullname, mimetype, version,
     assert scraper.streams not in [None, {}]
 
     unavs = []
-    for _, stream in iteritems(scraper.streams):
-        for key, stream_value in iteritems(stream):
+    for _, stream in dict.items(scraper.streams):
+        for key, stream_value in dict.items(stream):
             if stream_value == UNAV:
                 unavs.append(key)
 
@@ -384,7 +383,7 @@ def test_valid_combined(fullname, mimetype, version):
                       charset=predefined_charset)
     scraper.scrape()
 
-    for _, info in iteritems(scraper.info):
+    for _, info in dict.items(scraper.info):
         assert not info["errors"]
 
     _assert_valid_scraper_result(scraper, fullname, mimetype, version, True)
@@ -426,7 +425,7 @@ def test_invalid_combined(fullname, mimetype, version):
                       charset=predefined_charset)
     scraper.scrape()
 
-    for _, info in iteritems(scraper.info):
+    for _, info in dict.items(scraper.info):
         if scraper.mimetype != mimetype and info["class"] == "ScraperNotFound":
             pytest.skip(("[%s] mimetype mismatches with scraper "
                          "and scraper not found") % fullname)

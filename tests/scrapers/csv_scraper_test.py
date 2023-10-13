@@ -32,7 +32,6 @@ from __future__ import unicode_literals
 import io
 import os
 import pytest
-import six
 
 from file_scraper.csv_scraper.csv_model import CsvMeta
 from file_scraper.csv_scraper.csv_scraper import CsvScraper
@@ -331,7 +330,7 @@ def test_bad_parameters():
         CsvMeta(well_formed=True, params={"delimiter": ",", "fields": [],
                                           "first_line": ""})
     assert ("CsvMeta must be given a dict containing keys" in
-            six.text_type(err.value))
+            str(err.value))
 
 
 def test_empty_file():

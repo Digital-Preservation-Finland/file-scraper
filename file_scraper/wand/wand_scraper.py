@@ -13,8 +13,6 @@ tool.
 """
 from __future__ import unicode_literals
 
-import six
-
 from file_scraper.base import BaseScraper
 from file_scraper.wand.wand_model import (WandImageMeta, WandTiffMeta,
                                           WandExifMeta, WandDngMeta)
@@ -65,7 +63,7 @@ class WandScraper(BaseScraper):
             self._wandresults = wand.image.Image(filename=self.filename)
         except Exception as e:  # pylint: disable=broad-except, invalid-name
             self._errors.append("Error in analyzing file")
-            self._errors.append(six.text_type(e))
+            self._errors.append(str(e))
         else:
             for md_class in self._supported_metadata:
                 for image in self._wandresults.sequence:

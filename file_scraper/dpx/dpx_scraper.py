@@ -2,8 +2,6 @@
 
 from __future__ import unicode_literals
 
-import six
-
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.dpx.dpx_model import DpxMeta
@@ -23,8 +21,6 @@ class DpxScraper(BaseScraper):
         :returns: Path to dpxv command
 
         """
-        if six.PY3:
-            return "/usr/bin/dpxv-3"
         return "/usr/bin/dpxv"
 
     def scrape_file(self):

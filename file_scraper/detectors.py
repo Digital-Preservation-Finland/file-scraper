@@ -6,7 +6,6 @@ import distutils.spawn
 import os
 import zipfile
 import lxml.etree as ET
-import six
 import exiftool
 
 from fido.fido import Fido, defaults
@@ -212,7 +211,7 @@ class MagicDetector(BaseDetector):
         if mimetype in MIMETYPE_DICT:
             self.mimetype = MIMETYPE_DICT[mimetype]
         else:
-            self.mimetype = six.text_type(mimetype)
+            self.mimetype = str(mimetype)
         if mimetype == "application/json":
             self.mimetype = "text/plain"
 

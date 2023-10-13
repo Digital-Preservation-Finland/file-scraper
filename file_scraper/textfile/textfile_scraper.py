@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 import io
-import six
 from file_scraper.base import BaseScraper
 from file_scraper.defaults import UNAV
 from file_scraper.exceptions import (ForbiddenCharacterError,
@@ -233,7 +232,7 @@ class TextEncodingScraper(BaseScraper):
 
         except IOError as err:
             self._errors.append("Error when reading the file: " +
-                                six.text_type(err))
+                                str(err))
         except (ForbiddenCharacterError, UnknownEncodingError) as exception:
             self._errors.append("Character decoding error: %s" % exception)
 
@@ -318,7 +317,7 @@ class TextEncodingScraper(BaseScraper):
         try:
             decoded_chunk = chunk.decode(charset)
         except (UnicodeError, UnicodeDecodeError, LookupError) as err:
-            six.raise_from(UnknownEncodingError(err), err)
+            raise (UnknownEncodingError(err), err)
 
         forbidden = ["\x00", "\x01", "\x02", "\x03", "\x04", "\x05", "\x06",
                      "\x07", "\x08", "\x0B", "\x0C", "\x0E", "\x0F", "\x10",

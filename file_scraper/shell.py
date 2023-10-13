@@ -3,7 +3,6 @@
 import os
 import subprocess
 
-import six
 from file_scraper.utils import ensure_text
 
 
@@ -31,7 +30,7 @@ class Shell(object):
         self._env = os.environ.copy()
 
         if env:
-            for key, value in six.iteritems(env):
+            for key, value in dict.items(env):
                 self._env[key] = value
 
     @property

@@ -1,8 +1,6 @@
 """Metadata scraper for image file formats."""
 from __future__ import unicode_literals
 
-import six
-
 from file_scraper.base import BaseScraper
 from file_scraper.pil.pil_model import PngPilMeta, JpegPilMeta, \
     TiffPilMeta, DngPilMeta, Jp2PilMeta, GifPilMeta
@@ -49,7 +47,7 @@ class PilScraper(BaseScraper):
 
         except Exception as e:  # pylint: disable=invalid-name, broad-except
             self._errors.append("Error in analyzing file.")
-            self._errors.append(six.text_type(e))
+            self._errors.append(str(e))
             return
         else:
             with PIL.Image.open(self.filename) as pil:

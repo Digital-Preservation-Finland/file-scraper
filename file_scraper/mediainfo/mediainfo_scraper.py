@@ -1,8 +1,6 @@
 """Scraper for video and audio files scraped using MediaInfo."""
 from __future__ import unicode_literals
 
-import six
-
 from file_scraper.base import BaseScraper
 import file_scraper.mediainfo
 from file_scraper.mediainfo.mediainfo_model import (
@@ -67,7 +65,7 @@ class MediainfoScraper(BaseScraper):
             mediainfo = MediaInfo.parse(decode_path(self.filename))
         except Exception as e:  # pylint: disable=invalid-name, broad-except
             self._errors.append("Error in analyzing file.")
-            self._errors.append(six.text_type(e))
+            self._errors.append(str(e))
             self._check_supported()
             return
 

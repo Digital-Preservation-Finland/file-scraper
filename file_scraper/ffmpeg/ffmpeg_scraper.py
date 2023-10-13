@@ -12,7 +12,6 @@ done with FFMpegScraper, using FFMpegMeta as the metadata model.
 from __future__ import unicode_literals
 
 import re
-import six
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
@@ -233,7 +232,7 @@ def _filter_stderr(errors):
     """
     constructed_string = ""
     repeat = re.compile("Last message repeated [0-9]+ times")
-    for line in six.text_type(errors).split("\n"):
+    for line in str(errors).split("\n"):
         if not line:
             continue
         if "jpeg2000" in line and "bpno became negative" in line:

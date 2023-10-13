@@ -10,7 +10,6 @@ setup(
     install_requires=[
         "click",
         "python-mimeparse",
-        "six",
         "olefile",
         "file-magic<=0.4.0;python_version < '3.7'",
         "file-magic;python_version >= '3.7'",

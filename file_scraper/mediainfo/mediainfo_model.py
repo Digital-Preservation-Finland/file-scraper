@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 import re
-import six
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAP, UNAV
@@ -105,7 +104,7 @@ class BaseMediainfoMeta(BaseMeta):
         if self.stream_type() not in ["video"]:
             raise SkipElementException()
         if self._stream.width is not None:
-            return six.text_type(self._stream.width)
+            return str(self._stream.width)
         return UNAV
 
     @metadata()
@@ -114,7 +113,7 @@ class BaseMediainfoMeta(BaseMeta):
         if self.stream_type() not in ["video"]:
             raise SkipElementException()
         if self._stream.height is not None:
-            return six.text_type(self._stream.height)
+            return str(self._stream.height)
         return UNAV
 
     @metadata()
@@ -123,7 +122,7 @@ class BaseMediainfoMeta(BaseMeta):
         if self.stream_type() not in ["video"]:
             raise SkipElementException()
         if self._stream.pixel_aspect_ratio is not None:
-            return strip_zeros(six.text_type(self._stream.pixel_aspect_ratio))
+            return strip_zeros(str(self._stream.pixel_aspect_ratio))
         return UNAV
 
     @metadata()
@@ -132,7 +131,7 @@ class BaseMediainfoMeta(BaseMeta):
         if self.stream_type() not in ["video"]:
             raise SkipElementException()
         if self._stream.display_aspect_ratio is not None:
-            return strip_zeros(six.text_type(
+            return strip_zeros(str(
                 self._stream.display_aspect_ratio))
         return UNAV
 
@@ -143,9 +142,9 @@ class BaseMediainfoMeta(BaseMeta):
             raise SkipElementException()
         if self._stream.bit_rate is not None:
             if self._stream.track_type == "Video":
-                return strip_zeros(six.text_type(float(
+                return strip_zeros(str(float(
                     self._stream.bit_rate) / 1000000))
-            return strip_zeros(six.text_type(float(
+            return strip_zeros(str(float(
                 self._stream.bit_rate)/1000))
         return UNAV
 
@@ -155,7 +154,7 @@ class BaseMediainfoMeta(BaseMeta):
         if self.stream_type() not in ["video"]:
             raise SkipElementException()
         if self._stream.frame_rate is not None:
-            return strip_zeros(six.text_type(self._stream.frame_rate))
+            return strip_zeros(str(self._stream.frame_rate))
         return UNAV
 
     @metadata()
@@ -216,7 +215,7 @@ class BaseMediainfoMeta(BaseMeta):
         if self.stream_type() not in ["audio"]:
             raise SkipElementException()
         if self._stream.format is not None:
-            return six.text_type(self._stream.format)
+            return str(self._stream.format)
         return UNAV
 
     @metadata()
@@ -225,7 +224,7 @@ class BaseMediainfoMeta(BaseMeta):
         if self.stream_type() not in ["audio"]:
             raise SkipElementException()
         if self._stream.sampling_rate is not None:
-            return strip_zeros(six.text_type(float(
+            return strip_zeros(str(float(
                 self._stream.sampling_rate)/1000))
         return UNAV
 
@@ -235,7 +234,7 @@ class BaseMediainfoMeta(BaseMeta):
         if self.stream_type() not in ["audio"]:
             raise SkipElementException()
         if self._stream.channel_s is not None:
-            return six.text_type(self._stream.channel_s)
+            return str(self._stream.channel_s)
         return UNAV
 
     @metadata()
@@ -284,7 +283,7 @@ class BaseMediainfoMeta(BaseMeta):
         if self.stream_type() not in ["video", "audio"]:
             raise SkipElementException()
         if self._stream.bit_depth is not None:
-            return six.text_type(self._stream.bit_depth)
+            return str(self._stream.bit_depth)
         return UNAV
 
 
@@ -319,7 +318,7 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
     def version(self):
         """Return version of stream."""
         version = super(MkvMediainfoMeta, self).version()
-        if isinstance(version, six.text_type):
+        if isinstance(version, str):
             version = version.split(".")[0]
         return version
 
@@ -339,7 +338,7 @@ class FfvMediainfoMeta(BaseMediainfoMeta):
     def version(self):
         """Return version of stream."""
         version = super(FfvMediainfoMeta, self).version()
-        if isinstance(version, six.text_type):
+        if isinstance(version, str):
             version = version.split(".")[0]
         return version
 
@@ -699,10 +698,10 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
         if (self.mimetype() == "audio/mpeg" and
                 self._stream.track_type == "General" and
                 len(self._tracks) >= 2):
-            return six.text_type(self._tracks[1].format_version)[-1]
+            return str(self._tracks[1].format_version)[-1]
 
         if self._stream.format_version is not None:
-            return six.text_type(self._stream.format_version)[-1]
+            return str(self._stream.format_version)[-1]
         return UNAV
 
 

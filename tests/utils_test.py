@@ -104,7 +104,6 @@ requirements:
 from __future__ import unicode_literals
 
 from itertools import chain
-import six
 import pytest
 
 from file_scraper.scraper import LOSE
@@ -363,7 +362,7 @@ def test_merge_normal_conflict():
                          getattr(testclass, "key_notimportant"),
                          [], {})
     assert ("Conflict with values 'oldvalue' and 'newvalue'"
-            in six.text_type(error.value))
+            in str(error.value))
 
 
 def test_merge_important_conflict(meta_class_fx):
@@ -377,7 +376,7 @@ def test_merge_important_conflict(meta_class_fx):
         _fill_importants(model.key4, importants, [])
     assert (
         "Conflict with values 'importantvalue' and 'conflictingvalue'"
-        in six.text_type(error.value)
+        in str(error.value)
     )
 
 

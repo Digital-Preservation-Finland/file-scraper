@@ -5,8 +5,6 @@ import gzip
 import os.path
 from io import open as io_open
 
-import six
-
 from file_scraper.base import BaseScraper
 from file_scraper.defaults import UNAV
 from file_scraper.shell import Shell
@@ -55,7 +53,7 @@ class WarctoolsScraper(BaseScraper):
                 line = warc_fd.readline()
         except Exception as exception:  # pylint: disable=broad-except
             # Compressed but corrupted gzip file
-            self._errors.append(six.text_type(exception))
+            self._errors.append(str(exception))
             return
 
         self._messages.append("File was analyzed successfully.")

@@ -6,8 +6,6 @@ try:
 except ImportError:
     pass
 
-import six
-
 from file_scraper.base import BaseScraper
 from file_scraper.lxml_scraper.lxml_model import LxmlMeta
 
@@ -52,11 +50,11 @@ class LxmlScraper(BaseScraper):
                 tree = etree.parse(file_, parser)
             except etree.XMLSyntaxError as exception:
                 self._errors.append("Failed: document is not well-formed.")
-                self._errors.append(six.text_type(exception))
+                self._errors.append(str(exception))
                 return
             except IOError as exception:
                 self._errors.append("Failed: missing file.")
-                self._errors.append(six.text_type(exception))
+                self._errors.append(str(exception))
                 return
 
         self.streams = list(self.iterate_models(tree=tree))

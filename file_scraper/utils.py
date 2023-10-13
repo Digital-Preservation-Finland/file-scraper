@@ -7,8 +7,6 @@ import sys
 import unicodedata
 from itertools import chain
 
-import six
-
 from file_scraper.defaults import UNAV
 from file_scraper.exceptions import SkipElementException
 
@@ -44,9 +42,9 @@ def encode_path(filename):
     :filename: File name no encode
     :returns: Encoded file name
     """
-    if isinstance(filename, six.text_type):
+    if isinstance(filename, str):
         return filename.encode(encoding=sys.getfilesystemencoding())
-    if isinstance(filename, six.binary_type):
+    if isinstance(filename, bytes):
         return filename
 
     raise TypeError("Value is not a (byte) string")
@@ -77,7 +75,7 @@ def hexdigest(filename, algorithm="sha1", extra_hash=None):
         for chunk in iter(lambda: input_file.read(1024 * 1024), b""):
             checksum.update(chunk)
         if extra_hash:
-            if isinstance(extra_hash, six.text_type):
+            if isinstance(extra_hash, str):
                 extra_hash = extra_hash.encode("utf-8")
             checksum.update(extra_hash)
     return checksum.hexdigest()
@@ -189,9 +187,9 @@ def ensure_text(s, encoding="utf-8", errors="strict"):
     :errors: Error handling level
     """
     # pylint: disable=invalid-name
-    if isinstance(s, six.binary_type):
+    if isinstance(s, bytes):
         return s.decode(encoding, errors)
-    if isinstance(s, six.text_type):
+    if isinstance(s, str):
         return s
 
     raise TypeError("not expecting type '{}'".format(type(s)))

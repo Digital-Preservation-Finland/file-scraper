@@ -15,8 +15,6 @@ The module tests that:
 import os
 from tempfile import TemporaryFile
 
-import six
-
 import pytest
 
 from file_scraper.shell import Shell
@@ -45,11 +43,11 @@ def test_shell(command, expected_returncode, expected_stdout,
 
     shell = Shell(command)
 
-    assert isinstance(shell.stdout, six.text_type)
-    assert isinstance(shell.stderr, six.text_type)
+    assert isinstance(shell.stdout, str)
+    assert isinstance(shell.stderr, str)
 
-    assert isinstance(shell.stdout_raw, six.binary_type)
-    assert isinstance(shell.stderr_raw, six.binary_type)
+    assert isinstance(shell.stdout_raw, bytes)
+    assert isinstance(shell.stderr_raw, bytes)
 
     assert shell.returncode == expected_returncode
     assert shell.stderr == expected_stderr
@@ -68,7 +66,7 @@ def test_shell_output_to_file():
         outfile.seek(0)
         expected_number = 1
         for line in outfile:
-            assert line == six.text_type(expected_number) + "\n"
+            assert line == str(expected_number) + "\n"
             expected_number += 1
 
 

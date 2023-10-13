@@ -1,8 +1,6 @@
 """Metadata models for Wand"""
 from __future__ import unicode_literals
 
-import six
-
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAV
 from file_scraper.utils import metadata
@@ -47,7 +45,7 @@ class WandImageMeta(BaseMeta):
         """
         if not self._image:
             return UNAV
-        colorspace = six.text_type(self._image.colorspace)
+        colorspace = str(self._image.colorspace)
         if colorspace.lower() != "sRGB".lower():
             return colorspace
 
@@ -73,14 +71,14 @@ class WandImageMeta(BaseMeta):
         """If image exists, return its width, otherwise return (:unav)."""
         if not self._image:
             return UNAV
-        return six.text_type(self._image.width)
+        return str(self._image.width)
 
     @metadata()
     def height(self):
         """If image exists, return its height, otherwise return (:unav)."""
         if not self._image:
             return UNAV
-        return six.text_type(self._image.height)
+        return str(self._image.height)
 
     @metadata()
     def bps_value(self):
@@ -89,7 +87,7 @@ class WandImageMeta(BaseMeta):
         """
         if not self._image:
             return UNAV
-        return six.text_type(self._image.depth)
+        return str(self._image.depth)
 
     @metadata()
     def bps_unit(self):
