@@ -317,7 +317,7 @@ class TextEncodingScraper(BaseScraper):
         try:
             decoded_chunk = chunk.decode(charset)
         except (UnicodeError, UnicodeDecodeError, LookupError) as err:
-            raise UnknownEncodingError(err)
+            raise UnknownEncodingError(err) from err
 
         forbidden = ["\x00", "\x01", "\x02", "\x03", "\x04", "\x05", "\x06",
                      "\x07", "\x08", "\x0B", "\x0C", "\x0E", "\x0F", "\x10",

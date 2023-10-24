@@ -69,10 +69,7 @@ class CsvScraper(BaseScraper):
             reader = csv.reader(csvfile, dialect="new_dialect")
 
             first_row = next(reader)
-            if charset is not None:
-                first_line = [item.decode(charset) for item in first_row]
-            else:
-                first_line = first_row
+            first_line = first_row
 
             if fields and len(fields) != len(first_line):
                 self._errors.append(

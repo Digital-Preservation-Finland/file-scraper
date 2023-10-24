@@ -170,18 +170,11 @@ def strip_zeros(float_str):
 
 
 def ensure_text(s, encoding="utf-8", errors="strict"):
-    """Coerce *s* to six.text_type.
-
-    For Python 2:
-      - `unicode` -> `unicode`
-      - `str` -> `unicode`
+    """Coerce *s* to str.
 
     For Python 3:
       - `str` -> `str`
       - `bytes` -> decoded to `str`
-
-    Direct copy from release 1.12::
-        https://github.com/benjaminp/six/blob/master/six.py#L892
 
     :encoding: Used encoding
     :errors: Error handling level
