@@ -347,7 +347,7 @@ def _assert_valid_scraper_result(scraper, fullname, mimetype, version,
     assert scraper.streams not in [None, {}]
 
     unavs = []
-    for _, stream in dict.items(scraper.streams):
+    for _, stream in iter(dict.items(scraper.streams)):
         for key, stream_value in dict.items(stream):
             if stream_value == UNAV:
                 unavs.append(key)

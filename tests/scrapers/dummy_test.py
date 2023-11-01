@@ -66,7 +66,7 @@ def test_existing_files(filepath):
     assert not scraper.errors()
     assert partial_message_included("was found", scraper.messages())
     assert scraper.info()["class"] == "FileExists"
-    for stream_index, stream_metadata in dict.items(streams):
+    for stream_index, stream_metadata in iter(dict.items(streams)):
         scraped_metadata = scraper.streams[stream_index]
         for key, value in dict.items(stream_metadata):
             assert getattr(scraped_metadata, key)() == value

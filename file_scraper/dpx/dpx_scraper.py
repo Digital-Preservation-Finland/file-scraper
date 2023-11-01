@@ -21,7 +21,7 @@ class DpxScraper(BaseScraper):
         :returns: Path to dpxv command
 
         """
-        return "/usr/bin/dpxv"
+        return "/usr/bin/dpxv-3"
 
     def scrape_file(self):
         """Scrape DPX."""
