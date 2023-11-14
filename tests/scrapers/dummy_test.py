@@ -66,9 +66,9 @@ def test_existing_files(filepath):
     assert not scraper.errors()
     assert partial_message_included("was found", scraper.messages())
     assert scraper.info()["class"] == "FileExists"
-    for stream_index, stream_metadata in iter(dict.items(streams)):
+    for stream_index, stream_metadata in streams.items():
         scraped_metadata = scraper.streams[stream_index]
-        for key, value in iter(dict.items(stream_metadata)):
+        for key, value in stream_metadata.items():
             assert getattr(scraped_metadata, key)() == value
 
 
@@ -118,9 +118,9 @@ def test_scraper_not_found(filepath):
     streams = DEFAULTSTREAMS.copy()
 
     assert scraper.well_formed is False
-    for stream_index, stream_metadata in iter(dict.items(streams)):
+    for stream_index, stream_metadata in streams.items():
         scraped_metadata = scraper.streams[stream_index]
-        for key, value in iter(dict.items(stream_metadata)):
+        for key, value in stream_metadata.items():
             assert getattr(scraped_metadata, key)() == value
 
 

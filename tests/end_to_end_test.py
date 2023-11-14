@@ -347,8 +347,8 @@ def _assert_valid_scraper_result(scraper, fullname, mimetype, version,
     assert scraper.streams not in [None, {}]
 
     unavs = []
-    for _, stream in iter(dict.items(scraper.streams)):
-        for key, stream_value in iter(dict.items(stream)):
+    for _, stream in scraper.streams.items():
+        for key, stream_value in stream.items():
             if stream_value == UNAV:
                 unavs.append(key)
 
@@ -383,7 +383,7 @@ def test_valid_combined(fullname, mimetype, version):
                       charset=predefined_charset)
     scraper.scrape()
 
-    for _, info in iter(dict.items(scraper.info)):
+    for _, info in scraper.info.items():
         assert not info["errors"]
 
     _assert_valid_scraper_result(scraper, fullname, mimetype, version, True)
@@ -425,7 +425,7 @@ def test_invalid_combined(fullname, mimetype, version):
                       charset=predefined_charset)
     scraper.scrape()
 
-    for _, info in iter(dict.items(scraper.info)):
+    for _, info in scraper.info.items():
         if scraper.mimetype != mimetype and info["class"] == "ScraperNotFound":
             pytest.skip(("[%s] mimetype mismatches with scraper "
                          "and scraper not found") % fullname)

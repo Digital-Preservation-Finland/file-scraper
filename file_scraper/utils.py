@@ -169,23 +169,16 @@ def strip_zeros(float_str):
     return float_str
 
 
-def ensure_text(s, encoding="utf-8", errors="strict"):
-    """Coerce *s* to str.
-
-    For Python 3:
-      - `str` -> `str`
-      - `bytes` -> decoded to `str`
-
-    :encoding: Used encoding
-    :errors: Error handling level
+def ensure_text(string, encoding="utf-8", errors="strict"):
+    """Coerce string to str.
     """
     # pylint: disable=invalid-name
-    if isinstance(s, bytes):
-        return s.decode(encoding, errors)
-    if isinstance(s, str):
-        return s
+    if isinstance(string, bytes):
+        return string.decode(encoding, errors)
+    if isinstance(string, str):
+        return string
 
-    raise TypeError("not expecting type '{}'".format(type(s)))
+    raise TypeError("not expecting type '{}'".format(type(string)))
 
 
 def _merge_to_stream(stream, method, lose, importants):

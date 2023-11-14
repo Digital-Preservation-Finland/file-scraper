@@ -30,7 +30,7 @@ class Shell(object):
         self._env = os.environ.copy()
 
         if env:
-            for key, value in iter(dict.items(env)):
+            for key, value in env.items():
                 self._env[key] = value
 
     @property
