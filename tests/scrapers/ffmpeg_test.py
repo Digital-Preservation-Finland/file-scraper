@@ -30,7 +30,8 @@ This module tests that:
         - video/x-matroska containing ffv1 video stream
         - video/dv
         - video/mpeg, with version 1 and 2 separately
-        - video/mp4 containing h264 video and aac audio streams
+        - video/mp4 containing h264 video, aac audio streams and
+        too many packets buffered video
         - video/MP2T file
         - audio/mpeg version 1 file
         - application/mxf
@@ -138,6 +139,15 @@ UNAV_MIME = []
         ),
         (
             "valid__h264_aac_mp42.mp4",
+            {
+                "purpose": "Test valid mp4.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": ""
+            },
+            "video/mp4"
+        ),
+        (
+            "valid__too_many_packets_buffered.mp4",
             {
                 "purpose": "Test valid mp4.",
                 "stdout_part": "file was analyzed successfully",
