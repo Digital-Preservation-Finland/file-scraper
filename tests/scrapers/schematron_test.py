@@ -31,7 +31,6 @@ This module tests that:
     - Schematron removes extra copies of identical elements, but not if their
       attributes differ.
 """
-from __future__ import unicode_literals
 
 import os
 import pytest

@@ -23,7 +23,6 @@ This module tests that:
       WarctoolsScraper.
     - None of these scrapers supports a made up MIME type.
 """
-from __future__ import unicode_literals
 import os
 
 import pytest

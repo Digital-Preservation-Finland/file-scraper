@@ -1,6 +1,5 @@
 """File format detectors."""
 # pylint: disable=ungrouped-imports
-from __future__ import unicode_literals, absolute_import
 
 import distutils.spawn
 import os
@@ -161,7 +160,7 @@ class FidoDetector(BaseDetector):
         :mimetype: Mimetype from another source, e.g. METS
         :version: File format version from another source, e.g. METS
         """
-        super(FidoDetector, self).__init__(filename, mimetype=mimetype,
+        super().__init__(filename, mimetype=mimetype,
                                            version=version)
         self._puid = None
 
@@ -327,7 +326,7 @@ class VerapdfDetector(BaseDetector):
         # If we have not encountered problems, the file is PDF/A and its
         # version can be read from the profile.
         version = profile.split("PDF/A")[1].split(" validation profile")[0]
-        self.version = "A{}".format(version.lower())
+        self.version = f"A{version.lower()}"
         self.mimetype = "application/pdf"
         self.info = {"class": self.__class__.__name__,
                      "messages": ["PDF/A version detected by veraPDF."],
@@ -378,7 +377,7 @@ class MagicCharset(BaseDetector):
     def __init__(self, filename, mimetype=None, version=None):
         """Initialize detector."""
         self.charset = None
-        super(MagicCharset, self).__init__(filename, mimetype=mimetype,
+        super().__init__(filename, mimetype=mimetype,
                                            version=version)
 
     @classmethod

@@ -27,7 +27,6 @@ This module tests that:
 
     - Schema, catalogs and network-usage can be defined as parameters.
 """
-from __future__ import unicode_literals
 
 import os
 import pytest

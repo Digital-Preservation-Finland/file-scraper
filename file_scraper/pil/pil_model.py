@@ -1,5 +1,4 @@
 """Metadata model for image file formats scraped using PIL."""
-from __future__ import unicode_literals
 
 from copy import copy, deepcopy
 
@@ -134,7 +133,7 @@ class TiffPilMeta(BasePilMeta):
         tag_info = self._pil_tag_v2
         if tag_info and SAMPLES_PER_PIXEL_TAG in tag_info.keys():
             return str(tag_info[SAMPLES_PER_PIXEL_TAG])
-        return super(TiffPilMeta, self).samples_per_pixel()
+        return super().samples_per_pixel()
 
 
 class DngPilMeta(TiffPilMeta):
@@ -191,7 +190,7 @@ class Jp2PilMeta(BasePilMeta):
 
     @metadata()
     def mimetype(self):
-        mime = super(Jp2PilMeta, self).mimetype()
+        mime = super().mimetype()
         if mime == "image/jpx":
             return UNAV
         return mime
@@ -245,4 +244,4 @@ class JpegPilMeta(BasePilMeta):
         exif_info = self._pil_getexif
         if exif_info and SAMPLES_PER_PIXEL_TAG in exif_info.keys():
             return str(exif_info[SAMPLES_PER_PIXEL_TAG])
-        return super(JpegPilMeta, self).samples_per_pixel()
+        return super().samples_per_pixel()

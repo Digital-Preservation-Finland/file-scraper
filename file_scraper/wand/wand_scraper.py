@@ -11,7 +11,6 @@ file. More complete well-formedness test is required by specific validator
 tool.
 
 """
-from __future__ import unicode_literals
 
 from file_scraper.base import BaseScraper
 from file_scraper.wand.wand_model import (WandImageMeta, WandTiffMeta,
@@ -39,7 +38,7 @@ class WandScraper(BaseScraper):
         The _wandresults are needed to be initialized to be able to
         properly close them after the class has been executed.
         """
-        super(WandScraper, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._wandresults = None
 
     @property
@@ -49,7 +48,7 @@ class WandScraper(BaseScraper):
         :returns: False if Wand can not open or handle the file,
                   None otherwise.
         """
-        valid = super(WandScraper, self).well_formed
+        valid = super().well_formed
         if not valid:
             return valid
 

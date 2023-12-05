@@ -1,5 +1,4 @@
 """Common constants and dictionaries."""
-from __future__ import unicode_literals
 
 # Prioritize these pronom codes in identification.
 # fmt/289 could possibly be removed when fmt/1355 is known by FIDO.

@@ -16,7 +16,6 @@ This module tests that:
       supported.
     - When well-formedness is checked, a made up MIME type is not supported.
 """
-from __future__ import unicode_literals
 import os
 
 import pytest

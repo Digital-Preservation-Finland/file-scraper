@@ -1,5 +1,4 @@
 """Common functions for tests."""
-from __future__ import unicode_literals
 
 import os
 
@@ -27,7 +26,7 @@ def get_files(well_formed):
                 yield fullname, mimetype, version
 
 
-class Correct(object):
+class Correct:
     """Class for the correct results."""
 
     # pylint: disable=too-few-public-methods, too-many-instance-attributes

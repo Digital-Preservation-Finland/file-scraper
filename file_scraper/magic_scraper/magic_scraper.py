@@ -1,5 +1,4 @@
 """Scraper for various binary and text file formats."""
-from __future__ import unicode_literals
 
 import os
 
@@ -34,7 +33,7 @@ class MagicBaseScraper(BaseScraper):
         :returns: False if magic can not open or handle the file,
                   None otherwise.
         """
-        valid = super(MagicBaseScraper, self).well_formed
+        valid = super().well_formed
         if not valid:
             return valid
 

@@ -27,7 +27,6 @@ This module tests that:
     - Without well-formedness check, none of these MIME types are supported.
 """  # noqa  (it's neater to have long lines than to break mimetypes)
 
-from __future__ import unicode_literals
 
 import os
 from multiprocessing import Pool
@@ -127,7 +126,7 @@ def test_scraper_correct_application(filename, mimetype, application):
     scraper = OfficeScraper(filename=testfile, mimetype=mimetype)
     scraper.scrape_file()
 
-    assert partial_message_included("using filter : {}".format(application),
+    assert partial_message_included(f"using filter : {application}",
                                     scraper.messages())
 
 

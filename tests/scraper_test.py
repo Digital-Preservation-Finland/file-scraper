@@ -18,7 +18,6 @@ This module tests that:
     - Character encoding detection works and respects the predefined file type
       if provided.
 """
-from __future__ import unicode_literals
 
 import pytest
 

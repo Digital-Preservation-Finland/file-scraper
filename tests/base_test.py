@@ -11,7 +11,6 @@ This module tests:
     - That _check_supported() method gives error messages properly
     - That initialization of detector works properly
 """
-from __future__ import unicode_literals
 
 import pytest
 

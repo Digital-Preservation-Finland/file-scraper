@@ -17,7 +17,6 @@ This module tests that:
       characters are not printed in the error message, only their hex
       representation.
 """
-from __future__ import unicode_literals
 
 import pytest
 

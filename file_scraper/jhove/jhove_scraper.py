@@ -1,5 +1,4 @@
 """Scraper for gif, html, jpeg, tif, pdf and wav files using JHove."""
-from __future__ import unicode_literals
 
 try:
     import lxml.etree
@@ -33,7 +32,7 @@ class JHoveScraperBase(BaseScraper):
         :params: Extra parameters needed for the scraper
         """
         self._report = None  # JHove report
-        super(JHoveScraperBase, self).__init__(
+        super().__init__(
             filename=filename, mimetype=mimetype, version=version,
             params=params)
 
@@ -84,7 +83,7 @@ class JHoveHtmlScraper(JHoveScraperBase):
         the (X)HTML file, and these are optional in practice. If these are
         missing, then we just need to rely on other scraper tools.
         """
-        super(JHoveHtmlScraper, self).scrape_file()
+        super().scrape_file()
 
         # self.streams is empty if MIME type is not supported.
         # We run _check_supported() in super() where this case
@@ -133,7 +132,7 @@ class JHovePdfScraper(JHoveScraperBase):
         version is logged in messages, which is useful for PDF-A file scraping.
         """
 
-        super(JHovePdfScraper, self).scrape_file()
+        super().scrape_file()
 
         if self.streams:
             mimetype = self.streams[0].mimetype()
@@ -145,7 +144,7 @@ class JHovePdfScraper(JHoveScraperBase):
                     self._messages = ["JHove does not support PDF 1.7: "
                                       "All errors and messages ignored."]
 
-                self._messages.append("PDF root version is {}".format(version))
+                self._messages.append(f"PDF root version is {version}")
 
 
 class JHoveWavScraper(JHoveScraperBase):
@@ -159,7 +158,7 @@ class JHoveWavScraper(JHoveScraperBase):
         Scrape file.
         Add extra error message, if RF64 profile used.
         """
-        super(JHoveWavScraper, self).scrape_file()
+        super().scrape_file()
         if "RF64" in get_field(self._report, "profile"):
             self._errors.append("RF64 is not a supported format")
 

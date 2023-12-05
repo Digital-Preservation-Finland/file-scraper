@@ -1,5 +1,4 @@
 """PDF/A scraper."""
-from __future__ import unicode_literals
 
 try:
     import lxml.etree as ET

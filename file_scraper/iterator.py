@@ -1,6 +1,5 @@
 """Scraper iterator."""
 # flake8: noqa
-from __future__ import unicode_literals
 
 from file_scraper.csv_scraper.csv_scraper import CsvScraper
 from file_scraper.detectors import (FidoDetector,
@@ -54,12 +53,11 @@ def iter_detectors():
     We want to keep the detectors in ordered list.
     :returns: detector class
     """
-    for cls in [FidoDetector,
+    yield from [FidoDetector,
                 MagicDetector,
                 PredefinedDetector,
                 SiardDetector,
-                SegYDetector]:
-        yield cls
+                SegYDetector]
 
 
 def iter_graders():
@@ -67,8 +65,7 @@ def iter_graders():
 
     :returns: grader class
     """
-    for cls in [MIMEGrader, TextGrader, ContainerStreamsGrader]:
-        yield cls
+    yield from [MIMEGrader, TextGrader, ContainerStreamsGrader]
 
 
 def iter_scrapers(mimetype, version, check_wellformed=True, params=None):

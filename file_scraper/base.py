@@ -1,5 +1,4 @@
 """Base module for scrapers."""
-from __future__ import unicode_literals
 
 import abc
 
@@ -11,7 +10,7 @@ from file_scraper.utils import metadata, is_metadata
 # pylint: disable=useless-object-inheritance
 
 
-class BaseScraper(object):
+class BaseScraper:
     """Base scraper implements common methods for all scrapers."""
     # pylint: disable=too-many-instance-attributes
 
@@ -172,7 +171,7 @@ class BaseScraper(object):
                 "tools": self.tools()}
 
 
-class BaseMeta(object):
+class BaseMeta:
     """
     All metadata is formalized in common data model.
 
@@ -257,7 +256,7 @@ class BaseMeta(object):
         return cls._supported
 
 
-class BaseDetector(object):
+class BaseDetector:
     """Class to identify file format."""
     # pylint: disable=too-few-public-methods
 

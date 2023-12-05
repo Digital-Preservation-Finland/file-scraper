@@ -1,5 +1,4 @@
 """Metadata model for dummy scrapers."""
-from __future__ import unicode_literals
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAP, UNAV
@@ -151,7 +150,7 @@ class DetectedTextVersionMeta(DetectedMimeVersionMeta):
     @metadata()
     def version(self):
         """Return version."""
-        version = super(DetectedTextVersionMeta, self).version()
+        version = super().version()
         if version == UNAV and self.mimetype() == "text/xml":
             return "1.0"
         return version

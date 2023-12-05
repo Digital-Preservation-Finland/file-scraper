@@ -1,5 +1,4 @@
 """Metadata models for JHove"""
-from __future__ import unicode_literals
 
 try:
     import mimeparse
@@ -26,7 +25,7 @@ def get_field(report, field):
     """
     if report is None:
         return UNAV
-    query = "(//j_harvard:%s | //j_opf:%s)/text()" % (field, field)
+    query = "(//j_harvard:{} | //j_opf:{})/text()".format(field, field)
     results = report.xpath(query, namespaces=NAMESPACES)
     if not results:
         return UNAV
@@ -147,7 +146,7 @@ class JHoveHtmlMeta(JHoveBaseMeta):
         """
         if not self._well_formed:
             return UNAV
-        mime = super(JHoveHtmlMeta, self).mimetype()
+        mime = super().mimetype()
         if mime == "text/xml" and \
                 get_field(self._report, "format") == "XHTML":
             return "application/xhtml+xml"
@@ -275,7 +274,7 @@ class JHoveWavMeta(JHoveBaseMeta):
             if reported_mimetype == "audio/vnd.wave":
                 return "audio/x-wav"
 
-        return super(JHoveWavMeta, self).mimetype()
+        return super().mimetype()
 
     @metadata(important=True)
     def version(self):
@@ -390,7 +389,7 @@ class JHoveDngMeta(JHoveBaseMeta):
     @metadata()
     def mimetype(self):
         """Return mimetype."""
-        mime = super(JHoveDngMeta, self).mimetype()
+        mime = super().mimetype()
         if mime == "image/tiff":
             return "image/x-adobe-dng"
         return mime

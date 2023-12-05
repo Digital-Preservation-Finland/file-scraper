@@ -1,7 +1,6 @@
 """
 Expected stream results for different AV files
 """
-from __future__ import unicode_literals
 
 from file_scraper.defaults import UNAP, UNAV
 
@@ -231,7 +230,7 @@ MXF_CONTAINER = {
     "codec_name": "MXF (Material eXchange Format)",
     "codec_creator_app_version": "56.40.101",
     "codec_creator_app": "FFmpeg OP1a Muxer",
-    "duration": u"PT1.03S",
+    "duration": "PT1.03S",
 }
 
 MXF_JPEG2000_VIDEO = dict(BASE_JPEG2000_VIDEO,

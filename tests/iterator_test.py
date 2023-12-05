@@ -5,7 +5,6 @@ This module tests that:
     - iter_scrapers(mimetype, version) returns the correct scrapers.
     - iter_detectors() returns the correct detectors.
 """
-from __future__ import unicode_literals
 
 import pytest
 
@@ -155,15 +154,15 @@ def test_iter_scrapers(mimetype, version, scraper_classes):
     scrapers = iter_scrapers(mimetype, version, False)
     scraper_set = set(scraper_classes).difference(set(WELLFORMED_SCRAPERS))
     if mimetype in ["application/gzip", "image/x-dpx"]:
-        scraper_set = set(["ScraperNotFound"])
+        scraper_set = {"ScraperNotFound"}
     assert {x.__name__ for x in scrapers} == scraper_set
 
 
 def test_iter_detectors():
     """Test detector discovery."""
     detectors = iter_detectors()
-    assert {x.__name__ for x in detectors} == set(["FidoDetector",
+    assert {x.__name__ for x in detectors} == {"FidoDetector",
                                                    "MagicDetector",
                                                    "PredefinedDetector",
                                                    "SegYDetector",
-                                                   "SiardDetector"])
+                                                   "SiardDetector"}

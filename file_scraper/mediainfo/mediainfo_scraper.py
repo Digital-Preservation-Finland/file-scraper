@@ -1,5 +1,4 @@
 """Scraper for video and audio files scraped using MediaInfo."""
-from __future__ import unicode_literals
 
 from file_scraper.base import BaseScraper
 import file_scraper.mediainfo
@@ -53,7 +52,7 @@ class MediainfoScraper(BaseScraper):
         :returns: None if scraper does not check well-formedness, True if the
                   file has been scraped without errors and otherwise False
         """
-        valid = super(MediainfoScraper, self).well_formed
+        valid = super().well_formed
         if not valid:
             return valid
 

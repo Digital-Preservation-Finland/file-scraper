@@ -1,5 +1,4 @@
 """Metadata model for Warcs."""
-from __future__ import unicode_literals
 
 from file_scraper.defaults import UNAV
 from file_scraper.utils import metadata, ensure_text

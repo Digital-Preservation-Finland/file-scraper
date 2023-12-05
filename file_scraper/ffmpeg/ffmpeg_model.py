@@ -1,5 +1,4 @@
 """Metadata model for FFMpeg scraper."""
-from __future__ import unicode_literals
 
 import re
 from fractions import Fraction

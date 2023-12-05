@@ -1,5 +1,4 @@
 """Scraper for CSV file formats."""
-from __future__ import unicode_literals
 
 import csv
 from io import open as io_open
@@ -83,7 +82,7 @@ class CsvScraper(BaseScraper):
             for _ in reader:
                 pass
 
-        except IOError as err:
+        except OSError as err:
             self._errors.append("Error when reading the file: " +
                                 str(err))
         except csv.Error as exception:

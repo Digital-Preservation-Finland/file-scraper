@@ -1,5 +1,4 @@
 """Metadata scraper for image file formats."""
-from __future__ import unicode_literals
 
 from file_scraper.base import BaseScraper
 from file_scraper.pil.pil_model import PngPilMeta, JpegPilMeta, \
@@ -25,7 +24,7 @@ class PilScraper(BaseScraper):
         :returns: False if PIL can not open or handle the file,
                   None otherwise.
         """
-        valid = super(PilScraper, self).well_formed
+        valid = super().well_formed
         if not valid:
             return valid
 

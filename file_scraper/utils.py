@@ -1,5 +1,4 @@
 """Utilities for scrapers."""
-from __future__ import unicode_literals
 
 import hashlib
 import string
@@ -178,7 +177,7 @@ def ensure_text(string, encoding="utf-8", errors="strict"):
     if isinstance(string, str):
         return string
 
-    raise TypeError("not expecting type '{}'".format(type(string)))
+    raise TypeError(f"not expecting type '{type(string)}'")
 
 
 def _merge_to_stream(stream, method, lose, importants):
@@ -222,7 +221,7 @@ def _merge_to_stream(stream, method, lose, importants):
         # Set the value as UNAV and raise ValueError
         existing_value = stream[method_name]
         stream[method_name] = UNAV
-        raise ValueError("Conflict with values '%s' and '%s' for '%s'." % (
+        raise ValueError("Conflict with values '{}' and '{}' for '{}'.".format(
             existing_value, method_value, method_name))
 
 
@@ -324,7 +323,7 @@ def concat(lines, prefix=""):
     :prefix: Prefix to prepend each line with
     :returns: Joined lines as string
     """
-    return "\n".join(["%s%s" % (prefix, line) for line in lines])
+    return "\n".join(["{}{}".format(prefix, line) for line in lines])
 
 
 def sanitize_bytestring(input_bytes):

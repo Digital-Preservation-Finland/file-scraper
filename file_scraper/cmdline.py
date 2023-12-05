@@ -2,7 +2,6 @@
 Command line interface for file-scraper
 """
 
-from __future__ import print_function
 
 import json
 import click
@@ -124,11 +123,11 @@ def _extra_options_to_dict(args):
                 # enhanced stack trace there.
                 # pylint: disable=raise-missing-from
                 raise click.ClickException(
-                    "No value found for parameter '{}'".format(key))
+                    f"No value found for parameter '{key}'")
 
             if value[0] == "-":
                 raise click.ClickException(
-                    "No value found for parameter '{}'".format(key))
+                    f"No value found for parameter '{key}'")
             next_option_index += 2
         option_dict[key] = _string_to_bool(value)
 

@@ -18,7 +18,6 @@ This module tests that:
     - These MIME types are also supported with None or a made up version.
     - A made up MIME type with any of these versions is not supported.
 """
-from __future__ import unicode_literals
 
 import PIL
 import pytest

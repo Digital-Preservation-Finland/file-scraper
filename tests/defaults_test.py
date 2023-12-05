@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Module to test the default constants that were set."""
 
 import pytest

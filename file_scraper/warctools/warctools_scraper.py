@@ -1,5 +1,4 @@
 """Warc file scraper."""
-from __future__ import unicode_literals
 
 import gzip
 import os.path
@@ -38,7 +37,7 @@ class WarctoolsScraper(BaseScraper):
         """
         if check_wellformed:
             return False
-        return super(WarctoolsScraper, cls).is_supported(
+        return super().is_supported(
             mimetype, version, check_wellformed, params)
 
     def scrape_file(self):
@@ -47,7 +46,7 @@ class WarctoolsScraper(BaseScraper):
             # First assume archive is compressed
             with gzip.open(self.filename) as warc_fd:
                 line = warc_fd.readline()
-        except IOError:
+        except OSError:
             # Not compressed archive
             with io_open(self.filename, "rb") as warc_fd:
                 line = warc_fd.readline()
@@ -107,13 +106,13 @@ class WarctoolsFullScraper(WarctoolsScraper):
                 % (shell.returncode, shell.stderr))
             # Filter some trash printed by warcvalid.
             filtered_errors = [line for line in shell.stderr.split("\n")
-                               if u"ignored line" not in line]
+                               if "ignored line" not in line]
             self._errors.append("\n".join(filtered_errors))
             return
 
         self._messages.append(shell.stdout)
 
-        super(WarctoolsFullScraper, self).scrape_file()
+        super().scrape_file()
 
 
 class GzipWarctoolsScraper(WarctoolsFullScraper):
@@ -130,7 +129,7 @@ class GzipWarctoolsScraper(WarctoolsFullScraper):
         that class is reported as the scraper class. For failures,
         the class is GzipWarctoolsScraper.
         """
-        info = super(GzipWarctoolsScraper, self).info()
+        info = super().info()
         if self.streams:
             info["class"] = "WarctoolsFullScraper"
         return info

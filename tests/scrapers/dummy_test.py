@@ -26,7 +26,6 @@ This module tests the following scraper classes:
         - Results given file format version as a scraper result
         - Results error in MIME type is not supported
 """
-from __future__ import unicode_literals
 
 import pytest
 

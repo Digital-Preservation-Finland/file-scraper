@@ -1,6 +1,5 @@
 """DPX scraper"""
 
-from __future__ import unicode_literals
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell

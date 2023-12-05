@@ -67,7 +67,6 @@ This module tests that:
       is given as the version.
     - A made up MIME type is not supported.
 """
-from __future__ import unicode_literals
 
 import os
 

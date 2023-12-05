@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Tests for File (libmagick) scraper.
 
@@ -74,7 +73,6 @@ This module tests that:
       for text files.
 """  # noqa  (it's neater to have long lines than to break mimetypes)
 
-from __future__ import unicode_literals
 
 import pytest
 

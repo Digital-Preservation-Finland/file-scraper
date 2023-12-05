@@ -1,5 +1,4 @@
 """Dummy scrapers."""
-from __future__ import unicode_literals
 
 import os.path
 
@@ -58,7 +57,7 @@ class NoWellformednessBaseScraper(BaseScraper):
         None - Well-formedness is unknown
         False - File is not well-formed (errors found)
         """
-        valid = super(NoWellformednessBaseScraper, self).well_formed
+        valid = super().well_formed
 
         return None if valid else valid
 
@@ -72,11 +71,11 @@ class FileExists(NoWellformednessBaseScraper):
             self._errors.append("No filename given.")
         elif os.path.isfile(self.filename):
             self._messages.append(
-                "File {} was found.".format(decode_path(self.filename))
+                f"File {decode_path(self.filename)} was found."
             )
         else:
             self._errors.append(
-                "File {} does not exist.".format(decode_path(self.filename))
+                f"File {decode_path(self.filename)} does not exist."
             )
         self.streams.append(DummyMeta())
 
@@ -183,7 +182,7 @@ class DetectedMimeVersionMetadataScraper(DetectedMimeVersionScraper):
         """
         if check_wellformed:
             return False
-        return super(DetectedMimeVersionMetadataScraper, cls).is_supported(
+        return super().is_supported(
             mimetype, version, check_wellformed, params)
 
 
@@ -198,7 +197,7 @@ class ResultsMergeScraper(NoWellformednessBaseScraper):
     def __init__(self, filename, mimetype, version=None, params=None):
         """
         """
-        super(ResultsMergeScraper, self).__init__(
+        super().__init__(
             filename=filename, mimetype=mimetype, version=version,
             params=params)
         if params is None:

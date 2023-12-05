@@ -101,7 +101,6 @@ requirements:
         - UTF iterator works as designed if there is only UTF control
           character (c3) in a file
 """
-from __future__ import unicode_literals
 
 from itertools import chain
 import pytest
@@ -235,7 +234,7 @@ def test_strip_zeros(float_str, expected_output):
     assert strip_zeros(float_str) == expected_output
 
 
-class MetaTest(object):
+class MetaTest:
     """A collection of metadata methods for testing purposes."""
 
     def __init__(self, value):

@@ -1,5 +1,4 @@
 """Class for XML file well-formed check with Xmllint."""
-from __future__ import unicode_literals
 
 import os
 import tempfile
@@ -56,7 +55,7 @@ class XmllintScraper(BaseScraper):
                              internet.
                  catalog_path: Path to XMLcatalog
         """
-        super(XmllintScraper, self).__init__(
+        super().__init__(
             filename=filename, mimetype=mimetype, version=version,
             params=params)
         if params is None:
@@ -87,7 +86,7 @@ class XmllintScraper(BaseScraper):
             params = {}
         if "schematron" in params:
             return False
-        return super(XmllintScraper, cls).is_supported(mimetype, version,
+        return super().is_supported(mimetype, version,
                                                        check_wellformed,
                                                        params)
 
@@ -143,7 +142,7 @@ class XmllintScraper(BaseScraper):
             self._errors.append("Failed: document is not well-formed.")
             self._errors.append(str(exception))
             return
-        except IOError as exception:
+        except OSError as exception:
             self._errors.append("Failed: missing file.")
             self._errors.append(str(exception))
             return
@@ -174,7 +173,7 @@ class XmllintScraper(BaseScraper):
 
         if exitcode == 0:
             self._messages.append(
-                "%s Success\n%s" % (decode_path(self.filename), stdout)
+                "{} Success\n{}".format(decode_path(self.filename), stdout)
             )
         else:
             self._errors += stderr.splitlines()
@@ -283,4 +282,4 @@ class XmllintScraper(BaseScraper):
         for error in errors_to_add:
             self._errors.append(error)
 
-        return super(XmllintScraper, self).errors()
+        return super().errors()

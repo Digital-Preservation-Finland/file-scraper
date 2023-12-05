@@ -4,7 +4,6 @@
    configuration paths, and will select these, if exist. If not, then
    system default file command and magic library is selected.
 """
-from __future__ import print_function
 import sys
 import ctypes
 from file_scraper.shell import Shell

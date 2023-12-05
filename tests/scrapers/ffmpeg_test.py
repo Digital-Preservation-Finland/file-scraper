@@ -53,7 +53,6 @@ This module tests that:
       checked.
     - Scraping is done also when well-formedness is not checked.
 """
-from __future__ import unicode_literals
 import os
 
 import pytest

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Integration test for scrapers:
     - Scraping with checking the well-formedness for valid files,
@@ -10,7 +9,6 @@ Integration test for scrapers:
     - Scraping with user predefined MIME type and version.
     - Scraping with predefined character encoding.
 """
-from __future__ import unicode_literals
 
 import os
 import shutil

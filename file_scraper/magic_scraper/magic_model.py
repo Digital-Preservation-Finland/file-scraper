@@ -1,5 +1,4 @@
 """Metadata models for files scraped using magic."""
-from __future__ import unicode_literals
 import re
 
 from file_scraper.base import BaseMeta
@@ -132,7 +131,7 @@ class XmlFileMagicMeta(TextMagicBaseMeta):
             params = {}
         if "schematron" in params:
             return False
-        return super(XmlFileMagicMeta, cls).is_supported(mimetype, version,
+        return super().is_supported(mimetype, version,
                                                          params)
 
     @metadata()
@@ -148,7 +147,7 @@ class XmlFileMagicMeta(TextMagicBaseMeta):
 
         We do not currently support XML 1.1. in dPres specifications.
         """
-        version = super(XmlFileMagicMeta, self).version()
+        version = super().version()
         try:
             if version not in ["1.0"]:
                 raise ValueError(
@@ -335,7 +334,7 @@ class JpegFileMagicMeta(BinaryMagicBaseMeta):
         if self._magic_result['magic_none'].lower().startswith(
                 exif_magic_line):
             return UNAV
-        return super(JpegFileMagicMeta, self).version()
+        return super().version()
 
 
 class Jp2FileMagicMeta(BinaryMagicBaseMeta):
@@ -386,7 +385,7 @@ class GifFileMagicMeta(BinaryMagicBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        version = super(GifFileMagicMeta, self).version()
+        version = super().version()
         if version in ["87a", "89a"]:
             return "19" + version
         return version

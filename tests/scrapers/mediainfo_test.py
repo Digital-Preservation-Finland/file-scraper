@@ -27,7 +27,6 @@ This module tests that:
     - These MIME types are also supported with a made up version.
     - Made up MIME types are not supported.
 """
-from __future__ import unicode_literals
 
 import pytest
 

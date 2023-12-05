@@ -1,5 +1,4 @@
 """Metadata model for TextfileScraper."""
-from __future__ import unicode_literals
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAP, UNAV

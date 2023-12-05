@@ -9,7 +9,6 @@ currently possible. For AVI files, Mediainfo is not able to report
 all required metadata, so for those files all metadata collection is
 done with FFMpegScraper, using FFMpegMeta as the metadata model.
 """
-from __future__ import unicode_literals
 
 import re
 
@@ -40,7 +39,7 @@ class FFMpegMetaScraper(BaseScraper):
 
         :returns: False if errors found, None otherwise.
         """
-        valid = super(FFMpegMetaScraper, self).well_formed
+        valid = super().well_formed
 
         return None if valid else valid
 
@@ -54,7 +53,7 @@ class FFMpegMetaScraper(BaseScraper):
         if check_wellformed:
             return False
 
-        return super(FFMpegMetaScraper, cls).is_supported(
+        return super().is_supported(
             mimetype=mimetype, version=version,
             check_wellformed=check_wellformed, params=params)
 
@@ -188,7 +187,7 @@ class FFMpegScraper(FFMpegMetaScraper):
         Scraper or not. If the a stream can not be identified by Scraper, then
         well-formedness can not be True.
         """
-        super(FFMpegScraper, self).scrape_file()
+        super().scrape_file()
         self._validate_file()
 
     def _validate_file(self):

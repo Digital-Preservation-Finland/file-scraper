@@ -13,7 +13,6 @@ This module tests that:
       withh versions "2.1.1" or "2.2" are supported.
     - A made up MIME type or version is not supported.
 """
-from __future__ import unicode_literals
 
 import pytest
 

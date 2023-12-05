@@ -11,7 +11,6 @@ This module tests that:
     - ExifToolDetector results are important only for dng files.
     - Character encoding detection works properly.
 """
-from __future__ import unicode_literals
 import time
 import pytest
 from fido.fido import Fido

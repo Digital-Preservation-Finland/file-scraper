@@ -1,5 +1,4 @@
 """Module for checking if the file is suitable as text file or not."""
-from __future__ import unicode_literals
 
 import io
 from file_scraper.base import BaseScraper
@@ -31,7 +30,7 @@ class TextfileScraper(BaseScraper):
         :returns: False if TextfileScraper can not open or handle the file,
                   None otherwise.
         """
-        valid = super(TextfileScraper, self).well_formed
+        valid = super().well_formed
         if not valid:
             return valid
 
@@ -98,7 +97,7 @@ class TextEncodingMetaScraper(BaseScraper):
         :params: Extra parameters as dict, the following is required:
                  charset: File character encoding
         """
-        super(TextEncodingMetaScraper, self).__init__(
+        super().__init__(
             filename=filename, mimetype=mimetype, version=version,
             params=params)
         self._charset = self._params.get("charset", UNAV)
@@ -111,7 +110,7 @@ class TextEncodingMetaScraper(BaseScraper):
                   the file,
                   None otherwise.
         """
-        valid = super(TextEncodingMetaScraper, self).well_formed
+        valid = super().well_formed
         if not valid:
             return valid
 
@@ -132,7 +131,7 @@ class TextEncodingMetaScraper(BaseScraper):
         """
         if check_wellformed:
             return False
-        return super(TextEncodingMetaScraper, cls).is_supported(
+        return super().is_supported(
             mimetype, version, check_wellformed, params)
 
     def scrape_file(self):
@@ -182,7 +181,7 @@ class TextEncodingScraper(BaseScraper):
         :params: Extra parameters as dict, the following is required:
                  charset: File character encoding
         """
-        super(TextEncodingScraper, self).__init__(
+        super().__init__(
             filename=filename, mimetype=mimetype, version=version,
             params=params)
         self._charset = self._params.get("charset", UNAV)
@@ -195,7 +194,7 @@ class TextEncodingScraper(BaseScraper):
             self._errors.append("Character encoding not defined.")
             return
         try:
-            with io.open(self.filename, "rb") as infile:
+            with open(self.filename, "rb") as infile:
                 position = 0
                 probably_utf8 = None  # Not suggesting UTF-8 if empty file
 
@@ -230,7 +229,7 @@ class TextEncodingScraper(BaseScraper):
                     self._messages.append(
                         "Character encoding validated successfully.")
 
-        except IOError as err:
+        except OSError as err:
             self._errors.append("Error when reading the file: " +
                                 str(err))
         except (ForbiddenCharacterError, UnknownEncodingError) as exception:
@@ -339,5 +338,5 @@ class TextEncodingScraper(BaseScraper):
             index = decoded_chunk.find(forb_char)
             if index > -1:
                 raise ForbiddenCharacterError(
-                    "Illegal character '%s' in position %s" % (
+                    "Illegal character '{}' in position {}".format(
                         repr(forb_char)[1:-1], (position+index)))

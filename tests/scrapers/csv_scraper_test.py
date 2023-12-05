@@ -1,5 +1,3 @@
-# -*- coding: UTF-8 -*-
-
 """
 Tests for Csv scraper
 
@@ -27,7 +25,6 @@ This module tests that:
     - Non-existent files are not well-formed and the inability to read the
       file is logged as an error.
 """
-from __future__ import unicode_literals
 
 import io
 import os
@@ -238,7 +235,7 @@ def test_large_field(filename, result_dict, header,
     tempdatapath = os.path.join(testpath, "text_csv")
     os.makedirs(tempdatapath)
     tempfilepath = os.path.join(tempdatapath, filename)
-    with io.open(tempfilepath, 'w', encoding='utf8') as tempfile:
+    with open(tempfilepath, 'w', encoding='utf8') as tempfile:
         tempfile.write("test1,test2\ntest3,")
         tempfile.write(size*"a")
 

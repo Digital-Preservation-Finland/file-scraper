@@ -12,7 +12,6 @@ This module tests that:
       type (application/msword) at least one of them reports it as not well-
       formed.
 """
-from __future__ import unicode_literals
 
 import os
 import pytest

@@ -1,5 +1,4 @@
 """Metadata scraper for AV files."""
-from __future__ import unicode_literals
 
 import re
 
@@ -317,7 +316,7 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
     @metadata()
     def version(self):
         """Return version of stream."""
-        version = super(MkvMediainfoMeta, self).version()
+        version = super().version()
         if isinstance(version, str):
             version = version.split(".")[0]
         return version
@@ -337,7 +336,7 @@ class FfvMediainfoMeta(BaseMediainfoMeta):
     @metadata()
     def version(self):
         """Return version of stream."""
-        version = super(FfvMediainfoMeta, self).version()
+        version = super().version()
         if isinstance(version, str):
             version = version.split(".")[0]
         return version
@@ -399,7 +398,7 @@ class AiffMediainfoMeta(BaseMediainfoMeta):
         distinction between container and soundtrack needs to be made,
         as both are treated as one in the DPS.
         """
-        super(AiffMediainfoMeta, self).__init__(tracks, index)
+        super().__init__(tracks, index)
         self._container = None
 
     @metadata()
@@ -492,7 +491,7 @@ class WmaMediainfoMeta(BaseMediainfoMeta):
         WMA supports both fixed and variable bit rates. Variable
         bit rate mode was officially introduced in WMA9.
         """
-        mode = super(WmaMediainfoMeta, self).data_rate_mode()
+        mode = super().data_rate_mode()
         if mode not in [UNAV, None]:
             return mode
 
@@ -551,7 +550,7 @@ class WmvMediainfoMeta(BaseMediainfoMeta):
 
         WMV supports both fixed and variable bit rates.
         """
-        mode = super(WmvMediainfoMeta, self).data_rate_mode()
+        mode = super().data_rate_mode()
         if mode not in [UNAV, None]:
             return mode
 
@@ -577,7 +576,7 @@ class WmvMediainfoMeta(BaseMediainfoMeta):
         WMV files are by default in color, we can just use it as a
         default value if no other value is found.
         """
-        mode = super(WmvMediainfoMeta, self).color()
+        mode = super().color()
         if mode not in [UNAV, None]:
             return mode
 
@@ -618,7 +617,7 @@ class WavMediainfoMeta(BaseMediainfoMeta):
         distinction between container and soundtrack needs to be made,
         as both are treated as one in the DPS.
         """
-        super(WavMediainfoMeta, self).__init__(tracks, index)
+        super().__init__(tracks, index)
         self._container = None
 
     @metadata()
@@ -675,7 +674,7 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
         that MP4 does not support NAL stuffing and thus it cannot be
         forced to have constant bit rate.
         """
-        mode = super(MpegMediainfoMeta, self).data_rate_mode()
+        mode = super().data_rate_mode()
         if mode not in [UNAV, None]:
             return mode
         if self._stream.bit_rate_mode == "CBR":

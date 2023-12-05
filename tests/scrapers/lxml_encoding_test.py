@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Tests for XML encoding validator.
 
@@ -15,7 +14,6 @@ This module tests that:
     - A made up MIME type with correct version is reported as not supported.
     - Scraper works as designed with charset parameter.
 """
-from __future__ import unicode_literals
 
 import os
 import io
@@ -38,13 +36,13 @@ def test_xml_encoding(testpath, file_encoding):
 
     :file_encoding: File character encoding
     """
-    enc_match = {"latin_1": u"ISO-8859-15",
+    enc_match = {"latin_1": "ISO-8859-15",
                  "utf_8": "UTF-8",
                  "utf_16": "UTF-16"}
     xml = """<?xml version="1.0" encoding="{}" ?>
               <a>åäö</a>""".format(enc_match[file_encoding])
     tmppath = os.path.join(testpath, "valid__.csv")
-    with io.open(tmppath, "wb") as file_:
+    with open(tmppath, "wb") as file_:
         file_.write(xml.encode(file_encoding))
 
     scraper = LxmlScraper(filename=tmppath, mimetype="text/xml",

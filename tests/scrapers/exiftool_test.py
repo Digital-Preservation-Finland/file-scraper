@@ -8,7 +8,6 @@ This module tests that:
 
 """
 
-from __future__ import unicode_literals
 
 import pytest
 

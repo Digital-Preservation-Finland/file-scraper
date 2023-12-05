@@ -1,5 +1,4 @@
 """Class for XML and HTML5 header encoding check with lxml. """
-from __future__ import unicode_literals
 
 try:
     from lxml import etree
@@ -38,7 +37,7 @@ class LxmlScraper(BaseScraper):
             return False
         if mimetype == "text/xml" and check_wellformed:
             return True
-        return super(LxmlScraper, cls).is_supported(mimetype, version,
+        return super().is_supported(mimetype, version,
                                                     check_wellformed, params)
 
     def scrape_file(self):
@@ -52,7 +51,7 @@ class LxmlScraper(BaseScraper):
                 self._errors.append("Failed: document is not well-formed.")
                 self._errors.append(str(exception))
                 return
-            except IOError as exception:
+            except OSError as exception:
                 self._errors.append("Failed: missing file.")
                 self._errors.append(str(exception))
                 return

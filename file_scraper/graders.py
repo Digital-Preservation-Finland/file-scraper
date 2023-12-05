@@ -12,7 +12,7 @@ from file_scraper.defaults import (
 )
 
 
-class BaseGrader(object):
+class BaseGrader:
     """Base class for graders."""
     def __init__(self, scraper):
         """Initialize grader."""
@@ -532,11 +532,11 @@ class ContainerStreamsGrader(BaseGrader):
         # Create a set of (mime_type, version) tuples
         # This makes it trivial to check which grade should be assigned
         # using set operations.
-        contained_formats = set(
+        contained_formats = {
             (stream["mimetype"], stream["version"])
             for index, stream in self.streams.items()
             if index != 0
-        )
+        }
 
         recommended = self.recommended_formats.get(container_mimetype, set())
         acceptable = self.acceptable_formats.get(container_mimetype, set())

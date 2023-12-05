@@ -120,7 +120,6 @@ This module tests that:
         - For EPUB 2 files created with LibreOffice's built-in export function,
           scraper errors contains "element \"title\" not allowed here".
 """
-from __future__ import unicode_literals
 import os
 
 import pytest
@@ -441,7 +440,7 @@ def test_pdf_root_version_in_results(filename, version):
         filename=filename,
         mimetype="application/pdf")
     scraper.scrape_file()
-    assert "PDF root version is {}".format(version) in scraper.messages()
+    assert f"PDF root version is {version}" in scraper.messages()
 
 
 def test_pdf_17_scraping_result_ignored():

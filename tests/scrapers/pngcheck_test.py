@@ -12,7 +12,6 @@ This module tests that:
     - When well-formedness is not checked, image/png 1.2 is not supported.
     - A made up MIME type is not supported.
 """
-from __future__ import unicode_literals
 
 import pytest
 

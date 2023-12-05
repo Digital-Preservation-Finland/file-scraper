@@ -1,6 +1,5 @@
 """Metadata models for ExifTool"""
 
-from __future__ import unicode_literals
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAV
@@ -37,7 +36,7 @@ class ExifToolDngMeta(ExifToolBaseMeta):
         conflict can be avoided and the mimetype of dng files will be scraped
         correctly when merging the results from different scrapers.
         """
-        return super(ExifToolDngMeta, self).mimetype()
+        return super().mimetype()
 
     @metadata(important=True)
     def version(self):

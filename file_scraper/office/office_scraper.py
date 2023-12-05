@@ -1,5 +1,4 @@
 """Office file scraper."""
-from __future__ import unicode_literals
 
 import os.path
 import shutil
@@ -39,7 +38,7 @@ class OfficeScraper(BaseScraper):
                     % (shell.returncode, shell.stderr))
             self._messages.append(shell.stdout)
         except OSError as error:
-            self._errors.append("Error handling file: {}".format(error))
+            self._errors.append(f"Error handling file: {error}")
         finally:
             shutil.rmtree(temp_dir)
             self.streams = list(self.iterate_models())

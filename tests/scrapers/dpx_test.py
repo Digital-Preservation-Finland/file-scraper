@@ -17,7 +17,6 @@ This module tests that:
     - the scraper reports MIME type 'image/x-dpx' with version 2.0 as not
       supported when only well-formed check is performed
 """
-from __future__ import unicode_literals
 import os
 
 import pytest

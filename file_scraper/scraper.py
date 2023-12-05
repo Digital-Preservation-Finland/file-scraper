@@ -1,5 +1,4 @@
 """File metadata scraper."""
-from __future__ import unicode_literals
 
 from file_scraper.defaults import (
     ACCEPTABLE,
@@ -21,7 +20,7 @@ from file_scraper.utils import encode_path, hexdigest
 LOSE = (None, UNAV, "")
 
 
-class Scraper(object):
+class Scraper:
     """File indentifier and scraper."""
 
     # pylint: disable=no-member, too-many-instance-attributes

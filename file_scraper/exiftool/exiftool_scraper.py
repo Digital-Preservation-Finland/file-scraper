@@ -1,6 +1,5 @@
 """Scraper for dng files using ExifTool """
 
-from __future__ import unicode_literals
 
 import exiftool
 import json
@@ -23,7 +22,7 @@ class ExifToolScraperBase(BaseScraper):
         :version: Predefined file format version
         :params: Extra parameters needed for the scraper
         """
-        super(ExifToolScraperBase, self).__init__(
+        super().__init__(
             filename=filename, mimetype=mimetype, version=version,
             params=params)
 
@@ -34,7 +33,7 @@ class ExifToolScraperBase(BaseScraper):
         :returns: False if ExifTool can not open or handle the file,
                   None otherwise.
         """
-        valid = super(ExifToolScraperBase, self).well_formed
+        valid = super().well_formed
         if not valid:
             return valid
 

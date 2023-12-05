@@ -22,7 +22,6 @@ This module tests that:
       well-formedness is not checked. The scraper also does not support made
       up MIME types or versions.
 """
-from __future__ import unicode_literals
 import os
 
 import pytest

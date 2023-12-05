@@ -3,7 +3,6 @@
 This scraper does not scrape metadata but instead checks well-formedness
 of SIARD files.
 """
-from __future__ import unicode_literals
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell

@@ -1,5 +1,4 @@
 """Schematron scraper."""
-from __future__ import unicode_literals
 
 import os
 import shutil
@@ -36,7 +35,7 @@ class SchematronScraper(BaseScraper):
                              required. This can be a hash of files which are
                              called by the schematron file.
         """
-        super(SchematronScraper, self).__init__(
+        super().__init__(
             filename=filename, mimetype=mimetype, version=version,
             params=params)
         if params is None:
@@ -68,7 +67,7 @@ class SchematronScraper(BaseScraper):
             params = {}
         if "schematron" not in params:
             return False
-        return super(SchematronScraper, cls).is_supported(
+        return super().is_supported(
             mimetype, version, check_wellformed, params)
 
     @property
@@ -222,11 +221,11 @@ class SchematronScraper(BaseScraper):
         if self._verbose:
             extra = "verbose"
         if self._extra_hash is not None:
-            extra = "%s%s" % (extra, self._extra_hash)
+            extra = "{}{}".format(extra, self._extra_hash)
         schema_digest = hexdigest(self._schematron_file, extra_hash=extra)
         schema_basename = os.path.basename(self._schematron_file)
 
-        return os.path.join(self._cachepath, "%s.%s.validator.xsl" % (
+        return os.path.join(self._cachepath, "{}.{}.validator.xsl".format(
             schema_basename, schema_digest))
 
 

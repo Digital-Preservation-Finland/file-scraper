@@ -1,5 +1,4 @@
 """Metadata models for Wand"""
-from __future__ import unicode_literals
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAV

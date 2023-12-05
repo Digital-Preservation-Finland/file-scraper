@@ -1,5 +1,4 @@
 """A HTML5 scraper module using The Nu Html Checker."""
-from __future__ import unicode_literals
 
 import os
 
