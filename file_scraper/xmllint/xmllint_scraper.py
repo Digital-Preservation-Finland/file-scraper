@@ -3,6 +3,7 @@
 import os
 import tempfile
 from io import open as io_open
+from xml.etree import ElementTree as ET
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
@@ -154,7 +155,7 @@ class XmllintScraper(BaseScraper):
         # Try check againts XSD
         else:
             if not self._schema:
-                self._schema = self.construct_xsd(tree)
+                self._schema = self.construct_xsd()
                 if not self._schema:
                     # No given schema and didn't find included schemas but XML
                     # was well formed.
@@ -183,27 +184,28 @@ class XmllintScraper(BaseScraper):
             well_formed=self.well_formed, tree=tree))
         self._check_supported()
 
-    def construct_xsd(self, document_tree):
+    def construct_xsd(self):
         """
-        Construct one schema file for the given document tree.
+        Construct one schema file for the given document.
 
         The schema file will be placed temporarily in a temporary directory.
 
         :returns: Path to the constructed XSD schema
         """
+        XSI_SCHEMA_LOCATION = f'{{{XSI}}}schemaLocation'
+        XSI_NO_NS_SCHEMA_LOCATION = f'{{{XSI}}}noNamespaceSchemaLocation'
 
         xsd_exists = False
 
         parser = etree.XMLParser(dtd_validation=False, no_network=True)
         schema_tree = etree.XML(SCHEMA_TEMPLATE, parser)
 
-        schema_locations = set(document_tree.xpath(
-            "//*/@xsi:schemaLocation", namespaces={"xsi": XSI}))
+        schema_locations = self.iter_elements(XSI_SCHEMA_LOCATION)
         for schema_location in schema_locations:
             xsd_exists = True
 
             namespaces_locations = schema_location.strip().split()
-            # Import all found namspace/schema location pairs
+            # Import all found namespace/schema location pairs
             for namespace, location in zip(*[iter(namespaces_locations)] * 2):
                 xs_import = etree.Element(XS + "import")
                 xs_import.attrib["namespace"] = namespace
@@ -211,16 +213,16 @@ class XmllintScraper(BaseScraper):
                     "schemaLocation"] = self._evaluate_xsd_location(location)
                 schema_tree.append(xs_import)
 
-        schema_locations = set(document_tree.xpath(
-            "//*/@xsi:noNamespaceSchemaLocation", namespaces={"xsi": XSI}))
+        schema_locations = self.iter_elements(XSI_NO_NS_SCHEMA_LOCATION)
         for schema_location in schema_locations:
             xsd_exists = True
             xs_import = etree.Element(XS + "import")
             xs_import.attrib["schemaLocation"] = decode_path(
                 self._evaluate_xsd_location(schema_location))
             schema_tree.append(xs_import)
+
         if xsd_exists:
-            # Contstruct the schema
+            # Construct the schema
             _, schema = tempfile.mkstemp(
                 prefix="file-scraper-", suffix=".tmp")
             elem_tree = etree.ElementTree(schema_tree)
@@ -230,6 +232,30 @@ class XmllintScraper(BaseScraper):
             return schema
 
         return []
+
+    def iter_elements(self, attribute):
+        """
+        Iterate through all elements in xml tree.
+
+        :yields: schema locations
+        """
+        stack = []
+        events = ["start", "end"]
+
+        for event, element in ET.iterparse(self.filename, events=events):
+
+            if event == 'start':
+                stack.append(element)
+                continue
+
+            stack.pop()
+
+            schema_location = element.attrib.get(attribute)
+            if schema_location:
+                yield schema_location
+
+            if stack:
+                stack[-1].remove(element)
 
     def exec_xmllint(self, dtd_check=False, schema=None):
         """
