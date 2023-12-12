@@ -132,7 +132,7 @@ class XmlFileMagicMeta(TextMagicBaseMeta):
         if "schematron" in params:
             return False
         return super().is_supported(mimetype, version,
-                                                         params)
+                                    params)
 
     @metadata()
     def version(self):

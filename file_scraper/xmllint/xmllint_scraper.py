@@ -87,8 +87,8 @@ class XmllintScraper(BaseScraper):
         if "schematron" in params:
             return False
         return super().is_supported(mimetype, version,
-                                                       check_wellformed,
-                                                       params)
+                                    check_wellformed,
+                                    params)
 
     def _evaluate_xsd_location(self, location):
         """Determine whether or not the XSD schema is a

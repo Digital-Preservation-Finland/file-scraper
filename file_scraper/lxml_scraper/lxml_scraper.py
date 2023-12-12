@@ -38,7 +38,7 @@ class LxmlScraper(BaseScraper):
         if mimetype == "text/xml" and check_wellformed:
             return True
         return super().is_supported(mimetype, version,
-                                                    check_wellformed, params)
+                                    check_wellformed, params)
 
     def scrape_file(self):
         """Scrape file."""

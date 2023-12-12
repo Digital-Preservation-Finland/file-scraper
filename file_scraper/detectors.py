@@ -161,7 +161,7 @@ class FidoDetector(BaseDetector):
         :version: File format version from another source, e.g. METS
         """
         super().__init__(filename, mimetype=mimetype,
-                                           version=version)
+                         version=version)
         self._puid = None
 
     def detect(self):
@@ -378,7 +378,7 @@ class MagicCharset(BaseDetector):
         """Initialize detector."""
         self.charset = None
         super().__init__(filename, mimetype=mimetype,
-                                           version=version)
+                         version=version)
 
     @classmethod
     def is_supported(cls, mimetype):

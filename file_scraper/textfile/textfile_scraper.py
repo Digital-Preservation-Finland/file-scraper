@@ -1,6 +1,5 @@
 """Module for checking if the file is suitable as text file or not."""
 
-import io
 from file_scraper.base import BaseScraper
 from file_scraper.defaults import UNAV
 from file_scraper.exceptions import (ForbiddenCharacterError,
