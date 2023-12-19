@@ -18,6 +18,9 @@ except ImportError:
 XSI = "http://www.w3.org/2001/XMLSchema-instance"
 XS = "{http://www.w3.org/2001/XMLSchema}"
 
+XSI_SCHEMA_LOCATION = f"{{{XSI}}}schemaLocation"
+XSI_NO_NS_SCHEMA_LOCATION = f"{{{XSI}}}noNamespaceSchemaLocation"
+
 SCHEMA_TEMPLATE = b"""<?xml version = "1.0" encoding = "UTF-8"?>
 <xs:schema xmlns="http://dummy"
 targetNamespace="http://dummy"
@@ -192,9 +195,6 @@ class XmllintScraper(BaseScraper):
 
         :returns: Path to the constructed XSD schema
         """
-        XSI_SCHEMA_LOCATION = f'{{{XSI}}}schemaLocation'
-        XSI_NO_NS_SCHEMA_LOCATION = f'{{{XSI}}}noNamespaceSchemaLocation'
-
         xsd_exists = False
 
         parser = etree.XMLParser(dtd_validation=False, no_network=True)
