@@ -416,6 +416,9 @@ class ContainerStreamsGrader(BaseGrader):
             # Video
             ("video/mp4", UNAP),
             ("video/jpeg2000", UNAP),
+        },
+        "audio/mp4": {
+            ("audio/mp4", UNAP)
         }
     }
     acceptable_formats = {

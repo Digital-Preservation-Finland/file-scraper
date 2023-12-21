@@ -38,6 +38,12 @@ FORMATS = [
         "properties": {"format": "AAC"}
     },
     {
+        "mimetype": "audio/mp4",
+        "properties": {"format": "MPEG-4", "format_profile": "Apple audio "
+                                                             "with iTunes "
+                                                             "info"}
+    },
+    {
         "mimetype": "video/mp4",
         "properties": {"format": "AVC"}
     },
