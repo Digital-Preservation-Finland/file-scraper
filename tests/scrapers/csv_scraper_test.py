@@ -26,7 +26,6 @@ This module tests that:
       file is logged as an error.
 """
 
-import io
 import os
 import pytest
 

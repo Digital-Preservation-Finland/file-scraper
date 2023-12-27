@@ -16,7 +16,6 @@ This module tests that:
 """
 
 import os
-import io
 
 import pytest
 
