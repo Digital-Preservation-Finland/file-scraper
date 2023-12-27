@@ -162,7 +162,7 @@ def test_iter_detectors():
     """Test detector discovery."""
     detectors = iter_detectors()
     assert {x.__name__ for x in detectors} == {"FidoDetector",
-                                                   "MagicDetector",
-                                                   "PredefinedDetector",
-                                                   "SegYDetector",
-                                                   "SiardDetector"}
+                                               "MagicDetector",
+                                               "PredefinedDetector",
+                                               "SegYDetector",
+                                               "SiardDetector"}
