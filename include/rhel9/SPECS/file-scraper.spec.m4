@@ -45,6 +45,10 @@ Requires:       /usr/bin/ffmpeg
 Requires:       perl-Image-ExifTool
 Requires:       veraPDF
 Conflicts:      %{full_sp_name} < %{version}-%{release}, %{full_sp_name} > %{version}-%{release}
+# The ffmpeg-free package in EPEL does not have all the codecs we need for
+# validation. The ffmpeg package from RPMFusion should be installed with
+# file-scraper.
+Conflicts:	ffmpeg-free
 
 %description -n %{core_sp_name} %_description
 
@@ -66,6 +70,7 @@ Requires:       iso-schematron-xslt1
 # It seems this is a metapackage that requires everything we need in EL9. If
 # not, add additional libreoffice dependencies here.
 Requires:       libreoffice
+Conflicts:      ffmpeg-free
 
 %description -n %{full_sp_name}
 File scraper full: File detector, metadata collector and well-formed checker tools
