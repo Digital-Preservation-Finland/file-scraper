@@ -20,3 +20,4 @@ jpylyzer >= 2.2.0
 git+https://gitlab.ci.csc.fi/dpres/ffmpeg-python.git#egg=ffmpeg_python
 # Get our newest format string changes not yet present in official Fido repository
 git+https://gitlab.ci.csc.fi/dpres/fido.git@develop#egg=opf_fido
+git+https://gitlab.ci.csc.fi/dpres/xml-helpers.git@develop#egg=xml_helpers

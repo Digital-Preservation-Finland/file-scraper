@@ -3,7 +3,7 @@
 import os
 import tempfile
 from io import open as io_open
-from xml.etree import ElementTree as ET
+from xml_helpers.utils import iter_elements
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
@@ -200,26 +200,32 @@ class XmllintScraper(BaseScraper):
         parser = etree.XMLParser(dtd_validation=False, no_network=True)
         schema_tree = etree.XML(SCHEMA_TEMPLATE, parser)
 
-        schema_locations = self.iter_elements(XSI_SCHEMA_LOCATION)
-        for schema_location in schema_locations:
-            xsd_exists = True
+        elements = iter_elements(self.filename)
+        for element in elements:
+            schema_location = element.attrib.get(XSI_SCHEMA_LOCATION)
 
-            namespaces_locations = schema_location.strip().split()
-            # Import all found namespace/schema location pairs
-            for namespace, location in zip(*[iter(namespaces_locations)] * 2):
+            if schema_location:
+                xsd_exists = True
+                namespaces_locations = schema_location.strip().split()
+                # Import all found namespace/schema location pairs
+                for namespace, location in zip(
+                        *[iter(namespaces_locations)] * 2):
+                    xs_import = etree.Element(XS + "import")
+                    xs_import.attrib["namespace"] = namespace
+                    xs_import.attrib[
+                        "schemaLocation"] = self._evaluate_xsd_location(
+                            location)
+                    schema_tree.append(xs_import)
+
+        elements = iter_elements(self.filename)
+        for element in elements:
+            schema_location = element.attrib.get(XSI_NO_NS_SCHEMA_LOCATION)
+            if schema_location:
+                xsd_exists = True
                 xs_import = etree.Element(XS + "import")
-                xs_import.attrib["namespace"] = namespace
-                xs_import.attrib[
-                    "schemaLocation"] = self._evaluate_xsd_location(location)
+                xs_import.attrib["schemaLocation"] = decode_path(
+                    self._evaluate_xsd_location(schema_location))
                 schema_tree.append(xs_import)
-
-        schema_locations = self.iter_elements(XSI_NO_NS_SCHEMA_LOCATION)
-        for schema_location in schema_locations:
-            xsd_exists = True
-            xs_import = etree.Element(XS + "import")
-            xs_import.attrib["schemaLocation"] = decode_path(
-                self._evaluate_xsd_location(schema_location))
-            schema_tree.append(xs_import)
 
         if xsd_exists:
             # Construct the schema
@@ -232,30 +238,6 @@ class XmllintScraper(BaseScraper):
             return schema
 
         return []
-
-    def iter_elements(self, attribute):
-        """
-        Iterate through all elements in xml tree.
-
-        :yields: schema locations
-        """
-        stack = []
-        events = ["start", "end"]
-
-        for event, element in ET.iterparse(self.filename, events=events):
-
-            if event == 'start':
-                stack.append(element)
-                continue
-
-            stack.pop()
-
-            schema_location = element.attrib.get(attribute)
-            if schema_location:
-                yield schema_location
-
-            if stack:
-                stack[-1].remove(element)
 
     def exec_xmllint(self, dtd_check=False, schema=None):
         """

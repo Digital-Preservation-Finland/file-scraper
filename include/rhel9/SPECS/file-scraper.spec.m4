@@ -41,6 +41,7 @@ File scraper: Basic file detector and metadata collector tools
 Summary:        File scraper analysis tool
 Requires:       %{py3_dist ffmpeg-python}
 Requires:       %{py3_dist opf-fido}
+Requires:       %{py3_dist xml-helpers}
 Requires:       /usr/bin/ffmpeg
 Requires:       perl-Image-ExifTool
 Requires:       veraPDF

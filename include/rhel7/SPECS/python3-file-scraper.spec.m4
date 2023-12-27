@@ -41,6 +41,7 @@ Requires:       python36-mimeparse
 Requires:       python3-jpylyzer >= 2.2.0
 Requires:       libreoffice7.2-full
 Requires:       dbptk-developer
+Requires:       python3-xml-helpers
 
 %description
 File scraper: Basic file detector and metadata collector tools
