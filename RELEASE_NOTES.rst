@@ -1,6 +1,12 @@
 Release notes
 =============
 
+Version 0.64
+------------
+
+- Fix a bug related to ffmpeg that caused validation to fail with some video files.
+- Remove some Python 2 remainders from the code.
+
 Version 0.63
 ------------
 
