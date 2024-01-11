@@ -55,7 +55,9 @@ from tests.scrapers.stream_dicts import (AIFF_AUDIO,
                                          MPEG1_VIDEO,
                                          MPEG2_VIDEO,
                                          MPEG4_AUDIO,
+                                         M4A_MPEG4_AUDIO,
                                          MPEG4_CONTAINER,
+                                         M4A_MPEG4_CONTAINER,
                                          MPEG4_VIDEO,
                                          MPEGPS_AUDIO,
                                          MPEG1PS_CONTAINER,
@@ -465,6 +467,52 @@ def test_mediainfo_scraper_mp4(filename, result_dict, evaluate_scraper):
 @pytest.mark.parametrize(
     ["filename", "result_dict"],
     [
+        (
+            "valid__aac.m4a",
+            {
+                "purpose": "Test valid m4a.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": "",
+                "streams": {0: M4A_MPEG4_CONTAINER.copy(),
+                            1: M4A_MPEG4_AUDIO.copy()}
+            }
+        ),
+        (
+            "invalid__empty.m4a",
+            {
+                "purpose": "Test invalid m4a.",
+                "stdout_part": "",
+                "stderr_part": "No audio or video tracks found"
+            }
+        )
+    ]
+)
+def test_mediainfo_scraper_m4a(filename, result_dict, evaluate_scraper):
+    """
+    Test M4A scraping with MediainfoScraper.
+
+    :filename: Test file name
+    :result_dict: Result dict containing the test purpose, parts of
+                  expected results of stdout and stderr, and expected
+                  streams
+    """
+    mimetype = "audio/mp4"
+    correct = parse_results(filename, mimetype, result_dict, False)
+    scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
+    scraper.scrape_file()
+
+    if "empty" in filename:
+        assert partial_message_included(correct.stdout_part,
+                                        scraper.messages())
+        assert partial_message_included(correct.stderr_part, scraper.errors())
+        assert not scraper.streams
+    else:
+        evaluate_scraper(scraper, correct)
+
+
+@pytest.mark.parametrize(
+    ["filename", "result_dict"],
+    [
         ("valid_1.mp3", {
             "purpose": "Test valid mp3.",
             "stdout_part": "file was analyzed successfully",
@@ -623,6 +671,7 @@ def test_mediainfo_scraper_avi(evaluate_scraper):
         ("video/MP2P", ""),
         ("video/MP2T", ""),
         ("audio/x-wav", ""),
+        ("audio/mp4", "")
     ]
 )
 def test_is_supported(mime, ver):

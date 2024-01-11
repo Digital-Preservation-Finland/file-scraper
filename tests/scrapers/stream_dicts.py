@@ -166,6 +166,13 @@ MPEG4_AUDIO = dict(MPEG1_AUDIO, **{
     "duration": "PT0.86S", "data_rate": "135.233",
     "codec_creator_app": "Lavf56.40.101"})
 
+M4A_MPEG4_AUDIO = dict(MPEG4_AUDIO, **{
+    "index": 1,
+    "version": UNAP,
+    "codec_creator_app_version": UNAV,
+    "duration": "PT1.67S", "data_rate": "144",
+    "codec_creator_app": UNAV})
+
 MOV_MPEG4_AUDIO = dict(MPEG4_AUDIO, **{
     "duration": "PT0.91S", "data_rate": "128.298"
     })
@@ -179,6 +186,10 @@ MPEG4_CONTAINER = {
     "version": UNAP, "codec_name": "MPEG-4",
     "codec_creator_app_version": "56.40.101",
     "codec_creator_app": "Lavf56.40.101"}
+
+M4A_MPEG4_CONTAINER = dict(MPEG4_CONTAINER, **{
+    "codec_creator_app_version": UNAV,
+    "codec_creator_app": UNAV})
 
 MPEGTS_CONTAINER = {
     "codec_creator_app": UNAV,

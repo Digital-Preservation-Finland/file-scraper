@@ -141,7 +141,13 @@ UNAV_ELEMENTS = {
     "tests/data/application_mxf/valid__jpeg2000_grayscale.mxf": ["dar", "par"],
     "tests/data/application_mxf/valid__jpeg2000_lossless.mxf": ["dar", "par"],
     "tests/data/application_mxf/valid__jpeg2000_lossless-wavelet_lossy-subsampling.mxf":
-        ["dar", "par"]
+        ["dar", "par"],
+    "tests/data/audio_mp4/valid__aac.m4a": [
+        "bits_per_sample",
+        "codec_creator_app",
+        "codec_creator_app",
+        "codec_creator_app_version",
+        "codec_creator_app_version"],
 }
 
 # These are actually valid with another mimetype or version
@@ -461,7 +467,8 @@ def test_without_wellformed(fullname, mimetype, version):
 
     mimepart = mimetype.split("/")[0]
     if mimepart in ["image", "video", "text", "audio"]:
-        assert mimepart in scraper.streams[0]["stream_type"]
+        assert (mimepart in scraper.streams[0]["stream_type"] or
+            "videocontainer" in scraper.streams[0]["stream_type"])
 
     elem_dict = {"image": "colorspace", "video": "color",
                  "videocontainer": "codec_name",
