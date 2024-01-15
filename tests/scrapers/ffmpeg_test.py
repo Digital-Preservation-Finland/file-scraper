@@ -217,6 +217,15 @@ UNAV_MIME = []
             },
             "video/x-ms-asf"
         ),
+         (
+            "valid__aac.m4a",
+            {
+                "purpose": "test valid m4a.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": ""
+            },
+            "audio/mp4"
+        ),
     ]
 )
 def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
@@ -514,6 +523,15 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
                     "increasing dts to muxer")
             },
             "video/x-ms-asf"
+        ),
+        (
+            "invalid__empty.m4a",
+            {
+                "purpose": "Test invalid empty m4a.",
+                "stdout_part": "",
+                "stderr_part": "Invalid data found when processing input"
+            },
+            "audio/mp4"
         )
     ]
 )
