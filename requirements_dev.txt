@@ -15,6 +15,7 @@ wand; python_version >= '3.7'
 lxml
 click
 pyexiftool
+jpylyzer
 # Temporary patch for ffmpeg-python / jpeg2000 lossless detection
 git+https://gitlab.ci.csc.fi/dpres/ffmpeg-python.git#egg=ffmpeg_python
 # Get our newest format string changes not yet present in official Fido repository

@@ -21,6 +21,7 @@ setup(
         "pymediainfo",
         "lxml",
         "pyexiftool",
+        "jpylyzer"
     ],
     entry_points={'console_scripts': [
         'scraper=file_scraper.cmdline:cli']},
