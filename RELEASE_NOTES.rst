@@ -1,6 +1,14 @@
 Release notes
 =============
 
+Version 0.65
+------------
+
+- Support Apple M4A AAC files
+- The RPM package conflicts with ffmpeg-free, because the ffmpeg-free package
+  does not have all the codecs file-scraper needs
+- Modernised Python source code with pyupgrade, some manual cleanups as well
+
 Version 0.64
 ------------
 
