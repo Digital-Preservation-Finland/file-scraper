@@ -44,6 +44,7 @@ from file_scraper.warctools.warctools_scraper import (GzipWarctoolsScraper,
                                                       WarctoolsScraper)
 from file_scraper.xmllint.xmllint_scraper import XmllintScraper
 from file_scraper.exiftool.exiftool_scraper import ExifToolDngScraper
+from file_scraper.jpylyzer.jpylyzer_scraper import JpylyzerScraper
 
 
 def iter_detectors():
@@ -88,11 +89,12 @@ def iter_scrapers(mimetype, version, check_wellformed=True, params=None):
         ExifToolDngScraper, FFMpegMetaScraper, FFMpegScraper,
         GhostscriptScraper, JHoveAiffScraper, JHoveDngScraper,
         JHoveEpubScraper, JHoveGifScraper, JHoveHtmlScraper, JHoveJpegScraper,
-        JHovePdfScraper, JHoveTiffScraper, JHoveWavScraper, LxmlScraper,
-        MagicTextScraper, MagicBinaryScraper, MediainfoScraper, OfficeScraper,
-        PilScraper, PngcheckScraper, PsppScraper, SchematronScraper,
-        TextfileScraper, TextEncodingScraper, TextEncodingMetaScraper,
-        VerapdfScraper, VnuScraper, WandScraper, XmllintScraper]
+        JHovePdfScraper, JHoveTiffScraper, JHoveWavScraper, JpylyzerScraper,
+        LxmlScraper, MagicTextScraper, MagicBinaryScraper, MediainfoScraper,
+        OfficeScraper, PilScraper, PngcheckScraper, PsppScraper,
+        SchematronScraper, TextfileScraper, TextEncodingScraper,
+        TextEncodingMetaScraper, VerapdfScraper, VnuScraper, WandScraper,
+        XmllintScraper]
 
     for scraper in scrapers:
         if scraper.is_supported(mimetype, version, check_wellformed, params):
