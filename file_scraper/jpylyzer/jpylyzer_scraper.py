@@ -6,6 +6,7 @@ except ImportError:
 
 from file_scraper.base import BaseScraper
 from file_scraper.jpylyzer.jpylyzer_model import JpylyzerMeta
+from file_scraper.utils import decode_path
 
 
 class JpylyzerScraper(BaseScraper):
@@ -15,7 +16,7 @@ class JpylyzerScraper(BaseScraper):
 
     def scrape_file(self):
         """Scrape data from file."""
-        result = jpylyzer.checkOneFile(self.filename)
+        result = jpylyzer.checkOneFile(decode_path(self.filename))
         well_formed = result.findtext("./isValid")
         if not well_formed:
             self._errors.append("Failed: document is not well-formed.")
