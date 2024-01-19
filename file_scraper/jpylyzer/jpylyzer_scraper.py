@@ -1,6 +1,6 @@
 """"Scraper for jp2 files using Jpylyzer."""
 try:
-    import jpylyzer
+    from jpylyzer import jpylyzer
 except ImportError:
     pass
 
