@@ -1,6 +1,10 @@
 Release notes
 =============
 
+Unreleased
+----------
+- Fix a bug causing PDF files with warnings (but not severe errors) to be detected as not well-formed
+
 Version 0.65
 ------------
 

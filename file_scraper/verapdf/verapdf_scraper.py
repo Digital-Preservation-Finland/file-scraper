@@ -67,6 +67,19 @@ class VerapdfScraper(BaseScraper):
                     self._errors.append(shell.stdout)
                 else:
                     self._messages.append(shell.stdout)
+
+                    # Here we can be sure that the final report has been
+                    # generated and file is PDF/A compliant. If also the return
+                    # code is 0, we can be sure that everything went well.
+                    # Stderr output might still contain logged warnings about
+                    # the file contents, so append stderr to messages to catch
+                    # potentially useful information. If the returncode is not
+                    # 0, be safe and dump stderr in errors.
+                    if shell.returncode == 0:
+                        self._messages.append(shell.stderr)
+                    else:
+                        self._errors.append(shell.stderr)
+
                 profile = \
                     report.xpath("//validationReport")[0].get("profileName")
             else:

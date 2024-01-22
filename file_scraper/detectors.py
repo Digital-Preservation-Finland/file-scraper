@@ -298,7 +298,10 @@ class VerapdfDetector(BaseDetector):
         if distutils.spawn.find_executable("verapdf") is not None:
             verapdf_loc = "verapdf"
         # --nonpdfext flag allows also files without the .pdf extension
-        cmd = [verapdf_loc, encode_path(self.filename), "--nonpdfext"]
+        # --loglevel 1 leaves warnings out of the output, warnings are not
+        # useful for detection
+        cmd = [verapdf_loc, encode_path(self.filename), "--nonpdfext",
+               "--loglevel", "1"]
         shell = Shell(cmd)
 
         # Test if the file is a PDF/A. If --nonpdfext flag is not supported,
