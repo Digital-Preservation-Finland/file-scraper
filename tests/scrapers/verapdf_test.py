@@ -16,7 +16,6 @@ This module tests that:
       version and streams are scraped correctly but they are reported as
       not well-formed.
     - Scraper can be run for files without PDF extension.
-    - --nonpdfext flag is handled properly.
     - The scraper supports MIME type application/pdf with versions A-1b
       when well-formedness is checked, but does not support them when
       well-formedness is not checked. The scraper also does not support made
@@ -26,7 +25,7 @@ import os
 
 import pytest
 
-from file_scraper.verapdf.verapdf_scraper import VerapdfScraper, filter_errors
+from file_scraper.verapdf.verapdf_scraper import VerapdfScraper
 from tests.common import (parse_results, partial_message_included)
 
 MIMETYPE = "application/pdf"
@@ -129,21 +128,6 @@ def test_scraper_no_file_extension(evaluate_scraper):
     scraper.scrape_file()
 
     evaluate_scraper(scraper, correct)
-
-
-def test_error_filtering():
-    """Test flag creation based on version"""
-    error = \
-        "Oct 17, 2022 3:32:30 PM org.verapdf.apps.utils." \
-        "ApplicationUtils filterPdfFiles\n" \
-        "SEVERE: File /mypath/--nonpdfext doesn't exist.\n" \
-        "Oct 17, 2022 3:32:31 PM org.verapdf.apps.utils." \
-        "ApplicationUtils anotherError\n" \
-        "SEVERE: An error not to be removed."
-    assert filter_errors(error) == \
-        "Oct 17, 2022 3:32:31 PM org.verapdf.apps.utils." \
-        "ApplicationUtils anotherError\n" \
-        "SEVERE: An error not to be removed."
 
 
 @pytest.mark.usefixtures("patch_shell_attributes_fx")

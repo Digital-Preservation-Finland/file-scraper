@@ -16,7 +16,6 @@ from file_scraper.defaults import (MIMETYPE_DICT, PRIORITY_PRONOM, PRONOM_DICT,
                                    VERSION_DICT, UNKN)
 from file_scraper.utils import encode_path, decode_path
 from file_scraper.magiclib import magiclib, magic_analyze
-from file_scraper.verapdf.verapdf_scraper import filter_errors, OK_CODES
 
 MAGIC_LIB = magiclib()
 
@@ -304,8 +303,7 @@ class VerapdfDetector(BaseDetector):
                "--loglevel", "1"]
         shell = Shell(cmd)
 
-        # Test if the file is a PDF/A. If --nonpdfext flag is not supported,
-        # it does not affect to the return code.
+        # Test if the file is a PDF/A
         if shell.returncode != 0:
             self._set_info_not_pdf_a(shell)
             return
@@ -351,8 +349,6 @@ class VerapdfDetector(BaseDetector):
                      "tools": []}
 
         errors = error_shell.stderr
-        if error_shell.returncode in OK_CODES:
-            errors = filter_errors(error_shell.stderr)
         if errors:
             self.info["errors"] = [errors]
 

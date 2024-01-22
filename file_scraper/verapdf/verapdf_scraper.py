@@ -42,19 +42,12 @@ class VerapdfScraper(BaseScraper):
         cmd = [verapdf_loc, encode_path(self.filename), "--nonpdfext"]
         shell = Shell(cmd)
 
-        # If --nonpdfext flag is not supported, it does not affect to
-        # returncode
         if shell.returncode not in OK_CODES:
             self._errors.append("VeraPDF returned invalid return code: %s"
                                 % shell.returncode)
             self._errors.append(shell.stderr)
             self._check_supported()
             return
-
-        # Filter error about --nonpdfext flag not being supported
-        errors = filter_errors(shell.stderr)
-        if errors:
-            self._errors.append(errors)
 
         profile = None
 
@@ -85,30 +78,9 @@ class VerapdfScraper(BaseScraper):
             else:
                 self._errors.append(shell.stdout)
         except ET.XMLSyntaxError:
-            pass  # XML is empty. We already added all errors.
+            self._errors.append(shell.stderr)
 
         self.streams = list(self.iterate_models(
             well_formed=self.well_formed, profile=profile))
 
         self._check_supported()
-
-
-def filter_errors(stderr):
-    """Filter errors for the case where --nonpdfext flag is not supported.
-
-    :stderr: stderr from veraPDF
-    :returns: Filtered errors
-    """
-    if stderr:
-        error_list = []
-        for err_line in stderr.splitlines(True):
-            if "--nonpdfext doesn't exist." in err_line:
-                header = "org.verapdf.apps.utils.ApplicationUtils "\
-                    "filterPdfFiles"
-                if error_list and header in error_list[-1]:
-                    error_list.pop()  # Each error has it's own header line
-            else:
-                error_list.append(err_line)
-        return "".join(error_list)
-
-    return None
