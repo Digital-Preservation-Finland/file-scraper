@@ -16,12 +16,18 @@ class JpylyzerScraper(BaseScraper):
 
     def scrape_file(self):
         """Scrape data from file."""
-        result = jpylyzer.checkOneFile(decode_path(self.filename))
-        well_formed = result.findtext("./isValid")
-        if well_formed == "True":
-            self._messages.append("File is well-formed and valid.")
-        else:
-            self._errors.append("Failed: document is not well-formed.")
+        try:
+            result = jpylyzer.checkOneFile(decode_path(self.filename))
+            well_formed = result.findtext("./isValid")
+            if well_formed == "True":
+                self._messages.append("File is well-formed and valid.")
+            else:
+                self._errors.append("Failed: document is not well-formed.")
+        except Exception as exception:  # pylint: disable=broad-except
+            self._errors.append("Failed: error analyzing file.")
+            self._errors.append(str(exception))
+
         self.streams = list(self.iterate_models())
-        self._check_supported(allow_unav_mime=True, allow_unav_version=True,
+        self._check_supported(allow_unav_mime=True,
+                              allow_unav_version=True,
                               allow_unap_version=True)
