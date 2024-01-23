@@ -119,7 +119,7 @@ from tests.common import (parse_results, partial_message_included)
          MagicBinaryScraper),
         ("valid_1.2.png", "image/png", None, MagicBinaryScraper),
         ("valid_1.01.jpg", "image/jpeg", None, MagicBinaryScraper),
-        ("valid__srgb.jp2", "image/jp2", None, MagicBinaryScraper),
+        ("valid__jpylyzer-data.jp2", "image/jp2", None, MagicBinaryScraper),
         ("valid_6.0.tif", "image/tiff", None, MagicBinaryScraper),
         ("valid__iso8859.txt", "text/plain", "ISO-8859-15",
          MagicTextScraper),
