@@ -232,16 +232,16 @@ def test_scraper_jpg(filename, result_dict, evaluate_scraper):
 @pytest.mark.parametrize(
     ["filename", "result_dict"],
     [
-        ("valid__jpylyzer-data.jp2", {
+        ("valid__jpylyzer_reference.jp2", {
             "purpose": "Test valid file.",
-            "streams": {0: 
-                            {"version": UNAV,
-                             "bps_unit": UNAV,
-                             "bps_value": "8",
-                             "colorspace": "rgb",
-                             "height": "8",
-                             "width": "6",
-                             "samples_per_pixel": UNAV}},
+            "streams": {0: {
+                "version": UNAV,
+                "bps_unit": UNAV,
+                "bps_value": "8",
+                "colorspace": "rgb",
+                "height": "8",
+                "width": "6",
+                "samples_per_pixel": UNAV}},
             "stdout_part": "successfully",
             "stderr_part": ""}),
     ]
@@ -335,7 +335,7 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
 @pytest.mark.parametrize(("mimetype", "filename", "expected"), [
     ("image/gif", "valid_1987a.gif", "RGB"),
     ("image/gif", "valid_1989a.gif", "RGB"),
-    ("image/jp2", "valid__jpylyzer-data.jp2", "RGB"),
+    ("image/jp2", "valid__jpylyzer_reference.jp2", "RGB"),
     ("image/jpeg", "valid_1.01.jpg", "RGB"),
     ("image/jpeg", "valid_1.01_icc_sRGB_profile.jpg", "sRGB"),
     ("image/jpeg", "valid_2.2.1_exif_metadata.jpg", "RGB"),

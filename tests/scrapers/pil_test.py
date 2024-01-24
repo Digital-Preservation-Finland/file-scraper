@@ -248,7 +248,7 @@ def test_scraper_jpg(filename, result_dict, evaluate_scraper):
 @pytest.mark.parametrize(
     ["filename", "result_dict"],
     [
-        ("valid__jpylyzer-data.jp2", {
+        ("valid__jpylyzer_reference.jp2", {
             "purpose": "Test valid file.",
             "streams": {0: STREAM_VALID_RGB.copy()}}),
         ("invalid__data_missing.jp2", {
