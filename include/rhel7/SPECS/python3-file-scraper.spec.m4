@@ -38,7 +38,7 @@ Requires:       python3-warc-tools >= 4.8.3
 Requires:       pngcheck
 Requires:       pspp xhtml1-dtds vnu iso-schematron-xslt1
 Requires:       python36-mimeparse
-Requires:       python3-jpylyzer
+Requires:       python3-jpylyzer >= 2.2.0
 Requires:       libreoffice7.2-full
 Requires:       dbptk-developer
 
