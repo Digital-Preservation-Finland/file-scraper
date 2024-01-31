@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 
 from file_scraper.base import BaseScraper
 from file_scraper.jpylyzer.jpylyzer_model import JpylyzerMeta
-from file_scraper.utils import decode_path
+from file_scraper.utils import decode_path, ensure_text
 
 
 class JpylyzerScraper(BaseScraper):
@@ -25,7 +25,7 @@ class JpylyzerScraper(BaseScraper):
             else:
                 self._errors.append("Failed: document is not well-formed.")
                 _sanitize_filepaths(result)
-                self._errors.append(ET.tostring(result))
+                self._errors.append(ensure_text(ET.tostring(result)))
         except Exception as exception:  # pylint: disable=broad-except
             self._errors.append("Failed: error analyzing file.")
             self._errors.append(str(exception))
