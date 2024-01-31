@@ -22,17 +22,17 @@ from tests.common import (parse_results, partial_message_included)
             "stdout_part": "File is well-formed and valid",
             "stderr_part": ""
             }),
+        ("valid__many_qcc_blocks.jp2", {
+            "purpose": "Test valid file",
+            "stdout_part": "File is well-formed and valid",
+            "stderr_part": ""
+            }),
         ("invalid__empty.jp2", {
             "purpose": "Test empty file",
             "stdout_part": "",
             "stderr_part": "document is not well-formed"
             }),
         ("invalid__data_missing.jp2", {
-            "purpose": "Test invalid file",
-            "stdout_part": "",
-            "stderr_part": "document is not well-formed"
-            }),
-        ("invalid__many_qcc_blocks.jp2", {
             "purpose": "Test invalid file",
             "stdout_part": "",
             "stderr_part": "document is not well-formed"
