@@ -3,6 +3,7 @@ try:
     from jpylyzer import jpylyzer
 except ImportError:
     pass
+import xml.etree.ElementTree as ET
 
 from file_scraper.base import BaseScraper
 from file_scraper.jpylyzer.jpylyzer_model import JpylyzerMeta
@@ -23,6 +24,7 @@ class JpylyzerScraper(BaseScraper):
                 self._messages.append("File is well-formed and valid.")
             else:
                 self._errors.append("Failed: document is not well-formed.")
+                self._errors.append(ET.tostring(result))
         except Exception as exception:  # pylint: disable=broad-except
             self._errors.append("Failed: error analyzing file.")
             self._errors.append(str(exception))
