@@ -24,7 +24,6 @@ class JpylyzerScraper(BaseScraper):
                 self._messages.append("File is well-formed and valid.")
             else:
                 self._errors.append("Failed: document is not well-formed.")
-                _sanitize_filepaths(result)
                 self._errors.append(ensure_text(ET.tostring(result)))
         except Exception as exception:  # pylint: disable=broad-except
             self._errors.append("Failed: error analyzing file.")
@@ -34,10 +33,3 @@ class JpylyzerScraper(BaseScraper):
         self._check_supported(allow_unav_mime=True,
                               allow_unav_version=True,
                               allow_unap_version=True)
-
-
-def _sanitize_filepaths(result_obj):
-    """Remove filepaths from jpylyzer result object."""
-    for elem in result_obj.iter('fileInfo'):
-        for subelem in elem.findall('filePath'):
-            elem.remove(subelem)
