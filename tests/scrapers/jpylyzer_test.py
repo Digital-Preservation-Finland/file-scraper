@@ -36,6 +36,11 @@ from tests.common import (parse_results, partial_message_included)
             "purpose": "Test invalid file",
             "stdout_part": "",
             "stderr_part": "document is not well-formed"
+            }),
+        ("invalid__header_box_missing_bytes.jp2", {
+            "purpose": "Test invalid file",
+            "stdout_part": "",
+            "stderr_part": "document is not well-formed"
             })
     ]
 )
