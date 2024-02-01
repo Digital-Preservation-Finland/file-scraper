@@ -57,7 +57,6 @@ Summary:        File scraper analysis tool - full installation
 Conflicts:      %{core_sp_name} < %{version}-%{release}, %{core_sp_name} > %{version}-%{release}
 Requires:       %{core_sp_name} = %{version}-%{release}
 Requires:       %{py3_dist dpx-validator}
-Requires:       %{py3_dist jpylyzer}
 Requires:       %{py3_dist warctools}
 Requires:       dpres-xml-schemas
 Requires:       dbptk-developer
