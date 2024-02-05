@@ -645,6 +645,7 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
     # Supported mimetypes
     _supported = {"audio/mpeg": ["1", "2"],
                   "audio/mp4": [""],
+                  "audio/aac": [""],
                   "video/mpeg": ["1", "2"],
                   "video/mp4": [""]}
     _allow_versions = True  # Allow any version
@@ -691,7 +692,7 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
         MP3 "container" does not know the version, so it has to be
         checked from the first stream.
         """
-        if self.mimetype() in ["audio/mp4", "video/mp4"]:
+        if self.mimetype() in ["audio/aac", "audio/mp4", "video/mp4"]:
             return UNAP
 
         if (self.mimetype() == "audio/mpeg" and

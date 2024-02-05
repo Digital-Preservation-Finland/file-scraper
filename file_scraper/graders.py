@@ -127,6 +127,9 @@ class MIMEGrader(BaseGrader):
         "audio/mp4": {
             UNAP: RECOMMENDED
         },
+        "audio/aac": {
+            UNAP: RECOMMENDED
+        },
         "image/x-dpx": {
             "1.0": ACCEPTABLE,  # Allowed for special case
             "2.0": RECOMMENDED
@@ -371,21 +374,21 @@ class ContainerStreamsGrader(BaseGrader):
         },
         "video/MP2T": {
             # Audio
-            ("audio/mp4", UNAP),
+            ("audio/aac", UNAP),
 
             # Video
             ("video/mp4", UNAP)
         },
         "video/mp4": {
             # Audio
-            ("audio/mp4", UNAP),
+            ("audio/aac", UNAP),
 
             # Video
             ("video/mp4", UNAP)
         },
         "application/mxf": {
             # Audio
-            ("audio/mp4", UNAP),
+            ("audio/aac", UNAP),
             ("audio/L16", UNAP),
             ("audio/L8", UNAP),
             ("audio/L20", UNAP),
@@ -407,7 +410,7 @@ class ContainerStreamsGrader(BaseGrader):
         },
         "video/quicktime": {
             # Audio
-            ("audio/mp4", UNAP),
+            ("audio/aac", UNAP),
             ("audio/L16", UNAP),
             ("audio/L8", UNAP),
             ("audio/L20", UNAP),
@@ -418,7 +421,7 @@ class ContainerStreamsGrader(BaseGrader):
             ("video/jpeg2000", UNAP),
         },
         "audio/mp4": {
-            ("audio/mp4", UNAP)
+            ("audio/aac", UNAP)
         }
     }
     acceptable_formats = {

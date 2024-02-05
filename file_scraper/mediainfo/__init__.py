@@ -34,7 +34,7 @@ FORMATS = [
         "properties": {"format": "DV"}
     },
     {
-        "mimetype": "audio/mp4",
+        "mimetype": "audio/aac",
         "properties": {"format": "AAC"}
     },
     {
