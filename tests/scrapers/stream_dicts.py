@@ -160,7 +160,7 @@ MPEG1_AUDIO = {
     "data_rate": "128", "codec_creator_app": UNAV}
 
 MPEG4_AUDIO = dict(MPEG1_AUDIO, **{
-    "mimetype": "audio/mp4", "index": 2, "audio_data_encoding": "AAC",
+    "mimetype": "audio/aac", "index": 2, "audio_data_encoding": "AAC",
     "data_rate_mode": "Fixed", "version": UNAP, "codec_name": "AAC",
     "codec_creator_app_version": "56.40.101",
     "duration": "PT0.86S", "data_rate": "135.233",

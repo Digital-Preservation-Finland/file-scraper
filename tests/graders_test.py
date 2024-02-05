@@ -55,7 +55,7 @@ def test_text_grader(scraper, expected_grade):
                 'video/MP2T', '(:unap)',
                 {
                     0: {'mimetype': 'video/MP2T', 'version': '(:unap)'},
-                    1: {'mimetype': 'audio/mp4', 'version': '(:unap)'},
+                    1: {'mimetype': 'audio/aac', 'version': '(:unap)'},
                     2: {'mimetype': 'video/mp4', 'version': '(:unap)'}
                 }
             ),
@@ -79,7 +79,7 @@ def test_text_grader(scraper, expected_grade):
                 'video/quicktime', '(:unap)',
                 {
                     0: {'mimetype': 'video/quicktime', 'version': '(:unap)'},
-                    1: {'mimetype': 'audio/mp4', 'version': '(:unap)'},
+                    1: {'mimetype': 'audio/aac', 'version': '(:unap)'},
                     2: {'mimetype': 'video/x.fi-dpres.prores',
                         'version': '(:unap)'}
                 }
