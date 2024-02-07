@@ -289,7 +289,8 @@ class BaseMediainfoMeta(BaseMeta):
 class ContainerMediainfoMeta(BaseMediainfoMeta):
     """Metadata model for container streams."""
 
-    _supported = {"video/quicktime": [""],
+    _supported = {"audio/mp4": [""],
+                  "video/quicktime": [""],
                   "video/MP1S": [""],
                   "video/MP2P": [""],
                   "video/MP2T": [""],
@@ -644,7 +645,6 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
 
     # Supported mimetypes
     _supported = {"audio/mpeg": ["1", "2"],
-                  "audio/mp4": [""],
                   "audio/aac": [""],
                   "video/mpeg": ["1", "2"],
                   "video/mp4": [""]}
@@ -692,7 +692,7 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
         MP3 "container" does not know the version, so it has to be
         checked from the first stream.
         """
-        if self.mimetype() in ["audio/aac", "audio/mp4", "video/mp4"]:
+        if self.mimetype() in ["audio/aac", "video/mp4"]:
             return UNAP
 
         if (self.mimetype() == "audio/mpeg" and
