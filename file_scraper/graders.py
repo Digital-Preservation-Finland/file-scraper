@@ -124,9 +124,6 @@ class MIMEGrader(BaseGrader):
         "audio/L24": {
             UNAP: RECOMMENDED
         },
-        "audio/mp4": {
-            UNAP: RECOMMENDED
-        },
         "audio/aac": {
             UNAP: RECOMMENDED
         },
@@ -268,6 +265,9 @@ class MIMEGrader(BaseGrader):
         },
         "video/MP2P": {  # Container
             UNAP: ACCEPTABLE
+        },
+        "audio/mp4": {  # Container
+            UNAP: RECOMMENDED
         },
         "video/x.fi-dpres.prores": {
             UNAP: BIT_LEVEL_WITH_RECOMMENDED
