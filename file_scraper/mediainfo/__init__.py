@@ -44,7 +44,7 @@ FORMATS = [
                                                              "info"}
     },
     {
-        "mimetype": "video/mp4",
+        "mimetype": "video/h264",
         "properties": {"format": "AVC"}
     },
     {

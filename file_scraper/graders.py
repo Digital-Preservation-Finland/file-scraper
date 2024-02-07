@@ -137,7 +137,7 @@ class MIMEGrader(BaseGrader):
         "video/jpeg2000": {
             UNAP: RECOMMENDED
         },
-        "video/mp4": {
+        "video/h264": {
             UNAP: RECOMMENDED
         },
         "image/tiff": {
@@ -249,6 +249,9 @@ class MIMEGrader(BaseGrader):
             UNAP: RECOMMENDED
         },
         "video/mj2": {  # Container
+            UNAP: RECOMMENDED
+        },
+        "video/mp4": {  # Container
             UNAP: RECOMMENDED
         },
         "video/quicktime": {  # Container
@@ -377,14 +380,14 @@ class ContainerStreamsGrader(BaseGrader):
             ("audio/aac", UNAP),
 
             # Video
-            ("video/mp4", UNAP)
+            ("video/h264", UNAP)
         },
         "video/mp4": {
             # Audio
             ("audio/aac", UNAP),
 
             # Video
-            ("video/mp4", UNAP)
+            ("video/h264", UNAP)
         },
         "application/mxf": {
             # Audio
@@ -395,7 +398,7 @@ class ContainerStreamsGrader(BaseGrader):
             ("audio/L24", UNAP),
 
             # Video
-            ("video/mp4", UNAP),
+            ("video/h264", UNAP),
             ("video/jpeg2000", UNAP),
         },
         "video/mj2": {
@@ -417,7 +420,7 @@ class ContainerStreamsGrader(BaseGrader):
             ("audio/L24", UNAP),
 
             # Video
-            ("video/mp4", UNAP),
+            ("video/h264", UNAP),
             ("video/jpeg2000", UNAP),
         },
         "audio/mp4": {
