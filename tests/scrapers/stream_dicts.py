@@ -137,7 +137,7 @@ MPEG2_VIDEO = dict(MPEG1_VIDEO, **{
     "data_rate": "0.185784", "version": "2"})
 
 MPEG4_VIDEO = dict(MPEG1_VIDEO, **{
-    "mimetype": "video/mp4", "index": 1, "data_rate": "0.048704",
+    "mimetype": "video/h264", "index": 1, "data_rate": "0.048704",
     "sound": "Yes", "version": UNAP, "codec_name": "AVC",
     "codec_creator_app_version": "56.40.101",
     "codec_creator_app": "Lavf56.40.101"})

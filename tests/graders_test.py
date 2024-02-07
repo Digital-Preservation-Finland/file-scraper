@@ -56,7 +56,7 @@ def test_text_grader(scraper, expected_grade):
                 {
                     0: {'mimetype': 'video/MP2T', 'version': '(:unap)'},
                     1: {'mimetype': 'audio/aac', 'version': '(:unap)'},
-                    2: {'mimetype': 'video/mp4', 'version': '(:unap)'}
+                    2: {'mimetype': 'video/h264', 'version': '(:unap)'}
                 }
             ),
             RECOMMENDED
@@ -67,7 +67,7 @@ def test_text_grader(scraper, expected_grade):
                 'video/mp4', '(:unap)',
                 {
                     0: {'mimetype': 'video/mp4', 'version': '(:unap)'},
-                    1: {'mimetype': 'video/mp4', 'version': '(:unap)'},
+                    1: {'mimetype': 'video/h264', 'version': '(:unap)'},
                     2: {'mimetype': 'audio/mpeg', 'version': '2'}
                 }
             ),
