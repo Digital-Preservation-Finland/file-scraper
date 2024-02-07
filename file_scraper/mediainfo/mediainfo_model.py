@@ -640,7 +640,7 @@ class WavMediainfoMeta(BaseMediainfoMeta):
 
 
 class MpegMediainfoMeta(BaseMediainfoMeta):
-    """Metadata model for MPEG audio."""
+    """Metadata model for MPEG data streams."""
 
     # Supported mimetypes
     _supported = {"audio/mpeg": ["1", "2"],
