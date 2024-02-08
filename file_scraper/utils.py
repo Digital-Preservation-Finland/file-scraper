@@ -270,9 +270,9 @@ def generate_metadata_dict(scraper_results, lose):
     :lose: A list of values that can be overwritten.
     :returns: A tuple of (a dict containing the metadata of the file,
               metadata of each stream in its own dict. E.g.
-              {0: {'mimetype': 'video/mp4', 'index': 1,
+              {0: {'mimetype': 'video/h264', 'index': 1,
                    'frame_rate': '30', ...},
-               1: {'mimetype': 'audio/mp4', 'index': 2,
+               1: {'mimetype': 'audio/aac', 'index': 2,
                     'audio_data_encoding': 'AAC', ...}},
               and a list of error messages due to conflicting values)
 

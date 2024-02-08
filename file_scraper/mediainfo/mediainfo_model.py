@@ -671,9 +671,10 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
     def data_rate_mode(self):
         """Return data rate mode.
 
-        MP4 is assumed to always have variable bit rate, based on e.g.
+        MPEG-4 and MPEG-H video (i.e. AVC and HEVC) are assumed to always have
+        variable bit rate, based on e.g.
         https://slhck.info/video/2017/03/01/rate-control.html claiming
-        that MP4 does not support NAL stuffing and thus it cannot be
+        that they do not support NAL stuffing and thus they cannot be
         forced to have constant bit rate.
         """
         mode = super().data_rate_mode()
@@ -687,8 +688,8 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
     def version(self):
         """Return version of stream.
 
-        MP4 streams do not have version, and and therefore the result is
-        unapplicable (:unap).
+        MPEG-4 (i.e. AVC and AAC) streams do not have version, and and therefore
+        the result is unapplicable (:unap).
 
         MP3 "container" does not know the version, so it has to be
         checked from the first stream.
