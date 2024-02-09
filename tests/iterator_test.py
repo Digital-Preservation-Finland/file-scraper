@@ -165,4 +165,5 @@ def test_iter_detectors():
                                                "MagicDetector",
                                                "PredefinedDetector",
                                                "SegYDetector",
-                                               "SiardDetector"}
+                                               "SiardDetector",
+                                               "ODFDetector"}

@@ -1,6 +1,10 @@
 Release notes
 =============
 
+Unreleased
+----------
+- Detect format version of ODF files correctly
+
 Version 0.67
 ------------
 

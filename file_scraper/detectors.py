@@ -6,6 +6,7 @@ import os
 import zipfile
 import lxml.etree as ET
 import exiftool
+import errno
 
 from fido.fido import Fido, defaults
 from fido.pronomutils import get_local_pronom_versions
@@ -603,4 +604,95 @@ class SiardDetector(BaseDetector):
         if (not self._given_version and self.mimetype in
                 ["application/x-siard"]):
             important["version"] = self.version
+        return important
+
+
+class ODFDetector(BaseDetector):
+    """Detector for OpenDocument Format files.
+
+    All ODF files except ODF formula can be detected by FidoDetector and
+    MagicDetector. FidoDetector can not detect ODF formula at all, and
+    MagicDetector can not detect the format version. This detector was
+    created to add support for ODF formula, but of course if detects the
+    mimetype and format version of all other ODF files also.
+    """
+
+    def __init__(self, filename, mimetype=None, version=None):
+        """Initialize detector."""
+        super().__init__(filename, mimetype=mimetype,
+                         version=version)
+        self._mimetype_file = None
+        self._meta_xml_file = None
+        self._detected_mimetype = None
+        self._detected_version = None
+
+    def _read_zip(self):
+        filepath = decode_path(self.filename)
+        if zipfile.is_zipfile(filepath):
+            with zipfile.ZipFile(filepath) as zipf:
+                if {'mimetype', 'meta.xml'} <= set(zipf.namelist()):
+                    try:
+                        self._mimetype_file = zipf.read('mimetype')
+                        self._meta_xml_file = zipf.read('meta.xml')
+                    except OSError as exception:
+                        if exception.errno == errno.EINVAL:
+                            # Zip is corrupted, detection is impossible
+                            pass
+                        else:
+                            raise
+
+    def detect(self):
+        """Detect the mimetype and file format version of a file.
+
+        The detector checks that::
+
+            1) The file is a ZIP archive
+            2) Valid mimetype is found in "mimetype" file
+            3) Valid format version is defined in "meta.xml" file
+        """
+        # Try to read "mimetype" and "meta.xml" files from zip
+        self._read_zip()
+
+        if self._meta_xml_file and self._mimetype_file:
+
+            # Detect mimetype from "mimetype" file.
+            if self._mimetype_file.decode() in (
+                'application/vnd.oasis.opendocument.text',
+                'application/vnd.oasis.opendocument.spreadsheet',
+                'application/vnd.oasis.opendocument.presentation',
+                'application/vnd.oasis.opendocument.graphics',
+                'application/vnd.oasis.opendocument.formula'
+            ):
+                self._detected_mimetype = self._mimetype_file.decode()
+
+            # Detect format version from "meta.xml" file. Parsing the
+            # XML probably is not necessary, so only check that the
+            # file contains valid "office:version" attribute.
+            for version in '1.0', '1.1', '1.2':
+                if f'office:version="{version}"' \
+                        in self._meta_xml_file.decode():
+                    self._detected_version = version
+                    continue
+
+        # If both variables were not detected, we can not be sure that
+        # the file is an ODF file
+        if self._detected_mimetype and self._detected_version:
+            self.mimetype = self._detected_mimetype
+            self.version = self._detected_version
+
+        self.info = {"class": self.__class__.__name__,
+                     "messages": [],
+                     "errors": [],
+                     "tools": []}
+
+    def get_important(self):
+        """Return dict of important values determined by the detector.
+
+        Mimetype and format version are important because other
+        detectors do not detect them correctly.
+        """
+        important = {
+            "mimetype": self.mimetype,
+            "version": self.version
+        }
         return important

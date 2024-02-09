@@ -44,17 +44,17 @@ This module tests that:
 
     - The following MIME type and version pairs are supported when full
       scraping is performed:
-        - application/vnd.oasis.opendocument.text, 1.1
+        - application/vnd.oasis.opendocument.text, 1.2
         - application/msword, 97-2003
         - application/vnd.openxmlformats-officedocument.wordprocessingml.document, 2007 onwards
-        - application/vnd.oasis.opendocument.presentation, 1.1
+        - application/vnd.oasis.opendocument.presentation, 1.2
         - application/vnd.ms-powerpoint, 97-2003
         - application/vnd.openxmlformats-officedocument.presentationml.presentation, 2007 onwards
-        - application/vnd.oasis.opendocument.spreadsheet, 1.1
+        - application/vnd.oasis.opendocument.spreadsheet, 1.2
         - application/vnd.ms-excel, 8X
         - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, 2007 onwards
-        - application/vnd.oasis.opendocument.graphics, 1.1
-        - application/vnd.oasis.opendocument.formula, 1.0
+        - application/vnd.oasis.opendocument.graphics, 1.2
+        - application/vnd.oasis.opendocument.formula, 1.2
         - image/png, 1.2
         - image/jpeg, 1.01
         - image/jp2, ""
@@ -87,14 +87,14 @@ from tests.common import (parse_results, partial_message_included)
 @pytest.mark.parametrize(
     ["filename", "mimetype", "charset", "scraper_class"],
     [
-        ("valid_1.1.odt",
+        ("valid_1.2.odt",
          "application/vnd.oasis.opendocument.text", None, MagicBinaryScraper),
         ("valid_97-2003.doc",
          "application/msword", None, MagicBinaryScraper),
         ("valid_2007 onwards.docx",
          "application/vnd.openxmlformats-officedocument."
          "wordprocessingml.document", None, MagicBinaryScraper),
-        ("valid_1.1.odp",
+        ("valid_1.2.odp",
          "application/vnd.oasis.opendocument.presentation", None,
          MagicBinaryScraper),
         ("valid_97-2003.ppt",
@@ -103,7 +103,7 @@ from tests.common import (parse_results, partial_message_included)
          "application/vnd.openxml"
          "formats-officedocument.presentationml.presentation", None,
          MagicBinaryScraper),
-        ("valid_1.1.ods",
+        ("valid_1.2.ods",
          "application/vnd.oasis.opendocument.spreadsheet", None,
          MagicBinaryScraper),
         ("valid_8X.xls",
@@ -111,10 +111,10 @@ from tests.common import (parse_results, partial_message_included)
         ("valid_2007 onwards.xlsx",
          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
          None, MagicBinaryScraper),
-        ("valid_1.1.odg",
+        ("valid_1.2.odg",
          "application/vnd.oasis.opendocument.graphics", None,
          MagicBinaryScraper),
-        ("valid_1.0.odf",
+        ("valid_1.2.odf",
          "application/vnd.oasis.opendocument.formula", None,
          MagicBinaryScraper),
         ("valid_1.2.png", "image/png", None, MagicBinaryScraper),
@@ -169,26 +169,26 @@ def test_scraper_valid(filename, mimetype, charset, scraper_class,
 @pytest.mark.parametrize(
     ["filename", "mimetype"],
     [
-        ("invalid_1.1_missing_data.odt",
+        ("invalid_1.2_missing_data.odt",
          "application/vnd.oasis.opendocument.text"),
         ("invalid_97-2003_missing_data.doc", "application/msword"),
         ("invalid_2007 onwards_missing_data.docx",
          "application/vnd.openxmlformats-"
          "officedocument.wordprocessingml.document"),
-        ("invalid_1.1_missing_data.odp",
+        ("invalid_1.2_missing_data.odp",
          "application/vnd.oasis.opendocument.presentation"),
         ("invalid_97-2003_missing_data.ppt", "application/vnd.ms-powerpoint"),
         ("invalid_2007 onwards_missing_data.pptx",
          "application/vnd.openxmlformats-officedocument.presentationml."
          "presentation"),
-        ("invalid_1.1_missing_data.ods",
+        ("invalid_1.2_missing_data.ods",
          "application/vnd.oasis.opendocument.spreadsheet"),
         ("invalid_8X_missing_data.xls", "application/vnd.ms-excel"),
         ("invalid_2007 onwards_missing_data.xlsx",
          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
-        ("invalid_1.1_missing_data.odg",
+        ("invalid_1.2_missing_data.odg",
          "application/vnd.oasis.opendocument.graphics"),
-        ("invalid_1.0_missing_data.odf",
+        ("invalid_1.2_missing_data.odf",
          "application/vnd.oasis.opendocument.formula"),
         ("invalid__empty.doc", "application/msword"),
     ])
@@ -289,24 +289,24 @@ def test_jpeg_exif_character_case():
 @pytest.mark.parametrize(
     ["mime", "ver", "scraper_class"],
     [
-        ("application/vnd.oasis.opendocument.text", "1.1",
+        ("application/vnd.oasis.opendocument.text", "1.2",
          MagicBinaryScraper),
         ("application/msword", "97-2003", MagicBinaryScraper),
         ("application/vnd.openxmlformats-officedocument.wordprocessingml"
          ".document", "2007 onwards", MagicBinaryScraper),
-        ("application/vnd.oasis.opendocument.presentation", "1.1",
+        ("application/vnd.oasis.opendocument.presentation", "1.2",
          MagicBinaryScraper),
         ("application/vnd.ms-powerpoint", "97-2003", MagicBinaryScraper),
         ("application/vnd.openxmlformats-officedocument.presentationml"
          ".presentation", "2007 onwards", MagicBinaryScraper),
-        ("application/vnd.oasis.opendocument.spreadsheet", "1.1",
+        ("application/vnd.oasis.opendocument.spreadsheet", "1.2",
          MagicBinaryScraper),
         ("application/vnd.ms-excel", "8X", MagicBinaryScraper),
         ("application/vnd.openxmlformats-officedocument.spreadsheetml"
          ".sheet", "2007 onwards", MagicBinaryScraper),
-        ("application/vnd.oasis.opendocument.graphics", "1.1",
+        ("application/vnd.oasis.opendocument.graphics", "1.2",
          MagicBinaryScraper),
-        ("application/vnd.oasis.opendocument.formula", "1.0",
+        ("application/vnd.oasis.opendocument.formula", "1.2",
          MagicBinaryScraper),
         ("image/png", "1.2", MagicBinaryScraper),
         ("image/jpeg", "1.01", MagicBinaryScraper),

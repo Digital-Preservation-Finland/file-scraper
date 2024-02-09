@@ -4,7 +4,7 @@ File-scraper.
 
 This module tests that:
     - For a well-formed odt file, all scrapers supporting
-      application/vnd.oasis.opendocument.text version 1.1 report it as
+      application/vnd.oasis.opendocument.text version 1.2 report it as
       well-formed or None.
     - For a corrupted odt file, at least one scraper supporting
       application/vnd.oasis.opendocument.text reports it as not well-formed.
@@ -24,7 +24,7 @@ BASEPATH = "tests/data"
 @pytest.mark.parametrize(
     ['filename', 'mimetype'],
     [
-        ("valid_1.1.odt", "application/vnd.oasis.opendocument.text"),
+        ("valid_1.2.odt", "application/vnd.oasis.opendocument.text"),
     ]
 )
 def test_scrape_valid_file(filename, mimetype):
@@ -51,7 +51,7 @@ def test_scrape_valid_file(filename, mimetype):
         ("ODF_Text_Document_corrupted.odt",
          "application/vnd.oasis.opendocument.text"),
         # Wrong MIME - caught by File scraper
-        ("valid_1.1.odt", "application/msword"),
+        ("valid_1.2.odt", "application/msword"),
     ]
 )
 def test_scrape_invalid_file(filename, mimetype):

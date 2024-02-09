@@ -25,19 +25,11 @@ from file_scraper.defaults import (UNAP,
 from file_scraper.scraper import Scraper
 from tests.common import get_files
 
-# We currently do not have capability to define the file format version
-# of these test files
-UNAV_VERSION = [
-    "tests/data/application_vnd.oasis.opendocument.formula/valid_1.0.odf",
-]
-
 # These files will result (:unav) for some elements
 # For GIFs and TIFFs with 3 images inside, the version is missing from
 # the second and third streams, but exists in the first one.
 # For all, but one valid images, icc_profile_name is missing.
 UNAV_ELEMENTS = {
-    "tests/data/application_vnd.oasis.opendocument.formula/valid_1.0"
-    ".odf": ["version"],
     "tests/data/image_gif/valid_1987a.gif": ["icc_profile_name"],
     "tests/data/image_gif/valid_1989a.gif": ["version",
                                              "version",
@@ -362,8 +354,7 @@ def _assert_valid_scraper_result(scraper, fullname, mimetype, version,
         assert scraper.well_formed is False
 
     assert scraper.mimetype == mimetype
-    if fullname not in UNAV_VERSION:
-        assert scraper.version == version
+    assert scraper.version == version
     assert scraper.streams not in [None, {}]
 
     unavs = []
@@ -740,10 +731,6 @@ def test_grading(fullname, mimetype, version):
     Test that file format is graded as recommended unless the file
     is explicitly listed as acceptable or unacceptable.
     """
-    if fullname in UNAV_VERSION:
-        pytest.skip("File format version of file {} can not be defined."
-                    .format(fullname))
-
     charset = GIVEN_CHARSETS.get(fullname, None)
     scraper = Scraper(fullname,
                       mimetype=mimetype,

@@ -6,7 +6,8 @@ from file_scraper.detectors import (FidoDetector,
                                     MagicDetector,
                                     PredefinedDetector,
                                     SiardDetector,
-                                    SegYDetector)
+                                    SegYDetector,
+                                    ODFDetector)
 from file_scraper.dbptk.dbptk_scraper import DbptkScraper
 from file_scraper.dpx.dpx_scraper import DpxScraper
 from file_scraper.dummy.dummy_scraper import (DetectedMimeVersionMetadataScraper,
@@ -58,7 +59,8 @@ def iter_detectors():
                 MagicDetector,
                 PredefinedDetector,
                 SiardDetector,
-                SegYDetector]
+                SegYDetector,
+                ODFDetector]
 
 
 def iter_graders():

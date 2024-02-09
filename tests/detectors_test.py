@@ -21,7 +21,8 @@ from file_scraper.detectors import (_FidoReader,
                                     VerapdfDetector,
                                     ExifToolDetector,
                                     SegYDetector,
-                                    SiardDetector)
+                                    SiardDetector,
+                                    ODFDetector)
 from file_scraper.defaults import UNKN
 from tests.common import get_files, partial_message_included
 
@@ -50,7 +51,7 @@ CHANGE_FIDO = {
     ".sheet/valid_2007 onwards.xlsx": None,
     "application_vnd.openxmlformats-officedocument.presentationml"
     ".presentation/valid_2007 onwards.pptx": None,
-    "application_vnd.oasis.opendocument.formula/valid_1.0.odf":
+    "application_vnd.oasis.opendocument.formula/valid_1.2.odf":
         "application/zip",
     "application_warc/valid_1.0_.warc.gz": "application/gzip",
     "application_mxf/valid__jpeg2000.mxf": None,
@@ -416,6 +417,39 @@ def test_siard_detector(filepath, mimetype, version):
     :mimetype: Expected mimetype
     """
     detector = SiardDetector('tests/data/' + filepath)
+    detector.detect()
+    assert detector.mimetype == mimetype
+    assert detector.version == version
+
+
+@pytest.mark.parametrize(
+    ["filepath", "mimetype", "version"],
+    [
+        ("application_vnd.oasis.opendocument.text/valid_1.2.odt",
+         "application/vnd.oasis.opendocument.text",
+         "1.2"),
+        ("application_vnd.oasis.opendocument.spreadsheet/valid_1.2.ods",
+         "application/vnd.oasis.opendocument.spreadsheet",
+         "1.2"),
+        ("application_vnd.oasis.opendocument.presentation/valid_1.2.odp",
+         "application/vnd.oasis.opendocument.presentation",
+         "1.2"),
+        ("application_vnd.oasis.opendocument.graphics/valid_1.2.odg",
+         "application/vnd.oasis.opendocument.graphics",
+         "1.2"),
+        ("application_vnd.oasis.opendocument.formula/valid_1.2.odf",
+         "application/vnd.oasis.opendocument.formula",
+         "1.2"),
+    ]
+)
+def test_odf_detector(filepath, mimetype, version):
+    """Test that ODF detector detects ODF file.
+
+    :filepath: Test file
+    :mimetype: Expected mimetype
+    :version: Expected format version
+    """
+    detector = ODFDetector('tests/data/' + filepath)
     detector.detect()
     assert detector.mimetype == mimetype
     assert detector.version == version
