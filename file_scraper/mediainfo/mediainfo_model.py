@@ -688,7 +688,7 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
     def version(self):
         """Return version of stream.
 
-        MPEG-4 (i.e. AVC and AAC) streams do not have version, and and therefore
+        MPEG-4 (i.e. AVC and AAC) streams do not have version, and therefore
         the result is unapplicable (:unap).
 
         MP3 "container" does not know the version, so it has to be
