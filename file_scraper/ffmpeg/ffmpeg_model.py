@@ -22,6 +22,7 @@ class FFMpegSimpleMeta(BaseMeta):
         "video/mpeg": [],
         "video/mp4": [],
         "video/h264": [],
+        "video/h265": [],
         "audio/mpeg": [],
         "audio/mp4": [],
         "audio/aac": [],

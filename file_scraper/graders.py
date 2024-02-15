@@ -140,6 +140,9 @@ class MIMEGrader(BaseGrader):
         "video/h264": {
             UNAP: RECOMMENDED
         },
+        "video/h265": {
+            UNAP: RECOMMENDED
+        },        
         "image/tiff": {
             "6.0": RECOMMENDED,  # TIFF
             "1.0": RECOMMENDED,  # GeoTiff
@@ -373,21 +376,24 @@ class ContainerStreamsGrader(BaseGrader):
             ("audio/flac", "1.2.1"),
 
             # Video
-            ("video/x-ffv", "3"),
+            ("video/h265", UNAP),
+            ("video/x-ffv", "3")
         },
         "video/MP2T": {
             # Audio
             ("audio/aac", UNAP),
 
             # Video
-            ("video/h264", UNAP)
+            ("video/h264", UNAP),
+            ("video/h265", UNAP)
         },
         "video/mp4": {
             # Audio
             ("audio/aac", UNAP),
 
             # Video
-            ("video/h264", UNAP)
+            ("video/h264", UNAP),
+            ("video/h265", UNAP)
         },
         "application/mxf": {
             # Audio
@@ -421,6 +427,7 @@ class ContainerStreamsGrader(BaseGrader):
 
             # Video
             ("video/h264", UNAP),
+            ("video/h265", UNAP),
             ("video/jpeg2000", UNAP),
         },
         "audio/mp4": {

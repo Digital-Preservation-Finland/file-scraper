@@ -48,6 +48,10 @@ FORMATS = [
         "properties": {"format": "AVC"}
     },
     {
+        "mimetype": "video/h265",
+        "properties": {"format": "HEVC"}
+    },
+    {
         "mimetype": "video/mp4",
         "properties": {"format": "MPEG-4", "format_profile": "Base Media"}
     },

@@ -648,7 +648,8 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
     _supported = {"audio/mpeg": ["1", "2"],
                   "audio/aac": [""],
                   "video/mpeg": ["1", "2"],
-                  "video/h264": [""]}
+                  "video/h264": [""],
+                  "video/h265": [""]}
     _allow_versions = True  # Allow any version
 
     @metadata()
@@ -688,13 +689,13 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
     def version(self):
         """Return version of stream.
 
-        MPEG-4 (i.e. AVC and AAC) streams do not have version, and therefore
-        the result is unapplicable (:unap).
+        MPEG-4 (i.e. AVC and AAC) and MPEG-H (i.e. HEVC) streams do not have
+        version, and therefore the result is unapplicable (:unap).
 
         MP3 "container" does not know the version, so it has to be
         checked from the first stream.
         """
-        if self.mimetype() in ["audio/aac", "video/h264"]:
+        if self.mimetype() in ["audio/aac", "video/h264", "video/h265"]:
             return UNAP
 
         if (self.mimetype() == "audio/mpeg" and
