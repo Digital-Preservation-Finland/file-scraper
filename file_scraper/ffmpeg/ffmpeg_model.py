@@ -62,6 +62,7 @@ class FFMpegSimpleMeta(BaseMeta):
         "raw MPEG video",
         "FFmpeg video codec #1",
         "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
+        "H.265 / HEVC (High Efficiency Video Coding)",
         "raw H.264 video",
         "MP3 (MPEG audio layer 3)",
         "AAC (Advanced Audio Coding)",
