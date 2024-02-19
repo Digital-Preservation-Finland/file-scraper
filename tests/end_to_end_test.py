@@ -106,6 +106,7 @@ UNAV_ELEMENTS = {
                                           "codec_creator_app"],
     "tests/data/video_mp4/valid__h264_aac.mp4": ["bits_per_sample"],
     "tests/data/video_mp4/valid__h264_aac_mp42.mp4": ["bits_per_sample"],
+    "tests/data/video_mp4/valid__h265_aac.mp4": ["bits_per_sample"],
     "tests/data/video_mp4/valid__too_many_packets_buffered.mp4": [
         "bits_per_sample"],
     "tests/data/video_mpeg/valid_1.m1v": ["codec_creator_app_version",

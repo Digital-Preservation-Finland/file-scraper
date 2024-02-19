@@ -43,6 +43,7 @@ CHANGE_FIDO = {
     "text_plain/valid__utf8_multibyte.txt": None,
     "video_mp4/valid__h264_aac.mp4": None,
     "video_mp4/valid__h264_aac_mp42.mp4": None,
+    "video_mp4/valid__h265_aac.mp4": None,
     "video_mp4/valid__too_many_packets_buffered.mp4": None,
     "application_msword/valid_97-2003.doc": None,
     "application_vnd.openxmlformats-officedocument.spreadsheetml"
