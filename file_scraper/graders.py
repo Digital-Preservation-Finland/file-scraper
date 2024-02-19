@@ -142,7 +142,7 @@ class MIMEGrader(BaseGrader):
         },
         "video/h265": {
             UNAP: RECOMMENDED
-        },        
+        },
         "image/tiff": {
             "6.0": RECOMMENDED,  # TIFF
             "1.0": RECOMMENDED,  # GeoTiff
