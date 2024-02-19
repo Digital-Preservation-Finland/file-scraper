@@ -665,14 +665,12 @@ class ODFDetector(BaseDetector):
             ):
                 self._detected_mimetype = self._mimetype_file.decode()
 
-            # Detect format version from "meta.xml" file. Parsing the
-            # XML probably is not necessary, so only check that the
-            # file contains valid "office:version" attribute.
-            for version in '1.0', '1.1', '1.2':
-                if f'office:version="{version}"' \
-                        in self._meta_xml_file.decode():
-                    self._detected_version = version
-                    continue
+            # Detect format version from "meta.xml" file.
+            tree = ET.fromstring(self._meta_xml_file)
+            office_ns = tree.nsmap["office"]
+            version = tree.attrib[f"{{{office_ns}}}version"]
+            if version in ('1.0', '1.1', '1.2'):
+                self._detected_version = version
 
         # If both variables were not detected, we can not be sure that
         # the file is an ODF file
