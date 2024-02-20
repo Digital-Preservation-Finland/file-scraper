@@ -92,7 +92,7 @@ class Scraper:
         tool.detect()
         if tool.well_formed is False:
             self.well_formed = False
-        self.info[len(self.info)] = tool.info
+        self.info[len(self.info)] = tool.info()
         important = tool.get_important()
         if self._predefined_mimetype in LOSE:
             self._predefined_mimetype = tool.mimetype
@@ -105,7 +105,7 @@ class Scraper:
         if "version" in important and \
                 important["version"] not in LOSE:
             self._predefined_version = important["version"]
-        if tool.info["class"] != "PredefinedDetector" and \
+        if tool.info()["class"] != "PredefinedDetector" and \
                 self._predefined_mimetype == tool.mimetype and \
                 ("version" in important or
                  self._params["detected_version"] in LOSE):

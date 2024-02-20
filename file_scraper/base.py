@@ -10,7 +10,64 @@ from file_scraper.utils import metadata, is_metadata
 # pylint: disable=useless-object-inheritance
 
 
-class BaseScraper:
+class _BaseScraperDetector:
+    """Base class for Scrapers and detectors."""
+
+    __metaclass__ = abc.ABCMeta
+
+    def __init__(self, filename, mimetype=None, version=None):
+        """Initialize scraper/detector.
+
+        :filename: Path to the file that is to be scraped (bytes, not str!)
+        """
+        # TODO: We could check the type of filename parameter?
+        self.filename = filename
+        self._predefined_mimetype = mimetype
+        self._predefined_version = version
+        self._messages = []
+        self._errors = []
+        self._tools = []
+
+    def errors(self):
+        """Return the logged errors in a list.
+
+        :returns: copied list containing the logged errors
+        """
+        return self._errors[:]
+
+    def messages(self):
+        """Return logged non-empty messages in a list.
+
+        :returns: list containing the logged messages
+        """
+        return [message for message in self._messages if message]
+
+    def tools(self):
+        """Return used software tools in a list.
+
+        :returns: list containing the tools used
+        """
+        return [tool for tool in self._tools if tool]
+
+    def info(self):
+        """Return basic info of detector/scraper.
+
+        The returned dict contains keys "class", "messages", "errors"
+        and "tools", where:
+            class: Name of the class
+            messages: List of info messages
+            errors: List of errors
+            tools: List of tools used
+
+        :returns: Info dict
+        """
+        return {"class": self.__class__.__name__,
+                "messages": self.messages(),
+                "errors": self.errors(),
+                "tools": self.tools()}
+
+
+class BaseScraper(_BaseScraperDetector):
     """Base scraper implements common methods for all scrapers."""
     # pylint: disable=too-many-instance-attributes
 
@@ -29,13 +86,8 @@ class BaseScraper:
         :version: Predefined file format version
         :params: Extra parameters that some scrapers can use.
         """
+        super().__init__(filename, mimetype, version)
         self.streams = []
-        self.filename = filename
-        self._predefined_mimetype = mimetype
-        self._predefined_version = version
-        self._messages = []
-        self._errors = []
-        self._tools = []
         self._params = params if params is not None else {}
 
     @property
@@ -129,48 +181,6 @@ class BaseScraper:
                                      self._predefined_version, self._params):
                 yield md_class(**kwargs)
 
-    def errors(self):
-        """
-        Return the logged errors in a list.
-
-        :returns: copied list containing the logged errors
-        """
-        return self._errors[:]
-
-    def messages(self):
-        """
-        Return logged non-empty messages in a list.
-
-        :returns: list containing the logged messages
-        """
-        return [message for message in self._messages if message]
-
-    def tools(self):
-        """
-        Return used software tools in a list.
-
-        :returns: list containing the tools used by the scraper
-        """
-        return [tool for tool in self._tools if tool]
-
-    def info(self):
-        """
-        Return a dict containing class name, messages and errors.
-
-        The returned dict contains keys "class", "messages" and "errors",
-        where:
-            class: The scraper class name.
-            messages: List of info messages in scraping
-            errors: List of errors in scraping
-
-        :returns: Info dict
-        """
-        return {"class": self.__class__.__name__,
-                "messages": self.messages(),
-                "errors": self.errors(),
-                "tools": self.tools()}
-
-
 class BaseMeta:
     """
     All metadata is formalized in common data model.
@@ -256,39 +266,34 @@ class BaseMeta:
         return cls._supported
 
 
-class BaseDetector:
+class BaseDetector(_BaseScraperDetector):
     """Class to identify file format."""
-    # pylint: disable=too-few-public-methods
-
-    __metaclass__ = abc.ABCMeta
 
     def __init__(self, filename, mimetype=None, version=None):
-        """
-        Initialize detector.
+        """Initialize detector.
+
+        Detectors can use the user-supplied MIME types and versions to
+        refine or even fully determine the file format.
 
         :filename: Path to the identified file
         :mimetype: The MIME type of the file from another source, e.g. METS.
         :version: Version of the file from another source, e.g. METS.
         """
-        self.filename = filename  # File path
+        super().__init__(filename, mimetype, version)
+
         self.mimetype = None  # Identified mimetype
         self.version = None  # Identified file version
-        self.info = None  # Class name, messages, errors
 
-        # Detectors can use the user-supplied MIME types and versions to refine
-        # or even fully determine the file format.
-        self._given_mimetype = mimetype
-        self._given_version = version
 
     @property
     def well_formed(self):
-        """
-        Return well-formedness status of the detected file.
+        """Return well-formedness status of the detected file.
+
         This can be either None or False, because detectors do not validate.
 
         :returns: False if errors in detection, None otherwise.
         """
-        return False if self.info and self.info["errors"] else None
+        return False if self._errors else None
 
     @abc.abstractmethod
     def detect(self):

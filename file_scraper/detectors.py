@@ -171,10 +171,6 @@ class FidoDetector(BaseDetector):
         self.mimetype = fido.mimetype
         self.version = fido.version
         self._puid = fido.puid
-        self.info = {"class": self.__class__.__name__,
-                     "messages": [],
-                     "errors": [],
-                     "tools": []}
 
     def get_important(self):
         """
@@ -192,7 +188,7 @@ class FidoDetector(BaseDetector):
         :returns: A dict possibly containing key "mimetype"
         """
         important = {}
-        if not self._given_mimetype:
+        if not self._predefined_mimetype:
             if self._puid in ["fmt/471", "fmt/100"]:
                 important["mimetype"] = self.mimetype
             elif self.mimetype not in [None, "text/html", "application/zip"]:
@@ -226,11 +222,6 @@ class MagicDetector(BaseDetector):
             if analyze == "DIF (DV) movie file (PAL)":
                 self.mimetype = "video/dv"
 
-        self.info = {"class": self.__class__.__name__,
-                     "messages": [],
-                     "errors": [],
-                     "tools": []}
-
     def get_important(self):
         """
         Important mime types.
@@ -242,7 +233,7 @@ class MagicDetector(BaseDetector):
         :returns: A dict possibly containing key "mimetype"
         """
         important = {}
-        if (not self._given_mimetype and self.mimetype in
+        if (not self._predefined_mimetype and self.mimetype in
                 ["application/vnd.oasis.opendocument.formula"]):
             important["mimetype"] = self.mimetype
         return important
@@ -260,18 +251,12 @@ class PredefinedDetector(BaseDetector):
         possible: if the initilizer is not given a MIME type, the possible
         version information is ignored.
         """
-        self.mimetype = self._given_mimetype
-        if self._given_mimetype:
-            self.version = self._given_version
+        self.mimetype = self._predefined_mimetype
+        if self._predefined_mimetype:
+            self.version = self._predefined_version
 
-        if self._given_mimetype:
-            messages = ["User-supplied file format used"]
-        else:
-            messages = []
-        self.info = {"class": self.__class__.__name__,
-                     "messages": messages,
-                     "errors": [],
-                     "tools": []}
+        if self._predefined_mimetype:
+            self._messages.append("User-supplied file format used")
 
     def get_important(self):
         """
@@ -330,10 +315,7 @@ class VerapdfDetector(BaseDetector):
         version = profile.split("PDF/A")[1].split(" validation profile")[0]
         self.version = f"A{version.lower()}"
         self.mimetype = "application/pdf"
-        self.info = {"class": self.__class__.__name__,
-                     "messages": ["PDF/A version detected by veraPDF."],
-                     "errors": [],
-                     "tools": []}
+        self._messages.append("PDF/A version detected by veraPDF.")
 
     def _set_info_not_pdf_a(self, error_shell=None):
         """
@@ -343,15 +325,11 @@ class VerapdfDetector(BaseDetector):
         :error_shell: If a Shell instance is given, its stderr is
                       set as 'errors' in the info if it is not empty.
         """
-        self.info = {"class": self.__class__.__name__,
-                     "messages": ["INFO: File is not PDF/A, "
-                                  "so PDF/A validation is not performed"],
-                     "errors": [],
-                     "tools": []}
+        self._messages.append("INFO: File is not PDF/A, so PDF/A validation is not performed")
 
         errors = error_shell.stderr
         if errors:
-            self.info["errors"] = [errors]
+            self._errors.append(errors)
 
     def get_important(self):
         """
@@ -393,14 +371,12 @@ class MagicCharset(BaseDetector):
     def detect(self):
         """Detect charset with MagicLib. A charset is detected from up to
         1 megabytes of data from the beginning of file."""
-        messages = []
-        errors = []
         charset = magic_analyze(MAGIC_LIB,
                                 MAGIC_LIB.MAGIC_MIME_ENCODING,
                                 self.filename)
 
         if charset is None or charset.upper() == "BINARY":
-            errors.append("Unable to detect character encoding.")
+            self._errors.append("Unable to detect character encoding.")
         elif charset.upper() == "US-ASCII":
             self.charset = "UTF-8"
         elif charset.upper() == "ISO-8859-1":
@@ -410,14 +386,10 @@ class MagicCharset(BaseDetector):
             self.charset = "UTF-16"
         else:
             self.charset = charset.upper()
-        if not errors:
-            messages.append(
-                "Character encoding detected as %s" % self.charset)
-
-        self.info = {"class": self.__class__.__name__,
-                     "messages": messages,
-                     "errors": errors,
-                     "tools": []}
+        if not self._errors:
+            self._messages.append(
+                f"Character encoding detected as {self.charset}"
+            )
 
 
 class ExifToolDetector(BaseDetector):
@@ -438,10 +410,6 @@ class ExifToolDetector(BaseDetector):
             with exiftool.ExifToolHelper() as et:
                 metadata = et.get_metadata(self.filename)
                 self.mimetype = metadata[0].get("File:MIMEType", None)
-        self.info = {"class": self.__class__.__name__,
-                     "messages": [],
-                     "errors": [],
-                     "tools": []}
 
     def get_important(self):
         """
@@ -450,7 +418,7 @@ class ExifToolDetector(BaseDetector):
         detectors, which would detect dng files as tiff files.
         """
         important = {}
-        if (not self._given_mimetype and self.mimetype in
+        if (not self._predefined_mimetype and self.mimetype in
                 ["image/x-adobe-dng"]):
             important["mimetype"] = self.mimetype
         return important
@@ -506,10 +474,6 @@ class SegYDetector(BaseDetector):
             else:
                 raise ValueError
         except (UnicodeDecodeError, IndexError, ValueError):
-            self.info = {"class": self.__class__.__name__,
-                         "messages": [],
-                         "errors": [],
-                         "tools": []}
             return
 
         version = self._analyze_version(content)
@@ -517,16 +481,12 @@ class SegYDetector(BaseDetector):
             self.mimetype = "application/x.fi-dpres.segy"
             self.version = version
 
-        messages = []
         if version == UNKN:
-            messages.append("SEG-Y signature is missing, but file most"
-                            "likely is a SEG-Y file. File format version can "
-                            "not be detected.")
-
-        self.info = {"class": self.__class__.__name__,
-                     "messages": messages,
-                     "errors": [],
-                     "tools": []}
+            self._messages.append(
+                "SEG-Y signature is missing, but file most"
+                "likely is a SEG-Y file. File format version can "
+                "not be detected."
+            )
 
     def get_important(self):
         """
@@ -536,10 +496,10 @@ class SegYDetector(BaseDetector):
         files as plain text files.
         """
         important = {}
-        if (not self._given_mimetype and self.mimetype in
+        if (not self._predefined_mimetype and self.mimetype in
                 ["application/x.fi-dpres.segy"]):
             important["mimetype"] = self.mimetype
-        if (not self._given_version and self.mimetype in
+        if (not self._predefined_version and self.mimetype in
                 ["application/x.fi-dpres.segy"]):
             important["version"] = self.version
         return important
@@ -585,11 +545,6 @@ class SiardDetector(BaseDetector):
                     self.version = version
                     break
 
-        self.info = {"class": self.__class__.__name__,
-                     "messages": [],
-                     "errors": [],
-                     "tools": []}
-
     def get_important(self):
         """
         If SiardDetector determines the mimetype as SIARD, the mimetype
@@ -598,10 +553,10 @@ class SiardDetector(BaseDetector):
         files as ZIP archive files.
         """
         important = {}
-        if (not self._given_mimetype and self.mimetype in
+        if (not self._predefined_mimetype and self.mimetype in
                 ["application/x-siard"]):
             important["mimetype"] = self.mimetype
-        if (not self._given_version and self.mimetype in
+        if (not self._predefined_version and self.mimetype in
                 ["application/x-siard"]):
             important["version"] = self.version
         return important
@@ -677,11 +632,6 @@ class ODFDetector(BaseDetector):
         if self._detected_mimetype and self._detected_version:
             self.mimetype = self._detected_mimetype
             self.version = self._detected_version
-
-        self.info = {"class": self.__class__.__name__,
-                     "messages": [],
-                     "errors": [],
-                     "tools": []}
 
     def get_important(self):
         """Return dict of important values determined by the detector.

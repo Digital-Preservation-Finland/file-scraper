@@ -207,9 +207,9 @@ def test_base_detector():
         filename="testfilename", mimetype="test/mime", version="0.0")
     assert detector.filename == "testfilename"
     # pylint: disable=protected-access
-    assert detector._given_mimetype == "test/mime"
+    assert detector._predefined_mimetype == "test/mime"
 
-    assert detector._given_version == "0.0"
+    assert detector._predefined_version == "0.0"
 
 
 @pytest.mark.parametrize(('tools_given', 'tools_expected'), [

@@ -194,7 +194,7 @@ def test_pdf_detector(filepath, mimetype, version, message):
     detector.detect()
     assert detector.mimetype == mimetype
     assert detector.version == version
-    assert message in detector.info['messages']
+    assert message in detector.info()['messages']
 
 
 @pytest.mark.parametrize(
@@ -346,12 +346,12 @@ def test_magic_charset(filename, charset):
     detector.detect()
     if charset:
         detector.charset = charset
-        assert not detector.info["errors"]
+        assert not detector.info()["errors"]
         assert partial_message_included(
-            "Character encoding detected as", detector.info["messages"])
+            "Character encoding detected as", detector.info()["messages"])
     else:
         assert partial_message_included(
-            "Unable to detect character encoding", detector.info["errors"])
+            "Unable to detect character encoding", detector.info()["errors"])
 
 
 @pytest.mark.parametrize(
@@ -397,7 +397,7 @@ def test_segy_detector(filepath, mimetype, version):
     assert detector.version == version
     if version == UNKN:
         assert partial_message_included(
-            "SEG-Y signature is missing", detector.info["messages"])
+            "SEG-Y signature is missing", detector.info()["messages"])
 
 
 @pytest.mark.parametrize(
