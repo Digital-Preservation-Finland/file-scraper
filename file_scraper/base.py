@@ -69,7 +69,6 @@ class _BaseScraperDetector:
 
 class BaseScraper(_BaseScraperDetector):
     """Base scraper implements common methods for all scrapers."""
-    # pylint: disable=too-many-instance-attributes
 
     _supported_metadata = []
     _only_wellformed = False
@@ -135,7 +134,6 @@ class BaseScraper(_BaseScraperDetector):
         :allow_unav_version: True if (:unav) is an acceptable version
         :allow_unap_version: True if (:unap) is an acceptable version
         """
-
         # If there are no streams, the scraper does not support the determined
         # MIME type and version combination at all (i.e. the initial MIME type
         # guess used to choose scrapers has been inaccurate).
@@ -166,8 +164,9 @@ class BaseScraper(_BaseScraperDetector):
                     return
 
         # No supporting metadata models found.
-        self._errors.append("MIME type %s with version %s is not supported." %
-                            (mimetype, version))
+        self._errors.append(
+            f"MIME type {mimetype} with version {version} is not supported."
+        )
 
     def iterate_models(self, **kwargs):
         """
@@ -181,6 +180,7 @@ class BaseScraper(_BaseScraperDetector):
                                      self._predefined_version, self._params):
                 yield md_class(**kwargs)
 
+
 class BaseMeta:
     """
     All metadata is formalized in common data model.
@@ -191,7 +191,6 @@ class BaseMeta:
     Additional metadata and processing is implemented in subclasses.
     """
 
-    # pylint: disable=no-self-use
     _supported = {}
     _allow_versions = False
 
@@ -284,7 +283,6 @@ class BaseDetector(_BaseScraperDetector):
         self.mimetype = None  # Identified mimetype
         self.version = None  # Identified file version
 
-
     @property
     def well_formed(self):
         """Return well-formedness status of the detected file.
@@ -300,7 +298,6 @@ class BaseDetector(_BaseScraperDetector):
         """Detect file. Must be implemented in detectors."""
 
     def get_important(self):
-        # pylint: disable=no-self-use
         """
         Return dict of important values determined by the detector.
 

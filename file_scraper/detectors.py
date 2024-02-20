@@ -1,12 +1,12 @@
 """File format detectors."""
-# pylint: disable=ungrouped-imports
+
+import errno
+import os
 
 import distutils.spawn
-import os
 import zipfile
 import lxml.etree as ET
 import exiftool
-import errno
 
 from fido.fido import Fido, defaults
 from fido.pronomutils import get_local_pronom_versions
@@ -113,7 +113,6 @@ class _FidoReader(_FidoCachedFormats):
         :delta_t: Not needed here, but originates from Fido
         :matchtype: Not needed here, but originates from Fido
         """
-        # pylint: disable=unused-argument
         for (item, _) in matches:
             self.puid = self.get_puid(item)
             if self.puid in PRONOM_DICT:
@@ -325,7 +324,9 @@ class VerapdfDetector(BaseDetector):
         :error_shell: If a Shell instance is given, its stderr is
                       set as 'errors' in the info if it is not empty.
         """
-        self._messages.append("INFO: File is not PDF/A, so PDF/A validation is not performed")
+        self._messages.append(
+            "INFO: File is not PDF/A, so PDF/A validation is not performed"
+        )
 
         errors = error_shell.stderr
         if errors:
