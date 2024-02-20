@@ -3,11 +3,32 @@ File Scraper
 
 This software identifies files, collects metadata from them, and checks well-formedness of a file.
 
-Installation
+Requirements
 ------------
 
-Installation and usage requires Python 3.6 or newer.
-The software is tested with Python 3.6 on Centos 7.x release.
+Installation and usage requires Python 3.9 or newer.
+The software is tested with Python 3.9 on AlmaLinux 9 release.
+
+Installation using RPM packages (preferred)
+-------------------------------------------
+
+Installation on Linux distributions is done by using the RPM Package Manager.
+See how to `configure the PAS-jakelu RPM repositories`_ to setup necessary software sources.
+
+.. _configure the PAS-jakelu RPM repositories: https://www.digitalpreservation.fi/user_guide/installation_of_tools 
+
+After the repository has been added, the package can be installed by running one of the following commands.
+
+For a full installation containing all validation tools::
+
+    sudo dnf install python3-file-scraper-full
+
+For a lighter installation containing only the core tools needed for file format identification (file format validation not supported)::
+
+    sudo dnf install python3-file-scraper-core
+
+Installation using Python Virtualenv for development purposes
+-------------------------------------------------------------
 
 Create a virtual environment::
 
