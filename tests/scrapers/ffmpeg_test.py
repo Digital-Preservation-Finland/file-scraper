@@ -146,6 +146,16 @@ UNAV_MIME = []
             "video/mp4"
         ),
         (
+            "valid__h265_aac.mp4",
+            {
+                "purpose": "Test valid mp4.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": ""
+            },
+            "video/mp4"
+        ),
+
+        (
             "valid__too_many_packets_buffered.mp4",
             {
                 "purpose": "Test valid mp4.",
@@ -415,6 +425,15 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
                 "purpose": "Test invalid MPEG-4.",
                 "stdout_part": "",
                 "stderr_part": "moov atom not found"
+            },
+            "video/mp4"
+        ),
+        (
+            "invalid__h265_aac_invalid_data.mp4",
+            {
+                "purpose": "Test invalid MPEG-4.",
+                "stdout_part": "",
+                "stderr_part": "offset_len 108 is invalid"
             },
             "video/mp4"
         ),
