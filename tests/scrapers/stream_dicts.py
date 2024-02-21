@@ -142,6 +142,11 @@ MPEG4_VIDEO = dict(MPEG1_VIDEO, **{
     "codec_creator_app_version": "56.40.101",
     "codec_creator_app": "Lavf56.40.101"})
 
+HEVC_VIDEO = dict(MPEG4_VIDEO, **{
+    "mimetype": "video/h265", "data_rate": "0.015504",
+    "codec_name": "HEVC", "codec_creator_app": "Lavf57.71.100",
+    "codec_creator_app_version": "57.71.100"})
+
 MOV_MPEG4_VIDEO = dict(MPEG4_VIDEO, **{
     "frame_rate": "25", "height": "576", "duration": "PT0.08S",
     "data_rate": "0.5793", "par": "1.422", "width": "720",
@@ -166,6 +171,12 @@ MPEG4_AUDIO = dict(MPEG1_AUDIO, **{
     "duration": "PT0.86S", "data_rate": "135.233",
     "codec_creator_app": "Lavf56.40.101"})
 
+MPEG4_AUDIO2 = dict(MPEG4_AUDIO, **{
+    "codec_creator_app": "Lavf57.71.100",
+    "codec_creator_app_version": "57.71.100",
+    "duration": "PT0.88S",
+    "data_rate": "129.289"})
+
 M4A_MPEG4_AUDIO = dict(MPEG4_AUDIO, **{
     "index": 1,
     "version": UNAP,
@@ -186,6 +197,12 @@ MPEG4_CONTAINER = {
     "version": UNAP, "codec_name": "MPEG-4",
     "codec_creator_app_version": "56.40.101",
     "codec_creator_app": "Lavf56.40.101"}
+
+MPEG4_CONTAINER2 = {
+    "mimetype": "video/mp4", "index": 0, "stream_type": "videocontainer",
+    "version": UNAP, "codec_name": "MPEG-4",
+    "codec_creator_app_version": "57.71.100",
+    "codec_creator_app": "Lavf57.71.100"}
 
 M4A_MPEG4_CONTAINER = dict(MPEG4_CONTAINER, **{
     "codec_creator_app_version": UNAV,

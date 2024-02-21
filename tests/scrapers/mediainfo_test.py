@@ -45,6 +45,7 @@ from tests.scrapers.stream_dicts import (AIFF_AUDIO,
                                          FFV_VIDEO_SOUND_DATARATE,
                                          FFV_VIDEO_TRUNCATED,
                                          FLAC_AUDIO,
+                                         HEVC_VIDEO,
                                          LPCM8_AUDIO,
                                          MKV_CONTAINER,
                                          MOV_CONTAINER,
@@ -55,8 +56,10 @@ from tests.scrapers.stream_dicts import (AIFF_AUDIO,
                                          MPEG1_VIDEO,
                                          MPEG2_VIDEO,
                                          MPEG4_AUDIO,
+                                         MPEG4_AUDIO2,
                                          M4A_MPEG4_AUDIO,
                                          MPEG4_CONTAINER,
+                                         MPEG4_CONTAINER2,
                                          M4A_MPEG4_CONTAINER,
                                          MPEG4_VIDEO,
                                          MPEGPS_AUDIO,
@@ -429,6 +432,17 @@ def test_mediainfo_scraper_mpeg(filename, result_dict, evaluate_scraper):
                 "streams": {0: MPEG4_CONTAINER.copy(),
                             1: MPEG4_VIDEO.copy(),
                             2: MPEG4_AUDIO.copy()}
+            }
+        ),
+        (
+            "valid__h265_aac.mp4",
+            {
+                "purpose": "Test valid mp4.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": "",
+                "streams": {0: MPEG4_CONTAINER2.copy(),
+                            1: HEVC_VIDEO.copy(),
+                            2: MPEG4_AUDIO2.copy()}
             }
         ),
         (
