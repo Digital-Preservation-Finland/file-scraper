@@ -98,9 +98,21 @@ UNAV_ELEMENTS = {
         "codec_creator_app_version",
         "codec_creator_app"
     ],
+    "tests/data/video_MP2T/valid__h265_aac.ts": [
+        "codec_creator_app",
+        "codec_creator_app_version",
+        "codec_creator_app",
+        "codec_creator_app_version",
+        "codec_creator_app",
+        "codec_creator_app_version",
+        "data_rate",
+        "bits_per_sample",
+        "data_rate"
+    ],
     "tests/data/video_quicktime/valid__h264_aac.mov": ["bits_per_sample"],
     "tests/data/video_quicktime/valid__h264_aac_no_ftyp_atom.mov": [
         "bits_per_sample"],
+    "tests/data/video_quicktime/valid__h265_aac.mov": ["bits_per_sample"],
     "tests/data/audio_mpeg/valid_1.mp3": ["bits_per_sample",
                                           "codec_creator_app_version",
                                           "codec_creator_app"],

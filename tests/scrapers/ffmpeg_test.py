@@ -26,13 +26,12 @@ This module tests that:
       is not well-formed and errors should contain "Error while decoding
       stream".
     - The mimetypes tested are:
-        - video/quicktime containing dv video and lpcm8 audio stream
-        - video/x-matroska containing ffv1 video stream
+        - video/quicktime
+        - video/x-matroska
         - video/dv
         - video/mpeg, with version 1 and 2 separately
-        - video/mp4 containing h264 video, aac audio streams and
-        too many packets buffered video
-        - video/MP2T file
+        - video/mp4
+        - video/MP2T
         - audio/mpeg version 1 file
         - application/mxf
         - audio/x-wav
@@ -92,6 +91,15 @@ UNAV_MIME = []
             "video/quicktime"
         ),
         (
+            "valid__h265_aac.mov",
+            {
+                "purpose": "Test valid MOV with h265 and AAC.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": ""
+            },
+            "video/quicktime"
+        ),
+        (
             "valid__pal_lossy.dv",
             {
                 "purpose": "Test valid DV.",
@@ -102,6 +110,15 @@ UNAV_MIME = []
         ),
         (
             "valid_4_ffv1.mkv",
+            {
+                "purpose": "Test valid MKV.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": ""
+            },
+            "video/x-matroska"
+        ),
+        (
+            "valid_4_h265.mkv",
             {
                 "purpose": "Test valid MKV.",
                 "stdout_part": "file was analyzed successfully",
@@ -175,6 +192,15 @@ UNAV_MIME = []
         ),
         (
             "valid__mpeg2_mp3.ts",
+            {
+                "purpose": "Test valid MPEG-TS.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": ""
+            },
+            "video/MP2T"
+        ),
+        (
+            "valid__h265_aac.ts",
             {
                 "purpose": "Test valid MPEG-TS.",
                 "stdout_part": "file was analyzed successfully",

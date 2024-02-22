@@ -97,6 +97,17 @@ from tests.scrapers.stream_dicts import (AIFF_AUDIO,
                         1: MOV_MPEG4_VIDEO.copy(),
                         2: MOV_MPEG4_AUDIO.copy()}},
          "video/quicktime"),
+        ("valid__h265_aac.mov", {
+            "purpose": "Test valid MOV with HEVC and AAC.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": "",
+            "streams": {0: dict(MOV_CONTAINER.copy(),
+                                **{"codec_creator_app": "Lavf57.71.100",
+                                   "codec_creator_app_version": "57.71.100"}),
+                        1: HEVC_VIDEO.copy(),
+                        2: dict(MPEG4_AUDIO2.copy(),
+                                **{"data_rate": "129.196"})}},
+         "video/quicktime"),
         ("valid__h264_aac_no_ftyp_atom.mov", {
             "purpose": "Test valid MOV which does not have ftyp atom.",
             "stdout_part": "file was analyzed successfully",
@@ -169,6 +180,16 @@ def test_mediainfo_scraper_mov(filename, result_dict, mimetype,
             "streams": {0: MKV_CONTAINER.copy(),
                         1: FFV_VIDEO_SOUND_DATARATE.copy(),
                         2: LPCM8_AUDIO.copy()}}),
+        ("valid_4_h265.mkv", {
+            "purpose": "Test valid MKV with HEVC video.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": "",
+            "streams": {0: dict(MKV_CONTAINER.copy(),
+                                **{"codec_creator_app": "Lavf57.71.100",
+                                   "codec_creator_app_version": "57.71.100"}),
+                        1: dict(HEVC_VIDEO.copy(),
+                                **{"data_rate": "0.031426",
+                                   "sound": "No"})}}),
         ("invalid_4_ffv1_missing_data.mkv", {
             "purpose": "Test truncated MKV.",
             "stdout_part": "",
@@ -446,6 +467,14 @@ def test_mediainfo_scraper_mpeg(filename, result_dict, evaluate_scraper):
             }
         ),
         (
+            "invalid__h265_aac_invalid_data.mp4 ",
+            {
+                "purpose": "Test invalid MPEG-4.",
+                "stdout_part": "",
+                "stderr_part": "Error in analyzing file."
+            }
+        ),
+        (
             "invalid__empty.mp4",
             {
                 "purpose": "Test invalid MPEG-4.",
@@ -469,7 +498,7 @@ def test_mediainfo_scraper_mp4(filename, result_dict, evaluate_scraper):
     scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
 
-    if "empty" in filename:
+    if "invalid" in filename:
         assert partial_message_included(correct.stdout_part,
                                         scraper.messages())
         assert partial_message_included(correct.stderr_part, scraper.errors())
@@ -573,6 +602,27 @@ def test_mediainfo_scraper_mp3(filename, result_dict, evaluate_scraper):
                 "streams": {0: MPEGTS_CONTAINER.copy(),
                             1: MPEGTS_VIDEO.copy(),
                             2: MPEGTS_AUDIO.copy()}
+            }
+        ),
+        (
+            "valid__h265_aac.ts",
+            {
+                "purpose": "Test valid MPEG-TS.",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": "",
+                "streams": {0: MPEGTS_CONTAINER.copy(),
+                            1: dict(HEVC_VIDEO.copy(),
+                                    **{"data_rate": "(:unav)",
+                                       "data_rate_mode": "Variable",
+                                       "codec_creator_app": "(:unav)",
+                                       "codec_creator_app_version":
+                                       "(:unav)"}),
+                            2: dict(MPEG4_AUDIO2.copy(),
+                                    **{"data_rate": "(:unav)",
+                                       "data_rate_mode": "Variable",
+                                       "codec_creator_app": "(:unav)",
+                                       "codec_creator_app_version":
+                                       "(:unav)"})}
             }
         ),
         (
