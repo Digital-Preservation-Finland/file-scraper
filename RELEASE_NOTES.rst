@@ -1,6 +1,15 @@
 Release notes
 =============
 
+Version 0.67
+------------
+
+- Add support for h265 (HEVC) video streams.
+- Update the following mimetypes:
+
+   - audio/mp4 to audio/aac for AAC streams
+   - video/mp4 to video/h264 for AVC streams.
+
 Version 0.66
 ------------
 - Fix a bug causing PDF files with warnings (but not severe errors) to be detected as not well-formed.
