@@ -453,3 +453,28 @@ def test_odf_detector(filepath, mimetype, version):
     detector.detect()
     assert detector.mimetype == mimetype
     assert detector.version == version
+
+
+@pytest.mark.parametrize(
+    ["filepath", "error"],
+    [
+        # Invalid meta.xml file
+        ("application_vnd.oasis.opendocument.text/invalid_1.2_invalid_xml.odt",
+         "The meta.xml of ODF file is invalid"),
+        # ZIP can not be read
+        ("application_vnd.oasis.opendocument.text/"
+         "invalid_1.2_missing_data.odt",
+         "Corrupted ZIP archive")
+    ]
+)
+def test_invalid_odf(filepath, error):
+    """Test detecting invalid ODF files with ODFDetector.
+
+    :filepath: Test file
+    :error: Expected error message
+    """
+    detector = ODFDetector('tests/data/' + filepath)
+    detector.detect()
+    assert detector.mimetype is None
+    assert detector.version is None
+    assert detector.info()['errors'][-1] == error

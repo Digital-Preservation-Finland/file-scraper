@@ -5,7 +5,7 @@ import os
 
 import distutils.spawn
 import zipfile
-import lxml.etree as ET
+import lxml.etree
 import exiftool
 
 from fido.fido import Fido, defaults
@@ -293,7 +293,7 @@ class VerapdfDetector(BaseDetector):
             self._set_info_not_pdf_a(shell)
             return
         try:
-            report = ET.fromstring(shell.stdout_raw)
+            report = lxml.etree.fromstring(shell.stdout_raw)
             if report.xpath("//batchSummary")[0].get("failedToParse") == "0":
                 compliant = report.xpath(
                     "//validationReport")[0].get("isCompliant")
@@ -305,7 +305,7 @@ class VerapdfDetector(BaseDetector):
             else:
                 self._set_info_not_pdf_a(shell)
                 return
-        except ET.XMLSyntaxError:
+        except lxml.etree.XMLSyntaxError:
             self._set_info_not_pdf_a(shell)
             return
 
@@ -573,30 +573,6 @@ class ODFDetector(BaseDetector):
     mimetype and format version of all other ODF files also.
     """
 
-    def __init__(self, filename, mimetype=None, version=None):
-        """Initialize detector."""
-        super().__init__(filename, mimetype=mimetype,
-                         version=version)
-        self._mimetype_file = None
-        self._meta_xml_file = None
-        self._detected_mimetype = None
-        self._detected_version = None
-
-    def _read_zip(self):
-        filepath = decode_path(self.filename)
-        if zipfile.is_zipfile(filepath):
-            with zipfile.ZipFile(filepath) as zipf:
-                if {'mimetype', 'meta.xml'} <= set(zipf.namelist()):
-                    try:
-                        self._mimetype_file = zipf.read('mimetype')
-                        self._meta_xml_file = zipf.read('meta.xml')
-                    except OSError as exception:
-                        if exception.errno == errno.EINVAL:
-                            # Zip is corrupted, detection is impossible
-                            pass
-                        else:
-                            raise
-
     def detect(self):
         """Detect the mimetype and file format version of a file.
 
@@ -607,32 +583,58 @@ class ODFDetector(BaseDetector):
             3) Valid format version is defined in "meta.xml" file
         """
         # Try to read "mimetype" and "meta.xml" files from zip
-        self._read_zip()
+        if zipfile.is_zipfile(self.filename):
+            with zipfile.ZipFile(decode_path(self.filename)) as zipf:
+                if {'mimetype', 'meta.xml'} <= set(zipf.namelist()):
+                    try:
+                        mimetype_file = zipf.read('mimetype')
+                        meta_xml_file = zipf.read('meta.xml')
+                    except OSError as exception:
+                        if exception.errno == errno.EINVAL:
+                            self._errors.append('Corrupted ZIP archive')
+                            return
+                        # Unknown error
+                        raise
+                else:
+                    # ZIP does not contains required files, so it is not
+                    # ODF
+                    return
+        else:
+            # The file is no ZIP, so it is not ODF
+            return
 
-        if self._meta_xml_file and self._mimetype_file:
+        # Detect mimetype from "mimetype" file.
+        mimetype = mimetype_file.decode().strip()
+        if mimetype in (
+            'application/vnd.oasis.opendocument.text',
+            'application/vnd.oasis.opendocument.spreadsheet',
+            'application/vnd.oasis.opendocument.presentation',
+            'application/vnd.oasis.opendocument.graphics',
+            'application/vnd.oasis.opendocument.formula'
+        ):
+            detected_mimetype = mimetype
+        else:
+            # Unknown mimetype
+            return
 
-            # Detect mimetype from "mimetype" file.
-            if self._mimetype_file.decode() in (
-                'application/vnd.oasis.opendocument.text',
-                'application/vnd.oasis.opendocument.spreadsheet',
-                'application/vnd.oasis.opendocument.presentation',
-                'application/vnd.oasis.opendocument.graphics',
-                'application/vnd.oasis.opendocument.formula'
-            ):
-                self._detected_mimetype = self._mimetype_file.decode()
+        # Detect format version from "meta.xml" file.
+        try:
+            tree = lxml.etree.fromstring(meta_xml_file)
+        except lxml.etree.XMLSyntaxError:
+            self._errors.append('The meta.xml of ODF file is invalid')
+            return
+        office_ns = tree.nsmap["office"]
+        version = tree.attrib[f"{{{office_ns}}}version"]
+        if version in ('1.0', '1.1', '1.2'):
+            detected_version = version
+        else:
+            # Unknown format version
+            return
 
-            # Detect format version from "meta.xml" file.
-            tree = ET.fromstring(self._meta_xml_file)
-            office_ns = tree.nsmap["office"]
-            version = tree.attrib[f"{{{office_ns}}}version"]
-            if version in ('1.0', '1.1', '1.2'):
-                self._detected_version = version
-
-        # If both variables were not detected, we can not be sure that
-        # the file is an ODF file
-        if self._detected_mimetype and self._detected_version:
-            self.mimetype = self._detected_mimetype
-            self.version = self._detected_version
+        # Both variables were detected, so the file most likely is an
+        # ODF file
+        self.mimetype = detected_mimetype
+        self.version = detected_version
 
     def get_important(self):
         """Return dict of important values determined by the detector.
