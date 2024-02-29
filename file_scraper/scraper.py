@@ -31,6 +31,8 @@ class Scraper:
         :kwargs: Extra arguments for certain scrapers.
         """
         if filename is not None:
+            # Filename is stored as encoded string for better support
+            # of undecodable strings.
             filename = encode_path(filename)
         self.filename = filename
         self.mimetype = None

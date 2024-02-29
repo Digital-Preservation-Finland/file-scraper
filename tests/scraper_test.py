@@ -18,7 +18,7 @@ This module tests that:
     - Character encoding detection works and respects the predefined file type
       if provided.
 """
-
+import os
 import pytest
 
 from file_scraper.scraper import Scraper
@@ -199,3 +199,26 @@ def test_grade(file_path, expected_grade):
     # After scraping the file should have expected grade
     scraper.scrape()
     assert scraper.grade() == expected_grade
+
+
+def test_undecodable_filename(tmpdir):
+    """Test that scraper works with undecodable filenames.
+
+    Creates a file with iso-8859-15 encoded name and tests that some
+    methods work. All methods currently do not work, so they are not
+    tested.
+    """
+    path = os.path.join(tmpdir, 'källi').encode('iso-8859-15')
+    with open(path, 'w', encoding='utf-8') as file:
+        file.write('foo')
+
+    scraper = Scraper(path)
+    # TODO: Scraping/detection fails because ZipFile does not work with
+    # encoded strings. Note that all scrapers should be tested with
+    # undecodable filenames.
+    # assert scraper.scrape()
+    # assert scraper.detect_filetype()
+    assert scraper.is_textfile() is True
+    assert scraper.checksum() == 'acbd18db4cc2f85cedef654fccc4a4d8'
+    # File can not be graded because it can not be detected
+    assert scraper.grade() == '(:unav)'

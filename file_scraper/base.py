@@ -3,7 +3,7 @@
 import abc
 
 from file_scraper.defaults import UNAP, UNAV
-from file_scraper.utils import metadata, is_metadata
+from file_scraper.utils import metadata, is_metadata, encode_path
 
 # Object inheritance is needed as long as we support Python 2 to explicitly use
 # new-style classes.
@@ -18,9 +18,12 @@ class _BaseScraperDetector:
     def __init__(self, filename, mimetype=None, version=None):
         """Initialize scraper/detector.
 
-        :filename: Path to the file that is to be scraped (bytes, not str!)
+        :filename: Path to the file that is to be scraped
         """
-        # TODO: We could check the type of filename parameter?
+        # The filename passed here should already be encoded, but it is
+        # encoded also here to simplify testing Scrapers.
+        if filename is not None:
+            filename = encode_path(filename)
         self.filename = filename
         self._predefined_mimetype = mimetype
         self._predefined_version = version

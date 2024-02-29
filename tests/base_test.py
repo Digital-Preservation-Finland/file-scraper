@@ -130,7 +130,7 @@ def test_scraper_properties():
     scraper._errors.append("error")
     assert not scraper.well_formed
 
-    assert scraper.filename == "testfilename"
+    assert scraper.filename == b"testfilename"
     # pylint: disable=protected-access
     assert scraper._params == {"test": "value"}
 
@@ -205,7 +205,7 @@ def test_base_detector():
     """Test base detector initialization."""
     detector = BaseDetectorBasic(
         filename="testfilename", mimetype="test/mime", version="0.0")
-    assert detector.filename == "testfilename"
+    assert detector.filename == b"testfilename"
     # pylint: disable=protected-access
     assert detector._predefined_mimetype == "test/mime"
 
