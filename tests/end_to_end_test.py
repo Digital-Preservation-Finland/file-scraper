@@ -501,7 +501,7 @@ def test_without_wellformed(fullname, mimetype, version):
 @pytest.mark.parametrize(("fullname", "mimetype", "version"),
                          get_files(well_formed=True))
 # pylint: disable=unused-argument
-def test_coded_filename(testpath, fullname, mimetype, version):
+def test_coded_filename(tmpdir, fullname, mimetype, version):
     """
     Integration test with unicode and utf-8 filename and with all scrapers.
     - Test that unicode filenames work with all mimetypes
@@ -513,7 +513,7 @@ def test_coded_filename(testpath, fullname, mimetype, version):
     predefined_mimetype = GIVEN_MIMETYPES.get(fullname, None)
     predefined_charset = GIVEN_CHARSETS.get(fullname, None)
     ext = os.path.splitext(fullname)[1]
-    unicode_name = os.path.join(testpath, "äöå" + ext)
+    unicode_name = os.path.join(tmpdir, "äöå" + ext)
     shutil.copy(fullname, unicode_name)
     scraper = Scraper(unicode_name, mimetype=predefined_mimetype,
                       charset=predefined_charset)

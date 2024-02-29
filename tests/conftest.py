@@ -1,8 +1,6 @@
 """Configure py.test default values and functionality."""
 
 import os
-import tempfile
-import shutil
 
 import pytest
 from tests.common import partial_message_included
@@ -14,27 +12,15 @@ from file_scraper.utils import metadata
 # pylint: disable=redefined-outer-name
 
 
-@pytest.yield_fixture(scope="function")
-def testpath():
-    """
-    Creates temporary directory and clean up after testing.
-
-    :yields: Path to temporary directory
-    """
-    temp_path = tempfile.mkdtemp(prefix="tests.testpath.")
-    yield temp_path
-    shutil.rmtree(temp_path)
-
-
 @pytest.fixture(scope="function")
-def fido_cache_halting_file(testpath):
+def fido_cache_halting_file(tmpdir):
     """File that originally halted the FidoReader due to caching mistake.
 
     It should not take as long as Fido to identify or detect the file. Before
     due to caching mistake, old FidoDetector would take near 10 seconds to
     process this file while Fido processed it within 3 seconds.
     """
-    filepath = os.path.join(testpath, 'freeze_fido.bin')
+    filepath = os.path.join(tmpdir, 'freeze_fido.bin')
     with open(filepath, 'wb') as out_file:
         out_file.write(b"\xff\xfb\x10" * 1000)
 

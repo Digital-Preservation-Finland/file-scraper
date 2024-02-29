@@ -219,7 +219,7 @@ def test_scraper(filename, result_dict, header,
 )
 def test_large_field(filename, result_dict, header,
                      extra_params, size,
-                     evaluate_scraper, testpath):
+                     evaluate_scraper, tmpdir):
     """
     Test that large field sizes are properly handled.
     Large test files are created on the fly so as not to take up space.
@@ -231,7 +231,7 @@ def test_large_field(filename, result_dict, header,
     :extra_params: Extra parameters for the scraper (e.g. charset)
     :size: Amount of bytes in the large field
     """
-    tempdatapath = os.path.join(testpath, "text_csv")
+    tempdatapath = os.path.join(tmpdir, "text_csv")
     os.makedirs(tempdatapath)
     tempfilepath = os.path.join(tempdatapath, filename)
     with open(tempfilepath, 'w', encoding='utf8') as tempfile:
@@ -239,7 +239,7 @@ def test_large_field(filename, result_dict, header,
         tempfile.write(size*"a")
 
     correct = parse_results(filename, "text/csv", result_dict,
-                            True, basepath=testpath)
+                            True, basepath=tmpdir)
     params = {
         "separator": correct.streams[0]["separator"],
         "delimiter": correct.streams[0]["delimiter"],

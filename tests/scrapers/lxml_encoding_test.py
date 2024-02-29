@@ -29,7 +29,7 @@ from tests.common import partial_message_included
         "latin_1", "utf_8", "utf_16"
     ]
 )
-def test_xml_encoding(testpath, file_encoding):
+def test_xml_encoding(tmpdir, file_encoding):
     """
     Test that encoding check from XML header works.
 
@@ -40,7 +40,7 @@ def test_xml_encoding(testpath, file_encoding):
                  "utf_16": "UTF-16"}
     xml = """<?xml version="1.0" encoding="{}" ?>
               <a>åäö</a>""".format(enc_match[file_encoding])
-    tmppath = os.path.join(testpath, "valid__.csv")
+    tmppath = os.path.join(tmpdir, "valid__.csv")
     with open(tmppath, "wb") as file_:
         file_.write(xml.encode(file_encoding))
 
