@@ -4,6 +4,7 @@ Release notes
 Unreleased
 ----------
 - Detect format version of ODF files correctly
+- Loosen SEG-Y detection requirements: empty SEG-Y header is now allowed.
 
 Version 0.67
 ------------

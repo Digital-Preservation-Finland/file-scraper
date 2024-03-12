@@ -355,49 +355,63 @@ def test_magic_charset(filename, charset):
 
 
 @pytest.mark.parametrize(
-        ["filepath", "mimetype", "version"],
+        ["filepath", "version", "message"],
         [
             # The SEG-Y test files only contain the bare minimum data
             # (i.e. SEG-Y magic number and file format version) in order
             # to be detected by SegYDetector.
             ("application_x.fi-dpres.segy/invalid__ascii_header.sgy",
-             "application/x.fi-dpres.segy",
-             UNKN),
+             UNKN,
+             "SEG-Y signature is missing"),
+
             ("application_x.fi-dpres.segy/invalid_1.0_ascii_header.sgy",
-             "application/x.fi-dpres.segy",
-             "1.0"),
+             "1.0",
+             None),
+
             ("application_x.fi-dpres.segy/invalid_2.0_ascii_header.sgy",
-             "application/x.fi-dpres.segy",
-             "2.0"),
+             "2.0",
+             None),
+
             ("application_x.fi-dpres.segy/invalid__ebcdic_header.sgy",
-             "application/x.fi-dpres.segy",
-             UNKN),
+             UNKN,
+             "SEG-Y signature is missing"),
+
             ("application_x.fi-dpres.segy/invalid_1.0_ebcdic_header.sgy",
-             "application/x.fi-dpres.segy",
-             "1.0"),
+             "1.0",
+             None),
+
             ("application_x.fi-dpres.segy/invalid_2.0_ebcdic_header.sgy",
-             "application/x.fi-dpres.segy",
-             "2.0"),
+             "2.0",
+             None),
+
             ("application_x.fi-dpres.segy/invalid__ebcdic_ljust.sgy",
-             "application/x.fi-dpres.segy",
-             UNKN),
+             UNKN,
+             "SEG-Y signature is missing"),
+
+            ("application_x.fi-dpres.segy/invalid__empty_ascii_header.sgy",
+             UNKN,
+             "SEG-Y header is blank"),
+
+            ("application_x.fi-dpres.segy/invalid__empty_ebcdic_header.sgy",
+             UNKN,
+             "SEG-Y header is blank"),
         ]
 )
-def test_segy_detector(filepath, mimetype, version):
+def test_segy_detector(filepath, version, message):
     """
     Test that works with SEG-Y files. SegYDetector
     should detect the mimetype and, if possible, version of a SEG-Y file.
 
     :filepath: Test file
-    :mimetype: Expected mimetype
+    :version: Expected version
+    :message: Optional message fragment
     """
     detector = SegYDetector('tests/data/' + filepath)
     detector.detect()
-    assert detector.mimetype == mimetype
+    assert detector.mimetype == "application/x.fi-dpres.segy"
     assert detector.version == version
-    if version == UNKN:
-        assert partial_message_included(
-            "SEG-Y signature is missing", detector.info()["messages"])
+    if message:
+        assert partial_message_included(message, detector.info()["messages"])
 
 
 @pytest.mark.parametrize(

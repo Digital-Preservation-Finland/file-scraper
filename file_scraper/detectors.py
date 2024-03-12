@@ -472,6 +472,36 @@ class SegYDetector(BaseDetector):
                 content = byte_content.decode('ascii')
             elif byte_content[0] == 0xC3:
                 content = byte_content.decode('cp500')  # EBCDIC coding
+            elif len(byte_content) == 3200:  # At least 3200 bytes of data
+                # Header might be missing and be replaced entirely with
+                # whitespace. This is very dubious, but allow this as long
+                # as the file extension is correct.
+                filename = os.fsencode(self.filename)
+                is_file_ext_correct = (
+                    filename.lower().endswith(b".sgy")
+                    or filename.lower().endswith(b".segy")
+                )
+                if not is_file_ext_correct:
+                    raise ValueError
+
+                is_empty_header = byte_content in (
+                    b" " * 3200,  # ASCII encoding
+                    b"@" * 3200   # EBCDIC encoding
+                )
+                if is_empty_header:
+                    # If the header is empty, assume SEG-Y file of unknown
+                    # version is used. We bail out early, because we can't
+                    # analyze a non-existent header.
+                    self._messages.append(
+                        "SEG-Y header is blank with only whitespace, "
+                        "but '.sgy/.segy' file extension is used. "
+                        "Assuming SEG-Y file of unknown version."
+                    )
+                    self.mimetype = "application/x.fi-dpres.segy"
+                    self.version = UNKN
+                    return
+                else:
+                    raise ValueError
             else:
                 raise ValueError
         except (UnicodeDecodeError, IndexError, ValueError):
