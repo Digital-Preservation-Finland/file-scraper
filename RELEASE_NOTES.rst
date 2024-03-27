@@ -1,10 +1,12 @@
 Release notes
 =============
 
-Unreleased
-----------
+Version 0.68
+------------
+
 - Detect format version of ODF files correctly
 - Loosen SEG-Y detection requirements: empty SEG-Y header is now allowed.
+- Installation instructions for AlmaLinux 9 using RPM packages
 
 Version 0.67
 ------------
