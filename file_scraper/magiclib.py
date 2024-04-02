@@ -2,9 +2,8 @@
 
    The module checks if the file command and magic library exists in the
    configuration paths, and will select these, if exist. If not, then
-   system default file command and magic library is selected.
+   system default file command is selected.
 """
-import sys
 import ctypes
 from file_scraper.shell import Shell
 from file_scraper.utils import encode_path
@@ -41,8 +40,7 @@ def magic_analyze(magic_lib, magic_type, path):
 
 
 def magiclib():
-    """Resolve magic library from the configuration path, and if missing,
-    from the system path.
+    """Resolve magic library from the configuration path.
 
     :returns: Magic module
     """
@@ -50,9 +48,7 @@ def magiclib():
     try:
         ctypes.cdll.LoadLibrary(magic_file)
     except OSError:
-        print("%s not found, MS Office detection may not work properly if "
-              "file command library is older." % magic_file,
-              file=sys.stderr)
+        pass
 
     try:
         # pylint: disable=import-outside-toplevel
