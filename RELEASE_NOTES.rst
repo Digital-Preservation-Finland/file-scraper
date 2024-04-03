@@ -1,6 +1,11 @@
 Release notes
 =============
 
+Version 0.69
+------------
+
+- Remove missing system path warning when importing file-magic/libmagic.
+
 Version 0.68
 ------------
 
