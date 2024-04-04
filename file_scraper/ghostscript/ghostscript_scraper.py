@@ -26,8 +26,8 @@ class GhostscriptScraper(BaseScraper):
 
         if shell.returncode != 0:
             self._errors.append(
-                "Ghostscript returned invalid return code: %s\n%s"
-                % (shell.returncode, shell.stderr)
+                f"Ghostscript returned invalid return code: "
+                f"{shell.returncode}\n{shell.stderr}"
                 )
 
         # Ghostscript may print characters which cannot be converted to UTF-8
