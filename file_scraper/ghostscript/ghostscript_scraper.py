@@ -33,16 +33,17 @@ class GhostscriptScraper(BaseScraper):
         # Ghostscript may print characters which cannot be converted to UTF-8
         stdout_message = ensure_text(shell.stdout_raw, errors='replace')
         stderr_message = ensure_text(shell.stderr_raw, errors='replace')
-        self._messages.append(stdout_message)
 
         # Ghostscript will result 0 if it can repair errors.
         # However, in those cases an error is logged to either _errors or
         # _messages. This case should be handled as well-formed failure.
         if stderr_message:
             self._errors.append(stderr_message)
+            self._errors.append(stdout_message)
 
         # If no errors have been logged, the file is valid.
         else:
+            self._messages.append(stdout_message)
             self._messages.append("Well-Formed and valid")
 
         self.streams = list(self.iterate_models())

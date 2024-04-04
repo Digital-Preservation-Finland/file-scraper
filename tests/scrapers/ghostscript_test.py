@@ -74,7 +74,7 @@ def test_scraper_pdf(filename, result_dict, evaluate_scraper):
             assert partial_message_included(correct.stderr_part,
                                             scraper.errors())
             assert partial_message_included(correct.stdout_part,
-                                            scraper.messages())
+                                            scraper.errors())
 
 
 def test_jpeg2000_inside_pdf(evaluate_scraper):
