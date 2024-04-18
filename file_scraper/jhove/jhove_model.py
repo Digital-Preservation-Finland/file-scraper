@@ -360,7 +360,7 @@ class JHoveEpubMeta(JHoveBaseMeta):
     """Metadata model for EPUB files scraped with JHove"""
     # pylint: disable=no-self-use
 
-    _supported = {"application/epub+zip": ["2.0.1", "3.2"]}
+    _supported = {"application/epub+zip": ["2.0.1", "3.3"]}
 
     @metadata()
     def version(self):
