@@ -51,7 +51,7 @@ class MIMEGrader(BaseGrader):
             "2.0.1": RECOMMENDED,
             "3.0.0": RECOMMENDED,
             "3.0.1": RECOMMENDED,
-            "3.2": RECOMMENDED
+            "3.3": RECOMMENDED
         },
         "application/pdf": {
             "A-1a": RECOMMENDED,

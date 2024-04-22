@@ -33,6 +33,7 @@ Version 0.70
 ------------
 
 - Add Ghostscript's stdout to errors for invalid PDF files.
+- Update Epub version support from 3.2 to 3.3
 
 
 Version 0.69
