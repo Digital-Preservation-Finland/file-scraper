@@ -5,10 +5,9 @@ This module tests that:
     - FidoDetector and MagicDetector detect MIME types correctly.
     - FidoDetector returns an empty dict from get_important() with
       certain mimetypes and MagicDetector returns certain mimetypes.
-    - VerapdfDetector detects PDF/A MIME types and versions but no others.
-    - VerapdfDetector results are important for PDF/A files.
-    - ExifToolDetector detects the MIME types correctly for tiff and dng files.
-    - ExifToolDetector results are important only for dng files.
+    - ExifToolDetector detects the MIME types correctly for tiff, dng
+      and PDF/A files.
+    - ExifToolDetector results are important for dng and PDF/A files.
     - Character encoding detection works properly.
 """
 import time
@@ -18,7 +17,6 @@ from file_scraper.detectors import (_FidoReader,
                                     FidoDetector,
                                     MagicCharset,
                                     MagicDetector,
-                                    VerapdfDetector,
                                     ExifToolDetector,
                                     SegYDetector,
                                     SiardDetector,
@@ -168,20 +166,20 @@ def test_fido_cache_halting_file(fido_cache_halting_file):
         ("application_pdf/valid_1.4.pdf", None, None,
          "INFO: File is not PDF/A, so PDF/A validation is not performed"),
         ("application_pdf/valid_A-1a.pdf", "application/pdf",
-         "A-1a", "PDF/A version detected by veraPDF."),
+         "A-1a", "PDF/A version detected by Exiftool."),
         ("application_pdf/valid_A-2b.pdf", "application/pdf",
-         "A-2b", "PDF/A version detected by veraPDF."),
+         "A-2b", "PDF/A version detected by Exiftool."),
         ("application_pdf/valid_A-3b.pdf", "application/pdf",
-         "A-3b", "PDF/A version detected by veraPDF."),
+         "A-3b", "PDF/A version detected by Exiftool."),
         ("application_pdf/valid_A-3b_no_file_extension", "application/pdf",
-         "A-3b", "PDF/A version detected by veraPDF."),
+         "A-3b", "PDF/A version detected by Exiftool."),
         ("image_png/valid_1.2.png", None, None,
          "INFO: File is not PDF/A, so PDF/A validation is not performed")
     ]
 )
 def test_pdf_detector(filepath, mimetype, version, message):
     """
-    Test that VerapdfDetector works.
+    Test that ExiftoolDetector works for PDF/A files.
 
     The detector should detect the file types of PDF/A files, but return None
     for other files, including PDF files that are not PDF/A.
@@ -190,7 +188,7 @@ def test_pdf_detector(filepath, mimetype, version, message):
     :mimetype: Expected MIME type
     :version: Exprected file format version
     """
-    detector = VerapdfDetector('tests/data/' + filepath)
+    detector = ExifToolDetector('tests/data/' + filepath)
     detector.detect()
     assert detector.mimetype == mimetype
     assert detector.version == version
@@ -269,12 +267,12 @@ def test_detectors(detector_class, change_dict):
 )
 def test_important_pdf(filepath, important):
     """
-    Test that VerapdfDetector results are important for PDF/A files only.
+    Test that ExiftoolDetector results are important for PDF/A and png files only.
 
     :filepath: Test file
     :important: Expected boolean result of important
     """
-    detector = VerapdfDetector(filepath)
+    detector = ExifToolDetector(filepath)
     detector.detect()
     if important:
         assert "mimetype" in detector.get_important()

@@ -8,8 +8,7 @@ from file_scraper.defaults import (
     UNACCEPTABLE,
     UNAV
 )
-from file_scraper.detectors import (MagicCharset, VerapdfDetector,
-                                    ExifToolDetector)
+from file_scraper.detectors import (MagicCharset, ExifToolDetector)
 from file_scraper.dummy.dummy_scraper import (FileExists, MimeMatchScraper,
                                               ResultsMergeScraper)
 from file_scraper.iterator import iter_detectors, iter_graders, iter_scrapers
@@ -63,21 +62,17 @@ class Scraper:
             tool = detector(self.filename, _mime, _version)
             self._update_filetype(tool)
 
-        # PDF files should always be scrutinized further to determine if
-        # they are PDF/A
-        if self._predefined_mimetype == "application/pdf":
-            vera_detector = VerapdfDetector(self.filename)
-            self._update_filetype(vera_detector)
-
         if MagicCharset.is_supported(self._predefined_mimetype) and \
                 self._params.get("charset", None) is None:
             charset_detector = MagicCharset(self.filename)
             charset_detector.detect()
             self._params["charset"] = charset_detector.charset
 
+        # PDF files should always be scrutinized further to determine if
+        # they are PDF/A
         # Files predefined as tiff will be scrutinized further to check if they
         # are dng files in order to return the correct mimetype and version
-        if self._predefined_mimetype == "image/tiff":
+        if self._predefined_mimetype in ("image/tiff", "application/pdf"):
             exiftool_detector = ExifToolDetector(self.filename)
             self._update_filetype(exiftool_detector)
 

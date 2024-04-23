@@ -267,83 +267,6 @@ class PredefinedDetector(BaseDetector):
         return {"mimetype": self.mimetype, "version": self.version}
 
 
-class VerapdfDetector(BaseDetector):
-    """
-    Detector for finding the version of PDF/A files.
-    """
-
-    def detect(self):
-        """
-        Run veraPDF to find out if the file is PDF/A and possibly its version.
-
-        If the file is not a PDF/A, the MIME type and version are left as None.
-        """
-        verapdf_loc = get_value("VERAPDF_PATH")
-        if distutils.spawn.find_executable("verapdf") is not None:
-            verapdf_loc = "verapdf"
-        # --nonpdfext flag allows also files without the .pdf extension
-        # --loglevel 1 leaves warnings out of the output, warnings are not
-        # useful for detection
-        cmd = [verapdf_loc, encode_path(self.filename), "--nonpdfext",
-               "--loglevel", "1"]
-        shell = Shell(cmd)
-
-        # Test if the file is a PDF/A
-        if shell.returncode != 0:
-            self._set_info_not_pdf_a(shell)
-            return
-        try:
-            report = lxml.etree.fromstring(shell.stdout_raw)
-            if report.xpath("//batchSummary")[0].get("failedToParse") == "0":
-                compliant = report.xpath(
-                    "//validationReport")[0].get("isCompliant")
-                if compliant == "false":
-                    self._set_info_not_pdf_a()
-                    return
-                profile = \
-                    report.xpath("//validationReport")[0].get("profileName")
-            else:
-                self._set_info_not_pdf_a(shell)
-                return
-        except lxml.etree.XMLSyntaxError:
-            self._set_info_not_pdf_a(shell)
-            return
-
-        # If we have not encountered problems, the file is PDF/A and its
-        # version can be read from the profile.
-        version = profile.split("PDF/A")[1].split(" validation profile")[0]
-        self.version = f"A{version.lower()}"
-        self.mimetype = "application/pdf"
-        self._messages.append("PDF/A version detected by veraPDF.")
-
-    def _set_info_not_pdf_a(self, error_shell=None):
-        """
-        Set info to reflect the fact that the file was not a PDF/A
-        and thus PDF/A validation isn't performed.
-
-        :error_shell: If a Shell instance is given, its stderr is
-                      set as 'errors' in the info if it is not empty.
-        """
-        self._messages.append(
-            "INFO: File is not PDF/A, so PDF/A validation is not performed"
-        )
-
-        errors = error_shell.stderr
-        if errors:
-            self._errors.append(errors)
-
-    def get_important(self):
-        """
-        If and only if this detector determined a file type, it is important.
-
-        This is to make sure that the PDF/A detection result overrides the
-        non-archival result obtained by other detectors.
-        """
-        if self.mimetype and self.version:
-            return {"mimetype": self.mimetype, "version": self.version}
-        return {}
-
-
 class MagicCharset(BaseDetector):
     """Charset detector."""
 
@@ -395,13 +318,17 @@ class MagicCharset(BaseDetector):
 
 class ExifToolDetector(BaseDetector):
     """
-    Detector used with tiff files. Will tell dng files apart from ordinary tiff
-    files.
+    Detector used with tiff and pdf files. Will tell dng files apart from ordinary
+    tiff files. Will find the version of PDF/A.
     """
 
     def detect(self):
         """
-        Run ExifToolDetector to find out the mimetype of a file
+        Run ExifToolDetector to find out the mimetype of a file and to find
+        out if the file is PDF/A and possibly its version.
+
+        If the file is pdf file but not a PDF/A, the MIME type and version are
+        left as None.
         """
         try:
             with exiftool.ExifTool() as et:
@@ -411,6 +338,28 @@ class ExifToolDetector(BaseDetector):
             with exiftool.ExifToolHelper() as et:
                 metadata = et.get_metadata(self.filename)
                 self.mimetype = metadata[0].get("File:MIMEType", None)
+                self.version = None
+
+                if metadata[0].get("XMP:Conformance"):
+                    conformance = metadata[0].get("XMP:Conformance")
+                    pdf_a_version = metadata[0].get("XMP:Part")
+                    self.version =  "A-" + str(pdf_a_version) + conformance.lower()
+                    self._messages.append("PDF/A version detected by Exiftool.")
+                elif self.mimetype == "application/pdf":
+                    self._set_info_not_pdf_a()
+                    self.mimetype = None
+
+    def _set_info_not_pdf_a(self):
+        """
+        Set info to reflect the fact that the file was not a PDF/A
+        and thus PDF/A validation isn't performed.
+
+        :error_shell: If a Shell instance is given, its stderr is
+                      set as 'errors' in the info if it is not empty.
+        """
+        self._messages.append(
+            "INFO: File is not PDF/A, so PDF/A validation is not performed"
+        )
 
     def get_important(self):
         """
@@ -422,6 +371,10 @@ class ExifToolDetector(BaseDetector):
         if (not self._predefined_mimetype and self.mimetype in
                 ["image/x-adobe-dng"]):
             important["mimetype"] = self.mimetype
+        elif self.mimetype and self.version:
+            important["mimetype"] = self.mimetype
+            important["version"] = self.version
+
         return important
 
 
