@@ -3,7 +3,6 @@
 import errno
 import os
 
-import distutils.spawn
 import zipfile
 import lxml.etree
 import exiftool
@@ -11,11 +10,9 @@ import exiftool
 from fido.fido import Fido, defaults
 from fido.pronomutils import get_local_pronom_versions
 from file_scraper.base import BaseDetector
-from file_scraper.shell import Shell
-from file_scraper.config import get_value
 from file_scraper.defaults import (MIMETYPE_DICT, PRIORITY_PRONOM, PRONOM_DICT,
                                    VERSION_DICT, UNKN)
-from file_scraper.utils import encode_path, decode_path
+from file_scraper.utils import decode_path
 from file_scraper.magiclib import magiclib, magic_analyze
 
 MAGIC_LIB = magiclib()
@@ -318,8 +315,8 @@ class MagicCharset(BaseDetector):
 
 class ExifToolDetector(BaseDetector):
     """
-    Detector used with tiff and pdf files. Will tell dng files apart from ordinary
-    tiff files. Will find the version of PDF/A.
+    Detector used with tiff and pdf files. Will tell dng files apart from
+    ordinary tiff files. Will find the version of PDF/A.
     """
 
     def detect(self):
@@ -343,8 +340,10 @@ class ExifToolDetector(BaseDetector):
                 if metadata[0].get("XMP:Conformance"):
                     conformance = metadata[0].get("XMP:Conformance")
                     pdf_a_version = metadata[0].get("XMP:Part")
-                    self.version =  "A-" + str(pdf_a_version) + conformance.lower()
-                    self._messages.append("PDF/A version detected by Exiftool.")
+                    self.version = "A-" + str(pdf_a_version) + \
+                        conformance.lower()
+                    self._messages.append(
+                        "PDF/A version detected by Exiftool.")
                 elif self.mimetype == "application/pdf":
                     self._set_info_not_pdf_a()
                     self.mimetype = None
