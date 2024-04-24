@@ -173,16 +173,22 @@ def test_fido_cache_halting_file(fido_cache_halting_file):
          "A-3b", "PDF/A version detected by Exiftool."),
         ("application_pdf/valid_A-3b_no_file_extension", "application/pdf",
          "A-3b", "PDF/A version detected by Exiftool."),
-        ("image_png/valid_1.2.png", None, None,
+        ("image_png/valid_1.2.png", "image/png", None,
+         "INFO: File is not PDF/A, so PDF/A validation is not performed"),
+        ("image_x-adobe-dng/valid_1.4.dng", "image/x-adobe-dng", None,
+         "INFO: File is not PDF/A, so PDF/A validation is not performed"),
+        ("image_tiff/valid_6.0.tif", "image/tiff", None,
          "INFO: File is not PDF/A, so PDF/A validation is not performed")
     ]
 )
-def test_pdf_detector(filepath, mimetype, version, message):
+def test_pdf_dng_detector(filepath, mimetype, version, message):
     """
-    Test that ExiftoolDetector works for PDF/A files.
+    Test that ExifToolDetector works with dng, tiff and pdf files.
 
-    The detector should detect the file types of PDF/A files, but return None
-    for other files, including PDF files that are not PDF/A.
+    ExifToolDetector should detect the mimetype of a file and distinct
+    dng files from tiff files.
+    The detector should detect the types of PDF/A files, but return None
+    for other PDF files.
 
     :filepath: Test file
     :mimetype: Expected MIME type
@@ -193,27 +199,6 @@ def test_pdf_detector(filepath, mimetype, version, message):
     assert detector.mimetype == mimetype
     assert detector.version == version
     assert message in detector.info()['messages']
-
-
-@pytest.mark.parametrize(
-        ["filepath", "mimetype"],
-        [
-            ("image_x-adobe-dng/valid_1.4.dng", "image/x-adobe-dng"),
-            ("image_tiff/valid_6.0.tif", "image/tiff"),
-        ]
-)
-def test_dng_detector(filepath, mimetype):
-    """
-    Test that ExifToolDetector works with dng and tiff files. ExifToolDetector
-    should detect the mimetype of a file and distinct dng files from tiff
-    files.
-
-    :filepath: Test file
-    :mimetype: Expected mimetype
-    """
-    detector = ExifToolDetector('tests/data/' + filepath)
-    detector.detect()
-    assert detector.mimetype == mimetype
 
 
 @pytest.mark.parametrize(
@@ -262,35 +247,15 @@ def test_detectors(detector_class, change_dict):
     [
         ("tests/data/application_pdf/valid_A-1a.pdf", True),
         ("tests/data/application_pdf/valid_1.4.pdf", False),
-        ("tests/data/image_gif/valid_1987a.gif", False)
-    ]
-)
-def test_important_pdf(filepath, important):
-    """
-    Test that ExiftoolDetector results are important for PDF/A and png files only.
-
-    :filepath: Test file
-    :important: Expected boolean result of important
-    """
-    detector = ExifToolDetector(filepath)
-    detector.detect()
-    if important:
-        assert "mimetype" in detector.get_important()
-        assert "version" in detector.get_important()
-    else:
-        assert detector.get_important() == {}
-
-
-@pytest.mark.parametrize(
-    ["filepath", "important"],
-    [
+        ("tests/data/image_gif/valid_1987a.gif", False),
         ("tests/data/image_x-adobe-dng/valid_1.4.dng", True),
         ("tests/data/image_tiff/valid_6.0.tif", False)
     ]
 )
-def test_important_dng(filepath, important):
+def test_important_pdf_dng(filepath, important):
     """
-    Test that ExifToolDetector results are important for dng files only.
+    Test that ExifToolDetector results are important for PDF/A and dng files
+    only.
 
     :filepath: Test file
     :important: Expected boolean result of important
@@ -299,6 +264,8 @@ def test_important_dng(filepath, important):
     detector.detect()
     if important:
         assert "mimetype" in detector.get_important()
+        if detector.mimetype == "application/pdf":
+            assert "version" in detector.get_important()
     else:
         assert detector.get_important() == {}
 
