@@ -331,22 +331,25 @@ class ExifToolDetector(BaseDetector):
             with exiftool.ExifTool() as et:
                 metadata = et.get_metadata(self.filename)
                 self.mimetype = metadata.get("File:MIMEType", None)
+                self._detect_pdf_a(metadata)
         except AttributeError:
             with exiftool.ExifToolHelper() as et:
                 metadata = et.get_metadata(self.filename)
                 self.mimetype = metadata[0].get("File:MIMEType", None)
-                self.version = None
+                self._detect_pdf_a(metadata)
 
-                if metadata[0].get("XMP:Conformance"):
-                    conformance = metadata[0].get("XMP:Conformance")
-                    pdf_a_version = metadata[0].get("XMP:Part")
-                    self.version = "A-" + str(pdf_a_version) + \
-                        conformance.lower()
-                    self._messages.append(
-                        "PDF/A version detected by Exiftool.")
-                elif self.mimetype == "application/pdf":
-                    self._set_info_not_pdf_a()
-                    self.mimetype = None
+    def _detect_pdf_a(self, metadata):
+        """
+        Detect PDF/A and its version from metadata.
+        """
+        if metadata[0].get("XMP:Conformance"):
+            conformance = metadata[0].get("XMP:Conformance")
+            pdf_a_version = metadata[0].get("XMP:Part")
+            self.version = "A-" + str(pdf_a_version) + conformance.lower()
+            self._messages.append("PDF/A version detected by Exiftool.")
+        elif self.mimetype == "application/pdf":
+            self._set_info_not_pdf_a()
+            self.mimetype = None
 
     def _set_info_not_pdf_a(self):
         """

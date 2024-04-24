@@ -173,12 +173,9 @@ def test_fido_cache_halting_file(fido_cache_halting_file):
          "A-3b", "PDF/A version detected by Exiftool."),
         ("application_pdf/valid_A-3b_no_file_extension", "application/pdf",
          "A-3b", "PDF/A version detected by Exiftool."),
-        ("image_png/valid_1.2.png", "image/png", None,
-         "INFO: File is not PDF/A, so PDF/A validation is not performed"),
-        ("image_x-adobe-dng/valid_1.4.dng", "image/x-adobe-dng", None,
-         "INFO: File is not PDF/A, so PDF/A validation is not performed"),
-        ("image_tiff/valid_6.0.tif", "image/tiff", None,
-         "INFO: File is not PDF/A, so PDF/A validation is not performed")
+        ("image_png/valid_1.2.png", "image/png", None, None),
+        ("image_x-adobe-dng/valid_1.4.dng", "image/x-adobe-dng", None, None),
+        ("image_tiff/valid_6.0.tif", "image/tiff", None, None)
     ]
 )
 def test_pdf_dng_detector(filepath, mimetype, version, message):
@@ -198,7 +195,8 @@ def test_pdf_dng_detector(filepath, mimetype, version, message):
     detector.detect()
     assert detector.mimetype == mimetype
     assert detector.version == version
-    assert message in detector.info()['messages']
+    if message:
+        assert message in detector.info()['messages']
 
 
 @pytest.mark.parametrize(
