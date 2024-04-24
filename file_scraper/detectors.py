@@ -315,17 +315,21 @@ class MagicCharset(BaseDetector):
 
 class ExifToolDetector(BaseDetector):
     """
-    Detector used with tiff and pdf files. Will tell dng files apart from
-    ordinary tiff files. Will find the version of PDF/A.
+    Detector used with tiff and pdf files.
+
+    - tell dng files apart from ordinary tiff files
+    - detect PDF/A conformance for PDF files
+    - detect PDF/A version
     """
 
     def detect(self):
         """
-        Run ExifToolDetector to find out the mimetype of a file and to find
-        out if the file is PDF/A and possibly its version.
+        Run ExifToolDetector to find out the mimetype of a file and to check
+        PDF/A conformance for pdf files. PDF/A file version is also detected.
 
         If the file is pdf file but not a PDF/A, the MIME type and version are
-        left as None.
+        left as None as the file format identification will be handled by
+        other detectors.
         """
         try:
             with exiftool.ExifTool() as et:
@@ -336,15 +340,15 @@ class ExifToolDetector(BaseDetector):
             with exiftool.ExifToolHelper() as et:
                 metadata = et.get_metadata(self.filename)
                 self.mimetype = metadata[0].get("File:MIMEType", None)
-                self._detect_pdf_a(metadata)
+                self._detect_pdf_a(metadata[0])
 
     def _detect_pdf_a(self, metadata):
         """
         Detect PDF/A and its version from metadata.
         """
-        if metadata[0].get("XMP:Conformance"):
-            conformance = metadata[0].get("XMP:Conformance")
-            pdf_a_version = metadata[0].get("XMP:Part")
+        if metadata.get("XMP:Conformance") and metadata.get("XMP:Part"):
+            conformance = metadata.get("XMP:Conformance")
+            pdf_a_version = metadata.get("XMP:Part")
             self.version = "A-" + str(pdf_a_version) + conformance.lower()
             self._messages.append("PDF/A version detected by Exiftool.")
         elif self.mimetype == "application/pdf":
