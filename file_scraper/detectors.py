@@ -331,6 +331,7 @@ class ExifToolDetector(BaseDetector):
         left as None as the file format identification will be handled by
         other detectors.
         """
+        # TODO: try-except can be removed once RHEL9 migration is finished
         try:
             with exiftool.ExifTool() as et:
                 metadata = et.get_metadata(self.filename)
