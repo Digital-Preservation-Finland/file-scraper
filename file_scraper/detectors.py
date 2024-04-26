@@ -331,17 +331,10 @@ class ExifToolDetector(BaseDetector):
         left as None as the file format identification will be handled by
         other detectors.
         """
-        # TODO: try-except can be removed once RHEL9 migration is finished
-        try:
-            with exiftool.ExifTool() as et:
-                metadata = et.get_metadata(self.filename)
-                self.mimetype = metadata.get("File:MIMEType", None)
-                self._detect_pdf_a(metadata)
-        except AttributeError:
-            with exiftool.ExifToolHelper() as et:
-                metadata = et.get_metadata(self.filename)
-                self.mimetype = metadata[0].get("File:MIMEType", None)
-                self._detect_pdf_a(metadata[0])
+        with exiftool.ExifToolHelper() as et:
+            metadata = et.get_metadata(self.filename)
+            self.mimetype = metadata[0].get("File:MIMEType", None)
+            self._detect_pdf_a(metadata[0])
 
     def _detect_pdf_a(self, metadata):
         """
