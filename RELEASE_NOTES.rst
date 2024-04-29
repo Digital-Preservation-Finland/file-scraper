@@ -1,8 +1,8 @@
 Release notes
 =============
 
-Unreleased
-----------
+Version 0.70
+------------
 
 - Add Ghostscript's stdout to errors for invalid PDF files.
 
