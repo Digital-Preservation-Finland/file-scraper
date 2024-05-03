@@ -331,10 +331,13 @@ class ExifToolDetector(BaseDetector):
         left as None as the file format identification will be handled by
         other detectors.
         """
-        with exiftool.ExifToolHelper() as et:
-            metadata = et.get_metadata(self.filename)
-            self.mimetype = metadata[0].get("File:MIMEType", None)
-            self._detect_pdf_a(metadata[0])
+        try:
+            with exiftool.ExifToolHelper() as et:
+                metadata = et.get_metadata(self.filename)
+                self.mimetype = metadata[0].get("File:MIMEType", None)
+                self._detect_pdf_a(metadata[0])
+        except exiftool.exceptions.ExifToolExecuteError:
+            self._set_info_not_tiff_or_pdf_a()
 
     def _detect_pdf_a(self, metadata):
         """
@@ -353,12 +356,18 @@ class ExifToolDetector(BaseDetector):
         """
         Set info to reflect the fact that the file was not a PDF/A
         and thus PDF/A validation isn't performed.
-
-        :error_shell: If a Shell instance is given, its stderr is
-                      set as 'errors' in the info if it is not empty.
         """
         self._messages.append(
             "INFO: File is not PDF/A, so PDF/A validation is not performed"
+        )
+
+    def _set_info_not_tiff_or_pdf_a(self):
+        """
+        Set info to reflect the fact that the file was not a tiff or PDF/A
+        and thus validation isn't performed.
+        """
+        self._messages.append(
+            "INFO: File is not tiff or pdf/a, so validation is not performed"
         )
 
     def get_important(self):
