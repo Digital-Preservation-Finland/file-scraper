@@ -371,8 +371,8 @@ class ExifToolDetector(BaseDetector):
         and thus file format detection isn't performed.
         """
         self._messages.append(
-            "INFO: The file is not supported by ExifTool, file format detection "
-            "could not be performed by this tool"
+            "INFO: The file is not supported by ExifTool, file format "
+            "detection could not be performed by this tool"
         )
 
     def get_important(self):
