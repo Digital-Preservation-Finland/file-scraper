@@ -331,6 +331,10 @@ class ExifToolDetector(BaseDetector):
         left as None as the file format identification will be handled by
         other detectors.
         """
+        # Try-except is needed because calling et.get_metadata() may raise
+        # an ExifToolExecuteError in cases where e.g. the mimetype is defined
+        # but the file is not valid and therefore, the metadata can't be
+        # fetched by ExifTool.
         try:
             with exiftool.ExifToolHelper() as et:
                 metadata = et.get_metadata(self.filename)
@@ -364,10 +368,11 @@ class ExifToolDetector(BaseDetector):
     def _set_info_not_tiff_or_pdf_a(self):
         """
         Set info to reflect the fact that the file was not a tiff or PDF/A
-        and thus validation isn't performed.
+        and thus file format detection isn't performed.
         """
         self._messages.append(
-            "INFO: File is not tiff or pdf/a, so validation is not performed"
+            "INFO: The file is not supported by ExifTool, file format detection "
+            "could not be performed by this tool"
         )
 
     def get_important(self):
