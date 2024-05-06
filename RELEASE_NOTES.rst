@@ -1,6 +1,11 @@
 Release notes
 =============
 
+Unreleased
+------------
+
+- Replace VerapdfDetector with ExifToolDetector for detecting PDf/A files.
+
 Version 0.70
 ------------
 
