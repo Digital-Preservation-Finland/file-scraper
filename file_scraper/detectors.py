@@ -341,7 +341,7 @@ class ExifToolDetector(BaseDetector):
                 self.mimetype = metadata[0].get("File:MIMEType", None)
                 self._detect_pdf_a(metadata[0])
         except exiftool.exceptions.ExifToolExecuteError:
-            self._set_info_not_tiff_or_pdf_a()
+            self._set_info_exiftool_not_supported()
 
     def _detect_pdf_a(self, metadata):
         """
@@ -362,13 +362,14 @@ class ExifToolDetector(BaseDetector):
         and thus PDF/A validation isn't performed.
         """
         self._messages.append(
-            "INFO: File is not PDF/A, so PDF/A validation is not performed"
+            "INFO: File is not PDF/A, so PDF/A validation will not be "
+            "performed when validating the file"
         )
 
-    def _set_info_not_tiff_or_pdf_a(self):
+    def _set_info_exiftool_not_supported(self):
         """
-        Set info to reflect the fact that the file was not a tiff or PDF/A
-        and thus file format detection isn't performed.
+        Set info to reflect the fact that the file type is not supported by
+        ExifTool, and thus file format detection isn't performed.
         """
         self._messages.append(
             "INFO: The file is not supported by ExifTool, file format "

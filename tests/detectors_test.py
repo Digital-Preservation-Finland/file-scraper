@@ -164,7 +164,8 @@ def test_fido_cache_halting_file(fido_cache_halting_file):
     ["filepath", "mimetype", "version", "message"],
     [
         ("application_pdf/valid_1.4.pdf", None, None,
-         "INFO: File is not PDF/A, so PDF/A validation is not performed"),
+         "INFO: File is not PDF/A, so PDF/A validation will not be performed "
+         "when validating the file"),
         ("application_pdf/valid_A-1a.pdf", "application/pdf",
          "A-1a", "PDF/A version detected by Exiftool."),
         ("application_pdf/valid_A-2b.pdf", "application/pdf",
