@@ -163,7 +163,7 @@ def test_fido_cache_halting_file(fido_cache_halting_file):
 @pytest.mark.parametrize(
     ["filepath", "mimetype", "version", "message"],
     [
-        ("application_pdf/valid_1.4.pdf", None, None,
+        ("application_pdf/valid_1.4.pdf", "application/pdf", None,
          "INFO: File is not PDF/A, so PDF/A validation will not be performed "
          "when validating the file"),
         ("application_pdf/valid_A-1a.pdf", "application/pdf",

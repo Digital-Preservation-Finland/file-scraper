@@ -354,7 +354,6 @@ class ExifToolDetector(BaseDetector):
             self._messages.append("PDF/A version detected by Exiftool.")
         elif self.mimetype == "application/pdf":
             self._set_info_not_pdf_a()
-            self.mimetype = None
 
     def _set_info_not_pdf_a(self):
         """
