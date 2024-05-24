@@ -1,6 +1,15 @@
 Release notes
 =============
 
+Unreleased
+----------
+
+- Loosen SEG-Y detection requirements when SEG-Y version declaration is missing
+
+  - SEG-Y header with left-padded card numbers are allowed
+  - SEG-Y header with card markers without numbers are allowed
+  - SEG-Y header with `C40 EOF.` header EOF is allowed
+
 Version 0.71
 ------------
 
