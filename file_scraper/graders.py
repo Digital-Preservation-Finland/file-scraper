@@ -53,38 +53,6 @@ class MIMEGrader(BaseGrader):
             "3.0.1": RECOMMENDED,
             "3.2": RECOMMENDED
         },
-        "model/step": {
-            "4.0.2.1": RECOMMENDED
-        },
-        "application/vnd.oasis.opendocument.text": {
-            "1.0": RECOMMENDED,
-            "1.1": RECOMMENDED,
-            "1.2": RECOMMENDED,
-            "1.3": RECOMMENDED
-        },
-        "application/vnd.oasis.opendocument.spreadsheet": {
-            "1.0": RECOMMENDED,
-            "1.1": RECOMMENDED,
-            "1.2": RECOMMENDED,
-            "1.3": RECOMMENDED
-        },
-        "application/vnd.oasis.opendocument.presentation": {
-            "1.0": RECOMMENDED,
-            "1.1": RECOMMENDED,
-            "1.2": RECOMMENDED,
-            "1.3": RECOMMENDED
-        },
-        "application/vnd.oasis.opendocument.graphics": {
-            "1.0": RECOMMENDED,
-            "1.1": RECOMMENDED,
-            "1.2": RECOMMENDED,
-            "1.3": RECOMMENDED
-        },
-        "application/vnd.oasis.opendocument.formula": {
-            "1.0": RECOMMENDED,
-            "1.2": RECOMMENDED,
-            "1.3": RECOMMENDED
-        },
         "application/pdf": {
             "A-1a": RECOMMENDED,
             "A-1b": RECOMMENDED,
@@ -101,13 +69,91 @@ class MIMEGrader(BaseGrader):
             "1.6": ACCEPTABLE,
             "1.7": ACCEPTABLE
         },
-        "audio/x-aiff": {
-            UNAP: ACCEPTABLE,  # AIFF-C
-            "1.3": RECOMMENDED  # AIFF
+        "application/geopackage+sqlite3": {
+            "1.3.0": RECOMMENDED,
+            "1.3.1": RECOMMENDED
         },
-        "audio/x-wav": {
-            UNAP: RECOMMENDED,  # WAV
-            "2": RECOMMENDED  # BWF
+        "application/matlab": {
+            "7": RECOMMENDED,
+            "7.3": RECOMMENDED
+        },
+        "application/msword": {
+            "97-2003": ACCEPTABLE
+        },
+        "application/mxf": {  # Container
+            UNAP: RECOMMENDED
+        },
+        "application/postscript": {
+            "3.0": ACCEPTABLE
+        },
+        "application/vnd.ms-excel": {
+            "8": ACCEPTABLE,
+            "8X": ACCEPTABLE
+        },
+        "application/vnd.ms-powerpoint": {
+            "97-2003": ACCEPTABLE
+        },
+        "application/vnd.oasis.opendocument.formula": {
+            "1.0": RECOMMENDED,
+            "1.2": RECOMMENDED,
+            "1.3": RECOMMENDED
+        },
+        "application/vnd.oasis.opendocument.graphics": {
+            "1.0": RECOMMENDED,
+            "1.1": RECOMMENDED,
+            "1.2": RECOMMENDED,
+            "1.3": RECOMMENDED
+        },
+        "application/vnd.oasis.opendocument.presentation": {
+            "1.0": RECOMMENDED,
+            "1.1": RECOMMENDED,
+            "1.2": RECOMMENDED,
+            "1.3": RECOMMENDED
+        },
+        "application/vnd.oasis.opendocument.spreadsheet": {
+            "1.0": RECOMMENDED,
+            "1.1": RECOMMENDED,
+            "1.2": RECOMMENDED,
+            "1.3": RECOMMENDED
+        },
+        "application/vnd.oasis.opendocument.text": {
+            "1.0": RECOMMENDED,
+            "1.1": RECOMMENDED,
+            "1.2": RECOMMENDED,
+            "1.3": RECOMMENDED
+        },
+        "application/vnd.openxmlformats-officedocument.presentationml."
+        "presentation": {
+            "2007 onwards": ACCEPTABLE
+        },
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+            "2007 onwards": ACCEPTABLE
+        },
+        "application/vnd.openxmlformats-officedocument.wordprocessingml."
+        "document": {
+            "2007 onwards": ACCEPTABLE
+        },
+        "application/warc": {
+            "1.0": RECOMMENDED,
+            "1.1": RECOMMENDED
+        },
+        "application/x.fi-dpres.segy": {
+            "1.0": BIT_LEVEL,
+            "2.0": BIT_LEVEL,
+            UNKN: BIT_LEVEL
+        },
+        "application/x-hdf5": {
+            "1.10": RECOMMENDED
+        },
+        "application/x-siard": {
+            "2.1.1": RECOMMENDED,
+            "2.2": RECOMMENDED
+        },
+        "application/x-spss-por": {
+            UNAP: RECOMMENDED
+        },
+        "audio/aac": {
+            UNAP: RECOMMENDED
         },
         "audio/flac": {
             "1.2.1": RECOMMENDED
@@ -124,35 +170,30 @@ class MIMEGrader(BaseGrader):
         "audio/L24": {
             UNAP: RECOMMENDED
         },
-        "audio/aac": {
+        "audio/mp4": {  # Container
             UNAP: RECOMMENDED
         },
-        "image/x-dpx": {
-            "1.0": ACCEPTABLE,  # Allowed for special case
-            "2.0": RECOMMENDED
+        "audio/mpeg": {
+            "1": ACCEPTABLE,
+            "2": ACCEPTABLE
         },
-        "video/x-ffv": {
-            "3": RECOMMENDED
+        "audio/x-aiff": {
+            UNAP: ACCEPTABLE,  # AIFF-C
+            "1.3": RECOMMENDED  # AIFF
         },
-        "video/jpeg2000": {
+        "audio/x-ms-wma": {
+            "9": ACCEPTABLE
+        },
+        "audio/x-wav": {
+            UNAP: RECOMMENDED,  # WAV
+            "2": RECOMMENDED  # BWF
+        },
+        "image/gif": {
+            "1987a": ACCEPTABLE,
+            "1989a": ACCEPTABLE
+        },
+        "image/jp2": {
             UNAP: RECOMMENDED
-        },
-        "video/h264": {
-            UNAP: RECOMMENDED
-        },
-        "video/h265": {
-            UNAP: RECOMMENDED
-        },
-        "image/tiff": {
-            "6.0": RECOMMENDED,  # TIFF
-            "1.0": RECOMMENDED,  # GeoTiff
-        },
-        "image/x-adobe-dng": {
-            "1.1": RECOMMENDED,
-            "1.2": RECOMMENDED,
-            "1.3": RECOMMENDED,
-            "1.4": RECOMMENDED,
-            "1.5": RECOMMENDED
         },
         "image/jpeg": {
             "1.00": RECOMMENDED,
@@ -166,105 +207,47 @@ class MIMEGrader(BaseGrader):
             "2.3.1": RECOMMENDED,  # JPEG/EXIF
             "2.3.2": RECOMMENDED,  # JPEG/EXIF
         },
-        "image/jp2": {
-            UNAP: RECOMMENDED
-        },
         "image/png": {
             "1.2": RECOMMENDED
         },
         "image/svg+xml": {
             "1.1": RECOMMENDED
         },
-        "application/warc": {
-            "1.0": RECOMMENDED,
-            "1.1": RECOMMENDED
+        "image/tiff": {
+            "6.0": RECOMMENDED,  # TIFF
+            "1.0": RECOMMENDED,  # GeoTiff
         },
-        "application/geopackage+sqlite3": {
-            "1.3.0": RECOMMENDED,
-            "1.3.1": RECOMMENDED
+        "image/x-adobe-dng": {
+            "1.1": RECOMMENDED,
+            "1.2": RECOMMENDED,
+            "1.3": RECOMMENDED,
+            "1.4": RECOMMENDED,
+            "1.5": RECOMMENDED
         },
-        "application/x-siard": {
-            "2.1.1": RECOMMENDED,
-            "2.2": RECOMMENDED
+        "image/x-dpx": {
+            "1.0": ACCEPTABLE,  # Allowed for special case
+            "2.0": RECOMMENDED
         },
-        "application/x-spss-por": {
-            UNAP: RECOMMENDED
+        "model/step": {
+            "4.0.2.1": RECOMMENDED
         },
-        "application/matlab": {
-            "7": RECOMMENDED,
-            "7.3": RECOMMENDED
-        },
-        "application/x-hdf5": {
-            "1.10": RECOMMENDED
-        },
-        "application/msword": {
-            "97-2003": ACCEPTABLE
-        },
-        "application/vnd.openxmlformats-officedocument.wordprocessingml."
-        "document": {
-            "2007 onwards": ACCEPTABLE
-        },
-        "application/vnd.ms-excel": {
-            "8": ACCEPTABLE,
-            "8X": ACCEPTABLE
-        },
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
-            "2007 onwards": ACCEPTABLE
-        },
-        "application/vnd.ms-powerpoint": {
-            "97-2003": ACCEPTABLE
-        },
-        "application/vnd.openxmlformats-officedocument.presentationml."
-        "presentation": {
-            "2007 onwards": ACCEPTABLE
-        },
-        "audio/mpeg": {
-            "1": ACCEPTABLE,
-            "2": ACCEPTABLE
-        },
-        "audio/x-ms-wma": {
-            "9": ACCEPTABLE
+        "video/avi": {  # Container
+            UNAP: ACCEPTABLE
         },
         "video/dv": {
             UNAP: ACCEPTABLE
         },
-        "video/mpeg": {
-            "1": ACCEPTABLE,
-            "2": ACCEPTABLE
-        },
-        "video/x-ms-wmv": {
-            "9": ACCEPTABLE
-        },
-        "application/postscript": {
-            "3.0": ACCEPTABLE
-        },
-        "image/gif": {
-            "1987a": ACCEPTABLE,
-            "1989a": ACCEPTABLE
-        },
-        "video/x-matroska": {  # Container
-            "4": RECOMMENDED
-        },
-        "video/MP2T": {  # Container
+        "video/h264": {
             UNAP: RECOMMENDED
         },
-        "application/mxf": {  # Container
+        "video/h265": {
+            UNAP: RECOMMENDED
+        },
+        "video/jpeg2000": {
             UNAP: RECOMMENDED
         },
         "video/mj2": {  # Container
             UNAP: RECOMMENDED
-        },
-        "video/mp4": {  # Container
-            UNAP: RECOMMENDED
-        },
-        "video/quicktime": {  # Container
-            UNAP: RECOMMENDED
-        },
-        "video/x-ms-asf": {  # Container
-            UNAP: ACCEPTABLE
-        },
-        "video/avi": {  # Container
-            UNAP: ACCEPTABLE
         },
         "video/MP1S": {  # Container
             UNAP: ACCEPTABLE
@@ -272,16 +255,33 @@ class MIMEGrader(BaseGrader):
         "video/MP2P": {  # Container
             UNAP: ACCEPTABLE
         },
-        "audio/mp4": {  # Container
+        "video/MP2T": {  # Container
+            UNAP: RECOMMENDED
+        },
+        "video/mp4": {  # Container
+            UNAP: RECOMMENDED
+        },
+        "video/mpeg": {
+            "1": ACCEPTABLE,
+            "2": ACCEPTABLE
+        },
+        "video/quicktime": {  # Container
             UNAP: RECOMMENDED
         },
         "video/x.fi-dpres.prores": {
             UNAP: BIT_LEVEL_WITH_RECOMMENDED
         },
-        "application/x.fi-dpres.segy": {
-            "1.0": BIT_LEVEL,
-            "2.0": BIT_LEVEL,
-            UNKN: BIT_LEVEL
+        "video/x-ffv": {
+            "3": RECOMMENDED
+        },
+        "video/x-matroska": {  # Container
+            "4": RECOMMENDED
+        },
+        "video/x-ms-asf": {  # Container
+            UNAP: ACCEPTABLE
+        },
+        "video/x-ms-wmv": {
+            "9": ACCEPTABLE
         },
     }
 
@@ -304,9 +304,6 @@ class TextGrader(BaseGrader):
     """Grade file based on mimetype, version and charset."""
 
     formats = {
-        "text/csv": {
-            UNAP: RECOMMENDED
-        },
         "application/xhtml+xml": {
             "1.0": RECOMMENDED,
             "1.1": RECOMMENDED,
@@ -314,9 +311,14 @@ class TextGrader(BaseGrader):
             "5.1": RECOMMENDED,
             "5.2": RECOMMENDED
         },
-        "text/xml": {
-            "1.0": RECOMMENDED,
-            "1.1": RECOMMENDED
+        "application/gml+xml": {
+            "3.2.2": RECOMMENDED,
+        },
+        "application/vnd.google-earth.kml+xml": {
+            "2.3": RECOMMENDED,
+        },
+        "text/csv": {
+            UNAP: RECOMMENDED
         },
         "text/html": {
             "4.01": RECOMMENDED,
@@ -327,12 +329,10 @@ class TextGrader(BaseGrader):
         "text/plain": {
             UNAP: RECOMMENDED
         },
-        "application/gml+xml": {
-            "3.2.2": RECOMMENDED,
+        "text/xml": {
+            "1.0": RECOMMENDED,
+            "1.1": RECOMMENDED
         },
-        "application/vnd.google-earth.kml+xml": {
-            "2.3": RECOMMENDED,
-        }
     }
 
     allowed_charsets = ['ISO-8859-15', 'UTF-8', 'UTF-16', 'UTF-32']
@@ -367,17 +367,30 @@ class ContainerStreamsGrader(BaseGrader):
     """
     recommended_formats = {
         # Recommended
-        "video/x-matroska": {
+        "application/mxf": {
             # Audio
-            ("audio/L16", UNAP),
+            ("audio/aac", UNAP),
             ("audio/L8", UNAP),
+            ("audio/L16", UNAP),
             ("audio/L20", UNAP),
             ("audio/L24", UNAP),
-            ("audio/flac", "1.2.1"),
 
             # Video
-            ("video/h265", UNAP),
-            ("video/x-ffv", "3")
+            ("video/h264", UNAP),
+            ("video/jpeg2000", UNAP),
+        },
+        "audio/mp4": {
+            ("audio/aac", UNAP)
+        },
+        "video/mj2": {
+            # Audio
+            ("audio/L8", UNAP),
+            ("audio/L16", UNAP),
+            ("audio/L20", UNAP),
+            ("audio/L24", UNAP),
+
+            # Video
+            ("video/jpeg2000", UNAP),
         },
         "video/MP2T": {
             # Audio
@@ -395,33 +408,11 @@ class ContainerStreamsGrader(BaseGrader):
             ("video/h264", UNAP),
             ("video/h265", UNAP)
         },
-        "application/mxf": {
-            # Audio
-            ("audio/aac", UNAP),
-            ("audio/L16", UNAP),
-            ("audio/L8", UNAP),
-            ("audio/L20", UNAP),
-            ("audio/L24", UNAP),
-
-            # Video
-            ("video/h264", UNAP),
-            ("video/jpeg2000", UNAP),
-        },
-        "video/mj2": {
-            # Audio
-            ("audio/L16", UNAP),
-            ("audio/L8", UNAP),
-            ("audio/L20", UNAP),
-            ("audio/L24", UNAP),
-
-            # Video
-            ("video/jpeg2000", UNAP),
-        },
         "video/quicktime": {
             # Audio
             ("audio/aac", UNAP),
-            ("audio/L16", UNAP),
             ("audio/L8", UNAP),
+            ("audio/L16", UNAP),
             ("audio/L20", UNAP),
             ("audio/L24", UNAP),
 
@@ -430,25 +421,37 @@ class ContainerStreamsGrader(BaseGrader):
             ("video/h265", UNAP),
             ("video/jpeg2000", UNAP),
         },
-        "audio/mp4": {
-            ("audio/aac", UNAP)
-        }
+        "video/x-matroska": {
+            # Audio
+            ("audio/flac", "1.2.1"),
+            ("audio/L8", UNAP),
+            ("audio/L16", UNAP),
+            ("audio/L20", UNAP),
+            ("audio/L24", UNAP),
+
+            # Video
+            ("video/h265", UNAP),
+            ("video/x-ffv", "3")
+        },
     }
     acceptable_formats = {
         # Acceptable
-        "video/x-ms-asf": {
+        "application/mxf": {
             # Audio
-            ("audio/x-ms-wma", "9"),
+            ("audio/mpeg", "1"),
+            ("audio/mpeg", "2"),
 
             # Video
-            ("video/x-ms-wmv", "9"),
+            ("video/dv", UNAP),
+            ("video/mpeg", "1"),
+            ("video/mpeg", "2"),
         },
         "video/avi": {
             # Audio
             ("audio/mpeg", "1"),
             ("audio/mpeg", "2"),
-            ("audio/L16", UNAP),
             ("audio/L8", UNAP),
+            ("audio/L16", UNAP),
             ("audio/L20", UNAP),
             ("audio/L24", UNAP),
 
@@ -459,8 +462,8 @@ class ContainerStreamsGrader(BaseGrader):
         },
         "video/dv": {
             # Audio
-            ("audio/L16", UNAP),
             ("audio/L8", UNAP),
+            ("audio/L16", UNAP),
             ("audio/L20", UNAP),
             ("audio/L24", UNAP),
 
@@ -503,16 +506,6 @@ class ContainerStreamsGrader(BaseGrader):
             ("video/mpeg", "1"),
             ("video/mpeg", "2"),
         },
-        "application/mxf": {
-            # Audio
-            ("audio/mpeg", "1"),
-            ("audio/mpeg", "2"),
-
-            # Video
-            ("video/dv", UNAP),
-            ("video/mpeg", "1"),
-            ("video/mpeg", "2"),
-        },
         "video/quicktime": {
             # Audio
             ("audio/mpeg", "1"),
@@ -522,7 +515,14 @@ class ContainerStreamsGrader(BaseGrader):
             ("video/dv", UNAP),
             ("video/mpeg", "1"),
             ("video/mpeg", "2"),
-        }
+        },
+        "video/x-ms-asf": {
+            # Audio
+            ("audio/x-ms-wma", "9"),
+
+            # Video
+            ("video/x-ms-wmv", "9"),
+        },
     }
     bit_level_recommended_formats = {
         "video/quicktime": {

@@ -290,12 +290,12 @@ class ContainerMediainfoMeta(BaseMediainfoMeta):
     """Metadata model for container streams."""
 
     _supported = {"audio/mp4": [""],
-                  "video/quicktime": [""],
+                  "video/avi": [""],
                   "video/MP1S": [""],
                   "video/MP2P": [""],
                   "video/MP2T": [""],
                   "video/mp4": [""],
-                  "video/avi": [""],
+                  "video/quicktime": [""],
                   "video/x-ms-asf": [""]}
     _allow_versions = True  # Allow any version
 

@@ -9,9 +9,11 @@ class WandImageMeta(BaseMeta):
     """Metadata models for png, jp2 and gif files scraped with Wand"""
     # pylint: disable=no-self-use
 
-    _supported = {"image/png": [],
-                  "image/jp2": [],
-                  "image/gif": []}
+    _supported = {
+        "image/gif": [],
+        "image/jp2": [],
+        "image/png": [],
+    }
     _allow_versions = True
 
     def __init__(self, image):

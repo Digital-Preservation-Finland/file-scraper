@@ -5,6 +5,14 @@
 # identification.
 FORMATS = [
     {
+        "mimetype": "audio/aac",
+        "properties": {"format": "AAC"}
+    },
+    {
+        "mimetype": "audio/flac",
+        "properties": {"format": "FLAC"}
+    },
+    {
         "mimetype": "audio/L8",
         "properties": {"format": "PCM", "bit_depth": 8}
     },
@@ -21,27 +29,30 @@ FORMATS = [
         "properties": {"format": "PCM", "bit_depth": 24}
     },
     {
-        "mimetype": "video/quicktime",
-        "properties": {"format": "MPEG-4", "format_profile": "QuickTime"}
-    },
-    {
-        "mimetype": "video/quicktime",
-        "properties": {"format": "QuickTime",
-                       "format_info": "Original Apple specifications"}
-    },
-    {
-        "mimetype": "video/dv",
-        "properties": {"format": "DV"}
-    },
-    {
-        "mimetype": "audio/aac",
-        "properties": {"format": "AAC"}
-    },
-    {
         "mimetype": "audio/mp4",
         "properties": {"format": "MPEG-4", "format_profile": "Apple audio "
                                                              "with iTunes "
                                                              "info"}
+    },
+    {
+        "mimetype": "audio/mpeg",
+        "properties": {"format": "MPEG Audio"}
+    },
+    {
+        "mimetype": "audio/x-aiff",
+        "properties": {"format": "AIFF"}
+    },
+    {
+        "mimetype": "audio/x-ms-wma",
+        "properties": {"format": "WMA"}
+    },
+    {
+        "mimetype": "video/avi",
+        "properties": {"format": "AVI"}
+    },
+    {
+        "mimetype": "video/dv",
+        "properties": {"format": "DV"}
     },
     {
         "mimetype": "video/h264",
@@ -50,6 +61,20 @@ FORMATS = [
     {
         "mimetype": "video/h265",
         "properties": {"format": "HEVC"}
+    },
+    {
+        "mimetype": "video/MP1S",
+        "properties": {"format": "MPEG-PS",
+                       "internet_media_type": "video/mpeg"}
+    },
+    {
+        "mimetype": "video/MP2P",
+        "properties": {"format": "MPEG-PS",
+                       "internet_media_type": "video/MP2P"}
+    },
+    {
+        "mimetype": "video/MP2T",
+        "properties": {"format": "MPEG-TS"}
     },
     {
         "mimetype": "video/mp4",
@@ -67,50 +92,29 @@ FORMATS = [
         "properties": {"format": "MPEG Video"}
     },
     {
-        "mimetype": "video/MP2T",
-        "properties": {"format": "MPEG-TS"}
+        "mimetype": "video/quicktime",
+        "properties": {"format": "MPEG-4", "format_profile": "QuickTime"}
     },
     {
-        "mimetype": "video/MP1S",
-        "properties": {"format": "MPEG-PS",
-                       "internet_media_type": "video/mpeg"}
-    },
-    {
-        "mimetype": "video/MP2P",
-        "properties": {"format": "MPEG-PS",
-                       "internet_media_type": "video/MP2P"}
-    },
-    {
-        "mimetype": "audio/mpeg",
-        "properties": {"format": "MPEG Audio"}
-    },
-    {
-        "mimetype": "video/avi",
-        "properties": {"format": "AVI"}
-    },
-    {
-        "mimetype": "video/x-matroska",
-        "properties": {"format": "Matroska"}
-    },
-    {
-        "mimetype": "audio/x-aiff",
-        "properties": {"format": "AIFF"}
-    },
-    {
-        "mimetype": "audio/flac",
-        "properties": {"format": "FLAC"}
-    },
-    {
-        "mimetype": "video/x-ffv",
-        "properties": {"format": "FFV1"}
+        "mimetype": "video/quicktime",
+        "properties": {"format": "QuickTime",
+                       "format_info": "Original Apple specifications"}
     },
     {
         "mimetype": "video/x.fi-dpres.prores",
         "properties": {"format": "ProRes"}
     },
     {
-        "mimetype": "audio/x-ms-wma",
-        "properties": {"format": "WMA"}
+        "mimetype": "video/x-ffv",
+        "properties": {"format": "FFV1"}
+    },
+    {
+        "mimetype": "video/x-matroska",
+        "properties": {"format": "Matroska"}
+    },
+    {
+        "mimetype": "video/x-ms-asf",
+        "properties": {"format": "Windows Media"}
     },
     {
         "mimetype": "video/x-ms-wmv",
@@ -127,10 +131,6 @@ FORMATS = [
     {
         "mimetype": "video/x-ms-wmv",
         "properties": {"format": "WMV3"}
-    },
-    {
-        "mimetype": "video/x-ms-asf",
-        "properties": {"format": "Windows Media"}
     },
 ]
 
