@@ -359,6 +359,12 @@ def test_magic_charset(filename, charset):
             ("application_x.fi-dpres.segy/invalid__empty_ebcdic_header.sgy",
              UNKN,
              "SEG-Y header is blank"),
+
+            # SEG-Y file without signature, padded left-justified markers and
+            # `C40 EOF.` header EOF marker. See TPASPKT-1325.
+            ("application_x.fi-dpres.segy/invalid__ebcdic_padded_ljust_eof.sgy",
+             UNKN,
+             "SEG-Y signature is missing"),
         ]
 )
 def test_segy_detector(filepath, version, message):

@@ -417,10 +417,15 @@ class SegYDetector(BaseDetector):
         # and begin with a card number "C 1 " ... "C40 ". Here we also allow
         # left-justified card numbering, i.e. "C1  " instead of "C 1 ".
         if content[3120:3143] == "C40 END TEXTUAL HEADER " or \
-                content[3120:3135] == "C40 END EBCDIC ":
+                content[3120:3135] == "C40 END EBCDIC " or \
+                content[3120:3128] == "C40 EOF.":
             for index in range(0, 40):
-                if content[index*80:index*80+4] not in [
-                        "C%2d " % (index + 1), "C%-2d " % (index + 1)]:
+                allowed_markers = [
+                    "C%2d " % (index + 1),   # "C1 "
+                    "C%-2d " % (index + 1),  # "C 1 "
+                    "C%02d " % (index + 1),  # "C01 "
+                ]
+                if content[index*80:index*80+4] not in allowed_markers:
                     return None
 
             return UNKN
