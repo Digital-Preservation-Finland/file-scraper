@@ -430,6 +430,15 @@ class SegYDetector(BaseDetector):
 
             return UNKN
 
+        # For some SEG-Y files, the card marker has no number, and is instead
+        # just repeated 40 times.
+        if content[0] == "C":
+            for i in range(1, 40):
+                if content[i*80] != "C":
+                    return None
+
+            return UNKN
+
         return None
 
     def detect(self):

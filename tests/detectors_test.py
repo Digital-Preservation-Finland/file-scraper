@@ -365,6 +365,13 @@ def test_magic_charset(filename, charset):
             ("application_x.fi-dpres.segy/invalid__ebcdic_padded_ljust_eof.sgy",
              UNKN,
              "SEG-Y signature is missing"),
+
+            # SEG-Y file without signature, and markers without indices
+            # (i.e. `C ` just repeated 40 times).
+            # The rest appears to be free-form text. See TPASPKT-1325.
+            ("application_x.fi-dpres.segy/invalid__ebcdic_no_indices.sgy",
+             UNKN,
+             "SEG-Y signature is missing"),
         ]
 )
 def test_segy_detector(filepath, version, message):
