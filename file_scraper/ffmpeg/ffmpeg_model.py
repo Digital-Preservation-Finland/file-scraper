@@ -82,7 +82,7 @@ class FFMpegSimpleMeta(BaseMeta):
         "raw FLAC",
         "raw H.264 video",
         "raw MPEG video",
-        "SMPTE VC-1"
+        "SMPTE VC-1",
         "WAV / WAVE (Waveform Audio)",
         "Windows Media Audio 9 Professional",
         "Windows Media Audio Lossless",
