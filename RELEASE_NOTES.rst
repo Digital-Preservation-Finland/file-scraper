@@ -39,8 +39,8 @@ Version 0.67
 - Add support for h265 (HEVC) video streams.
 - Update the following mimetypes:
 
-   - audio/mp4 to audio/aac for AAC streams
-   - video/mp4 to video/h264 for AVC streams.
+  - audio/mp4 to audio/aac for AAC streams
+  - video/mp4 to video/h264 for AVC streams.
 
 Version 0.66
 ------------
@@ -66,16 +66,16 @@ Version 0.63
 
 - Make config file for excecutable paths
 - Json files are now detected as plain text
-- Add note to dummy_scraper.py on formatVersion not being
-supported with mimetype text/plain
+- Add note to dummy_scraper.py on formatVersion not being supported with mimetype text/plain
 
 Version 0.62
 ------------
 
 - Change well-formedness results of the following scrapers, because they do not validate:
-    - ExifTool Scraper
-    - Magic Scraper
-    - Textfile Scraper: TextfileScraper and TextEncodingMetaScraper
+
+  - ExifTool Scraper
+  - Magic Scraper
+  - Textfile Scraper: TextfileScraper and TextEncodingMetaScraper
 
 Version 0.61
 ------------
@@ -236,9 +236,11 @@ Version 0.34
 ------------
 
 - Changes in PDF scraping:
+
   - Both JHove and Ghostscript are now run for all PDF files, but the scraping
     results are ignored if the file is not supported by the tool.
   - Added PDF root version reporting to JHove scraper output
+
 - Select Python 2/3 version of dpx-validator depending on the current
   environment.
 - Added grades for files into the scraper output. The grade defines
@@ -326,7 +328,7 @@ Version 0.22
 Version 0.21
 ------------
 
-Add command-line interface
+- Add command-line interface
 
 Version 0.20
 ------------
@@ -343,12 +345,12 @@ Version 0.19
 Version 0.18
 ------------
 
-Changed Wand and ImageMagick error messages have been updated to tests.
+- Changed Wand and ImageMagick error messages have been updated to tests.
 
 Version 0.17
 ------------
 
-Exif version is extracted from JPEG metadata using Python Wand module. JFIF version is extracted with file-scraper's magiclib module. Exif version for a JPEG file consists of four bytes of ASCII values representing eg. '0221' which is interpreted as 2.2.1, conforming to `the Finnish national digital preservation service specification for file formats`__.
+- Exif version is extracted from JPEG metadata using Python Wand module. JFIF version is extracted with file-scraper's magiclib module. Exif version for a JPEG file consists of four bytes of ASCII values representing eg. '0221' which is interpreted as 2.2.1, conforming to `the Finnish national digital preservation service specification for file formats`__.
 
 
 __ http://digitalpreservation.fi/files/File-Formats-1.8.0.pdf
