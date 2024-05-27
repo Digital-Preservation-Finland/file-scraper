@@ -353,4 +353,4 @@ Version 0.17
 - Exif version is extracted from JPEG metadata using Python Wand module. JFIF version is extracted with file-scraper's magiclib module. Exif version for a JPEG file consists of four bytes of ASCII values representing eg. '0221' which is interpreted as 2.2.1, conforming to `the Finnish national digital preservation service specification for file formats`__.
 
 
-__ http://digitalpreservation.fi/files/File-Formats-1.8.0.pdf
+__ https://urn.fi/urn:nbn:fi-fe2020100578095
