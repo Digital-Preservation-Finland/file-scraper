@@ -28,7 +28,7 @@ BuildRequires:  pyproject-rpm-macros
 BuildRequires:  %{py3_dist pip}
 BuildRequires:  %{py3_dist wheel}
 BuildRequires:  %{py3_dist setuptools}
-BuildRequires:  ImageMagick = 6.9.12.88
+BuildRequires:  ImageMagick
 BuildRequires:  libmediainfo
 
 %global _description %{expand:
