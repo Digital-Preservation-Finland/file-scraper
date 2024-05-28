@@ -1,11 +1,6 @@
 Release notes
 =============
 
-Unreleased
-----------
-
-- Sort mimetypes and scrapers alphabetically
-
 Version 0.71
 ------------
 
