@@ -1,8 +1,8 @@
 Release notes
 =============
 
-Unreleased
-----------
+Version 0.7.2
+-------------
 
 - Loosen SEG-Y detection requirements when SEG-Y version declaration is missing
 
