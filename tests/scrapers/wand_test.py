@@ -380,11 +380,9 @@ def test_scraper_colorspace(mimetype, filename, expected):
          "MagickReadImage returns false, but did not raise ImageMagick"
          "  exception."),
         ("invalid_1.2_no_IEND.png", "image/png",
-         "MagickReadImage returns false, but did not raise ImageMagick"
-         "  exception."),
+         "Read Exception"),
         ("invalid_1.2_no_IHDR.png", "image/png",
-         "MagickReadImage returns false, but did not raise ImageMagick"
-         "  exception."),
+         "IHDR: CRC error"),
         ("invalid_1.2_wrong_header.png", "image/png",
          "improper image header"),
         ("invalid__empty.png", "image/png",
@@ -413,6 +411,15 @@ def test_scraper_invalid(filename, mimetype, stderr_part):
     :mimetype: File MIME type
     :stderr_part: Part of the expected stderr
     """
+    
+    # TODO: delete this check if it's not needed:
+    if filename in ["invalid_1.2_no_IEND.png", "invalid_1.2_no_IHDR.png"]:
+      import wand
+      # CentOS 7 uses older version of ImageMagick than RHEL 9
+      # and it gives a different error message
+      if wand.version.MAGICK_VERSION_INFO < (6, 9, 12, 93):
+           stderr_part = "MagickReadImage returns false, but did not raise ImageMagick  exception."
+    
     scraper = WandScraper(
         filename=os.path.join("tests/data/", mimetype.replace("/", "_"),
                               filename),
