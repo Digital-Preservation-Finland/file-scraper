@@ -88,6 +88,134 @@ class FFMpegSimpleMeta(BaseMeta):
         "Windows Media Audio Lossless",
         "Windows Media Video 9",
     ]
+    _supported_formats2 = {
+        "ASF (Advanced / Active Streaming Format)": [
+            # Audio
+            "Windows Media Audio 9 Professional",
+            "Windows Media Audio Lossless",
+            # Video
+            "SMPTE VC-1",
+            "Windows Media Video 9"
+        ],
+        "AVI (Audio Video Interleaved)": [
+            # Audio
+            "MP3 (MPEG audio layer 3)",
+            "PCM signed 16-bit big-endian",
+            "PCM signed 16-bit little-endian",
+            "PCM signed 24-bit big-endian",
+            "PCM signed 24-bit little-endian",
+            "PCM signed 8-bit",
+            "PCM unsigned 16-bit big-endian",
+            "PCM unsigned 16-bit little-endian",
+            "PCM unsigned 24-bit big-endian",
+            "PCM unsigned 24-bit little-endian",
+            "PCM unsigned 8-bit",
+            # Video
+            "DV (Digital Video)",
+            "MPEG-1 video",
+            "MPEG-2 video",
+            "raw MPEG video"
+        ],
+        "DV (Digital Video)": [
+            # Audio
+            "PCM signed 16-bit big-endian",
+            "PCM signed 16-bit little-endian",
+            "PCM signed 24-bit big-endian",
+            "PCM signed 24-bit little-endian",
+            "PCM signed 8-bit",
+            "PCM unsigned 16-bit big-endian",
+            "PCM unsigned 16-bit little-endian",
+            "PCM unsigned 24-bit big-endian",
+            "PCM unsigned 24-bit little-endian",
+            "PCM unsigned 8-bit",
+            # Video
+            "DV (Digital Video)"
+        ],
+        "Matroska / WebM": [
+            # Audio
+            "FLAC (Free Lossless Audio Codec)",
+            "PCM signed 16-bit big-endian",
+            "PCM signed 16-bit little-endian",
+            "PCM signed 24-bit big-endian",
+            "PCM signed 24-bit little-endian",
+            "PCM signed 8-bit",
+            "PCM unsigned 16-bit big-endian",
+            "PCM unsigned 16-bit little-endian",
+            "PCM unsigned 24-bit big-endian",
+            "PCM unsigned 24-bit little-endian",
+            "PCM unsigned 8-bit",
+            "raw FLAC",
+            # Video
+            "FFmpeg video codec #1",
+            "H.265 / HEVC (High Efficiency Video Coding)"
+        ],
+        "MPEG-PS (MPEG-2 Program Stream)": [
+            # Audio
+            "MP3 (MPEG audio layer 3)",
+            # Video
+            "MPEG-1 video",
+            "MPEG-2 video",
+            "raw MPEG video"
+        ],
+        "MPEG-TS (MPEG-2 Transport Stream)": [
+            # Audio
+            "AAC (Advanced Audio Coding)",
+            "MP3 (MPEG audio layer 3)",
+            # Video
+            "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
+            "H.265 / HEVC (High Efficiency Video Coding)",
+            "MPEG-1 video",
+            "MPEG-2 video",
+            "raw H.264 video",
+            "raw MPEG video"
+        ],
+        "MXF (Material eXchange Format)": [
+            # Audio
+            "AAC (Advanced Audio Coding)",
+            "MP3 (MPEG audio layer 3)",
+            "PCM signed 16-bit big-endian",
+            "PCM signed 16-bit little-endian",
+            "PCM signed 24-bit big-endian",
+            "PCM signed 24-bit little-endian",
+            "PCM signed 8-bit",
+            "PCM unsigned 16-bit big-endian",
+            "PCM unsigned 16-bit little-endian",
+            "PCM unsigned 24-bit big-endian",
+            "PCM unsigned 24-bit little-endian",
+            "PCM unsigned 8-bit",
+            # Video
+            "DV (Digital Video)",
+            "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
+            "JPEG 2000",
+            "MPEG-1 video",
+            "MPEG-2 video",
+            "raw MPEG video"
+        ],
+        "QuickTime / MOV": [
+            # Audio
+            "AAC (Advanced Audio Coding)",
+            "MP3 (MPEG audio layer 3)",
+            "PCM signed 16-bit big-endian",
+            "PCM signed 16-bit little-endian",
+            "PCM signed 24-bit big-endian",
+            "PCM signed 24-bit little-endian",
+            "PCM signed 8-bit",
+            "PCM unsigned 16-bit big-endian",
+            "PCM unsigned 16-bit little-endian",
+            "PCM unsigned 24-bit big-endian",
+            "PCM unsigned 24-bit little-endian",
+            "PCM unsigned 8-bit",
+            # Video
+            "DV (Digital Video)",
+            "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
+            "H.265 / HEVC (High Efficiency Video Coding)",
+            "JPEG 2000",
+            "MPEG-1 video",
+            "MPEG-2 video",
+            "raw MPEG video"
+        ]
+
+    }
 
     def __init__(self, probe_results, index):
         """
@@ -130,7 +258,25 @@ class FFMpegSimpleMeta(BaseMeta):
             supported = self._ffmpeg_stream["codec_long_name"] in \
                 self._supported_formats
 
+        if supported:
+            if self.hascontainer() and self.index() == 0:
+                supported = self.container_streams_supported()
+
         return supported
+
+    def container_streams_supported(self):
+        """TODO"""
+        container = self._ffmpeg_stream["format_long_name"]
+        if container not in self._supported_containers:
+            return False
+        av_streams = []
+        for stream in self._probe_results["streams"]:
+            if stream["codec_type"] in ["video", "audio"]:
+                av_streams.append(stream["codec_long_name"])
+        for stream in av_streams:
+            if stream not in self._supported_formats2[container]:
+                return False
+        return True
 
     def hascontainer(self):
         """Check if file has a video container.
