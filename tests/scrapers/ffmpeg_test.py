@@ -51,6 +51,8 @@ This module tests that:
     - Supported MIME type is supported when well-formedness is not
       checked.
     - Scraping is done also when well-formedness is not checked.
+    - For containers that have unacceptable av streams, the scraper returns
+      None for well-formedness.
 """
 import os
 
@@ -253,7 +255,7 @@ UNAV_MIME = []
             },
             "video/x-ms-asf"
         ),
-         (
+        (
             "valid__aac.m4a",
             {
                 "purpose": "test valid m4a.",
@@ -598,6 +600,35 @@ def test_ffmpeg_scraper_invalid(filename, result_dict, mimetype,
     scraper.scrape_file()
 
     evaluate_scraper(scraper, correct)
+
+
+@pytest.mark.parametrize(
+    ["filepath", "mimetype"],
+    [
+        (
+            "tests/data/video_x-matroska/invalid_4_ffv1_aac.mkv",
+            "video/x-matroska"
+        ),
+        (
+            "tests/data/video_x-matroska/invalid_4_mp1.mkv",
+            "video/x-matroska"
+        ),
+        (
+            "tests/data/video_x-ms-asf/invalid__vc1_mp3.wmv",
+            "video/x-ms-asf"
+        )
+    ]
+)
+def test_ffmpeg_scraper_wellformed_none(filepath, mimetype):
+    """
+    Test that FFMpegScraper returns None for well_formedness
+    when all the streams all well_formed, but some of the av
+    streams are not acceptable inside the container.
+    """
+    scraper = FFMpegScraper(filename=filepath, mimetype=mimetype)
+    scraper.scrape_file()
+
+    assert scraper.well_formed is None
 
 
 @pytest.mark.usefixtures("patch_shell_attributes_fx")

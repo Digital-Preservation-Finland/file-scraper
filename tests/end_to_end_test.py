@@ -332,7 +332,14 @@ UNACCEPTABLE_FILES = [
     "tests/data/application_warc/valid_0.18.warc",
 
     # Acceptable container with a cinepak stream, which is not supported
-    "tests/data/video_quicktime/invalid__cinepak_lpcm8.mov"
+    "tests/data/video_quicktime/invalid__cinepak_lpcm8.mov",
+
+    # Aac audio and mp1 video streams are not supported in matroska containers
+    "tests/data/video_x-matroska/invalid_4_ffv1_aac.mkv",
+    "tests/data/video_x-matroska/invalid_4_mp1.mkv",
+
+    # Mp3 audio stream is not supported in asf containers
+    "tests/data/video_x-ms-asf/invalid__vc1_mp3.wmv"
 ]
 
 
