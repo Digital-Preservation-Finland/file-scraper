@@ -56,39 +56,7 @@ class FFMpegSimpleMeta(BaseMeta):
         "QuickTime / MOV",
     ]
 
-    _supported_formats = _supported_containers + [
-        "AAC (Advanced Audio Coding)",
-        "Audio IFF",
-        "FFmpeg video codec #1",
-        "FLAC (Free Lossless Audio Codec)",
-        "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
-        "H.265 / HEVC (High Efficiency Video Coding)",
-        "JPEG 2000",
-        "MP2 (MPEG audio layer 2)",
-        "MP2/3 (MPEG audio layer 2/3)",
-        "MP3 (MPEG audio layer 3)",
-        "MPEG-1 video",
-        "MPEG-2 video",
-        "PCM signed 16-bit big-endian",
-        "PCM signed 16-bit little-endian",
-        "PCM signed 24-bit big-endian",
-        "PCM signed 24-bit little-endian",
-        "PCM signed 8-bit",
-        "PCM unsigned 16-bit big-endian",
-        "PCM unsigned 16-bit little-endian",
-        "PCM unsigned 24-bit big-endian",
-        "PCM unsigned 24-bit little-endian",
-        "PCM unsigned 8-bit",
-        "raw FLAC",
-        "raw H.264 video",
-        "raw MPEG video",
-        "SMPTE VC-1",
-        "WAV / WAVE (Waveform Audio)",
-        "Windows Media Audio 9 Professional",
-        "Windows Media Audio Lossless",
-        "Windows Media Video 9",
-    ]
-    _supported_formats2 = {
+    _supported_formats = {
         "ASF (Advanced / Active Streaming Format)": [
             # Audio
             "Windows Media Audio 9 Professional",
@@ -243,29 +211,28 @@ class FFMpegSimpleMeta(BaseMeta):
         True - Supported
         """
         supported = False
-        if "codec_type" not in self._ffmpeg_stream and \
-                self.index() > 0:
-            return None
-        if not self.hascontainer() or self.index() > 0:
+        if self.hascontainer() and self.index() == 0:
+            supported = self.streams_in_container_supported()
+            return supported
+
+        if self.index() > 0:
+            if "codec_type" not in self._ffmpeg_stream:
+                return None
             if self._ffmpeg_stream["codec_type"] not in ["video", "audio"]:
                 return None
 
-        if "format_long_name" in self._ffmpeg_stream:
-            supported = self._ffmpeg_stream["format_long_name"] in \
-                self._supported_formats
-
-        if not supported and "codec_long_name" in self._ffmpeg_stream:
-            supported = self._ffmpeg_stream["codec_long_name"] in \
-                self._supported_formats
-
-        if supported:
-            if self.hascontainer() and self.index() == 0:
-                supported = self.container_streams_supported()
+        if "codec_long_name" in self._ffmpeg_stream:
+            supported = any(self._ffmpeg_stream["codec_long_name"] in
+                            val for val in self._supported_formats.values())
 
         return supported
 
-    def container_streams_supported(self):
-        """TODO"""
+    def streams_in_container_supported(self):
+        """Check if the streams inside a container are supported.
+
+        :returns: True if all of the streams are supported, False
+                  otherwise.
+        """
         container = self._ffmpeg_stream["format_long_name"]
         if container not in self._supported_containers:
             return False
@@ -274,7 +241,7 @@ class FFMpegSimpleMeta(BaseMeta):
             if stream["codec_type"] in ["video", "audio"]:
                 av_streams.append(stream["codec_long_name"])
         for stream in av_streams:
-            if stream not in self._supported_formats2[container]:
+            if stream not in self._supported_formats[container]:
                 return False
         return True
 
