@@ -660,7 +660,7 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
 @pytest.mark.parametrize(
         ["filename", "result_dict", "mimetype"],
         [
-            ("valid__ps1.mpg", {
+            ("valid__mpeg1_mp3.mpg", {
                 "purpose": "Test valid MPEG1-PS.",
                 "stdout_part": "file was analyzed successfully",
                 "stderr_part": "",
@@ -668,7 +668,7 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
                             1: MPEG1PS_VIDEO.copy(),
                             2: MPEGPS_AUDIO.copy()}},
              "video/MP1S"),
-            ("valid__ps2.mpg", {
+            ("valid__mpeg2_mp3.mpg", {
                 "purpose": "Test valid MPEG2-PS.",
                 "stdout_part": "file was analyzed successfully",
                 "stderr_part": "",

@@ -94,8 +94,8 @@ CHANGE_MAGIC = {
         ["application/octet-stream", "text/plain"],
     "text_plain/valid__utf32be_without_bom.txt":
         "application/octet-stream",
-    "video_MP1S/valid__ps1.mpg": "video/mpeg",
-    "video_MP2P/valid__ps2.mpg": "video/mpeg",
+    "video_MP1S/valid__mpeg1_mp3.mpg": "video/mpeg",
+    "video_MP2P/valid__mpeg2_mp3.mpg": "video/mpeg",
     "video_MP2T/valid__mpeg2_mp3.ts": "application/octet-stream",
     "video_MP2T/valid__h265_aac.ts": "application/octet-stream",
     "application_xhtml+xml/valid_1.0.xhtml": "text/xml",

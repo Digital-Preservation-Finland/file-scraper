@@ -223,19 +223,19 @@ MPEG1PS_CONTAINER = {
 
 MPEG1PS_VIDEO = dict(MPEG1_VIDEO, **{
     "index": 1, "par": "0.999",
-    "data_rate": "2.431719", "dar": "0.562",
+    "data_rate": "2.38447", "dar": "0.562",
     "height": "1920", "sound": "Yes",
     "duration": "PT1.1S", "width": "1080"})
 
 MPEGPS_AUDIO = dict(MPEG1_AUDIO, **{
     "index": 2, "sampling_frequency": "48",
-    "duration": "PT1.15S", "data_rate": "384"})
+    "duration": "PT1.18S", "data_rate": "128"})
 
 MPEG2PS_CONTAINER = dict(MPEG1PS_CONTAINER, **{
     "mimetype": "video/MP2P"})
 
 MPEG2PS_VIDEO = dict(MPEG1PS_VIDEO, **{
-    "par": "1", "data_rate": "2.626867",
+    "par": "1", "data_rate": "2.548327",
     "version": "2"})
 
 BASE_JPEG2000_VIDEO = {
