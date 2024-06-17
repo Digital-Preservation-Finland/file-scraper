@@ -1,7 +1,12 @@
 Release notes
 =============
 
-Version 0.7.3
+Unreleased
+----------
+
+- Check that av streams inside containers are supported with the specific container.
+
+Version 0.73
 -------------
 
 - Identify some CSV files as text/csv instead of application/csv
@@ -9,8 +14,8 @@ Version 0.7.3
 - Process certain text based Windows configuration files, identified by Magic, as plain text
 - Support newer version of ImageMagick than v6.9.12.88
 
-Version 0.7.2
--------------
+Version 0.72
+------------
 
 - Loosen SEG-Y detection requirements when SEG-Y version declaration is missing
 
