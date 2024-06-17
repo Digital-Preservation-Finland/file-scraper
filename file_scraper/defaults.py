@@ -25,6 +25,7 @@ MIMETYPE_DICT = {
     "application/xml": "text/xml",
     "application/mp4": None,
     "application/vnd.ms-asf": "video/x-ms-asf",
+    "application/x-wine-extension-ini": "text/plain",
     "video/x-msvideo": "video/avi",
     "video/x-dv": "video/dv",
     "audio/x-ms-wma": "video/x-ms-asf",
