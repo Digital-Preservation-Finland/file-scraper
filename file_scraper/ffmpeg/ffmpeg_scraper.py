@@ -162,11 +162,13 @@ class FFMpegScraper(FFMpegMetaScraper):
     def well_formed(self):
         """
         Return well-formedness status of the scraped file.
-        If file contains streams that can not be identified, the scraper can
-        not check well-formedness.
+        If the file contains streams that can not be identified or
+        is a container with unacceptable av streams, the scraper
+        can not check well-formedness.
 
         :returns: None if there were no errors but a stream was not
-                  identified, True if the file has been scraped without errors
+                  identified or a container has unacceptable streams,
+                  True if the file has been scraped without errors
                   and otherwise False
         """
         # Use super class of super class, i.e. BaseScraper for initial result.
