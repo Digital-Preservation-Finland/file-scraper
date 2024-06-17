@@ -12,7 +12,7 @@ from fido.pronomutils import get_local_pronom_versions
 from file_scraper.base import BaseDetector
 from file_scraper.defaults import (MIMETYPE_DICT, PRIORITY_PRONOM, PRONOM_DICT,
                                    VERSION_DICT, UNKN)
-from file_scraper.utils import decode_path
+from file_scraper.utils import decode_path, is_zipfile
 from file_scraper.magiclib import magiclib, magic_analyze
 
 MAGIC_LIB = magiclib()
@@ -540,7 +540,7 @@ class SiardDetector(BaseDetector):
         # The zipfile module prefers filepaths as strings
         filename = decode_path(self.filename)
         if all((os.path.splitext(filename)[1] == ".siard",
-                zipfile.is_zipfile(filename))):
+                is_zipfile(filename))):
             with zipfile.ZipFile(filename) as zipf:
                 version_folders = [
                     x for x in zipf.namelist() if "header/siardversion" in x]
@@ -594,7 +594,7 @@ class ODFDetector(BaseDetector):
             3) Valid format version is defined in "meta.xml" file
         """
         # Try to read "mimetype" and "meta.xml" files from zip
-        if zipfile.is_zipfile(self.filename):
+        if is_zipfile(self.filename):
             with zipfile.ZipFile(decode_path(self.filename)) as zipf:
                 if {'mimetype', 'meta.xml'} <= set(zipf.namelist()):
                     try:

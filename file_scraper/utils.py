@@ -4,6 +4,7 @@ import hashlib
 import string
 import sys
 import unicodedata
+import zipfile
 from itertools import chain
 
 from file_scraper.defaults import UNAV
@@ -409,3 +410,25 @@ def iter_utf_bytes(file_handle, chunksize, charset):
                          "indexes": [1, 2]}], True)
 
         yield chunk
+
+
+def is_zipfile(filename):
+    """
+    Check if file is a ZIP file.
+
+    Ideally this would be done using zipfile.is_zipfile function. However there
+    is an outstanding issue with that function and thus we can't use it
+    directly.
+
+    Relevant Github issue: https://github.com/python/cpython/issues/72680
+
+    :filename: File to check
+    """
+    if zipfile.is_zipfile(filename):
+        try:
+            with zipfile.ZipFile(decode_path(filename)):
+                return True
+        except (OSError, zipfile.BadZipFile):
+            return False
+    else:
+        return False
