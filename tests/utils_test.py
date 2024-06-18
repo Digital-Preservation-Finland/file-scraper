@@ -104,6 +104,7 @@ requirements:
 
 from itertools import chain
 import pytest
+import zipfile
 
 from file_scraper.scraper import LOSE
 from file_scraper.utils import (_fill_importants,
@@ -111,7 +112,7 @@ from file_scraper.utils import (_fill_importants,
                                 generate_metadata_dict, hexdigest,
                                 iso8601_duration, metadata,
                                 sanitize_string, strip_zeros,
-                                iter_utf_bytes)
+                                iter_utf_bytes, is_zipfile)
 
 
 @pytest.mark.parametrize(
@@ -495,3 +496,17 @@ def test_iter_utf_bytes_trivial():
         for chunk in iter_utf_bytes(infile, 4, "UTF-8"):
             chunks += chunk
         assert original_bytes == chunks
+
+
+def test_zipfile(monkeypatch):
+    """
+    Test that is_zipfile returns false for a ZIP file that is accepted by
+    zipfile.is_zipfile, but which can't be opened by zipfile.ZipFile.
+    """
+    def mocked_zipfile_init(*args):
+        raise zipfile.BadZipFile("This file is not really ZIP!")
+
+    monkeypatch.setattr('zipfile.ZipFile', mocked_zipfile_init)
+    assert not is_zipfile(
+        'tests/data/application_vnd.oasis.opendocument.text/valid_1.2.odt'
+    )
