@@ -621,8 +621,8 @@ def test_ffmpeg_scraper_invalid(filename, result_dict, mimetype,
 )
 def test_ffmpeg_scraper_wellformed_none(filepath, mimetype):
     """
-    Test that FFMpegScraper returns None for well_formedness
-    when all the streams all well_formed, but some of the av
+    Test that FFMpegScraper returns None for well-formedness
+    when all the streams are well-formed, but some of the av
     streams are not acceptable inside the container.
     """
     scraper = FFMpegScraper(filename=filepath, mimetype=mimetype)
