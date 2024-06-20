@@ -677,3 +677,23 @@ def test_is_supported(mimetype, version):
         assert FFMpegMetaScraper.is_supported(mimetype, version, False)
     else:
         assert not FFMpegMetaScraper.is_supported(mimetype, version, False)
+
+
+@pytest.mark.parametrize(
+    "filename",
+    [
+        # Unsupported stream in unsupported container
+        "tests/data/application_vnd.rn-realmedia/valid__ac3.ra",
+        # Supported stream in unsupported container. This file is
+        # detected as well formed although it should not?
+        "tests/data/application_vnd.rn-realmedia/valid__aac.ra"
+    ]
+)
+def test_unsupported_format(filename):
+    """Test that unsupported format is not well formed."""
+    # Scrape the file. Use some supported mimetype, otherwise the
+    # Scraper will refuse to scrape.
+    scraper = FFMpegScraper(filename=filename, mimetype="audio/mp4")
+    scraper.scrape_file()
+
+    assert not scraper.well_formed
