@@ -539,8 +539,7 @@ class SiardDetector(BaseDetector):
         version_folders = []
         # The zipfile module prefers filepaths as strings
         filename = decode_path(self.filename)
-        if all((os.path.splitext(filename)[1] == ".siard",
-                is_zipfile(filename))):
+        if os.path.splitext(filename)[1] == ".siard" and is_zipfile(filename):
             with zipfile.ZipFile(filename) as zipf:
                 version_folders = [
                     x for x in zipf.namelist() if "header/siardversion" in x]
