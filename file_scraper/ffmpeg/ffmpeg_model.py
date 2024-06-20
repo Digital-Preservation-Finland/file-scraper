@@ -45,17 +45,6 @@ class FFMpegSimpleMeta(BaseMeta):
     }
     _allow_versions = True   # Allow any version
 
-    _supported_containers = [
-        "ASF (Advanced / Active Streaming Format)",
-        "AVI (Audio Video Interleaved)",
-        "DV (Digital Video)",
-        "Matroska / WebM",
-        "MPEG-PS (MPEG-2 Program Stream)",
-        "MPEG-TS (MPEG-2 Transport Stream)",
-        "MXF (Material eXchange Format)",
-        "QuickTime / MOV",
-    ]
-
     _supported_formats = {
         "ASF (Advanced / Active Streaming Format)": [
             # Audio
@@ -234,7 +223,7 @@ class FFMpegSimpleMeta(BaseMeta):
                   otherwise.
         """
         container = self._ffmpeg_stream["format_long_name"]
-        if container not in self._supported_containers:
+        if container not in self._supported_formats:
             return False
         av_streams = []
         for stream in self._probe_results["streams"]:
@@ -255,7 +244,7 @@ class FFMpegSimpleMeta(BaseMeta):
         format_name = self._probe_results["format"]["format_long_name"]
 
         is_container = (
-            format_name in self._supported_containers and
+            format_name in self._supported_formats and
             "codec_type" not in self._probe_results["format"])
 
         if is_container and format_name == "DV (Digital Video)":
