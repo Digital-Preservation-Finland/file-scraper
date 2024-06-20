@@ -1,6 +1,11 @@
 Release notes
 =============
 
+Unreleased
+----------
+
+- Fix crash due to incorrectly detecting a ZIP file and attempting to parse it
+
 Version 0.7.2
 -------------
 
