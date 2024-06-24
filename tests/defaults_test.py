@@ -35,6 +35,7 @@ def test_mimetype_dict(monkeypatch):
         "audio/x-ms-wma": "video/x-ms-asf",
         "video/x-ms-wmv": "video/x-ms-asf",
         "audio/x-m4a": "audio/mp4",
+        "application/csv": "text/csv",
     }
     for key, value in TEST_MIMETYPE_DICT.items():
         def mock_analyze(magic_lib, magic_type, path):
