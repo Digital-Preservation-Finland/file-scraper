@@ -3,7 +3,7 @@
 import pytest
 
 from file_scraper.detectors import MagicDetector
-from file_scraper.defaults import PRONOM_DICT, VERSION_DICT, MIMETYPE_DICT
+from file_scraper.defaults import PRONOM_DICT, VERSION_DICT
 
 
 @pytest.mark.parametrize(
