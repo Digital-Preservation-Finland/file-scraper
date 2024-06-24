@@ -57,16 +57,16 @@ class FFMpegSimpleMeta(BaseMeta):
         "AVI (Audio Video Interleaved)": [
             # Audio
             "MP3 (MPEG audio layer 3)",
+            "PCM signed 8-bit",
             "PCM signed 16-bit big-endian",
             "PCM signed 16-bit little-endian",
             "PCM signed 24-bit big-endian",
             "PCM signed 24-bit little-endian",
-            "PCM signed 8-bit",
+            "PCM unsigned 8-bit",
             "PCM unsigned 16-bit big-endian",
             "PCM unsigned 16-bit little-endian",
             "PCM unsigned 24-bit big-endian",
             "PCM unsigned 24-bit little-endian",
-            "PCM unsigned 8-bit",
             # Video
             "DV (Digital Video)",
             "MPEG-1 video",
@@ -75,32 +75,32 @@ class FFMpegSimpleMeta(BaseMeta):
         ],
         "DV (Digital Video)": [
             # Audio
+            "PCM signed 8-bit",
             "PCM signed 16-bit big-endian",
             "PCM signed 16-bit little-endian",
             "PCM signed 24-bit big-endian",
             "PCM signed 24-bit little-endian",
-            "PCM signed 8-bit",
+            "PCM unsigned 8-bit",
             "PCM unsigned 16-bit big-endian",
             "PCM unsigned 16-bit little-endian",
             "PCM unsigned 24-bit big-endian",
             "PCM unsigned 24-bit little-endian",
-            "PCM unsigned 8-bit",
             # Video
             "DV (Digital Video)"
         ],
         "Matroska / WebM": [
             # Audio
             "FLAC (Free Lossless Audio Codec)",
+            "PCM signed 8-bit",
             "PCM signed 16-bit big-endian",
             "PCM signed 16-bit little-endian",
             "PCM signed 24-bit big-endian",
             "PCM signed 24-bit little-endian",
-            "PCM signed 8-bit",
+            "PCM unsigned 8-bit",
             "PCM unsigned 16-bit big-endian",
             "PCM unsigned 16-bit little-endian",
             "PCM unsigned 24-bit big-endian",
             "PCM unsigned 24-bit little-endian",
-            "PCM unsigned 8-bit",
             "raw FLAC",
             # Video
             "FFmpeg video codec #1",
@@ -130,16 +130,16 @@ class FFMpegSimpleMeta(BaseMeta):
             # Audio
             "AAC (Advanced Audio Coding)",
             "MP3 (MPEG audio layer 3)",
+            "PCM signed 8-bit",
             "PCM signed 16-bit big-endian",
             "PCM signed 16-bit little-endian",
             "PCM signed 24-bit big-endian",
             "PCM signed 24-bit little-endian",
-            "PCM signed 8-bit",
+            "PCM unsigned 8-bit",
             "PCM unsigned 16-bit big-endian",
             "PCM unsigned 16-bit little-endian",
             "PCM unsigned 24-bit big-endian",
             "PCM unsigned 24-bit little-endian",
-            "PCM unsigned 8-bit",
             # Video
             "DV (Digital Video)",
             "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
@@ -152,16 +152,16 @@ class FFMpegSimpleMeta(BaseMeta):
             # Audio
             "AAC (Advanced Audio Coding)",
             "MP3 (MPEG audio layer 3)",
+            "PCM signed 8-bit",
             "PCM signed 16-bit big-endian",
             "PCM signed 16-bit little-endian",
             "PCM signed 24-bit big-endian",
             "PCM signed 24-bit little-endian",
-            "PCM signed 8-bit",
+            "PCM unsigned 8-bit",
             "PCM unsigned 16-bit big-endian",
             "PCM unsigned 16-bit little-endian",
             "PCM unsigned 24-bit big-endian",
             "PCM unsigned 24-bit little-endian",
-            "PCM unsigned 8-bit",
             # Video
             "DV (Digital Video)",
             "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
