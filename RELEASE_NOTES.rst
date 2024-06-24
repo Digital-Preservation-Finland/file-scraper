@@ -5,6 +5,7 @@ Unreleased
 ----------
 
 - Fix crash due to incorrectly detecting a ZIP file and attempting to parse it
+- Process certain text based Windows configuration files, identified by Magic, as plain text
 
 Version 0.7.2
 -------------
