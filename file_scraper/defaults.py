@@ -22,42 +22,42 @@ PRIORITY_PRONOM = [
 
 # Dict between detectors' results and known mimetypes.
 MIMETYPE_DICT = {
-    "application/xml": "text/xml",
+    "application/csv": "text/csv",
     "application/mp4": None,
     "application/vnd.ms-asf": "video/x-ms-asf",
     "application/x-wine-extension-ini": "text/plain",
-    "video/x-msvideo": "video/avi",
-    "video/x-dv": "video/dv",
-    "audio/x-ms-wma": "video/x-ms-asf",
-    "video/x-ms-wmv": "video/x-ms-asf",
+    "application/xml": "text/xml",
     "audio/x-m4a": "audio/mp4",
-    "application/csv": "text/csv",
+    "audio/x-ms-wma": "video/x-ms-asf",
+    "video/x-dv": "video/dv",
+    "video/x-ms-wmv": "video/x-ms-asf",
+    "video/x-msvideo": "video/avi",
 }
 
 # Dict between detectors' results and known file format versions.
 VERSION_DICT = {
-    "text/html": {"5": "5.0"},
     "application/pdf": {"1a": "A-1a", "1b": "A-1b",
                         "2a": "A-2a", "2b": "A-2b", "2u": "A-2u",
                         "3a": "A-3a", "3b": "A-3b", "3u": "A-3u"},
     "audio/x-wav": {"2 Generic": "2"},
+    "text/html": {"5": "5.0"},
 }
 
 # Dict between detectors' pronom results and known mimetypes and versions.
 # fmt/289 might be need to change to fmt/1355 when supported by FIDO.
 PRONOM_DICT = {
-    "x-fmt/135": ("audio/x-aiff", "1.3"),
-    "fmt/541": ("image/x-dpx", "2.0"),
-    "fmt/289": ("application/warc", None),  # does not result version
+    "fmt/5": ("video/avi", ""),
     "fmt/244": ("application/vnd.google-earth.kml+xml", "2.3"),
-    "fmt/997": ("application/x-spss-por", ""),
-    "fmt/649": ("video/mpeg", "1"),
+    "fmt/289": ("application/warc", None),  # does not result version
+    "fmt/541": ("image/x-dpx", "2.0"),
+    "fmt/569": ("video/x-matroska", "4"),
+    "fmt/585": ("video/MP2T", ""),
     "fmt/640": ("video/mpeg", "2"),
+    "fmt/649": ("video/mpeg", "1"),
+    "fmt/997": ("application/x-spss-por", ""),
+    "x-fmt/135": ("audio/x-aiff", "1.3"),
     "x-fmt/385": ("video/MP1S", ""),
     "x-fmt/386": ("video/MP2P", ""),
-    "fmt/585": ("video/MP2T", ""),
-    "fmt/5": ("video/avi", ""),
-    "fmt/569": ("video/x-matroska", "4")
 }
 
 # (:unap) = Not applicable, makes no sense

@@ -26,16 +26,16 @@ def test_mimetype_dict(monkeypatch):
     Test mapped mimetypes by mocking file_scraper.detectors.magic_analyze
     """
     TEST_MIMETYPE_DICT = {
-        "application/xml": "text/xml",
+        "application/csv": "text/csv",
         "application/mp4": None,
         "application/vnd.ms-asf": "video/x-ms-asf",
         "application/x-wine-extension-ini": "text/plain",
-        "video/x-msvideo": "video/avi",
-        "video/x-dv": "video/dv",
-        "audio/x-ms-wma": "video/x-ms-asf",
-        "video/x-ms-wmv": "video/x-ms-asf",
+        "application/xml": "text/xml",
         "audio/x-m4a": "audio/mp4",
-        "application/csv": "text/csv",
+        "audio/x-ms-wma": "video/x-ms-asf",
+        "video/x-dv": "video/dv",
+        "video/x-ms-wmv": "video/x-ms-asf",
+        "video/x-msvideo": "video/avi",
     }
     for key, value in TEST_MIMETYPE_DICT.items():
         def mock_analyze(magic_lib, magic_type, path):
