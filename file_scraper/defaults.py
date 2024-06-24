@@ -31,6 +31,7 @@ MIMETYPE_DICT = {
     "audio/x-ms-wma": "video/x-ms-asf",
     "video/x-ms-wmv": "video/x-ms-asf",
     "audio/x-m4a": "audio/mp4",
+    "application/csv": "text/csv",
 }
 
 # Dict between detectors' results and known file format versions.
