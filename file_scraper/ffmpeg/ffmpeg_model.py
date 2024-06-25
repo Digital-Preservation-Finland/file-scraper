@@ -46,6 +46,19 @@ class FFMpegSimpleMeta(BaseMeta):
     _allow_versions = True   # Allow any version
 
     _supported_formats = {
+        "Audio IFF": [
+            # Audio
+            "PCM signed 8-bit",
+            "PCM signed 16-bit big-endian",
+            "PCM signed 16-bit little-endian",
+            "PCM signed 24-bit big-endian",
+            "PCM signed 24-bit little-endian",
+            "PCM unsigned 8-bit",
+            "PCM unsigned 16-bit big-endian",
+            "PCM unsigned 16-bit little-endian",
+            "PCM unsigned 24-bit big-endian",
+            "PCM unsigned 24-bit little-endian",
+        ],
         "ASF (Advanced / Active Streaming Format)": [
             # Audio
             "Windows Media Audio 9 Professional",
@@ -105,6 +118,10 @@ class FFMpegSimpleMeta(BaseMeta):
             # Video
             "FFmpeg video codec #1",
             "H.265 / HEVC (High Efficiency Video Coding)"
+        ],
+        "MP2/3 (MPEG audio layer 2/3)": [
+            # Audio
+            "MP3 (MPEG audio layer 3)"
         ],
         "MPEG-PS (MPEG-2 Program Stream)": [
             # Audio
@@ -170,8 +187,25 @@ class FFMpegSimpleMeta(BaseMeta):
             "MPEG-1 video",
             "MPEG-2 video",
             "raw MPEG video"
+        ],
+        "raw MPEG video": [
+            # Video
+            "MPEG-1 video",
+            "MPEG-2 video"
+        ],
+        "WAV / WAVE (Waveform Audio)": [
+            # Audio
+            "PCM signed 8-bit",
+            "PCM signed 16-bit big-endian",
+            "PCM signed 16-bit little-endian",
+            "PCM signed 24-bit big-endian",
+            "PCM signed 24-bit little-endian",
+            "PCM unsigned 8-bit",
+            "PCM unsigned 16-bit big-endian",
+            "PCM unsigned 16-bit little-endian",
+            "PCM unsigned 24-bit big-endian",
+            "PCM unsigned 24-bit little-endian",
         ]
-
     }
 
     def __init__(self, probe_results, index):
@@ -210,6 +244,11 @@ class FFMpegSimpleMeta(BaseMeta):
             if self._ffmpeg_stream["codec_type"] not in ["video", "audio"]:
                 return None
 
+        if "format_long_name" in self._ffmpeg_stream:
+            if (self._ffmpeg_stream["format_long_name"] not in
+                    self._supported_formats):
+                return False
+
         if "codec_long_name" in self._ffmpeg_stream:
             supported = any(self._ffmpeg_stream["codec_long_name"] in
                             val for val in self._supported_formats.values())
@@ -243,9 +282,7 @@ class FFMpegSimpleMeta(BaseMeta):
         """
         format_name = self._probe_results["format"]["format_long_name"]
 
-        is_container = (
-            format_name in self._supported_formats and
-            "codec_type" not in self._probe_results["format"])
+        is_container = "codec_type" not in self._probe_results["format"]
 
         if is_container and format_name == "DV (Digital Video)":
             is_container = len(self._probe_results["streams"]) > 1

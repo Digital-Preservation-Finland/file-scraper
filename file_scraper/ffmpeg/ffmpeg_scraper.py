@@ -115,6 +115,12 @@ class FFMpegMetaScraper(BaseScraper):
                 for stream in self.streams:
                     if stream.hascontainer():
                         container = True
+            if probe_results["format"].get("format_long_name", UNAV) in [
+                                "Audio IFF",
+                                "MP2/3 (MPEG audio layer 2/3)",
+                                "raw MPEG video",
+                                "WAV / WAVE (Waveform Audio)"]:
+                self.streams = self.streams[:1]
 
         except ffmpeg.Error as err:
             self._errors.append("Error in analyzing file with FFProbe.")
