@@ -83,8 +83,7 @@ class FFMpegSimpleMeta(BaseMeta):
             # Video
             "DV (Digital Video)",
             "MPEG-1 video",
-            "MPEG-2 video",
-            "raw MPEG video"
+            "MPEG-2 video"
         ],
         "DV (Digital Video)": [
             # Audio
@@ -128,8 +127,7 @@ class FFMpegSimpleMeta(BaseMeta):
             "MP3 (MPEG audio layer 3)",
             # Video
             "MPEG-1 video",
-            "MPEG-2 video",
-            "raw MPEG video"
+            "MPEG-2 video"
         ],
         "MPEG-TS (MPEG-2 Transport Stream)": [
             # Audio
@@ -140,8 +138,7 @@ class FFMpegSimpleMeta(BaseMeta):
             "H.265 / HEVC (High Efficiency Video Coding)",
             "MPEG-1 video",
             "MPEG-2 video",
-            "raw H.264 video",
-            "raw MPEG video"
+            "raw H.264 video"
         ],
         "MXF (Material eXchange Format)": [
             # Audio
@@ -163,8 +160,9 @@ class FFMpegSimpleMeta(BaseMeta):
             "JPEG 2000",
             "MPEG-1 video",
             "MPEG-2 video",
-            "raw MPEG video"
+            "raw H.264 video"
         ],
+        # video/quicktime and video/mp4
         "QuickTime / MOV": [
             # Audio
             "AAC (Advanced Audio Coding)",
@@ -186,7 +184,7 @@ class FFMpegSimpleMeta(BaseMeta):
             "JPEG 2000",
             "MPEG-1 video",
             "MPEG-2 video",
-            "raw MPEG video"
+            "raw H.264 video"
         ],
         "raw MPEG video": [
             # Video
