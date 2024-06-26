@@ -1,11 +1,13 @@
 Release notes
 =============
 
-Unreleased
-----------
+Version 0.7.3
+-------------
 
+- Identify some CSV files as text/csv instead of application/csv
 - Fix crash due to incorrectly detecting a ZIP file and attempting to parse it
 - Process certain text based Windows configuration files, identified by Magic, as plain text
+- Support newer version of ImageMagick than v6.9.12.88
 
 Version 0.7.2
 -------------
