@@ -53,6 +53,8 @@ This module tests that:
     - Scraping is done also when well-formedness is not checked.
     - For containers that have unacceptable av streams, the scraper returns
       None for well-formedness.
+    - For unsupported formats, scraper doesn't return  True for
+      well-formedness.
 """
 import os
 
@@ -683,10 +685,9 @@ def test_is_supported(mimetype, version):
     "filename",
     [
         # Unsupported stream in unsupported container
-        "tests/data/application_vnd.rn-realmedia/valid__ac3.ra",
-        # Supported stream in unsupported container. This file is
-        # detected as well formed although it should not?
-        "tests/data/application_vnd.rn-realmedia/valid__aac.ra"
+        "tests/data/application_vnd.rn-realmedia/invalid__ac3.ra",
+        # Supported stream in unsupported container
+        "tests/data/application_vnd.rn-realmedia/invalid__aac.ra"
     ]
 )
 def test_unsupported_format(filename):
@@ -695,5 +696,9 @@ def test_unsupported_format(filename):
     # Scraper will refuse to scrape.
     scraper = FFMpegScraper(filename=filename, mimetype="audio/mp4")
     scraper.scrape_file()
+
+    # Ensure that file was validated to avoid false positive
+    assert 'The file was analyzed successfully with FFMpeg.' \
+        in scraper.messages()
 
     assert not scraper.well_formed
