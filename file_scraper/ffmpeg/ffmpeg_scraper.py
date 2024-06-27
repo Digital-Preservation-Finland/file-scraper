@@ -115,6 +115,12 @@ class FFMpegMetaScraper(BaseScraper):
                 for stream in self.streams:
                     if stream.hascontainer():
                         container = True
+
+            # Some audio and video files need a bit of a special treatment.
+            # They only have one stream, but because ffmpeg reports the format
+            # and the stream's codec separately, file-scraper would print two
+            # streams (one with the real info and one empty) for them without
+            # this check.
             if probe_results["format"].get("format_long_name", UNAV) in [
                                 "Audio IFF",
                                 "MP2/3 (MPEG audio layer 2/3)",
