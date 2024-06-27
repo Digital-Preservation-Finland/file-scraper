@@ -630,6 +630,10 @@ def test_ffmpeg_scraper_wellformed_none(filepath, mimetype):
     scraper = FFMpegScraper(filename=filepath, mimetype=mimetype)
     scraper.scrape_file()
 
+    # Ensure that file was validated to avoid false positive
+    assert 'The file was analyzed successfully with FFMpeg.' \
+        in scraper.messages()
+
     assert scraper.well_formed is None
 
 
