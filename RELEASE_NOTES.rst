@@ -5,6 +5,7 @@ Unreleased
 ----------
 
 - Check that av streams inside containers are supported with the specific container.
+- Improve processing for very large XML files
 
 Version 0.73
 -------------
