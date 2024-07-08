@@ -1,0 +1,11 @@
+
+module file_scraper_custom_policy 1.0;
+
+require {
+	type init_t;
+	type initrc_t;
+	class process siginh;
+}
+
+#============= init_t ==============
+allow init_t initrc_t:process siginh;
