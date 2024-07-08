@@ -40,7 +40,7 @@ UNAV_ELEMENTS = {
     "tests/data/image_jp2/valid__many_qcc_blocks.jp2": ["icc_profile_name"],
     "tests/data/image_jpeg/valid_1.01.jpg": ["icc_profile_name"],
     "tests/data/image_jpeg/valid_2.2.1_exif_metadata.jpg":
-    ["icc_profile_name"],
+        ["icc_profile_name"],
     "tests/data/image_jpeg/valid_2.2.1_exif_no_jfif.jpg": ["icc_profile_name"],
     "tests/data/image_png/valid_1.2.png": ["icc_profile_name"],
     "tests/data/image_png/valid_1.2_LA.png": ["icc_profile_name"],
@@ -285,7 +285,8 @@ ACCEPTABLE_FILES = [
     "tests/data/application_pdf/valid_1.7.pdf",
     "tests/data/application_pdf/valid_1.2.pdf",
     "tests/data/application_pdf/valid_1.4.pdf",
-    "tests/data/application_vnd.openxmlformats-officedocument."
+    "tests/data/application_pdf/valid_1.4_do_not_crash_on_invalid_charactcers.pdf",
+    "tests/data/application_vnd.openxmlformats-officedocument.",
     "presentationml.presentation/valid_2007 onwards.pptx",
     "tests/data/application_vnd.ms-powerpoint/valid_97-2003.ppt",
     "tests/data/application_vnd.ms-excel/valid_8X.xls",
@@ -450,7 +451,7 @@ def test_invalid_combined(fullname, mimetype, version):
 
     assert not scraper.well_formed  # Should return either False or None
     assert scraper.mimetype == mimetype or (
-        fullname in UNAV_MIMETYPE_INVALID and scraper.mimetype == UNAV)
+            fullname in UNAV_MIMETYPE_INVALID and scraper.mimetype == UNAV)
 
 
 @pytest.mark.parametrize(("fullname", "mimetype", "version"),
@@ -480,7 +481,7 @@ def test_without_wellformed(fullname, mimetype, version):
     mimepart = mimetype.split("/")[0]
     if mimepart in ["image", "video", "text", "audio"]:
         assert (mimepart in scraper.streams[0]["stream_type"] or
-            "videocontainer" in scraper.streams[0]["stream_type"])
+                "videocontainer" in scraper.streams[0]["stream_type"])
 
     elem_dict = {"image": "colorspace", "video": "color",
                  "videocontainer": "codec_name",
