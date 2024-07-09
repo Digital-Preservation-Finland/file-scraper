@@ -7,7 +7,6 @@ Unreleased
 - Check that av streams inside containers are supported with the specific container.
 - Improve processing for very large XML files
 - Update Epub version support from 3.2 to 3.3
-- Add test case for invalid characters in PDF
 
 Version 0.73
 -------------

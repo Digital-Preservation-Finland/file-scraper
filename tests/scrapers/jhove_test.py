@@ -835,8 +835,8 @@ def test_charset(filename, mimetype, charset, well_formed):
         ("invalid_3.3_libreoffice.epub", {
             "purpose": "Test invalid epub made by LibreOffice export.",
             "stdout_part": "",
-            "stderr_part": "The \"head\" element should have a \"title\" child "
-                           "element"}),
+            "stderr_part": "The \"head\" element should have a \"title\" "
+                           "child element"}),
         ("invalid_2.0.1_libreoffice.epub", {
             "purpose": "Test invalid epub made by LibreOffice export.",
             "stdout_part": "",
