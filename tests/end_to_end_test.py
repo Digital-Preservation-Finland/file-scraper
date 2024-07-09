@@ -285,7 +285,7 @@ ACCEPTABLE_FILES = [
     "tests/data/application_pdf/valid_1.7.pdf",
     "tests/data/application_pdf/valid_1.2.pdf",
     "tests/data/application_pdf/valid_1.4.pdf",
-    "tests/data/application_pdf/valid_1.4_do_not_crash_on_invalid_charactcers.pdf",
+    "tests/data/application_pdf/valid_1.4_0xFFFF_character.pdf",
     "tests/data/application_vnd.openxmlformats-officedocument."
     "presentationml.presentation/valid_2007 onwards.pptx",
     "tests/data/application_vnd.ms-powerpoint/valid_97-2003.ppt",
