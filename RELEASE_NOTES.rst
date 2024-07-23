@@ -1,7 +1,7 @@
 Release notes
 =============
 
-Unreleased
+Version 0.74
 ----------
 
 - Check that av streams inside containers are supported with the specific container.

@@ -1,2 +1,2 @@
 """file-scraper module."""
-__version__ = '0.73'
+__version__ = '0.74'
