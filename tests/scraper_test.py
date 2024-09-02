@@ -222,3 +222,31 @@ def test_undecodable_filename(tmpdir):
     assert scraper.checksum() == 'acbd18db4cc2f85cedef654fccc4a4d8'
     # File can not be graded because it can not be detected
     assert scraper.grade() == '(:unav)'
+
+
+def test_illegal_characters(monkeypatch):
+    """Test that `utils.filter_illegal_chars` replaces
+    illegal characters in `scraper.info` with an empty string"""
+
+    # TODO: pylint: C0415: Import outside toplevel (file_scraper.textfile.textfile_scraper.TextfileScraper) (import-outside-toplevel)
+    from file_scraper.textfile.textfile_scraper import TextfileScraper
+
+    # TODO: pylint: "W0212: Access to a protected members _messages and _errors of a client class (protected-access)"
+    # is it ok to disable that?
+    def mock_scrape(self):
+        self._messages.append("text\ntext null \x00\n")
+        self._messages.append("short unicode \ufffe")
+        self._errors.append("long unicode \U0005fffe")
+
+    monkeypatch.setattr(TextfileScraper, "scrape_file", mock_scrape)
+
+    scraper = Scraper("tests/data/text_plain/valid__ascii.txt")
+    scraper.scrape()
+
+    tfscraper = None
+    for d in scraper.info.values():
+        if d["class"] == "TextfileScraper":
+            tfscraper = d
+
+    assert tfscraper["messages"] == ["text\ntext null \n", "short unicode "]
+    assert tfscraper["errors"] == ["long unicode "]

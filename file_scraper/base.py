@@ -3,7 +3,8 @@
 import abc
 
 from file_scraper.defaults import UNAP, UNAV
-from file_scraper.utils import metadata, is_metadata, encode_path
+from file_scraper.utils import (metadata, is_metadata, encode_path,
+                                filter_illegal_chars)
 
 # Object inheritance is needed as long as we support Python 2 to explicitly use
 # new-style classes.
@@ -36,14 +37,15 @@ class _BaseScraperDetector:
 
         :returns: copied list containing the logged errors
         """
-        return self._errors[:]
+        return [filter_illegal_chars(error) for error in self._errors if error]
 
     def messages(self):
         """Return logged non-empty messages in a list.
 
         :returns: list containing the logged messages
         """
-        return [message for message in self._messages if message]
+        return [filter_illegal_chars(message) for
+                message in self._messages if message]
 
     def tools(self):
         """Return used software tools in a list.

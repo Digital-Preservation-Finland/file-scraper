@@ -1,6 +1,7 @@
 """Utilities for scrapers."""
 
 import hashlib
+import re
 import string
 import sys
 import unicodedata
@@ -432,3 +433,30 @@ def is_zipfile(filename):
             return False
     else:
         return False
+
+
+def filter_illegal_chars(info_string):
+    """Filter illegal XML unicode characters from provided info_string.
+    They are replaced with ''.
+    Illegal characters are from here: https://www.w3.org/TR/xml11/#charsets"""
+
+    illegal_chars = [(0x00, 0x08), (0x0B, 0x0C), (0x0E, 0x1F),
+                        (0x7F, 0x84), (0x86, 0x9F),
+                        (0xFDD0, 0xFDDF), (0xFFFE, 0xFFFF),
+                        (0x1FFFE, 0x1FFFF), (0x2FFFE, 0x2FFFF),
+                        (0x3FFFE, 0x3FFFF), (0x4FFFE, 0x4FFFF),
+                        (0x5FFFE, 0x5FFFF), (0x6FFFE, 0x6FFFF),
+                        (0x7FFFE, 0x7FFFF), (0x8FFFE, 0x8FFFF),
+                        (0x9FFFE, 0x9FFFF), (0xAFFFE, 0xAFFFF),
+                        (0xBFFFE, 0xBFFFF), (0xCFFFE, 0xCFFFF),
+                        (0xDFFFE, 0xDFFFF), (0xEFFFE, 0xEFFFF),
+                        (0xFFFFE, 0xFFFFF), (0x10FFFE, 0x10FFFF)]
+
+    illegal_ranges = [
+        fr'{chr(low)}-{chr(high)}' for (low, high) in illegal_chars
+        ]
+    illegal_chars_regex_string = '[' + ''.join(illegal_ranges) + ']'
+    illegal_chars_re_pattern = re.compile(
+        illegal_chars_regex_string)
+
+    return illegal_chars_re_pattern.sub('', info_string)
