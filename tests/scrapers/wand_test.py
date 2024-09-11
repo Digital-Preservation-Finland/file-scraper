@@ -71,12 +71,16 @@ This module tests that:
 import os
 
 import pytest
+import wand
 
 from file_scraper.defaults import UNAV
 from file_scraper.wand.wand_model import (WandImageMeta, WandTiffMeta,
                                           WandDngMeta, WandExifMeta)
 from file_scraper.wand.wand_scraper import WandScraper
 from tests.common import (parse_results, partial_message_included)
+
+# CentOS 7 uses older version of ImageMagick than RHEL 9
+RHEL9 = wand.version.MAGICK_VERSION_INFO > (6, 9, 12, 93)
 
 STREAM_VALID = {
     "bps_unit": UNAV,
@@ -163,8 +167,8 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
                              "bps_unit": UNAV,
                              "bps_value": "16",
                              "colorspace": "rgb",
-                             "height": "866",
-                             "width": "1154",
+                             "height": "866" if RHEL9 else "1154",
+                             "width": "1154" if RHEL9 else "866",
                              "samples_per_pixel": UNAV}},
                 "stdout_part": "successfully",
                 "stderr_part": ""
@@ -414,10 +418,9 @@ def test_scraper_invalid(filename, mimetype, stderr_part):
     
     # TODO: delete this check if it's not needed:
     if filename in ["invalid_1.2_no_IEND.png", "invalid_1.2_no_IHDR.png"]:
-      import wand
       # CentOS 7 uses older version of ImageMagick than RHEL 9
       # and it gives a different error message
-      if wand.version.MAGICK_VERSION_INFO < (6, 9, 12, 93):
+      if not RHEL9:
            stderr_part = "MagickReadImage returns false, but did not raise ImageMagick  exception."
     
     scraper = WandScraper(
