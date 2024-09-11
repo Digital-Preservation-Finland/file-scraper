@@ -163,8 +163,8 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
                              "bps_unit": UNAV,
                              "bps_value": "16",
                              "colorspace": "rgb",
-                             "height": "1154",
-                             "width": "866",
+                             "height": "866",
+                             "width": "1154",
                              "samples_per_pixel": UNAV}},
                 "stdout_part": "successfully",
                 "stderr_part": ""
