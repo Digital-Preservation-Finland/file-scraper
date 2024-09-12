@@ -3,7 +3,7 @@ import re
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import MIMETYPE_DICT, UNAP, UNAV
-from file_scraper.utils import metadata
+from file_scraper.utils import metadata, normalize_charset
 
 
 class BaseMagicMeta(BaseMeta):
@@ -72,18 +72,7 @@ class TextMagicBaseMeta(BaseMagicMeta):
     def charset(self):
         """Return charset."""
         magic_charset = self._magic_result['magic_mime_encoding']
-
-        if magic_charset is None or magic_charset.upper() == "BINARY":
-            return UNAV
-        if magic_charset.upper() == "US-ASCII":
-            return "UTF-8"
-        if magic_charset.upper() == "ISO-8859-1":
-            return "ISO-8859-15"
-        if magic_charset.upper() == "UTF-16LE" \
-                or magic_charset.upper() == "UTF-16BE":
-            return "UTF-16"
-
-        return magic_charset.upper()
+        return normalize_charset(magic_charset)
 
     # pylint: disable=no-self-use
     @metadata()

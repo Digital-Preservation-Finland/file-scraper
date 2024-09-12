@@ -95,6 +95,28 @@ def sanitize_string(dirty_string):
     return sanitized_string
 
 
+def normalize_charset(charset):
+    """
+    Normalize charset to its most common and supported form.
+
+    For example, 'US-ASCII' is converted to 'UTF-8' as it is backwards
+    compatible and 'UTF-8' is more commonly recognized than 'US-ASCII'.
+    :param charset: Charset
+    :returns: Normalized charset in upper-case
+    """
+    if charset is None or charset.upper() == "BINARY":
+        return UNAV
+    if charset.upper() == "US-ASCII":
+        return "UTF-8"
+    if charset.upper() == "ISO-8859-1":
+        return "ISO-8859-15"
+    if charset.upper() == "UTF-16LE" \
+            or charset.upper() == "UTF-16BE":
+        return "UTF-16"
+
+    return charset.upper()
+
+
 def iso8601_duration(time):
     """Convert seconds into ISO 8601 duration.
 

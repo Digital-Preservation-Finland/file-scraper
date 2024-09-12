@@ -102,17 +102,17 @@ requirements:
           character (c3) in a file
 """
 
-from itertools import chain
-import pytest
 import zipfile
+from itertools import chain
+
+import pytest
 
 from file_scraper.scraper import LOSE
-from file_scraper.utils import (_fill_importants,
-                                _merge_to_stream, concat,
-                                generate_metadata_dict, hexdigest,
-                                iso8601_duration, metadata,
-                                sanitize_string, strip_zeros,
-                                iter_utf_bytes, is_zipfile)
+from file_scraper.utils import (_fill_importants, _merge_to_stream, concat,
+                                generate_metadata_dict, hexdigest, is_zipfile,
+                                iso8601_duration, iter_utf_bytes, metadata,
+                                normalize_charset, sanitize_string,
+                                strip_zeros)
 
 
 @pytest.mark.parametrize(
@@ -162,6 +162,25 @@ def test_sanitize_string(original_string, sanitized_string):
     :sanitized_string: Sanitized string
     """
     assert sanitize_string(original_string) == sanitized_string
+
+
+@pytest.mark.parametrize(
+    ["charset", "norm_charset"],
+    [
+        ("utf-8", "UTF-8"),         # Converted to upper-case
+        ("US-ASCII", "UTF-8"),      # UTF-8 backwards compatible w/ ASCII
+        ("ISO-8859-1", "ISO-8859-15"),  # Identical except for 8 characters
+
+        ("UTF-16LE", "UTF-16"),  # Endianness is ignored
+        ("UTF-16BE", "UTF-16")
+    ]
+)
+def test_normalize_charset(charset, norm_charset):
+    """
+    Test that 'normalize_charset' converts a charset name to its most common
+    and supported form
+    """
+    assert normalize_charset(charset) == norm_charset
 
 
 @pytest.mark.parametrize(

@@ -12,7 +12,7 @@ from fido.pronomutils import get_local_pronom_versions
 from file_scraper.base import BaseDetector
 from file_scraper.defaults import (MIMETYPE_DICT, PRIORITY_PRONOM, PRONOM_DICT,
                                    VERSION_DICT, UNKN)
-from file_scraper.utils import decode_path, is_zipfile
+from file_scraper.utils import decode_path, is_zipfile, normalize_charset
 from file_scraper.magiclib import magiclib, magic_analyze
 
 MAGIC_LIB = magiclib()
@@ -298,15 +298,8 @@ class MagicCharset(BaseDetector):
 
         if charset is None or charset.upper() == "BINARY":
             self._errors.append("Unable to detect character encoding.")
-        elif charset.upper() == "US-ASCII":
-            self.charset = "UTF-8"
-        elif charset.upper() == "ISO-8859-1":
-            self.charset = "ISO-8859-15"
-        elif charset.upper() == "UTF-16LE" or \
-                charset.upper() == "UTF-16BE":
-            self.charset = "UTF-16"
         else:
-            self.charset = charset.upper()
+            self.charset = normalize_charset(charset)
         if not self._errors:
             self._messages.append(
                 f"Character encoding detected as {self.charset}"
