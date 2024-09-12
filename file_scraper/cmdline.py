@@ -21,6 +21,7 @@ def cli():
     allow_extra_args=True,
 ))
 @click.argument("filename", type=click.Path(exists=True))
+@click.argument("scraper_args", nargs=-1, type=click.UNPROCESSED)
 @click.option("--skip-wellformed-check", "check_wellformed",
               default=True, flag_value=False,
               help="Don't check the file well-formedness, only scrape "
@@ -33,13 +34,15 @@ def cli():
 @click.option("--version", default=None,
               help="Specify version for the filetype")
 @click.pass_context
-def scrape_file(ctx, filename, check_wellformed, tool_info, mimetype, version):
+def scrape_file(
+        ctx, filename, scraper_args, check_wellformed, tool_info, mimetype,
+        version):
     """
     Identify file type, collect metadata, and optionally check well-formedness.
 
     In addition to the given options, the user can provide any extra options
-    that are passed onto the scraper. These options must be in the long form,
-    e.g. "--charset=UTF-8" or "--charset UTF-8".
+    after FILENAME that are passed onto the scraper. These options must be
+    in the long form, e.g. "--charset=UTF-8" or "--charset UTF-8".
     \f
 
     :ctx: Context object
@@ -51,7 +54,7 @@ def scrape_file(ctx, filename, check_wellformed, tool_info, mimetype, version):
     :version: Specified version for the scraped file
     """
     scraper = Scraper(filename, mimetype=mimetype, version=version,
-                      **_extra_options_to_dict(ctx.args))
+                      **_extra_options_to_dict(scraper_args))
     scraper.scrape(check_wellformed=check_wellformed)
 
     results = {
