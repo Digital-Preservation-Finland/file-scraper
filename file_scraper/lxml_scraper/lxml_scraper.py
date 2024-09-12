@@ -7,6 +7,7 @@ except ImportError:
 
 from file_scraper.base import BaseScraper
 from file_scraper.lxml_scraper.lxml_model import LxmlMeta
+from file_scraper.utils import normalize_charset
 
 
 class LxmlScraper(BaseScraper):
@@ -65,9 +66,21 @@ class LxmlScraper(BaseScraper):
             if not self._params.get("charset", None):
                 self._errors.append("Character encoding not defined.")
                 return
+
+            provided_encoding = self._params["charset"].upper()
             encoding = self.streams[0].charset()
-            if encoding is not None and \
-                    encoding.upper() != self._params["charset"]:
+            if encoding:
+                encoding = encoding.upper()
+            norm_encoding = normalize_charset(encoding)
+
+            # If encoding was provided in the XML header, ensure
+            # that it matches the encoding provided to the scraper beforehand
+            # in either the original or normalized form
+            encoding_matches = (
+                encoding is None
+                or provided_encoding in (encoding, norm_encoding)
+            )
+            if not encoding_matches:
                 self._errors.append(
                     "Found encoding declaration %s from the file %s, but %s "
                     "was expected." % (encoding, self.filename,

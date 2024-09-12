@@ -24,28 +24,36 @@ from tests.common import partial_message_included
 
 
 @pytest.mark.parametrize(
-    "file_encoding",
+    "encoding,py_codec,norm_encoding",
     [
-        "latin_1", "utf_8", "utf_16"
+        # Converted to upper-case
+        ("utf-8", "utf-8", "UTF-8"),
+
+        # UTF-8 is backwards compatible with US-ASCII
+        ("US-ASCII", "ascii", "UTF-8"),
+
+        # Identical except for 8 characters
+        ("ISO-8859-1", "latin-1", "ISO-8859-15"),
+
+        # Big/little-endianness is ignored
+        ("UTF-16LE", "utf-16le", "UTF-16"),
+        ("UTF-16BE", "utf-16be", "UTF-16")
     ]
 )
-def test_xml_encoding(tmpdir, file_encoding):
+def test_xml_encoding_normalized(tmpdir, encoding, py_codec, norm_encoding):
     """
-    Test that encoding check from XML header works.
-
-    :file_encoding: File character encoding
+    Test that supported encodings pass the well-formed checks.
+    Some charsets are also normalized to an equivalent
+    supported encoding during validation.
     """
-    enc_match = {"latin_1": "ISO-8859-15",
-                 "utf_8": "UTF-8",
-                 "utf_16": "UTF-16"}
-    xml = """<?xml version="1.0" encoding="{}" ?>
-              <a>åäö</a>""".format(enc_match[file_encoding])
-    tmppath = os.path.join(tmpdir, "valid__.csv")
+    xml = f"""<?xml version="1.0" encoding="{encoding}" ?>
+              <a>test</a>"""
+    tmppath = os.path.join(tmpdir, "test.csv")
     with open(tmppath, "wb") as file_:
-        file_.write(xml.encode(file_encoding))
+        file_.write(xml.encode(py_codec))
 
     scraper = LxmlScraper(filename=tmppath, mimetype="text/xml",
-                          params={"charset": enc_match[file_encoding]})
+                          params={"charset": norm_encoding})
     scraper.scrape_file()
     assert scraper.well_formed
 
