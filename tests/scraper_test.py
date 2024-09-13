@@ -229,9 +229,9 @@ def test_undecodable_filename(tmpdir):
     assert scraper.grade() == '(:unav)'
 
 
-def test_illegal_characters(monkeypatch):
-    """Test that `utils.filter_illegal_chars` replaces
-    illegal characters in `scraper.info` with an empty string"""
+def test_filter_unwanted_characters(monkeypatch):
+    """Test that `utils.filter_unwanted_chars` replaces
+    unwanted characters in `scraper.info` with an empty string"""
 
     # pylint: disable=protected-access
     def mock_scrape(self):

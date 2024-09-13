@@ -435,27 +435,36 @@ def is_zipfile(filename):
         return False
 
 
-def filter_illegal_chars(info_string):
-    """Filter illegal XML unicode characters from provided info_string.
-    They are replaced with ''.
-    Illegal characters are from here: https://www.w3.org/TR/xml11/#charsets"""
+def filter_unwanted_chars(info_string):
+    """Filter out characters that are not compatible with XML 1.1
 
-    illegal_chars = [(0x00, 0x08), (0x0B, 0x0C), (0x0E, 0x1F),
-                     (0x7F, 0x84), (0x86, 0x9F),
-                     (0xFDD0, 0xFDDF), (0xFFFE, 0xFFFF),
-                     (0x1FFFE, 0x1FFFF), (0x2FFFE, 0x2FFFF),
-                     (0x3FFFE, 0x3FFFF), (0x4FFFE, 0x4FFFF),
-                     (0x5FFFE, 0x5FFFF), (0x6FFFE, 0x6FFFF),
-                     (0x7FFFE, 0x7FFFF), (0x8FFFE, 0x8FFFF),
-                     (0x9FFFE, 0x9FFFF), (0xAFFFE, 0xAFFFF),
-                     (0xBFFFE, 0xBFFFF), (0xCFFFE, 0xCFFFF),
-                     (0xDFFFE, 0xDFFFF), (0xEFFFE, 0xEFFFF),
-                     (0xFFFFE, 0xFFFFF), (0x10FFFE, 0x10FFFF)]
+    Sometimes scraper output contains control characters from the scraping
+    tools we use, and we want to get rid of these characters so that scraper
+    output is compatible with XML.
 
-    illegal_ranges = [fr'{chr(low)}-{chr(high)}' for (low, high) in
-                      illegal_chars]
-    illegal_chars_regex_string = '[' + ''.join(illegal_ranges) + ']'
-    illegal_chars_re_pattern = re.compile(
-        illegal_chars_regex_string)
+    Restricted characters in XML 1.1 are listed here:
+    https://www.w3.org/TR/xml11/#charsets
 
-    return illegal_chars_re_pattern.sub('', info_string)
+    :info_string: String to run filtering on
+    :returns: Filtered string
+    """
+
+    unwanted_chars = [(0x00, 0x08), (0x0B, 0x0C), (0x0E, 0x1F),
+                      (0x7F, 0x84), (0x86, 0x9F),
+                      (0xFDD0, 0xFDDF), (0xFFFE, 0xFFFF),
+                      (0x1FFFE, 0x1FFFF), (0x2FFFE, 0x2FFFF),
+                      (0x3FFFE, 0x3FFFF), (0x4FFFE, 0x4FFFF),
+                      (0x5FFFE, 0x5FFFF), (0x6FFFE, 0x6FFFF),
+                      (0x7FFFE, 0x7FFFF), (0x8FFFE, 0x8FFFF),
+                      (0x9FFFE, 0x9FFFF), (0xAFFFE, 0xAFFFF),
+                      (0xBFFFE, 0xBFFFF), (0xCFFFE, 0xCFFFF),
+                      (0xDFFFE, 0xDFFFF), (0xEFFFE, 0xEFFFF),
+                      (0xFFFFE, 0xFFFFF), (0x10FFFE, 0x10FFFF)]
+
+    unwanted_ranges = [fr'{chr(low)}-{chr(high)}' for (low, high) in
+                       unwanted_chars]
+    unwanted_chars_regex_string = '[' + ''.join(unwanted_ranges) + ']'
+    unwanted_chars_re_pattern = re.compile(
+        unwanted_chars_regex_string)
+
+    return unwanted_chars_re_pattern.sub('', info_string)
