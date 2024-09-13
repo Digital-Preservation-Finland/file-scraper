@@ -1,8 +1,13 @@
 Release notes
 =============
 
+Version 0.75
+------------
+
+- Filter out XML-incompatible characters from scraper output.
+
 Version 0.74
-----------
+------------
 
 - Check that av streams inside containers are supported with the specific container.
 - Improve processing for very large XML files
