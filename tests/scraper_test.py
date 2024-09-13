@@ -17,6 +17,10 @@ This module tests that:
       file type if provided.
     - Character encoding detection works and respects the predefined file type
       if provided.
+    - Grading works so that the correct digital preservation grade is returned.
+    - Scraper works with undecodable filenames.
+    - If a scraper has XML-incompatible characters in its messages or errors,
+      they are filtered out correctly.
 """
 import os
 import pytest
