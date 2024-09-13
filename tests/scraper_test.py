@@ -22,6 +22,7 @@ import os
 import pytest
 
 from file_scraper.scraper import Scraper
+from file_scraper.textfile.textfile_scraper import TextfileScraper
 
 
 def test_is_textfile():
@@ -228,11 +229,7 @@ def test_illegal_characters(monkeypatch):
     """Test that `utils.filter_illegal_chars` replaces
     illegal characters in `scraper.info` with an empty string"""
 
-    # TODO: pylint: C0415: Import outside toplevel (file_scraper.textfile.textfile_scraper.TextfileScraper) (import-outside-toplevel)
-    from file_scraper.textfile.textfile_scraper import TextfileScraper
-
-    # TODO: pylint: "W0212: Access to a protected members _messages and _errors of a client class (protected-access)"
-    # is it ok to disable that?
+    # pylint: disable=protected-access
     def mock_scrape(self):
         self._messages.append("text\ntext null \x00\n")
         self._messages.append("short unicode \ufffe")
@@ -244,9 +241,10 @@ def test_illegal_characters(monkeypatch):
     scraper.scrape()
 
     tfscraper = None
-    for d in scraper.info.values():
-        if d["class"] == "TextfileScraper":
-            tfscraper = d
+    for value in scraper.info.values():
+        if value["class"] == "TextfileScraper":
+            tfscraper = value
+            break
 
     assert tfscraper["messages"] == ["text\ntext null \n", "short unicode "]
     assert tfscraper["errors"] == ["long unicode "]
