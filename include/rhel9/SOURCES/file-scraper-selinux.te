@@ -1,5 +1,5 @@
 
-module file_scraper_custom_policy 1.0;
+module file-scraper-selinux 1.0;
 
 require {
 	type init_t;
