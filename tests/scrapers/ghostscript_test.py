@@ -36,11 +36,15 @@ from tests.common import (parse_results, partial_message_included)
             "stderr_part": ""}),
         ("invalid_X_payload_altered.pdf", {
             "purpose": "Test payload altered file.",
-            "stdout_part": "Error: Tf refers to an unknown resource name",
+            # 9.54.0: "Error: Tf refers to an unknown resource name"
+            # 10.03.1: "startxref offset invalid"
+            "stdout_part": "startxref offset invalid",
             "stderr_part": ""}),
         ("invalid_X_removed_xref.pdf", {
             "purpose": "Test xref change.",
-            "stdout_part": "Error:  An error occurred while reading an XREF",
+            # 9.54.0: "Error:  An error occurred while reading an XREF"
+            # 10.03.1: "xref entry not valid format"
+            "stdout_part": "xref entry not valid format",
             "stderr_part": ""}),
     ]
 )

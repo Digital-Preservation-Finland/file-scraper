@@ -7,6 +7,7 @@ Unreleased
 - `LxmlScraper` will now consider XML files with `US-ASCII` encoding declaration valid if `--charset=UTF-8` parameter was used
 - Improve `scraper scrape-file` help text
 - Add `GHOSTSCRIPT_PATH` configuration field to run externally packaged Ghostscript by default
+- RPM package now supports Ghostscript 10.03.1, which fixes some PDF files from being erroneously detected as invalid
 - Fix `verapdf` in `$PATH` always overriding `VERAPDF_PATH` configuration value
 
 Version 0.75

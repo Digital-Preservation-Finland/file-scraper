@@ -61,7 +61,6 @@ Requires:       %{py3_dist dpx-validator}
 Requires:       %{py3_dist warctools}
 Requires:       dpres-xml-schemas
 Requires:       dbptk-developer
-Requires:       ghostscript
 Requires:       jhove
 Requires:       pngcheck
 Requires:       pspp
@@ -72,6 +71,9 @@ Requires:       iso-schematron-xslt1
 # not, add additional libreoffice dependencies here.
 Requires:       libreoffice
 Conflicts:      ffmpeg-free
+
+# Manually packaged Ghostscript with fixes not found in stock RHEL9
+Requires:       ghostscript-10.03
 
 %description -n %{full_sp_name}
 File scraper full: File detector, metadata collector and well-formed checker tools
