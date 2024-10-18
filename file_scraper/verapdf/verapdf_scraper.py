@@ -5,12 +5,13 @@ try:
 except ImportError:
     pass
 
-import distutils.spawn
+import shutil
+
 from file_scraper.base import BaseScraper
-from file_scraper.shell import Shell
 from file_scraper.config import get_value
-from file_scraper.verapdf.verapdf_model import VerapdfMeta
+from file_scraper.shell import Shell
 from file_scraper.utils import encode_path
+from file_scraper.verapdf.verapdf_model import VerapdfMeta
 
 # Exit codes given by veraPDF that we don't want to immediately
 # raise as fatal errors
@@ -36,8 +37,8 @@ class VerapdfScraper(BaseScraper):
         :raises: VeraPDFError
         """
         verapdf_loc = get_value("VERAPDF_PATH")
-        if distutils.spawn.find_executable("verapdf") is not None:
-            verapdf_loc = "verapdf"
+        if not verapdf_loc and shutil.which("verapdf"):
+            verapdf_loc = shutil.which("verapdf")
         # --nonpdfext flag allows also files without the .pdf extension
         cmd = [verapdf_loc, encode_path(self.filename), "--nonpdfext"]
         shell = Shell(cmd)
