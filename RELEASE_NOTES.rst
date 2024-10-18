@@ -6,6 +6,7 @@ Unreleased
 
 - `LxmlScraper` will now consider XML files with `US-ASCII` encoding declaration valid if `--charset=UTF-8` parameter was used
 - Improve `scraper scrape-file` help text
+- Add `GHOSTSCRIPT_PATH` configuration field to run externally packaged Ghostscript by default
 
 Version 0.75
 ------------
