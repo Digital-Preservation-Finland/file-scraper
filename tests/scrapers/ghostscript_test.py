@@ -40,6 +40,10 @@ from tests.common import (parse_results, partial_message_included)
             # 10.03.1: "startxref offset invalid"
             "stdout_part": "startxref offset invalid",
             "stderr_part": ""}),
+        ("invalid_X_invalid_resource_name.pdf", {
+            "purpose": "Test file has reference to unknown resource name.",
+            "stdout_part": "error executing PDF token",
+            "stderr_part": ""}),
         ("invalid_X_removed_xref.pdf", {
             "purpose": "Test xref change.",
             # 9.54.0: "Error:  An error occurred while reading an XREF"
