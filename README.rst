@@ -59,10 +59,10 @@ The following software is required for minimal usage without file format well-fo
 
 Additionally, the following software is required for complete well-formed check. The bolded software are NOT included in the pip installation script. Where the version supplied by the CentOS repositories differs from the one file-scraper uses, the version has been marked after the software name. It is possible that other versions work too, but file-scraper has only been tested using the marked versions.
 
-    * For text and xml files: python-lxml, python-mimeparse, **JHove 1.24.1**, **v.Nu 17.7**, **iso-schematron-xslt1**
-    * For image files: **JHove 1.24.1**, **dpx-validator**, **pngcheck 2.3**
-    * For audio/video files: **JHove 1.24.1** (for WAVE audio files)
-    * For other files: **JHove 1.24.1**, **LibreOffice 7.2**,  **Ghostscript 10.03.1**, **warc-tools >= 4.8.3**, **pspp 1.2.0-2** (patched by dpres), **dbptk-developer >= 2.10.3**
+    * For text and xml files: python-lxml, python-mimeparse, **JHove 1.30.0**, **v.Nu 17.7**, **iso-schematron-xslt1**
+    * For image files: **JHove 1.30.0**, **dpx-validator**, **pngcheck 2.3**
+    * For audio/video files: **JHove 1.30.0** (for WAVE audio files)
+    * For other files: **JHove 1.30.0**, **LibreOffice 7.2**,  **Ghostscript 10.03.1**, **warc-tools >= 4.8.3**, **pspp 1.2.0-2** (patched by dpres), **dbptk-developer >= 2.10.3**
 
 See also:
 
