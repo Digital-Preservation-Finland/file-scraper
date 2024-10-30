@@ -1,8 +1,8 @@
 Release notes
 =============
 
-Unreleased
-----------
+Version 0.76
+------------
 
 - `LxmlScraper` will now consider XML files with `US-ASCII` encoding declaration valid if `--charset=UTF-8` parameter was used
 - Improve `scraper scrape-file` help text
