@@ -15,7 +15,7 @@ DEFAULT_PATHS = {
                  "SCHEMATRON_DIRNAME": "/usr/share/iso_schematron_xslt1",
                  "VERAPDF_PATH": "/usr/share/java/verapdf/verapdf",
                  "VNU_PATH": "/usr/share/java/vnu/vnu.jar",
-                 "SOFFICE_PATH": "/opt/libreoffice7.2/program/soffice",
+                 "SOFFICE_PATH": "/opt/libreoffice24.8/program/soffice",
                  "GHOSTSCRIPT_PATH": "/opt/ghostscript-10.03/bin/gs",
                  }
 

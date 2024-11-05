@@ -45,4 +45,4 @@ def test_get_value_default_values():
     assert schematron_value == "/usr/share/iso_schematron_xslt1"
     assert verapdf_value == "/usr/share/java/verapdf/verapdf"
     assert vnu_value == "/usr/share/java/vnu/vnu.jar"
-    assert soffice_value == "/opt/libreoffice7.2/program/soffice"
+    assert soffice_value == "/opt/libreoffice24.8/program/soffice"

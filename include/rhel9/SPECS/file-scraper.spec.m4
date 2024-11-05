@@ -67,9 +67,7 @@ Requires:       pspp
 Requires:       vnu
 Requires:       xhtml1-dtds
 Requires:       iso-schematron-xslt1
-# It seems this is a metapackage that requires everything we need in EL9. If
-# not, add additional libreoffice dependencies here.
-Requires:       libreoffice
+Requires:       libreoffice24.8-full
 Conflicts:      ffmpeg-free
 
 # Manually packaged Ghostscript with fixes not found in stock RHEL9

@@ -1,6 +1,11 @@
 Release notes
 =============
 
+Unreleased
+----------
+
+- LibreOffice 24.8 is used by default if available to fix false negatives with some MS Office files
+
 Version 0.76
 ------------
 
