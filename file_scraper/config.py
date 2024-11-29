@@ -58,8 +58,10 @@ def config_filecmd_env():
     Get path and environment for file command
     :returns: Path and environment for file command
     """
-    filecmd_path = "/opt/file-5.30/bin/file"
-    _magic_dir = "/opt/file-5.30/lib64/"
+    filecmd_path = "/opt/file-5.45/bin/file"
+    _magic_dir = "/opt/file-5.45/lib64/"
+    # TODO: LD_LIBRARY_PATH is technically unnecessary; our file-5.45 RPM
+    # package sets the correct library path in the binary itself
     if os.path.isfile(filecmd_path) and os.path.isfile(_magic_dir):
         return (filecmd_path, {"LD_LIBRARY_PATH": _magic_dir})
 
@@ -76,7 +78,7 @@ def magic_library_path():
     Get path for magic library
     :returns: Path for magic library
     """
-    magic_file = "/opt/file-5.30/lib64/libmagic.so.1"
+    magic_file = "/opt/file-5.45/lib64/libmagic.so.1"
     if not os.path.isfile(magic_file) and \
             os.path.isfile(magic_file.replace("lib64", "lib")):
         return magic_file.replace("lib64", "lib")

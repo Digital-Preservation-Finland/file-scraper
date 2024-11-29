@@ -1,6 +1,11 @@
 Release notes
 =============
 
+Unreleased
+----------
+
+- Use custom packaged file 5.45 by default to fix improperly identified MS Office document files
+
 Version 0.77
 ------------
 
