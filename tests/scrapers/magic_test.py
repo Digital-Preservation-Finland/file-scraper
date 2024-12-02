@@ -286,6 +286,25 @@ def test_jpeg_exif_character_case():
     assert jpeg_meta.version() == UNAV
 
 
+def test_msoffice_word_detected():
+    """
+    Regression test for TPASPKT-1382. Ensure that MSOffice Word document's type
+    is detected correctly. Older file versions such as 5.39 shipped with RHEL9
+    only report the generic "Microsoft OOXML" instead of "Microsoft Word 2007+"
+    """
+    scraper = MagicBinaryScraper(
+        filename=(
+            "tests/data/application_vnd.openxmlformats-officedocument"
+            ".wordprocessingml.document/valid_2007 onwards_word-dir-third.docx"
+        ),
+        mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    )
+    scraper.scrape_file()
+
+    assert scraper.streams[0].mimetype() \
+        == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+
+
 @pytest.mark.parametrize(
     ["mime", "ver", "scraper_class"],
     [

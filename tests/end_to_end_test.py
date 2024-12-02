@@ -293,6 +293,8 @@ ACCEPTABLE_FILES = [
     "tests/data/application_vnd.openxmlformats-officedocument."
     "wordprocessingml.document/valid_2007 onwards.docx",
     "tests/data/application_vnd.openxmlformats-officedocument."
+    "wordprocessingml.document/valid_2007 onwards_word-dir-third.docx",
+    "tests/data/application_vnd.openxmlformats-officedocument."
     "spreadsheetml.sheet/valid_2007 onwards.xlsx",
     "tests/data/application_msword/valid_97-2003.doc",
     "tests/data/image_gif/valid_1989a.gif",
