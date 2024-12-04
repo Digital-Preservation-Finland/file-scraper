@@ -4,6 +4,8 @@ This scraper does not scrape metadata but instead checks well-formedness
 of SIARD files.
 """
 
+import os
+
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.dbptk.dbptk_model import DbptkMeta
@@ -17,11 +19,14 @@ class DbptkScraper(BaseScraper):
 
     def scrape_file(self):
         """Scrape file using dbptk."""
+        # Set $PATH so that Java 8 is favored if it's installed
+        path = f"/usr/lib/jvm/jre-1.8.0/bin{os.pathsep}{os.environ['PATH']}"
         shell = Shell([
             "dbptk",
             "validate",
             "-if",
-            self.filename])
+            self.filename
+        ], env={"PATH": path})
 
         report = shell.stdout
 

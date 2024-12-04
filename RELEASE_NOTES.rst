@@ -5,6 +5,7 @@ Unreleased
 ----------
 
 - Use custom packaged file 5.45 by default to fix improperly identified MS Office document files
+- Fix dbptk using incompatible Java by default
 
 Version 0.77
 ------------
