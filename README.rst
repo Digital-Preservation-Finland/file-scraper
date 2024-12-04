@@ -52,7 +52,7 @@ Installing this software will install virtualenv virtual environment with the fo
 
 The following software is required for minimal usage without file format well-formed check. Supported versions of the software is mentioned for some packages. The bolded software are NOT included in the pip installation script:
 
-    * For all files: opf-fido 1.4.0 (patched by dpres), file-magic, **file-5.30 or newer**
+    * For all files: opf-fido 1.4.0 (patched by dpres), file-magic, **file-5.45 or newer**
     * Additionally, for image files: Pillow 6.0, python-wand 0.6.1, pyexiftool, **ImageMagick 6.9.10.68**, **ExifTool**, **ufraw**
     * Additionally, for audio/video files: pymediainfo, ffmpeg-python 0.1.16-2 (patched by dpres), **MediaInfo**, **FFMpeg 3.3.6**
     * Additionally, for pdf files: **veraPDF 1.24**
@@ -62,7 +62,7 @@ Additionally, the following software is required for complete well-formed check.
     * For text and xml files: python-lxml, python-mimeparse, **JHove 1.30.0**, **v.Nu 17.7**, **iso-schematron-xslt1**
     * For image files: **JHove 1.30.0**, **dpx-validator**, **pngcheck 2.3**
     * For audio/video files: **JHove 1.30.0** (for WAVE audio files)
-    * For other files: **JHove 1.30.0**, **LibreOffice 7.2**,  **Ghostscript 10.03.1**, **warc-tools >= 4.8.3**, **pspp 1.2.0-2** (patched by dpres), **dbptk-developer >= 2.10.3**
+    * For other files: **JHove 1.30.0**, **LibreOffice 24.8**,  **Ghostscript 10.03.1**, **warc-tools >= 4.8.3**, **pspp 1.2.0-2** (patched by dpres), **dbptk-developer >= 2.10.3**
 
 See also:
 
