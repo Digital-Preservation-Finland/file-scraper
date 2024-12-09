@@ -86,12 +86,8 @@ CHANGE_MAGIC = {
         "application/octet-stream",
     "text_plain/valid__utf16be_multibyte.txt":
         "application/octet-stream",
-    "text_plain/valid__utf32le_bom.txt":
-        ["application/octet-stream", "text/plain"],
     "text_plain/valid__utf32le_without_bom.txt":
         "application/octet-stream",
-    "text_plain/valid__utf32be_bom.txt":
-        ["application/octet-stream", "text/plain"],
     "text_plain/valid__utf32be_without_bom.txt":
         "application/octet-stream",
     "video_MP1S/valid__mpeg1_mp3.mpg": "video/mpeg",
@@ -99,13 +95,10 @@ CHANGE_MAGIC = {
     "video_MP2T/valid__mpeg2_mp3.ts": "application/octet-stream",
     "video_MP2T/valid__h265_aac.ts": "application/octet-stream",
     "application_xhtml+xml/valid_1.0.xhtml": "text/xml",
-    "application_warc/valid_1.0_.warc.gz": ["application/x-gzip",
-                                            "application/gzip"],
+    "application_warc/valid_1.0_.warc.gz": "application/gzip",
     "application_x-spss-por/valid__spss24-dot.por": "text/plain",
     "application_x-spss-por/valid__spss24-dates.por": "text/plain",
-    "text_csv/valid__ascii.csv": ["text/plain", "text/csv"],
     "text_csv/valid__quotechar.csv": "text/plain",
-    "text_csv/valid__ascii_header.csv": ["text/plain", "text/csv"],
     "text_csv/valid__header_only.csv": "text/plain",
     "text_xml/valid_1.0_mets_noheader.xml": "text/plain",
     "application_gml+xml/valid__x-fmt-227.xml": "text/xml",
@@ -225,16 +218,7 @@ def test_detectors(detector_class, change_dict):
                              "{}: {}".format(
                                  detector_class.__name__, format_name))
 
-        # If the "file" command detects mime types differently in EL7 and EL9,
-        # expected_mimetype will be a list. get_files could be made to always
-        # return a list of mime types, but this is a quick fix.
-        # TODO: This test can be changed back to how it was in commit ff890511
-        # after we drop support for EL7.
-        if type(expected_mimetype) == list:
-            assert any(detector.mimetype == exp_mt for exp_mt in
-                       expected_mimetype), assertion_message
-        else:
-            assert detector.mimetype == expected_mimetype, assertion_message
+        assert detector.mimetype == expected_mimetype, assertion_message
 
 
 @pytest.mark.parametrize(
