@@ -60,6 +60,7 @@ class DetectedMimeVersionMeta(BaseMeta):
     """
 
     _supported = {
+        "application/epub+zip": ["2.0.1", "3"],
         "application/vnd.oasis.opendocument.text": ["1.0", "1.1", "1.2"],
         "application/vnd.oasis.opendocument.spreadsheet": [
             "1.0", "1.1", "1.2"],
