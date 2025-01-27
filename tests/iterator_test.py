@@ -13,12 +13,12 @@ from file_scraper.iterator import iter_scrapers, iter_detectors
 
 WELLFORMED_SCRAPERS = [
     "DpxScraper", "FFMpegScraper", "GhostscriptScraper", "JHoveAiffScraper",
-    "JHoveGifScraper", "JHoveHtmlScraper", "JHoveJpegScraper",
-    "JHoveTiffScraper", "JHovePdfScraper", "JHoveWavScraper",
-    "JHoveUtf8Scraper", "LxmlScraper", "OfficeScraper", "PngcheckScraper",
-    "PsppScraper", "SchematronScraper", "TextEncodingScraper",
-    "VerapdfScraper", "VnuScraper", "WarctoolsFullScraper",
-    "GzipWarctoolsScraper", "XmllintScraper"
+    "JHoveEpubScraper", "JHoveGifScraper", "JHoveHtmlScraper",
+    "JHoveJpegScraper", "JHoveTiffScraper", "JHovePdfScraper",
+    "JHoveWavScraper", "JHoveUtf8Scraper", "LxmlScraper", "OfficeScraper",
+    "PngcheckScraper", "PsppScraper", "SchematronScraper",
+    "TextEncodingScraper", "VerapdfScraper", "VnuScraper",
+    "WarctoolsFullScraper", "GzipWarctoolsScraper", "XmllintScraper"
 ]
 
 
@@ -37,6 +37,8 @@ WELLFORMED_SCRAPERS = [
         ("video/x-matroska", None, ["MediainfoScraper", "FFMpegScraper"]),
         ("video/dv", None, ["MediainfoScraper", "FFMpegScraper"]),
         ("video/quicktime", None, ["MediainfoScraper", "FFMpegScraper"]),
+        ("application/epub+zip", "3", ["JHoveEpubScraper",
+                                       "DetectedMimeVersionScraper"]),
         ("application/mxf", None, ["FFMpegScraper"]),
         ("application/pdf", "1.2", ["MagicBinaryScraper", "JHovePdfScraper",
                                     "GhostscriptScraper"]),
@@ -161,7 +163,8 @@ def test_iter_scrapers(mimetype, version, scraper_classes):
 def test_iter_detectors():
     """Test detector discovery."""
     detectors = iter_detectors()
-    assert {x.__name__ for x in detectors} == {"FidoDetector",
+    assert {x.__name__ for x in detectors} == {"EpubDetector",
+                                               "FidoDetector",
                                                "MagicDetector",
                                                "PredefinedDetector",
                                                "SegYDetector",
