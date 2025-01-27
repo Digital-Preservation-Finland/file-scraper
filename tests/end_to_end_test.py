@@ -216,9 +216,9 @@ IGNORE_FOR_METADATA = IGNORE_VALID + [
     "tests/data/application_warc/valid_1.0_.warc.gz",
     "tests/data/text_xml/valid_1.0_mets_noheader.xml",
     "tests/data/application_epub+zip/valid_2.0.1_calibre.epub",
-    "tests/data/application_epub+zip/valid_3.3_calibre.epub",
-    "tests/data/application_epub+zip/valid_3.3_pages.epub",
-    "tests/data/application_epub+zip/valid_3.3_libreoffice_writer2epub.epub"
+    "tests/data/application_epub+zip/valid_3_calibre.epub",
+    "tests/data/application_epub+zip/valid_3_pages.epub",
+    "tests/data/application_epub+zip/valid_3_libreoffice_writer2epub.epub"
 ]
 
 # These invalid files are not recognized

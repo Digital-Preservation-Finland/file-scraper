@@ -812,11 +812,11 @@ def test_charset(filename, mimetype, charset, well_formed):
 @pytest.mark.parametrize(
     ["filename", "result_dict"],
     [
-        ("valid_3.3_pages.epub", {
+        ("valid_3_pages.epub", {
             "purpose": "Test valid file.",
             "stdout_part": "Well-Formed and valid",
             "stderr_part": ""}),
-        ("valid_3.3_calibre.epub", {
+        ("valid_3_calibre.epub", {
             "purpose": "Test valid file made with calibre.",
             "stdout_part": "Well-Formed and valid",
             "stderr_part": ""}),
@@ -824,15 +824,15 @@ def test_charset(filename, mimetype, charset, well_formed):
             "purpose": "Test valid file made with calibre.",
             "stdout_part": "Well-Formed and valid",
             "stderr_part": ""}),
-        ("valid_3.3_libreoffice_writer2epub.epub", {
+        ("valid_3_libreoffice_writer2epub.epub", {
             "purpose": "Test valid file made with libreoffice extension.",
             "stdout_part": "Well-Formed and valid",
             "stderr_part": ""}),
-        ("invalid_3.3_mimetype_not_first.epub", {
+        ("invalid_3_mimetype_not_first.epub", {
             "purpose": "Test invalid epub where mimetype is not first.",
             "stdout_part": "",
             "stderr_part": "Mimetype file entry is missing"}),
-        ("invalid_3.3_libreoffice.epub", {
+        ("invalid_3_libreoffice.epub", {
             "purpose": "Test invalid epub made by LibreOffice export.",
             "stdout_part": "",
             "stderr_part": "The \"head\" element should have a \"title\" "
