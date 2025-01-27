@@ -49,9 +49,7 @@ class MIMEGrader(BaseGrader):
     formats = {
         "application/epub+zip": {
             "2.0.1": RECOMMENDED,
-            "3.0.0": RECOMMENDED,
-            "3.0.1": RECOMMENDED,
-            "3.3": RECOMMENDED
+            "3": RECOMMENDED
         },
         "application/pdf": {
             "A-1a": RECOMMENDED,
