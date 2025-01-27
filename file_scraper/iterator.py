@@ -2,7 +2,8 @@
 # flake8: noqa
 
 from file_scraper.csv_scraper.csv_scraper import CsvScraper
-from file_scraper.detectors import (FidoDetector,
+from file_scraper.detectors import (EpubDetector,
+                                    FidoDetector,
                                     MagicDetector,
                                     PredefinedDetector,
                                     SiardDetector,
@@ -55,7 +56,8 @@ def iter_detectors():
     We want to keep the detectors in ordered list.
     :returns: detector class
     """
-    yield from [FidoDetector,
+    yield from [EpubDetector,
+                FidoDetector,
                 MagicDetector,
                 PredefinedDetector,
                 SiardDetector,

@@ -650,3 +650,66 @@ class ODFDetector(BaseDetector):
             "version": self.version
         }
         return important
+
+
+class EpubDetector(BaseDetector):
+    """
+    Detector used with EPUB files. Will identify EPUB files and their
+    file format version.
+    """
+
+    def detect(self):
+        """
+        Run EpubDetector to find out the mimetype and file format
+        version of a file. The detector checks::
+
+            1) The file must be a ZIP archive file
+            2) The ZIP archive file must contain a file with the
+               extension .opf
+            3) The .opf file must be an XML file, whose root element
+               contains an attribute "version"
+            4) The root element of the .opf file must be
+               {http://www.idpf.org/2007/opf}package
+            5) The root element must contain a version attribute, whose
+               value is the main file format version (i.e. 2.0 or 3.0)
+
+        The file format version is present in the attribute value
+        """
+        version = None
+        # The zipfile module prefers filepaths as strings
+        filename = decode_path(self.filename)
+        if is_zipfile(filename):
+            with zipfile.ZipFile(filename) as zipf:
+                for filepath in zipf.namelist():
+                    if os.path.splitext(filepath)[1] != ".opf":
+                        continue
+                    with zipf.open(filepath) as opf:
+                        try:
+                            root = lxml.etree.parse(opf).getroot()
+                            if root.tag == (
+                                    '{http://www.idpf.org/2007/opf}package'):
+                                version = root.get('version')
+                        except lxml.etree.XMLSyntaxError:
+                            pass
+
+        # Map the valid attribute values to supported versions
+        if version == "2.0":
+            self.mimetype = "application/epub+zip"
+            self.version = "2.0.1"
+        elif version == "3.0":
+            self.mimetype = "application/epub+zip"
+            self.version = "3"
+
+    def get_important(self):
+        """
+        If EpubDetector determines the mimetype as EPUB, the mimetype
+        and version are marked as important.
+        """
+        important = {}
+        if (not self._predefined_mimetype and self.mimetype in
+                ["application/epub+zip"]):
+            important["mimetype"] = self.mimetype
+        if (not self._predefined_version and self.mimetype in
+                ["application/epub+zip"]):
+            important["version"] = self.version
+        return important
