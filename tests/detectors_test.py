@@ -9,11 +9,14 @@ This module tests that:
       and PDF/A files.
     - ExifToolDetector results are important for dng and PDF/A files.
     - Character encoding detection works properly.
+    - That separate detectors for SEG-Y, SIARD, ODF and EPUB files
+      respectively detect correctly
 """
 import time
 import pytest
 from fido.fido import Fido
 from file_scraper.detectors import (_FidoReader,
+                                    EpubDetector,
                                     FidoDetector,
                                     MagicCharset,
                                     MagicDetector,
@@ -449,3 +452,33 @@ def test_invalid_odf(filepath, error):
     assert detector.mimetype is None
     assert detector.version is None
     assert detector.info()['errors'][-1] == error
+
+
+@pytest.mark.parametrize(
+    ["filepath", "mimetype", "version"],
+    [
+        ("application_epub+zip/valid_2.0.1_calibre.epub",
+         "application/epub+zip",
+         "2.0.1"),
+        ("application_epub+zip/valid_3_calibre.epub",
+         "application/epub+zip",
+         "3"),
+        ("application_epub+zip/valid_3_libreoffice_writer2epub.epub",
+         "application/epub+zip",
+         "3"),
+        ("application_epub+zip/valid_3_pages.epub",
+         "application/epub+zip",
+         "3"),
+    ]
+)
+def test_epub_detector(filepath, mimetype, version):
+    """Test that EPUB detector detects EPUB file.
+
+    :filepath: Test file
+    :mimetype: Expected mimetype
+    :version: Expected format version
+    """
+    detector = EpubDetector('tests/data/' + filepath)
+    detector.detect()
+    assert detector.mimetype == mimetype
+    assert detector.version == version
