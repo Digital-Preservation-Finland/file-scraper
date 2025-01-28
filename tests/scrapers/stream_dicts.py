@@ -67,7 +67,7 @@ FLAC_AUDIO = {
     "data_rate": UNAV, "data_rate_mode": "Variable",
     "duration": "PT0.86S", "index": 2, "mimetype": "audio/flac",
     "num_channels": "2", "sampling_frequency": "44.1",
-    "stream_type": "audio", "version": "1.2.1"}
+    "stream_type": "audio", "version": UNAP}
 
 AIFF_AUDIO = {
     "audio_data_encoding": "PCM", "bits_per_sample": "16",
