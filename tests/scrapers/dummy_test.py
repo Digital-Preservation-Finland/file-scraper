@@ -212,6 +212,13 @@ def test_detected_version_scraper():
     assert scraper.well_formed is False
     assert scraper.streams[0].version() == "123"
 
+    scraper = DetectedMimeVersionScraper(
+        None, "application/epub+zip",
+        params={"detected_version": "3"})
+    scraper.scrape_file()
+    assert scraper.well_formed is None
+    assert scraper.streams[0].version() == "3"
+
     # File format for bit-level preservation
     scraper = DetectedMimeVersionScraper(
         None, "application/x.fi-dpres.segy",
