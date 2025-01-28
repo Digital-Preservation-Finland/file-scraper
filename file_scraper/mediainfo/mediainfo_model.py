@@ -588,22 +588,23 @@ class WmvMediainfoMeta(BaseMediainfoMeta):
 class FlacMediainfoMeta(BaseMediainfoMeta):
     """Metadata model for FLAC audio."""
 
-    _supported = {"audio/flac": ["1.2.1"]}
+    _supported = {"audio/flac": [""]}
     _allow_versions = True  # Allow any version
 
     @metadata()
     def version(self):
         """Return version of stream.
 
-        The version number 1.2.1 of FLAC comes from PRONOM registry.
-        This is actually the version number of FLAC tools containing
+        The PRONOM registry reports the version number of FLAC as 1.2.1.
+        This is actually the version number of FLAC tools containing the
         FLAC format specification. Although the latest FLAC tools
         version is 1.3.3, version 1.2.1 still includes the latest format
-        change and was released in 2007. There is no separate version
-        numbering in FLAC format itself, and therefore, there is no
-        proper way to extract it.
+        change and was released in 2007.
+
+        FLAC is standardized in RFC 9639 without a file format version
+        information, so the version will be mapped to (:unap).
         """
-        return "1.2.1"
+        return UNAP
 
 
 class WavMediainfoMeta(BaseMediainfoMeta):
