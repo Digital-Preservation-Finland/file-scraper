@@ -203,6 +203,10 @@ class FFMpegSimpleMeta(BaseMeta):
             "PCM unsigned 16-bit little-endian",
             "PCM unsigned 24-bit big-endian",
             "PCM unsigned 24-bit little-endian",
+        ],
+        "raw FLAC": [
+            "FLAC (Free Lossless Audio Codec)",
+            "raw FLAC"
         ]
     }
 
@@ -283,6 +287,9 @@ class FFMpegSimpleMeta(BaseMeta):
         is_container = "codec_type" not in self._probe_results["format"]
 
         if is_container and format_name == "DV (Digital Video)":
+            is_container = len(self._probe_results["streams"]) > 1
+
+        if is_container and format_name == "raw FLAC":
             is_container = len(self._probe_results["streams"]) > 1
 
         return is_container
