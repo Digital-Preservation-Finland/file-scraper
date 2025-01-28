@@ -69,6 +69,11 @@ FLAC_AUDIO = {
     "num_channels": "2", "sampling_frequency": "44.1",
     "stream_type": "audio", "version": UNAP}
 
+FLAC_AUDIO_FILE = dict(FLAC_AUDIO, **{
+    "codec_creator_app": "Lavf59.27.100",
+    "codec_creator_app_version": "59.27.100",
+    "data_rate": "67.79"})
+
 AIFF_AUDIO = {
     "audio_data_encoding": "PCM", "bits_per_sample": "16",
     "codec_creator_app": UNAV, "codec_creator_app_version": UNAV,

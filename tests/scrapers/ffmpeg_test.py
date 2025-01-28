@@ -34,6 +34,7 @@ This module tests that:
         - video/MP2T
         - audio/mpeg version 1 file
         - application/mxf
+        - audio/flac
         - audio/x-wav
         - audio/x-aiff
         - video/x-ms-asf
@@ -266,6 +267,15 @@ UNAV_MIME = []
             },
             "audio/mp4"
         ),
+        (
+            "valid__flac.flac",
+            {
+                "purpose": "Test valid FLAC audio file",
+                "stdout_part": "file was analyzed successfully",
+                "stderr_part": ""
+            },
+            "audio/flac"
+        )
     ]
 )
 def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
@@ -581,6 +591,24 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
                 "stderr_part": "Invalid data found when processing input"
             },
             "audio/mp4"
+        ),
+        (
+            "invalid__bytes_missing.flac",
+            {
+                "purpose": "Test truncated FLAC audio file",
+                "stdout_part": "",
+                "stderr_part": "Invalid data found when processing input"
+            },
+            "audio/flac"
+        ),
+        (
+            "invalid__header_edited.flac",
+            {
+                "purpose": "Test FLAC audio file with broken header",
+                "stdout_part": "",
+                "stderr_part": "Invalid data found when processing input"
+            },
+            "audio/flac"
         )
     ]
 )

@@ -6,8 +6,8 @@ for well-formed checks.
 
 This module tests that:
     - MIME type, version, streams, and well-formedness are scraped
-      correctly for aiff, dv, wav, m1v, m2v, mp4, mp3, ts, wma and wmv
-      files.
+      correctly for aiff, dv, flac, wav, m1v, m2v, mp4, mp3, ts, wma
+      and wmv files.
       Additionally, this is scraped correctly to mov video container
       containing dv video and lpcm8 audio, and to mkv container
       containing ffv1 video without sound and with lpcm8 and flac sound.
@@ -18,6 +18,7 @@ This module tests that:
       whether well-formedness is checked or not:
         - audio/x-wav, '2'
         - audio/x-aiff, '1.3'
+        - audio/flac, ''
         - video/x-ms-asf, ''
         - video/mpeg, '1'
         - video/mp4, ''
@@ -45,6 +46,7 @@ from tests.scrapers.stream_dicts import (AIFF_AUDIO,
                                          FFV_VIDEO_SOUND_DATARATE,
                                          FFV_VIDEO_TRUNCATED,
                                          FLAC_AUDIO,
+                                         FLAC_AUDIO_FILE,
                                          HEVC_VIDEO,
                                          LPCM8_AUDIO,
                                          MKV_CONTAINER,
@@ -266,6 +268,43 @@ def test_mediainfo_scraper_wav(filename, result_dict, evaluate_scraper):
     scraper.scrape_file()
 
     if "empty" in filename:
+        assert partial_message_included(correct.stdout_part,
+                                        scraper.messages())
+        assert partial_message_included(correct.stderr_part, scraper.errors())
+        assert not scraper.streams
+    else:
+        evaluate_scraper(scraper, correct)
+
+
+@pytest.mark.parametrize(
+    ["filename", "result_dict"],
+    [
+        ("valid__flac.flac", {
+            "purpose": "Test valid FLAC audio file.",
+            "stdout_part": "file was analyzed successfully",
+            "stderr_part": "",
+            "streams": {0: FLAC_AUDIO_FILE.copy()}}),
+        ("invalid__header_edited.flac", {
+            "purpose": "Test invalid FLAC with broken header.",
+            "stdout_part": "",
+            "stderr_part": "No audio or video tracks found."}),
+    ])
+def test_mediainfo_scraper_flac(filename, result_dict, evaluate_scraper):
+    """
+    Test FLAC audio file scraping with Mediainfo.
+
+    :filename: Test file name
+    :result_dict: Result dict containing the test purpose, parts of
+                  expected results of stdout and stderr, and expected
+                  streams
+    """
+    mimetype = "audio/flac"
+    correct = parse_results(filename, mimetype, result_dict, False)
+
+    scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
+    scraper.scrape_file()
+
+    if "header_edited" in filename:
         assert partial_message_included(correct.stdout_part,
                                         scraper.messages())
         assert partial_message_included(correct.stderr_part, scraper.errors())
@@ -735,7 +774,8 @@ def test_mediainfo_scraper_avi(evaluate_scraper):
         ("video/MP2P", ""),
         ("video/MP2T", ""),
         ("audio/x-wav", ""),
-        ("audio/mp4", "")
+        ("audio/mp4", ""),
+        ("audio/flac", "")
     ]
 )
 def test_is_supported(mime, ver):
