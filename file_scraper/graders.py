@@ -154,7 +154,7 @@ class MIMEGrader(BaseGrader):
             UNAP: RECOMMENDED
         },
         "audio/flac": {
-            "1.2.1": RECOMMENDED
+            UNAP: RECOMMENDED
         },
         "audio/L8": {
             UNAP: RECOMMENDED
@@ -421,7 +421,7 @@ class ContainerStreamsGrader(BaseGrader):
         },
         "video/x-matroska": {
             # Audio
-            ("audio/flac", "1.2.1"),
+            ("audio/flac", UNAP),
             ("audio/L8", UNAP),
             ("audio/L16", UNAP),
             ("audio/L20", UNAP),
