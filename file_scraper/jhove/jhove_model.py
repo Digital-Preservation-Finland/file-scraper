@@ -372,9 +372,10 @@ class JHoveEpubMeta(JHoveBaseMeta):
         """
         if self._well_formed:
             jhove_version = get_field(self._report, "version")
+            # Map all versions 3.x to 3
             if jhove_version.startswith("3."):
                 return "3"
-            return get_field(self._report, "version")
+            return jhove_version
         return UNAV
 
     @metadata()
