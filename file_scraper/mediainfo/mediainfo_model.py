@@ -597,7 +597,7 @@ class FlacMediainfoMeta(BaseMediainfoMeta):
         FLAC is a special container format. If the file is a FLAC audio
         file, no distinction between container and soundtrack needs to
         be made, as both are treated as one in the DPS. However, FLAC
-        audio can also exist a stream in a separate video container
+        audio can also exist as a stream in a separate video container
         file and must be treated as a separate audio stream in these
         cases.
         """

@@ -279,8 +279,8 @@ class FFMpegSimpleMeta(BaseMeta):
         """Check if file has a video container.
 
         We have to check a little bit more than just the container name.
-        For example, DV might be either a container or just a raw DV video
-        stream.
+        For example, DV or FLAC might be either a container or just a
+        raw stream.
         """
         format_name = self._probe_results["format"]["format_long_name"]
 
