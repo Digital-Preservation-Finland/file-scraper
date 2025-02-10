@@ -305,9 +305,7 @@ class TextGrader(BaseGrader):
         "application/xhtml+xml": {
             "1.0": RECOMMENDED,
             "1.1": RECOMMENDED,
-            "5.0": RECOMMENDED,
-            "5.1": RECOMMENDED,
-            "5.2": RECOMMENDED
+            "5": RECOMMENDED
         },
         "application/gml+xml": {
             "3.2.2": RECOMMENDED,
@@ -320,9 +318,7 @@ class TextGrader(BaseGrader):
         },
         "text/html": {
             "4.01": RECOMMENDED,
-            "5.0": RECOMMENDED,
-            "5.1": RECOMMENDED,
-            "5.2": RECOMMENDED
+            "5": RECOMMENDED
         },
         "text/plain": {
             UNAP: RECOMMENDED
