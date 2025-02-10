@@ -6,9 +6,9 @@ from file_scraper.utils import metadata
 
 
 class VnuMeta(BaseMeta):
-    """Metadata model for HTML 5.0 scraped using Vnu."""
+    """Metadata model for HTML 5 scraped using Vnu."""
 
-    _supported = {"text/html": ["5.0"]}  # Supported mimetypes
+    _supported = {"text/html": ["5"]}  # Supported mimetypes
 
     def __init__(self, well_formed):
         """
@@ -36,7 +36,7 @@ class VnuMeta(BaseMeta):
         If the well-formed status from scraper is False,
         then we do not know the actual version.
         """
-        return "5.0" if self._well_formed else UNAV
+        return "5" if self._well_formed else UNAV
 
     @metadata()
     def stream_type(self):

@@ -9,7 +9,7 @@ from file_scraper.vnu.vnu_model import VnuMeta
 
 
 class VnuScraper(BaseScraper):
-    """Vnu scraper. Supports only HTML version 5.0."""
+    """Vnu scraper. Supports only HTML version 5."""
 
     _supported_metadata = [VnuMeta]
     _only_wellformed = True              # Only well-formed check

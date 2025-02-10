@@ -54,7 +54,7 @@ class TextEncodingMeta(BaseMeta):
 
     _supported = {"text/plain": [],
                   "text/csv": [],
-                  "text/html": ["4.01", "5.0"],
+                  "text/html": ["4.01", "5"],
                   "text/xml": ["1.0"],
                   "application/xhtml+xml": ["1.0", "1.1"]}
     _allow_versions = True

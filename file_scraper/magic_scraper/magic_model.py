@@ -170,7 +170,7 @@ class HtmlFileMagicMeta(TextMagicBaseMeta):
     """Metadata model for html files."""
 
     # Supported mimetypes
-    _supported = {"text/html": ["4.01", "5.0"]}
+    _supported = {"text/html": ["4.01", "5"]}
 
     @metadata()
     def version(self):

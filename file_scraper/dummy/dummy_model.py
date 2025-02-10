@@ -144,7 +144,7 @@ class DetectedTextVersionMeta(DetectedMimeVersionMeta):
     when Scraper is used for metadata collecting.
     """
     _supported = {
-        "text/html": ["4.01", "5.0"],
+        "text/html": ["4.01", "5"],
         "text/xml": ["1.0"],
     }
 

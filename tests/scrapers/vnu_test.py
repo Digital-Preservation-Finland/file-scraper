@@ -11,7 +11,7 @@ This module tests that:
       child of element".
     - For empty file, scraper errors contain "End of file seen without seeing
       a doctype first".
-    - When well-formedness is checked, MIME type text/html versions 5.0 and
+    - When well-formedness is checked, MIME type text/html versions 5 and
       None are supported. When well-formedness is not checked, this combination
       is not supported.
     - A made up MIME type or version is not supported.
@@ -98,7 +98,7 @@ def test_vnu_returns_invalid_return_code():
 def test_is_supported():
     """Test is_supported method."""
     mime = MIMETYPE
-    ver = "5.0"
+    ver = "5"
     assert VnuScraper.is_supported(mime, ver, True)
     assert VnuScraper.is_supported(mime, None, True)
     assert not VnuScraper.is_supported(mime, ver, False)
