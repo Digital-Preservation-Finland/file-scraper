@@ -131,7 +131,7 @@ from tests.common import (parse_results, partial_message_included)
         ("valid_1.0.xhtml", "application/xhtml+xml", "UTF-8",
          MagicTextScraper),
         ("valid_4.01.html", "text/html", "UTF-8", MagicTextScraper),
-        ("valid_5.0.html", "text/html", "UTF-8", MagicTextScraper),
+        ("valid_5.html", "text/html", "UTF-8", MagicTextScraper),
         ("valid_1.4.pdf", "application/pdf", None, MagicBinaryScraper),
         ("valid_1.3.aiff", "audio/x-aiff", None, MagicBinaryScraper),
         ("valid__aiff-c.aiff", "audio/x-aiff", None, MagicBinaryScraper),
@@ -219,7 +219,7 @@ def test_invalid_office(filename, mimetype):
         ("invalid_1.0_no_doctype.xhtml", "application/xhtml+xml",
          MagicTextScraper),
         ("invalid_4.01_nodoctype.html", "text/html", MagicTextScraper),
-        ("invalid_5.0_nodoctype.html", "text/html", MagicTextScraper),
+        ("invalid_5_nodoctype.html", "text/html", MagicTextScraper),
         ("invalid_1.4_removed_xref.pdf", "application/pdf",
          MagicBinaryScraper),
     ])

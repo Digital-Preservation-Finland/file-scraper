@@ -4,7 +4,7 @@ Tests for Vnu scraper.
 This module tests that:
     - MIME type, version, streams and well-formedness are scraped correctly for
       html 5 files.
-    - For well-formed file, scraper messages contain "valid_5.0.html".
+    - For well-formed file, scraper messages contain "valid_5.html".
     - For file without doctype, scraper errors contain  "Start tag seen
       without seeing a doctype first."
     - For file with illegal tags in it, scraper errors contain "not allowed as
@@ -29,15 +29,15 @@ MIMETYPE = "text/html"
 @pytest.mark.parametrize(
     ["filename", "result_dict"],
     [
-        ("valid_5.0.html", {
+        ("valid_5.html", {
             "purpose": "Test valid file.",
-            "stdout_part": "valid_5.0.html",
+            "stdout_part": "valid_5.html",
             "stderr_part": ""}),
-        ("invalid_5.0_nodoctype.html", {
+        ("invalid_5_nodoctype.html", {
             "purpose": "Test valid file.",
             "stdout_part": "",
             "stderr_part": "Start tag seen without seeing a doctype first."}),
-        ("invalid_5.0_illegal_tags.html", {
+        ("invalid_5_illegal_tags.html", {
             "purpose": "Test valid file.",
             "stdout_part": "",
             "stderr_part": "not allowed as child of element"}),
@@ -45,14 +45,14 @@ MIMETYPE = "text/html"
             "purpose": "Test valid file.",
             "stdout_part": "",
             "stderr_part": "End of file seen without seeing a doctype first"}),
-        ("valid_5.0_language_warning.html", {
+        ("valid_5_language_warning.html", {
             "purpose": "Test valid file.",
-            "stdout_part": "valid_5.0_language_warning.html",
+            "stdout_part": "valid_5_language_warning.html",
             "stderr_part": ""}),
-        ("valid_5.0_unicode_normalization_warning.html", {
+        ("valid_5_unicode_normalization_warning.html", {
             "purpose": "Test that not using unicode normalization form C is "
                        "not an error.",
-            "stdout_part": "valid_5.0_unicode_normalization_warning.html",
+            "stdout_part": "valid_5_unicode_normalization_warning.html",
             "stderr_part": ""}),
     ]
 )
@@ -85,7 +85,7 @@ def test_vnu_returns_invalid_return_code():
     """Test that a correct error message is given
     when the tool gives an invalid return code"""
     path = os.path.join("tests/data", MIMETYPE.replace("/", "_"))
-    testfile = os.path.join(path, "valid_5.0.html")
+    testfile = os.path.join(path, "valid_5.html")
 
     scraper = VnuScraper(filename=testfile,
                          mimetype=MIMETYPE)

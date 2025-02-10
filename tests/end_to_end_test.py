@@ -577,19 +577,19 @@ def test_coded_filename(tmpdir, fullname, mimetype, version):
          None),
 
         # Scrape invalid HTML as plaintext, as which it is well-formed
-        ("tests/data/text_html/invalid_5.0_illegal_tags.html",
+        ("tests/data/text_html/invalid_5_illegal_tags.html",
          {"mimetype": "text/plain"}, True, "text/plain", UNAP, "UTF-8",
          None),
 
         # Scrape invalid HTML as plaintext and give correct charset, as which
         # it is well-formed
-        ("tests/data/text_html/invalid_5.0_illegal_tags.html",
+        ("tests/data/text_html/invalid_5_illegal_tags.html",
          {"mimetype": "text/plain", "charset": "UTF-8"}, True,
          "text/plain", UNAP, "UTF-8", None),
 
         # Scrape invalid HTML as plaintext and give incorrect charset, as
         # which it is not well-formed
-        ("tests/data/text_html/invalid_5.0_illegal_tags.html",
+        ("tests/data/text_html/invalid_5_illegal_tags.html",
          {"mimetype": "text/plain", "charset": "UTF-16"}, False,
          "text/plain", UNAP, "UTF-16", None),
 

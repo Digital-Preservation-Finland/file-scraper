@@ -546,7 +546,7 @@ def test_scraper_jpeg(filename, result_dict, evaluate_scraper):
             "stdout_part": "Well-Formed and valid",
             "stderr_part": ""},
          "application/xhtml+xml", "UTF-8"),
-        ("valid_5.0.html", {
+        ("valid_5.html", {
             "purpose": "Test valid file, which is invalid for this scraper.",
             "inverse": True,
             "stdout_part": "",
