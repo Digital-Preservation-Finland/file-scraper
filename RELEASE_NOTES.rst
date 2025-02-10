@@ -1,6 +1,15 @@
 Release notes
 =============
 
+Unreleased
+----------
+
+- Replace support for HTML 5.x files with support for HTML 5 files
+- Add support for FLAC audio files
+- Replace support for FLAC version with support for FLAC with version None
+- Add EPUB file format detection without needing to check for well-formedness
+- Replace support for EPUB 3.x files with support for EPUB 3 files
+
 Version 0.78
 ------------
 

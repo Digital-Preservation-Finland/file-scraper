@@ -251,7 +251,6 @@ Misc notes
     * Scraping XML files without XML header works correctly only when ``check_wellformed`` parameter is ``True``.
     * Only audio and video stream metadata is collected for audio and video files. Other streams, such as menus and subtitles, are omitted.
     * The software may result arbitrary metadata values, if incorrect MIME type or version is given as a parameter. However, the file is also then denoted as invalid.
-    * Scraping EPUB files only works when ``check_wellformed`` parameter is ``True``.
 
 Copyright
 ---------
