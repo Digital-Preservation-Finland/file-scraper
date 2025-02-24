@@ -227,7 +227,8 @@ class MIMEGrader(BaseGrader):
             "2.0": RECOMMENDED
         },
         "model/step": {
-            "4.0.2.1": RECOMMENDED
+            "4.0.2.1": RECOMMENDED,
+            "4.3.2.0": RECOMMENDED
         },
         "video/avi": {  # Container
             UNAP: ACCEPTABLE
