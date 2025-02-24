@@ -10,6 +10,7 @@ Unreleased
 - Add EPUB file format detection without needing to check for well-formedness
 - Replace support for EPUB 3.x files with support for EPUB 3 files
 - Read first 100 KiB of CSV files to help analyze large files
+- Add recommended grade for IFC version 4.3.2.0
 
 Version 0.78
 ------------
