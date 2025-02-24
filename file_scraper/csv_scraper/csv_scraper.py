@@ -42,7 +42,7 @@ class CsvScraper(BaseScraper):
                 # with the default dialect. This will raise an exception.
                 # Therefore, sniffing should be skipped totally, if the
                 # characters are given as a parameter.
-                dialect = csv.Sniffer().sniff(csvfile.read(4096))
+                dialect = csv.Sniffer().sniff(csvfile.read(100*1024))
                 if delimiter is None:
                     delimiter = dialect.delimiter
                 if separator is None:
