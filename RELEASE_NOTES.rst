@@ -4,6 +4,9 @@ Release notes
 Unreleased
 ----------
 
+Version 0.79
+------------
+
 - Replace support for HTML 5.x files with support for HTML 5 files
 - Add support for FLAC audio files
 - Replace support for FLAC version with support for FLAC with version None
