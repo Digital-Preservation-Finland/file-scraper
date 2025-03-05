@@ -210,12 +210,14 @@ class OfficeFileMagicMeta(BinaryMagicBaseMeta):
 
     # Supported mimetypes and versions
     _supported = {
-        "application/vnd.oasis.opendocument.text": ["1.0", "1.1", "1.2", "1.3"],
+        "application/vnd.oasis.opendocument.text": ["1.0", "1.1", "1.2",
+                                                    "1.3"],
         "application/vnd.oasis.opendocument.spreadsheet": ["1.0", "1.1",
                                                            "1.2", "1.3"],
         "application/vnd.oasis.opendocument.presentation": ["1.0", "1.1",
                                                             "1.2", "1.3"],
-        "application/vnd.oasis.opendocument.graphics": ["1.0", "1.1", "1.2", "1.3"],
+        "application/vnd.oasis.opendocument.graphics": ["1.0", "1.1", "1.2",
+                                                        "1.3"],
         "application/vnd.oasis.opendocument.formula": ["1.0", "1.2", "1.3"],
         "application/msword": ["97-2003"],
         "application/vnd.ms-excel": ["8X"],

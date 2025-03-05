@@ -61,13 +61,15 @@ class DetectedMimeVersionMeta(BaseMeta):
 
     _supported = {
         "application/epub+zip": ["2.0.1", "3"],
-        "application/vnd.oasis.opendocument.text": ["1.0", "1.1", "1.2"],
+        "application/vnd.oasis.opendocument.text": ["1.0", "1.1", "1.2",
+                                                    "1.3"],
         "application/vnd.oasis.opendocument.spreadsheet": [
-            "1.0", "1.1", "1.2"],
+            "1.0", "1.1", "1.2", "1.3"],
         "application/vnd.oasis.opendocument.presentation": [
-            "1.0", "1.1", "1.2"],
-        "application/vnd.oasis.opendocument.graphics": ["1.0", "1.1", "1.2"],
-        "application/vnd.oasis.opendocument.formula": ["1.0", "1.2"],
+            "1.0", "1.1", "1.2", "1.3"],
+        "application/vnd.oasis.opendocument.graphics": ["1.0", "1.1", "1.2",
+                                                        "1.3"],
+        "application/vnd.oasis.opendocument.formula": ["1.0", "1.2", "1.3"],
         "application/x.fi-dpres.segy": ["(:unkn)", "1.0", "2.0"]
     }
 
