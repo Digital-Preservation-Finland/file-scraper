@@ -54,6 +54,8 @@ CHANGE_FIDO = {
     ".presentation/valid_2007 onwards.pptx": None,
     "application_vnd.oasis.opendocument.formula/valid_1.2.odf":
         "application/zip",
+    "application_vnd.oasis.opendocument.formula/valid_1.3.odf":                                                                                                                                                
+        "application/zip",
     "application_warc/valid_1.0_.warc.gz": "application/gzip",
     "application_mxf/valid__jpeg2000.mxf": None,
     "application_mxf/valid__jpeg2000_grayscale.mxf": None,
