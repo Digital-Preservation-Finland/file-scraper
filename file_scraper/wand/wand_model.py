@@ -13,6 +13,7 @@ class WandImageMeta(BaseMeta):
         "image/gif": [],
         "image/jp2": [],
         "image/png": [],
+        "image/webp": [],
     }
     _allow_versions = True
 
@@ -159,6 +160,19 @@ class WandExifMeta(WandImageMeta):
         if exif_version:
             return format_exif_version(exif_version)
 
+        return UNAV
+
+
+class WandWebPMeta(WandImageMeta):
+    """Metadata models for WebP files scraped with wand"""
+
+    @metadata(important=True)
+    def compression_quality(self):
+        """Return compression quality if exists, otherwise (:unav)"""
+        if self._image.compression_quality < 100:
+            return "VP8 Lossy"
+        if self._image.compression_quality == 100:
+            return "VP8 Lossless"
         return UNAV
 
 

@@ -245,3 +245,15 @@ class JpegPilMeta(BasePilMeta):
         if exif_info and SAMPLES_PER_PIXEL_TAG in exif_info.keys():
             return str(exif_info[SAMPLES_PER_PIXEL_TAG])
         return super().samples_per_pixel()
+
+
+class WebPMeta(BasePilMeta):
+    """Metadata model for WebP images"""
+
+    _supported = {"image/webp": []}
+    _allow_versions = True
+
+    @metadata()
+    def mimetype(self):
+        """Return mimetype"""
+        return "image/webp"
