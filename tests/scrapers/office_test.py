@@ -10,17 +10,17 @@ This module tests that:
       being recorded in scraper errors.
     - Scraper uses parallel instances of LibreOffice properly.
     - The following MIME type and version combinations are supported:
-        - application/vnd.oasis.opendocument.text, 1.2
+        - application/vnd.oasis.opendocument.text, 1.2, 1.3
         - application/msword, 97-2003
         - application/vnd.openxmlformats-officedocument.wordprocessingml.document, 2007 onwards
-        - application/vnd.oasis.opendocument.presentation, 1.2
+        - application/vnd.oasis.opendocument.presentation, 1.2, 1.3
         - application/vnd.ms-powerpoint, 97-2003
         - application/vnd.openxmlformats-officedocument.presentationml.presentation, 2007 onwards
-        - application/vnd.oasis.opendocument.spreadsheet, 1.2
+        - application/vnd.oasis.opendocument.spreadsheet, 1.2, 1.3
         - application/vnd.ms-excel, 8X
         - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, 2007 onwards
-        - application/vnd.oasis.opendocument.graphics, 1.2
-        - application/vnd.oasis.opendocument.formula, 1.2
+        - application/vnd.oasis.opendocument.graphics, 1.2, 1.3
+        - application/vnd.oasis.opendocument.formula, 1.2, 1.3
     - These MIME types are also supported with a made up version or None as
       the version.
     - A made up MIME type is not supported.
@@ -44,21 +44,28 @@ BASEPATH = "tests/data"
     ["filename", "mimetype"],
     [
         ("valid_1.2.odt", "application/vnd.oasis.opendocument.text"),
+        ("valid_1.3.odt", "application/vnd.oasis.opendocument.text"),
         ("valid_97-2003.doc", "application/msword"),
         ("valid_2007 onwards.docx", "application/vnd.openxmlformats-"
          "officedocument.wordprocessingml.document"),
         ("valid_1.2.odp",
          "application/vnd.oasis.opendocument.presentation"),
+        ("valid_1.3.odp",
+         "application/vnd.oasis.opendocument.presentation"), 
         ("valid_97-2003.ppt", "application/vnd.ms-powerpoint"),
         ("valid_2007 onwards.pptx", "application/vnd.openxml"
          "formats-officedocument.presentationml.presentation"),
         ("valid_1.2.ods",
          "application/vnd.oasis.opendocument.spreadsheet"),
+        ("valid_1.3.ods",
+         "application/vnd.oasis.opendocument.spreadsheet"),
         ("valid_8X.xls", "application/vnd.ms-excel"),
         ("valid_2007 onwards.xlsx", "application/vnd."
          "openxmlformats-officedocument.spreadsheetml.sheet"),
         ("valid_1.2.odg", "application/vnd.oasis.opendocument.graphics"),
+        ("valid_1.3.odg", "application/vnd.oasis.opendocument.graphics"),
         ("valid_1.2.odf", "application/vnd.oasis.opendocument.formula"),
+        ("valid_1.3.odf", "application/vnd.oasis.opendocument.formula"),
     ]
 )
 def test_scraper_valid_file(filename, mimetype, evaluate_scraper):
@@ -84,26 +91,36 @@ def test_scraper_valid_file(filename, mimetype, evaluate_scraper):
     [
         ("valid_1.2.odt", "application/vnd.oasis.opendocument.text",
          "writer"),
+        ("valid_1.3.odt", "application/vnd.oasis.opendocument.text",
+         "writer"),
         ("valid_97-2003.doc", "application/msword", "writer"),
         ("valid_2007 onwards.docx",
          "application/vnd.openxmlformats-officedocument.wordprocessingml.document", # noqa
          "writer"),
         ("valid_1.2.odp",
          "application/vnd.oasis.opendocument.presentation", "impress"),
+        ("valid_1.3.odp",
+         "application/vnd.oasis.opendocument.presentation", "impress"), 
         ("valid_97-2003.ppt", "application/vnd.ms-powerpoint", "impress"),
         ("valid_2007 onwards.pptx",
          "application/vnd.openxmlformats-officedocument.presentationml.presentation", # noqa
          "impress"),
         ("valid_1.2.ods",
          "application/vnd.oasis.opendocument.spreadsheet", "calc"),
+        ("valid_1.3.ods",
+         "application/vnd.oasis.opendocument.spreadsheet", "calc"), 
         ("valid_8X.xls", "application/vnd.ms-excel", "calc"),
         ("valid_2007 onwards.xlsx",
          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
          "calc"),
         ("valid_1.2.odg", "application/vnd.oasis.opendocument.graphics",
          "draw"),
+        ("valid_1.3.odg", "application/vnd.oasis.opendocument.graphics",
+         "draw"),
         ("valid_1.2.odf", "application/vnd.oasis.opendocument.formula",
          "math"),
+        ("valid_1.3.odf", "application/vnd.oasis.opendocument.formula",
+         "math"), 
     ]
 )
 def test_scraper_correct_application(filename, mimetype, application):
@@ -135,20 +152,31 @@ def test_scraper_correct_application(filename, mimetype, application):
     [
         ("invalid_1.2_corrupted.odt", "application/vnd.oasis.opendocument"
          ".text"),
+        ("invalid_1.3_corrupted.odt", "application/vnd.oasis.opendocument"
+         ".text"),
         ("invalid_2007 onwards_corrupted.docx", "application/"
          "vnd.openxmlformats-officedocument.wordprocessingml.document"),
         ("invalid_1.2_corrupted.odp",
+         "application/vnd.oasis.opendocument.presentation"),
+        ("invalid_1.3_corrupted.odp",                                                                                                                                                                          
          "application/vnd.oasis.opendocument.presentation"),
         ("invalid_2007 onwards_corrupted.pptx", "application/vnd.openxml"
          "formats-officedocument.presentationml.presentation"),
         ("invalid_1.2_corrupted.ods",
          "application/vnd.oasis.opendocument.spreadsheet"),
+        ("invalid_1.3_corrupted.ods",
+         "application/vnd.oasis.opendocument.spreadsheet"),
         ("invalid_2007 onwards_corrupted.xlsx", "application/vnd."
          "openxmlformats-officedocument.spreadsheetml.sheet"),
         ("invalid_1.2_corrupted.odg", "application/vnd.oasis.opendocument"
          ".graphics"),
+        ("invalid_1.3_corrupted.odg", "application/vnd.oasis.opendocument"
+         ".graphics"), 
         ("invalid_1.2_corrupted.odf", "application/vnd.oasis.opendocument"
          ".formula"),
+        ("invalid_1.3_corrupted.odf", "application/vnd.oasis.opendocument"
+         ".formula"),
+
     ]
 )
 def test_scraper_invalid_file(filename, mimetype, evaluate_scraper):
@@ -230,19 +258,24 @@ def test_office_returns_invalid_return_code():
     ["mime", "ver"],
     [
         ("application/vnd.oasis.opendocument.text", "1.2"),
+        ("application/vnd.oasis.opendocument.text", "1.3"),
         ("application/msword", "97-2003"),
         ("application/vnd.openxmlformats-"
          "officedocument.wordprocessingml.document", "2007 onwards"),
         ("application/vnd.oasis.opendocument.presentation", "1.2"),
+        ("application/vnd.oasis.opendocument.presentation", "1.3"), 
         ("application/vnd.ms-powerpoint", "97-2003"),
         ("application/vnd.openxml"
          "formats-officedocument.presentationml.presentation", "2007 onwards"),
         ("application/vnd.oasis.opendocument.spreadsheet", "1.2"),
+        ("application/vnd.oasis.opendocument.spreadsheet", "1.3"),
         ("application/vnd.ms-excel", "8X"),
         ("application/vnd."
          "openxmlformats-officedocument.spreadsheetml.sheet", "2007 onwards"),
         ("application/vnd.oasis.opendocument.graphics", "1.2"),
+        ("application/vnd.oasis.opendocument.graphics", "1.3"),
         ("application/vnd.oasis.opendocument.formula", "1.2"),
+        ("application/vnd.oasis.opendocument.formula", "1.3"),
     ]
 )
 def test_is_supported(mime, ver):

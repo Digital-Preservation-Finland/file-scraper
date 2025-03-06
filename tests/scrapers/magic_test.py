@@ -45,16 +45,21 @@ This module tests that:
     - The following MIME type and version pairs are supported when full
       scraping is performed:
         - application/vnd.oasis.opendocument.text, 1.2
+        - application/vnd.oasis.opendocument.text, 1.3
         - application/msword, 97-2003
         - application/vnd.openxmlformats-officedocument.wordprocessingml.document, 2007 onwards
         - application/vnd.oasis.opendocument.presentation, 1.2
+        - application/vnd.oasis.opendocument.presentation, 1.3
         - application/vnd.ms-powerpoint, 97-2003
         - application/vnd.openxmlformats-officedocument.presentationml.presentation, 2007 onwards
         - application/vnd.oasis.opendocument.spreadsheet, 1.2
+        - application/vnd.oasis.opendocument.spreadsheet, 1.3
         - application/vnd.ms-excel, 8X
         - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, 2007 onwards
         - application/vnd.oasis.opendocument.graphics, 1.2
+        - application/vnd.oasis.opendocument.graphics, 1.3
         - application/vnd.oasis.opendocument.formula, 1.2
+        - application/vnd.oasis.opendocument.formula, 1.3
         - image/png, 1.2
         - image/jpeg, 1.01
         - image/jp2, ""
@@ -89,6 +94,8 @@ from tests.common import (parse_results, partial_message_included)
     [
         ("valid_1.2.odt",
          "application/vnd.oasis.opendocument.text", None, MagicBinaryScraper),
+        ("valid_1.3.odt",
+         "application/vnd.oasis.opendocument.text", None, MagicBinaryScraper),
         ("valid_97-2003.doc",
          "application/msword", None, MagicBinaryScraper),
         ("valid_2007 onwards.docx",
@@ -96,6 +103,9 @@ from tests.common import (parse_results, partial_message_included)
          "wordprocessingml.document", None, MagicBinaryScraper),
         ("valid_1.2.odp",
          "application/vnd.oasis.opendocument.presentation", None,
+         MagicBinaryScraper),
+        ("valid_1.3.odp",
+         "application/vnd.oasis.opendocument.presentation", None,                                                                                                                                              
          MagicBinaryScraper),
         ("valid_97-2003.ppt",
          "application/vnd.ms-powerpoint", None, MagicBinaryScraper),
@@ -106,6 +116,9 @@ from tests.common import (parse_results, partial_message_included)
         ("valid_1.2.ods",
          "application/vnd.oasis.opendocument.spreadsheet", None,
          MagicBinaryScraper),
+        ("valid_1.3.ods",
+         "application/vnd.oasis.opendocument.spreadsheet", None,
+         MagicBinaryScraper),
         ("valid_8X.xls",
          "application/vnd.ms-excel", None, MagicBinaryScraper),
         ("valid_2007 onwards.xlsx",
@@ -114,7 +127,13 @@ from tests.common import (parse_results, partial_message_included)
         ("valid_1.2.odg",
          "application/vnd.oasis.opendocument.graphics", None,
          MagicBinaryScraper),
+        ("valid_1.3.odg",
+         "application/vnd.oasis.opendocument.graphics", None,
+         MagicBinaryScraper),
         ("valid_1.2.odf",
+         "application/vnd.oasis.opendocument.formula", None,
+         MagicBinaryScraper),
+        ("valid_1.3.odf",
          "application/vnd.oasis.opendocument.formula", None,
          MagicBinaryScraper),
         ("valid_1.2.png", "image/png", None, MagicBinaryScraper),
@@ -310,22 +329,32 @@ def test_msoffice_word_detected():
     [
         ("application/vnd.oasis.opendocument.text", "1.2",
          MagicBinaryScraper),
+        ("application/vnd.oasis.opendocument.text", "1.3",                                                                                                                                                     
+         MagicBinaryScraper),
         ("application/msword", "97-2003", MagicBinaryScraper),
         ("application/vnd.openxmlformats-officedocument.wordprocessingml"
          ".document", "2007 onwards", MagicBinaryScraper),
         ("application/vnd.oasis.opendocument.presentation", "1.2",
+         MagicBinaryScraper),
+        ("application/vnd.oasis.opendocument.presentation", "1.3",
          MagicBinaryScraper),
         ("application/vnd.ms-powerpoint", "97-2003", MagicBinaryScraper),
         ("application/vnd.openxmlformats-officedocument.presentationml"
          ".presentation", "2007 onwards", MagicBinaryScraper),
         ("application/vnd.oasis.opendocument.spreadsheet", "1.2",
          MagicBinaryScraper),
+        ("application/vnd.oasis.opendocument.spreadsheet", "1.3",
+         MagicBinaryScraper),  
         ("application/vnd.ms-excel", "8X", MagicBinaryScraper),
         ("application/vnd.openxmlformats-officedocument.spreadsheetml"
          ".sheet", "2007 onwards", MagicBinaryScraper),
         ("application/vnd.oasis.opendocument.graphics", "1.2",
          MagicBinaryScraper),
+        ("application/vnd.oasis.opendocument.graphics", "1.3",
+         MagicBinaryScraper),
         ("application/vnd.oasis.opendocument.formula", "1.2",
+         MagicBinaryScraper),
+        ("application/vnd.oasis.opendocument.formula", "1.3",                                                                                                                                                  
          MagicBinaryScraper),
         ("image/png", "1.2", MagicBinaryScraper),
         ("image/jpeg", "1.01", MagicBinaryScraper),
