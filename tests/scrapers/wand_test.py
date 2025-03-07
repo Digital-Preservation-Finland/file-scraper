@@ -75,7 +75,8 @@ import wand
 
 from file_scraper.defaults import UNAV
 from file_scraper.wand.wand_model import (WandImageMeta, WandTiffMeta,
-                                          WandDngMeta, WandExifMeta)
+                                          WandDngMeta, WandExifMeta,
+                                          WandWebPMeta)
 from file_scraper.wand.wand_scraper import WandScraper
 from tests.common import (parse_results, partial_message_included)
 
@@ -336,6 +337,41 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
     evaluate_scraper(scraper, correct)
 
 
+@pytest.mark.parametrize(
+    ["filename", "result_dict"],
+    [
+        ("valid_lossless.webp", {
+            "purpose": "Test valid lossless file",
+            "streams": {0: STREAM_VALID_WITH_SRGB.copy()},
+            "stdout_part": "successfully",
+            "stderr_part": ""}),
+        ("valid_lossy.webp", {
+            "purpose": "Test valid lossy file.",
+            "streams": {0: STREAM_VALID_WITH_SRGB.copy()},
+            "stdout_part": "successfully",
+            "stderr_part": ""}),
+    ]
+)
+def test_scraper_webp(filename, result_dict, evaluate_scraper):
+    """
+    Test scraper with valid webp files
+
+    :filename: Test file name
+    :result_dict: Result dict containing the test purpose, partf of
+                  expected results of stdout nad stderr, and expected streams
+    """
+    correct = parse_results(filename, "image/webp", result_dict, False)
+
+    for stream in correct.streams.values():
+        stream["version"] = UNAV
+        stream["height"] = "16"
+        stream["width"] = "16"
+
+    scraper = WandScraper(filename=correct.filename, mimetype="image/webp")
+    scraper.scrape_file()
+    evaluate_scraper(scraper, correct)
+
+
 @pytest.mark.parametrize(("mimetype", "filename", "expected"), [
     ("image/gif", "valid_1987a.gif", "RGB"),
     ("image/gif", "valid_1989a.gif", "RGB"),
@@ -445,6 +481,7 @@ def test_scraper_invalid(filename, mimetype, stderr_part):
         ("image/jp2", "", WandImageMeta),
         ("image/png", "1.2", WandImageMeta),
         ("image/gif", "1987a", WandImageMeta),
+        ("image/webp", "", WandWebPMeta),
     ]
 )
 def test_model_is_supported(mime, ver, class_):
@@ -471,6 +508,7 @@ def test_model_is_supported(mime, ver, class_):
         ("image/jp2", ""),
         ("image/png", "1.2"),
         ("image/gif", "1987a"),
+        ("image/webp", ""),
     ]
 )
 def test_scraper_is_supported(mime, ver):
