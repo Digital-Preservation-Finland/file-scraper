@@ -257,3 +257,11 @@ class WebPMeta(BasePilMeta):
     def mimetype(self):
         """Return mimetype"""
         return "image/webp"
+
+    @metadata()
+    def height(self):
+        return UNAV
+
+    @metadata()
+    def width(self):
+        return UNAV

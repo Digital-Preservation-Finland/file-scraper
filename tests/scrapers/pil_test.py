@@ -417,6 +417,47 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
 
 
 @pytest.mark.parametrize(
+    ["filename", "result_dict"],
+    [
+        ("valid_lossless.webp", {
+            "purpose": "Test valid lossless file",
+            "streams": {0: STREAM_VALID_RGB.copy()}}),
+        ("valid_lossy.webp", {
+            "purpose": "Test valid lossy file",
+            "streams": {0: STREAM_VALID_RGB.copy()}}),
+    ]
+)
+def test_scraper_webp(filename, result_dict, evaluate_scraper):
+    """Test screaper with WebP files.
+
+    :filename: Test file name
+    :result_dict: Result dic containing the test purpose and expected streams
+    """
+    correct = parse_results(filename, "image/webp", result_dict, False)
+
+    if correct.well_formed is not False:
+        correct.stdout_part = VALID_MSG
+        correct.stderr_part = ""
+    else:
+        correct.stdout_part = ""
+        correct.stderr_part = INVALID_MSG
+
+    correct.streams[0]["version"] = UNAV
+    scraper = PilScraper(filename=correct.filename, mimetype="image/webp")
+    scraper.scrape_file()
+
+    if correct.well_formed is not False:
+        evaluate_scraper(scraper, correct)
+    else:
+        assert scraper.well_formed is not False
+        assert partial_message_included(correct.stdout_part,
+                                        scraper.messages())
+        assert partial_message_included(correct.stderr_part,
+                                        scraper.errors())
+        assert not scraper.streams
+
+
+@pytest.mark.parametrize(
     ["mime", "ver"],
     [
         ("image/tiff", "6.0"),
@@ -424,6 +465,7 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
         ("image/jp2", ""),
         ("image/png", "1.2"),
         ("image/gif", "1987a"),
+        ("image/webp", "")
     ]
 )
 def test_is_supported(mime, ver):
