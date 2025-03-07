@@ -105,7 +105,7 @@ from tests.common import (parse_results, partial_message_included)
          "application/vnd.oasis.opendocument.presentation", None,
          MagicBinaryScraper),
         ("valid_1.3.odp",
-         "application/vnd.oasis.opendocument.presentation", None,                                                                                                                                              
+         "application/vnd.oasis.opendocument.presentation", None,
          MagicBinaryScraper),
         ("valid_97-2003.ppt",
          "application/vnd.ms-powerpoint", None, MagicBinaryScraper),
@@ -329,7 +329,7 @@ def test_msoffice_word_detected():
     [
         ("application/vnd.oasis.opendocument.text", "1.2",
          MagicBinaryScraper),
-        ("application/vnd.oasis.opendocument.text", "1.3",                                                                                                                                                     
+        ("application/vnd.oasis.opendocument.text", "1.3",
          MagicBinaryScraper),
         ("application/msword", "97-2003", MagicBinaryScraper),
         ("application/vnd.openxmlformats-officedocument.wordprocessingml"
@@ -344,7 +344,7 @@ def test_msoffice_word_detected():
         ("application/vnd.oasis.opendocument.spreadsheet", "1.2",
          MagicBinaryScraper),
         ("application/vnd.oasis.opendocument.spreadsheet", "1.3",
-         MagicBinaryScraper),  
+         MagicBinaryScraper),
         ("application/vnd.ms-excel", "8X", MagicBinaryScraper),
         ("application/vnd.openxmlformats-officedocument.spreadsheetml"
          ".sheet", "2007 onwards", MagicBinaryScraper),
@@ -354,7 +354,7 @@ def test_msoffice_word_detected():
          MagicBinaryScraper),
         ("application/vnd.oasis.opendocument.formula", "1.2",
          MagicBinaryScraper),
-        ("application/vnd.oasis.opendocument.formula", "1.3",                                                                                                                                                  
+        ("application/vnd.oasis.opendocument.formula", "1.3",
          MagicBinaryScraper),
         ("image/png", "1.2", MagicBinaryScraper),
         ("image/jpeg", "1.01", MagicBinaryScraper),
