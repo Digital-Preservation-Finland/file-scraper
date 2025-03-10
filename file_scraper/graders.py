@@ -215,6 +215,9 @@ class MIMEGrader(BaseGrader):
             "6.0": RECOMMENDED,  # TIFF
             "1.0": RECOMMENDED,  # GeoTiff
         },
+        "image/webp": {
+            UNAP: RECOMMENDED
+        },
         "image/x-adobe-dng": {
             "1.1": RECOMMENDED,
             "1.2": RECOMMENDED,
@@ -225,9 +228,6 @@ class MIMEGrader(BaseGrader):
         "image/x-dpx": {
             "1.0": ACCEPTABLE,  # Allowed for special case
             "2.0": RECOMMENDED
-        },
-        "image/webp": {
-            UNAP: RECOMMENDED
         },
         "model/step": {
             "4.0.2.1": RECOMMENDED,
