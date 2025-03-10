@@ -265,3 +265,7 @@ class WebPMeta(BasePilMeta):
     @metadata()
     def width(self):
         return UNAV
+
+    @metadata()
+    def version(self):
+        return UNAP

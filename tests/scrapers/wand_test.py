@@ -340,12 +340,12 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
 @pytest.mark.parametrize(
     ["filename", "result_dict"],
     [
-        ("valid_lossless.webp", {
+        ("valid__lossless.webp", {
             "purpose": "Test valid lossless file",
             "streams": {0: STREAM_VALID_WITH_SRGB.copy()},
             "stdout_part": "successfully",
             "stderr_part": ""}),
-        ("valid_lossy.webp", {
+        ("valid__lossy.webp", {
             "purpose": "Test valid lossy file.",
             "streams": {0: STREAM_VALID_WITH_SRGB.copy()},
             "stdout_part": "successfully",

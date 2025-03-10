@@ -166,6 +166,9 @@ class WandExifMeta(WandImageMeta):
 class WandWebPMeta(WandImageMeta):
     """Metadata models for WebP files scraped with wand"""
 
+    _supported = {"image/webp": []}
+    _allow_versions = True
+
     @metadata(important=True)
     def compression_quality(self):
         """Return compression quality if exists, otherwise (:unav)"""
