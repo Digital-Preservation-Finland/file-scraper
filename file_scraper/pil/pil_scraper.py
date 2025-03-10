@@ -2,7 +2,7 @@
 
 from file_scraper.base import BaseScraper
 from file_scraper.pil.pil_model import PngPilMeta, JpegPilMeta, \
-    TiffPilMeta, DngPilMeta, Jp2PilMeta, GifPilMeta, WebPMeta
+    TiffPilMeta, DngPilMeta, Jp2PilMeta, GifPilMeta, WebPPilMeta
 
 try:
     import PIL.Image
@@ -14,7 +14,7 @@ class PilScraper(BaseScraper):
     """Scraper that uses PIL to scrape tiff, png, jpeg, gif and webp images."""
 
     _supported_metadata = [TiffPilMeta, DngPilMeta, PngPilMeta, GifPilMeta,
-                           JpegPilMeta, Jp2PilMeta, WebPMeta]
+                           JpegPilMeta, Jp2PilMeta, WebPPilMeta]
 
     @property
     def well_formed(self):

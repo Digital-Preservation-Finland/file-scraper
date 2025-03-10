@@ -247,7 +247,7 @@ class JpegPilMeta(BasePilMeta):
         return super().samples_per_pixel()
 
 
-class WebPMeta(BasePilMeta):
+class WebPPilMeta(BasePilMeta):
     """Metadata model for WebP images"""
 
     _supported = {"image/webp": []}
