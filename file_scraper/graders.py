@@ -226,6 +226,9 @@ class MIMEGrader(BaseGrader):
             "1.0": ACCEPTABLE,  # Allowed for special case
             "2.0": RECOMMENDED
         },
+        "image/webp": {
+            UNAP: RECOMMENDED
+        },
         "model/step": {
             "4.0.2.1": RECOMMENDED,
             "4.3.2.0": RECOMMENDED

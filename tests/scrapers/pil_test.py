@@ -22,7 +22,7 @@ This module tests that:
 import PIL
 import pytest
 
-from file_scraper.defaults import UNAV
+from file_scraper.defaults import UNAV, UNAP
 from file_scraper.pil.pil_scraper import PilScraper
 from tests.common import (parse_results, partial_message_included)
 
@@ -442,7 +442,7 @@ def test_scraper_webp(filename, result_dict, evaluate_scraper):
         correct.stdout_part = ""
         correct.stderr_part = INVALID_MSG
 
-    correct.streams[0]["version"] = UNAV
+    correct.streams[0]["version"] = UNAP
     scraper = PilScraper(filename=correct.filename, mimetype="image/webp")
     scraper.scrape_file()
 
