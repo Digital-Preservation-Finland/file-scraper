@@ -79,7 +79,9 @@ CHANGE_FIDO = {
     "video_x-ms-asf/valid__vc1_wma9.wmv": None,
     "image_x-dpx/valid_1.0_just_version_change_from_2.0.dpx": None,
     "text_plain/valid__should_scrape_as_plain_text.json": None,
-    "audio_mp4/valid__aac.m4a": None
+    "audio_mp4/valid__aac.m4a": None,
+    "image_webp/valid__lossless.webp": None,
+    "image_webp/valid__lossy.webp": None
 }
 
 CHANGE_MAGIC = {
