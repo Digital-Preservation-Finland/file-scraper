@@ -450,7 +450,7 @@ def test_scraper_colorspace(mimetype, filename, expected):
         ("invalid__missing_image_data.webp", "image/webp",
          "insufficient image data in file"),
         ("invalid__lossless_with_lossy_header.webp", "image/webp",
-         "insufficient image data in file")
+         "corrupt image")
     ]
 )
 def test_scraper_invalid(filename, mimetype, stderr_part):
