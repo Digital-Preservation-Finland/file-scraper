@@ -440,7 +440,17 @@ def test_scraper_colorspace(mimetype, filename, expected):
         ("invalid_1.4_edited_header.dng", "image/x-adobe-dng",
          "@ error"),
         ("invalid__empty.dng", "image/x-adobe-dng",
-         "@ error")
+         "@ error"),
+        ("invalid__missing_icc_profile.webp", "image/webp",
+         "insufficient image data in file"),
+        ("invalid__missing_bitstream.webp", "image/webp",
+         "insufficient image data in file"),
+        ("invalid__empty.webp", "image/webp",
+         "insufficient image data in file"),
+        ("invalid__missing_image_data.webp", "image/webp",
+         "insufficient image data in file"),
+        ("invalid__lossless_with_lossy_header.webp", "image/webp",
+         "insufficient image data in file")
     ]
 )
 def test_scraper_invalid(filename, mimetype, stderr_part):

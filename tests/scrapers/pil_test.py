@@ -425,6 +425,21 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
         ("valid__lossy.webp", {
             "purpose": "Test valid lossy file",
             "streams": {0: STREAM_VALID_RGB.copy()}}),
+        ("invalid__empty.webp", {
+            "purpose": "Test empty file",
+            "streams": {0: STREAM_VALID_RGB.copy()}}),
+        ("invalid__lossless_with_lossy_header.webp", {
+            "purpose": "Test lossless file with VP8 header",
+            "streams": {0: STREAM_VALID_RGB.copy()}}),
+        ("invalid__missing_bitstream.webp", {
+            "purpose": "Test (lossless) file without VP8L header",
+            "streams": {0: STREAM_VALID_RGB.copy()}}),
+        ("invalid__missing_icc_profile.webp", {
+            "purpose": "Test file without iccp header",
+            "streams": {0: STREAM_VALID_RGB.copy()}}),
+        ("invalid__missing_image_data.webp", {
+            "purpose": "Test file with byte missing from image data",
+            "streams": {0: STREAM_VALID_RGB.copy()}}),
     ]
 )
 def test_scraper_webp(filename, result_dict, evaluate_scraper):
@@ -449,7 +464,7 @@ def test_scraper_webp(filename, result_dict, evaluate_scraper):
     if correct.well_formed is not False:
         evaluate_scraper(scraper, correct)
     else:
-        assert scraper.well_formed is not False
+        assert scraper.well_formed is False
         assert partial_message_included(correct.stdout_part,
                                         scraper.messages())
         assert partial_message_included(correct.stderr_part,
