@@ -4,6 +4,9 @@ Release notes
 Unreleased
 ----------
 
+- Add support for WebP image files
+- Add support for ODF version 1.3
+
 Version 0.79
 ------------
 
