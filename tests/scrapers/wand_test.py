@@ -357,7 +357,7 @@ def test_scraper_webp(filename, result_dict, evaluate_scraper):
     Test scraper with valid webp files
 
     :filename: Test file name
-    :result_dict: Result dict containing the test purpose, partf of
+    :result_dict: Result dict containing the test purpose, parts of
                   expected results of stdout nad stderr, and expected streams
     """
     correct = parse_results(filename, "image/webp", result_dict, False)

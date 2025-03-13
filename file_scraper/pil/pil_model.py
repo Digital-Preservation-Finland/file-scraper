@@ -248,24 +248,27 @@ class JpegPilMeta(BasePilMeta):
 
 
 class WebPPilMeta(BasePilMeta):
-    """Metadata model for WebP images"""
+    """Metadata model for WebP images."""
 
     _supported = {"image/webp": []}
     _allow_versions = True
 
     @metadata()
     def mimetype(self):
-        """Return mimetype"""
+        """Return mimetype."""
         return "image/webp"
 
     @metadata()
     def height(self):
+        """Return (:unav): we will get height from another scraper."""
         return UNAV
 
     @metadata()
     def width(self):
+        """Return (:unav): we will get width from another scraper."""
         return UNAV
 
     @metadata()
     def version(self):
+        """Return (:unap): no version for WebP files."""
         return UNAP
