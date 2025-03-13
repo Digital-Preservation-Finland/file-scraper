@@ -358,7 +358,7 @@ def test_scraper_webp(filename, result_dict, evaluate_scraper):
 
     :filename: Test file name
     :result_dict: Result dict containing the test purpose, parts of
-                  expected results of stdout nad stderr, and expected streams
+                  expected results of stdout and stderr, and expected streams
     """
     correct = parse_results(filename, "image/webp", result_dict, False)
 
@@ -388,7 +388,9 @@ def test_scraper_webp(filename, result_dict, evaluate_scraper):
     ("image/png", "valid_1.2.png", "RGB"),
     ("image/png", "valid_1.2_LA.png", "Gray"),
     ("image/tiff", "valid_6.0.tif", "RGB"),
-    ("image/tiff", "valid_6.0_multiple_tiffs.tif", "RGB")
+    ("image/tiff", "valid_6.0_multiple_tiffs.tif", "RGB"),
+    ("image/webp", "valid__lossless.webp", "SRGB"),
+    ("image/webp", "valid__lossy.webp", "SRGB"),
 ])
 def test_scraper_colorspace(mimetype, filename, expected):
     """

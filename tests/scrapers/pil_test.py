@@ -432,10 +432,10 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
             "purpose": "Test lossless file with VP8 header",
             "streams": {0: STREAM_VALID_RGB.copy()}}),
         ("invalid__missing_bitstream.webp", {
-            "purpose": "Test (lossless) file without VP8L header",
+            "purpose": "Test lossless file without bitstream (VP8L header)",
             "streams": {0: STREAM_VALID_RGB.copy()}}),
         ("invalid__missing_icc_profile.webp", {
-            "purpose": "Test file without iccp header",
+            "purpose": "Test file without icc profile header",
             "streams": {0: STREAM_VALID_RGB.copy()}}),
         ("invalid__missing_image_data.webp", {
             "purpose": "Test file with byte missing from image data",
