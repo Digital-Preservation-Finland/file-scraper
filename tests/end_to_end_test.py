@@ -229,7 +229,11 @@ UNAV_MIMETYPE_INVALID = [
     "tests/data/text_csv/invalid__missing_end_quote.csv",
     "tests/data/text_plain/invalid__utf8_just_c3.txt",
     "tests/data/video_mp4/invalid__h264_aac_missing_data.mp4",
-    "tests/data/video_x-matroska/invalid_4_ffv1_missing_data.mkv"
+    "tests/data/video_x-matroska/invalid_4_ffv1_missing_data.mkv",
+    "tests/data/image_webp/invalid__missing_bitstream.webp",
+    "tests/data/image_webp/invalid__missing_icc_profile.webp",
+    "tests/data/image_webp/invalid__missing_image_data.webp",
+    "tests/data/image_webp/invalid__lossless_with_lossy_header.webp",
 ]
 
 # Some MIME types can not be detected, either because of the file format
