@@ -170,7 +170,7 @@ class WandWebPMeta(WandImageMeta):
     _allow_versions = True
 
     @metadata(important=True)
-    def compression_quality(self):
+    def compression(self):
         """Return compression quality if exists, otherwise (:unav)"""
         if self._image.compression_quality < 100:
             return "VP8 Lossy"

@@ -371,6 +371,11 @@ def test_scraper_webp(filename, result_dict, evaluate_scraper):
     scraper.scrape_file()
     evaluate_scraper(scraper, correct)
 
+    if "lossless" in filename:
+        assert scraper.streams[1].compression() == "VP8 Lossless"
+    if "lossy" in filename:
+        assert scraper.streams[1].compression() == "VP8 Lossy"
+
 
 @pytest.mark.parametrize(("mimetype", "filename", "expected"), [
     ("image/gif", "valid_1987a.gif", "RGB"),
