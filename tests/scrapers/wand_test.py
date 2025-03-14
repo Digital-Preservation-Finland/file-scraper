@@ -50,7 +50,7 @@ This module tests that:
         - For truncated version 1989a file, scraper errors contains "negative
           or zero image size".
         - For empty file, scraper errors contains "improper image header".
-    - WandTiffMeta model is supported for TIFF files, WandDngMeta for Dng files
+    - WandTiffMeta model is supported for TIFF files
       WandExifMeta for JPEG files and  WandImageMeta for other image files
     - Image colorspace detected as "sRGB" will be detected as "RGB" unless
       explicitly expressed by a metadata for colorspace to be sRGB.
@@ -75,8 +75,7 @@ import wand
 
 from file_scraper.defaults import UNAV
 from file_scraper.wand.wand_model import (WandImageMeta, WandTiffMeta,
-                                          WandDngMeta, WandExifMeta,
-                                          WandWebPMeta)
+                                          WandExifMeta, WandWebPMeta)
 from file_scraper.wand.wand_scraper import WandScraper
 from tests.common import (parse_results, partial_message_included)
 
@@ -372,9 +371,9 @@ def test_scraper_webp(filename, result_dict, evaluate_scraper):
     evaluate_scraper(scraper, correct)
 
     if "lossless" in filename:
-        assert scraper.streams[1].compression() == "VP8 Lossless"
+        assert scraper.streams[0].compression() == "VP8 Lossless"
     if "lossy" in filename:
-        assert scraper.streams[1].compression() == "VP8 Lossy"
+        assert scraper.streams[0].compression() == "VP8 Lossy"
 
 
 @pytest.mark.parametrize(("mimetype", "filename", "expected"), [
@@ -493,7 +492,7 @@ def test_scraper_invalid(filename, mimetype, stderr_part):
     ["mime", "ver", "class_"],
     [
         ("image/tiff", "6.0", WandTiffMeta),
-        ("image/x-adobe-dng", "", WandDngMeta),
+        ("image/x-adobe-dng", "", WandImageMeta),
         ("image/jpeg", "", WandExifMeta),
         ("image/jp2", "", WandImageMeta),
         ("image/png", "1.2", WandImageMeta),
@@ -503,8 +502,7 @@ def test_scraper_invalid(filename, mimetype, stderr_part):
 )
 def test_model_is_supported(mime, ver, class_):
     """
-    Test is_supported method for WandTiffMeta, WandDngMeta,
-    WandExifMeta and WandImageMeta.
+    Test is_supported method for WandTiffMeta, WandExifMeta and WandImageMeta.
 
     :mime: MIME type
     :ver: File format version

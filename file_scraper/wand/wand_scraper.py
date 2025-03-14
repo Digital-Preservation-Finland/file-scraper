@@ -14,8 +14,7 @@ tool.
 
 from file_scraper.base import BaseScraper
 from file_scraper.wand.wand_model import (WandImageMeta, WandTiffMeta,
-                                          WandExifMeta, WandDngMeta,
-                                          WandWebPMeta)
+                                          WandExifMeta, WandWebPMeta)
 
 try:
     import wand.image
@@ -27,7 +26,7 @@ class WandScraper(BaseScraper):
     """Scraper for the Wand/ImageMagick library."""
 
     _supported_metadata = [WandExifMeta, WandTiffMeta, WandImageMeta,
-                           WandDngMeta, WandWebPMeta]
+                           WandWebPMeta]
 
     def __init__(self, *args, **kwargs):
         """

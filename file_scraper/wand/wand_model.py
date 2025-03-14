@@ -6,14 +6,14 @@ from file_scraper.utils import metadata
 
 
 class WandImageMeta(BaseMeta):
-    """Metadata models for png, jp2 and gif files scraped with Wand"""
+    """Metadata model for image files scraped with Wand"""
     # pylint: disable=no-self-use
 
     _supported = {
         "image/gif": [],
         "image/jp2": [],
         "image/png": [],
-        "image/webp": [],
+        "image/x-adobe-dng": [],
     }
     _allow_versions = True
 
@@ -137,13 +137,6 @@ class WandTiffMeta(WandImageMeta):
                 if value == "lsb":
                     return "little endian"
         return UNAV
-
-
-class WandDngMeta(WandImageMeta):
-    """Metadata models for dng files scraped with Wand"""
-
-    _supported = {"image/x-adobe-dng": []}
-    _allow_versions = True
 
 
 class WandExifMeta(WandImageMeta):
