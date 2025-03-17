@@ -3,8 +3,8 @@ Tests for PIL scraper.
 
 This module tests that:
     - The MIME type, version, streams and well-formedness are scraped
-      correctly from well-formed tif, jpg, jp2, png and gif files with scraper
-      messages containing 'successfully'
+      correctly from well-formed tif, jpg, jp2, png, gif and WebP files with
+      scraper messages containing 'successfully'
     - These are also scraped correctly from files of same type with errors
       such as missing data, broken header or empty file, with scraper errors
       containing 'Error in analyzing file'.
@@ -15,6 +15,7 @@ This module tests that:
         - image/jp2, ''
         - image/png, 1.2
         - image/gif, 1987a
+        - image/webp, ''
     - These MIME types are also supported with None or a made up version.
     - A made up MIME type with any of these versions is not supported.
 """
