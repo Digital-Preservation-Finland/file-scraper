@@ -1,7 +1,7 @@
 """Metadata models for Wand"""
 
 from file_scraper.base import BaseMeta
-from file_scraper.defaults import UNAV
+from file_scraper.defaults import UNAV, UNAP
 from file_scraper.utils import metadata
 
 
@@ -170,6 +170,11 @@ class WandWebPMeta(WandImageMeta):
         if self._image.compression_quality == 100:
             return "VP8 Lossless"
         return UNAV
+
+    @metadata(important=True)
+    def version(self):
+        """No version for WebP files, return (:unap)."""
+        return UNAP
 
 
 def format_exif_version(wand_exif_version):

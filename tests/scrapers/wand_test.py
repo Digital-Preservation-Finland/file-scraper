@@ -73,7 +73,7 @@ import os
 import pytest
 import wand
 
-from file_scraper.defaults import UNAV
+from file_scraper.defaults import UNAV, UNAP
 from file_scraper.wand.wand_model import (WandImageMeta, WandTiffMeta,
                                           WandExifMeta, WandWebPMeta)
 from file_scraper.wand.wand_scraper import WandScraper
@@ -362,7 +362,7 @@ def test_scraper_webp(filename, result_dict, evaluate_scraper):
     correct = parse_results(filename, "image/webp", result_dict, False)
 
     for stream in correct.streams.values():
-        stream["version"] = UNAV
+        stream["version"] = UNAP
         stream["height"] = "16"
         stream["width"] = "16"
 
