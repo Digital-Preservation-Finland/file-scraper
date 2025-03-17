@@ -446,7 +446,7 @@ def test_scraper_webp(filename, result_dict, evaluate_scraper):
     """Test screaper with WebP files.
 
     :filename: Test file name
-    :result_dict: Result dic containing the test purpose and expected streams
+    :result_dict: Result dict containing the test purpose and expected streams
     """
     correct = parse_results(filename, "image/webp", result_dict, False)
 

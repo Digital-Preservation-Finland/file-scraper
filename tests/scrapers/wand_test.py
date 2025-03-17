@@ -40,7 +40,7 @@ This module tests that:
         - For file with invalid header, scraper errors contain "improper
           image header".
         - For empty file, scraper errors contain "improper image header".
-     streams and well-formedness are scraped correctly for gif files.
+    - streams and well-formedness are scraped correctly for gif files.
         - For well-formed files with one or more images, scraper messages
           contain "successfully".
         - For images with broken header, scraper errors contains "improper
@@ -50,8 +50,15 @@ This module tests that:
         - For truncated version 1989a file, scraper errors contains "negative
           or zero image size".
         - For empty file, scraper errors contains "improper image header".
-    - WandTiffMeta model is supported for TIFF files
-      WandExifMeta for JPEG files and  WandImageMeta for other image files
+    - streams and well-formedness are scraped correctly for WebP files.
+        - For well-formed files, scraper messages contain "successfully".
+        - For images with missing headers or image data, scraper errors contain
+          "insufficient image data in file".
+        - For mismatched headers and data, scraper errors contain "corrupt
+          image".
+    - WandTiffMeta model is supported for TIFF files, WandExifMeta for
+      JPEG files, WandWebPMeta for WebP files and WandImageMeta for other image
+      files.
     - Image colorspace detected as "sRGB" will be detected as "RGB" unless
       explicitly expressed by a metadata for colorspace to be sRGB.
     - With or without well-formedness check, the following MIME type and
@@ -63,6 +70,7 @@ This module tests that:
         - image/jp2, ''
         - image/png, 1.2
         - image/gif, 1987a
+        - image/webp, ''
     - All these MIME types are also supported when None or a made up version
       is given as the version.
     - A made up MIME type is not supported.
