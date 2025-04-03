@@ -135,6 +135,9 @@ class MIMEGrader(BaseGrader):
             "1.0": RECOMMENDED,
             "1.1": RECOMMENDED
         },
+        "application/x.fi-dpres.atlproj": {
+            "(:unap)": BIT_LEVEL_WITH_RECOMMENDED
+        },
         "application/x.fi-dpres.segy": {
             "1.0": BIT_LEVEL,
             "2.0": BIT_LEVEL,
