@@ -6,6 +6,7 @@ from file_scraper.detectors import (EpubDetector,
                                     FidoDetector,
                                     MagicDetector,
                                     PredefinedDetector,
+                                    AtlasTiDetector,
                                     SiardDetector,
                                     SegYDetector,
                                     ODFDetector)
@@ -60,6 +61,7 @@ def iter_detectors():
                 FidoDetector,
                 MagicDetector,
                 PredefinedDetector,
+                AtlasTiDetector,
                 SiardDetector,
                 SegYDetector,
                 ODFDetector]
