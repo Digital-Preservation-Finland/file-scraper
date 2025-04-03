@@ -23,8 +23,9 @@ from file_scraper.detectors import (_FidoReader,
                                     ExifToolDetector,
                                     SegYDetector,
                                     SiardDetector,
+                                    AtlasTiDetector,
                                     ODFDetector)
-from file_scraper.defaults import UNKN
+from file_scraper.defaults import UNKN, UNAP
 from tests.common import get_files, partial_message_included
 
 CHANGE_FIDO = {
@@ -398,6 +399,19 @@ def test_siard_detector(filepath, mimetype, version):
     detector.detect()
     assert detector.mimetype == mimetype
     assert detector.version == version
+
+def test_atlas_ti_detector():
+    """
+    Test that works with atlproj files. AtlasTiDetector
+    should detect the mimetype and version of a atlproj file.
+
+    :filepath: Test file
+    :mimetype: Expected mimetype
+    """
+    detector = AtlasTiDetector('tests/data/' + 'application_x.fi-dpres.atlproj/invalid_empty.atlproj')
+    detector.detect()
+    assert detector.mimetype == "application/x.fi-dpres.atlproj"
+    assert detector.version == UNAP
 
 
 @pytest.mark.parametrize(

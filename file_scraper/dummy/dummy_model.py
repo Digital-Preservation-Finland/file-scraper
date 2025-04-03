@@ -70,7 +70,8 @@ class DetectedMimeVersionMeta(BaseMeta):
         "application/vnd.oasis.opendocument.graphics": ["1.0", "1.1", "1.2",
                                                         "1.3"],
         "application/vnd.oasis.opendocument.formula": ["1.0", "1.2", "1.3"],
-        "application/x.fi-dpres.segy": ["(:unkn)", "1.0", "2.0"]
+        "application/x.fi-dpres.segy": ["(:unkn)", "1.0", "2.0"],
+        "application/x.fi-dpres.atlproj": ["(:unap)"]
     }
 
     def __init__(self, mimetype, version):
