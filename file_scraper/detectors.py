@@ -509,10 +509,11 @@ class SegYDetector(BaseDetector):
             important["version"] = self.version
         return important
 
+
 class AtlasTiDetector(BaseDetector):
     """
-    Detector used with ATLAS TI project bundle files. Will identify ATLPROJ files and their
-    file format version.
+    Detector used with ATLAS TI project bundle files.
+    Will identify ATLPROJ files and their file format version.
     """
 
     def detect(self):
@@ -526,15 +527,17 @@ class AtlasTiDetector(BaseDetector):
         """
         # The zipfile module prefers filepaths as strings
         filename = decode_path(self.filename)
-        if os.path.splitext(filename)[1] == ".atlproj" and is_zipfile(filename):
+        if (os.path.splitext(filename)[1] == ".atlproj"
+                and is_zipfile(filename)):
             self.mimetype = "application/x.fi-dpres.atlproj"
             self.version = "(:unap)"
+
     def get_important(self):
         """
-        If AtlasTiDetector determines the mimetype as x.fi-dpres.atlproj, the mimetype
-        and version are marked as important. This is to make sure that
-        this result overrides other detectors, which would detect atlproj 
-        files as ZIP archive files.
+        If AtlasTiDetector determines the mimetype as x.fi-dpres.atlproj,
+        the mimetype and version are marked as important. This is to make
+        sure that this result overrides other detectors, which would detect
+        atlproj files as ZIP archive files.
         """
         important = {}
         if (not self._predefined_mimetype and self.mimetype in
@@ -544,6 +547,7 @@ class AtlasTiDetector(BaseDetector):
                 ["application/x.fi-dpres.atlproj"]):
             important["version"] = self.version
         return important
+
 
 class SiardDetector(BaseDetector):
     """
