@@ -11,7 +11,7 @@ from fido.fido import Fido, defaults
 from fido.pronomutils import get_local_pronom_versions
 from file_scraper.base import BaseDetector
 from file_scraper.defaults import (MIMETYPE_DICT, PRIORITY_PRONOM, PRONOM_DICT,
-                                   VERSION_DICT, UNKN)
+                                   VERSION_DICT, UNKN, UNAP)
 from file_scraper.utils import decode_path, is_zipfile, normalize_charset
 from file_scraper.magiclib import magiclib, magic_analyze
 
@@ -530,7 +530,7 @@ class AtlasTiDetector(BaseDetector):
         if (os.path.splitext(filename)[1] == ".atlproj"
                 and is_zipfile(filename)):
             self.mimetype = "application/x.fi-dpres.atlproj"
-            self.version = "(:unap)"
+            self.version = UNAP
 
     def get_important(self):
         """
