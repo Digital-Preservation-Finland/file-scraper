@@ -168,6 +168,6 @@ def test_iter_detectors():
                                                "MagicDetector",
                                                "PredefinedDetector",
                                                "SegYDetector",
-                                               "AtlasTiDetector"
+                                               "AtlasTiDetector",
                                                "SiardDetector",
                                                "ODFDetector"}
