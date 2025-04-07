@@ -158,7 +158,7 @@ MOV_MPEG4_VIDEO = dict(MPEG4_VIDEO, **{
     "signal_format": "PAL", "data_rate_mode": "Variable"
     })
 MPEGTS_VIDEO = dict(MPEG1_VIDEO, **{
-    "data_rate": UNAV, "index": 1, "sound": "Yes", "version": "2"})
+    "data_rate": "0.20903", "index": 1, "sound": "Yes", "version": "2"})
 
 MPEG1_AUDIO = {
     "mimetype": "audio/mpeg", "index": 0,

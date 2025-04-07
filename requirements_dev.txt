@@ -4,7 +4,7 @@ pytest-cov
 python-mimeparse
 olefile
 file-magic
-pymediainfo == 6.1.0
+pymediainfo == 7.0.1
 Pillow
 wand
 lxml
