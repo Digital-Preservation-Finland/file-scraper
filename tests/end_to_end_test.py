@@ -29,7 +29,7 @@ from tests.common import get_files
 # For GIFs and TIFFs with 3 images inside, the version is missing from
 # the second and third streams, but exists in the first one.
 # For all, but one valid images, icc_profile_name is missing.
-UNAV_ELEMENTS = {
+EXPECTED_UNAV_FIELDS_FOR_FILE = {
     "tests/data/image_gif/valid_1987a.gif": ["icc_profile_name"],
     "tests/data/image_gif/valid_1989a.gif": ["version",
                                              "version",
@@ -83,7 +83,6 @@ UNAV_ELEMENTS = {
     "tests/data/video_MP2T/valid__mpeg2_mp3.ts": [
         "codec_creator_app_version",
         "codec_creator_app",
-        "data_rate",
         "codec_creator_app_version",
         "codec_creator_app",
         "bits_per_sample",
@@ -230,6 +229,7 @@ UNAV_MIMETYPE_INVALID = [
     "tests/data/text_plain/invalid__utf8_just_c3.txt",
     "tests/data/video_mp4/invalid__h264_aac_missing_data.mp4",
     "tests/data/video_x-matroska/invalid_4_ffv1_missing_data.mkv",
+    "tests/data/video_MP2T/invalid__missing_data.ts",
     "tests/data/image_webp/invalid__missing_bitstream.webp",
     "tests/data/image_webp/invalid__missing_icc_profile.webp",
     "tests/data/image_webp/invalid__missing_image_data.webp",
@@ -373,7 +373,7 @@ def _assert_valid_scraper_result(scraper, fullname, mimetype, version,
             if stream_value == UNAV:
                 unavs.append(key)
 
-    unav_expected = UNAV_ELEMENTS
+    unav_expected = EXPECTED_UNAV_FIELDS_FOR_FILE
 
     if fullname in unav_expected:
         assert sorted(unavs) == sorted(unav_expected[fullname])
