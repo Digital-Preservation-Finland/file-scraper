@@ -17,6 +17,7 @@ import pytest
 from file_scraper.base import BaseScraper, BaseMeta, BaseDetector
 from file_scraper.utils import metadata
 from tests.common import partial_message_included
+from file_scraper.defaults import UNAV
 
 
 class BaseMetaBasic(BaseMeta):
@@ -212,20 +213,9 @@ def test_base_detector():
     assert detector._predefined_version == "0.0"
 
 
-@pytest.mark.parametrize(('tools_given', 'tools_expected'), [
-    (None, []),
-    (['foo', 'bar'], ['foo', 'bar']),
-    ([False, 'foo'], ['foo']),
-
-])
-def test_tools(tools_given, tools_expected):
-    """Tests that self.tools outputs the expected sring for
-    given tools.
+def test_tools():
     """
-    # We are intentionally altering the private property in this test.
-    # pylint: disable=protected-access
+    Test that the base implementation of tools returns UNAV.
+    """
     scraper = BaseScraperBasic("testfilename", "test/mimetype")
-    if tools_given:
-        for tool in tools_given:
-            scraper._tools.append(tool)
-    assert scraper.tools() == tools_expected
+    assert scraper.tools() == UNAV

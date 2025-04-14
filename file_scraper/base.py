@@ -11,10 +11,9 @@ from file_scraper.utils import (metadata, is_metadata, encode_path,
 # pylint: disable=useless-object-inheritance
 
 
-class _BaseScraperDetector:
-    """Base class for Scrapers and detectors."""
+class _BaseScraperDetector():
 
-    __metaclass__ = abc.ABCMeta
+    """Base class for Scrapers and detectors."""
 
     def __init__(self, filename, mimetype=None, version=None):
         """Initialize scraper/detector.
@@ -30,7 +29,6 @@ class _BaseScraperDetector:
         self._predefined_version = version
         self._messages = []
         self._errors = []
-        self._tools = []
 
     def errors(self):
         """Return the logged errors in a list.
@@ -49,11 +47,14 @@ class _BaseScraperDetector:
                 message in self._messages if message]
 
     def tools(self):
-        """Return used software tools in a list.
+        """Tools method must be implemented in each
+        scraper and detector or
+        return value will be unavailable or possibly unavailable (UNAV).
 
-        :returns: list containing the tools used
+        :returns: (:unav)
         """
-        return [tool for tool in self._tools if tool]
+
+        return UNAV
 
     def info(self):
         """Return basic info of detector/scraper.
