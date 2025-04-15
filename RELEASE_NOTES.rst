@@ -1,12 +1,17 @@
 Release notes
 =============
 
+Unreleased
+------------
+
+- Update to compatibility with pymediainfo 7.x.x
+- Update to compatibility with libmediainfo 25.03
+
 Version 0.81
 ------------
 
 - Add detector for ATLAS TI project bundle files
 - Make schematron cache creation atomic
-
 
 Version 0.80
 ------------
