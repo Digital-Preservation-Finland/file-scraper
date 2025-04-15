@@ -169,7 +169,7 @@ class SchematronScraper(BaseScraper):
         :returns: XSLT file name
         """
         xslt_filename = self._generate_xslt_filename()
-        tempdir = tempfile.mkdtemp()
+        tempdir = tempfile.mkdtemp(dir=self._cachepath)
 
         if self._cache:
             if os.path.isfile(xslt_filename):
