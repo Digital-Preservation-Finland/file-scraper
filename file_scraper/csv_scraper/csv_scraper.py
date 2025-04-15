@@ -14,8 +14,8 @@ class CsvScraper(BaseScraper):
 
     # Raise csv field size limit to 1 MB
     csv.field_size_limit(1048576)
-
     # pylint: disable=too-many-branches
+
     def scrape_file(self):
         """Scrape CSV file."""
 
@@ -119,3 +119,10 @@ class CsvScraper(BaseScraper):
         :raises: IOError if the file cannot be read
         """
         return io_open(self.filename, "rt", encoding=charset)
+
+    def tools(self):
+        """
+        Overwriting baseclass implementation
+        No software dependencies
+        """
+        return {}

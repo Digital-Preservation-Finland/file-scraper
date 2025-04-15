@@ -366,7 +366,9 @@ def test_nonexistent_file():
 
 
 def test_is_supported():
-    """Test is_supported method."""
+    """
+    Test is_supported method.
+    """
     mime = MIMETYPE
     ver = ""
     assert CsvScraper.is_supported(mime, ver, True)
@@ -374,3 +376,11 @@ def test_is_supported():
     assert CsvScraper.is_supported(mime, ver, False)
     assert CsvScraper.is_supported(mime, "foo", True)
     assert not CsvScraper.is_supported("foo", ver, True)
+
+
+def test_tools():
+    """
+    Test that there are no thirdparty dependencies for csv.
+    """
+    scraper = CsvScraper("testfilename", "test/mimetype")
+    assert scraper.tools() == {}
