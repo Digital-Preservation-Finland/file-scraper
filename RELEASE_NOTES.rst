@@ -1,6 +1,13 @@
 Release notes
 =============
 
+Version 0.81
+------------
+
+- Add detector for ATLAS TI project bundle files
+- Make schematron cache creation atomic
+
+
 Version 0.80
 ------------
 
