@@ -42,3 +42,11 @@ class DpxScraper(BaseScraper):
             filename=self.filename))
 
         self._check_supported()
+
+    def tools(self):
+        """
+        Collecting software dependencies for this scraper.
+        """
+        # dpx_validator is hardcoded to work from an rpm package and
+        # the validator cli doesn't have a get version flag or command.
+        return super().tools()

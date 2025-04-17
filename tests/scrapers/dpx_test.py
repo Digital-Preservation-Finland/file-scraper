@@ -22,6 +22,7 @@ import os
 import pytest
 from tests.common import parse_results
 from file_scraper.dpx.dpx_scraper import DpxScraper
+from file_scraper.defaults import UNAV
 
 MIMETYPE = "image/x-dpx"
 
@@ -92,3 +93,13 @@ def test_is_supported():
     assert not DpxScraper.is_supported(mime, "3.0", False)
     assert not DpxScraper.is_supported(mime, "foo", True)
     assert not DpxScraper.is_supported("foo", "2.0", True)
+
+
+def test_tools():
+    """ Test that tools were unavailable """
+    path = os.path.join("tests/data", MIMETYPE.replace("/", "_"))
+    testfile = os.path.join(path, "valid_2.0.dpx")
+
+    scraper = DpxScraper(filename=testfile,
+                         mimetype=MIMETYPE)
+    assert scraper.tools() == UNAV
