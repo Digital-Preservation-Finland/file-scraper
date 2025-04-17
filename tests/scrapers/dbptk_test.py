@@ -81,3 +81,19 @@ def test_is_supported():
         assert DbptkScraper.is_supported(mime, ver, True)
         assert not DbptkScraper.is_supported(mime, ver, False)
         assert not DbptkScraper.is_supported("foo", ver, True)
+
+
+def test_tools_not_empty():
+    """Test that dbptk scraper has exactly one dependency"""
+    scraper = DbptkScraper(filename="valid_2.1.1.siard", mimetype=MIMETYPE)
+    assert len(scraper.tools()) == 1
+
+
+def test_tools_returns_version():
+    """Test thatdbptk scraper tools
+    returns a somewhat valid version"""
+    scraper = DbptkScraper(filename="invalid_2.1.1_schema_errors.siard",
+                           mimetype=MIMETYPE)
+
+    assert scraper.tools()["dbptk-developer"] is not None
+    assert scraper.tools()["dbptk-developer"]["version"] is not UNAV
