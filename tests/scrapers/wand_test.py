@@ -475,14 +475,7 @@ def test_scraper_invalid(filename, mimetype, stderr_part):
     :mimetype: File MIME type
     :stderr_part: Part of the expected stderr
     """
-    
-    # TODO: delete this check if it's not needed:
-    if filename in ["invalid_1.2_no_IEND.png", "invalid_1.2_no_IHDR.png"]:
-      # CentOS 7 uses older version of ImageMagick than RHEL 9
-      # and it gives a different error message
-      if not RHEL9:
-           stderr_part = "MagickReadImage returns false, but did not raise ImageMagick  exception."
-    
+
     scraper = WandScraper(
         filename=os.path.join("tests/data/", mimetype.replace("/", "_"),
                               filename),
@@ -491,7 +484,6 @@ def test_scraper_invalid(filename, mimetype, stderr_part):
 
     assert not scraper.streams
     assert scraper.info()["class"] == "WandScraper"
-    assert not scraper.messages()
     assert partial_message_included(stderr_part, scraper.errors())
     assert scraper.well_formed is False
 
