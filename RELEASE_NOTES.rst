@@ -4,7 +4,7 @@ Release notes
 Unreleased
 ------------
 
-- Update to compatibility with pymediainfo 7.x.x
+- Update to compatibility with pymediainfo 7.0.1
 - Update to compatibility with libmediainfo 25.03
 
 Version 0.81
