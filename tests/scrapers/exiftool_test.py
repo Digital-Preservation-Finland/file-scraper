@@ -52,3 +52,13 @@ def test_scraper_dng(filename, result_dict, evaluate_scraper):
                                         scraper.messages())
         assert partial_message_included(correct.stderr_part,
                                         scraper.errors())
+
+
+def test_tools():
+    """
+    Test tools return correctly
+    """
+    scraper = ExifToolDngScraper(filename="valid_1.4.dng",
+                                 mimetype="image/x-adobe-dng")
+    assert scraper.tools() is not None
+    assert scraper.tools()["exiftool"]["version"][0].isdigit()

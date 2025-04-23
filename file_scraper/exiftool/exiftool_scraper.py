@@ -66,6 +66,14 @@ class ExifToolScraperBase(BaseScraper):
         self.streams = list(self.iterate_models(metadata=metadata))
         self._check_supported(allow_unav_version=True)
 
+    def tools(self):
+        """
+        :return: software versions used
+        """
+
+        with exiftool.ExifTool() as et:
+            return {"exiftool": {"version": et.version}}
+
 
 class ExifToolDngScraper(ExifToolScraperBase):
     """Variables for scraping dng files."""
