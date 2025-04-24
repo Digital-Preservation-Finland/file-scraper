@@ -734,3 +734,20 @@ def test_unsupported_format(filename):
         in scraper.messages()
 
     assert not scraper.well_formed
+
+
+def test_tools():
+    """
+    Test tools
+    """
+    # validity or invalidity of the file doesn't matter for tools
+    scraper = FFMpegScraper(
+        filename="tests/data/application_vnd.rn-realmedia/invalid__ac3.ra",
+        mimetype="audio/mp4")
+    scraper.scrape_file()
+
+    try:
+        assert scraper.tools()["ffmpeg"] is not None
+        assert scraper.tools()["ffmpeg"]["version"] is not UNAV
+    except KeyError:
+        assert not True

@@ -146,6 +146,24 @@ class FFMpegMetaScraper(BaseScraper):
                 if md_object.av_format_supported() is not None:
                     yield md_object
 
+    def tools(self):
+        """
+        Collect used software for the Scraper
+        """
+
+        toolShell = Shell(["ffmpeg", "-version"])
+        """ Find version with capture group to capture integers and dots
+            until any other character appears.
+        """
+        regex = r"[vV]ersion ([\d\.]+)"
+        try:
+            version = next(
+                re.finditer(regex, toolShell.stdout, re.MULTILINE)
+                ).groups()[0]
+        except StopIteration:
+            version = UNAV
+        return {"ffmpeg": {"version": version}}
+
 
 class FFMpegScraper(FFMpegMetaScraper):
     """
