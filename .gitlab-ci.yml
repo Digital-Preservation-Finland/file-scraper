@@ -2,6 +2,7 @@
 
 variables:
   CI_EL9: "yes"
+  CI_SONAR: "yes"
 
 include:
   - project: 'dpres/gitlab-ci-pipeline'
