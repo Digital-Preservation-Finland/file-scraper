@@ -208,6 +208,7 @@ def test_old_namespace(filename, result_dict, evaluate_scraper, monkeypatch):
 
     Mocks the results of Shell stdout to edit the XML output.
     """
+
     @property
     def _mock_stdout_raw(self):
         """
@@ -215,15 +216,17 @@ def test_old_namespace(filename, result_dict, evaluate_scraper, monkeypatch):
         Replace new OPF namespace with old Harvard one.
         """
         mock_output = self.popen()["stdout"]
-        assert (b"http://schema.openpreservation.org/ois/xml/ns/jhove" in
-                mock_output)
-        mock_output = mock_output.replace(
-                b"http://schema.openpreservation.org/ois/xml/ns/jhove",
-                b"http://hul.harvard.edu/ois/xml/ns/jhove")
-        mock_output = mock_output.replace(
-                b"https://schema.openpreservation.org/ois/xml/xsd/jhove/"
-                b"1.8/jhove.xsd",
-                b"http://hul.harvard.edu/ois/xml/xsd/jhove/1.6/jhove.xsd")
+
+        if self.command[0:4] == ["jhove", "-h", "XML", "-m"]:
+            assert (b"http://schema.openpreservation.org/ois/xml/ns/jhove" in
+                    mock_output)
+            mock_output = mock_output.replace(
+                    b"http://schema.openpreservation.org/ois/xml/ns/jhove",
+                    b"http://hul.harvard.edu/ois/xml/ns/jhove")
+            mock_output = mock_output.replace(
+                    b"https://schema.openpreservation.org/ois/xml/xsd/jhove/"
+                    b"1.8/jhove.xsd",
+                    b"http://hul.harvard.edu/ois/xml/xsd/jhove/1.6/jhove.xsd")
         return mock_output
 
     monkeypatch.setattr(Shell, "stdout_raw", _mock_stdout_raw)
@@ -875,3 +878,10 @@ def test_jhove_returns_invalid_return_code():
     scraper.scrape_file()
 
     assert "JHove returned invalid return code: -1\n" in scraper.errors()
+
+
+def test_jhove_tools():
+    """Test scraper tools return correctly something non nullable"""
+    scraper = JHovePdfScraper(filename="",
+                              mimetype="")
+    assert scraper.tools()["jhove"]["version"][0].isdigit()

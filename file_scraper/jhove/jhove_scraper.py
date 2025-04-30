@@ -4,9 +4,11 @@ try:
     import lxml.etree
 except ImportError:
     pass
+import re
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
+from file_scraper.defaults import UNAV
 from file_scraper.jhove.jhove_model import (JHoveAiffMeta, JHoveDngMeta,
                                             JHoveEpubMeta, JHoveGifMeta,
                                             JHoveHtmlMeta, JHoveJpegMeta,
@@ -59,6 +61,23 @@ class JHoveScraperBase(BaseScraper):
 
         self._check_supported(allow_unav_version=True,
                               allow_unap_version=True)
+
+    def tools(self):
+        """ Collect software used by the scraper """
+        version_shell = Shell(["jhove"])
+
+        regex_jhove = r"App:[\n ]+API: ([\d\.]+)"
+        try:
+            version = next(
+                re.finditer(regex_jhove, version_shell.stdout, re.MULTILINE)
+                ).groups()[0]
+        except StopIteration:
+            version = UNAV
+
+        return {"jhove": {
+            "version": version
+            }
+        }
 
 
 class JHoveGifScraper(JHoveScraperBase):
