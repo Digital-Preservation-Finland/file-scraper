@@ -6,12 +6,14 @@ versions 1.7, A-2a, A-2b, A-2u, A-3a, A-3b and A-3u.
 """
 
 import shutil
+import re
 
 from file_scraper.base import BaseScraper
 from file_scraper.config import get_value
 from file_scraper.ghostscript.ghostscript_model import GhostscriptMeta
 from file_scraper.shell import Shell
 from file_scraper.utils import encode_path, ensure_text
+from file_scraper.defaults import UNAV
 
 
 class GhostscriptScraper(BaseScraper):
@@ -72,3 +74,25 @@ class GhostscriptScraper(BaseScraper):
                     "**** warning" in message.lower()):
                 return False
         return super().well_formed
+
+    def tools(self):
+        """
+        Collect used software for the Scraper
+        """
+        gs_path = get_value("GHOSTSCRIPT_PATH")
+        if not gs_path and shutil.which("gs"):
+            gs_path = shutil.which("gs")
+        version_shell = Shell([gs_path, "-version"])
+        regex = r"Ghostscript ([\d\.]+)"
+        try:
+            version = next(
+                re.finditer(regex, version_shell.stdout, re.MULTILINE)
+                ).groups()[0]
+        except StopIteration:
+            version = UNAV
+
+        self._tools = {"ghostscript": {
+            "version": version
+            }
+        }
+        return self._tools

@@ -135,3 +135,11 @@ def test_is_supported():
     assert not GhostscriptScraper.is_supported(mime, ver, False)
     assert not GhostscriptScraper.is_supported(mime, "foo", True)
     assert not GhostscriptScraper.is_supported("foo", ver, True)
+
+
+def test_ghostscript_tools():
+    """Test verifies that tools will be returned"""
+    scraper = GhostscriptScraper(filename="None", mimetype="None")
+
+    assert scraper.tools()["ghostscript"] is not None
+    assert scraper.tools()["ghostscript"]["version"] is not UNAV or None
