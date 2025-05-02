@@ -118,3 +118,10 @@ def test_charset(filename, mimetype, charset, well_formed):
     else:
         assert partial_message_included("encoding not defined",
                                         scraper.errors())
+
+
+def test_tools():
+    """Test that the version is only numeric"""
+    scraper = LxmlScraper(filename="tests/data/text_xml/valid_1.0_xsd.xml",
+                          mimetype="text/xml", params={"charset": "UTF-8"})
+    assert scraper.tools()["lxml"]["version"].replace(".", "").isnumeric()

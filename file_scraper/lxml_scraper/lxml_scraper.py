@@ -118,3 +118,11 @@ class LxmlScraper(BaseScraper):
                                         "information could not be gathered.")
                 else:
                     yield md_model
+
+    def tools(self):
+        """Software used by the scraper"""
+        # Version consists of 4 values. Expect the first 3 to follow SemVers
+        major, minor, patch, extra = etree.LXML_VERSION
+        return {
+            "lxml": {"version": f"{major}.{minor}.{patch}.{extra}"}
+        }
