@@ -18,6 +18,7 @@ from file_scraper.mediainfo.mediainfo_model import (
     UnknownStreamFormatMeta
 )
 from file_scraper.utils import decode_path
+from file_scraper.defaults import UNAV
 
 try:
     from pymediainfo import MediaInfo
@@ -147,3 +148,25 @@ class MediainfoScraper(BaseScraper):
             self._errors.append("File contains a truncated track.")
 
         return not truncated and track_found
+
+    def tools(self):
+        """Collect software used inside pymedia info"""
+        pymediaversion = UNAV
+        libmediaversion = UNAV
+
+        try:
+            import pymediainfo as pmi
+            pymediaversion = pmi.__version__
+            libmediaversion = MediaInfo._get_library()[2]
+        except (ImportError, OSError):
+            pass
+        except (IndexError):
+            pymediaversion = pmi.__version__
+        return {
+            "pymediainfo": {
+                "version": pymediaversion
+            },
+            "libmediainfo": {
+                    "version": libmediaversion
+            }
+        }

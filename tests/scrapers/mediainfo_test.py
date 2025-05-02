@@ -794,3 +794,10 @@ def test_is_supported(mime, ver):
     assert MediainfoScraper.is_supported(mime, ver, False)
     assert MediainfoScraper.is_supported(mime, "foo", True)
     assert not MediainfoScraper.is_supported("foo", ver, True)
+
+
+def test_mediainfo_tools():
+    """Test that tool versions have at least one digit in the start"""
+    scraper = MediainfoScraper(filename="", mimetype="")
+    assert scraper.tools()["pymediainfo"]["version"][0].isdigit()
+    assert scraper.tools()["libmediainfo"]["version"][0].isdigit()
