@@ -33,3 +33,11 @@ class JpylyzerScraper(BaseScraper):
         self._check_supported(allow_unav_mime=True,
                               allow_unav_version=True,
                               allow_unap_version=True)
+
+    def tools(self):
+        """Collect software used by Scraper"""
+        return {"jpylyzer":
+                {
+                        "version": jpylyzer.__version__
+                    }
+                }

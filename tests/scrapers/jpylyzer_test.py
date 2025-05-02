@@ -66,3 +66,9 @@ def test_scraper_jp2(filename, result_dict):
                                     scraper.messages())
     assert partial_message_included(correct.stderr_part,
                                     scraper.errors())
+
+
+def test_tools():
+    scraper = JpylyzerScraper(filename="valid__jpylyzer_reference.jp2",
+                              mimetype="image/jp2")
+    assert scraper.tools()["jpylyzer"]["version"][0].isdigit()
