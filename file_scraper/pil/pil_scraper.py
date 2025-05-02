@@ -58,3 +58,12 @@ class PilScraper(BaseScraper):
             self._check_supported(allow_unav_version=True)
 
             self._messages.append("The file was analyzed successfully.")
+
+    def tools(self):
+        """Collect software use by scraper"""
+
+        return {
+            "pil-image": {
+                "version": PIL.Image.__version__
+            }
+        }
