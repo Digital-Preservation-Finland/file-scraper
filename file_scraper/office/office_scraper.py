@@ -44,3 +44,15 @@ class OfficeScraper(BaseScraper):
             self.streams = list(self.iterate_models())
             self._check_supported(allow_unav_mime=True,
                                   allow_unav_version=True)
+
+    def tools(self):
+        """Collect software use by scraper"""
+        cmd = "soffice"
+        if os.path.isfile(get_value("SOFFICE_PATH")):
+            cmd = get_value("SOFFICE_PATH")
+        version_shell = Shell([cmd, "--version"])
+        return {
+            "soffice": {
+                "version": version_shell.stdout.split(" ")[1]
+            }
+        }

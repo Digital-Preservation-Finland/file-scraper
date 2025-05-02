@@ -289,3 +289,9 @@ def test_is_supported(mime, ver):
     assert not OfficeScraper.is_supported(mime, ver, False)
     assert OfficeScraper.is_supported(mime, "foo", True)
     assert not OfficeScraper.is_supported("foo", ver, True)
+
+
+def test_tools():
+    """Test that tool versions have at least one digit in the start"""
+    scraper = OfficeScraper(filename="", mimetype="")
+    assert scraper.tools()["soffice"]["version"][0].isdigit()
