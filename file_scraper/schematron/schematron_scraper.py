@@ -3,12 +3,14 @@
 import os
 import shutil
 import tempfile
+import re
 
 from lxml import etree
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.config import get_value
+from file_scraper.defaults import UNAV
 from file_scraper.schematron.schematron_model import SchematronMeta
 from file_scraper.utils import encode_path, hexdigest, ensure_text
 
@@ -227,6 +229,23 @@ class SchematronScraper(BaseScraper):
 
         return os.path.join(self._cachepath, "{}.{}.validator.xsl".format(
             schema_basename, schema_digest))
+
+    def tools(self):
+        tool_shell = Shell(["xsltproc", "-version"])
+        regexes = [r"libxml ", r"libxslt ", r"libxml "]
+        versions = []
+        for regex in regexes:
+            try:
+                versions.append(next(
+                    re.finditer(regex + r"([\d\.]+)", tool_shell.stdout,
+                                re.MULTILINE)
+                    ).groups()[0])
+            except StopIteration:
+                versions.append(UNAV)
+        return {"libxml": {"version": versions[0]},
+                "libxslt": {"version": versions[1]},
+                "libexslt": {"version": versions[2]}
+                }
 
 
 class SchematronValidatorError(Exception):

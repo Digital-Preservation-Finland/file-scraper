@@ -209,3 +209,11 @@ def test_filter_duplicate_elements():
     assert result.count(b"<svrl:active-pattern") == 1
     assert result.count(b"<svrl:fired-rule") == 1
     assert result.count(b"<svrl:failed-assert") == 2
+
+
+def test_tools():
+    scraper = SchematronScraper("testsfile", "test/mimetype")
+    result = scraper.tools()
+    assert result["libxml"]["version"][0].isdigit()
+    assert result["libxslt"]["version"][0].isdigit()
+    assert result["libexslt"]["version"][0].isdigit()
