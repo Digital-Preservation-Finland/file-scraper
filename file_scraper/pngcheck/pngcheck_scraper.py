@@ -4,6 +4,8 @@ from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.pngcheck.pngcheck_model import PngcheckMeta
 from file_scraper.utils import encode_path
+from file_scraper.defaults import UNAV
+import re
 
 
 class PngcheckScraper(BaseScraper):
@@ -31,3 +33,21 @@ class PngcheckScraper(BaseScraper):
         self.streams = list(self.iterate_models())
 
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)
+
+    def tools(self):
+        """
+        Collect used software for the Scraper
+        """
+
+        tool_shell = Shell(["pngcheck", "-v"])
+        """ Find version with capture group to capture integers and dots
+            until any other character appears.
+        """
+        regex = r"[vV]ersion ([\d\.]+)"
+        try:
+            version = next(
+                re.finditer(regex, tool_shell.stdout, re.MULTILINE)
+                ).groups()[0]
+        except StopIteration:
+            version = UNAV
+        return {"pngcheck": {"version": version}}

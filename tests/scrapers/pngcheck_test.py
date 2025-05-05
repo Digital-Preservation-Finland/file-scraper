@@ -73,3 +73,12 @@ def test_is_supported():
     assert not PngcheckScraper.is_supported(mime, ver, False)
     assert PngcheckScraper.is_supported(mime, "foo", True)
     assert not PngcheckScraper.is_supported("foo", ver, True)
+
+
+def test_tools():
+    """Test scraper tools return correctly something non nullable"""
+    correct = parse_results("valid_1.2.png", MIMETYPE, {
+            "purpose": "Test valid file."}, True)
+    scraper = PngcheckScraper(filename=correct.filename,
+                              mimetype="image/png")
+    assert scraper.tools()["pngcheck"]["version"][0].isdigit()
