@@ -109,3 +109,13 @@ def test_is_supported():
     assert not PsppScraper.is_supported(mime, ver, False)
     assert PsppScraper.is_supported(mime, "foo", True)
     assert not PsppScraper.is_supported("foo", ver, True)
+
+
+def test_tools():
+    """Test scraper tools return correctly something non nullable"""
+    path = os.path.join("tests/data", MIMETYPE.replace("/", "_"))
+    testfile = os.path.join(path, "valid__spss24-dot.por")
+
+    scraper = PsppScraper(filename=testfile,
+                          mimetype=MIMETYPE)
+    assert scraper.tools()["pspp"]["version"][0].isdigit()

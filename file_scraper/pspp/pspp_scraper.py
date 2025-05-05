@@ -3,10 +3,12 @@
 import os
 import shutil
 import tempfile
+import re
 from io import open as io_open
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
+from file_scraper.defaults import UNAV
 from file_scraper.config import get_value
 from file_scraper.pspp.pspp_model import PsppMeta
 
@@ -54,3 +56,15 @@ class PsppScraper(BaseScraper):
                 well_formed=self.well_formed))
             self._check_supported(allow_unav_mime=True,
                                   allow_unav_version=True)
+
+    def tools(self):
+        tool_shell = Shell([get_value("PSPP_PATH"), "--version"])
+
+        regex = r"\(GNU PSPP\) ([\d\.]+)"
+        try:
+            version = next(
+                re.finditer(regex, tool_shell.stdout, re.MULTILINE)
+                ).groups()[0]
+        except StopIteration:
+            version = UNAV
+        return {"pspp": {"version": version}}
