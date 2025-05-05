@@ -84,12 +84,31 @@ def test_scraper(filename, result_dict, params, evaluate_scraper):
 
     evaluate_scraper(scraper, correct)
 
-    if "verbose" in correct.params and correct.params["verbose"]:
-        assert not partial_message_included("have been suppressed",
-                                            scraper.messages())
-    elif scraper.messages():
-        assert partial_message_included("have been suppressed",
-                                        scraper.messages())
+
+@pytest.mark.parametrize("verbose", [True, False])
+def test_scraper_verbose(verbose):
+    """
+    Test scraper and ensure `verbose` flag causes `xsltproc` to print a
+    different message for a test file.
+    """
+    scraper = SchematronScraper(
+        filename="tests/data/text_xml/valid_1.0_well_formed.xml",
+        mimetype="text/xml",
+        params={
+            "verbose": verbose,
+            "schematron": "tests/data/text_xml/supplementary/local.sch"
+        }
+    )
+    scraper.scrape_file()
+
+    # If 'verbose' flag is *not* set, a specific message
+    # will be printed indicating output is suppressed
+    is_suppressed = not verbose
+
+    assert partial_message_included(
+        "have been suppressed",
+        scraper.messages()
+    ) == is_suppressed
 
 
 @pytest.mark.usefixtures("patch_shell_attributes_fx")
