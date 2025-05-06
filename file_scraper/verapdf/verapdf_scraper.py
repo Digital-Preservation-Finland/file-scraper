@@ -6,10 +6,12 @@ except ImportError:
     pass
 
 import shutil
+import re
 
 from file_scraper.base import BaseScraper
 from file_scraper.config import get_value
 from file_scraper.shell import Shell
+from file_scraper.defaults import UNAV
 from file_scraper.utils import encode_path
 from file_scraper.verapdf.verapdf_model import VerapdfMeta
 
@@ -85,3 +87,23 @@ class VerapdfScraper(BaseScraper):
             well_formed=self.well_formed, profile=profile))
 
         self._check_supported()
+
+    def tools(self):
+        """Find"""
+        verapdf_loc = get_value("VERAPDF_PATH")
+        if not verapdf_loc and shutil.which("verapdf"):
+            verapdf_loc = shutil.which("verapdf")
+        tool_shell = Shell([verapdf_loc, "--version"])
+
+        """
+        Find verPDF string and capture a group after it containing
+        integers and dots until any other character appears.
+        """
+        regex = r"veraPDF ([\d\.]+)"
+        try:
+            version = next(
+                re.finditer(regex, tool_shell.stdout, re.MULTILINE)
+                ).groups()[0]
+        except StopIteration:
+            version = UNAV
+        return {"veraPDF": {"version": version}}

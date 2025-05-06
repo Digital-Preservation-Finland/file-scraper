@@ -154,3 +154,12 @@ def test_is_supported():
     assert not VerapdfScraper.is_supported(mime, ver, False)
     assert not VerapdfScraper.is_supported(mime, "foo", True)
     assert not VerapdfScraper.is_supported("foo", ver, True)
+
+
+def test_tools():
+    """
+    Test that correct software is received and
+    that the version number starts with a digit
+    """
+    tool_scraper = VerapdfScraper(filename="", mimetype="")
+    assert tool_scraper.tools()["veraPDF"]["version"][0].isdigit()
