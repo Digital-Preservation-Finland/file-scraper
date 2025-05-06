@@ -4,6 +4,8 @@ from file_scraper.base import BaseScraper
 from file_scraper.defaults import UNAV
 from file_scraper.exceptions import (ForbiddenCharacterError,
                                      UnknownEncodingError)
+from file_scraper.shell import Shell
+from file_scraper.config import config_filecmd_env
 from file_scraper.magiclib import file_command
 from file_scraper.utils import iter_utf_bytes
 from file_scraper.textfile.textfile_model import (TextFileMeta,
@@ -75,6 +77,15 @@ class TextfileScraper(BaseScraper):
         self._check_supported(allow_unav_mime=True,
                               allow_unav_version=True)
 
+    def tools(self):
+        """
+        Overwrite base implementation
+        :returns: software used by scraper
+        """
+        (filecmd_path, magic_env) = config_filecmd_env()
+        tool_scraper = Shell([filecmd_path, "-version"], env=magic_env)
+        return {"file": {"version": tool_scraper.stdout.split("\n")[0][5:]}}
+
 
 class TextEncodingMetaScraper(BaseScraper):
     """
@@ -141,6 +152,13 @@ class TextEncodingMetaScraper(BaseScraper):
             predefined_mimetype=self._predefined_mimetype))
         self._check_supported(allow_unav_mime=True,
                               allow_unav_version=True)
+
+    def tools(self):
+        """
+        Overwrite base implementation
+        :returns: software used by scraper
+        """
+        return {}
 
 
 class TextEncodingScraper(BaseScraper):
@@ -339,3 +357,10 @@ class TextEncodingScraper(BaseScraper):
                 raise ForbiddenCharacterError(
                     "Illegal character '{}' in position {}".format(
                         repr(forb_char)[1:-1], (position+index)))
+
+    def tools(self):
+        """
+        Overwrite base implementation
+        :returns: software used by scraper
+        """
+        return {}

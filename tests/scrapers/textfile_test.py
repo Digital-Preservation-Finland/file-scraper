@@ -23,7 +23,8 @@ import pytest
 from file_scraper.defaults import UNAP, UNAV
 from file_scraper.magiclib import file_command
 from file_scraper.textfile.textfile_scraper import (TextfileScraper,
-                                                    TextEncodingScraper)
+                                                    TextEncodingScraper,
+                                                    TextEncodingMetaScraper)
 from tests.common import parse_results, partial_message_included
 
 VALID_MSG = "is a text file"
@@ -241,3 +242,15 @@ def test_error_message_control_character():
     character = "'\\x1f'"
     assert partial_message_included(
             "Illegal character %s in position 4" % character, scraper.errors())
+
+
+def test_tools():
+    """
+    Test that tools return correct software
+    """
+    text_scraper = TextfileScraper(filename="", mimetype="")
+    text_encoding_scraper = TextEncodingScraper(filename="", mimetype="")
+    text_meta_scraper = TextEncodingMetaScraper(filename="", mimetype="")
+    assert text_scraper.tools()["file"]["version"][0].isdigit()
+    assert text_encoding_scraper.tools() == {}
+    assert text_meta_scraper.tools() == {}
