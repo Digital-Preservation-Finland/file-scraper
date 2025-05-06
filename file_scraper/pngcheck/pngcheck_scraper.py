@@ -39,7 +39,7 @@ class PngcheckScraper(BaseScraper):
         Collect used software for the Scraper
         """
 
-        tool_shell = Shell(["pngcheck", "-v"])
+        tool_shell = Shell(["pngcheck", "-v"], use_pty=True)
         """ Find version with capture group to capture integers and dots
             until any other character appears.
         """
