@@ -538,3 +538,9 @@ def test_scraper_is_supported(mime, ver):
     assert WandScraper.is_supported(mime, ver, False)
     assert WandScraper.is_supported(mime, "foo", True)
     assert not WandScraper.is_supported("foo", ver, True)
+
+
+def test_tools():
+    """:returns: tools used by the scraper as a dictionary"""
+    scraper = WandScraper(filename="", mimetype="")
+    assert scraper.tools()["magic-wand-api"]["version"][0].isdigit()

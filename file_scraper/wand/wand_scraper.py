@@ -81,3 +81,7 @@ class WandScraper(BaseScraper):
             for frame in self._wandresults.sequence:
                 frame.destroy()
             self._wandresults.close()
+
+    def tools(self):
+        version = wand.image.MAGICK_VERSION_NUMBER
+        return {"magic-wand-api": {"version": str(version)}}
