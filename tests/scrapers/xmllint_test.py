@@ -256,3 +256,9 @@ def test_parameters():
                              params={"catalog_path": "catpath"})
     assert scraper._catalogs
     assert scraper._catalog_path == "catpath"
+
+
+def test_tools():
+    """Test that scraper returns correct version"""
+    scraper = XmllintScraper(filename="", mimetype="")
+    assert scraper.tools()["lxml"]["version"].replace(".", "").isnumeric()
