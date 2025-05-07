@@ -7,6 +7,7 @@ import zipfile
 import lxml.etree
 import exiftool
 
+from fido import __version__ as fido_version
 from fido.fido import Fido, defaults
 from fido.pronomutils import get_local_pronom_versions
 from file_scraper.base import BaseDetector
@@ -190,6 +191,12 @@ class FidoDetector(BaseDetector):
             elif self.mimetype not in [None, "text/html", "application/zip"]:
                 important["mimetype"] = self.mimetype
         return important
+
+    def tools(self):
+        """Software used by the detector"""
+        return {
+            "fido": {"version": fido_version}
+        }
 
 
 class MagicDetector(BaseDetector):

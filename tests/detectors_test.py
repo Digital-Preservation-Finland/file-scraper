@@ -157,6 +157,12 @@ def test_fido_cache_halting_file(fido_cache_halting_file):
     assert abs(fido_elapsed_time - fido_reader_elapsed_time) < 2
 
 
+def test_fido_tools():
+    """Test that tools function provides a valid version"""
+    fido_detector = FidoDetector("")
+    assert fido_detector.tools()["fido"]["version"][0].isdigit()
+
+
 @pytest.mark.parametrize(
     ["filepath", "mimetype", "version", "message"],
     [
