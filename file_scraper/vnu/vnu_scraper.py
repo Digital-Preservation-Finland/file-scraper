@@ -34,3 +34,9 @@ class VnuScraper(BaseScraper):
             self.streams = list(self.iterate_models(
                 well_formed=self.well_formed))
             self._check_supported()
+
+    def tools(self):
+        """:returns: software used by this scraper as a dictionary"""
+        tool_shell = Shell(["java", "-jar", get_value("VNU_PATH"),
+                            "--version"])
+        return {"vnu": {"version": tool_shell.stdout.removesuffix("\n")}}

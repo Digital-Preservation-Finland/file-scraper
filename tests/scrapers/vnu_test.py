@@ -104,3 +104,9 @@ def test_is_supported():
     assert not VnuScraper.is_supported(mime, ver, False)
     assert not VnuScraper.is_supported(mime, "foo", True)
     assert not VnuScraper.is_supported("foo", ver, True)
+
+
+def test_tools():
+    """Test that tools return expected version of software used."""
+    scraper = VnuScraper(filename="", mimetype="")
+    assert scraper.tools()["vnu"]["version"][0].isdigit()
