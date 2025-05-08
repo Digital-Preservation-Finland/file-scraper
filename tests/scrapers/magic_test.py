@@ -404,3 +404,9 @@ def test_is_supported_disallow_versions(mime, ver):
     assert MagicTextScraper.is_supported(mime, ver, False)
     assert not MagicTextScraper.is_supported(mime, "foo", True)
     assert not MagicTextScraper.is_supported("foo", ver, True)
+
+
+def test_tools():
+    """Test that magic scraper returns software used"""
+    tools = MagicTextScraper(filename="", mimetype="").tools()
+    assert tools["magic"]["version"][0].isdigit()

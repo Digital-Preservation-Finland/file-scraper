@@ -2,7 +2,7 @@
 
 import os
 
-from file_scraper.magiclib import magiclib, magic_analyze
+from file_scraper.magiclib import magiclib, magic_analyze, magiclib_version
 from file_scraper.base import BaseScraper
 from file_scraper.magic_scraper.magic_model import (TextFileMagicMeta,
                                                     XmlFileMagicMeta,
@@ -73,6 +73,13 @@ class MagicBaseScraper(BaseScraper):
                               allow_unav_version=True,
                               allow_unap_version=True)
         self._messages.append("The file was analyzed successfully.")
+
+    def tools(self):
+        """
+        Overwrite base implementation
+        :returns: software used by this scraper
+        """
+        return {"magic": {"version": magiclib_version()}}
 
 
 class MagicTextScraper(MagicBaseScraper):
