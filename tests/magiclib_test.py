@@ -30,3 +30,17 @@ def test_magiclib():
     """Test that magic library is found"""
     magic_lib = file_scraper.magiclib.magiclib()
     assert magic_lib._libraries  # pylint: disable=protected-access
+
+
+def test_magiclib_version():
+    """
+    Test that magic_version follows strict X.YY format
+    defined in the original header file for MAGIC_VERSION at
+    https://github.com/file/file/blob/master/src/magic.h.in
+    """
+    magic_lib = file_scraper.magiclib
+    version = magic_lib.magiclib_version()
+    assert (version[0].isdigit() &
+           (version[1] == '.') &
+           version[2:].isnumeric())
+    assert len(version) == 4
