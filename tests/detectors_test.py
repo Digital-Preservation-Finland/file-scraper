@@ -9,8 +9,9 @@ This module tests that:
       and PDF/A files.
     - ExifToolDetector results are important for dng and PDF/A files.
     - Character encoding detection works properly.
-    - That separate detectors for SEG-Y, SIARD, ODF and EPUB files
-      respectively detect correctly
+    - Separate detectors for SEG-Y, SIARD, ODF and EPUB files
+      respectively, detect correctly
+    - Each detectors tools functions return exact or somewhat valid versions
 """
 import time
 import pytest
@@ -26,6 +27,7 @@ from file_scraper.detectors import (_FidoReader,
                                     AtlasTiDetector,
                                     ODFDetector)
 from file_scraper.defaults import UNKN, UNAP
+from file_scraper.base import BaseDetector
 from tests.common import get_files, partial_message_included
 
 CHANGE_FIDO = {
@@ -155,12 +157,6 @@ def test_fido_cache_halting_file(fido_cache_halting_file):
 
     # 2 second difference is acceptable with the given test file.
     assert abs(fido_elapsed_time - fido_reader_elapsed_time) < 2
-
-
-def test_fido_tools():
-    """Test that tools function provides a valid version"""
-    fido_detector = FidoDetector("")
-    assert fido_detector.tools()["fido"]["version"][0].isdigit()
 
 
 @pytest.mark.parametrize(
@@ -406,6 +402,7 @@ def test_siard_detector(filepath, mimetype, version):
     assert detector.mimetype == mimetype
     assert detector.version == version
 
+
 def test_atlas_ti_detector():
     """
     Test that works with atlproj files. AtlasTiDetector
@@ -506,3 +503,28 @@ def test_epub_detector(filepath, mimetype, version):
     detector.detect()
     assert detector.mimetype == mimetype
     assert detector.version == version
+
+
+@pytest.mark.parametrize(
+    ["detector", "tool"],
+    [
+        (FidoDetector, "fido"),
+        (MagicCharset, "magiclib"),
+        (MagicDetector, "magiclib"),
+        (SegYDetector, ""),
+        (EpubDetector, "lxml"),
+        (ExifToolDetector, "exiftool"),
+        (SiardDetector, ""),
+        (AtlasTiDetector, ""),
+        (ODFDetector, "lxml"),
+    ]
+)
+def test_tools(detector, tool):
+    """
+    Test that each Detector has a somewhat valid software version returned
+    or no software used
+    """
+    if tool:
+        assert detector("").tools()[tool]["version"][0].isdigit()
+    else:
+        assert not detector("").tools()

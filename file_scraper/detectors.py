@@ -12,9 +12,9 @@ from fido.fido import Fido, defaults
 from fido.pronomutils import get_local_pronom_versions
 from file_scraper.base import BaseDetector
 from file_scraper.defaults import (MIMETYPE_DICT, PRIORITY_PRONOM, PRONOM_DICT,
-                                   VERSION_DICT, UNKN, UNAP)
+                                   VERSION_DICT, UNKN, UNAP, UNAV)
 from file_scraper.utils import decode_path, is_zipfile, normalize_charset
-from file_scraper.magiclib import magiclib, magic_analyze
+from file_scraper.magiclib import magiclib, magic_analyze, magiclib_version
 
 MAGIC_LIB = magiclib()
 
@@ -241,6 +241,10 @@ class MagicDetector(BaseDetector):
             important["mimetype"] = self.mimetype
         return important
 
+    def tools(self):
+        """:return: a dictionary containing software used by this detector"""
+        return {"magiclib": {"version": magiclib_version()}}
+
 
 class PredefinedDetector(BaseDetector):
     """A detector for handling user-supplied MIME types and versions."""
@@ -269,6 +273,10 @@ class PredefinedDetector(BaseDetector):
         None and thus ignored by the scraper.
         """
         return {"mimetype": self.mimetype, "version": self.version}
+
+    def tools(self):
+        """:return: a dictionary containing software used by this detector"""
+        return {}
 
 
 class MagicCharset(BaseDetector):
@@ -311,6 +319,10 @@ class MagicCharset(BaseDetector):
             self._messages.append(
                 f"Character encoding detected as {self.charset}"
             )
+
+    def tools(self):
+        """:return: a dictionary containing software used by this detector"""
+        return {"magiclib": {"version": magiclib_version()}}
 
 
 class ExifToolDetector(BaseDetector):
@@ -390,6 +402,14 @@ class ExifToolDetector(BaseDetector):
             important["version"] = self.version
 
         return important
+
+    def tools(self):
+        """:return: a dictionary containing software used by this detector"""
+        try:
+            with exiftool.ExifToolHelper() as et:
+                return {"exiftool": {"version": et.version}}
+        except exiftool.exceptions.ExifToolExecuteError:
+            return UNAV
 
 
 class SegYDetector(BaseDetector):
@@ -516,6 +536,10 @@ class SegYDetector(BaseDetector):
             important["version"] = self.version
         return important
 
+    def tools(self):
+        """:return: a dictionary containing software used by this detector"""
+        return {}
+
 
 class AtlasTiDetector(BaseDetector):
     """
@@ -554,6 +578,10 @@ class AtlasTiDetector(BaseDetector):
                 ["application/x.fi-dpres.atlproj"]):
             important["version"] = self.version
         return important
+
+    def tools(self):
+        """:return: a dictionary containing software used by this detector"""
+        return {}
 
 
 class SiardDetector(BaseDetector):
@@ -610,6 +638,10 @@ class SiardDetector(BaseDetector):
                 ["application/x-siard"]):
             important["version"] = self.version
         return important
+
+    def tools(self):
+        """:return: a dictionary containing software used by this detector"""
+        return {}
 
 
 class ODFDetector(BaseDetector):
@@ -697,6 +729,14 @@ class ODFDetector(BaseDetector):
         }
         return important
 
+    def tools(self):
+        """:return: a dictionary containing software used by this detector"""
+        # Version consists of 4 values. Expect the first 3 to follow SemVers
+        major, minor, patch, extra = lxml.etree.LXML_VERSION
+        return {
+            "lxml": {"version": f"{major}.{minor}.{patch}.{extra}"}
+        }
+
 
 class EpubDetector(BaseDetector):
     """
@@ -759,3 +799,11 @@ class EpubDetector(BaseDetector):
                 ["application/epub+zip"]):
             important["version"] = self.version
         return important
+
+    def tools(self):
+        """:return: a dictionary containing software used by this detector"""
+        # Version consists of 4 values. Expect the first 3 to follow SemVers
+        major, minor, patch, extra = lxml.etree.LXML_VERSION
+        return {
+            "lxml": {"version": f"{major}.{minor}.{patch}.{extra}"}
+        }
