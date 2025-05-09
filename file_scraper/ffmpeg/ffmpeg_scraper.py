@@ -148,7 +148,10 @@ class FFMpegMetaScraper(BaseScraper):
 
     def tools(self):
         """
-        Collect used software for the Scraper
+        Overwriting baseclass implementation
+        to collect information about software used by the scraper
+
+        :returns: a dictionary with the used software or UNAV.
         """
 
         toolShell = Shell(["ffmpeg", "-version"])

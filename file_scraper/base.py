@@ -47,11 +47,13 @@ class _BaseScraperDetector():
                 message in self._messages if message]
 
     def tools(self):
-        """Tools method must be implemented in each
-        scraper and detector or
-        return value will be unavailable or possibly unavailable (UNAV).
+        """
+        Base implementation.
+        This tools function needs to be implemented
+        to return more accurate information about
+        software used by each Scraper and Detector
 
-        :returns: (:unav)
+        :returns: a dictionary with the used software or UNAV.
         """
 
         return UNAV

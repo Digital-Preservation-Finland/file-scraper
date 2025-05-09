@@ -36,7 +36,12 @@ class VnuScraper(BaseScraper):
             self._check_supported()
 
     def tools(self):
-        """:returns: software used by this scraper as a dictionary"""
+        """
+        Overwriting baseclass implementation
+        to collect information about software used by the scraper
+
+        :returns: a dictionary with the used software or UNAV.
+        """
         tool_shell = Shell(["java", "-jar", get_value("VNU_PATH"),
                             "--version"])
         return {"vnu": {"version": tool_shell.stdout.removesuffix("\n")}}

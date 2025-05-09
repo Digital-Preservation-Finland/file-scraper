@@ -76,8 +76,10 @@ class MagicBaseScraper(BaseScraper):
 
     def tools(self):
         """
-        Overwrite base implementation
-        :returns: software used by this scraper
+        Overwriting baseclass implementation
+        to collect information about software used by the scraper
+
+        :returns: a dictionary with the used software or UNAV.
         """
         return {"magic": {"version": magiclib_version()}}
 

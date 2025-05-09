@@ -79,8 +79,10 @@ class TextfileScraper(BaseScraper):
 
     def tools(self):
         """
-        Overwrite base implementation
-        :returns: software used by scraper
+        Overwriting baseclass implementation
+        to collect information about software used by the scraper
+
+        :returns: a dictionary with the used software or UNAV.
         """
         (filecmd_path, magic_env) = config_filecmd_env()
         tool_scraper = Shell([filecmd_path, "-version"], env=magic_env)
@@ -155,8 +157,10 @@ class TextEncodingMetaScraper(BaseScraper):
 
     def tools(self):
         """
-        Overwrite base implementation
-        :returns: software used by scraper
+        Overwriting baseclass implementation
+        to collect information about software used by the scraper
+
+        :returns: a dictionary with the used software or UNAV.
         """
         return {}
 
@@ -360,7 +364,9 @@ class TextEncodingScraper(BaseScraper):
 
     def tools(self):
         """
-        Overwrite base implementation
-        :returns: software used by scraper
+        Overwriting baseclass implementation
+        to collect information about software used by the scraper
+
+        :returns: a dictionary with the used software or UNAV.
         """
         return {}

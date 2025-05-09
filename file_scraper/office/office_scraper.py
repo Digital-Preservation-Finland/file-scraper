@@ -46,7 +46,12 @@ class OfficeScraper(BaseScraper):
                                   allow_unav_version=True)
 
     def tools(self):
-        """Collect software use by scraper"""
+        """
+        Overwriting baseclass implementation
+        to collect information about software used by the scraper
+
+        :returns: a dictionary with the used software or UNAV.
+        """
         cmd = "soffice"
         if os.path.isfile(get_value("SOFFICE_PATH")):
             cmd = get_value("SOFFICE_PATH")

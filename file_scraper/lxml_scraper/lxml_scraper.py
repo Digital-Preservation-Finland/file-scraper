@@ -120,7 +120,12 @@ class LxmlScraper(BaseScraper):
                     yield md_model
 
     def tools(self):
-        """Software used by the scraper"""
+        """
+        Overwriting baseclass implementation
+        to collect information about software used by the scraper
+
+        :returns: a dictionary with the used software or UNAV.
+        """
         # Version consists of 4 values. Expect the first 3 to follow SemVers
         major, minor, patch, extra = etree.LXML_VERSION
         return {

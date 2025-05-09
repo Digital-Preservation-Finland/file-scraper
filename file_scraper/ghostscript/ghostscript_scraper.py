@@ -77,7 +77,10 @@ class GhostscriptScraper(BaseScraper):
 
     def tools(self):
         """
-        Collect used software for the Scraper
+        Overwriting baseclass implementation
+        to collect information about software used by the scraper
+
+        :returns: a dictionary with the used software or UNAV.
         """
         gs_path = get_value("GHOSTSCRIPT_PATH")
         if not gs_path and shutil.which("gs"):

@@ -193,7 +193,12 @@ class FidoDetector(BaseDetector):
         return important
 
     def tools(self):
-        """Software used by the detector"""
+        """
+        Overwriting baseclass implementation
+        to collect information about software used by the detector
+
+        :returns: a dictionary with the used software or UNAV.
+        """
         return {
             "fido": {"version": fido_version}
         }
@@ -242,7 +247,12 @@ class MagicDetector(BaseDetector):
         return important
 
     def tools(self):
-        """:return: a dictionary containing software used by this detector"""
+        """
+        Overwriting baseclass implementation
+        to collect information about software used by the detector
+
+        :returns: a dictionary with the used software or UNAV.
+        """
         return {"magiclib": {"version": magiclib_version()}}
 
 
@@ -275,7 +285,12 @@ class PredefinedDetector(BaseDetector):
         return {"mimetype": self.mimetype, "version": self.version}
 
     def tools(self):
-        """:return: a dictionary containing software used by this detector"""
+        """
+        Overwriting baseclass implementation
+        to collect information about software used by the detector
+
+        :returns: a dictionary with the used software or UNAV.
+        """
         return {}
 
 
@@ -321,7 +336,12 @@ class MagicCharset(BaseDetector):
             )
 
     def tools(self):
-        """:return: a dictionary containing software used by this detector"""
+        """
+        Overwriting baseclass implementation
+        to collect information about software used by the detector
+
+        :returns: a dictionary with the used software or UNAV.
+        """
         return {"magiclib": {"version": magiclib_version()}}
 
 
@@ -404,7 +424,12 @@ class ExifToolDetector(BaseDetector):
         return important
 
     def tools(self):
-        """:return: a dictionary containing software used by this detector"""
+        """
+        Overwriting baseclass implementation
+        to collect information about software used by the detector
+
+        :returns: a dictionary with the used software or UNAV.
+        """
         try:
             with exiftool.ExifToolHelper() as et:
                 return {"exiftool": {"version": et.version}}
@@ -537,7 +562,12 @@ class SegYDetector(BaseDetector):
         return important
 
     def tools(self):
-        """:return: a dictionary containing software used by this detector"""
+        """
+        Overwriting baseclass implementation
+        to collect information about software used by the detector
+
+        :returns: a dictionary with the used software or UNAV.
+        """
         return {}
 
 
@@ -580,7 +610,12 @@ class AtlasTiDetector(BaseDetector):
         return important
 
     def tools(self):
-        """:return: a dictionary containing software used by this detector"""
+        """
+        Overwriting baseclass implementation
+        to collect information about software used by the detector
+
+        :returns: a dictionary with the used software or UNAV.
+        """
         return {}
 
 
@@ -640,7 +675,12 @@ class SiardDetector(BaseDetector):
         return important
 
     def tools(self):
-        """:return: a dictionary containing software used by this detector"""
+        """
+        Overwriting baseclass implementation
+        to collect information about software used by the detector
+
+        :returns: a dictionary with the used software or UNAV.
+        """
         return {}
 
 
@@ -730,7 +770,12 @@ class ODFDetector(BaseDetector):
         return important
 
     def tools(self):
-        """:return: a dictionary containing software used by this detector"""
+        """
+        Overwriting baseclass implementation
+        to collect information about software used by the detector
+
+        :returns: a dictionary with the used software or UNAV.
+        """
         # Version consists of 4 values. Expect the first 3 to follow SemVers
         major, minor, patch, extra = lxml.etree.LXML_VERSION
         return {
@@ -801,7 +846,12 @@ class EpubDetector(BaseDetector):
         return important
 
     def tools(self):
-        """:return: a dictionary containing software used by this detector"""
+        """
+        Overwriting baseclass implementation
+        to collect information about software used by the detector
+
+        :returns: a dictionary with the used software or UNAV.
+        """
         # Version consists of 4 values. Expect the first 3 to follow SemVers
         major, minor, patch, extra = lxml.etree.LXML_VERSION
         return {

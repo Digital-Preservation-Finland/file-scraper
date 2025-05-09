@@ -58,6 +58,12 @@ class PsppScraper(BaseScraper):
                                   allow_unav_version=True)
 
     def tools(self):
+        """
+        Overwriting baseclass implementation
+        to collect information about software used by the scraper
+
+        :returns: a dictionary with the used software or UNAV.
+        """
         tool_shell = Shell([get_value("PSPP_PATH"), "--version"])
 
         regex = r"\(GNU PSPP\) ([\d\.]+)"

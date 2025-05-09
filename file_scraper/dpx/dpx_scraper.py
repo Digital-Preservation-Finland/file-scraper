@@ -45,7 +45,10 @@ class DpxScraper(BaseScraper):
 
     def tools(self):
         """
-        Collecting software dependencies for this scraper.
+        Overwriting baseclass implementation
+        to collect information about software used by the scraper
+
+        :returns: a dictionary with the used software or UNAV.
         """
         # dpx_validator is hardcoded to work from an rpm package and
         # the validator cli doesn't have a get version flag or command.

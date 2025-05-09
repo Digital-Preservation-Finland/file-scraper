@@ -83,5 +83,11 @@ class WandScraper(BaseScraper):
             self._wandresults.close()
 
     def tools(self):
+        """
+        Overwriting baseclass implementation
+        to collect information about software used by the scraper
+
+        :returns: a dictionary with the used software or UNAV.
+        """
         version = wand.image.MAGICK_VERSION_NUMBER
         return {"magic-wand-api": {"version": str(version)}}

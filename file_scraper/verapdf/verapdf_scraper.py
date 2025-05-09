@@ -89,7 +89,12 @@ class VerapdfScraper(BaseScraper):
         self._check_supported()
 
     def tools(self):
-        """Find"""
+        """
+        Overwriting baseclass implementation
+        to collect information about software used by the scraper
+
+        :returns: a dictionary with the used software or UNAV.
+        """
         verapdf_loc = get_value("VERAPDF_PATH")
         if not verapdf_loc and shutil.which("verapdf"):
             verapdf_loc = shutil.which("verapdf")

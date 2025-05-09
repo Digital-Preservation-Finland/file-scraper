@@ -231,6 +231,12 @@ class SchematronScraper(BaseScraper):
             schema_basename, schema_digest))
 
     def tools(self):
+        """
+        Overwriting baseclass implementation
+        to collect information about software used by the scraper
+
+        :returns: a dictionary with the used software or UNAV.
+        """
         tool_shell = Shell(["xsltproc", "-version"])
         regexes = [r"libxml ", r"libxslt ", r"libxml "]
         versions = []

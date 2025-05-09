@@ -35,7 +35,12 @@ class JpylyzerScraper(BaseScraper):
                               allow_unap_version=True)
 
     def tools(self):
-        """Collect software used by Scraper"""
+        """
+        Overwriting baseclass implementation
+        to collect information about software used by the scraper
+
+        :returns: a dictionary with the used software or UNAV.
+        """
         return {"jpylyzer":
                 {
                         "version": jpylyzer.__version__

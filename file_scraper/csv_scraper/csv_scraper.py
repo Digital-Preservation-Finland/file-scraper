@@ -123,6 +123,8 @@ class CsvScraper(BaseScraper):
     def tools(self):
         """
         Overwriting baseclass implementation
-        No software dependencies
+        to collect information about software used by the scraper
+
+        :returns: a dictionary with the used software or UNAV.
         """
         return {}

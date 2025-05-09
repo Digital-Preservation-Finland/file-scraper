@@ -150,7 +150,12 @@ class MediainfoScraper(BaseScraper):
         return not truncated and track_found
 
     def tools(self):
-        """Collect software used inside pymedia info"""
+        """
+        Overwriting baseclass implementation
+        to collect information about software used by the scraper
+
+        :returns: a dictionary with the used software or UNAV.
+        """
         pymediaversion = UNAV
         libmediaversion = UNAV
 

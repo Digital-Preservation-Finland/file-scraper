@@ -63,7 +63,12 @@ class JHoveScraperBase(BaseScraper):
                               allow_unap_version=True)
 
     def tools(self):
-        """ Collect software used by the scraper """
+        """
+        Overwriting baseclass implementation
+        to collect information about software used by the scraper
+
+        :returns: a dictionary with the used software or UNAV.
+        """
         version_shell = Shell(["jhove"])
 
         regex_jhove = r"App:[\n ]+API: ([\d\.]+)"

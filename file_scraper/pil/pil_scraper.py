@@ -60,7 +60,12 @@ class PilScraper(BaseScraper):
             self._messages.append("The file was analyzed successfully.")
 
     def tools(self):
-        """Collect software use by scraper"""
+        """
+        Overwriting baseclass implementation
+        to collect information about software used by the scraper
+
+        :returns: a dictionary with the used software or UNAV.
+        """
 
         return {
             "pil-image": {
