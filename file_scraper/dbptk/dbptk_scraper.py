@@ -11,7 +11,6 @@ from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.defaults import UNAV
 from file_scraper.dbptk.dbptk_model import DbptkMeta
-from file_scraper.defaults import UNAV
 
 
 class DbptkScraper(BaseScraper):
