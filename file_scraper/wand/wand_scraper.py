@@ -11,10 +11,12 @@ file. More complete well-formedness test is required by specific validator
 tool.
 
 """
+import re
 
 from file_scraper.base import BaseScraper
 from file_scraper.wand.wand_model import (WandImageMeta, WandTiffMeta,
                                           WandExifMeta, WandWebPMeta)
+from file_scraper.defaults import UNAV
 
 try:
     import wand.image
@@ -90,5 +92,16 @@ class WandScraper(BaseScraper):
 
         :returns: a dictionary with the used software or UNAV.
         """
-        version = wand.version.VERSION
+        version_str = wand.version.MAGICK_VERSION
+        """
+        ImageMagick following a group with any character, digit, number and
+        also can include dash or dot one or more times.
+        """
+        regex = r"ImageMagick ([\w\d\-.]*)"
+        try:
+            version = next(
+                re.finditer(regex, version_str, re.MULTILINE)
+                ).groups()[0]
+        except StopIteration:
+            version = UNAV
         return {"ImageMagick": {"version": version}}
