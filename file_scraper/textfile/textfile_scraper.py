@@ -85,7 +85,7 @@ class TextfileScraper(BaseScraper):
         :returns: a dictionary with the used software or UNAV.
         """
         (filecmd_path, magic_env) = config_filecmd_env()
-        tool_scraper = Shell([filecmd_path, "-version"], env=magic_env)
+        tool_scraper = Shell([filecmd_path, "--version"], env=magic_env)
         return {"file": {"version": tool_scraper.stdout.split("\n")[0][5:]}}
 
 
