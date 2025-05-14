@@ -128,6 +128,8 @@ class LxmlScraper(BaseScraper):
         """
         # Version consists of 4 values. Expect the first 3 to follow SemVers
         major, minor, patch, extra = etree.LXML_VERSION
+        libmajor, libminor, libpatch = etree.LIBXML_VERSION
         return {
-            "lxml": {"version": f"{major}.{minor}.{patch}.{extra}"}
+            "lxml": {"version": f"{major}.{minor}.{patch}.{extra}"},
+            "libxml": {"version": f"{libmajor}.{libminor}.{libpatch}"}
         }
