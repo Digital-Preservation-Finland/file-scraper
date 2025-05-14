@@ -18,6 +18,7 @@ from file_scraper.wand.wand_model import (WandImageMeta, WandTiffMeta,
 
 try:
     import wand.image
+    import wand.version
 except ImportError:
     pass
 
@@ -89,5 +90,5 @@ class WandScraper(BaseScraper):
 
         :returns: a dictionary with the used software or UNAV.
         """
-        version = wand.image.MAGICK_VERSION_NUMBER
-        return {"magic-wand-api": {"version": str(version)}}
+        version = wand.version.VERSION
+        return {"ImageMagick": {"version": version}}

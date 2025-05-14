@@ -543,4 +543,4 @@ def test_scraper_is_supported(mime, ver):
 def test_tools():
     """:returns: tools used by the scraper as a dictionary"""
     scraper = WandScraper(filename="", mimetype="")
-    assert scraper.tools()["magic-wand-api"]["version"][0].isdigit()
+    assert scraper.tools()["ImageMagick"]["version"][0].isdigit()
