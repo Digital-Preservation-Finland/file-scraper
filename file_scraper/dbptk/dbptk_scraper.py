@@ -59,7 +59,7 @@ class DbptkScraper(BaseScraper):
         """
         # command without arguments prints default output,
         # which includes the version
-        toolShell = Shell(["dbptk", ""], env={"PATH": self._path})
+        toolShell = Shell(["dbptk"], env={"PATH": self._path})
         """
         Regex for finding the version of dbptk
 
