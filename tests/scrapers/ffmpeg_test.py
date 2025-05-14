@@ -746,8 +746,4 @@ def test_tools():
         mimetype="audio/mp4")
     scraper.scrape_file()
 
-    try:
-        assert scraper.tools()["ffmpeg"] is not None
-        assert scraper.tools()["ffmpeg"]["version"] is not UNAV
-    except KeyError:
-        assert not True
+    assert scraper.tools()["ffmpeg"]["version"] not in (UNAV, None)
