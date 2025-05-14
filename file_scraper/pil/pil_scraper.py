@@ -68,7 +68,7 @@ class PilScraper(BaseScraper):
         """
 
         return {
-            "pil-image": {
-                "version": PIL.Image.__version__
+            "pillow": {
+                "version": PIL.__version__
             }
         }

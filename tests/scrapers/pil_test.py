@@ -501,4 +501,4 @@ def test_is_supported(mime, ver):
 def test_tools():
     """Test that tools give version"""
     scraper = PilScraper(filename="", mimetype="")
-    assert scraper.tools()["pil-image"]["version"][0].isdigit()
+    assert scraper.tools()["pillow"]["version"][0].isdigit()
