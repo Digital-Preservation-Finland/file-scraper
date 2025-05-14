@@ -42,7 +42,7 @@ class PngcheckScraper(BaseScraper):
         :returns: a dictionary with the used software or UNAV.
         """
 
-        tool_shell = Shell(["pngcheck", "-v"], use_pty=True)
+        tool_shell = Shell(["pngcheck"], use_pty=True)
         """ Find version with capture group to capture integers and dots
             until any other character appears.
         """
