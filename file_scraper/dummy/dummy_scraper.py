@@ -41,6 +41,9 @@ class ScraperNotFound(BaseScraper):
         """
         return False
 
+    def tools(self):
+        pass
+
 
 class NoWellformednessBaseScraper(BaseScraper):
     """
@@ -60,6 +63,9 @@ class NoWellformednessBaseScraper(BaseScraper):
         valid = super().well_formed
 
         return None if valid else valid
+
+    def tools(self):
+        pass
 
 
 class FileExists(NoWellformednessBaseScraper):
