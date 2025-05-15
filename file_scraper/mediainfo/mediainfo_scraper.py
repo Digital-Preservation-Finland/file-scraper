@@ -171,7 +171,7 @@ class MediainfoScraper(BaseScraper):
             "pymediainfo": {
                 "version": pymediaversion
             },
-            "libmediainfo": {
+            "MediaInfoLib": {
                     "version": libmediaversion
             }
         }
