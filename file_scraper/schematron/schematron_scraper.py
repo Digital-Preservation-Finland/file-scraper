@@ -237,7 +237,7 @@ class SchematronScraper(BaseScraper):
 
         :returns: a dictionary with the used software or UNAV.
         """
-        tool_shell = Shell(["xsltproc", "-version"])
+        tool_shell = Shell(["xsltproc", "--version"])
         regexes = [r"libxml ", r"libxslt ", r"libxml "]
         versions = []
         for regex in regexes:
