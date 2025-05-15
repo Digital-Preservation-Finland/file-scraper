@@ -11,6 +11,13 @@ from file_scraper.utils import encode_path
 from file_scraper.config import get_value
 
 
+def _choose_cmd():
+    if os.path.isfile(get_value("SOFFICE_PATH")):
+        return get_value("SOFFICE_PATH")
+    else:
+        return "soffice"
+
+
 class OfficeScraper(BaseScraper):
     """Office file format scraper."""
 
@@ -21,15 +28,11 @@ class OfficeScraper(BaseScraper):
         """Scrape file."""
         temp_dir = tempfile.mkdtemp()
 
-        cmd = "soffice"
-        if os.path.isfile(get_value("SOFFICE_PATH")):
-            cmd = get_value("SOFFICE_PATH")
-
         try:
             env = {"HOME": temp_dir}
             shell = Shell([
-                cmd, "--convert-to", "pdf", "--outdir", temp_dir,
-                encode_path(self.filename)], env=env)
+                _choose_cmd(), "--convert-to", "pdf", "--outdir",
+                temp_dir, encode_path(self.filename)], env=env)
             if shell.stderr:
                 self._errors.append(shell.stderr)
             if shell.returncode != 0:
@@ -52,12 +55,9 @@ class OfficeScraper(BaseScraper):
 
         :returns: a dictionary with the used software or UNAV.
         """
-        cmd = "soffice"
-        if os.path.isfile(get_value("SOFFICE_PATH")):
-            cmd = get_value("SOFFICE_PATH")
-        version_shell = Shell([cmd, "--version"])
+        version_shell = Shell([_choose_cmd(), "--version"])
         return {
-            "soffice": {
+            "libreoffice": {
                 "version": version_shell.stdout.split(" ")[1]
             }
         }
