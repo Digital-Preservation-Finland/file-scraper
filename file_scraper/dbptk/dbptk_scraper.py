@@ -59,7 +59,7 @@ class DbptkScraper(BaseScraper):
         """
         # command without arguments prints default output,
         # which includes the version
-        toolShell = Shell(["dbptk"], env={"PATH": self._path})
+        tool_shell = Shell(["dbptk"], env={"PATH": self._path})
         """
         Regex for finding the version of dbptk
 
@@ -70,10 +70,10 @@ class DbptkScraper(BaseScraper):
         try:
             version = next(
                 re.finditer(r"DBPTK Developer \(version ([\w\d\-.]*)\)$",
-                            toolShell.stdout, re.MULTILINE)
+                            tool_shell.stdout, re.MULTILINE)
             ).groups()[0]
-            return {"dbptk-developer": {"version":  version}}
+            return {"DBPTK Developer": {"version":  version}}
         except StopIteration:
             self._errors.append("Could not parse version number from CLI "
                                 "output")
-            return {"dbptk-developer": {"version": UNAV}}
+            return {"DBPTK Developer": {"version": UNAV}}

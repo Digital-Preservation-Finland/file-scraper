@@ -95,5 +95,4 @@ def test_tools_returns_version():
     scraper = DbptkScraper(filename="invalid_2.1.1_schema_errors.siard",
                            mimetype=MIMETYPE)
 
-    assert scraper.tools()["dbptk-developer"] is not None
-    assert scraper.tools()["dbptk-developer"]["version"] is not UNAV
+    assert scraper.tools()["DBPTK Developer"]["version"] not in (UNAV, None)
