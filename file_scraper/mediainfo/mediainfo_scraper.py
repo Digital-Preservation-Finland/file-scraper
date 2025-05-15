@@ -21,7 +21,7 @@ from file_scraper.utils import decode_path
 from file_scraper.defaults import UNAV
 
 try:
-    from pymediainfo import MediaInfo
+    import pymediainfo
 except ImportError:
     pass
 
@@ -62,7 +62,7 @@ class MediainfoScraper(BaseScraper):
     def scrape_file(self):
         """Populate streams with supported metadata objects."""
         try:
-            mediainfo = MediaInfo.parse(decode_path(self.filename))
+            mediainfo = pymediainfo.MediaInfo.parse(decode_path(self.filename))
         except Exception as e:  # pylint: disable=invalid-name, broad-except
             self._errors.append("Error in analyzing file.")
             self._errors.append(str(e))
@@ -156,17 +156,17 @@ class MediainfoScraper(BaseScraper):
 
         :returns: a dictionary with the used software or UNAV.
         """
-        pymediaversion = UNAV
-        libmediaversion = UNAV
-
+        pymediaversion = pymediainfo.__version__
         try:
-            import pymediainfo as pmi
-            pymediaversion = pmi.__version__
-            libmediaversion = MediaInfo._get_library()[2]
-        except (ImportError, OSError):
-            pass
-        except (IndexError):
-            pymediaversion = pmi.__version__
+            # Determine the library version from
+            # `MediaInfo_Option(handle, "Info_Version", "")`
+            # result. This is only available via the private
+            # interface, so take care to clean up the handle
+            # ourselves afterwards.
+            # pylint: disable=protected-access
+            libmediaversion = pymediainfo.MediaInfo._get_library()[2]
+        except Exception:  # pylint: broad-except
+            libmediaversion = UNAV
         return {
             "pymediainfo": {
                 "version": pymediaversion
