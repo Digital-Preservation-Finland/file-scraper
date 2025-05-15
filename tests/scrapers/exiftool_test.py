@@ -61,4 +61,4 @@ def test_tools():
     scraper = ExifToolDngScraper(filename="valid_1.4.dng",
                                  mimetype="image/x-adobe-dng")
     assert scraper.tools() is not None
-    assert scraper.tools()["exiftool"]["version"][0].isdigit()
+    assert scraper.tools()["ExifTool"]["version"][0].isdigit()

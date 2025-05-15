@@ -109,4 +109,4 @@ def test_is_supported():
 def test_tools():
     """Test that tools return expected version of software used."""
     scraper = VnuScraper(filename="", mimetype="")
-    assert scraper.tools()["vnu"]["version"][0].isdigit()
+    assert scraper.tools()["Validator.nu"]["version"][0].isdigit()

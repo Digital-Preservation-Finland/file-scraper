@@ -120,7 +120,7 @@ def test_charset(filename, mimetype, charset, well_formed):
                                         scraper.errors())
 
 
-@pytest.mark.parametrize("tool", ["lxml", "libxml"])
+@pytest.mark.parametrize("tool", ["lxml", "libxml2"])
 def test_tools(tool):
     """Test that the versions are numeric"""
     scraper = LxmlScraper(filename="tests/data/text_xml/valid_1.0_xsd.xml",

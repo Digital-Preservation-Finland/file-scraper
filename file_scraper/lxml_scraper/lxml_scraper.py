@@ -131,5 +131,5 @@ class LxmlScraper(BaseScraper):
         libmajor, libminor, libpatch = etree.LIBXML_VERSION
         return {
             "lxml": {"version": f"{major}.{minor}.{patch}.{extra}"},
-            "libxml": {"version": f"{libmajor}.{libminor}.{libpatch}"}
+            "libxml2": {"version": f"{libmajor}.{libminor}.{libpatch}"}
         }

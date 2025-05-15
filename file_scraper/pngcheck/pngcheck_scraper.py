@@ -53,4 +53,4 @@ class PngcheckScraper(BaseScraper):
                 ).groups()[0]
         except StopIteration:
             version = UNAV
-        return {"pngcheck": {"version": version}}
+        return {"PNGcheck": {"version": version}}

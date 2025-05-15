@@ -141,4 +141,4 @@ def test_tools():
     """Test verifies that tools will be returned"""
     scraper = GhostscriptScraper(filename="None", mimetype="None")
 
-    assert scraper.tools()["ghostscript"]["version"] not in (UNAV, None)
+    assert scraper.tools()["Ghostscript"]["version"] not in (UNAV, None)

@@ -884,4 +884,4 @@ def test_jhove_tools():
     """Test scraper tools return correctly something non nullable"""
     scraper = JHovePdfScraper(filename="",
                               mimetype="")
-    assert scraper.tools()["jhove"]["version"][0].isdigit()
+    assert scraper.tools()["JHOVE"]["version"][0].isdigit()

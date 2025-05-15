@@ -118,4 +118,4 @@ def test_tools():
 
     scraper = PsppScraper(filename=testfile,
                           mimetype=MIMETYPE)
-    assert scraper.tools()["pspp"]["version"][0].isdigit()
+    assert scraper.tools()["GNU PSPP"]["version"][0].isdigit()

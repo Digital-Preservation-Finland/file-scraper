@@ -73,4 +73,4 @@ class PsppScraper(BaseScraper):
                 ).groups()[0]
         except StopIteration:
             version = UNAV
-        return {"pspp": {"version": version}}
+        return {"GNU PSPP": {"version": version}}

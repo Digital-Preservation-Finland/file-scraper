@@ -81,4 +81,4 @@ def test_tools():
             "purpose": "Test valid file."}, True)
     scraper = PngcheckScraper(filename=correct.filename,
                               mimetype="image/png")
-    assert scraper.tools()["pngcheck"]["version"][0].isdigit()
+    assert scraper.tools()["PNGcheck"]["version"][0].isdigit()

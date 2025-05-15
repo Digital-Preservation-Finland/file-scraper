@@ -44,4 +44,8 @@ class VnuScraper(BaseScraper):
         """
         tool_shell = Shell(["java", "-jar", get_value("VNU_PATH"),
                             "--version"])
-        return {"vnu": {"version": tool_shell.stdout.removesuffix("\n")}}
+        return {
+            "Validator.nu": {
+                "version": tool_shell.stdout.removesuffix("\n")
+            }
+        }

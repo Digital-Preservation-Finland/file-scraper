@@ -79,7 +79,7 @@ class JHoveScraperBase(BaseScraper):
         except StopIteration:
             version = UNAV
 
-        return {"jhove": {
+        return {"JHOVE": {
             "version": version
             }
         }

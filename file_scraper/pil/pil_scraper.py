@@ -68,7 +68,7 @@ class PilScraper(BaseScraper):
         """
 
         return {
-            "pillow": {
+            "Pillow": {
                 "version": PIL.__version__
             }
         }

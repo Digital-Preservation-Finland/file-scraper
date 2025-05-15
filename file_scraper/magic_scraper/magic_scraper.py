@@ -81,7 +81,7 @@ class MagicBaseScraper(BaseScraper):
 
         :returns: a dictionary with the used software or UNAV.
         """
-        return {"magic": {"version": magiclib_version()}}
+        return {"libmagic": {"version": magiclib_version()}}
 
 
 class MagicTextScraper(MagicBaseScraper):

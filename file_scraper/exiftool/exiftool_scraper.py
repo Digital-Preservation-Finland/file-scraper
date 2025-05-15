@@ -75,7 +75,7 @@ class ExifToolScraperBase(BaseScraper):
         """
 
         with exiftool.ExifTool() as et:
-            return {"exiftool": {"version": et.version}}
+            return {"ExifTool": {"version": et.version}}
 
 
 class ExifToolDngScraper(ExifToolScraperBase):
