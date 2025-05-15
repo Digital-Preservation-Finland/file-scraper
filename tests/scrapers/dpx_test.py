@@ -22,7 +22,7 @@ import os
 import pytest
 from tests.common import parse_results
 from file_scraper.dpx.dpx_scraper import DpxScraper
-from file_scraper.defaults import UNAV
+from file_scraper.defaults import UNKN
 
 MIMETYPE = "image/x-dpx"
 
@@ -102,4 +102,4 @@ def test_tools():
 
     scraper = DpxScraper(filename=testfile,
                          mimetype=MIMETYPE)
-    assert scraper.tools()["dpx-validator"]["version"] is UNAV
+    assert scraper.tools()["Python DPX validator"]["version"] is UNKN

@@ -5,7 +5,7 @@ from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.dpx.dpx_model import DpxMeta
 from file_scraper.utils import encode_path
-from file_scraper.defaults import UNAV
+from file_scraper.defaults import UNKN
 
 
 class DpxScraper(BaseScraper):
@@ -51,6 +51,7 @@ class DpxScraper(BaseScraper):
 
         :returns: a dictionary with the used software or UNAV.
         """
-        # dpx_validator is hardcoded to work from an rpm package and
-        # the validator cli doesn't have a get version flag or command.
-        return {"dpx-validator": {"version": UNAV}}
+        # TODO TPASPKT-1502 dpx_validator is hardcoded to work from
+        # an rpm package and the validator cli doesn't have a get version flag
+        # or command, so the version is not currently available.
+        return {"Python DPX validator": {"version": UNKN}}
