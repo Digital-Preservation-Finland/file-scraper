@@ -11,7 +11,7 @@ from file_scraper.utils import (metadata, is_metadata, encode_path,
 # pylint: disable=useless-object-inheritance
 
 
-class _BaseScraperDetector():
+class _BaseScraperDetector(metaclass=abc.ABCMeta):
 
     """Base class for Scrapers and detectors."""
 
@@ -46,17 +46,14 @@ class _BaseScraperDetector():
         return [filter_unwanted_chars(message) for
                 message in self._messages if message]
 
+    @abc.abstractmethod
     def tools(self):
         """
-        Base implementation.
-        This tools function needs to be implemented
-        to return more accurate information about
-        software used by each Scraper and Detector
+        Implement this function
+        collect information about software used by the scraper
 
-        :returns: a dictionary with the used software or UNAV.
+        :returns: a dictionary with the used software, UNAV or UNKN.
         """
-
-        return UNAV
 
     def info(self):
         """Return basic info of detector/scraper.
@@ -66,14 +63,17 @@ class _BaseScraperDetector():
             class: Name of the class
             messages: List of info messages
             errors: List of errors
-            tools: List of tools used
+            tools: Dictionary of tools used or
+                None if tools are not implemented
 
         :returns: Info dict
         """
-        return {"class": self.__class__.__name__,
-                "messages": self.messages(),
-                "errors": self.errors(),
-                "tools": self.tools()}
+
+        return {
+            "class": self.__class__.__name__,
+            "messages": self.messages(),
+            "errors": self.errors(),
+            "tools": self.tools()}
 
 
 class BaseScraper(_BaseScraperDetector):
@@ -188,6 +188,15 @@ class BaseScraper(_BaseScraperDetector):
             if md_class.is_supported(self._predefined_mimetype,
                                      self._predefined_version, self._params):
                 yield md_class(**kwargs)
+
+    @abc.abstractmethod
+    def tools(self):
+        """
+        Implement this function
+        collect information about software used by the scraper
+
+        :returns: a dictionary with the used software, UNAV or UNKN.
+        """
 
 
 class BaseMeta:
@@ -314,3 +323,12 @@ class BaseDetector(_BaseScraperDetector):
         method to add "mimetype" and/or "version" keys to the dict.
         """
         return {}
+
+    @abc.abstractmethod
+    def tools(self):
+        """
+        Implement this function
+        collect information about software used by the scraper
+
+        :returns: a dictionary with the used software, UNAV or UNKN.
+        """

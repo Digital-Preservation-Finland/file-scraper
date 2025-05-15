@@ -17,7 +17,6 @@ import pytest
 from file_scraper.base import BaseScraper, BaseMeta, BaseDetector
 from file_scraper.utils import metadata
 from tests.common import partial_message_included
-from file_scraper.defaults import UNAV
 
 
 class BaseMetaBasic(BaseMeta):
@@ -39,6 +38,9 @@ class BaseScraperBasic(BaseScraper):
     def scrape_file(self):
         """Do nothing, scraping not needed here."""
         self.streams.append(BaseMetaBasic([]))
+
+    def tools(self):
+        pass
 
 
 class BaseMetaVersion(BaseMeta):
@@ -71,6 +73,9 @@ class BaseDetectorBasic(BaseDetector):
     # pylint: disable=too-few-public-methods
     def detect(self):
         """Do not detect anything"""
+
+    def tools(self):
+        pass
 
 
 @pytest.mark.parametrize(
@@ -167,6 +172,9 @@ class BaseScraperSupported(BaseScraper):
 
     _supported_metadata = [BaseMetaCustom]
 
+    def tools(self):
+        pass
+
 
 @pytest.mark.parametrize(
     ["scraper_class", "mimetype", "version", "errors"],
@@ -218,4 +226,4 @@ def test_tools():
     Test that the base implementation of tools returns UNAV.
     """
     scraper = BaseScraperBasic("testfilename", "test/mimetype")
-    assert scraper.tools() == UNAV
+    assert scraper.tools() is None
