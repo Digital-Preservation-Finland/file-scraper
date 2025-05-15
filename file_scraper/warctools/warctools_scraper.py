@@ -5,7 +5,7 @@ import os.path
 from io import open as io_open
 
 from file_scraper.base import BaseScraper
-from file_scraper.defaults import UNAV
+from file_scraper.defaults import UNKN, UNAV
 from file_scraper.shell import Shell
 from file_scraper.warctools.warctools_model import (GzipWarctoolsMeta,
                                                     WarctoolsMeta)
@@ -60,6 +60,15 @@ class WarctoolsScraper(BaseScraper):
             well_formed=self.well_formed, line=line))
         self._check_supported()
 
+    def tools(self):
+        """
+        Overwriting baseclass implementation
+        to collect information about software used by the scraper
+
+        :returns: a dictionary with the used software.
+        """
+        return {}
+
 
 class WarctoolsFullScraper(WarctoolsScraper):
     """
@@ -113,6 +122,15 @@ class WarctoolsFullScraper(WarctoolsScraper):
         self._messages.append(shell.stdout)
 
         super().scrape_file()
+
+    def tools(self):
+        """
+        Overwriting baseclass implementation
+        to collect information about software used by the scraper
+
+        :returns: a dictionary with the used software.
+        """
+        return {"warctools": {"version": UNKN}}
 
 
 class GzipWarctoolsScraper(WarctoolsFullScraper):
