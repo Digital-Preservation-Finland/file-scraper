@@ -154,14 +154,14 @@ class FFMpegMetaScraper(BaseScraper):
         :returns: a dictionary with the used software or UNAV.
         """
 
-        toolShell = Shell(["ffmpeg", "-version"])
-        """ Find version with capture group to capture integers and dots
-            until any other character appears.
-        """
+        tool_shell = Shell(["ffmpeg", "-version"])
+
+        # Find version with capture group to capture integers and dots
+        # until any other character appears.
         regex = r"[vV]ersion ([\d\.]+)"
         try:
             version = next(
-                re.finditer(regex, toolShell.stdout, re.MULTILINE)
+                re.finditer(regex, tool_shell.stdout, re.MULTILINE)
                 ).groups()[0]
         except StopIteration:
             version = UNAV
