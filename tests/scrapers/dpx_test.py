@@ -102,4 +102,4 @@ def test_tools():
 
     scraper = DpxScraper(filename=testfile,
                          mimetype=MIMETYPE)
-    assert scraper.tools() == UNAV
+    assert scraper.tools()["dpx-validator"]["version"] is UNAV

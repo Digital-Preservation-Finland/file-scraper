@@ -5,6 +5,7 @@ from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.dpx.dpx_model import DpxMeta
 from file_scraper.utils import encode_path
+from file_scraper.defaults import UNAV
 
 
 class DpxScraper(BaseScraper):
@@ -52,4 +53,4 @@ class DpxScraper(BaseScraper):
         """
         # dpx_validator is hardcoded to work from an rpm package and
         # the validator cli doesn't have a get version flag or command.
-        return super().tools()
+        return {"dpx-validator": {"version": UNAV}}
