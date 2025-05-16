@@ -50,7 +50,7 @@ class _BaseScraperDetector(metaclass=abc.ABCMeta):
     def tools(self):
         """
         Implement this function
-        collect information about software used by the scraper
+        collect information about software used by the scraper or detector
 
         :returns: a dictionary with the used software, UNAV or UNKN.
         """
@@ -189,15 +189,6 @@ class BaseScraper(_BaseScraperDetector):
                                      self._predefined_version, self._params):
                 yield md_class(**kwargs)
 
-    @abc.abstractmethod
-    def tools(self):
-        """
-        Implement this function
-        collect information about software used by the scraper
-
-        :returns: a dictionary with the used software, UNAV or UNKN.
-        """
-
 
 class BaseMeta:
     """
@@ -323,12 +314,3 @@ class BaseDetector(_BaseScraperDetector):
         method to add "mimetype" and/or "version" keys to the dict.
         """
         return {}
-
-    @abc.abstractmethod
-    def tools(self):
-        """
-        Implement this function
-        collect information about software used by the scraper
-
-        :returns: a dictionary with the used software, UNAV or UNKN.
-        """
