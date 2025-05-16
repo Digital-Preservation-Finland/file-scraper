@@ -1,11 +1,13 @@
 """A HTML5 scraper module using The Nu Html Checker."""
 
 import os
+import re
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.config import get_value
 from file_scraper.vnu.vnu_model import VnuMeta
+from file_scraper.defaults import UNAV
 
 
 class VnuScraper(BaseScraper):
@@ -44,8 +46,18 @@ class VnuScraper(BaseScraper):
         """
         tool_shell = Shell(["java", "-jar", get_value("VNU_PATH"),
                             "--version"])
+        regex = r"([\d\.]+)"
+        try:
+            if tool_shell.returncode != 0:
+                raise StopIteration
+            version = next(
+                re.finditer(regex, tool_shell.stdout, re.MULTILINE)
+                ).groups()[0]
+        except StopIteration:
+            version = UNAV
+
         return {
             "Validator.nu": {
-                "version": tool_shell.stdout.removesuffix("\n")
+                "version": version
             }
         }
