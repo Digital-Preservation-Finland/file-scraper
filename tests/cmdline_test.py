@@ -1,8 +1,9 @@
 import pytest
 from click.testing import CliRunner
 from file_scraper.cmdline import cli
+import pathlib
 
-data = "tests/data/"
+data_path = pathlib.Path(__file__).parent / "data"
 
 
 def _get_cmdline_options():
@@ -26,15 +27,13 @@ def test_scraper_without_arguments():
 
 @pytest.mark.parametrize(
     "filename, flag, output",
-    [(data + "application_pdf/valid_A-1a", "", ""),
-        (data + "application_pdf/valid_A-1a", "--version=1.5", ""),
-        (data + "application_pdf/valid_A-1a", "--tool-info", "")])
+    [(data_path / "application_pdf/valid_A-1a.pdf", "--version=1.5", ""),
+     (data_path / "application_pdf/valid_A-1a.pdf", "--tool-info", "")])
 def test_flags_change_output(filename, flag, output):
     """"""
 
     runner = CliRunner()
-    result = runner.invoke(cli, ["scrape-file", filename, flag])
-    if flag:
-        result_noflag = runner.invoke(cli, ["scrape-file", filename])
-        assert result != result_noflag
+    result = runner.invoke(cli, ["scrape-file", str(filename), flag])
+    result_noflag = runner.invoke(cli, ["scrape-file", filename])
+    assert result != result_noflag
     assert result.exit_code == 0
