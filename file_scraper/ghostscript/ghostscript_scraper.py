@@ -94,8 +94,7 @@ class GhostscriptScraper(BaseScraper):
         except StopIteration:
             version = UNAV
 
-        self._tools = {"Ghostscript": {
+        return {"Ghostscript": {
             "version": version
             }
         }
-        return self._tools
