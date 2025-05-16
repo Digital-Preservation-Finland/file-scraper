@@ -247,9 +247,12 @@ class SchematronScraper(BaseScraper):
                                 re.MULTILINE)
                     ).groups()[0]
                 # preprocessing
+                reslt = str(reslt).zfill(5)
+                print(reslt)
                 versions.append(
                     ".".join(
-                        (int(reslt[:-4]), int(reslt[-4:-2]), int(reslt[-2:]))
+                        (str(int(reslt[:-4])), str(int(reslt[-4:-2])),
+                         str(int(reslt[-2:])))
                     )
                 )
             except StopIteration:

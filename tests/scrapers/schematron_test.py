@@ -214,6 +214,6 @@ def test_filter_duplicate_elements():
 def test_tools():
     scraper = SchematronScraper("testsfile", "test/mimetype")
     result = scraper.tools()
-    assert result["libxml"]["version"][0].isdigit()
+    assert result["libxml2"]["version"][0].isdigit()
     assert result["libxslt"]["version"][0].isdigit()
     assert result["libexslt"]["version"][0].isdigit()
