@@ -128,7 +128,7 @@ class WarctoolsFullScraper(WarctoolsScraper):
         Overwriting baseclass implementation
         to collect information about software used by the scraper
 
-        :returns: a dictionary with the used software.
+        :returns: a dictionary with the used software or UNKN.
         """
         return {"warctools": {"version": UNKN}}
 

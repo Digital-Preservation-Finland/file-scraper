@@ -71,7 +71,7 @@ class ExifToolScraperBase(BaseScraper):
         Overwriting baseclass implementation
         to collect information about software used by the scraper
 
-        :returns: a dictionary with the used software or UNAV.
+        :returns: a dictionary with the used software.
         """
 
         with exiftool.ExifTool() as et:
