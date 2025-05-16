@@ -96,10 +96,7 @@ def test_is_supported():
 
 
 def test_tools():
-    """ Test that tools were unavailable """
-    path = os.path.join("tests/data", MIMETYPE.replace("/", "_"))
-    testfile = os.path.join(path, "valid_2.0.dpx")
+    """ Test that tools were unknown """
 
-    scraper = DpxScraper(filename=testfile,
-                         mimetype=MIMETYPE)
+    scraper = DpxScraper(filename="", mimetype="")
     assert scraper.tools()["Python DPX validator"]["version"] is UNKN

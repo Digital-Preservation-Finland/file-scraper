@@ -49,7 +49,7 @@ class DpxScraper(BaseScraper):
         Overwriting baseclass implementation
         to collect information about software used by the scraper
 
-        :returns: a dictionary with the used software or UNAV.
+        :returns: a dictionary with the used software or UNKN.
         """
         # TODO TPASPKT-1502 dpx_validator is hardcoded to work from
         # an rpm package and the validator cli doesn't have a get version flag
