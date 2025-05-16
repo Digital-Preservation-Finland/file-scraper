@@ -238,17 +238,23 @@ class SchematronScraper(BaseScraper):
         :returns: a dictionary with the used software or UNAV.
         """
         tool_shell = Shell(["xsltproc", "--version"])
-        regexes = [r"libxml ", r"libxslt ", r"libxml "]
+        regexes = [r"libxml ", r"libxslt ", r"libexslt "]
         versions = []
         for regex in regexes:
             try:
-                versions.append(next(
+                reslt = next(
                     re.finditer(regex + r"([\d\.]+)", tool_shell.stdout,
                                 re.MULTILINE)
-                    ).groups()[0])
+                    ).groups()[0]
+                # preprocessing
+                versions.append(
+                    ".".join(
+                        (int(reslt[:-4]), int(reslt[-4:-2]), int(reslt[-2:]))
+                    )
+                )
             except StopIteration:
                 versions.append(UNAV)
-        return {"libxml": {"version": versions[0]},
+        return {"libxml2": {"version": versions[0]},
                 "libxslt": {"version": versions[1]},
                 "libexslt": {"version": versions[2]}
                 }
