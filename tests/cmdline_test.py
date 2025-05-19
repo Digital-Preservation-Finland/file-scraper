@@ -1,3 +1,5 @@
+import json
+
 import pytest
 from click.testing import CliRunner
 from file_scraper.cmdline import cli
@@ -18,6 +20,25 @@ def test_scraper_without_arguments():
     result = runner.invoke(cli, ["scrape-file"])
     assert result.exit_code == 2
     assert "Error: Missing argument 'FILENAME'" in result.output
+
+
+def test_scrape_valid_file():
+    file_path = data_path / "application_pdf/valid_1.2.pdf"
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["scrape-file", str(file_path)])
+    assert result.exit_code == 0
+    assert '"well-formed": true' in result.stdout
+
+def test_scrape_invalid_file():
+    file_path = data_path / "application_pdf/invalid_1.2_payload_altered.pdf"
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["scrape-file", str(file_path)])
+    assert result.exit_code == 0
+    assert '"well-formed": false' in result.stdout
+
+
 
 
 @pytest.mark.parametrize(
