@@ -28,7 +28,8 @@ def test_scrape_valid_file():
     runner = CliRunner()
     result = runner.invoke(cli, ["scrape-file", str(file_path)])
     assert result.exit_code == 0
-    assert '"well-formed": true' in result.stdout
+    assert json.loads(result.stdout)["well-formed"] == True
+
 
 def test_scrape_invalid_file():
     file_path = data_path / "application_pdf/invalid_1.2_payload_altered.pdf"
@@ -36,9 +37,7 @@ def test_scrape_invalid_file():
     runner = CliRunner()
     result = runner.invoke(cli, ["scrape-file", str(file_path)])
     assert result.exit_code == 0
-    assert '"well-formed": false' in result.stdout
-
-
+    assert json.loads(result.stdout)["well-formed"] == False
 
 
 @pytest.mark.parametrize(
