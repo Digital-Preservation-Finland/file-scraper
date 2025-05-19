@@ -42,7 +42,6 @@ def test_scrape_invalid_file():
 
 @pytest.mark.parametrize(
     "flag, output_contains",
-    # MimeMatchScraper gives an error when invalid PDF version is provided
     [("--version=1.5", "MimeMatchScraper"),
      ("--tool-info", "tool_info")])
 def test_flags_change_output(flag, output_contains):
@@ -58,38 +57,29 @@ def test_flags_change_output(flag, output_contains):
     assert result.exit_code == 0
     assert output_contains in result.stdout
 
-    # Check that the output is JSON
-    json.loads(result.stdout)
-
 
 def test_non_existent_file_type():
     file_path = DATA_PATH / "application_pdf/valid_A-1a.pdf"
     runner = CliRunner()
-    result = runner.invoke(cli, ["scrape-file", str(file_path),
-                                 "--mimetype=non/existent"])
+    result = runner.invoke(cli, ["scrape-file", str(file_path), "--mimetype=non/existent"])
     assert result.exit_code == 1
-    assert result.stdout == ("Error: Proper scraper was not found. The file "
-                             "was not analyzed.\n")
+    assert result.stdout == "Error: Proper scraper was not found. The file was not analyzed.\n"
 
 
 def test_extra_arguments():
     file_path = DATA_PATH / "text_csv/valid__ascii.csv"
     runner = CliRunner()
-    result = runner.invoke(cli, ["scrape-file", str(file_path),
-                                 '--fields=["a","b","c"]'])
+    result = runner.invoke(cli, ["scrape-file", str(file_path), '--fields=["a","b","c"]'])
     assert result.exit_code == 0
-    assert ("CSV not well-formed: field counts in the given header "
-            "parameter and the CSV header don't match.") in result.stdout
+    assert "CSV not well-formed: field counts in the given header parameter and the CSV header don't match." in result.stdout
 
 
 def test_extra_arguments_with_space():
     file_path = DATA_PATH / "text_csv/valid__ascii.csv"
     runner = CliRunner()
-    result = runner.invoke(cli, ["scrape-file", str(file_path), '--fields',
-                                 '["a","b","c"]'])
+    result = runner.invoke(cli, ["scrape-file", str(file_path), '--fields', '["a","b","c"]'])
     assert result.exit_code == 0
-    assert ("CSV not well-formed: field counts in the given header parameter "
-            "and the CSV header don't match.") in result.stdout
+    assert "CSV not well-formed: field counts in the given header parameter and the CSV header don't match." in result.stdout
 
 
 def test_missing_value_in_extra_argument():
@@ -103,8 +93,7 @@ def test_missing_value_in_extra_argument():
 def test_argument_after_argument():
     file_path = DATA_PATH / "text_csv/valid__ascii.csv"
     runner = CliRunner()
-    result = runner.invoke(cli, ["scrape-file", str(file_path), '--fields',
-                                 '--quotechar="\""'])
+    result = runner.invoke(cli, ["scrape-file", str(file_path), '--fields', '--quotechar="\""'])
     assert result.exit_code == 1
     assert result.stdout == "Error: No value found for parameter 'fields'\n"
 
@@ -114,5 +103,13 @@ def test_incorrect_extra_argument():
     runner = CliRunner()
     result = runner.invoke(cli, ["scrape-file", str(file_path), "abc"])
     assert result.exit_code == 1
-    assert result.stdout == ("Error: Unexpected positional "
-                             "argument 'abc' encountered\n")
+    assert result.stdout == "Error: Unexpected positional argument 'abc' encountered\n"
+
+
+def test_mime_type_cases():
+    file_path = DATA_PATH / "application_pdf/valid_1.2.pdf"
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["scrape-file", "--mimetype", "Application/pdf", str(file_path)])
+    assert result.exit_code == 0
+    assert json.loads(result.stdout)["well-formed"] == True

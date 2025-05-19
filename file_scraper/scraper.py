@@ -45,7 +45,8 @@ class Scraper:
         self._predefined_version = None
         self._file_exists = None
         if self._params.get("mimetype", None) not in LOSE:
-            self._predefined_mimetype = self._params.get("mimetype", None)
+            self._predefined_mimetype = self._params.get("mimetype").lower()
+            self._params["mimetype"] = self._params.get("mimetype").lower()
         if self._params.get("version", None) not in LOSE:
             self._predefined_version = self._params.get("version", None)
 
