@@ -164,9 +164,14 @@ class MediainfoScraper(BaseScraper):
             # interface, so take care to clean up the handle
             # ourselves afterwards.
             # pylint: disable=protected-access
-            libmediaversion = pymediainfo.MediaInfo._get_library()[2]
+            lib, handle, libmediaversion, *_ \
+                = pymediainfo.MediaInfo._get_library()
+            lib.MediaInfo_Close(handle)
+            lib.MediaInfo_Delete(handle)
+
         except Exception:  # pylint: broad-except
             libmediaversion = UNAV
+
         return {
             "pymediainfo": {
                 "version": pymediaversion
