@@ -63,8 +63,7 @@ class _BaseScraperDetector(metaclass=abc.ABCMeta):
             class: Name of the class
             messages: List of info messages
             errors: List of errors
-            tools: Dictionary of tools used or
-                None if tools are not implemented
+            tools: Dictionary of tools used
 
         :returns: Info dict
         """
