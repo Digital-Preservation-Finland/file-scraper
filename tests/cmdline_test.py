@@ -6,11 +6,6 @@ import pathlib
 data_path = pathlib.Path(__file__).parent / "data"
 
 
-def _get_cmdline_options():
-    return ["--skip-wellformed-check", "--tool-info",
-            "--version", "--mimetype"]
-
-
 def test_group_command_lists_commands():
     runner = CliRunner()
     result = runner.invoke(cli, [])
