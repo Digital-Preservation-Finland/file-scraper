@@ -248,7 +248,6 @@ class SchematronScraper(BaseScraper):
                     ).groups()[0]
                 # preprocessing
                 reslt = str(reslt).zfill(5)
-                print(reslt)
                 versions.append(
                     ".".join(
                         (str(int(reslt[:-4])), str(int(reslt[-4:-2])),
