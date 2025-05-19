@@ -27,13 +27,14 @@ def test_scraper_without_arguments():
 
 @pytest.mark.parametrize(
     "filename, flag, output",
-    [(data_path / "application_pdf/valid_A-1a.pdf", "--version=1.5", ""),
-     (data_path / "application_pdf/valid_A-1a.pdf", "--tool-info", "")])
+    [("application_pdf/valid_A-1a.pdf", "--version=1.5", ""),
+     ("application_pdf/valid_A-1a.pdf", "--tool-info", "")])
 def test_flags_change_output(filename, flag, output):
     """"""
 
+    file_path = data_path / filename
     runner = CliRunner()
-    result = runner.invoke(cli, ["scrape-file", str(filename), flag])
-    result_noflag = runner.invoke(cli, ["scrape-file", filename])
+    result = runner.invoke(cli, ["scrape-file", str(file_path), flag])
+    result_noflag = runner.invoke(cli, ["scrape-file", str(file_path)])
     assert result != result_noflag
     assert result.exit_code == 0
