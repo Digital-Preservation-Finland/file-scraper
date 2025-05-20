@@ -5,7 +5,7 @@ import os.path
 from io import open as io_open
 
 from file_scraper.base import BaseScraper
-from file_scraper.defaults import UNKN, UNAV
+from file_scraper.defaults import UNAC, UNAV
 from file_scraper.shell import Shell
 from file_scraper.warctools.warctools_model import (GzipWarctoolsMeta,
                                                     WarctoolsMeta)
@@ -130,7 +130,8 @@ class WarctoolsFullScraper(WarctoolsScraper):
 
         :returns: a dictionary with the used software or UNKN.
         """
-        return {"warctools": {"version": UNKN}}
+        # TODO TPASPKT-1506 add version information to warctools.
+        return {"warctools": {"version": UNAC}}
 
 
 class GzipWarctoolsScraper(WarctoolsFullScraper):

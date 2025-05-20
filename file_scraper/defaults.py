@@ -61,10 +61,12 @@ PRONOM_DICT = {
 
 # (:unap) = Not applicable, makes no sense
 # (:unav) = Value unavailable, possibly unknown
+# (:unac) = Temporarily inaccessible
 # See: https://digitalpreservation.fi/support/vocabularies#Tuntemattomatarvot
 UNAP = "(:unap)"
 UNAV = "(:unav)"
 UNKN = "(:unkn)"
+UNAC = "(:unac)"
 
 # Digital preservation grading
 RECOMMENDED = "fi-dpres-recommended-file-format"
