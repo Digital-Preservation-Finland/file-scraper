@@ -56,3 +56,11 @@ def test_flags_change_output(flag, output_contains):
     assert result != result_noflag
     assert result.exit_code == 0
     assert output_contains in result.stdout
+
+
+def test_non_existent_file_type():
+    file_path = DATA_PATH / "application_pdf/valid_A-1a.pdf"
+    runner = CliRunner()
+    result = runner.invoke(cli, ["scrape-file", str(file_path), "--mimetype=non/existent"])
+    assert result.exit_code == 1
+    assert result.stdout == "Error: Proper scraper was not found. The file was not analyzed.\n"
