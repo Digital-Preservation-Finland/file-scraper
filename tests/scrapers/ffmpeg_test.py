@@ -202,7 +202,7 @@ UNAV_MIME = []
                 "stdout_part": "file was analyzed successfully",
                 "stderr_part": ""
             },
-            "video/MP2T"
+            "video/mp2t"
         ),
         (
             "valid__h265_aac.ts",
@@ -211,7 +211,7 @@ UNAV_MIME = []
                 "stdout_part": "file was analyzed successfully",
                 "stderr_part": ""
             },
-            "video/MP2T"
+            "video/mp2t"
         ),
         (
             "valid__wav.wav",
@@ -520,7 +520,7 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
                 "stdout_part": "",
                 "stderr_part": "invalid new backstep"
             },
-            "video/MP2T"
+            "video/mp2t"
         ),
         (
             "invalid__empty.ts",
@@ -529,7 +529,7 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
                 "stdout_part": "",
                 "stderr_part": "Invalid data found when processing input"
             },
-            "video/MP2T"
+            "video/mp2t"
         ),
         # In EL9 ffmpeg does not print the "Invalid data" error anymore and
         # scraper considers the file to be valid.
@@ -687,7 +687,7 @@ def test_ffmpeg_returns_invalid_return_code():
         ("video/avi", ""),
         ("video/mpeg", "1"),
         ("video/mp4", ""),
-        ("video/MP2T", ""),
+        ("video/mp2t", ""),
         ("application/mxf", "")
     ]
 )

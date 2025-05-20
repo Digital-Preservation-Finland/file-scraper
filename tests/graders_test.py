@@ -52,9 +52,9 @@ def test_text_grader(scraper, expected_grade):
         # All streams recommended
         (
             FakeScraper(
-                'video/MP2T', '(:unap)',
+                'video/mp2t', '(:unap)',
                 {
-                    0: {'mimetype': 'video/MP2T', 'version': '(:unap)'},
+                    0: {'mimetype': 'video/mp2t', 'version': '(:unap)'},
                     1: {'mimetype': 'audio/aac', 'version': '(:unap)'},
                     2: {'mimetype': 'video/h264', 'version': '(:unap)'}
                 }

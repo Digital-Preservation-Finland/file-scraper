@@ -291,9 +291,9 @@ class ContainerMediainfoMeta(BaseMediainfoMeta):
 
     _supported = {"audio/mp4": [""],
                   "video/avi": [""],
-                  "video/MP1S": [""],
-                  "video/MP2P": [""],
-                  "video/MP2T": [""],
+                  "video/mp1s": [""],
+                  "video/mp2p": [""],
+                  "video/mp2t": [""],
                   "video/mp4": [""],
                   "video/quicktime": [""],
                   "video/x-ms-asf": [""]}

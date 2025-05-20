@@ -33,7 +33,7 @@ WELLFORMED_SCRAPERS = [
                               "TextEncodingScraper"]),
         ("video/mpeg", None, ["MediainfoScraper", "FFMpegScraper"]),
         ("video/mp4", None, ["MediainfoScraper", "FFMpegScraper"]),
-        ("video/MP2T", None, ["MediainfoScraper", "FFMpegScraper"]),
+        ("video/mp2t", None, ["MediainfoScraper", "FFMpegScraper"]),
         ("video/x-matroska", None, ["MediainfoScraper", "FFMpegScraper"]),
         ("video/dv", None, ["MediainfoScraper", "FFMpegScraper"]),
         ("video/quicktime", None, ["MediainfoScraper", "FFMpegScraper"]),

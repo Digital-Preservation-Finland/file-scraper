@@ -63,17 +63,17 @@ FORMATS = [
         "properties": {"format": "HEVC"}
     },
     {
-        "mimetype": "video/MP1S",
+        "mimetype": "video/mp1s",
         "properties": {"format": "MPEG-PS",
                        "internet_media_type": "video/mpeg"}
     },
     {
-        "mimetype": "video/MP2P",
+        "mimetype": "video/mp2p",
         "properties": {"format": "MPEG-PS",
-                       "internet_media_type": "video/MP2P"}
+                       "internet_media_type": "video/mp2p"}
     },
     {
-        "mimetype": "video/MP2T",
+        "mimetype": "video/mp2t",
         "properties": {"format": "MPEG-TS"}
     },
     {

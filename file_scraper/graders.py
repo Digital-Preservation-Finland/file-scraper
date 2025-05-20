@@ -254,13 +254,13 @@ class MIMEGrader(BaseGrader):
         "video/mj2": {  # Container
             UNAP: RECOMMENDED
         },
-        "video/MP1S": {  # Container
+        "video/mp1s": {  # Container
             UNAP: ACCEPTABLE
         },
-        "video/MP2P": {  # Container
+        "video/mp2p": {  # Container
             UNAP: ACCEPTABLE
         },
-        "video/MP2T": {  # Container
+        "video/mp2t": {  # Container
             UNAP: RECOMMENDED
         },
         "video/mp4": {  # Container
@@ -393,7 +393,7 @@ class ContainerStreamsGrader(BaseGrader):
             # Video
             ("video/jpeg2000", UNAP),
         },
-        "video/MP2T": {
+        "video/mp2t": {
             # Audio
             ("audio/aac", UNAP),
 
@@ -471,7 +471,7 @@ class ContainerStreamsGrader(BaseGrader):
             # Video
             ("video/dv", UNAP)
         },
-        "video/MP1S": {
+        "video/mp1s": {
             # Audio
             ("audio/mpeg", "1"),
             ("audio/mpeg", "2"),
@@ -480,7 +480,7 @@ class ContainerStreamsGrader(BaseGrader):
             ("video/mpeg", "1"),
             ("video/mpeg", "2"),
         },
-        "video/MP2P": {
+        "video/mp2p": {
             # Audio
             ("audio/mpeg", "1"),
             ("audio/mpeg", "2"),
@@ -489,7 +489,7 @@ class ContainerStreamsGrader(BaseGrader):
             ("video/mpeg", "1"),
             ("video/mpeg", "2"),
         },
-        "video/MP2T": {
+        "video/mp2t": {
             # Audio
             ("audio/mpeg", "1"),
             ("audio/mpeg", "2"),

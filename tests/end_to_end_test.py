@@ -62,7 +62,7 @@ EXPECTED_UNAV_FIELDS_FOR_FILE = {
         "version",
         "version"],
     "tests/data/video_avi/valid__mpeg2_mp3.avi": ["bits_per_sample"],
-    "tests/data/video_MP1S/valid__mpeg1_mp3.mpg": [
+    "tests/data/video_mp1s/valid__mpeg1_mp3.mpg": [
         "codec_creator_app",
         "codec_creator_app_version",
         "codec_creator_app",
@@ -71,7 +71,7 @@ EXPECTED_UNAV_FIELDS_FOR_FILE = {
         "codec_creator_app",
         "codec_creator_app_version"
     ],
-    "tests/data/video_MP2P/valid__mpeg2_mp3.mpg": [
+    "tests/data/video_mp2p/valid__mpeg2_mp3.mpg": [
         "codec_creator_app",
         "codec_creator_app_version",
         "codec_creator_app",
@@ -80,7 +80,7 @@ EXPECTED_UNAV_FIELDS_FOR_FILE = {
         "codec_creator_app",
         "codec_creator_app_version"
     ],
-    "tests/data/video_MP2T/valid__mpeg2_mp3.ts": [
+    "tests/data/video_mp2t/valid__mpeg2_mp3.ts": [
         "codec_creator_app_version",
         "codec_creator_app",
         "codec_creator_app_version",
@@ -89,7 +89,7 @@ EXPECTED_UNAV_FIELDS_FOR_FILE = {
         "codec_creator_app_version",
         "codec_creator_app"
     ],
-    "tests/data/video_MP2T/valid__h265_aac.ts": [
+    "tests/data/video_mp2t/valid__h265_aac.ts": [
         "codec_creator_app",
         "codec_creator_app_version",
         "codec_creator_app",

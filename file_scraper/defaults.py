@@ -50,13 +50,13 @@ PRONOM_DICT = {
     "fmt/289": ("application/warc", None),  # does not result version
     "fmt/541": ("image/x-dpx", "2.0"),
     "fmt/569": ("video/x-matroska", "4"),
-    "fmt/585": ("video/MP2T", ""),
+    "fmt/585": ("video/mp2t", ""),
     "fmt/640": ("video/mpeg", "2"),
     "fmt/649": ("video/mpeg", "1"),
     "fmt/997": ("application/x-spss-por", ""),
     "x-fmt/135": ("audio/x-aiff", "1.3"),
-    "x-fmt/385": ("video/MP1S", ""),
-    "x-fmt/386": ("video/MP2P", ""),
+    "x-fmt/385": ("video/mp1s", ""),
+    "x-fmt/386": ("video/mp2p", ""),
 }
 
 # (:unap) = Not applicable, makes no sense

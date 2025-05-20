@@ -682,7 +682,7 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
                   expected results of stdout and stderr, and expected
                   streams
     """
-    mimetype = "video/MP2T"
+    mimetype = "video/mp2t"
     correct = parse_results(filename, mimetype, result_dict, False)
     scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
     scraper.scrape_file()
@@ -706,7 +706,7 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
                 "streams": {0: MPEG1PS_CONTAINER.copy(),
                             1: MPEG1PS_VIDEO.copy(),
                             2: MPEGPS_AUDIO.copy()}},
-             "video/MP1S"),
+             "video/mp1s"),
             ("valid__mpeg2_mp3.mpg", {
                 "purpose": "Test valid MPEG2-PS.",
                 "stdout_part": "file was analyzed successfully",
@@ -714,12 +714,12 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
                 "streams": {0: MPEG2PS_CONTAINER.copy(),
                             1: MPEG2PS_VIDEO.copy(),
                             2: MPEGPS_AUDIO.copy()}},
-             "video/MP2P"),
+             "video/mp2p"),
             ("invalid__empty.mpg", {
                 "purpose": "Test empty MPEG-PS",
                 "stdout_part": "",
                 "stderr_part": "No audio or video tracks found."},
-             "video/MP1S")
+             "video/mp1s")
         ])
 def test_mediainfo_scraper_mpegps(filename, result_dict,
                                   mimetype, evaluate_scraper):
@@ -770,9 +770,9 @@ def test_mediainfo_scraper_avi(evaluate_scraper):
         ("video/avi", ""),
         ("video/mpeg", "1"),
         ("video/mp4", ""),
-        ("video/MP1S", ""),
-        ("video/MP2P", ""),
-        ("video/MP2T", ""),
+        ("video/mp1s", ""),
+        ("video/mp2p", ""),
+        ("video/mp2t", ""),
         ("audio/x-wav", ""),
         ("audio/mp4", ""),
         ("audio/flac", "")
