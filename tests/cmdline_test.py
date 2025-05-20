@@ -72,3 +72,35 @@ def test_extra_arguments():
     result = runner.invoke(cli, ["scrape-file", str(file_path), '--fields=["a","b","c"]'])
     assert result.exit_code == 0
     assert "CSV not well-formed: field counts in the given header parameter and the CSV header don't match." in result.stdout
+
+
+def test_extra_arguments_with_space():
+    file_path = DATA_PATH / "text_csv/valid__ascii.csv"
+    runner = CliRunner()
+    result = runner.invoke(cli, ["scrape-file", str(file_path), '--fields', '["a","b","c"]'])
+    assert result.exit_code == 0
+    assert "CSV not well-formed: field counts in the given header parameter and the CSV header don't match." in result.stdout
+
+
+def test_missing_value_in_extra_argument():
+    file_path = DATA_PATH / "text_csv/valid__ascii.csv"
+    runner = CliRunner()
+    result = runner.invoke(cli, ["scrape-file", str(file_path), '--fields'])
+    assert result.exit_code == 1
+    assert result.stdout == "Error: No value found for parameter 'fields'\n"
+
+
+def test_argument_after_argument():
+    file_path = DATA_PATH / "text_csv/valid__ascii.csv"
+    runner = CliRunner()
+    result = runner.invoke(cli, ["scrape-file", str(file_path), '--fields', '--quotechar="\""'])
+    assert result.exit_code == 1
+    assert result.stdout == "Error: No value found for parameter 'fields'\n"
+
+
+def test_incorrect_extra_argument():
+    file_path = DATA_PATH / "application_pdf/valid_A-1a.pdf"
+    runner = CliRunner()
+    result = runner.invoke(cli, ["scrape-file", str(file_path), "abc"])
+    assert result.exit_code == 1
+    assert result.stdout == "Error: Unexpected positional argument 'abc' encountered\n"
