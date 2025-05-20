@@ -41,15 +41,18 @@ def test_scrape_invalid_file():
 
 
 @pytest.mark.parametrize(
-    "filename, flag, output",
-    [("application_pdf/valid_A-1a.pdf", "--version=1.5", ""),
-     ("application_pdf/valid_A-1a.pdf", "--tool-info", "")])
-def test_flags_change_output(filename, flag, output):
-    """"""
+    "flag, output_contains",
+    [("--version=1.5", "MimeMatchScraper"),
+     ("--tool-info", "tool_info")])
+def test_flags_change_output(flag, output_contains):
+    """
+    Tests that the command gives output based on its flags.
+    """
 
-    file_path = DATA_PATH / filename
+    file_path = DATA_PATH / "application_pdf/valid_A-1a.pdf"
     runner = CliRunner()
     result = runner.invoke(cli, ["scrape-file", str(file_path), flag])
     result_noflag = runner.invoke(cli, ["scrape-file", str(file_path)])
     assert result != result_noflag
     assert result.exit_code == 0
+    assert output_contains in result.stdout
