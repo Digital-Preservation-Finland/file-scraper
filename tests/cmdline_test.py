@@ -64,3 +64,11 @@ def test_non_existent_file_type():
     result = runner.invoke(cli, ["scrape-file", str(file_path), "--mimetype=non/existent"])
     assert result.exit_code == 1
     assert result.stdout == "Error: Proper scraper was not found. The file was not analyzed.\n"
+
+
+def test_extra_arguments():
+    file_path = DATA_PATH / "text_csv/valid__ascii.csv"
+    runner = CliRunner()
+    result = runner.invoke(cli, ["scrape-file", str(file_path), '--fields=["a","b","c"]'])
+    assert result.exit_code == 0
+    assert "CSV not well-formed: field counts in the given header parameter and the CSV header don't match." in result.stdout
