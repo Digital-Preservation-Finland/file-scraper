@@ -5,7 +5,7 @@ from click.testing import CliRunner
 from file_scraper.cmdline import cli
 import pathlib
 
-data_path = pathlib.Path(__file__).parent / "data"
+DATA_PATH = pathlib.Path(__file__).parent / "data"
 
 
 def test_group_command_lists_commands():
