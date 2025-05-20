@@ -23,7 +23,7 @@ def test_scraper_without_arguments():
 
 
 def test_scrape_valid_file():
-    file_path = data_path / "application_pdf/valid_1.2.pdf"
+    file_path = DATA_PATH / "application_pdf/valid_1.2.pdf"
 
     runner = CliRunner()
     result = runner.invoke(cli, ["scrape-file", str(file_path)])
@@ -32,7 +32,7 @@ def test_scrape_valid_file():
 
 
 def test_scrape_invalid_file():
-    file_path = data_path / "application_pdf/invalid_1.2_payload_altered.pdf"
+    file_path = DATA_PATH / "application_pdf/invalid_1.2_payload_altered.pdf"
 
     runner = CliRunner()
     result = runner.invoke(cli, ["scrape-file", str(file_path)])
@@ -47,7 +47,7 @@ def test_scrape_invalid_file():
 def test_flags_change_output(filename, flag, output):
     """"""
 
-    file_path = data_path / filename
+    file_path = DATA_PATH / filename
     runner = CliRunner()
     result = runner.invoke(cli, ["scrape-file", str(file_path), flag])
     result_noflag = runner.invoke(cli, ["scrape-file", str(file_path)])
