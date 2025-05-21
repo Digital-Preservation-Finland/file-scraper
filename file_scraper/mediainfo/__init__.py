@@ -70,7 +70,7 @@ FORMATS = [
     {
         "mimetype": "video/mp2p",
         "properties": {"format": "MPEG-PS",
-                       "internet_media_type": "video/mp2p"}
+                       "internet_media_type": "video/MP2P"}
     },
     {
         "mimetype": "video/mp2t",
