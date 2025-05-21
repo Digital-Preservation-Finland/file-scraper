@@ -4,6 +4,7 @@ Release notes
 Unreleased
 ------------
 
+- Update tools to return meaningful versions for each scraper and detector
 - Update to compatibility with pymediainfo 7.0.1
 - Update to compatibility with libmediainfo 25.03
 
