@@ -189,7 +189,7 @@ def test_charset_parameter(charset):
         # Acceptable container file format due to containing acceptable audio
         # and video streams
         (
-            "tests/data/video_MP2T/valid__mpeg2_mp3.ts",
+            "tests/data/video_mp2t/valid__mpeg2_mp3.ts",
             "fi-dpres-acceptable-file-format"
         ),
     ]
