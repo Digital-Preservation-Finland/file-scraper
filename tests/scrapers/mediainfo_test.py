@@ -682,9 +682,9 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
                   expected results of stdout and stderr, and expected
                   streams
     """
-    mimetype = "video/mp2t"
+    mimetype = "video/MP2T"
     correct = parse_results(filename, mimetype, result_dict, False)
-    scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
+    scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype.lower())
     scraper.scrape_file()
 
     if "empty" in filename:
@@ -706,7 +706,7 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
                 "streams": {0: MPEG1PS_CONTAINER.copy(),
                             1: MPEG1PS_VIDEO.copy(),
                             2: MPEGPS_AUDIO.copy()}},
-             "video/mp1s"),
+             "video/MP1S"),
             ("valid__mpeg2_mp3.mpg", {
                 "purpose": "Test valid MPEG2-PS.",
                 "stdout_part": "file was analyzed successfully",
@@ -714,12 +714,12 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
                 "streams": {0: MPEG2PS_CONTAINER.copy(),
                             1: MPEG2PS_VIDEO.copy(),
                             2: MPEGPS_AUDIO.copy()}},
-             "video/mp2p"),
+             "video/MP2P"),
             ("invalid__empty.mpg", {
                 "purpose": "Test empty MPEG-PS",
                 "stdout_part": "",
                 "stderr_part": "No audio or video tracks found."},
-             "video/mp1s")
+             "video/MP1S")
         ])
 def test_mediainfo_scraper_mpegps(filename, result_dict,
                                   mimetype, evaluate_scraper):
@@ -732,7 +732,7 @@ def test_mediainfo_scraper_mpegps(filename, result_dict,
                   streams
     """
     correct = parse_results(filename, mimetype, result_dict, False)
-    scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
+    scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype.lower())
     scraper.scrape_file()
 
     if "empty" in filename:

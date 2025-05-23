@@ -100,10 +100,10 @@ CHANGE_MAGIC = {
         "application/octet-stream",
     "text_plain/valid__utf32be_without_bom.txt":
         "application/octet-stream",
-    "video_mp1s/valid__mpeg1_mp3.mpg": "video/mpeg",
-    "video_mp2p/valid__mpeg2_mp3.mpg": "video/mpeg",
-    "video_mp2t/valid__mpeg2_mp3.ts": "application/octet-stream",
-    "video_mp2t/valid__h265_aac.ts": "application/octet-stream",
+    "video_MP1S/valid__mpeg1_mp3.mpg": "video/mpeg",
+    "video_MP2P/valid__mpeg2_mp3.mpg": "video/mpeg",
+    "video_MP2T/valid__mpeg2_mp3.ts": "application/octet-stream",
+    "video_MP2T/valid__h265_aac.ts": "application/octet-stream",
     "application_xhtml+xml/valid_1.0.xhtml": "text/xml",
     "application_warc/valid_1.0_.warc.gz": "application/gzip",
     "application_x-spss-por/valid__spss24-dot.por": "text/plain",
@@ -223,6 +223,9 @@ def test_detectors(detector_class, change_dict):
         format_name = filename.replace('tests/data/', '')
         if format_name in change_dict:
             expected_mimetype = change_dict[format_name]
+
+        if expected_mimetype is not None:
+            expected_mimetype = expected_mimetype.lower()
 
         assertion_message = ("Detected mimetype did not match expected: "
                              "{}: {}".format(

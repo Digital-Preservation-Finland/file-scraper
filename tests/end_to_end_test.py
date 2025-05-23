@@ -62,7 +62,7 @@ EXPECTED_UNAV_FIELDS_FOR_FILE = {
         "version",
         "version"],
     "tests/data/video_avi/valid__mpeg2_mp3.avi": ["bits_per_sample"],
-    "tests/data/video_mp1s/valid__mpeg1_mp3.mpg": [
+    "tests/data/video_MP1S/valid__mpeg1_mp3.mpg": [
         "codec_creator_app",
         "codec_creator_app_version",
         "codec_creator_app",
@@ -71,7 +71,7 @@ EXPECTED_UNAV_FIELDS_FOR_FILE = {
         "codec_creator_app",
         "codec_creator_app_version"
     ],
-    "tests/data/video_mp2p/valid__mpeg2_mp3.mpg": [
+    "tests/data/video_MP2P/valid__mpeg2_mp3.mpg": [
         "codec_creator_app",
         "codec_creator_app_version",
         "codec_creator_app",
@@ -80,7 +80,7 @@ EXPECTED_UNAV_FIELDS_FOR_FILE = {
         "codec_creator_app",
         "codec_creator_app_version"
     ],
-    "tests/data/video_mp2t/valid__mpeg2_mp3.ts": [
+    "tests/data/video_MP2T/valid__mpeg2_mp3.ts": [
         "codec_creator_app_version",
         "codec_creator_app",
         "codec_creator_app_version",
@@ -89,7 +89,7 @@ EXPECTED_UNAV_FIELDS_FOR_FILE = {
         "codec_creator_app_version",
         "codec_creator_app"
     ],
-    "tests/data/video_mp2t/valid__h265_aac.ts": [
+    "tests/data/video_MP2T/valid__h265_aac.ts": [
         "codec_creator_app",
         "codec_creator_app_version",
         "codec_creator_app",
@@ -229,7 +229,7 @@ UNAV_MIMETYPE_INVALID = [
     "tests/data/text_plain/invalid__utf8_just_c3.txt",
     "tests/data/video_mp4/invalid__h264_aac_missing_data.mp4",
     "tests/data/video_x-matroska/invalid_4_ffv1_missing_data.mkv",
-    "tests/data/video_mp2t/invalid__missing_data.ts",
+    "tests/data/video_MP2T/invalid__missing_data.ts",
     "tests/data/image_webp/invalid__missing_bitstream.webp",
     "tests/data/image_webp/invalid__missing_icc_profile.webp",
     "tests/data/image_webp/invalid__missing_image_data.webp",
@@ -304,9 +304,9 @@ ACCEPTABLE_FILES = [
     "tests/data/video_dv/valid__pal_lossy.dv",
     "tests/data/video_quicktime/valid__dv_lpcm8.mov",
     "tests/data/video_avi/valid__mpeg2_mp3.avi",
-    "tests/data/video_mp1s/valid__mpeg1_mp3.mpg",
-    "tests/data/video_mp2p/valid__mpeg2_mp3.mpg",
-    "tests/data/video_mp2t/valid__mpeg2_mp3.ts",
+    "tests/data/video_MP1S/valid__mpeg1_mp3.mpg",
+    "tests/data/video_MP2P/valid__mpeg2_mp3.mpg",
+    "tests/data/video_MP2T/valid__mpeg2_mp3.ts",
     "tests/data/audio_x-aiff/valid__aiff-c.aiff",
     "tests/data/video_x-ms-asf/valid__wma9.wma",
     "tests/data/video_x-ms-asf/valid__vc1.wmv",
@@ -363,7 +363,7 @@ def _assert_valid_scraper_result(scraper, fullname, mimetype, version,
     elif well_formed is False:
         assert scraper.well_formed is False
 
-    assert scraper.mimetype == mimetype
+    assert scraper.mimetype == mimetype.lower()
     assert scraper.version == version
     assert scraper.streams not in [None, {}]
 

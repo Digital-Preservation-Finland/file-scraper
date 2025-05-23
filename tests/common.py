@@ -115,7 +115,7 @@ def parse_results(filename, mimetype, results, check_wellformed,
         correct_ver = UNAV
         stream_type = UNAV if stream_type != "binary" else stream_type
     else:
-        correct_mime = mimetype
+        correct_mime = mimetype.lower()
         correct_ver = version
 
     if "streams" in results:

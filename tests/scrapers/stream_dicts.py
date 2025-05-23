@@ -216,11 +216,11 @@ M4A_MPEG4_CONTAINER = dict(MPEG4_CONTAINER, **{
 MPEGTS_CONTAINER = {
     "codec_creator_app": UNAV,
     "codec_creator_app_version": UNAV,
-    "codec_name": "MPEG-TS", "index": 0, "mimetype": "video/mp2t",
+    "codec_name": "MPEG-TS", "index": 0, "mimetype": "video/MP2T",
     "stream_type": "videocontainer", "version": UNAP}
 
 MPEG1PS_CONTAINER = {
-    "index": 0, "mimetype": "video/mp1s",
+    "index": 0, "mimetype": "video/MP1S",
     "stream_type": "videocontainer", "version": UNAP,
     "codec_creator_app": UNAV,
     "codec_creator_app_version": UNAV,
@@ -237,7 +237,7 @@ MPEGPS_AUDIO = dict(MPEG1_AUDIO, **{
     "duration": "PT1.18S", "data_rate": "128"})
 
 MPEG2PS_CONTAINER = dict(MPEG1PS_CONTAINER, **{
-    "mimetype": "video/mp2p"})
+    "mimetype": "video/MP2P"})
 
 MPEG2PS_VIDEO = dict(MPEG1PS_VIDEO, **{
     "par": "1", "data_rate": "2.548327",
