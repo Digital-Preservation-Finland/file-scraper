@@ -363,10 +363,10 @@ class DvMediainfoMeta(BaseMediainfoMeta):
 class LpcmMediainfoMeta(BaseMediainfoMeta):
     """Metadata model for Linear Pulse-Code Modulation audio."""
 
-    _supported = {"audio/L8": [""],
-                  "audio/L16": [""],
-                  "audio/L20": [""],
-                  "audio/L24": [""]}
+    _supported = {"audio/l8": [""],
+                  "audio/l16": [""],
+                  "audio/l20": [""],
+                  "audio/l24": [""]}
     _allow_versions = True  # Allow any version
 
     @metadata()

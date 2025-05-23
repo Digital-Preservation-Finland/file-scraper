@@ -57,7 +57,7 @@ WAV_AUDIO = {
     "index": 0, "mimetype": "audio/x-wav", "num_channels": "2",
     "sampling_frequency": "44.1", "stream_type": "audio"}
 LPCM8_AUDIO = dict(WAV_AUDIO, **{
-    "mimetype": "audio/L8", "version": UNAP})
+    "mimetype": "audio/l8", "version": UNAP})
 
 FLAC_AUDIO = {
     "audio_data_encoding": "FLAC", "bits_per_sample": "24",

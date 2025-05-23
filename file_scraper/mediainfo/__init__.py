@@ -13,19 +13,19 @@ FORMATS = [
         "properties": {"format": "FLAC"}
     },
     {
-        "mimetype": "audio/L8",
+        "mimetype": "audio/l8",
         "properties": {"format": "PCM", "bit_depth": 8}
     },
     {
-        "mimetype": "audio/L16",
+        "mimetype": "audio/l16",
         "properties": {"format": "PCM", "bit_depth": 16}
     },
     {
-        "mimetype": "audio/L20",
+        "mimetype": "audio/l20",
         "properties": {"format": "PCM", "bit_depth": 20}
     },
     {
-        "mimetype": "audio/L24",
+        "mimetype": "audio/l24",
         "properties": {"format": "PCM", "bit_depth": 24}
     },
     {

@@ -20,9 +20,9 @@ class FFMpegSimpleMeta(BaseMeta):
     _supported = {
         "audio/aac": [],
         "audio/flac": [],
-        "audio/L8": [],
-        "audio/L16": [],
-        "audio/L24": [],
+        "audio/l8": [],
+        "audio/l16": [],
+        "audio/l24": [],
         "audio/mp4": [],
         "audio/mpeg": [],
         "audio/x-aiff": [],

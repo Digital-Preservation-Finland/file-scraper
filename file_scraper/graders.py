@@ -159,16 +159,16 @@ class MIMEGrader(BaseGrader):
         "audio/flac": {
             UNAP: RECOMMENDED
         },
-        "audio/L8": {
+        "audio/l8": {
             UNAP: RECOMMENDED
         },
-        "audio/L16": {
+        "audio/l16": {
             UNAP: RECOMMENDED
         },
-        "audio/L20": {
+        "audio/l20": {
             UNAP: RECOMMENDED
         },
-        "audio/L24": {
+        "audio/l24": {
             UNAP: RECOMMENDED
         },
         "audio/mp4": {  # Container
@@ -371,10 +371,10 @@ class ContainerStreamsGrader(BaseGrader):
         "application/mxf": {
             # Audio
             ("audio/aac", UNAP),
-            ("audio/L8", UNAP),
-            ("audio/L16", UNAP),
-            ("audio/L20", UNAP),
-            ("audio/L24", UNAP),
+            ("audio/l8", UNAP),
+            ("audio/l16", UNAP),
+            ("audio/l20", UNAP),
+            ("audio/l24", UNAP),
 
             # Video
             ("video/h264", UNAP),
@@ -385,10 +385,10 @@ class ContainerStreamsGrader(BaseGrader):
         },
         "video/mj2": {
             # Audio
-            ("audio/L8", UNAP),
-            ("audio/L16", UNAP),
-            ("audio/L20", UNAP),
-            ("audio/L24", UNAP),
+            ("audio/l8", UNAP),
+            ("audio/l16", UNAP),
+            ("audio/l20", UNAP),
+            ("audio/l24", UNAP),
 
             # Video
             ("video/jpeg2000", UNAP),
@@ -412,10 +412,10 @@ class ContainerStreamsGrader(BaseGrader):
         "video/quicktime": {
             # Audio
             ("audio/aac", UNAP),
-            ("audio/L8", UNAP),
-            ("audio/L16", UNAP),
-            ("audio/L20", UNAP),
-            ("audio/L24", UNAP),
+            ("audio/l8", UNAP),
+            ("audio/l16", UNAP),
+            ("audio/l20", UNAP),
+            ("audio/l24", UNAP),
 
             # Video
             ("video/h264", UNAP),
@@ -425,10 +425,10 @@ class ContainerStreamsGrader(BaseGrader):
         "video/x-matroska": {
             # Audio
             ("audio/flac", UNAP),
-            ("audio/L8", UNAP),
-            ("audio/L16", UNAP),
-            ("audio/L20", UNAP),
-            ("audio/L24", UNAP),
+            ("audio/l8", UNAP),
+            ("audio/l16", UNAP),
+            ("audio/l20", UNAP),
+            ("audio/l24", UNAP),
 
             # Video
             ("video/h265", UNAP),
@@ -451,10 +451,10 @@ class ContainerStreamsGrader(BaseGrader):
             # Audio
             ("audio/mpeg", "1"),
             ("audio/mpeg", "2"),
-            ("audio/L8", UNAP),
-            ("audio/L16", UNAP),
-            ("audio/L20", UNAP),
-            ("audio/L24", UNAP),
+            ("audio/l8", UNAP),
+            ("audio/l16", UNAP),
+            ("audio/l20", UNAP),
+            ("audio/l24", UNAP),
 
             # Video
             ("video/dv", UNAP),
@@ -463,10 +463,10 @@ class ContainerStreamsGrader(BaseGrader):
         },
         "video/dv": {
             # Audio
-            ("audio/L8", UNAP),
-            ("audio/L16", UNAP),
-            ("audio/L20", UNAP),
-            ("audio/L24", UNAP),
+            ("audio/l8", UNAP),
+            ("audio/l16", UNAP),
+            ("audio/l20", UNAP),
+            ("audio/l24", UNAP),
 
             # Video
             ("video/dv", UNAP)
