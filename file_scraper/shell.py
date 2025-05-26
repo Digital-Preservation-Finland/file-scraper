@@ -96,10 +96,6 @@ class Shell:
 
         if self._returncode is None:
 
-            # A context manager would be nice, but Python 2 version of
-            # subprocess does not support it.
-            # pylint: disable=consider-using-with
-
             # Some applications (*cough*, `pngcheck`) are stupid and check
             # if the stdin refers to a terminal device (using `isatty(0)`)
             # and act differently depending on the case (print help
@@ -115,16 +111,15 @@ class Shell:
                 pty_master, pty_slave = pty.openpty()
                 stdin = pty_master
 
-            proc = subprocess.Popen(
-                args=self.command,
-                stdout=self.stdout_file,
-                stderr=self.stderr_file,
-                stdin=stdin,
-                shell=False,
-                env=self._env)
-
-            (self._stdout, self._stderr) = proc.communicate()
-            self._returncode = proc.returncode
+            with subprocess.Popen(
+                    args=self.command,
+                    stdout=self.stdout_file,
+                    stderr=self.stderr_file,
+                    stdin=stdin,
+                    shell=False,
+                    env=self._env) as proc:
+                (self._stdout, self._stderr) = proc.communicate()
+                self._returncode = proc.returncode
 
             if self._use_pty:
                 os.close(pty_master)

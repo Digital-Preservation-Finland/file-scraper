@@ -224,17 +224,12 @@ def test_parallel_validation(filename, mimetype):
     """
 
     number = 3
+    with Pool(number) as pool:
+        results = [pool.apply_async(_scrape, (filename, mimetype))
+                   for _ in range(number)]
 
-    # Python 2 version of `multiprocessing.Pool` does not work as a context
-    # manager. We can transition into using a context manager when Python 2
-    # support is dropped.
-    # pylint: disable=consider-using-with
-    pool = Pool(number)
-    results = [pool.apply_async(_scrape, (filename, mimetype))
-               for _ in range(number)]
-
-    for result in results:
-        assert result.get(timeout=5)
+        for result in results:
+            assert result.get(timeout=5)
 
 
 @pytest.mark.usefixtures("patch_shell_attributes_fx")

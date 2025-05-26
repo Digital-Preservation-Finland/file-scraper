@@ -7,10 +7,6 @@ from typing import Optional
 from file_scraper.defaults import UNAP, UNAV
 from file_scraper.utils import (metadata, is_metadata, filter_unwanted_chars)
 
-# Object inheritance is needed as long as we support Python 2 to explicitly use
-# new-style classes.
-# pylint: disable=useless-object-inheritance
-
 
 class _BaseScraperDetector(metaclass=abc.ABCMeta):
 
