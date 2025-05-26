@@ -82,9 +82,9 @@ class LxmlScraper(BaseScraper):
             )
             if not encoding_matches:
                 self._errors.append(
-                    "Found encoding declaration %s from the file %s, but %s "
-                    "was expected." % (encoding, self.filename,
-                                       self._params["charset"]))
+                    f"Found encoding declaration {encoding} from the file "
+                    f"{self.filename}, but {self._params['charset']} was "
+                    f"expected.")
 
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)
 

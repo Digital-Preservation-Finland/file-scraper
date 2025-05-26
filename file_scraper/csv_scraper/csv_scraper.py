@@ -85,15 +85,15 @@ class CsvScraper(BaseScraper):
                                 str(err))
         except csv.Error as exception:
             if reader is not None:
-                self._errors.append("CSV error on line %s: %s" %
-                                    (reader.line_num, exception))
+                self._errors.append(
+                    f"CSV error on line {reader.line_num}: {exception}")
             else:
-                self._errors.append("CSV error: %s" % exception)
+                self._errors.append(f"CSV error: {exception}")
         except (UnicodeError,
                 UnicodeDecodeError,
                 StopIteration,
                 LookupError) as exception:
-            self._errors.append("Error reading file as CSV: %s" % exception)
+            self._errors.append(f"Error reading file as CSV: {exception}")
         else:
             self._messages.append("CSV file was checked successfully.")
         finally:

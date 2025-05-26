@@ -28,8 +28,9 @@ class DpxScraper(BaseScraper):
         shell = Shell([self._dpxv, os.fsencode(self.filename)])
 
         if shell.returncode != 0:
-            self._errors.append("DPX returned invalid return code: %s\n%s" %
-                                (shell.returncode, shell.stderr))
+            self._errors.append(
+                f"DPX returned invalid return code: {shell.returncode}\n"
+                f"{shell.stderr}")
 
         if shell.stderr:
             self._errors += list(shell.stderr.splitlines())

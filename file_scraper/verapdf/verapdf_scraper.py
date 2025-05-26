@@ -46,8 +46,8 @@ class VerapdfScraper(BaseScraper):
         shell = Shell(cmd)
 
         if shell.returncode not in OK_CODES:
-            self._errors.append("VeraPDF returned invalid return code: %s"
-                                % shell.returncode)
+            self._errors.append(
+                f"VeraPDF returned invalid return code: {shell.returncode}")
             self._errors.append(shell.stderr)
             self._check_supported()
             return

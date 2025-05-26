@@ -128,12 +128,12 @@ def iso8601_duration(time):
     duration = "PT"
 
     if hours:
-        duration += "%dH" % hours
+        duration += f"{hours:d}H"
     if minutes:
-        duration += "%dM" % minutes
+        duration += f"{minutes:d}M"
     if seconds > 0:
-        seconds = strip_zeros("%.2f" % seconds)
-        duration += "%sS" % seconds
+        seconds = strip_zeros(f"{seconds:.2f}")
+        duration += f"{seconds}S"
     if duration == "PT":
         duration = "PT0S"
 
@@ -220,8 +220,9 @@ def _merge_to_stream(stream, method, lose, importants):
         # Set the value as UNAV and raise ValueError
         existing_value = stream[method_name]
         stream[method_name] = UNAV
-        raise ValueError("Conflict with values '{}' and '{}' for '{}'.".format(
-            existing_value, method_value, method_name))
+        raise ValueError(
+            f"Conflict with values '{existing_value}' and '{method_value}' "
+            f"for '{method_name}'.")
 
 
 def _fill_importants(method, importants, lose):
@@ -243,11 +244,9 @@ def _fill_importants(method, importants, lose):
             if method_name in importants and \
                     importants[method_name] != method_value:
                 raise ValueError(
-                    "Conflict with values '%s' and '%s' for '%s': "
-                    "both are marked important." %
-                    (importants[method_name],
-                     method_value,
-                     method_name))
+                    f"Conflict with values '{importants[method_name]}' and "
+                    f"'{method_value}' for '{method_name}': both "
+                    f"are marked important.")
             importants[method_name] = method_value
     except SkipElementException:
         pass
@@ -322,7 +321,7 @@ def concat(lines, prefix=""):
     :prefix: Prefix to prepend each line with
     :returns: Joined lines as string
     """
-    return "\n".join(["{}{}".format(prefix, line) for line in lines])
+    return "\n".join([f"{prefix}{line}" for line in lines])
 
 
 def sanitize_bytestring(input_bytes):

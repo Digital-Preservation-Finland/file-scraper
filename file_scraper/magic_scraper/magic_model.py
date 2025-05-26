@@ -140,8 +140,7 @@ class XmlFileMagicMeta(TextMagicBaseMeta):
         try:
             if version not in ["1.0"]:
                 raise ValueError(
-                    "Invalid version '{}'. "
-                    "XML version must be '1.0'.".format(version))
+                    f"Invalid version '{version}'. XML version must be '1.0'.")
             return version
         except ValueError:
             return UNAV

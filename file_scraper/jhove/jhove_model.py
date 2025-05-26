@@ -25,7 +25,7 @@ def get_field(report, field):
     """
     if report is None:
         return UNAV
-    query = "(//j_harvard:{} | //j_opf:{})/text()".format(field, field)
+    query = f"(//j_harvard:{field} | //j_opf:{field})/text()"
     results = report.xpath(query, namespaces=NAMESPACES)
     if not results:
         return UNAV

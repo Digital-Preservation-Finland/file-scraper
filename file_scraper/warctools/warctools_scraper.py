@@ -111,8 +111,8 @@ class WarctoolsFullScraper(WarctoolsScraper):
 
         if shell.returncode != 0:
             self._errors.append(
-                "Warctools returned invalid return code: %s\n%s"
-                % (shell.returncode, shell.stderr))
+                f"Warctools returned invalid return code: "
+                f"{shell.returncode}\n{shell.stderr}")
             # Filter some trash printed by warcvalid.
             filtered_errors = [line for line in shell.stderr.split("\n")
                                if "ignored line" not in line]
@@ -182,5 +182,5 @@ class GzipWarctoolsScraper(WarctoolsFullScraper):
         if WarctoolsFullScraper.is_supported(mimetype, version):
             return
 
-        self._errors.append("MIME type {} with version {} is not "
-                            "supported.".format(mimetype, version))
+        self._errors.append(
+            f"MIME type {mimetype} with version {version} is not supported.")

@@ -488,8 +488,10 @@ class FFMpegMeta(FFMpegSimpleMeta):
         # value. In that case, return UNAV.
         sar = self._ffmpeg_stream.get("sample_aspect_ratio")
         if sar and sar[0] != "0":
-            return strip_zeros("%.3f" % float(Fraction(
-                self._ffmpeg_stream["sample_aspect_ratio"].replace(":", "/"))))
+            value = float(Fraction(
+                self._ffmpeg_stream['sample_aspect_ratio'].replace(':', '/')))
+            return strip_zeros(
+                f"{value :.3f}")
 
         return UNAV
 
@@ -502,9 +504,10 @@ class FFMpegMeta(FFMpegSimpleMeta):
         # value. In that case, return UNAV.
         dar = self._ffmpeg_stream.get("display_aspect_ratio")
         if dar and dar[0] != "0":
-            return strip_zeros("%.3f" % float(Fraction(
-                self._ffmpeg_stream["display_aspect_ratio"].replace(
-                    ":", "/"))))
+            value = float(Fraction(
+                self._ffmpeg_stream['display_aspect_ratio'].replace(':', '/')))
+            return strip_zeros(
+                f"{value :.3f}")
         return UNAV
 
     @metadata()
@@ -543,8 +546,9 @@ class FFMpegMeta(FFMpegSimpleMeta):
         if self.stream_type() not in ["video"]:
             raise SkipElementException()
         if "r_frame_rate" in self._ffmpeg_stream:
-            return strip_zeros("%.2f" % float(Fraction(
-                self._ffmpeg_stream["r_frame_rate"])))
+            value = float(Fraction(self._ffmpeg_stream['r_frame_rate']))
+            return strip_zeros(
+                f"{value :.2f}")
         return UNAV
 
     @metadata()

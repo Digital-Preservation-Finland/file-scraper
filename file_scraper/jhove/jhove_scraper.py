@@ -45,8 +45,9 @@ class JHoveScraperBase(BaseScraper):
         shell = Shell(exec_cmd)
 
         if shell.returncode != 0:
-            self._errors.append("JHove returned invalid return code: %s\n%s" %
-                                (shell.returncode, shell.stderr))
+            self._errors.append(
+                f"JHove returned invalid return code: {shell.returncode}\n"
+                f"{shell.stderr}")
         self._report = lxml.etree.fromstring(shell.stdout_raw)
 
         status = get_field(self._report, "status")
@@ -121,9 +122,9 @@ class JHoveHtmlScraper(JHoveScraperBase):
         if encoding is not None and \
                 encoding.upper() != self._params["charset"]:
             self._errors.append(
-                "Found encoding declaration %s from the file %s, but %s "
-                "was expected." % (encoding, self.filename,
-                                   self._params["charset"]))
+                f"Found encoding declaration {encoding} from the file "
+                f"{self.filename}, but {self._params['charset']} was "
+                f"expected.")
 
 
 class JHoveJpegScraper(JHoveScraperBase):

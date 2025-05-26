@@ -43,8 +43,9 @@ class PsppScraper(BaseScraper):
             if shell.stderr:
                 self._errors.append(shell.stderr)
             if shell.returncode != 0:
-                self._errors.append("PSPP returned invalid return code: %s\n%s"
-                                    % (shell.returncode, shell.stderr))
+                self._errors.append(
+                    f"PSPP returned invalid return code: {shell.returncode}\n"
+                    f"{shell.stderr}")
             self._messages.append(shell.stdout)
             if os.path.isfile(temp_file):
                 self._messages.append("File conversion was succesful.")

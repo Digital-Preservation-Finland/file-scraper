@@ -60,8 +60,8 @@ class TextfileScraper(BaseScraper):
         charset = self._params.get("charset", None)
         if charset is not None and charset.upper() in ["UTF-32", "UTF-16"]:
             self._messages.append(
-                "Scraper not supported with charset %s. Predefined metadata "
-                "is collected." % charset)
+                f"Scraper not supported with charset {charset}. Predefined "
+                f"metadata is collected.")
         else:
             self._messages.append("Trying text detection...")
 
@@ -236,16 +236,17 @@ class TextEncodingScraper(BaseScraper):
                     position = position + len(chunk)
                     if position >= self._limit and self._limit > 0:
                         self._messages.append(
-                            "First %s bytes read, we skip the remainder." % (
-                                self._limit))
+                            f"First {self._limit} bytes read, "
+                            f"we skip the remainder.")
                         break
 
                 if probably_utf8:
                     self._errors.append(
-                        "Character decoding error: The character encoding "
-                        "passed with UTF-8 and it contains characters "
-                        "colliding with the given encoding %s. Most likely "
-                        "the file is UTF-8 file." % self._charset.upper())
+                        f"Character decoding error: The character "
+                        f"encoding passed with UTF-8 and it contains "
+                        f"characters colliding with the given encoding "
+                        f"{self._charset.upper()}. Most likely "
+                        f"the file is UTF-8 file.")
                 else:
                     self._messages.append(
                         "Character encoding validated successfully.")
@@ -254,7 +255,7 @@ class TextEncodingScraper(BaseScraper):
             self._errors.append("Error when reading the file: " +
                                 str(err))
         except (ForbiddenCharacterError, UnknownEncodingError) as exception:
-            self._errors.append("Character decoding error: %s" % exception)
+            self._errors.append(f"Character decoding error: {exception}")
 
         self.streams = list(self.iterate_models(
             well_formed=self.well_formed, charset=self._charset,
@@ -359,8 +360,8 @@ class TextEncodingScraper(BaseScraper):
             index = decoded_chunk.find(forb_char)
             if index > -1:
                 raise ForbiddenCharacterError(
-                    "Illegal character '{}' in position {}".format(
-                        repr(forb_char)[1:-1], (position+index)))
+                    f"Illegal character '{repr(forb_char)[1:-1]}' in "
+                    f"position {(position + index)}")
 
     def tools(self):
         """

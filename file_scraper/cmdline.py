@@ -108,8 +108,8 @@ def _extra_options_to_dict(args):
 
         if current_option.find("--") != 0:
             raise click.ClickException(
-                "Unexpected positional argument '{}' encountered"
-                "".format(current_option))
+                f"Unexpected positional argument "
+                f"'{current_option}' encountered")
         current_option = current_option.lstrip("--")
 
         if "=" in current_option:  # --key=value

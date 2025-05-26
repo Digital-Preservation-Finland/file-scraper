@@ -466,9 +466,9 @@ class SegYDetector(BaseDetector):
                 content[3120:3128] == "C40 EOF.":
             for index in range(0, 40):
                 allowed_markers = [
-                    "C%2d " % (index + 1),   # "C1 "
-                    "C%-2d " % (index + 1),  # "C 1 "
-                    "C%02d " % (index + 1),  # "C01 "
+                    f"C{index + 1:2d} ",   # "C1 "
+                    f"C{index + 1:<2d} ",  # "C 1 "
+                    f"C{index + 1:02d} ",  # "C01 "
                 ]
                 if content[index*80:index*80+4] not in allowed_markers:
                     return None

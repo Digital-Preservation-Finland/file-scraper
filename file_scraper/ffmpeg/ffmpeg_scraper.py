@@ -94,8 +94,8 @@ class FFMpegMetaScraper(BaseScraper):
                             stream.get("codec_long_name", UNAV).startswith(x)
                             for x in ["PCM signed", "PCM unsigned"]):
                         self._errors.append(
-                            "%s does not seem to be LPCM format."
-                            % stream["codec_long_name"])
+                            f"{stream['codec_long_name']} does not seem to be "
+                            "LPCM format.")
 
             container = False
             for index in range(len(probe_results["streams"]) + 1):
@@ -236,8 +236,9 @@ class FFMpegScraper(FFMpegMetaScraper):
             self._messages.append(
                 "The file was analyzed successfully with FFMpeg.")
         else:
-            self._errors.append("FFMpeg returned invalid return code: %s\n%s" %
-                                (shell.returncode, shell.stderr))
+            self._errors.append(
+                f"FFMpeg returned invalid return code: {shell.returncode}\n"
+                f"{shell.stderr}")
 
         # Do not add errors, if only errors to be filtered exist,
         # otherwise add all errors without filtering

@@ -28,8 +28,9 @@ class VnuScraper(BaseScraper):
         if shell.stderr:
             self._errors.append(shell.stderr)
         if shell.returncode != 0:
-            self._errors.append("Vnu returned invalid return code: %s\n%s"
-                                % (shell.returncode, shell.stderr))
+            self._errors.append(
+                f"Vnu returned invalid return code: {shell.returncode}\n"
+                f"{shell.stderr}")
         self._messages.append(shell.stdout)
 
         if self.well_formed:

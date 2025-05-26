@@ -157,10 +157,8 @@ class SchematronScraper(BaseScraper):
         shell = Shell(cmd)
         if shell.returncode not in allowed_codes:
             raise SchematronValidatorError(
-                "Schematron returned invalid return code {}\n"
-                "stdout:\n{}\nstderr:\n{}".format(
-                    shell.returncode, shell.stdout,
-                    shell.stderr)
+                f"Schematron returned invalid return code {shell.returncode}\n"
+                f"stdout:\n{shell.stdout}\nstderr:\n{shell.stderr}"
             )
         return shell
 
@@ -223,12 +221,12 @@ class SchematronScraper(BaseScraper):
         if self._verbose:
             extra = "verbose"
         if self._extra_hash is not None:
-            extra = "{}{}".format(extra, self._extra_hash)
+            extra = f"{extra}{self._extra_hash}"
         schema_digest = hexdigest(self._schematron_file, extra_hash=extra)
         schema_basename = os.path.basename(self._schematron_file)
 
-        return os.path.join(self._cachepath, "{}.{}.validator.xsl".format(
-            schema_basename, schema_digest))
+        return os.path.join(self._cachepath,
+                            f"{schema_basename}.{schema_digest}.validator.xsl")
 
     def tools(self):
         """

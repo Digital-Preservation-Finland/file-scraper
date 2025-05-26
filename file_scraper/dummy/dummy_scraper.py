@@ -118,8 +118,8 @@ class MimeMatchScraper(NoWellformednessBaseScraper):
             self._errors.append("File format is not supported.")
         elif mime != self._predefined_mimetype and mime not in pre_list:
             self._errors.append(
-                "Predefined mimetype '{}' and resulted mimetype '{}' "
-                "mismatch.".format(self._predefined_mimetype, mime))
+                f"Predefined mimetype '{self._predefined_mimetype}' and "
+                f"resulted mimetype '{mime}' mismatch.")
 
         if ver in [UNAV, None]:
             if mime in self._MIMES_UNAV_VERSIONS:
@@ -130,8 +130,8 @@ class MimeMatchScraper(NoWellformednessBaseScraper):
                 self._errors.append("File format version is not supported.")
         elif self._predefined_version not in [ver, None]:
             self._errors.append(
-                "Predefined version '{}' and resulted version '{}' "
-                "mismatch.".format(self._predefined_version, ver))
+                f"Predefined version '{self._predefined_version}' and "
+                f"resulted version '{ver}' mismatch.")
 
         self._messages.append("MIME type and file format version checked.")
 

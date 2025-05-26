@@ -1,21 +1,8 @@
 [MESSAGES CONTROL]
 
-# Explanations for the ignored messages:
-# consider-using-f-string:
-# As long as we support Python 2, we cannot use f-strings. This can be removed
-# when Python 2 support is dropped.
-#
 # duplicate-code:
 # Scraper contains some intentional boilerplate.
 #
-# super-with-arguments:
-# As long as we support Python 2, the arguments are needed. This can be removed
-# when Python 2 support is dropped.
-#
-# useless-object-inheritance:
-# As per https://gitlab.ci.csc.fi/dpres/file-scraper/-/merge_requests/88?commit_id=8fea7d999ddfbb04a3f75a20e121be1e2a85966f#note_119161
-# we want to keep the new-style classes for Python 2 also when it isn't
-# strictly necessary and then do a cleanup when Python 2 support is dropped.
-disable=consider-using-f-string, duplicate-code, super-with-arguments, useless-object-inheritance
+disable=duplicate-code
 
 extension-pkg-whitelist=lxml

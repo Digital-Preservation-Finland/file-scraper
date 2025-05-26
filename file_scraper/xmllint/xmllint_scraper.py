@@ -177,7 +177,7 @@ class XmllintScraper(BaseScraper):
 
         if exitcode == 0:
             self._messages.append(
-                "{} Success\n{}".format(os.fsdecode(self.filename), stdout)
+                f"{os.fsdecode(self.filename)} Success\n{stdout}"
             )
         else:
             self._errors += stderr.splitlines()
