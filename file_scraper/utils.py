@@ -114,8 +114,8 @@ def iso8601_duration(time):
     :time: Time in seconds
     :returns: ISO 8601 representation of time
     """
-    hours = time // (60 * 60)
-    minutes = time // 60 % 60
+    hours = int(time // (60 * 60))
+    minutes = int(time // 60 % 60)
     seconds = round(time % 60, 2)
 
     if seconds == 60:
