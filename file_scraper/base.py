@@ -1,11 +1,11 @@
 """Base module for scrapers."""
 
 import abc
+import os
 from typing import Optional
 
 from file_scraper.defaults import UNAP, UNAV
-from file_scraper.utils import (metadata, is_metadata, encode_path,
-                                filter_unwanted_chars)
+from file_scraper.utils import (metadata, is_metadata, filter_unwanted_chars)
 
 # Object inheritance is needed as long as we support Python 2 to explicitly use
 # new-style classes.
@@ -24,7 +24,7 @@ class _BaseScraperDetector(metaclass=abc.ABCMeta):
         # The filename passed here should already be encoded, but it is
         # encoded also here to simplify testing Scrapers.
         if filename is not None:
-            filename = encode_path(filename)
+            filename = os.fsencode(filename)
         self.filename = filename
         self._predefined_mimetype = mimetype
         self._predefined_version = version

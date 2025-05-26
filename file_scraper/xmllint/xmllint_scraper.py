@@ -7,7 +7,7 @@ from xml_helpers.utils import iter_elements
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
-from file_scraper.utils import ensure_text, decode_path, encode_path
+from file_scraper.utils import ensure_text
 from file_scraper.xmllint.xmllint_model import XmllintMeta
 
 try:
@@ -111,8 +111,8 @@ class XmllintScraper(BaseScraper):
         # schemaLocation or noNamespaceSchemaLocation is always either
         # direct path or relative path to the XML in question.
         local_location = os.path.join(
-            os.path.dirname(encode_path(self.filename)),
-            encode_path(location)
+            os.path.dirname(os.fsencode(self.filename)),
+            os.fsencode(location)
         )
         if os.path.isfile(local_location):
             return os.path.abspath(ensure_text(local_location))
@@ -177,7 +177,7 @@ class XmllintScraper(BaseScraper):
 
         if exitcode == 0:
             self._messages.append(
-                "{} Success\n{}".format(decode_path(self.filename), stdout)
+                "{} Success\n{}".format(os.fsdecode(self.filename), stdout)
             )
         else:
             self._errors += stderr.splitlines()
@@ -223,7 +223,7 @@ class XmllintScraper(BaseScraper):
             if schema_location:
                 xsd_exists = True
                 xs_import = etree.Element(XS + "import")
-                xs_import.attrib["schemaLocation"] = decode_path(
+                xs_import.attrib["schemaLocation"] = os.fsdecode(
                     self._evaluate_xsd_location(schema_location))
                 schema_tree.append(xs_import)
 
@@ -254,7 +254,7 @@ class XmllintScraper(BaseScraper):
         command += ["--nonet"] if self._no_network else []
         command += ["--catalogs"] if self._catalogs else []
         command += ["--schema", schema] if schema else []
-        command += [encode_path(self.filename)]
+        command += [os.fsencode(self.filename)]
 
         if self._catalog_path is not None:
             environment = {

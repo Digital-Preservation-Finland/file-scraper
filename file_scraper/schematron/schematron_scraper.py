@@ -12,7 +12,7 @@ from file_scraper.shell import Shell
 from file_scraper.config import get_value
 from file_scraper.defaults import UNAV
 from file_scraper.schematron.schematron_model import SchematronMeta
-from file_scraper.utils import encode_path, hexdigest, ensure_text
+from file_scraper.utils import hexdigest, ensure_text
 
 
 class SchematronScraper(BaseScraper):
@@ -153,7 +153,7 @@ class SchematronScraper(BaseScraper):
         if outputfilter and not self._verbose:
             cmd = cmd + ["--stringparam", "outputfilter", "only_messages"]
         cmd = cmd + [os.path.join(get_value("SCHEMATRON_DIRNAME"), stylesheet),
-                     encode_path(inputfile)]
+                     os.fsencode(inputfile)]
         shell = Shell(cmd)
         if shell.returncode not in allowed_codes:
             raise SchematronValidatorError(

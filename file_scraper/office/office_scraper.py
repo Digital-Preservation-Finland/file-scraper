@@ -1,13 +1,11 @@
 """Office file scraper."""
-
-import os.path
+import os
 import shutil
 import tempfile
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.office.office_model import OfficeMeta
-from file_scraper.utils import encode_path
 from file_scraper.config import get_value
 
 
@@ -32,7 +30,7 @@ class OfficeScraper(BaseScraper):
             env = {"HOME": temp_dir}
             shell = Shell([
                 _choose_cmd(), "--convert-to", "pdf", "--outdir",
-                temp_dir, encode_path(self.filename)], env=env)
+                temp_dir, os.fsencode(self.filename)], env=env)
             if shell.stderr:
                 self._errors.append(shell.stderr)
             if shell.returncode != 0:

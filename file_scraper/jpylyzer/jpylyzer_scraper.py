@@ -1,4 +1,6 @@
 """"Scraper for jp2 files using Jpylyzer."""
+import os
+
 try:
     from jpylyzer import jpylyzer
 except ImportError:
@@ -7,7 +9,7 @@ import xml.etree.ElementTree as ET
 
 from file_scraper.base import BaseScraper
 from file_scraper.jpylyzer.jpylyzer_model import JpylyzerMeta
-from file_scraper.utils import decode_path, ensure_text
+from file_scraper.utils import ensure_text
 
 
 class JpylyzerScraper(BaseScraper):
@@ -18,7 +20,7 @@ class JpylyzerScraper(BaseScraper):
     def scrape_file(self):
         """Scrape data from file."""
         try:
-            result = jpylyzer.checkOneFile(decode_path(self.filename))
+            result = jpylyzer.checkOneFile(os.fsdecode(self.filename))
             well_formed = result.findtext("./isValid")
             if well_formed == "True":
                 self._messages.append("File is well-formed and valid.")

@@ -1,4 +1,5 @@
 """Scraper for video and audio files scraped using MediaInfo."""
+import os
 
 from file_scraper.base import BaseScraper
 import file_scraper.mediainfo
@@ -17,7 +18,6 @@ from file_scraper.mediainfo.mediainfo_model import (
     WmvMediainfoMeta,
     UnknownStreamFormatMeta
 )
-from file_scraper.utils import decode_path
 from file_scraper.defaults import UNAV
 
 try:
@@ -62,7 +62,7 @@ class MediainfoScraper(BaseScraper):
     def scrape_file(self):
         """Populate streams with supported metadata objects."""
         try:
-            mediainfo = pymediainfo.MediaInfo.parse(decode_path(self.filename))
+            mediainfo = pymediainfo.MediaInfo.parse(os.fsdecode(self.filename))
         except Exception as e:  # pylint: disable=invalid-name, broad-except
             self._errors.append("Error in analyzing file.")
             self._errors.append(str(e))

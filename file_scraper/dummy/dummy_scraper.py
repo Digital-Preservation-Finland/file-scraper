@@ -1,10 +1,9 @@
 """Dummy scrapers."""
-
-import os.path
+import os
 
 from file_scraper.base import BaseScraper
 from file_scraper.defaults import UNAV
-from file_scraper.utils import decode_path, generate_metadata_dict
+from file_scraper.utils import generate_metadata_dict
 from file_scraper.dummy.dummy_model import (
     DetectedMimeVersionMeta,
     DetectedPdfaVersionMeta,
@@ -74,7 +73,7 @@ class FileExists(NoWellformednessBaseScraper):
     def scrape_file(self):
         """Check if file exists."""
         if self.filename:
-            path = decode_path(self.filename)
+            path = os.fsdecode(self.filename)
 
         if not self.filename:
             self._errors.append("No filename given.")

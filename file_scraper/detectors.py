@@ -13,7 +13,7 @@ from fido.pronomutils import get_local_pronom_versions
 from file_scraper.base import BaseDetector
 from file_scraper.defaults import (MIMETYPE_DICT, PRIORITY_PRONOM, PRONOM_DICT,
                                    VERSION_DICT, UNKN, UNAP, UNAV)
-from file_scraper.utils import decode_path, is_zipfile, normalize_charset
+from file_scraper.utils import is_zipfile, normalize_charset
 from file_scraper.magiclib import magiclib, magic_analyze, magiclib_version
 
 MAGIC_LIB = magiclib()
@@ -99,7 +99,7 @@ class _FidoReader(_FidoCachedFormats):
         self.identify_file(
             # Python's zipfile module used internally by FIDO doesn't support
             # paths that are provided as byte strings
-            filename=decode_path(self.filename), extension=False
+            filename=os.fsdecode(self.filename), extension=False
         )
 
     def print_matches(self, fullname, matches, delta_t, matchtype=""):
@@ -220,7 +220,7 @@ class MagicDetector(BaseDetector):
 
         # DV detection with unpatched file library
         mime_check = mimetype == "application/octet-stream"
-        file_extension_check = decode_path(self.filename).endswith(".dv")
+        file_extension_check = os.fsdecode(self.filename).endswith(".dv")
         if mime_check and file_extension_check:
             analyze = magic_analyze(
                 MAGIC_LIB,
@@ -587,7 +587,7 @@ class AtlasTiDetector(BaseDetector):
 
         """
         # The zipfile module prefers filepaths as strings
-        filename = decode_path(self.filename)
+        filename = os.fsdecode(self.filename)
         if (os.path.splitext(filename)[1] == ".atlproj"
                 and is_zipfile(filename)):
             self.mimetype = "application/x.fi-dpres.atlproj"
@@ -640,7 +640,7 @@ class SiardDetector(BaseDetector):
         """
         version_folders = []
         # The zipfile module prefers filepaths as strings
-        filename = decode_path(self.filename)
+        filename = os.fsdecode(self.filename)
         if os.path.splitext(filename)[1] == ".siard" and is_zipfile(filename):
             with zipfile.ZipFile(filename) as zipf:
                 version_folders = [
@@ -705,7 +705,7 @@ class ODFDetector(BaseDetector):
         """
         # Try to read "mimetype" and "meta.xml" files from zip
         if is_zipfile(self.filename):
-            with zipfile.ZipFile(decode_path(self.filename)) as zipf:
+            with zipfile.ZipFile(os.fsdecode(self.filename)) as zipf:
                 if {'mimetype', 'meta.xml'} <= set(zipf.namelist()):
                     try:
                         mimetype_file = zipf.read('mimetype')
@@ -808,7 +808,7 @@ class EpubDetector(BaseDetector):
         """
         version = None
         # The zipfile module prefers filepaths as strings
-        filename = decode_path(self.filename)
+        filename = os.fsdecode(self.filename)
         if is_zipfile(filename):
             with zipfile.ZipFile(filename) as zipf:
                 for filepath in zipf.namelist():

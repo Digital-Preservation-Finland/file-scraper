@@ -1,9 +1,9 @@
 """Utilities for scrapers."""
 
 import hashlib
+import os
 import re
 import string
-import sys
 import unicodedata
 import zipfile
 from itertools import chain
@@ -34,31 +34,6 @@ def is_metadata(func):
     :returns: True if function has metadata flag, False otherwise
     """
     return callable(func) and getattr(func, "is_metadata", False)
-
-
-def encode_path(filename):
-    """
-    Encode Unicode filenames.
-
-    :filename: File name no encode
-    :returns: Encoded file name
-    """
-    if isinstance(filename, str):
-        return filename.encode(encoding=sys.getfilesystemencoding())
-    if isinstance(filename, bytes):
-        return filename
-
-    raise TypeError("Value is not a (byte) string")
-
-
-def decode_path(filename):
-    """
-    Decode Unicode filenames.
-
-    :filename: File name to decode
-    :returns: Decoded file name
-    """
-    return ensure_text(filename, encoding=sys.getfilesystemencoding())
 
 
 def hexdigest(filename, algorithm="sha1", extra_hash=None):
@@ -449,7 +424,7 @@ def is_zipfile(filename):
     """
     if zipfile.is_zipfile(filename):
         try:
-            with zipfile.ZipFile(decode_path(filename)):
+            with zipfile.ZipFile(os.fsdecode(filename)):
                 return True
         except (OSError, zipfile.BadZipFile):
             return False

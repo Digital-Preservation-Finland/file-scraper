@@ -9,13 +9,13 @@ currently possible. For AVI files, Mediainfo is not able to report
 all required metadata, so for those files all metadata collection is
 done with FFMpegScraper, using FFMpegMeta as the metadata model.
 """
-
+import os
 import re
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.ffmpeg.ffmpeg_model import FFMpegSimpleMeta, FFMpegMeta
-from file_scraper.utils import ensure_text, encode_path
+from file_scraper.utils import ensure_text
 from file_scraper.defaults import UNAV
 
 try:
@@ -67,7 +67,7 @@ class FFMpegMetaScraper(BaseScraper):
         """Gather video and audio stream metadata with FFProbe.
         """
         try:
-            probe_results = ffmpeg.probe(encode_path(self.filename))
+            probe_results = ffmpeg.probe(os.fsencode(self.filename))
             probe_results["format"]["index"] = 0
             for stream in probe_results["streams"]:
                 if "index" not in stream:
@@ -228,7 +228,7 @@ class FFMpegScraper(FFMpegMetaScraper):
     def _validate_file(self):
         """Validate A/V file"""
         shell = Shell(["ffmpeg", "-v", "error", "-i",
-                       encode_path(self.filename),
+                       os.fsencode(self.filename),
                        "-max_muxing_queue_size", "1024",
                        "-f", "null", "-"])
 

@@ -1,4 +1,5 @@
 """PDF/A scraper."""
+import os
 
 try:
     import lxml.etree as ET
@@ -12,7 +13,6 @@ from file_scraper.base import BaseScraper
 from file_scraper.config import get_value
 from file_scraper.shell import Shell
 from file_scraper.defaults import UNAV
-from file_scraper.utils import encode_path
 from file_scraper.verapdf.verapdf_model import VerapdfMeta
 
 # Exit codes given by veraPDF that we don't want to immediately
@@ -42,7 +42,7 @@ class VerapdfScraper(BaseScraper):
         if not verapdf_loc and shutil.which("verapdf"):
             verapdf_loc = shutil.which("verapdf")
         # --nonpdfext flag allows also files without the .pdf extension
-        cmd = [verapdf_loc, encode_path(self.filename), "--nonpdfext"]
+        cmd = [verapdf_loc, os.fsencode(self.filename), "--nonpdfext"]
         shell = Shell(cmd)
 
         if shell.returncode not in OK_CODES:

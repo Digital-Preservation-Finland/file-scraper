@@ -4,7 +4,7 @@ Metadata scraper for pdf files, based on Ghostscript.
 This scraper does not scrape metadata but instead checks well-formedness of pdf
 versions 1.7, A-2a, A-2b, A-2u, A-3a, A-3b and A-3u.
 """
-
+import os
 import shutil
 import re
 
@@ -12,7 +12,7 @@ from file_scraper.base import BaseScraper
 from file_scraper.config import get_value
 from file_scraper.ghostscript.ghostscript_model import GhostscriptMeta
 from file_scraper.shell import Shell
-from file_scraper.utils import encode_path, ensure_text
+from file_scraper.utils import ensure_text
 from file_scraper.defaults import UNAV
 
 
@@ -30,7 +30,7 @@ class GhostscriptScraper(BaseScraper):
             gs_path = shutil.which("gs")
         shell = Shell([
             gs_path, "-o", "/dev/null", "-sDEVICE=nullpage",
-            encode_path(self.filename)])
+            os.fsencode(self.filename)])
 
         if shell.returncode != 0:
             self._errors.append(

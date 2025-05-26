@@ -1,9 +1,9 @@
 """Module for pngcheck scraper."""
+import os
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.pngcheck.pngcheck_model import PngcheckMeta
-from file_scraper.utils import encode_path
 from file_scraper.defaults import UNAV
 import re
 
@@ -20,7 +20,7 @@ class PngcheckScraper(BaseScraper):
 
     def scrape_file(self):
         """Scrape file."""
-        shell = Shell(["pngcheck", encode_path(self.filename)])
+        shell = Shell(["pngcheck", os.fsencode(self.filename)])
 
         if shell.returncode != 0:
             self._errors.append("Pngcheck returned invalid return code: %s\n%s"

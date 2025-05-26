@@ -1,10 +1,9 @@
 """DPX scraper"""
-
+import os
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.dpx.dpx_model import DpxMeta
-from file_scraper.utils import encode_path
 from file_scraper.defaults import UNKN
 
 
@@ -26,7 +25,7 @@ class DpxScraper(BaseScraper):
     def scrape_file(self):
         """Scrape DPX."""
 
-        shell = Shell([self._dpxv, encode_path(self.filename)])
+        shell = Shell([self._dpxv, os.fsencode(self.filename)])
 
         if shell.returncode != 0:
             self._errors.append("DPX returned invalid return code: %s\n%s" %

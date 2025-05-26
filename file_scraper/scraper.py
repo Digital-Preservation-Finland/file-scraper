@@ -1,4 +1,5 @@
 """File metadata scraper."""
+import os
 
 from file_scraper.defaults import (
     ACCEPTABLE,
@@ -14,7 +15,7 @@ from file_scraper.dummy.dummy_scraper import (FileExists, MimeMatchScraper,
 from file_scraper.iterator import iter_detectors, iter_graders, iter_scrapers
 from file_scraper.jhove.jhove_scraper import JHoveUtf8Scraper
 from file_scraper.textfile.textfile_scraper import TextfileScraper
-from file_scraper.utils import encode_path, hexdigest
+from file_scraper.utils import hexdigest
 
 LOSE = (None, UNAV, "")
 
@@ -32,7 +33,7 @@ class Scraper:
         if filename is not None:
             # Filename is stored as encoded string for better support
             # of undecodable strings.
-            filename = encode_path(filename)
+            filename = os.fsencode(filename)
         self.filename = filename
         self.mimetype = None
         self.version = None
