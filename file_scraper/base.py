@@ -1,6 +1,7 @@
 """Base module for scrapers."""
 
 import abc
+from typing import Optional
 
 from file_scraper.defaults import UNAP, UNAV
 from file_scraper.utils import (metadata, is_metadata, encode_path,
@@ -288,7 +289,7 @@ class BaseDetector(_BaseScraperDetector):
         """
         super().__init__(filename, mimetype, version)
 
-        self.mimetype = None  # Identified mimetype
+        self._mimetype = None  # Identified mimetype
         self.version = None  # Identified file version
 
     @property
@@ -313,3 +314,14 @@ class BaseDetector(_BaseScraperDetector):
         method to add "mimetype" and/or "version" keys to the dict.
         """
         return {}
+
+    @property
+    def mimetype(self) -> Optional[str]:
+        return self._mimetype
+
+    @mimetype.setter
+    def mimetype(self, value: Optional[str]):
+        if value is None:
+            self._mimetype = None
+        else:
+            self._mimetype = value.lower()

@@ -25,7 +25,8 @@ from file_scraper.detectors import (_FidoReader,
                                     SegYDetector,
                                     SiardDetector,
                                     AtlasTiDetector,
-                                    ODFDetector)
+                                    ODFDetector,
+                                    PredefinedDetector)
 from file_scraper.defaults import UNKN, UNAP
 from file_scraper.base import BaseDetector
 from tests.common import get_files, partial_message_included
@@ -531,3 +532,11 @@ def test_tools(detector, tool):
         assert detector("").tools()[tool]["version"][0].isdigit()
     else:
         assert not detector("").tools()
+
+
+def test_detector_mimetype_normalization():
+    mimetype = "TEXT/PLAIN"
+    detector = PredefinedDetector("tests/data/text_plain/valid__ascii.txt",
+                                  mimetype=mimetype)
+    detector.detect()
+    assert detector.mimetype == mimetype.lower()
