@@ -35,7 +35,8 @@ class OfficeScraper(BaseScraper):
                 self._errors.append(shell.stderr)
             if shell.returncode != 0:
                 self._errors.append(
-                    f"Office returned invalid return code: {shell.returncode}\n{shell.stderr}")
+                    f"Office returned invalid return code: "
+                    f"{shell.returncode}\n{shell.stderr}")
             self._messages.append(shell.stdout)
         except OSError as error:
             self._errors.append(f"Error handling file: {error}")
