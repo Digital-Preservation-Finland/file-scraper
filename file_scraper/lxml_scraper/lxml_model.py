@@ -33,7 +33,6 @@ class LxmlMeta(BaseMeta):
         """Return charset."""
         return self._tree.docinfo.encoding
 
-    # pylint: disable=no-self-use
     @metadata()
     def stream_type(self):
         """Return file type."""

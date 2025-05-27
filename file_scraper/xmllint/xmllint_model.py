@@ -41,7 +41,6 @@ class XmllintMeta(BaseMeta):
             return self._tree.docinfo.xml_version
         return UNAV
 
-    # pylint: disable=no-self-use
     @metadata()
     def stream_type(self):
         """

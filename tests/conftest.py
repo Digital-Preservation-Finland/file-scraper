@@ -88,7 +88,6 @@ class Meta1(BaseMeta):
     conflicting metadata methods that allow testing both important values
     and LOSE dict.
     """
-    # pylint: disable=no-self-use
 
     @metadata()
     def index(self):
@@ -144,7 +143,6 @@ class Meta2(BaseMeta):
     conflicting metadata methods that allow testing both important values
     and LOSE dict.
     """
-    # pylint: disable=no-self-use
 
     @metadata()
     def index(self):
@@ -200,7 +198,6 @@ class Meta3(BaseMeta):
     version, stream_type or other metadata fields do not need to match the
     other streams.
     """
-    # pylint: disable=no-self-use
 
     @metadata()
     def index(self):
@@ -237,7 +234,6 @@ class Meta4(BaseMeta):
     """
     Conflicting important value with Meta1(), where key4() is also important.
     """
-    # pylint: disable=no-self-use
 
     @metadata()
     def mimetype(self):
@@ -265,7 +261,6 @@ class Meta5(BaseMeta):
     Identical metadata with Meta1. Used for testing that results
     can be merged to scraper.stream without conflicts.
     """
-    # pylint: disable=no-self-use
     @metadata()
     def index(self):
         """Return 0: this metadata class will be merged with Meta1."""

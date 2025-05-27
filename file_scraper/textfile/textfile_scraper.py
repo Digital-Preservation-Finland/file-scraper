@@ -319,7 +319,6 @@ class TextEncodingScraper(BaseScraper):
             return False
         return True
 
-    # pylint: disable=no-self-use
     def _decode_chunk(self, chunk, charset, position):
         """
         Decode given chunk and check forbidden characters.

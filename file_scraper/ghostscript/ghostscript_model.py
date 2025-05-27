@@ -6,7 +6,6 @@ from file_scraper.utils import metadata
 
 class GhostscriptMeta(BaseMeta):
     """Metadata model for pdf files scraped by Ghostscript."""
-    # pylint: disable=no-self-use
 
     # Supported mimetype and versions
     _supported = {"application/pdf": ["1.2", "1.3", "1.4", "1.5", "1.6",

@@ -58,7 +58,6 @@ class BaseMagicMeta(BaseMeta):
 class BinaryMagicBaseMeta(BaseMagicMeta):
     """Base class for metadata models of binary files."""
 
-    # pylint: disable=no-self-use
     @metadata()
     def stream_type(self):
         """Return file type."""
@@ -74,7 +73,6 @@ class TextMagicBaseMeta(BaseMagicMeta):
         magic_charset = self._magic_result['magic_mime_encoding']
         return normalize_charset(magic_charset)
 
-    # pylint: disable=no-self-use
     @metadata()
     def stream_type(self):
         """Return file type."""

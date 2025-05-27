@@ -50,7 +50,6 @@ class BasePilMeta(BaseMeta):
     def mimetype(self):
         return self._pil_mimetype
 
-    # pylint: disable=no-self-use
     @metadata()
     def version(self):
         """PIL does not know the version, return (:unav)."""

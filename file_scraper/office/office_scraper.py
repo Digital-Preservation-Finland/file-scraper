@@ -12,8 +12,7 @@ from file_scraper.config import get_value
 def _choose_cmd():
     if os.path.isfile(get_value("SOFFICE_PATH")):
         return get_value("SOFFICE_PATH")
-    else:
-        return "soffice"
+    return "soffice"
 
 
 class OfficeScraper(BaseScraper):

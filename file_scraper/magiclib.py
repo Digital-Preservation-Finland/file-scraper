@@ -65,8 +65,8 @@ def magiclib_version():
     Define missing version function for the magic library
     :returns: magiclib version
     """
-    MAGIC_LIB = magiclib()
-    magic_version = MAGIC_LIB._libraries['magic'].magic_version
+    magic_lib = magiclib()
+    magic_version = magic_lib._libraries['magic'].magic_version
     magic_version.restype = ctypes.c_int
     magic_version.argtypes = []
     version_string = str(magic_version())

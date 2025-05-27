@@ -108,7 +108,6 @@ class SchematronScraper(BaseScraper):
 
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)
 
-    # pylint: disable=no-self-use
     def _filter_duplicate_elements(self, result):
         """
         Filter duplicate elements from the result.

@@ -53,7 +53,6 @@ class JHoveBaseMeta(BaseMeta):
 
 class JHoveGifMeta(JHoveBaseMeta):
     """Metadata model for gif files scraped with JHove"""
-    # pylint: disable=no-self-use
 
     _supported = {"image/gif": ["1987a", "1989a"]}
     _allow_versions = True
@@ -89,7 +88,6 @@ class JHoveGifMeta(JHoveBaseMeta):
 
 class JHoveHtmlMeta(JHoveBaseMeta):
     """Metadata model for HTML files scraped with JHove"""
-    # pylint: disable=no-self-use
 
     _supported = {"text/html": ["4.01"],
                   "application/xhtml+xml": ["1.0", "1.1"]}
@@ -174,7 +172,6 @@ class JHoveHtmlMeta(JHoveBaseMeta):
 
 class JHoveJpegMeta(JHoveBaseMeta):
     """Metadata model for jpeg files scraped with JHove"""
-    # pylint: disable=no-self-use
 
     _supported = {"image/jpeg": ["1.00", "1.01", "1.02", "2.0",
                                  "2.1", "2.2", "2.2.1"]}
@@ -193,7 +190,6 @@ class JHoveJpegMeta(JHoveBaseMeta):
 
 class JHoveTiffMeta(JHoveBaseMeta):
     """Metadata model for tiff files scraped with JHove"""
-    # pylint: disable=no-self-use
 
     _supported = {"image/tiff": ["6.0"]}
     _allow_versions = True
@@ -221,7 +217,6 @@ class JHoveTiffMeta(JHoveBaseMeta):
 
 class JHovePdfMeta(JHoveBaseMeta):
     """Metadata model for pdf files scraped with JHove"""
-    # pylint: disable=no-self-use
 
     _supported = {"application/pdf": ["1.2", "1.3", "1.4", "1.5", "1.6",
                                       "1.7", "A-1a", "A-1b", "A-2a", "A-2b",
@@ -248,7 +243,6 @@ class JHovePdfMeta(JHoveBaseMeta):
 
 class JHoveWavMeta(JHoveBaseMeta):
     """Metadata model for wav files scraped with JHove"""
-    # pylint: disable=no-self-use
 
     _supported = {"audio/x-wav": ["", "2"]}
     _allow_versions = True
@@ -343,13 +337,11 @@ class JHoveUtf8Meta(JHoveBaseMeta):
         """
         return "text" if self._well_formed else UNAV
 
-    # pylint: disable=no-self-use
     @metadata()
     def mimetype(self):
         """We don't know the mimetype."""
         return UNAV
 
-    # pylint: disable=no-self-use
     @metadata()
     def version(self):
         """We don't know the version."""
@@ -358,7 +350,6 @@ class JHoveUtf8Meta(JHoveBaseMeta):
 
 class JHoveEpubMeta(JHoveBaseMeta):
     """Metadata model for EPUB files scraped with JHove"""
-    # pylint: disable=no-self-use
 
     _supported = {"application/epub+zip": ["2.0.1", "3"]}
 

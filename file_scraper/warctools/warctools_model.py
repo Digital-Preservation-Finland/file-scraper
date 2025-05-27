@@ -9,7 +9,6 @@ from file_scraper.base import BaseMeta
 class BaseWarctoolsMeta(BaseMeta):
     """Base metadata class for Warcs."""
 
-    # pylint: disable=no-self-use
     @metadata()
     def stream_type(self):
         """Return file type."""

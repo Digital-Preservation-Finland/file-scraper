@@ -103,7 +103,6 @@ class TextEncodingMeta(BaseMeta):
         """Return charset."""
         return self._charset
 
-    # pylint: disable=no-self-use
     @metadata()
     def stream_type(self):
         """Return stream type."""

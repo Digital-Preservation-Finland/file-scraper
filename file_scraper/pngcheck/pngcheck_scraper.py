@@ -1,11 +1,11 @@
 """Module for pngcheck scraper."""
 import os
+import re
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.pngcheck.pngcheck_model import PngcheckMeta
 from file_scraper.defaults import UNAV
-import re
 
 
 class PngcheckScraper(BaseScraper):

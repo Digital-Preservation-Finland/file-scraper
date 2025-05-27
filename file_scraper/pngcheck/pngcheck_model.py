@@ -15,7 +15,6 @@ class PngcheckMeta(BaseMeta):
     _supported = {"image/png": []}  # Supported mimetype
     _allow_versions = True  # Allow any version
 
-    # pylint: disable=no-self-use
     @metadata()
     def stream_type(self):
         """We do not need to resolve stream type."""

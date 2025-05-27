@@ -657,6 +657,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
         """Return bits per sample."""
         if self.stream_type() not in ["audio", "video"]:
             raise SkipElementException()
-        if "bits_per_raw_sample" in self._ffmpeg_stream is not None:
+        if ("bits_per_raw_sample" in self._ffmpeg_stream and
+                self._ffmpeg_stream["bits_per_raw_sample"] is not None):
             return str(self._ffmpeg_stream["bits_per_raw_sample"])
         return UNAV

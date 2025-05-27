@@ -1,8 +1,7 @@
 """Scraper for dng files using ExifTool """
 
-
-import exiftool
 import json
+import exiftool
 
 from file_scraper.base import BaseScraper
 from file_scraper.exiftool.exiftool_model import ExifToolDngMeta

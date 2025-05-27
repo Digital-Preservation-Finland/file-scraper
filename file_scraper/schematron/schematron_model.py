@@ -29,7 +29,6 @@ class SchematronMeta(BaseMeta):
         """Return file format version."""
         return "1.0" if self._well_formed else UNAV
 
-    # pylint: disable=no-self-use
     @metadata()
     def stream_type(self):
         """Return stream type."""

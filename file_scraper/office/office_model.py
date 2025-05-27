@@ -30,7 +30,6 @@ class OfficeMeta(BaseMeta):
     _allow_versions = True  # Allow any version
     _only_wellformed = True  # Only well-formed check
 
-    # pylint: disable=no-self-use
     @metadata()
     def stream_type(self):
         """Return file type."""

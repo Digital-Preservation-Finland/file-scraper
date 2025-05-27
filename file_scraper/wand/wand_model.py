@@ -7,7 +7,6 @@ from file_scraper.utils import metadata
 
 class WandImageMeta(BaseMeta):
     """Metadata model for image files scraped with Wand"""
-    # pylint: disable=no-self-use
 
     _supported = {
         "image/gif": [],
@@ -197,7 +196,7 @@ def format_exif_version(wand_exif_version):
         version_bytes = [chr(int(byte)) for byte in
                          wand_exif_version.split(', ')]
     else:
-        version_bytes = [byte for byte in wand_exif_version]
+        version_bytes = list(wand_exif_version)
 
     version_bytes[0] += version_bytes.pop(1)
 

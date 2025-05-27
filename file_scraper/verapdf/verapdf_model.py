@@ -48,7 +48,6 @@ class VerapdfMeta(BaseMeta):
                 " validation profile")[0].lower()
         return UNAV
 
-    # pylint: disable=no-self-use
     @metadata()
     def stream_type(self):
         """Return file type."""
