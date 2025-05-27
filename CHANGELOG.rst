@@ -5,12 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.1.0/>`__,
 and this project adheres to `Semantic Versioning <(https://semver.org/spec/v2.0.0.html>`__.
 
-Unreleased
-------------
+1.0.0 2025-05-27
+----------------
 
-- Update tools to return meaningful versions for each scraper and detector
+
+Changed
+~~~~~~~
+- Information of used 3rd party tools was added for each scraper and detector
+- The information about used 3rd party tools is now returned as a dictionary instead of a list
 - Update to compatibility with pymediainfo 7.0.1
 - Update to compatibility with libmediainfo 25.03
+
+Fixed
+~~~~~
+- The --mimetype parameter is now case-insensitive
 
 Version 0.81
 ------------
