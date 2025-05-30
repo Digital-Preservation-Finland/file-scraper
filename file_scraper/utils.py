@@ -1,7 +1,6 @@
 """Utilities for scrapers."""
 
 import hashlib
-import os
 import re
 import string
 import unicodedata
@@ -410,7 +409,7 @@ def iter_utf_bytes(file_handle, chunksize, charset):
         yield chunk
 
 
-def is_zipfile(filename:Path):
+def is_zipfile(filename: Path):
     """
     Check if file is a ZIP file.
 

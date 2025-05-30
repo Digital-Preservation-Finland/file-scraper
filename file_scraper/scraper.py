@@ -27,7 +27,8 @@ class Scraper:
 
     # pylint: disable=no-member, too-many-instance-attributes
 
-    def __init__(self, filename: Union[str, bytes, os.PathLike, None], **kwargs):
+    def __init__(self, filename: Union[str, bytes, os.PathLike, None],
+                 **kwargs):
         """Initialize scraper.
         :filename: File path
         :kwargs: Extra arguments for certain scrapers.

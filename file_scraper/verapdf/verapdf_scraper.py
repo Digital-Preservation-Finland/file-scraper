@@ -1,5 +1,4 @@
 """PDF/A scraper."""
-import os
 
 try:
     import lxml.etree as ET

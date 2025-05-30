@@ -209,9 +209,8 @@ class XmllintScraper(BaseScraper):
                         *[iter(namespaces_locations)] * 2):
                     xs_import = etree.Element(XS + "import")
                     xs_import.attrib["namespace"] = namespace
-                    xs_import.attrib[
-                        "schemaLocation"] = str(self._evaluate_xsd_location(
-                        location))
+                    xs_import.attrib["schemaLocation"] = (
+                        str(self._evaluate_xsd_location(location)))
                     schema_tree.append(xs_import)
 
         elements = iter_elements(self.filename)

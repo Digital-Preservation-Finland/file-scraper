@@ -1,5 +1,4 @@
 """DPX scraper"""
-import os
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
