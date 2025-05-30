@@ -23,7 +23,7 @@ This module tests that:
       WarctoolsScraper.
     - None of these scrapers supports a made up MIME type.
 """
-import os
+from pathlib import Path
 
 import pytest
 
@@ -143,8 +143,8 @@ def test_warctools_returns_invalid_return_code():
     """Test that a correct error message is given
     when the tool gives an invalid return code"""
     mimetype = "application/warc"
-    path = os.path.join("tests/data", mimetype.replace("/", "_"))
-    testfile = os.path.join(path, "valid_0.17.warc")
+    path = Path("tests/data", mimetype.replace("/", "_"))
+    testfile = path / "valid_0.17.warc"
 
     scraper = WarctoolsFullScraper(filename=testfile,
                                    mimetype=mimetype)

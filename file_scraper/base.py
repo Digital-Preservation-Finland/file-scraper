@@ -1,7 +1,7 @@
 """Base module for scrapers."""
 
 import abc
-import os
+from pathlib import Path
 from typing import Optional
 
 from file_scraper.defaults import UNAP, UNAV
@@ -12,15 +12,12 @@ class _BaseScraperDetector(metaclass=abc.ABCMeta):
 
     """Base class for Scrapers and detectors."""
 
-    def __init__(self, filename, mimetype=None, version=None):
+    def __init__(self, filename: Optional[Path], mimetype=None, version=None):
         """Initialize scraper/detector.
 
         :filename: Path to the file that is to be scraped
         """
-        # The filename passed here should already be encoded, but it is
-        # encoded also here to simplify testing Scrapers.
-        if filename is not None:
-            filename = os.fsencode(filename)
+
         self.filename = filename
         self._predefined_mimetype = mimetype
         self._predefined_version = version

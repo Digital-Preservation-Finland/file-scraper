@@ -1,6 +1,4 @@
 """"Scraper for jp2 files using Jpylyzer."""
-import os
-
 try:
     from jpylyzer import jpylyzer
 except ImportError:
@@ -20,7 +18,7 @@ class JpylyzerScraper(BaseScraper):
     def scrape_file(self):
         """Scrape data from file."""
         try:
-            result = jpylyzer.checkOneFile(os.fsdecode(self.filename))
+            result = jpylyzer.checkOneFile(self.filename)
             well_formed = result.findtext("./isValid")
             if well_formed == "True":
                 self._messages.append("File is well-formed and valid.")

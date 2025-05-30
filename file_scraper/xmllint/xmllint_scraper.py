@@ -106,17 +106,14 @@ class XmllintScraper(BaseScraper):
         self.filename.
 
         :param location: Given schema location in string.
-        :return: String of the XSD location. If it's local, absolute path.
+        :return: Path of the XSD location. If it's local, absolute path.
         """
         # schemaLocation or noNamespaceSchemaLocation is always either
         # direct path or relative path to the XML in question.
-        local_location = os.path.join(
-            os.path.dirname(os.fsencode(self.filename)),
-            os.fsencode(location)
-        )
-        if os.path.isfile(local_location):
-            return os.path.abspath(ensure_text(local_location))
-        return ensure_text(location)
+        local_location = self.filename.parent / location
+        if local_location.is_file():
+            return local_location.absolute()
+        return location
 
     def scrape_file(self):
         """
@@ -177,7 +174,7 @@ class XmllintScraper(BaseScraper):
 
         if exitcode == 0:
             self._messages.append(
-                f"{os.fsdecode(self.filename)} Success\n{stdout}"
+                f"{self.filename} Success\n{stdout}"
             )
         else:
             self._errors += stderr.splitlines()
@@ -213,8 +210,8 @@ class XmllintScraper(BaseScraper):
                     xs_import = etree.Element(XS + "import")
                     xs_import.attrib["namespace"] = namespace
                     xs_import.attrib[
-                        "schemaLocation"] = self._evaluate_xsd_location(
-                            location)
+                        "schemaLocation"] = str(self._evaluate_xsd_location(
+                        location))
                     schema_tree.append(xs_import)
 
         elements = iter_elements(self.filename)
@@ -223,7 +220,7 @@ class XmllintScraper(BaseScraper):
             if schema_location:
                 xsd_exists = True
                 xs_import = etree.Element(XS + "import")
-                xs_import.attrib["schemaLocation"] = os.fsdecode(
+                xs_import.attrib["schemaLocation"] = str(
                     self._evaluate_xsd_location(schema_location))
                 schema_tree.append(xs_import)
 
@@ -254,7 +251,7 @@ class XmllintScraper(BaseScraper):
         command += ["--nonet"] if self._no_network else []
         command += ["--catalogs"] if self._catalogs else []
         command += ["--schema", schema] if schema else []
-        command += [os.fsencode(self.filename)]
+        command += [self.filename]
 
         if self._catalog_path is not None:
             environment = {

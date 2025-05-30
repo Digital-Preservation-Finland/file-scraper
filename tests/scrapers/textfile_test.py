@@ -17,6 +17,7 @@ This module tests that:
       characters are not printed in the error message, only their hex
       representation.
 """
+from pathlib import Path
 
 import pytest
 
@@ -206,7 +207,7 @@ def test_encoding_not_defined(charset):
     :charset: Character encoding
     """
     scraper = TextEncodingScraper(
-        filename="tests/data/text_plain/valid__utf8_without_bom.txt",
+        filename=Path("tests/data/text_plain/valid__utf8_without_bom.txt"),
         mimetype="text/plain", params={"charset": charset})
     scraper.scrape_file()
     assert partial_message_included(
@@ -220,7 +221,7 @@ def test_decoding_limit(monkeypatch):
     monkeypatch.setattr(TextEncodingScraper, "_chunksize", 4)
     monkeypatch.setattr(TextEncodingScraper, "_limit", 8)
     scraper = TextEncodingScraper(
-        filename="tests/data/text_plain/valid__utf8_bom.txt",
+        filename=Path("tests/data/text_plain/valid__utf8_bom.txt"),
         mimetype="text/plain", params={"charset": "UTF-8"})
     scraper.scrape_file()
     assert partial_message_included(
@@ -235,7 +236,7 @@ def test_error_message_control_character():
     files do not allow most control characters.
     """
     scraper = TextEncodingScraper(
-        filename="tests/data/text_plain/invalid__control_character.txt",
+        filename=Path("tests/data/text_plain/invalid__control_character.txt"),
         mimetype="text/plain", params={"charset": "UTF-8"})
     scraper.scrape_file()
     assert not partial_message_included("\x1f", scraper.errors())
@@ -248,9 +249,9 @@ def test_tools():
     """
     Test that tools return correct software
     """
-    text_scraper = TextfileScraper(filename="", mimetype="")
-    text_encoding_scraper = TextEncodingScraper(filename="", mimetype="")
-    text_meta_scraper = TextEncodingMetaScraper(filename="", mimetype="")
+    text_scraper = TextfileScraper(filename=Path(""), mimetype="")
+    text_encoding_scraper = TextEncodingScraper(filename=Path(""), mimetype="")
+    text_meta_scraper = TextEncodingMetaScraper(filename=Path(""), mimetype="")
     assert text_scraper.tools()["file"]["version"][0].isdigit()
     assert text_encoding_scraper.tools() == {}
     assert text_meta_scraper.tools() == {}

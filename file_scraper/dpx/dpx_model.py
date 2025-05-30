@@ -2,7 +2,7 @@
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAV
-from file_scraper.utils import metadata, ensure_text
+from file_scraper.utils import metadata
 
 
 class DpxMeta(BaseMeta):
@@ -46,7 +46,7 @@ class DpxMeta(BaseMeta):
 
         for supported_version in self._supported["image/x-dpx"]:
 
-            version_string = (f"File {ensure_text(self._filename)}: Validated "
+            version_string = (f"File {self._filename}: Validated "
                               f"as V{supported_version}")
 
             if version_string in self._messages:

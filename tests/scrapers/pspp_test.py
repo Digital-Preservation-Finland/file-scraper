@@ -16,7 +16,7 @@ This module tests that:
       supported.
     - When well-formedness is checked, a made up MIME type is not supported.
 """
-import os
+from pathlib import Path
 
 import pytest
 
@@ -89,8 +89,8 @@ def test_scraper(filename, result_dict, evaluate_scraper):
 def test_pspp_returns_invalid_return_code():
     """Test that a correct error message is given
     when the tool gives an invalid return code"""
-    path = os.path.join("tests/data", MIMETYPE.replace("/", "_"))
-    testfile = os.path.join(path, "valid__spss24-dot.por")
+    path = Path("tests/data", MIMETYPE.replace("/", "_"))
+    testfile = path / "valid__spss24-dot.por"
 
     scraper = PsppScraper(filename=testfile,
                           mimetype=MIMETYPE)
@@ -113,8 +113,8 @@ def test_is_supported():
 
 def test_tools():
     """Test scraper tools return correctly something non nullable"""
-    path = os.path.join("tests/data", MIMETYPE.replace("/", "_"))
-    testfile = os.path.join(path, "valid__spss24-dot.por")
+    path = Path("tests/data", MIMETYPE.replace("/", "_"))
+    testfile = path / "valid__spss24-dot.por"
 
     scraper = PsppScraper(filename=testfile,
                           mimetype=MIMETYPE)

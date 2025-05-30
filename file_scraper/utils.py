@@ -7,6 +7,7 @@ import string
 import unicodedata
 import zipfile
 from itertools import chain
+from pathlib import Path
 
 from file_scraper.defaults import UNAV
 from file_scraper.exceptions import SkipElementException
@@ -409,7 +410,7 @@ def iter_utf_bytes(file_handle, chunksize, charset):
         yield chunk
 
 
-def is_zipfile(filename):
+def is_zipfile(filename:Path):
     """
     Check if file is a ZIP file.
 
@@ -423,7 +424,7 @@ def is_zipfile(filename):
     """
     if zipfile.is_zipfile(filename):
         try:
-            with zipfile.ZipFile(os.fsdecode(filename)):
+            with zipfile.ZipFile(filename):
                 return True
         except (OSError, zipfile.BadZipFile):
             return False

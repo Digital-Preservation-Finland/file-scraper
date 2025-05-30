@@ -42,7 +42,7 @@ class VerapdfScraper(BaseScraper):
         if not verapdf_loc and shutil.which("verapdf"):
             verapdf_loc = shutil.which("verapdf")
         # --nonpdfext flag allows also files without the .pdf extension
-        cmd = [verapdf_loc, os.fsencode(self.filename), "--nonpdfext"]
+        cmd = [verapdf_loc, self.filename, "--nonpdfext"]
         shell = Shell(cmd)
 
         if shell.returncode not in OK_CODES:

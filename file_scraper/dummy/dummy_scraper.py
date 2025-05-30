@@ -73,7 +73,7 @@ class FileExists(NoWellformednessBaseScraper):
     def scrape_file(self):
         """Check if file exists."""
         if self.filename:
-            path = os.fsdecode(self.filename)
+            path = self.filename
 
         if not self.filename:
             self._errors.append("No filename given.")

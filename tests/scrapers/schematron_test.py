@@ -33,6 +33,7 @@ This module tests that:
 """
 
 import os
+from pathlib import Path
 import pytest
 
 from file_scraper.schematron.schematron_scraper import (SchematronScraper,
@@ -92,7 +93,7 @@ def test_scraper_verbose(verbose):
     different message for a test file.
     """
     scraper = SchematronScraper(
-        filename="tests/data/text_xml/valid_1.0_well_formed.xml",
+        filename=Path("tests/data/text_xml/valid_1.0_well_formed.xml"),
         mimetype="text/xml",
         params={
             "verbose": verbose,
@@ -119,9 +120,9 @@ def test_schematron_returns_invalid_return_code():
     params = {"schematron": os.path.join(
         ROOTPATH,
         "tests/data/text_xml/supplementary/local.sch"
-        ), "cache": False}
-    path = os.path.join("tests/data", mimetype.replace("/", "_"))
-    testfile = os.path.join(path, "valid_1.0_well_formed.xml")
+    ), "cache": False}
+    path = Path("tests/data", mimetype.replace("/", "_"))
+    testfile = path / "valid_1.0_well_formed.xml"
 
     scraper = SchematronScraper(filename=testfile,
                                 mimetype=mimetype,
@@ -154,13 +155,13 @@ def test_is_supported():
 def test_parameters():
     """Test that parameters and default values work properly."""
     # pylint: disable=protected-access
-    scraper = SchematronScraper("testsfile", "test/mimetype")
+    scraper = SchematronScraper(Path("testsfile"), "test/mimetype")
     assert scraper._schematron_file is None
     assert scraper._extra_hash is None
     assert not scraper._verbose
     assert scraper._cache
 
-    scraper = SchematronScraper("testfile", "text/xml",
+    scraper = SchematronScraper(Path("testfile"), "text/xml",
                                 params={"schematron": "schfile",
                                         "extra_hash": "abc",
                                         "verbose": True,
@@ -174,7 +175,7 @@ def test_parameters():
 def test_xslt_filename():
     """Test that checksum for xslt filename is calculated properly."""
     # pylint: disable=protected-access
-    scraper = SchematronScraper("filename", "text/xml")
+    scraper = SchematronScraper(Path("filename"), "text/xml")
     scraper._schematron_file = "tests/data/text_xml/supplementary/local.sch"
     assert "76ed62" in scraper._generate_xslt_filename()
     scraper._verbose = True
@@ -204,7 +205,7 @@ def test_filter_duplicate_elements():
                <svrl:fired-rule context="context"/>
                <svrl:active-pattern id="id"/>
            </svrl:schematron-output>"""
-    scraper = SchematronScraper("filename", "text/xml")
+    scraper = SchematronScraper(Path("filename"), "text/xml")
     result = scraper._filter_duplicate_elements(schtest)
     assert result.count(b"<svrl:active-pattern") == 1
     assert result.count(b"<svrl:fired-rule") == 1
@@ -212,7 +213,7 @@ def test_filter_duplicate_elements():
 
 
 def test_tools():
-    scraper = SchematronScraper("testsfile", "test/mimetype")
+    scraper = SchematronScraper(Path("testsfile"), "test/mimetype")
     result = scraper.tools()
     assert result["libxml2"]["version"][0].isdigit()
     assert result["libxslt"]["version"][0].isdigit()

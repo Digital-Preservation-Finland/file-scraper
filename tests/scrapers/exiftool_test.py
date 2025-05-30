@@ -7,7 +7,7 @@ This module tests that:
     - For an empty file, scraper errors contain "File is empty".
 
 """
-
+from pathlib import Path
 
 import pytest
 
@@ -58,7 +58,7 @@ def test_tools():
     """
     Test tools return correctly
     """
-    scraper = ExifToolDngScraper(filename="valid_1.4.dng",
+    scraper = ExifToolDngScraper(filename=Path("valid_1.4.dng"),
                                  mimetype="image/x-adobe-dng")
     assert scraper.tools() is not None
     assert scraper.tools()["ExifTool"]["version"][0].isdigit()

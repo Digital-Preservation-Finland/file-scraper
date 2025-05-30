@@ -29,6 +29,7 @@ This module tests that:
 """
 
 import os
+from pathlib import Path
 import pytest
 
 from file_scraper.xmllint.xmllint_scraper import XmllintScraper
@@ -108,7 +109,7 @@ def test_scraper_valid(filename, result_dict, params, evaluate_scraper):
     """
     correct = parse_results(filename, "text/xml",
                             result_dict, True, params)
-    scraper = XmllintScraper(filename=correct.filename,
+    scraper = XmllintScraper(filename=Path(correct.filename),
                              mimetype="text/xml",
                              params=correct.params)
     scraper.scrape_file()
@@ -200,7 +201,7 @@ def test_scraper_invalid(filename, result_dict, params, evaluate_scraper):
     """
     correct = parse_results(filename, "text/xml",
                             result_dict, True, params)
-    scraper = XmllintScraper(filename=correct.filename,
+    scraper = XmllintScraper(filename=Path(correct.filename),
                              mimetype="text/xml",
                              params=correct.params)
     scraper.scrape_file()
@@ -237,21 +238,21 @@ def test_is_supported():
 def test_parameters():
     """Test that parameters and default values work properly."""
     # pylint: disable=protected-access
-    scraper = XmllintScraper("testsfile", "test/mimetype")
+    scraper = XmllintScraper(Path("testsfile"), "test/mimetype")
     assert scraper._schema is None
     assert scraper._catalogs
     assert scraper._no_network
     assert scraper._catalog_path is None
 
     scraper = XmllintScraper(
-        filename="testsfile", mimetype="text/xml",
+        filename=Path("testsfile"), mimetype="text/xml",
         params={"schema": "schemafile", "catalogs": False,
                 "no_network": False})
     assert scraper._schema == "schemafile"
     assert not scraper._catalogs
     assert not scraper._no_network
 
-    scraper = XmllintScraper(filename="testsfile",
+    scraper = XmllintScraper(filename=Path("testsfile"),
                              mimetype="text/xml",
                              params={"catalog_path": "catpath"})
     assert scraper._catalogs
@@ -260,5 +261,5 @@ def test_parameters():
 
 def test_tools():
     """Test that scraper returns correct version"""
-    scraper = XmllintScraper(filename="", mimetype="")
+    scraper = XmllintScraper(filename=Path(""), mimetype="")
     assert scraper.tools()["lxml"]["version"].replace(".", "").isnumeric()

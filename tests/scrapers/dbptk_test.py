@@ -13,6 +13,7 @@ This module tests that:
       withh versions "2.1.1" or "2.2" are supported.
     - A made up MIME type or version is not supported.
 """
+from pathlib import Path
 
 import pytest
 
@@ -85,14 +86,14 @@ def test_is_supported():
 
 def test_tools_not_empty():
     """Test that dbptk scraper has exactly one dependency"""
-    scraper = DbptkScraper(filename="valid_2.1.1.siard", mimetype=MIMETYPE)
+    scraper = DbptkScraper(filename=Path("valid_2.1.1.siard"), mimetype=MIMETYPE)
     assert len(scraper.tools()) == 1
 
 
 def test_tools_returns_version():
     """Test thatdbptk scraper tools
     returns a somewhat valid version"""
-    scraper = DbptkScraper(filename="invalid_2.1.1_schema_errors.siard",
+    scraper = DbptkScraper(filename=Path("invalid_2.1.1_schema_errors.siard"),
                            mimetype=MIMETYPE)
 
     assert scraper.tools()["DBPTK Developer"]["version"] not in (UNAV, None)

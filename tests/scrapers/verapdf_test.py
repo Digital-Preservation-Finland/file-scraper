@@ -21,7 +21,7 @@ This module tests that:
       well-formedness is not checked. The scraper also does not support made
       up MIME types or versions.
 """
-import os
+from pathlib import Path
 
 import pytest
 
@@ -134,8 +134,8 @@ def test_scraper_no_file_extension(evaluate_scraper):
 def test_verapdf_returns_invalid_return_code():
     """Test that a correct error message is given
     when the tool gives an invalid return code"""
-    path = os.path.join("tests/data", MIMETYPE.replace("/", "_"))
-    testfile = os.path.join(path, "valid_X.pdf")
+    path = Path("tests/data", MIMETYPE.replace("/", "_"))
+    testfile = path / "valid_X.pdf"
 
     scraper = VerapdfScraper(filename=testfile,
                              mimetype=MIMETYPE)
@@ -161,5 +161,5 @@ def test_tools():
     Test that correct software is received and
     that the version number starts with a digit
     """
-    tool_scraper = VerapdfScraper(filename="", mimetype="")
+    tool_scraper = VerapdfScraper(filename=Path(""), mimetype="")
     assert tool_scraper.tools()["veraPDF"]["version"][0].isdigit()

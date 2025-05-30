@@ -27,9 +27,8 @@ This module tests that:
     - Without well-formedness check, none of these MIME types are supported.
 """  # noqa  (it's neater to have long lines than to break mimetypes)
 
-
-import os
 from multiprocessing import Pool
+from pathlib import Path
 
 import pytest
 
@@ -137,8 +136,8 @@ def test_scraper_correct_application(filename, mimetype, application):
     :mimetype: File MIME type
     :application: Correct office application
     """
-    testfile = os.path.join("tests/data", mimetype.replace("/", "_"),
-                            filename)
+    testfile = Path("tests/data", mimetype.replace("/", "_"),
+                    filename)
 
     scraper = OfficeScraper(filename=testfile, mimetype=mimetype)
     scraper.scrape_file()
@@ -200,8 +199,8 @@ def test_scraper_invalid_file(filename, mimetype, evaluate_scraper):
 
 def _scrape(filename, mimetype):
     scraper = OfficeScraper(
-        filename=os.path.join(BASEPATH, mimetype.replace("/", "_"),
-                              filename), mimetype=mimetype)
+        filename=Path(BASEPATH, mimetype.replace("/", "_"),
+                      filename), mimetype=mimetype)
     scraper.scrape_file()
     return scraper.well_formed
 
@@ -237,8 +236,8 @@ def test_office_returns_invalid_return_code():
     """Test that a correct error message is given
     when the tool gives an invalid return code"""
     mimetype = "application/vnd.oasis.opendocument.text"
-    path = os.path.join("tests/data", mimetype.replace("/", "_"))
-    testfile = os.path.join(path, "valid_1.2.odt")
+    path = Path("tests/data", mimetype.replace("/", "_"))
+    testfile = path / "valid_1.2.odt"
 
     scraper = OfficeScraper(filename=testfile,
                             mimetype=mimetype)
@@ -288,5 +287,5 @@ def test_is_supported(mime, ver):
 
 def test_tools():
     """Test that tool versions have at least one digit in the start"""
-    scraper = OfficeScraper(filename="", mimetype="")
+    scraper = OfficeScraper(filename=Path(""), mimetype="")
     assert scraper.tools()["libreoffice"]["version"][0].isdigit()

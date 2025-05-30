@@ -120,7 +120,7 @@ This module tests that:
         - For EPUB 2 files created with LibreOffice's built-in export function,
           scraper errors contains "element \"title\" not allowed here".
 """
-import os
+from pathlib import Path
 
 import pytest
 
@@ -457,7 +457,7 @@ def test_pdf_17_scraping_result_ignored():
     ignored.
     """
     scraper = JHovePdfScraper(
-        filename="tests/data/application_pdf/valid_1.7.pdf",
+        filename=Path("tests/data/application_pdf/valid_1.7.pdf"),
         mimetype="application/pdf")
     scraper.scrape_file()
     assert not scraper.errors()
@@ -479,8 +479,8 @@ def test_scraper_invalid_pdfversion(version_in_filename, found_version):
     Test that unsupported version is detected.
     """
     scraper = JHovePdfScraper(
-        filename="tests/data/application_pdf/invalid_X_wrong_version"
-                 ".pdf".replace("X", version_in_filename),
+        filename=Path("tests/data/application_pdf/invalid_X_wrong_version"
+                      ".pdf".replace("X", version_in_filename)),
         mimetype="application/pdf")
     scraper.scrape_file()
     assert partial_message_included(
@@ -797,7 +797,7 @@ def test_charset(filename, mimetype, charset, well_formed):
     :well_formed: Expected well-formed result
     """
     params = {"charset": charset}
-    scraper = JHoveHtmlScraper(filename=filename, mimetype=mimetype,
+    scraper = JHoveHtmlScraper(filename=Path(filename), mimetype=mimetype,
                                params=params)
     scraper.scrape_file()
     assert scraper.well_formed == well_formed
@@ -869,8 +869,8 @@ def test_jhove_returns_invalid_return_code():
     """Test that a correct error message is given
     when the tool gives an invalid return code"""
     mimetype = "application/pdf"
-    path = os.path.join("tests/data", mimetype.replace("/", "_"))
-    testfile = os.path.join(path, "valid_1.2.pdf")
+    path = Path("tests/data", mimetype.replace("/", "_"))
+    testfile = path / "valid_1.2.pdf"
 
     scraper = JHovePdfScraper(filename=testfile,
                               mimetype=mimetype)
@@ -882,6 +882,6 @@ def test_jhove_returns_invalid_return_code():
 
 def test_jhove_tools():
     """Test scraper tools return correctly something non nullable"""
-    scraper = JHovePdfScraper(filename="",
+    scraper = JHovePdfScraper(filename=Path(""),
                               mimetype="")
     assert scraper.tools()["JHOVE"]["version"][0].isdigit()

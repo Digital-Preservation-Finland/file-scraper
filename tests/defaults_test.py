@@ -1,7 +1,7 @@
 """Module to test the default constants that were set."""
 
 import pytest
-
+from pathlib import Path
 from file_scraper.detectors import MagicDetector
 from file_scraper.defaults import PRONOM_DICT, VERSION_DICT
 
@@ -43,6 +43,6 @@ def test_mimetype_dict(monkeypatch):
         monkeypatch.setattr('file_scraper.detectors.magic_analyze',
                             mock_analyze)
         detector = MagicDetector(
-            "tests/data/text_plain/valid__utf8_without_bom.txt")
+            Path("tests/data/text_plain/valid__utf8_without_bom.txt"))
         detector.detect()
         assert detector.mimetype == value

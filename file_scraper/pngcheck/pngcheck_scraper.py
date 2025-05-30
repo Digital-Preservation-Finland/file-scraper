@@ -1,5 +1,4 @@
 """Module for pngcheck scraper."""
-import os
 import re
 
 from file_scraper.base import BaseScraper
@@ -20,7 +19,7 @@ class PngcheckScraper(BaseScraper):
 
     def scrape_file(self):
         """Scrape file."""
-        shell = Shell(["pngcheck", os.fsencode(self.filename)])
+        shell = Shell(["pngcheck", self.filename])
 
         if shell.returncode != 0:
             self._errors.append(

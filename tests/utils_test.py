@@ -104,6 +104,7 @@ requirements:
 
 import zipfile
 from itertools import chain
+from pathlib import Path
 
 import pytest
 
@@ -527,5 +528,5 @@ def test_zipfile(monkeypatch):
 
     monkeypatch.setattr('zipfile.ZipFile', mocked_zipfile_init)
     assert not is_zipfile(
-        'tests/data/application_vnd.oasis.opendocument.text/valid_1.2.odt'
+        Path('tests/data/application_vnd.oasis.opendocument.text/valid_1.2.odt')
     )

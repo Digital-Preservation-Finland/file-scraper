@@ -17,7 +17,7 @@ This module tests that:
     - the scraper reports MIME type 'image/x-dpx' with version 2.0 as not
       supported when only well-formed check is performed
 """
-import os
+from pathlib import Path
 
 import pytest
 from tests.common import parse_results
@@ -72,8 +72,8 @@ def test_scraper(filename, result_dict, evaluate_scraper):
 def test_dpx_returns_invalid_return_code():
     """Test that a correct error message is given
     when the tool gives an invalid return code"""
-    path = os.path.join("tests/data", MIMETYPE.replace("/", "_"))
-    testfile = os.path.join(path, "valid_2.0.dpx")
+    path = Path("tests/data", MIMETYPE.replace("/", "_"))
+    testfile = path / "valid_2.0.dpx"
 
     scraper = DpxScraper(filename=testfile,
                          mimetype=MIMETYPE)
@@ -98,5 +98,5 @@ def test_is_supported():
 def test_tools():
     """ Test that tools were unknown """
 
-    scraper = DpxScraper(filename="", mimetype="")
+    scraper = DpxScraper(filename=Path(""), mimetype="")
     assert scraper.tools()["Python DPX validator"]["version"] is UNKN

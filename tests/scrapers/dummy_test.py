@@ -26,6 +26,7 @@ This module tests the following scraper classes:
         - Results given file format version as a scraper result
         - Results error in MIME type is not supported
 """
+from pathlib import Path
 
 import pytest
 
@@ -56,7 +57,7 @@ def test_existing_files(filepath):
     :filepath: Existing test file name
     """
 
-    scraper = FileExists(filepath, None)
+    scraper = FileExists(Path(filepath), None)
     scraper.scrape_file()
 
     streams = DEFAULTSTREAMS.copy()
@@ -80,7 +81,7 @@ def test_nonexistent_files(filepath):
 
     :filepath: Non-existing file path
     """
-    scraper = FileExists(filepath, None)
+    scraper = FileExists(Path(filepath), None)
     scraper.scrape_file()
 
     assert scraper.well_formed is False
@@ -111,7 +112,7 @@ def test_scraper_not_found(filepath):
 
     :filepath: Test file
     """
-    scraper = ScraperNotFound(filepath, None)
+    scraper = ScraperNotFound(Path(filepath), None)
     scraper.scrape_file()
 
     streams = DEFAULTSTREAMS.copy()

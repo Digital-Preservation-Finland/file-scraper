@@ -15,7 +15,7 @@ This module tests that:
     - Scraper works as designed with charset parameter.
 """
 
-import os
+from pathlib import Path
 
 import pytest
 
@@ -48,7 +48,7 @@ def test_xml_encoding_normalized(tmpdir, encoding, py_codec, norm_encoding):
     """
     xml = f"""<?xml version="1.0" encoding="{encoding}" ?>
               <a>test</a>"""
-    tmppath = os.path.join(tmpdir, "test.csv")
+    tmppath = Path(tmpdir, "test.csv")
     with open(tmppath, "wb") as file_:
         file_.write(xml.encode(py_codec))
 
@@ -106,7 +106,7 @@ def test_charset(filename, mimetype, charset, well_formed):
     :well_formed: Expected result of well-formedness
     """
     params = {"charset": charset}
-    scraper = LxmlScraper(filename=filename, mimetype=mimetype, params=params)
+    scraper = LxmlScraper(filename=Path(filename), mimetype=mimetype, params=params)
     scraper.scrape_file()
     assert scraper.well_formed == well_formed
     if charset:
@@ -123,6 +123,6 @@ def test_charset(filename, mimetype, charset, well_formed):
 @pytest.mark.parametrize("tool", ["lxml", "libxml2"])
 def test_tools(tool):
     """Test that the versions are numeric"""
-    scraper = LxmlScraper(filename="tests/data/text_xml/valid_1.0_xsd.xml",
+    scraper = LxmlScraper(filename=Path("tests/data/text_xml/valid_1.0_xsd.xml"),
                           mimetype="text/xml", params={"charset": "UTF-8"})
     assert scraper.tools()[tool]["version"].replace(".", "").isnumeric()

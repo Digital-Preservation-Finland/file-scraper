@@ -11,6 +11,7 @@ This module tests:
     - That _check_supported() method gives error messages properly
     - That initialization of detector works properly
 """
+from pathlib import Path
 
 import pytest
 
@@ -114,7 +115,7 @@ def test_is_supported(scraper_class, mimetype, version, check_wellformed,
 
 def test_messages_errors():
     """Test scraper's messages and errors."""
-    scraper = BaseScraperBasic("testfilename", "test/mimetype")
+    scraper = BaseScraperBasic(Path("testfilename"), "test/mimetype")
     # pylint: disable=protected-access
     scraper._messages.append("test message")
     scraper._messages.append("test message 2")
@@ -128,7 +129,7 @@ def test_messages_errors():
 def test_scraper_properties():
     """Test scraper's attributes and well_formed property."""
     scraper = BaseScraperBasic(
-        filename="testfilename", mimetype="test/mime",
+        filename=Path("testfilename"), mimetype="test/mime",
         params={"test": "value"})
     # pylint: disable=protected-access
     scraper._messages.append("success")
@@ -136,7 +137,7 @@ def test_scraper_properties():
     scraper._errors.append("error")
     assert not scraper.well_formed
 
-    assert scraper.filename == b"testfilename"
+    assert scraper.filename == Path("testfilename")
     # pylint: disable=protected-access
     assert scraper._params == {"test": "value"}
 
@@ -200,7 +201,7 @@ def test_check_supported(scraper_class, mimetype, version, errors):
     :errors: Expected errors
     """
     # pylint: disable=protected-access
-    scraper = scraper_class("testfilename", mimetype)
+    scraper = scraper_class(Path("testfilename"), mimetype)
     scraper.streams.append(BaseMetaCustom(mimetype=mimetype,
                                           version=version))
     scraper._check_supported()
@@ -213,8 +214,8 @@ def test_check_supported(scraper_class, mimetype, version, errors):
 def test_base_detector():
     """Test base detector initialization."""
     detector = BaseDetectorBasic(
-        filename="testfilename", mimetype="test/mime", version="0.0")
-    assert detector.filename == b"testfilename"
+        filename=Path("testfilename"), mimetype="test/mime", version="0.0")
+    assert detector.filename == Path("testfilename")
     # pylint: disable=protected-access
     assert detector._predefined_mimetype == "test/mime"
 
@@ -225,5 +226,5 @@ def test_tools():
     """
     Test that the base implementation of tools returns UNAV.
     """
-    scraper = BaseScraperBasic("testfilename", "test/mimetype")
+    scraper = BaseScraperBasic(Path("testfilename"), "test/mimetype")
     assert scraper.tools() is None

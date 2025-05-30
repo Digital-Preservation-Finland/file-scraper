@@ -57,7 +57,7 @@ This module tests that:
     - For unsupported formats, scraper doesn't return  True for
       well-formedness.
 """
-import os
+from pathlib import Path
 
 import pytest
 
@@ -370,7 +370,7 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
     """
     correct = parse_results(filename, mimetype, result_dict, True)
 
-    scraper = FFMpegScraper(filename=correct.filename, mimetype=mimetype)
+    scraper = FFMpegScraper(filename=Path(correct.filename), mimetype=mimetype)
     scraper.scrape_file()
 
     evaluate_scraper(scraper, correct)
@@ -655,7 +655,7 @@ def test_ffmpeg_scraper_wellformed_none(filepath, mimetype):
     when all the streams are well-formed, but some of the av
     streams are not acceptable inside the container.
     """
-    scraper = FFMpegScraper(filename=filepath, mimetype=mimetype)
+    scraper = FFMpegScraper(Path(filename=filepath), mimetype=mimetype)
     scraper.scrape_file()
 
     # Ensure that file was validated to avoid false positive
@@ -670,8 +670,8 @@ def test_ffmpeg_returns_invalid_return_code():
     """Test that a correct error message is given
     when the tool gives an invalid return code"""
     mimetype = "video/avi"
-    path = os.path.join("tests/data", mimetype.replace("/", "_"))
-    testfile = os.path.join(path, "valid__mpeg2_mp3.avi")
+    path = Path("tests/data", mimetype.replace("/", "_"))
+    testfile = path / "valid__mpeg2_mp3.avi"
 
     scraper = FFMpegScraper(filename=testfile,
                             mimetype=mimetype)
@@ -726,7 +726,7 @@ def test_unsupported_format(filename):
     """Test that unsupported format is not well formed."""
     # Scrape the file. Use some supported mimetype, otherwise the
     # Scraper will refuse to scrape.
-    scraper = FFMpegScraper(filename=filename, mimetype="audio/mp4")
+    scraper = FFMpegScraper(filename=Path(filename), mimetype="audio/mp4")
     scraper.scrape_file()
 
     # Ensure that file was validated to avoid false positive
@@ -741,5 +741,5 @@ def test_tools():
     Test that tools don't return UNAV or None
     """
     # validity or invalidity of the file doesn't matter for tools
-    scraper = FFMpegScraper(filename="", mimetype="")
+    scraper = FFMpegScraper(filename=Path(""), mimetype="")
     assert scraper.tools()["ffmpeg"]["version"] not in (UNAV, None)

@@ -27,6 +27,8 @@ This module tests that:
 """
 
 import os
+from pathlib import Path
+
 import pytest
 
 from file_scraper.csv_scraper.csv_model import CsvMeta
@@ -36,7 +38,7 @@ from tests.common import parse_results, partial_message_included
 
 MIMETYPE = "text/csv"
 
-PDF_PATH = os.path.join(
+PDF_PATH = Path(
     "tests/data/application_pdf/valid_1.4.pdf")
 
 TEST_DATA_PATH = "tests/data/text_csv"
@@ -267,7 +269,7 @@ def test_first_line_charset(filename, charset):
     params = {"delimiter": ",", "separator": "CR+LF",
               "mimetype": "text/csv", "charset": charset}
 
-    scraper = CsvScraper(filename, mimetype="text/csv", params=params)
+    scraper = CsvScraper(Path(filename), mimetype="text/csv", params=params)
     scraper.scrape_file()
     assert scraper.well_formed
     assert scraper.streams[0].first_line() == \
@@ -338,14 +340,14 @@ def test_empty_file():
     parameters are not given. Secondly, sniffer is skipped when parameters
     are given, but the then scraper raises exception elsewhere.
     """
-    scraper = CsvScraper("tests/data/text_csv/invalid__empty.csv",
+    scraper = CsvScraper(Path("tests/data/text_csv/invalid__empty.csv"),
                          mimetype=MIMETYPE)
     scraper.scrape_file()
     assert partial_message_included("Could not determine delimiter",
                                     scraper.errors())
     assert not scraper.well_formed
 
-    scraper = CsvScraper("tests/data/text_csv/invalid__empty.csv",
+    scraper = CsvScraper(Path("tests/data/text_csv/invalid__empty.csv"),
                          mimetype=MIMETYPE,
                          params={"delimiter": ";", "separator": "CRLF"})
     scraper.scrape_file()
@@ -358,7 +360,7 @@ def test_nonexistent_file():
     """
     Test that CsvScraper logs an error when file is not found.
     """
-    scraper = CsvScraper(filename="nonexistent/file.csv", mimetype="text/csv")
+    scraper = CsvScraper(filename=Path("nonexistent/file.csv"), mimetype="text/csv")
     scraper.scrape_file()
     assert partial_message_included("Error when reading the file: ",
                                     scraper.errors())
@@ -382,5 +384,5 @@ def test_tools():
     """
     Test that there are no thirdparty dependencies for csv.
     """
-    scraper = CsvScraper("testfilename", "test/mimetype")
+    scraper = CsvScraper(Path("testfilename"), "test/mimetype")
     assert scraper.tools() == {}

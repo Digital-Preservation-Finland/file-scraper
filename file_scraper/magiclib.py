@@ -5,7 +5,6 @@
    system default file command is selected.
 """
 import ctypes
-import os
 
 from file_scraper.shell import Shell
 from file_scraper.config import config_filecmd_env, magic_library_path
@@ -21,7 +20,7 @@ def file_command(filename, parameters=None):
     if parameters is None:
         parameters = []
     (filecmd_path, magic_env) = config_filecmd_env()
-    return Shell([filecmd_path] + parameters + [os.fsencode(filename)],
+    return Shell([filecmd_path] + parameters + [filename],
                  env=magic_env)
 
 
@@ -35,7 +34,7 @@ def magic_analyze(magic_lib, magic_type, path):
     """
     magic_ = magic_lib.open(magic_type)
     magic_.load()
-    magic_result = magic_.file(os.fsencode(path))
+    magic_result = magic_.file(path)
     magic_.close()
     return magic_result
 

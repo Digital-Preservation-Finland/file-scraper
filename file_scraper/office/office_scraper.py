@@ -29,7 +29,7 @@ class OfficeScraper(BaseScraper):
             env = {"HOME": temp_dir}
             shell = Shell([
                 _choose_cmd(), "--convert-to", "pdf", "--outdir",
-                temp_dir, os.fsencode(self.filename)], env=env)
+                temp_dir, self.filename], env=env)
             if shell.stderr:
                 self._errors.append(shell.stderr)
             if shell.returncode != 0:

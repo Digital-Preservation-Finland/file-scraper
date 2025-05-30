@@ -77,7 +77,7 @@ This module tests that:
     - When full scraping is not done, these combinations are supported only
       for text files.
 """  # noqa  (it's neater to have long lines than to break mimetypes)
-
+from pathlib import Path
 
 import pytest
 
@@ -312,7 +312,7 @@ def test_msoffice_word_detected():
     only report the generic "Microsoft OOXML" instead of "Microsoft Word 2007+"
     """
     scraper = MagicBinaryScraper(
-        filename=(
+        filename=Path(
             "tests/data/application_vnd.openxmlformats-officedocument"
             ".wordprocessingml.document/valid_2007 onwards_word-dir-third.docx"
         ),
@@ -408,5 +408,5 @@ def test_is_supported_disallow_versions(mime, ver):
 
 def test_tools():
     """Test that magic scraper returns software used"""
-    tools = MagicTextScraper(filename="", mimetype="").tools()
+    tools = MagicTextScraper(filename=Path(""), mimetype="").tools()
     assert tools["libmagic"]["version"][0].isdigit()

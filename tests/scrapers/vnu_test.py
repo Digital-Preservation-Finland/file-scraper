@@ -16,7 +16,7 @@ This module tests that:
       is not supported.
     - A made up MIME type or version is not supported.
 """
-import os
+from pathlib import Path
 
 import pytest
 
@@ -84,8 +84,8 @@ def test_scraper(filename, result_dict, evaluate_scraper):
 def test_vnu_returns_invalid_return_code():
     """Test that a correct error message is given
     when the tool gives an invalid return code"""
-    path = os.path.join("tests/data", MIMETYPE.replace("/", "_"))
-    testfile = os.path.join(path, "valid_5.html")
+    path = Path("tests/data", MIMETYPE.replace("/", "_"))
+    testfile = path / "valid_5.html"
 
     scraper = VnuScraper(filename=testfile,
                          mimetype=MIMETYPE)
@@ -108,5 +108,5 @@ def test_is_supported():
 
 def test_tools():
     """Test that tools return expected version of software used."""
-    scraper = VnuScraper(filename="", mimetype="")
+    scraper = VnuScraper(filename=Path(""), mimetype="")
     assert scraper.tools()["Validator.nu"]["version"][0].isdigit()

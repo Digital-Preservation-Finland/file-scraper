@@ -14,6 +14,7 @@ This module tests that:
     - Each detectors tools functions return exact or somewhat valid versions
 """
 import time
+from pathlib import Path
 import pytest
 from fido.fido import Fido
 from file_scraper.detectors import (_FidoReader,
@@ -192,7 +193,7 @@ def test_pdf_dng_detector(filepath, mimetype, version, message):
     :mimetype: Expected MIME type
     :version: Exprected file format version
     """
-    detector = ExifToolDetector('tests/data/' + filepath)
+    detector = ExifToolDetector(Path('tests/data/' , filepath))
     detector.detect()
     assert detector.mimetype == mimetype
     assert detector.version == version
@@ -253,7 +254,7 @@ def test_important_pdf_dng(filepath, important):
     :filepath: Test file
     :important: Expected boolean result of important
     """
-    detector = ExifToolDetector(filepath)
+    detector = ExifToolDetector(Path(filepath))
     detector.detect()
     if important:
         assert "mimetype" in detector.get_important()
@@ -278,7 +279,7 @@ def test_important_other(detector_class, mimetype):
     :detector_class: Detector class
     :mimetype: File MIME type
     """
-    detector = detector_class("testfilename")
+    detector = detector_class(Path("testfilename"))
     detector.mimetype = mimetype
     if detector_class == FidoDetector:
         assert detector.get_important() == {}
@@ -300,7 +301,7 @@ def test_magic_charset(filename, charset):
     :filename: Test file
     :charset: Character encoding
     """
-    detector = MagicCharset(filename)
+    detector = MagicCharset(Path(filename))
     detector.detect()
     if charset:
         detector.charset = charset
@@ -401,7 +402,7 @@ def test_siard_detector(filepath, mimetype, version):
     :filepath: Test file
     :mimetype: Expected mimetype
     """
-    detector = SiardDetector('tests/data/' + filepath)
+    detector = SiardDetector(Path('tests/data/', filepath))
     detector.detect()
     assert detector.mimetype == mimetype
     assert detector.version == version
@@ -415,7 +416,7 @@ def test_atlas_ti_detector():
     :filepath: Test file
     :mimetype: Expected mimetype
     """
-    detector = AtlasTiDetector('tests/data/' + 'application_x.fi-dpres.atlproj/invalid_empty.atlproj')
+    detector = AtlasTiDetector(Path('tests/data/' , 'application_x.fi-dpres.atlproj/invalid_empty.atlproj'))
     detector.detect()
     assert detector.mimetype == "application/x.fi-dpres.atlproj"
     assert detector.version == UNAP
@@ -448,7 +449,7 @@ def test_odf_detector(filepath, mimetype, version):
     :mimetype: Expected mimetype
     :version: Expected format version
     """
-    detector = ODFDetector('tests/data/' + filepath)
+    detector = ODFDetector(Path('tests/data/' , filepath))
     detector.detect()
     assert detector.mimetype == mimetype
     assert detector.version == version
@@ -472,7 +473,7 @@ def test_invalid_odf(filepath, error):
     :filepath: Test file
     :error: Expected error message
     """
-    detector = ODFDetector('tests/data/' + filepath)
+    detector = ODFDetector(Path('tests/data/' , filepath))
     detector.detect()
     assert detector.mimetype is None
     assert detector.version is None
@@ -503,7 +504,7 @@ def test_epub_detector(filepath, mimetype, version):
     :mimetype: Expected mimetype
     :version: Expected format version
     """
-    detector = EpubDetector('tests/data/' + filepath)
+    detector = EpubDetector(Path('tests/data/', filepath))
     detector.detect()
     assert detector.mimetype == mimetype
     assert detector.version == version
@@ -529,14 +530,14 @@ def test_tools(detector, tool):
     or no software used
     """
     if tool:
-        assert detector("").tools()[tool]["version"][0].isdigit()
+        assert detector(Path("")).tools()[tool]["version"][0].isdigit()
     else:
-        assert not detector("").tools()
+        assert not detector(Path("")).tools()
 
 
 def test_detector_mimetype_normalization():
     mimetype = "TEXT/PLAIN"
-    detector = PredefinedDetector("tests/data/text_plain/valid__ascii.txt",
+    detector = PredefinedDetector(Path("tests/data/text_plain/valid__ascii.txt"),
                                   mimetype=mimetype)
     detector.detect()
     assert detector.mimetype == mimetype.lower()

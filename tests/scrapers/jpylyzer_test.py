@@ -7,6 +7,7 @@ This module tests that:
     - For invalid files, scraper errors contain "document is not well-formed".
 
 """
+from pathlib import Path
 
 import pytest
 
@@ -55,7 +56,7 @@ def test_scraper_jp2(filename, result_dict):
     """
     correct = parse_results(filename, "image/jp2", result_dict, True)
 
-    scraper = JpylyzerScraper(filename=correct.filename,
+    scraper = JpylyzerScraper(filename=Path(correct.filename),
                               mimetype="image/jp2")
 
     scraper.scrape_file()
@@ -69,6 +70,6 @@ def test_scraper_jp2(filename, result_dict):
 
 
 def test_tools():
-    scraper = JpylyzerScraper(filename="valid__jpylyzer_reference.jp2",
+    scraper = JpylyzerScraper(filename=Path("valid__jpylyzer_reference.jp2"),
                               mimetype="image/jp2")
     assert scraper.tools()["jpylyzer"]["version"][0].isdigit()

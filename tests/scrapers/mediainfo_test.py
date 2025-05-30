@@ -28,6 +28,7 @@ This module tests that:
     - These MIME types are also supported with a made up version.
     - Made up MIME types are not supported.
 """
+from pathlib import Path
 
 import pytest
 
@@ -798,6 +799,6 @@ def test_is_supported(mime, ver):
 
 def test_mediainfo_tools():
     """Test that tool versions have at least one digit in the start"""
-    scraper = MediainfoScraper(filename="", mimetype="")
+    scraper = MediainfoScraper(filename=Path(""), mimetype="")
     assert scraper.tools()["pymediainfo"]["version"][0].isdigit()
     assert scraper.tools()["MediaInfoLib"]["version"][0].isdigit()

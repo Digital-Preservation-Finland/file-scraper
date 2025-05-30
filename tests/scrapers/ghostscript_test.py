@@ -19,6 +19,7 @@ This module tests that:
     - Made up MIME type with supported version is reported as not supported
 """
 import os
+from pathlib import Path
 
 import pytest
 
@@ -118,7 +119,7 @@ def test_ghostscript_returns_invalid_return_code():
     path = os.path.join("tests/data", mimetype.replace("/", "_"))
     testfile = os.path.join(path, "valid_X.pdf")
 
-    scraper = GhostscriptScraper(filename=testfile,
+    scraper = GhostscriptScraper(filename=Path(testfile),
                                  mimetype=mimetype)
 
     scraper.scrape_file()
@@ -139,6 +140,6 @@ def test_is_supported():
 
 def test_tools():
     """Test verifies that tools will be returned"""
-    scraper = GhostscriptScraper(filename="None", mimetype="None")
+    scraper = GhostscriptScraper(filename=Path("None"), mimetype="None")
 
     assert scraper.tools()["Ghostscript"]["version"] not in (UNAV, None)

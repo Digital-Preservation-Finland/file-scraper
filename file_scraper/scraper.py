@@ -1,5 +1,7 @@
 """File metadata scraper."""
 import os
+from pathlib import Path
+from typing import Union, Optional
 
 from file_scraper.defaults import (
     ACCEPTABLE,
@@ -25,16 +27,17 @@ class Scraper:
 
     # pylint: disable=no-member, too-many-instance-attributes
 
-    def __init__(self, filename, **kwargs):
+    def __init__(self, filename: Union[str, bytes, os.PathLike, None], **kwargs):
         """Initialize scraper.
         :filename: File path
         :kwargs: Extra arguments for certain scrapers.
         """
         if filename is not None:
-            # Filename is stored as encoded string for better support
-            # of undecodable strings.
-            filename = os.fsencode(filename)
-        self.filename = filename
+            if isinstance(filename, bytes):
+                filename = os.fsdecode(filename)
+            filename = Path(filename)
+
+        self.filename: Optional[Path] = filename
         self.mimetype = None
         self.version = None
         self.streams = None

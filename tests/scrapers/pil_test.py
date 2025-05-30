@@ -19,6 +19,7 @@ This module tests that:
     - These MIME types are also supported with None or a made up version.
     - A made up MIME type with any of these versions is not supported.
 """
+from pathlib import Path
 
 import PIL
 import pytest
@@ -500,5 +501,5 @@ def test_is_supported(mime, ver):
 
 def test_tools():
     """Test that tools give version"""
-    scraper = PilScraper(filename="", mimetype="")
+    scraper = PilScraper(filename=Path(""), mimetype="")
     assert scraper.tools()["Pillow"]["version"][0].isdigit()

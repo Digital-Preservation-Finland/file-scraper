@@ -54,7 +54,7 @@ class ExifToolScraperBase(BaseScraper):
             with exiftool.ExifToolHelper() as et:
                 from exiftool.exceptions import ExifToolExecuteError
                 try:
-                    metadata = et.get_metadata(self.filename)[0]
+                    metadata = et.get_metadata(str(self.filename))[0]
                 except ExifToolExecuteError as eee:
                     metadata = json.loads(eee.stdout)[0]
                     self._errors.append(metadata["ExifTool:Error"])
