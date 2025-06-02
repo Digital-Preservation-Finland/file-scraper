@@ -22,7 +22,8 @@ class DbptkScraper(BaseScraper):
     _supported_metadata = [DbptkMeta]
     _only_wellformed = True  # Only well-formed check
 
-    def __init__(self, filename: Optional[Path], mimetype, version=None, params=None):
+    def __init__(self, filename: Optional[Path], mimetype, version=None,
+                 params=None):
         super().__init__(filename, mimetype, version, params)
         self._path = f"/usr/lib/jvm/jre-1.8.0/bin{os.pathsep} \
         {os.environ['PATH']}"

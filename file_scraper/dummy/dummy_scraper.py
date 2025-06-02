@@ -204,7 +204,8 @@ class ResultsMergeScraper(NoWellformednessBaseScraper):
 
     _supported_metadata = [DummyMeta]
 
-    def __init__(self, filename: Optional[Path], mimetype, version=None, params=None):
+    def __init__(self, filename: Optional[Path], mimetype, version=None,
+                 params=None):
         """
         """
         super().__init__(
