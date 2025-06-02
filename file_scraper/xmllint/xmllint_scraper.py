@@ -213,7 +213,7 @@ class XmllintScraper(BaseScraper):
                         str(self._evaluate_xsd_location(location)))
                     schema_tree.append(xs_import)
 
-        elements = iter_elements(self.filename)
+        elements = iter_elements(str(self.filename))
         for element in elements:
             schema_location = element.attrib.get(XSI_NO_NS_SCHEMA_LOCATION)
             if schema_location:
