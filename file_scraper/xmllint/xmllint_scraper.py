@@ -197,7 +197,7 @@ class XmllintScraper(BaseScraper):
         parser = etree.XMLParser(dtd_validation=False, no_network=True)
         schema_tree = etree.XML(SCHEMA_TEMPLATE, parser)
 
-        elements = iter_elements(self.filename)
+        elements = iter_elements(str(self.filename))
         for element in elements:
             schema_location = element.attrib.get(XSI_SCHEMA_LOCATION)
 
