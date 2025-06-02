@@ -655,7 +655,7 @@ def test_ffmpeg_scraper_wellformed_none(filepath, mimetype):
     when all the streams are well-formed, but some of the av
     streams are not acceptable inside the container.
     """
-    scraper = FFMpegScraper(Path(filename=filepath), mimetype=mimetype)
+    scraper = FFMpegScraper(filename=Path(filepath), mimetype=mimetype)
     scraper.scrape_file()
 
     # Ensure that file was validated to avoid false positive
