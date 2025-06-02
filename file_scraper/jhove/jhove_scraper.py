@@ -1,4 +1,6 @@
 """Scraper for gif, html, jpeg, tif, pdf and wav files using JHove."""
+from pathlib import Path
+from typing import Optional
 
 try:
     import lxml.etree
@@ -24,7 +26,7 @@ class JHoveScraperBase(BaseScraper):
     _jhove_module = None
     _only_wellformed = True
 
-    def __init__(self, filename, mimetype, version=None, params=None):
+    def __init__(self, filename: Optional[Path], mimetype, version=None, params=None):
         """
         Initialize JHove base scarper.
 

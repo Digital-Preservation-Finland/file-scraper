@@ -75,7 +75,7 @@ class BaseScraper(_BaseScraperDetector):
     _supported_metadata = []
     _only_wellformed = False
 
-    def __init__(self, filename, mimetype, version=None, params=None):
+    def __init__(self, filename: Optional[Path], mimetype, version=None, params=None):
         """
         Initialize scraper.
 
@@ -270,7 +270,7 @@ class BaseMeta:
 class BaseDetector(_BaseScraperDetector):
     """Class to identify file format."""
 
-    def __init__(self, filename, mimetype=None, version=None):
+    def __init__(self, filename: Optional[Path], mimetype=None, version=None):
         """Initialize detector.
 
         Detectors can use the user-supplied MIME types and versions to

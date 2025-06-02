@@ -3,6 +3,9 @@
 import os
 import tempfile
 from io import open as io_open
+from pathlib import Path
+from typing import Optional
+
 from xml_helpers.utils import iter_elements
 
 from file_scraper.base import BaseScraper
@@ -44,7 +47,7 @@ class XmllintScraper(BaseScraper):
     _supported_metadata = [XmllintMeta]
     _only_wellformed = True  # Only well-formed check
 
-    def __init__(self, filename, mimetype, version=None, params=None):
+    def __init__(self, filename: Optional[Path], mimetype, version=None, params=None):
         """
         Initialize scraper.
 
