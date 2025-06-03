@@ -5,7 +5,6 @@ import os
 
 import zipfile
 from pathlib import Path
-from typing import Optional
 import lxml.etree
 import exiftool
 
