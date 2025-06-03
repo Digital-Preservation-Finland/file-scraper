@@ -5,7 +5,6 @@ import shutil
 import tempfile
 import re
 from pathlib import Path
-from typing import Optional
 
 from lxml import etree
 
@@ -23,8 +22,7 @@ class SchematronScraper(BaseScraper):
     _supported_metadata = [SchematronMeta]
     _only_wellformed = True
 
-    def __init__(self, filename: Optional[Path], mimetype, version=None,
-                 params=None):
+    def __init__(self, filename: Path, mimetype, version=None, params=None):
         """
         Initialize instance.
 

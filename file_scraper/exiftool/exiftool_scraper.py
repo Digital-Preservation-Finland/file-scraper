@@ -2,7 +2,6 @@
 
 import json
 from pathlib import Path
-from typing import Optional
 import exiftool
 
 from file_scraper.base import BaseScraper
@@ -14,8 +13,7 @@ class ExifToolScraperBase(BaseScraper):
     Scraping methods for the ExifTool scraper
     """
 
-    def __init__(self, filename: Optional[Path], mimetype, version=None,
-                 params=None):
+    def __init__(self, filename: Path, mimetype, version=None, params=None):
         """
         Initialize ExifTool base scraper.
 

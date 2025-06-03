@@ -129,10 +129,11 @@ def test_scraper_not_found_with_given_mimetype_and_version():
     Test that ScraperNotFound retains the MIME type that is given to it
     when scraping the file.
     """
+    filename = Path("tests/data/text_plain/valid__ascii.txt")
     expected_mimetype = "expected_mimetype"
     expected_version = "expected_version"
     scraper = ScraperNotFound(
-        None, mimetype=expected_mimetype, version=expected_version)
+        filename, mimetype=expected_mimetype, version=expected_version)
     scraper.scrape_file()
     stream = scraper.streams[0]
 
@@ -142,26 +143,27 @@ def test_scraper_not_found_with_given_mimetype_and_version():
 
 def test_mime_match_scraper():
     """Test scraper for MIME type and version match check."""
+    filename = Path("tests/data/text_plain/valid__ascii.txt")
     scraper = MimeMatchScraper(
-        None, mimetype="expected_mime", version="expected_version",
+        filename, mimetype="expected_mime", version="expected_version",
         params={"mimetype": "expected_mime", "version": "expected_version"})
     scraper.scrape_file()
     assert scraper.well_formed is None
 
     scraper = MimeMatchScraper(
-        None, mimetype="mismatch", version="expected_version",
+        filename, mimetype="mismatch", version="expected_version",
         params={"mimetype": "expected_mime", "version": "expected_version"})
     scraper.scrape_file()
     assert scraper.well_formed is False
 
     scraper = MimeMatchScraper(
-        None, mimetype="expected_mime", version="mismatch",
+        filename, mimetype="expected_mime", version="mismatch",
         params={"mimetype": "expected_mime", "version": "expected_version"})
     scraper.scrape_file()
     assert scraper.well_formed is False
 
     scraper = MimeMatchScraper(
-        None, mimetype="expected_mime", version="some_version",
+        filename, mimetype="expected_mime", version="some_version",
         params={"mimetype": "expected_mime", "version": UNAV})
     scraper.scrape_file()
     assert partial_message_included(
@@ -169,7 +171,7 @@ def test_mime_match_scraper():
     assert scraper.well_formed is False
 
     scraper = MimeMatchScraper(
-        None, mimetype="application/vnd.oasis.opendocument.text",
+        filename, mimetype="application/vnd.oasis.opendocument.text",
         version="some_version",
         params={"mimetype": "application/vnd.oasis.opendocument.text",
                 "version": UNAV})
@@ -181,40 +183,41 @@ def test_mime_match_scraper():
 
 def test_detected_version_scraper():
     """Test detected version scraper"""
+    filename = Path("tests/data/text_plain/valid__ascii.txt")
     scraper = DetectedMimeVersionMetadataScraper(
-        None, "text/xml", params={"detected_version": "123"})
+        filename, "text/xml", params={"detected_version": "123"})
     scraper.scrape_file()
     assert scraper.well_formed is False
     assert scraper.streams[0].version() == "123"
 
     scraper = DetectedMimeVersionMetadataScraper(
-        None, "text/xml", params=None)
+        filename, "text/xml", params=None)
     scraper.scrape_file()
     assert scraper.well_formed is None
     assert scraper.streams[0].version() == "1.0"
 
     scraper = DetectedMimeVersionMetadataScraper(
-        None, "text/plain", params=None)
+        filename, "text/plain", params=None)
     scraper.scrape_file()
     assert partial_message_included(
         "MIME type not supported", scraper.errors())
 
     scraper = DetectedMimeVersionScraper(
-        None, "application/x-siard", params={"detected_version": "2.1.1"})
+        filename, "application/x-siard", params={"detected_version": "2.1.1"})
     scraper.scrape_file()
     assert scraper.well_formed is None
     assert scraper.streams[0].version() == "2.1.1"
     assert scraper.streams[0].stream_type() == "binary"
 
     scraper = DetectedMimeVersionScraper(
-        None, "application/vnd.oasis.opendocument.text",
+        filename, "application/vnd.oasis.opendocument.text",
         params={"detected_version": "123"})
     scraper.scrape_file()
     assert scraper.well_formed is False
     assert scraper.streams[0].version() == "123"
 
     scraper = DetectedMimeVersionScraper(
-        None, "application/epub+zip",
+        filename, "application/epub+zip",
         params={"detected_version": "3"})
     scraper.scrape_file()
     assert scraper.well_formed is None
@@ -222,7 +225,7 @@ def test_detected_version_scraper():
 
     # File format for bit-level preservation
     scraper = DetectedMimeVersionScraper(
-        None, "application/x.fi-dpres.segy",
+        filename, "application/x.fi-dpres.segy",
         params={"detected_version": "(:unkn)"})
     scraper.scrape_file()
     assert scraper.well_formed is None
@@ -241,11 +244,12 @@ def test_results_merge_scraper(meta_class_fx, meta_classes, wellformed):
     conflicts in metadata resulting in the well-formedness being
     false.
     """
+    filename = Path("tests/data/text_plain/valid__ascii.txt")
     results = []
     for meta_class in meta_classes:
         results.append([meta_class_fx(meta_class)])
     scraper = ResultsMergeScraper(
-        None, mimetype="expected_mime", version="expected_version",
+        filename, mimetype="expected_mime", version="expected_version",
         params={"scraper_results": results})
     scraper.scrape_file()
     assert scraper.well_formed == wellformed

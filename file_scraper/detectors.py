@@ -150,7 +150,7 @@ class _FidoReader(_FidoCachedFormats):
 class FidoDetector(BaseDetector):
     """Fido detector."""
 
-    def __init__(self, filename: Optional[Path], mimetype=None, version=None):
+    def __init__(self, filename: Path, mimetype=None, version=None):
         """
         Initialize detector.
 
@@ -304,7 +304,7 @@ class MagicCharset(BaseDetector):
                   "text/xml",
                   "application/xhtml+xml"]
 
-    def __init__(self, filename: Optional[Path], mimetype=None, version=None):
+    def __init__(self, filename: Path, mimetype=None, version=None):
         """Initialize detector."""
         self.charset = None
         super().__init__(filename, mimetype=mimetype,

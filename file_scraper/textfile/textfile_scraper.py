@@ -1,6 +1,5 @@
 """Module for checking if the file is suitable as text file or not."""
 from pathlib import Path
-from typing import Optional
 
 from file_scraper.base import BaseScraper
 from file_scraper.defaults import UNAV
@@ -101,8 +100,7 @@ class TextEncodingMetaScraper(BaseScraper):
     """
     _supported_metadata = [TextEncodingMeta]
 
-    def __init__(self, filename: Optional[Path], mimetype, version=None,
-                 params=None):
+    def __init__(self, filename: Path, mimetype, version=None, params=None):
         """
         Initialize scraper. Add given charset.
 
@@ -195,8 +193,7 @@ class TextEncodingScraper(BaseScraper):
     # Limit file read in MB, 0 = unlimited. Must be divisible by _chunksize
     _limit = 5*_chunksize
 
-    def __init__(self, filename: Optional[Path], mimetype, version=None,
-                 params=None):
+    def __init__(self, filename: Path, mimetype, version=None, params=None):
         """
         Initialize scraper. Add given charset.
 

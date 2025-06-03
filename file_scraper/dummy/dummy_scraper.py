@@ -1,7 +1,6 @@
 """Dummy scrapers."""
 import os
 from pathlib import Path
-from typing import Optional
 
 from file_scraper.base import BaseScraper
 from file_scraper.defaults import UNAV
@@ -204,8 +203,7 @@ class ResultsMergeScraper(NoWellformednessBaseScraper):
 
     _supported_metadata = [DummyMeta]
 
-    def __init__(self, filename: Optional[Path], mimetype, version=None,
-                 params=None):
+    def __init__(self, filename: Path, mimetype, version=None, params=None):
         """
         """
         super().__init__(

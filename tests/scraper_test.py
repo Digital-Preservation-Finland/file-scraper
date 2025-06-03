@@ -23,6 +23,8 @@ This module tests that:
       they are filtered out correctly.
 """
 import os
+from pathlib import Path
+
 import pytest
 
 from file_scraper.scraper import Scraper
@@ -68,11 +70,6 @@ def test_empty_file():
 def test_missing_file():
     """Test missing file."""
     scraper = Scraper("missing_file", mimetype="application/pdf")
-    scraper.scrape()
-    assert not scraper.well_formed
-    assert len(scraper.info) == 1 and scraper.info[0]["class"] == "FileExists"
-
-    scraper = Scraper(None, mimetype="application/pdf")
     scraper.scrape()
     assert not scraper.well_formed
     assert len(scraper.info) == 1 and scraper.info[0]["class"] == "FileExists"
@@ -218,11 +215,11 @@ def test_undecodable_filename(tmpdir):
         file.write('foo')
 
     scraper = Scraper(path)
-    # TODO: Scraping/detection fails because ZipFile does not work with
-    # encoded strings. Note that all scrapers should be tested with
-    # undecodable filenames.
-    # assert scraper.scrape()
-    # assert scraper.detect_filetype()
+    # Nowadays ZipFile works with path-like objects
+    # (https://docs.python.org/3/library/zipfile.html#zipfile-objects)
+    # Note that all scrapers should be tested with undecodable filenames.
+    scraper.scrape()
+    assert scraper.detect_filetype() == ("text/plain", None)
     assert scraper.is_textfile() is True
     assert scraper.checksum() == 'acbd18db4cc2f85cedef654fccc4a4d8'
     # File can not be graded because it can not be detected
@@ -252,3 +249,31 @@ def test_filter_unwanted_characters(monkeypatch):
 
     assert tfscraper["messages"] == ["text\ntext null \n", "short unicode "]
     assert tfscraper["errors"] == ["long unicode "]
+
+
+class MockBytePath:
+    def __init__(self, path: bytes):
+        self.path = path
+
+    def __fspath__(self) -> bytes:
+        return self.path
+
+
+@pytest.mark.parametrize("pathlike",
+                         ["tests/data/text_plain/valid__ascii.txt",
+                          Path("tests/data/text_plain/valid__ascii.txt"),
+                          b"tests/data/text_plain/valid__ascii.txt",
+                          MockBytePath(b"tests/data/text_plain/valid__ascii.txt")])
+def test_different_pathlike_types(pathlike):
+    scraper = Scraper(pathlike)
+    scraper.scrape()
+    assert scraper.well_formed
+
+
+@pytest.mark.parametrize("value", [None, 1, True, [], ()])
+def test_wrong_types(value):
+    with pytest.raises(TypeError) as type_error:
+        scraper = Scraper(value)
+        scraper.scrape()
+
+    assert str(type_error.value) == "Expected a PathLike type as filename."
