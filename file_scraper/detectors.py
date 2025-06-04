@@ -586,9 +586,7 @@ class AtlasTiDetector(BaseDetector):
             2) The file must be a ZIP archive file
 
         """
-        filename = self.filename
-        if (os.path.splitext(filename)[1] == ".atlproj"
-                and is_zipfile(filename)):
+        if self.filename.suffix == ".atlproj" and is_zipfile(self.filename):
             self.mimetype = "application/x.fi-dpres.atlproj"
             self.version = UNAP
 
@@ -638,9 +636,8 @@ class SiardDetector(BaseDetector):
         a valid SIARD file: "header/siardversion/<version>/"
         """
         version_folders = []
-        filename = self.filename
-        if os.path.splitext(filename)[1] == ".siard" and is_zipfile(filename):
-            with zipfile.ZipFile(filename) as zipf:
+        if self.filename.suffix == ".siard" and is_zipfile(self.filename):
+            with zipfile.ZipFile(self.filename) as zipf:
                 version_folders = [
                     x for x in zipf.namelist() if "header/siardversion" in x]
 
@@ -806,9 +803,8 @@ class EpubDetector(BaseDetector):
         """
         version = None
 
-        filename = self.filename
-        if is_zipfile(filename):
-            with zipfile.ZipFile(filename) as zipf:
+        if is_zipfile(self.filename):
+            with zipfile.ZipFile(self.filename) as zipf:
                 for filepath in zipf.namelist():
                     if os.path.splitext(filepath)[1] != ".opf":
                         continue
