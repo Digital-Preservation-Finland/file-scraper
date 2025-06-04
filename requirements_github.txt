@@ -16,3 +16,4 @@ git+https://github.com/Digital-Preservation-Finland/ffmpeg-python.git#egg=ffmpeg
 # Get our newest format string changes not yet present in official Fido repository
 git+https://github.com/Digital-Preservation-Finland/fido.git#egg=opf_fido
 git+https://github.com/Digital-Preservation-Finland/xml-helpers.git#egg=xml_helpers
+TODO: Add dpres-file-formats github URL

@@ -42,6 +42,7 @@ Summary:        File scraper analysis tool
 Requires:       %{py3_dist ffmpeg-python}
 Requires:       %{py3_dist opf-fido}
 Requires:       %{py3_dist xml-helpers}
+Requires:       %{py3_dist dpres-file-formats}
 Requires:       /usr/bin/ffmpeg
 Requires:       perl-Image-ExifTool
 Requires:       veraPDF
