@@ -17,7 +17,7 @@ from file_scraper.dummy.dummy_scraper import (DetectedMimeVersionMetadataScraper
                                               ScraperNotFound)
 from file_scraper.ffmpeg.ffmpeg_scraper import FFMpegMetaScraper, FFMpegScraper
 from file_scraper.ghostscript.ghostscript_scraper import GhostscriptScraper
-from file_scraper.graders import ContainerStreamsGrader, MIMEGrader, TextGrader
+from dpres_file_formats.graders import ContainerStreamsGrader, MIMEGrader, TextGrader
 from file_scraper.jhove.jhove_scraper import (JHoveAiffScraper,
                                               JHoveDngScraper,
                                               JHoveEpubScraper,
