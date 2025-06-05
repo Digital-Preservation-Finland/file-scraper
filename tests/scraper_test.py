@@ -218,12 +218,11 @@ def test_undecodable_filename(tmpdir):
     # Nowadays ZipFile works with path-like objects
     # (https://docs.python.org/3/library/zipfile.html#zipfile-objects)
     # Note that all scrapers should be tested with undecodable filenames.
-    scraper.scrape()
     assert scraper.detect_filetype() == ("text/plain", None)
+    scraper.scrape()
+    assert scraper.grade() == "fi-dpres-recommended-file-format"
     assert scraper.is_textfile() is True
     assert scraper.checksum() == 'acbd18db4cc2f85cedef654fccc4a4d8'
-    # File can not be graded because it can not be detected
-    assert scraper.grade() == '(:unav)'
 
 
 def test_filter_unwanted_characters(monkeypatch):
