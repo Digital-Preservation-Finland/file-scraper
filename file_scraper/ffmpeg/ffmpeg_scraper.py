@@ -66,7 +66,7 @@ class FFMpegMetaScraper(BaseScraper):
         """Gather video and audio stream metadata with FFProbe.
         """
         try:
-            probe_results = ffmpeg.probe(str(self.filename))
+            probe_results = ffmpeg.probe(self.filename)
             probe_results["format"]["index"] = 0
             for stream in probe_results["streams"]:
                 if "index" not in stream:

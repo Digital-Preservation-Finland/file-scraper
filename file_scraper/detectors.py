@@ -220,7 +220,7 @@ class MagicDetector(BaseDetector):
 
         # DV detection with unpatched file library
         mime_check = mimetype == "application/octet-stream"
-        file_extension_check = str(self.filename).endswith(".dv")
+        file_extension_check = self.filename.suffix == ".dv"
         if mime_check and file_extension_check:
             analyze = magic_analyze(
                 MAGIC_LIB,
@@ -369,7 +369,7 @@ class ExifToolDetector(BaseDetector):
         # fetched by ExifTool.
         try:
             with exiftool.ExifToolHelper() as et:
-                metadata = et.get_metadata(str(self.filename))
+                metadata = et.get_metadata(self.filename)
                 self.mimetype = metadata[0].get("File:MIMEType", None)
                 self._detect_pdf_a(metadata[0])
         except exiftool.exceptions.ExifToolExecuteError:

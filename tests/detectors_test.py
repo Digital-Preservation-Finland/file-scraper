@@ -219,7 +219,7 @@ def test_detectors(detector_class, change_dict):
     """
     for filename, expected_mimetype, _ in get_files(well_formed=True):
 
-        detector = detector_class(filename)
+        detector = detector_class(Path(filename))
         detector.detect()
 
         format_name = filename.replace('tests/data/', '')
