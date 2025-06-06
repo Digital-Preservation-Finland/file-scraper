@@ -289,7 +289,7 @@ class Scraper:
             grade = UNAV
 
         else:
-            grades = [grader(self).grade()
+            grades = [grader(self.mimetype, self.version, self.streams).grade()
                       for grader in iter_graders()
                       if grader.is_supported(self.mimetype)]
 
