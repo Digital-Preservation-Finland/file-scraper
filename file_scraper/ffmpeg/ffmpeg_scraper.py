@@ -226,10 +226,8 @@ class FFMpegScraper(FFMpegMetaScraper):
 
     def _validate_file(self):
         """Validate A/V file"""
-        shell = Shell(["ffmpeg", "-v", "error", "-i",
-                       self.filename,
-                       "-max_muxing_queue_size", "1024",
-                       "-f", "null", "-"])
+        shell = Shell(["ffmpeg", "-v", "error", "-max_muxing_queue_size",
+                       "1024", "-f", "null", "-", "-i", self.filename])
 
         if shell.returncode == 0:
             self._messages.append(
