@@ -63,14 +63,14 @@ def config_filecmd_env():
     # TODO: LD_LIBRARY_PATH is technically unnecessary; our file-5.45 RPM
     # package sets the correct library path in the binary itself
     if os.path.isfile(filecmd_path) and os.path.isfile(_magic_dir):
-        return (filecmd_path, {"LD_LIBRARY_PATH": _magic_dir})
+        return filecmd_path
 
     if os.path.isfile(filecmd_path) and \
             os.path.isfile(_magic_dir.replace("lib64", "lib")):
         _magic_dir = _magic_dir.replace("lib64", "lib")
-        return (filecmd_path, {"LD_LIBRARY_PATH": _magic_dir})
+        return filecmd_path
 
-    return ("file", {})
+    return "file"
 
 
 def magic_library_path():

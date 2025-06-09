@@ -5,9 +5,7 @@
    system default file command is selected.
 """
 import ctypes
-
-from file_scraper.shell import Shell
-from file_scraper.config import config_filecmd_env, magic_library_path
+from file_scraper.paths import resolve_path_from_config
 
 
 def file_command(filename, parameters=None):
@@ -19,9 +17,8 @@ def file_command(filename, parameters=None):
     """
     if parameters is None:
         parameters = []
-    (filecmd_path, magic_env) = config_filecmd_env()
-    return Shell([filecmd_path] + parameters + [filename],
-                 env=magic_env)
+    return Shell([resolve_path(SOFTWARE_LOCATIONS["FILE"])]
+                 + parameters + [filename])
 
 
 def magic_analyze(magic_lib, magic_type, path):
@@ -44,9 +41,8 @@ def magiclib():
 
     :returns: Magic module
     """
-    magic_file = magic_library_path()
     try:
-        ctypes.cdll.LoadLibrary(magic_file)
+        ctypes.cdll.LoadLibrary(resolve_path_from_config("magiclib"))
     except OSError:
         pass
 

@@ -5,13 +5,14 @@ Tests for magiclib module. This module tests that:
     - magic library is found.
 """
 import file_scraper.magiclib
+from file_scraper.shell import Shell
 
 
 def test_file_command():
     """Test that file command returns a mimetype"""
-    shell = file_scraper.magiclib.file_command(
-        "tests/data/text_plain/valid__utf8_without_bom.txt",
-        ["-be", "soft", "--mime-type"])
+    shell = Shell(["file", "-be", "soft", "--mime-type",
+                   "tests/data/text_plain/valid__utf8_without_bom.txt"])
+
     assert 'text/plain' in shell.stdout
     assert shell.stderr == ""
     assert shell.returncode == 0
