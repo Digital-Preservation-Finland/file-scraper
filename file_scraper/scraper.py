@@ -39,13 +39,11 @@ class Scraper:
         :filename: File path
         :kwargs: Extra arguments for certain scrapers.
         """
-        if not isinstance(filename, (str, bytes, os.PathLike)):
-            raise TypeError("Expected a PathLike type as filename.")
+        try:
+            self.filename = Path(os.fsdecode(filename))
+        except TypeError as exc:
+            raise TypeError("Expected a PathLike type as filename.") from exc
 
-        filename = os.fsdecode(filename)
-        filename = Path(filename)
-
-        self.filename: Path = filename
         self.mimetype = None
         self.version = None
         self.streams = None
