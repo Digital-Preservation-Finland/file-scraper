@@ -1,18 +1,11 @@
 """Office file scraper."""
-import os
+
 import shutil
 import tempfile
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.office.office_model import OfficeMeta
-from file_scraper.config import get_value
-
-
-def _choose_cmd():
-    if os.path.isfile(get_value("SOFFICE_PATH")):
-        return get_value("SOFFICE_PATH")
-    return "soffice"
 
 
 class OfficeScraper(BaseScraper):
@@ -28,8 +21,9 @@ class OfficeScraper(BaseScraper):
         try:
             env = {"HOME": temp_dir}
             shell = Shell([
-                _choose_cmd(), "--convert-to", "pdf", "--outdir",
-                temp_dir, self.filename], env=env)
+                "soffice", "--convert-to",
+                "pdf", "--outdir", temp_dir, self.filename
+                ], env=env)
             if shell.stderr:
                 self._errors.append(shell.stderr)
             if shell.returncode != 0:
@@ -52,7 +46,7 @@ class OfficeScraper(BaseScraper):
 
         :returns: a dictionary with the used software or UNAV.
         """
-        version_shell = Shell([_choose_cmd(), "--version"])
+        version_shell = Shell(["soffice", "--version"])
         return {
             "libreoffice": {
                 "version": version_shell.stdout.split(" ")[1]
