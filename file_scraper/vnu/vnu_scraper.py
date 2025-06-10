@@ -5,7 +5,6 @@ import re
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
-from file_scraper.config import get_value
 from file_scraper.vnu.vnu_model import VnuMeta
 from file_scraper.defaults import UNAV
 
@@ -21,9 +20,8 @@ class VnuScraper(BaseScraper):
         filterfile = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                   'vnu_filters.txt')
         shell = Shell([
-            "java", "-jar", get_value("VNU_PATH"), "--verbose",
-            "--filterfile", filterfile,
-            self.filename])
+                "vnu", "--verbose", "--filterfile", filterfile, self.filename
+            ])
 
         if shell.stderr:
             self._errors.append(shell.stderr)
@@ -45,8 +43,7 @@ class VnuScraper(BaseScraper):
 
         :returns: a dictionary with the used software or UNAV.
         """
-        tool_shell = Shell(["java", "-jar", get_value("VNU_PATH"),
-                            "--version"])
+        tool_shell = Shell(["vnu", "--version"])
         regex = r"([\d\.]+)"
         try:
             if tool_shell.returncode != 0:
