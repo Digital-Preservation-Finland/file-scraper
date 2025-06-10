@@ -120,7 +120,7 @@ The ``check_wellformed`` option is ``True`` by default and does full file format
 
 As a result the collected metadata and results are in the following instance variables:
 
-    * Path: ``scraper.filename``
+    * Path: ``scraper.path``
     * File format: ``scraper.mimetype``
     * Format version: ``scraper.version``
     * Metadata of the streams: ``scraper.streams``

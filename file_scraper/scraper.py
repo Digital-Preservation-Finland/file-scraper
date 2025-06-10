@@ -40,7 +40,7 @@ class Scraper:
         :kwargs: Extra arguments for certain scrapers.
         """
         try:
-            self.filename = Path(os.fsdecode(filename))
+            self.path = Path(os.fsdecode(filename))
         except TypeError as exc:
             raise TypeError("Expected a PathLike type as filename.") from exc
 
@@ -60,6 +60,15 @@ class Scraper:
         if self._params.get("version", None) not in LOSE:
             self._predefined_version = self._params.get("version", None)
 
+    @property
+    def filename(self) -> bytes:
+        """Return file path as byte string.
+
+        This maintains backwards compatibility for tools expecting file path
+        as string. `path` should be preferred instead for newer code.
+        """
+        return os.fsencode(self.path)
+
     def _identify(self):
         """Identify file format and version.
         """
@@ -70,12 +79,12 @@ class Scraper:
         self._params["detected_version"] = UNAV
 
         for detector in iter_detectors():
-            tool = detector(self.filename, _mime, _version)
+            tool = detector(self.path, _mime, _version)
             self._update_filetype(tool)
 
         if MagicCharset.is_supported(self._predefined_mimetype) and \
                 self._params.get("charset", None) is None:
-            charset_detector = MagicCharset(self.filename)
+            charset_detector = MagicCharset(self.path)
             charset_detector.detect()
             self._params["charset"] = charset_detector.charset
 
@@ -84,7 +93,7 @@ class Scraper:
         # Files predefined as tiff will be scrutinized further to check if they
         # are dng files in order to return the correct mimetype and version
         if self._predefined_mimetype in ("image/tiff", "application/pdf"):
-            exiftool_detector = ExifToolDetector(self.filename)
+            exiftool_detector = ExifToolDetector(self.path)
             self._update_filetype(exiftool_detector)
 
     def _update_filetype(self, tool):
@@ -146,7 +155,7 @@ class Scraper:
             return
         if "charset" in self.streams[0] and \
                 self.streams[0]["charset"] == "UTF-8":
-            scraper = JHoveUtf8Scraper(filename=self.filename,
+            scraper = JHoveUtf8Scraper(filename=self.path,
                                        mimetype=UNAV)
             self._scrape_file(scraper, True)
 
@@ -160,7 +169,7 @@ class Scraper:
         if self._params.get("version", None) not in LOSE:
             version = self._params.get("version", None)
         scraper = MimeMatchScraper(
-            filename=self.filename,
+            filename=self.path,
             mimetype=self._predefined_mimetype,
             version=version,
             params={"mimetype": self.mimetype,
@@ -176,7 +185,7 @@ class Scraper:
         :check_wellformed: Whether full scraping is used or not.
         """
         scraper = ResultsMergeScraper(
-            filename=self.filename,
+            filename=self.path,
             mimetype=self._predefined_mimetype,
             version=self._predefined_version,
             params=self._params)
@@ -202,7 +211,7 @@ class Scraper:
                 version=self._predefined_version,
                 check_wellformed=check_wellformed, params=self._params):
             scraper = scraper_class(
-                filename=self.filename,
+                filename=self.path,
                 mimetype=self._predefined_mimetype,
                 version=self._predefined_version,
                 params=self._params)
@@ -243,7 +252,7 @@ class Scraper:
         if self._params.get("version", None) not in LOSE:
             self._predefined_version = self._params.get("version", None)
 
-        file_exists = FileExists(self.filename, None)
+        file_exists = FileExists(self.path, None)
         self._scrape_file(file_exists, True)
         if file_exists.well_formed is False:
             self._file_exists = False
@@ -259,7 +268,7 @@ class Scraper:
 
         :returns: True, if file is a text file, false otherwise
         """
-        scraper = TextfileScraper(self.filename, "text/plain")
+        scraper = TextfileScraper(self.path, "text/plain")
         scraper.scrape_file()
         if scraper.well_formed is False:
             return False
@@ -272,7 +281,7 @@ class Scraper:
         :algorithm: MD5 or SHA variant
         :returns: Calculated checksum
         """
-        return hexdigest(self.filename, algorithm)
+        return hexdigest(self.path, algorithm)
 
     def grade(self):
         """Return digital preservation grade."""
