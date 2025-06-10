@@ -10,7 +10,7 @@ from lxml import etree
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
-from file_scraper.config import get_value
+from file_scraper.paths import resolve_path, SoftwareLocation
 from file_scraper.defaults import UNAV
 from file_scraper.schematron.schematron_model import SchematronMeta
 from file_scraper.utils import hexdigest, ensure_text
@@ -147,12 +147,14 @@ class SchematronScraper(BaseScraper):
         :outputfilter: Use outputfilter parameter with value only_messages
         :return: Shell instance
         """
-        cmd = ["xsltproc", "--maxdepth", "20000"]
+        schematron_dir_path = resolve_path(SoftwareLocation.SCHEMATRON_DIR)
+        cmd = [resolve_path(SoftwareLocation.XMLTPROC),
+               "--maxdepth", "20000"]
         if outputfile:
             cmd = cmd + ["-o", outputfile]
         if outputfilter and not self._verbose:
             cmd = cmd + ["--stringparam", "outputfilter", "only_messages"]
-        cmd = cmd + [os.path.join(get_value("SCHEMATRON_DIRNAME"), stylesheet),
+        cmd = cmd + [os.path.join(schematron_dir_path, stylesheet),
                      os.fsencode(inputfile)]
         shell = Shell(cmd)
         if shell.returncode not in allowed_codes:
@@ -235,7 +237,8 @@ class SchematronScraper(BaseScraper):
 
         :returns: a dictionary with the used software or UNAV.
         """
-        tool_shell = Shell(["xsltproc", "--version"])
+        tool_shell = Shell([resolve_path(SoftwareLocation.XMLTPROC),
+                            "--version"])
         regexes = [r"libxml ", r"libxslt ", r"libexslt "]
         versions = []
         for regex in regexes:

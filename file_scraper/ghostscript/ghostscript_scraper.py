@@ -8,7 +8,7 @@ import shutil
 import re
 
 from file_scraper.base import BaseScraper
-from file_scraper.config import get_value
+from file_scraper.paths import resolve_path, SoftwareLocation
 from file_scraper.ghostscript.ghostscript_model import GhostscriptMeta
 from file_scraper.shell import Shell
 from file_scraper.utils import ensure_text
@@ -24,7 +24,7 @@ class GhostscriptScraper(BaseScraper):
 
     def scrape_file(self):
         """Scrape file."""
-        gs_path = get_value("GHOSTSCRIPT_PATH")
+        gs_path = resolve_path(SoftwareLocation.GHOSTSCRIPT)
         if not gs_path and shutil.which("gs"):
             gs_path = shutil.which("gs")
         shell = Shell([
@@ -80,10 +80,8 @@ class GhostscriptScraper(BaseScraper):
 
         :returns: a dictionary with the used software or UNAV.
         """
-        gs_path = get_value("GHOSTSCRIPT_PATH")
-        if not gs_path and shutil.which("gs"):
-            gs_path = shutil.which("gs")
-        version_shell = Shell([gs_path, "-version"])
+        version_shell = Shell([resolve_path(SoftwareLocation.GHOSTSCRIPT),
+                               "-version"])
         regex = r"Ghostscript ([\d\.]+)"
         try:
             version = next(
