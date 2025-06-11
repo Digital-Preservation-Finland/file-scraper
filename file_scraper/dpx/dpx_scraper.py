@@ -12,19 +12,10 @@ class DpxScraper(BaseScraper):
     _supported_metadata = [DpxMeta]
     _only_wellformed = True
 
-    @property
-    def _dpxv(self):
-        """Return matching dpxv command current Python version.
-
-        :returns: Path to dpxv command
-
-        """
-        return "/usr/bin/dpxv-3"
-
     def scrape_file(self):
         """Scrape DPX."""
 
-        shell = Shell([self._dpxv, self.filename])
+        shell = Shell(["dpxv-3", self.filename])
 
         if shell.returncode != 0:
             self._errors.append(
