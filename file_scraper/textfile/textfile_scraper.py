@@ -6,8 +6,6 @@ from file_scraper.defaults import UNAV
 from file_scraper.exceptions import (ForbiddenCharacterError,
                                      UnknownEncodingError)
 from file_scraper.shell import Shell
-from file_scraper.config import config_filecmd_env
-from file_scraper.magiclib import file_command
 from file_scraper.utils import iter_utf_bytes
 from file_scraper.textfile.textfile_model import (TextFileMeta,
                                                   TextEncodingMeta)
@@ -44,8 +42,7 @@ class TextfileScraper(BaseScraper):
 
         :returns: file mimetype
         """
-        params = ["-be", "soft", "--mime-type"]
-        shell = file_command(self.filename, params)
+        shell = Shell(["file", "-be", "soft", "--mime-type", self.filename])
         if shell.stderr:
             self._errors.append(shell.stderr)
 
@@ -85,8 +82,7 @@ class TextfileScraper(BaseScraper):
 
         :returns: a dictionary with the used software or UNAV.
         """
-        filecmd_path = config_filecmd_env()
-        tool_scraper = Shell([filecmd_path, "--version"])
+        tool_scraper = Shell(["file", "--version"])
         return {"file": {"version": tool_scraper.stdout.split("\n")[0][5:]}}
 
 

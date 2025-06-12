@@ -22,7 +22,7 @@ from pathlib import Path
 import pytest
 
 from file_scraper.defaults import UNAP, UNAV
-from file_scraper.magiclib import file_command
+from file_scraper.shell import Shell
 from file_scraper.textfile.textfile_scraper import (TextfileScraper,
                                                     TextEncodingScraper,
                                                     TextEncodingMetaScraper)
@@ -33,9 +33,10 @@ INVALID_MSG = "is not a text file"
 
 
 def _new_file_version(version):
-    """Check whether version of file command is given version or newer.
     """
-    shell = file_command("", ["--version"])
+    Check whether version of file command is given version or newer.
+    """
+    shell = Shell(["file", "--version"])
     ver = float(shell.stdout.split("\n")[0][len("file-"):])
     return True if ver >= version else False
 
