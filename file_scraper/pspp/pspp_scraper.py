@@ -9,7 +9,6 @@ from io import open as io_open
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.defaults import UNAV
-from file_scraper.config import get_value
 from file_scraper.pspp.pspp_model import PsppMeta
 
 SPSS_PORTABLE_HEADER = b"SPSS PORT FILE"
@@ -36,7 +35,7 @@ class PsppScraper(BaseScraper):
 
         try:
             shell = Shell([
-                get_value("PSPP_PATH"),
+                "pspp-convert",
                 self.filename,
                 temp_file
             ])
@@ -65,7 +64,7 @@ class PsppScraper(BaseScraper):
 
         :returns: a dictionary with the used software or UNAV.
         """
-        tool_shell = Shell([get_value("PSPP_PATH"), "--version"])
+        tool_shell = Shell(["pspp-convert", "--version"])
 
         regex = r"\(GNU PSPP\) ([\d\.]+)"
         try:
