@@ -126,6 +126,7 @@ import pytest
 
 from file_scraper.shell import Shell
 from file_scraper.defaults import UNAV
+from file_scraper.paths import resolve_command
 from file_scraper.jhove.jhove_scraper import (JHoveAiffScraper,
                                               JHoveDngScraper,
                                               JHoveEpubScraper,
@@ -216,8 +217,9 @@ def test_old_namespace(filename, result_dict, evaluate_scraper, monkeypatch):
         Replace new OPF namespace with old Harvard one.
         """
         mock_output = self.popen()["stdout"]
-
-        if self.command[0:4] == ["jhove", "-h", "XML", "-m"]:
+        # Shell uses resolve_command so to mock Shell output realistically
+        # Need to use the resolve_command function here.
+        if self.command[0:4] == [resolve_command("jhove"), "-h", "XML", "-m"]:
             assert (b"http://schema.openpreservation.org/ois/xml/ns/jhove" in
                     mock_output)
             mock_output = mock_output.replace(

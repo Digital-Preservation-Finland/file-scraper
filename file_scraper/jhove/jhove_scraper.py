@@ -41,9 +41,9 @@ class JHoveScraperBase(BaseScraper):
 
     def scrape_file(self):
         """Run JHove command and store XML output to self.report."""
-        exec_cmd = ["jhove", "-h", "XML", "-m",
-                    self._jhove_module, self.filename]
-        shell = Shell(exec_cmd)
+
+        shell = Shell(["jhove", "-h",
+                       "XML", "-m", self._jhove_module, self.filename])
 
         if shell.returncode != 0:
             self._errors.append(
