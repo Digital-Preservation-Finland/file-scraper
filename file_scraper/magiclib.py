@@ -8,19 +8,6 @@ import ctypes
 from file_scraper.paths import resolve_path_from_config
 
 
-def file_command(filename, parameters=None):
-    """Use file command in shell.
-
-    :filename: Filename for the file command.
-    :parameters: Parameter list for the file command.
-    :returns: Shell class
-    """
-    if parameters is None:
-        parameters = []
-    return Shell([resolve_path(SOFTWARE_LOCATIONS["FILE"])]
-                 + parameters + [filename])
-
-
 def magic_analyze(magic_lib, magic_type, path):
     """Analyze file with given magic module.
 
