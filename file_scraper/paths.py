@@ -1,9 +1,9 @@
 """
 Path configuration of file-scraper.
 
-The paths used by national Digital Preservation Services are located inside
-the configuration file:
-'/etc/file-scraper/file-scraper.conf'
+Configuration:
+    The paths used by national Digital Preservation Services are located inside
+    the configuration file in: '/etc/file-scraper/file-scraper.conf'
 
     It is also possible to use another configuration file by setting the
     environment variable 'FILE_SCRAPER_CONFIG'. (when using another
@@ -54,8 +54,8 @@ def resolve_command(command: str) -> str:
 
     :raises: NameError if the command cannot be found.
 
-    :returns: path of the executable or
-    another path specified by the configuration file
+    :returns: path specified by the configuration file or the path of the
+    executable.
     """
 
     path_found = _find_from_config("COMMANDS", command)
