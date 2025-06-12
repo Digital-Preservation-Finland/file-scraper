@@ -5,11 +5,9 @@ try:
 except ImportError:
     pass
 
-import shutil
 import re
 
 from file_scraper.base import BaseScraper
-from file_scraper.config import get_value
 from file_scraper.shell import Shell
 from file_scraper.defaults import UNAV
 from file_scraper.verapdf.verapdf_model import VerapdfMeta
@@ -37,12 +35,9 @@ class VerapdfScraper(BaseScraper):
 
         :raises: VeraPDFError
         """
-        verapdf_loc = get_value("VERAPDF_PATH")
-        if not verapdf_loc and shutil.which("verapdf"):
-            verapdf_loc = shutil.which("verapdf")
         # --nonpdfext flag allows also files without the .pdf extension
-        cmd = [verapdf_loc, self.filename, "--nonpdfext"]
-        shell = Shell(cmd)
+        shell = Shell(["verapdf",
+                      self.filename, "--nonpdfext"])
 
         if shell.returncode not in OK_CODES:
             self._errors.append(
@@ -94,10 +89,7 @@ class VerapdfScraper(BaseScraper):
 
         :returns: a dictionary with the used software or UNAV.
         """
-        verapdf_loc = get_value("VERAPDF_PATH")
-        if not verapdf_loc and shutil.which("verapdf"):
-            verapdf_loc = shutil.which("verapdf")
-        tool_shell = Shell([verapdf_loc, "--version"])
+        tool_shell = Shell(["verapdf", "--version"])
 
         """
         Find verPDF string and capture a group after it containing
