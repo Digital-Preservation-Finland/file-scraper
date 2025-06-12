@@ -30,12 +30,8 @@ class DbptkScraper(BaseScraper):
         """Scrape file using dbptk."""
         # Set $PATH so that Java 8 is favored if it's installed
 
-        shell = Shell([
-            "dbptk",
-            "validate",
-            "-if",
-            self.filename
-        ], env={"PATH": self._path})
+        shell = Shell(["dbptk", "validate", "-if",
+                       self.filename], env={"PATH": self._path})
 
         report = shell.stdout
 
