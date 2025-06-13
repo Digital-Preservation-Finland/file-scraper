@@ -5,13 +5,14 @@ import subprocess
 import pty
 
 from file_scraper.utils import ensure_text
+from file_scraper.paths import resolve_command
 
 
 class Shell:
     """Shell command handler for non-Python 3rd party software."""
 
-    def __init__(self, command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                 use_pty=False, env=None):
+    def __init__(self, command: list, stdout=subprocess.PIPE,
+                 stderr=subprocess.PIPE, use_pty=False, env=None):
         """
         Initialize instance.
 
@@ -21,6 +22,8 @@ class Shell:
                          will require this.
         :param env: Environment variables
         """
+        resolved_path = resolve_command(command.pop(0))
+        command.insert(0, resolved_path)
         self.command = command
 
         self._stdout = None
