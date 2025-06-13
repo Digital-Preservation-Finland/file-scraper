@@ -280,4 +280,4 @@ class Scraper:
 
     def grade(self):
         """Return digital preservation grade."""
-        return graders.grade(self.mimetype,self.version,self.streams)
+        return graders.grade(self.mimetype, self.version, self.streams)
