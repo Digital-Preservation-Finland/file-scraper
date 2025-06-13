@@ -10,7 +10,7 @@ from lxml import etree
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
-from file_scraper.paths import resolve_path, SoftwareLocation
+from file_scraper.paths import resolve_path_from_config
 from file_scraper.defaults import UNAV
 from file_scraper.schematron.schematron_model import SchematronMeta
 from file_scraper.utils import hexdigest, ensure_text
@@ -147,9 +147,8 @@ class SchematronScraper(BaseScraper):
         :outputfilter: Use outputfilter parameter with value only_messages
         :return: Shell instance
         """
-        schematron_dir_path = resolve_path(SoftwareLocation.SCHEMATRON_DIR)
-        cmd = [resolve_path(SoftwareLocation.XMLTPROC),
-               "--maxdepth", "20000"]
+        dir_path = resolve_path_from_config("schematron_dir")
+        cmd = ["xsltproc", "--maxdepth", "20000"]
         if outputfile:
             cmd = cmd + ["-o", outputfile]
         if outputfilter and not self._verbose:
@@ -237,7 +236,7 @@ class SchematronScraper(BaseScraper):
 
         :returns: a dictionary with the used software or UNAV.
         """
-        tool_shell = Shell([resolve_path(SoftwareLocation.XMLTPROC),
+        tool_shell = Shell(["xsltproc",
                             "--version"])
         regexes = [r"libxml ", r"libxslt ", r"libexslt "]
         versions = []
