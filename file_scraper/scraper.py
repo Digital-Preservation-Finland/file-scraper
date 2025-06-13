@@ -3,18 +3,13 @@ import os
 from pathlib import Path
 from typing import Union
 
-from file_scraper.defaults import (
-    ACCEPTABLE,
-    BIT_LEVEL,
-    BIT_LEVEL_WITH_RECOMMENDED,
-    RECOMMENDED,
-    UNACCEPTABLE,
-    UNAV
-)
+from dpres_file_formats import graders
+
+from file_scraper.defaults import UNAV
 from file_scraper.detectors import (MagicCharset, ExifToolDetector)
 from file_scraper.dummy.dummy_scraper import (FileExists, MimeMatchScraper,
                                               ResultsMergeScraper)
-from file_scraper.iterator import iter_detectors, iter_graders, iter_scrapers
+from file_scraper.iterator import iter_detectors, iter_scrapers
 from file_scraper.jhove.jhove_scraper import JHoveUtf8Scraper
 from file_scraper.textfile.textfile_scraper import TextfileScraper
 from file_scraper.utils import hexdigest
@@ -285,36 +280,4 @@ class Scraper:
 
     def grade(self):
         """Return digital preservation grade."""
-        if not self.mimetype or self.mimetype == UNAV:
-            grade = UNAV
-
-        else:
-            grades = [grader(self.mimetype, self.version, self.streams).grade()
-                      for grader in iter_graders()
-                      if grader.is_supported(self.mimetype)]
-
-            # If no graders support the MIME type, we don't know anything
-            # about the MIME type and therefore can not accept it
-            if not grades:
-                return UNACCEPTABLE
-
-            # Multiple grades might be returned. For example, Grader (which
-            # only performs a quick MIME type check) might grade the main file
-            # format as RECOMMENDED, while ContainerStreamsGrader might give it
-            # a lower grade because the contained streams do not fulfill the
-            # additional requirements.
-            #
-            # In such cases, pick the lowest assigned grade.
-            grade = next(
-                grade for grade in
-                (
-                    UNACCEPTABLE,
-                    BIT_LEVEL,
-                    BIT_LEVEL_WITH_RECOMMENDED,
-                    ACCEPTABLE,
-                    RECOMMENDED
-                )
-                if grade in grades
-            )
-
-        return grade
+        return graders.grade(self.mimetype,self.version,self.streams)
