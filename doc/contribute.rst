@@ -20,20 +20,6 @@ See ``<scraper info X>`` from `README.rst <../README.rst>`_ for the content of t
 
 .. image:: scraper_tree.png
 
-Graders
--------
-
-Graders are used to assign a digital preservation grade for a file that has been scraped, and define if the file is suitable for digital preservation.
-Graders are defined in ``./file_scraper/graders.py``.
-
-The graders inherit ``BaseGrader``, which exposes the following methods:
-
-    * MUST call ``super()`` during initialization, if separate initialization method is created.
-    * MUST implement ``is_supported(mimetype)`` to determine whether to grade the given file based on its MIME type.
-    * MUST implement ``grade()`` to perform the actual grading and return the grade. The returned grade must be one of the grade constants defined in ``file_scraper.DEFAULTS``.
-
-Each grader instance contains the ``mimetype``, ``version``, ``streams`` and ``scraper`` attributes that can be used to inspect the file and perform the grading.
-
 Scraper tools
 -------------
 
