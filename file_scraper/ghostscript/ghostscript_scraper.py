@@ -4,7 +4,6 @@ Metadata scraper for pdf files, based on Ghostscript.
 This scraper does not scrape metadata but instead checks well-formedness of pdf
 versions 1.7, A-2a, A-2b, A-2u, A-3a, A-3b and A-3u.
 """
-import shutil
 import re
 
 from file_scraper.base import BaseScraper

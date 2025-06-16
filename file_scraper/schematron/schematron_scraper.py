@@ -153,7 +153,7 @@ class SchematronScraper(BaseScraper):
             cmd = cmd + ["-o", outputfile]
         if outputfilter and not self._verbose:
             cmd = cmd + ["--stringparam", "outputfilter", "only_messages"]
-        cmd = cmd + [os.path.join(schematron_dir_path, stylesheet),
+        cmd = cmd + [os.path.join(dir_path, stylesheet),
                      os.fsencode(inputfile)]
         shell = Shell(cmd)
         if shell.returncode not in allowed_codes:

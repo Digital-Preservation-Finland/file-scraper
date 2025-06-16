@@ -76,7 +76,7 @@ def resolve_path_from_config(config_name):
     """
     Resolves section "PATHS" from the configuration file.
 
-    :param path: the path
+    :param config_name: the config name to be searched.
     """
 
     path_found = _find_from_config("PATHS", config_name)
