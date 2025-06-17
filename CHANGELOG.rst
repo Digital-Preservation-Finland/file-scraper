@@ -12,6 +12,10 @@ Added
 ~~~~~
 - Add `Scraper.path` field to access file path as `pathlib.Path` object. `Scraper.filename` remains available for backwards compatibility.
 
+Changed
+~~~~~~~
+- Moved grading to dpres-file-formats
+
 1.0.0 2025-05-27
 ----------------
 
