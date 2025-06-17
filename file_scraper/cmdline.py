@@ -56,7 +56,7 @@ def scrape_file(
     scraper.scrape(check_wellformed=check_wellformed)
 
     results = {
-        "path": str(scraper.filename),
+        "path": str(scraper.path),
         "MIME type": ensure_text(scraper.mimetype),
         "version": ensure_text(scraper.version),
         "metadata": scraper.streams,

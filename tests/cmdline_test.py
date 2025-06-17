@@ -28,7 +28,10 @@ def test_scrape_valid_file():
     runner = CliRunner()
     result = runner.invoke(cli, ["scrape-file", str(file_path)])
     assert result.exit_code == 0
-    assert json.loads(result.stdout)["well-formed"] == True
+
+    data = json.loads(result.stdout)
+    assert data["well-formed"] is True
+    assert data["path"] == str(file_path)
 
 
 def test_scrape_invalid_file():
