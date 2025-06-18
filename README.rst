@@ -200,6 +200,18 @@ The following returns a checksum of the file with given algorithm (MD5 or SHA va
 
     scraper.checksum(algorithm=<algorithm>)
 
+Developer Testing
+-----------------
+
+file scraper can be tested using the pytest library by using the command:
+
+    ``pytest``
+
+the tests are located in the ``tests``` directory. The content of the directory generally attempts follow the same structure as the project itself
+the data used by the tests are defined in two locations ``data``` and ``config```.
+The ``data`` folder includes test data for scrapers to test agains and the ``config`` includes custom configuration data required by tests.
+
+Currently tests are quite slow and take time to run. Currently around 30 minutes, but the test time can be halved to 15 minutes by leaving out the end to end tests.
 
 Command line tool
 -----------------

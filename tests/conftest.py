@@ -12,6 +12,15 @@ from file_scraper.utils import metadata
 # pylint: disable=redefined-outer-name
 
 
+@pytest.fixture(autouse=True)
+def set_config():
+    """
+    Set the correct environment variable for tests
+    The content of environment variables are defined in the config folder.
+    """
+    os.environ["FILE_SCRAPER_CONFIG"] = "tests/config/file-scraper-duplicate.conf"
+
+
 @pytest.fixture(scope="function")
 def fido_cache_halting_file(tmpdir):
     """File that originally halted the FidoReader due to caching mistake.
