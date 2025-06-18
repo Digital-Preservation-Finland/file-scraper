@@ -17,8 +17,6 @@ from file_scraper.defaults import (MIMETYPE_DICT, PRIORITY_PRONOM, PRONOM_DICT,
 from file_scraper.utils import is_zipfile, normalize_charset
 from file_scraper.magiclib import magiclib, magic_analyze, magiclib_version
 
-MAGIC_LIB = magiclib()
-
 
 class _FidoCachedFormats(Fido):
     """Class whose sole purpose is to override one of the default function
@@ -209,6 +207,7 @@ class MagicDetector(BaseDetector):
 
     def detect(self):
         """Detect mimetype."""
+        MAGIC_LIB = magiclib()
         mimetype = magic_analyze(MAGIC_LIB, MAGIC_LIB.MAGIC_MIME_TYPE,
                                  self.filename)
         if mimetype in MIMETYPE_DICT:
@@ -322,8 +321,8 @@ class MagicCharset(BaseDetector):
     def detect(self):
         """Detect charset with MagicLib. A charset is detected from up to
         1 megabytes of data from the beginning of file."""
-        charset = magic_analyze(MAGIC_LIB,
-                                MAGIC_LIB.MAGIC_MIME_ENCODING,
+        charset = magic_analyze(magiclib(),
+                                magiclib().MAGIC_MIME_ENCODING,
                                 self.filename)
 
         if charset is None or charset.upper() == "BINARY":

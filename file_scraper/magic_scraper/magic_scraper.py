@@ -17,8 +17,6 @@ from file_scraper.magic_scraper.magic_model import (TextFileMagicMeta,
                                                     TiffFileMagicMeta,
                                                     GifFileMagicMeta)
 
-MAGIC_LIB = magiclib()
-
 
 class MagicBaseScraper(BaseScraper):
     """Scraper for scraping files using magic."""
@@ -45,6 +43,7 @@ class MagicBaseScraper(BaseScraper):
 
         :returns: Python dict of the three fetched values from magic
         """
+        MAGIC_LIB = magiclib()
         magicdict = {
             "magic_mime_type": MAGIC_LIB.MAGIC_MIME_TYPE,
             "magic_none": MAGIC_LIB.MAGIC_NONE,

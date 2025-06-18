@@ -13,12 +13,13 @@ from file_scraper.utils import metadata
 
 
 @pytest.fixture(autouse=True)
-def set_config():
+def set_config(monkeypatch):
     """
     Set the correct environment variable for tests
     The content of environment variables are defined in the config folder.
     """
-    os.environ["FILE_SCRAPER_CONFIG"] = "tests/config/file-scraper-duplicate.conf"
+    monkeypatch.setenv("FILE_SCRAPER_CONFIG",
+                       "tests/config/file-scraper-duplicate.conf")
 
 
 @pytest.fixture(scope="function")
