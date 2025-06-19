@@ -66,7 +66,7 @@ def resolve_command(command: str) -> str:
 
     # Raise and error if the value cannot be found.
     if path_found is None:
-        raise NameError(f"Configuration path: {command} cannot be found from"
+        raise NameError(f"Configuration path: {command} cannot be found from "
                         f"{get_config_path()} or from the path: "
                         f"{os.environ.get('PATH', '')}")
     return path_found
