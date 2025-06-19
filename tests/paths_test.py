@@ -24,8 +24,8 @@ def test_resolve_command_with_edited_configfile():
     assert pspp_exec == "/test/path/test/pspp-convert"
 
     # Executable which is not in the configuration file still found from $PATH
-    gs_exec = resolve_command("gs")
-    assert gs_exec == "/usr/bin/gs"
+    cd_exec = resolve_command("cd")
+    assert cd_exec in ["/usr/bin/cd", "/bin/cd"]
 
 
 @pytest.mark.usefixtures("config_file_fx")
