@@ -128,3 +128,27 @@ def test_mime_type_cases():
     result = runner.invoke(cli, ["scrape-file", "--mimetype", "Application/pdf", str(file_path)])
     assert result.exit_code == 0
     assert json.loads(result.stdout)["well-formed"] == True
+
+
+@pytest.mark.parametrize(
+    "flag,expected_output",
+    [
+        ("-v", "INFO"),
+        ("-vv", "DEBUG")
+    ]
+)
+def test_verbose_flag(flag, expected_output, caplog):
+    """
+    Test that `-v` and `-vv` cause INFO and DEBUG log messages to be printed
+    respectively
+    """
+    file_path = DATA_PATH / "application_pdf/valid_A-1a.pdf"
+
+    try:
+        runner = CliRunner(mix_stderr=False)
+    except TypeError:  # 'mix_stderr' removed in Click 8.2+
+        runner = CliRunner()
+
+    result = runner.invoke(cli, ["scrape-file", flag, str(file_path)])
+
+    assert expected_output in result.stderr

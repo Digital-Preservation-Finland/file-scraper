@@ -4,9 +4,11 @@ Command line interface for file-scraper
 
 
 import json
+import logging
+
 import click
 
-from file_scraper.logger import LOGGER
+from file_scraper.logger import LOGGER, enable_logging
 from file_scraper.scraper import Scraper
 from file_scraper.utils import ensure_text
 
@@ -32,10 +34,17 @@ def cli():
               help="Specify the mimetype of the file")
 @click.option("--version", default=None,
               help="Specify version for the filetype")
+@click.option(
+    "--verbose", "-v", count=True,
+    help=(
+        "Print detailed information about execution. "
+        "Can be provided twice for additional verbosity."
+    )
+)
 @click.pass_context
 def scrape_file(
         ctx, filename, scraper_args, check_wellformed, tool_info, mimetype,
-        version):
+        version, verbose):
     """
     Identify file type, collect metadata, and optionally check well-formedness.
 
@@ -52,6 +61,16 @@ def scrape_file(
     :mimetype: Specified mimetype for the scraped file
     :version: Specified version for the scraped file
     """
+    level = {
+        0: logging.WARNING,
+        1: logging.INFO,
+        2: logging.DEBUG
+    }
+
+    # Enable logging. If flag is provided an additional number of times,
+    # default to the highest possible verbosity.
+    enable_logging(level.get(verbose, logging.DEBUG))
+
     LOGGER.info("Additional scraper args provided: %s", scraper_args)
 
     scraper = Scraper(filename, mimetype=mimetype, version=version,
