@@ -15,6 +15,7 @@ Changed
 Added
 ~~~~~
 - Add `Scraper.path` field to access file path as `pathlib.Path` object. `Scraper.filename` remains available for backwards compatibility.
+- Add `--verbose/-v` command-line flag to enable printing logs. Flag can be provided twice (`-vv`) for maximum verbosity.
 
 Changed
 ~~~~~~~

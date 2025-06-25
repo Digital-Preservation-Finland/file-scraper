@@ -231,6 +231,8 @@ In addition to these specific options, the user can provide any extra options th
 
 The tool will always print out detector/scraper errors if there are any.
 
+For better insight into how file-scraper determines the information for a given file, logging can be enabled with the ``-v`` flag. The flag can be provided twice for additional detail.
+
 
 File type detection without full scraping
 -----------------------------------------
