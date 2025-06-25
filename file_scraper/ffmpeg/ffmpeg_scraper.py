@@ -16,6 +16,7 @@ from file_scraper.shell import Shell
 from file_scraper.ffmpeg.ffmpeg_model import FFMpegSimpleMeta, FFMpegMeta
 from file_scraper.utils import ensure_text
 from file_scraper.defaults import UNAV
+from file_scraper.logger import LOGGER
 
 try:
     import ffmpeg
@@ -163,6 +164,10 @@ class FFMpegMetaScraper(BaseScraper):
                 re.finditer(regex, tool_shell.stdout, re.MULTILINE)
                 ).groups()[0]
         except StopIteration:
+            LOGGER.warning(
+                "Could not retrieve ffmpeg version from stdout: %s",
+                tool_shell.stdout
+            )
             version = UNAV
         return {"ffmpeg": {"version": version}}
 
@@ -270,10 +275,13 @@ def _filter_stderr(errors):
         if not line:
             continue
         if "jpeg2000" in line and "bpno became negative" in line:
+            LOGGER.debug("Filtering 'bpno became negative'")
             continue
         if "jpeg2000" in line and "bpno became invalid" in line:
+            LOGGER.debug("Filtering 'bpno became invalid'")
             continue
         if repeat.match(line.strip()):
+            LOGGER.debug("Filtering 'Last message repeated ... times'")
             continue
         constructed_string = constructed_string + line + "\n"
     return constructed_string

@@ -8,6 +8,7 @@ except ImportError:
 import re
 
 from file_scraper.base import BaseScraper
+from file_scraper.logger import LOGGER
 from file_scraper.shell import Shell
 from file_scraper.defaults import UNAV
 from file_scraper.verapdf.verapdf_model import VerapdfMeta
@@ -101,5 +102,10 @@ class VerapdfScraper(BaseScraper):
                 re.finditer(regex, tool_shell.stdout, re.MULTILINE)
                 ).groups()[0]
         except StopIteration:
+            LOGGER.warning(
+                "Could not find VeraPDF version. stdout: %s, stderr: %s",
+                tool_shell.stdout, tool_shell.stderr,
+                exc_info=True,
+            )
             version = UNAV
         return {"veraPDF": {"version": version}}

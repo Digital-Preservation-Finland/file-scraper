@@ -9,6 +9,7 @@ import re
 from file_scraper.base import BaseScraper
 from file_scraper.ghostscript.ghostscript_model import GhostscriptMeta
 from file_scraper.shell import Shell
+from file_scraper.logger import LOGGER
 from file_scraper.utils import ensure_text
 from file_scraper.defaults import UNAV
 
@@ -82,6 +83,10 @@ class GhostscriptScraper(BaseScraper):
                 re.finditer(regex, version_shell.stdout, re.MULTILINE)
                 ).groups()[0]
         except StopIteration:
+            LOGGER.warning(
+                "Could not retrieve GhostScript version from stdout: %s",
+                version_shell.stdout
+            )
             version = UNAV
 
         return {"Ghostscript": {

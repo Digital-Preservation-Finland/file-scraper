@@ -10,6 +10,7 @@ from pathlib import Path
 
 from file_scraper.defaults import UNAV
 from file_scraper.exceptions import SkipElementException
+from file_scraper.logger import LOGGER
 
 
 def metadata(important=False):
@@ -211,6 +212,11 @@ def _merge_to_stream(stream, method, lose, importants):
         return
 
     if method.is_important:
+        LOGGER.debug(
+            "Stream metadata field '%s' overwritten with important value: "
+            "%s -> %s",
+            method_name, stream[method_name], method_value
+        )
         stream[method_name] = method_value
     elif method_name in importants:
         return
@@ -309,6 +315,9 @@ def generate_metadata_dict(scraper_results, lose):
             # In case of conflicting values, append the error message
             except ValueError as err:
                 conflicts.append(str(err))
+        LOGGER.debug(
+            "Scraper result %s merged to stream: %s", model, current_stream
+        )
 
     return streams, conflicts
 

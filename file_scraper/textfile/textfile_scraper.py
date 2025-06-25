@@ -6,6 +6,7 @@ from file_scraper.defaults import UNAV
 from file_scraper.exceptions import (ForbiddenCharacterError,
                                      UnknownEncodingError)
 from file_scraper.shell import Shell
+from file_scraper.logger import LOGGER
 from file_scraper.utils import iter_utf_bytes
 from file_scraper.textfile.textfile_model import (TextFileMeta,
                                                   TextEncodingMeta)
@@ -305,6 +306,9 @@ class TextEncodingScraper(BaseScraper):
                 return False
             except (ForbiddenCharacterError, UnknownEncodingError):
                 # If ASCII did not work, then charset can be (almost) anything
+                LOGGER.debug(
+                    "Test chunk could not be parsed as ASCII", exc_info=True
+                )
                 pass
 
         # If ASCII did not work, but UTF-8 works, then we quite probably have
@@ -313,6 +317,9 @@ class TextEncodingScraper(BaseScraper):
             self._decode_chunk(chunk, "UTF-8", position)
         except (ForbiddenCharacterError, UnknownEncodingError):
             # If it was not UTF-8, then we have to believe the given charset
+            LOGGER.debug(
+                "Test chunk could not be parsed as UTF-8", exc_info=True
+            )
             return False
         return True
 

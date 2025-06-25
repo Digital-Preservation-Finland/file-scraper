@@ -5,6 +5,7 @@ import re
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
+from file_scraper.logger import LOGGER
 from file_scraper.vnu.vnu_model import VnuMeta
 from file_scraper.defaults import UNAV
 
@@ -52,6 +53,10 @@ class VnuScraper(BaseScraper):
                 re.finditer(regex, tool_shell.stdout, re.MULTILINE)
                 ).groups()[0]
         except StopIteration:
+            LOGGER.warning(
+                "Could not retrieve VNU version from stdout: %s",
+                tool_shell.stdout
+            )
             version = UNAV
 
         return {

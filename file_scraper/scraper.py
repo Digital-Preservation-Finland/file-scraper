@@ -13,6 +13,7 @@ from file_scraper.iterator import iter_detectors, iter_scrapers
 from file_scraper.jhove.jhove_scraper import JHoveUtf8Scraper
 from file_scraper.textfile.textfile_scraper import TextfileScraper
 from file_scraper.utils import hexdigest
+from file_scraper.logger import LOGGER
 
 LOSE = (None, UNAV, "")
 
@@ -74,6 +75,7 @@ class Scraper:
         self._params["detected_version"] = UNAV
 
         for detector in iter_detectors():
+            LOGGER.info("Detecting file type using %s", detector.__name__)
             tool = detector(self.path, _mime, _version)
             self._update_filetype(tool)
 
@@ -102,6 +104,13 @@ class Scraper:
         :tool: Detector tool
         """
         tool.detect()
+        LOGGER.debug(
+            "%s detected MIME type: %s, version: %s, important: %s, "
+            "well-formed: %s",
+            tool.__class__.__name__, tool.mimetype, tool.version,
+            tool.get_important(), tool.well_formed
+        )
+
         if tool.well_formed is False:
             self.well_formed = False
         self.info[len(self.info)] = tool.info()
@@ -113,14 +122,33 @@ class Scraper:
             self._predefined_version = tool.version
         if "mimetype" in important and \
                 important["mimetype"] not in LOSE:
+            LOGGER.info(
+                "Tool provided important value '%s' for MIME type, "
+                "setting pre-defined MIME type",
+                important["mimetype"]
+            )
             self._predefined_mimetype = important["mimetype"]
         if "version" in important and \
                 important["version"] not in LOSE:
+            LOGGER.info(
+                "Tool provided important value '%s' for file format version, "
+                "setting pre-defined version",
+                important["version"]
+            )
             self._predefined_version = important["version"]
         if tool.info()["class"] != "PredefinedDetector" and \
                 self._predefined_mimetype == tool.mimetype and \
                 ("version" in important or
                  self._params["detected_version"] in LOSE):
+            LOGGER.info(
+                "Detected MIME type and version changed. "
+                "MIME type: %s -> %s, version: %s -> %s",
+                self._params["detected_mimetype"],
+                tool.mimetype,
+                self._params["detected_version"],
+                tool.version
+            )
+
             self._params["detected_mimetype"] = tool.mimetype
             self._params["detected_version"] = tool.version
 
@@ -192,10 +220,15 @@ class Scraper:
 
         :check_wellformed: True, full scraping; False, skip well-formed check.
         """
+        LOGGER.info("Scraping %s", self.path)
+
         self.detect_filetype()
 
         # MIME type could not be determined or file was not found.
         if not self._predefined_mimetype or not self._file_exists:
+            LOGGER.info(
+                "MIME type could not be determined or file was not found"
+            )
             self.streams = {}
             self.mimetype = "(:unav)"
             self.version = "(:unav)"
@@ -205,6 +238,8 @@ class Scraper:
                 mimetype=self._predefined_mimetype,
                 version=self._predefined_version,
                 check_wellformed=check_wellformed, params=self._params):
+            LOGGER.info("Scraping with %s", scraper_class.__name__)
+
             scraper = scraper_class(
                 filename=self.path,
                 mimetype=self._predefined_mimetype,

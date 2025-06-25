@@ -18,6 +18,8 @@ from file_scraper.mediainfo.mediainfo_model import (
     UnknownStreamFormatMeta
 )
 from file_scraper.defaults import UNAV
+from file_scraper.logger import LOGGER
+
 
 try:
     import pymediainfo
@@ -63,6 +65,10 @@ class MediainfoScraper(BaseScraper):
         try:
             mediainfo = pymediainfo.MediaInfo.parse(self.filename)
         except Exception as e:  # pylint: disable=invalid-name, broad-except
+            LOGGER.warning(
+                "Error analyzing file %s with MediaInfo",
+                self.filename
+            )
             self._errors.append("Error in analyzing file.")
             self._errors.append(str(e))
             self._check_supported()
@@ -70,6 +76,7 @@ class MediainfoScraper(BaseScraper):
 
         if not self._tracks_ok(mediainfo):
             return
+
         self._messages.append("The file was analyzed successfully.")
 
         for index, track in enumerate(mediainfo.tracks):
@@ -86,6 +93,7 @@ class MediainfoScraper(BaseScraper):
             elif (self._predefined_mimetype == 'audio/x-wav'
                   or file_scraper.mediainfo.track_mimetype(mediainfo.tracks[0])
                   == 'audio/x-wav'):
+                LOGGER.debug("Normalizing MIME type to 'audio/x-wav'")
                 mimetype = 'audio/x-wav'
                 version = None
 
@@ -169,6 +177,10 @@ class MediainfoScraper(BaseScraper):
             lib.MediaInfo_Delete(handle)
 
         except Exception:  # pylint: broad-except
+            LOGGER.warning(
+                "Could not retrieve MediaInfo version due to exception",
+                exc_info=True
+            )
             libmediaversion = UNAV
 
         return {

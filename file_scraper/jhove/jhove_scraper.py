@@ -10,6 +10,7 @@ import re
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.defaults import UNAV
+from file_scraper.logger import LOGGER
 from file_scraper.jhove.jhove_model import (JHoveAiffMeta, JHoveDngMeta,
                                             JHoveEpubMeta, JHoveGifMeta,
                                             JHoveHtmlMeta, JHoveJpegMeta,
@@ -79,6 +80,10 @@ class JHoveScraperBase(BaseScraper):
                 re.finditer(regex_jhove, version_shell.stdout, re.MULTILINE)
                 ).groups()[0]
         except StopIteration:
+            LOGGER.warning(
+                "Could not retrieve JHOVE version from stdout: %s",
+                version_shell.stdout
+            )
             version = UNAV
 
         return {"JHOVE": {

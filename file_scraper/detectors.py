@@ -14,6 +14,7 @@ from fido.pronomutils import get_local_pronom_versions
 from file_scraper.base import BaseDetector
 from file_scraper.defaults import (MIMETYPE_DICT, PRIORITY_PRONOM, PRONOM_DICT,
                                    VERSION_DICT, UNKN, UNAP, UNAV)
+from file_scraper.logger import LOGGER
 from file_scraper.utils import is_zipfile, normalize_charset
 from file_scraper.magiclib import magiclib, magic_analyze, magiclib_version
 
@@ -227,6 +228,9 @@ class MagicDetector(BaseDetector):
                 self.filename
             )
             if analyze == "DIF (DV) movie file (PAL)":
+                LOGGER.info(
+                    "Magic detection overridden to 'video/dv' per manual check"
+                )
                 self.mimetype = "video/dv"
 
     def get_important(self):
@@ -372,6 +376,7 @@ class ExifToolDetector(BaseDetector):
                 self.mimetype = metadata[0].get("File:MIMEType", None)
                 self._detect_pdf_a(metadata[0])
         except exiftool.exceptions.ExifToolExecuteError:
+            LOGGER.info("ExifTool could not process file", exc_info=True)
             self._set_info_exiftool_not_supported()
 
     def _detect_pdf_a(self, metadata):
@@ -433,6 +438,9 @@ class ExifToolDetector(BaseDetector):
             with exiftool.ExifToolHelper() as et:
                 return {"exiftool": {"version": et.version}}
         except exiftool.exceptions.ExifToolExecuteError:
+            LOGGER.warning(
+                "Could not retrieve ExifTool version", exc_info=True
+            )
             return UNAV
 
 
@@ -744,6 +752,7 @@ class ODFDetector(BaseDetector):
             detected_version = version
         else:
             # Unknown format version
+            LOGGER.info("Unknown format version %s", version)
             return
 
         # Both variables were detected, so the file most likely is an
@@ -814,6 +823,10 @@ class EpubDetector(BaseDetector):
                                     '{http://www.idpf.org/2007/opf}package'):
                                 version = root.get('version')
                         except lxml.etree.XMLSyntaxError:
+                            LOGGER.info(
+                                "Ignoring unparseable XML file '%s' in '%s'",
+                                filepath, self.filename
+                            )
                             pass
 
         # Map the valid attribute values to supported versions

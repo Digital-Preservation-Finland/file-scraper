@@ -17,6 +17,7 @@ from file_scraper.base import BaseScraper
 from file_scraper.wand.wand_model import (WandImageMeta, WandTiffMeta,
                                           WandExifMeta, WandWebPMeta)
 from file_scraper.defaults import UNAV
+from file_scraper.logger import LOGGER
 
 try:
     import wand.image
@@ -103,5 +104,9 @@ class WandScraper(BaseScraper):
                 re.finditer(regex, version_str, re.MULTILINE)
                 ).groups()[0]
         except StopIteration:
+            LOGGER.warning(
+                "Could not retrieve Wand version from string %s",
+                version_str
+            )
             version = UNAV
         return {"ImageMagick": {"version": version}}

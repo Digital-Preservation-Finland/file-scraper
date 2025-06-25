@@ -9,6 +9,7 @@ from io import open as io_open
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.defaults import UNAV
+from file_scraper.logger import LOGGER
 from file_scraper.pspp.pspp_model import PsppMeta
 
 SPSS_PORTABLE_HEADER = b"SPSS PORT FILE"
@@ -72,5 +73,9 @@ class PsppScraper(BaseScraper):
                 re.finditer(regex, tool_shell.stdout, re.MULTILINE)
                 ).groups()[0]
         except StopIteration:
+            LOGGER.debug(
+                "Could not parse PSPP version from stdout: %s",
+                tool_shell.stdout
+            )
             version = UNAV
         return {"GNU PSPP": {"version": version}}

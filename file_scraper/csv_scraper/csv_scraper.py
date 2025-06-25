@@ -5,6 +5,7 @@ from io import open as io_open
 
 from file_scraper.base import BaseScraper
 from file_scraper.csv_scraper.csv_model import CsvMeta
+from file_scraper.logger import LOGGER
 
 
 class CsvScraper(BaseScraper):
@@ -43,11 +44,27 @@ class CsvScraper(BaseScraper):
                 # Therefore, sniffing should be skipped totally, if the
                 # characters are given as a parameter.
                 dialect = csv.Sniffer().sniff(csvfile.read(100*1024))
+                LOGGER.debug(
+                    "csv.Sniffer detected dialect with "
+                    "delimiter: %s, line terminator: %s, quotechar: %s",
+                    dialect.delimiter, dialect.lineterminator,
+                    dialect.quotechar
+                )
                 if delimiter is None:
+                    LOGGER.debug(
+                        "Using auto-detected delimeter: %s", dialect.delimiter
+                    )
                     delimiter = dialect.delimiter
                 if separator is None:
+                    LOGGER.debug(
+                        "Using auto-detected separator: %s",
+                        dialect.lineterminator
+                    )
                     separator = dialect.lineterminator
                 if quotechar is None:
+                    LOGGER.debug(
+                        "Using auto-detected quotechar: %s", dialect.quotechar
+                    )
                     quotechar = dialect.quotechar
 
             # Default quotechar according to csv module documentation is '"'.

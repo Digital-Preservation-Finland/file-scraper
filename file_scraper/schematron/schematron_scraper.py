@@ -12,6 +12,7 @@ from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
 from file_scraper.paths import resolve_path_from_config
 from file_scraper.defaults import UNAV
+from file_scraper.logger import LOGGER
 from file_scraper.schematron.schematron_model import SchematronMeta
 from file_scraper.utils import hexdigest, ensure_text
 
@@ -255,6 +256,10 @@ class SchematronScraper(BaseScraper):
                     )
                 )
             except StopIteration:
+                LOGGER.warning(
+                    "Could not retrieve Schematron version from stdout: %s",
+                    tool_shell.stdout
+                )
                 versions.append(UNAV)
         return {"libxml2": {"version": versions[0]},
                 "libxslt": {"version": versions[1]},

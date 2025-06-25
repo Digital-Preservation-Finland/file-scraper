@@ -1,6 +1,7 @@
 """Metadata scraper for image file formats."""
 
 from file_scraper.base import BaseScraper
+from file_scraper.logger import LOGGER
 from file_scraper.pil.pil_model import PngPilMeta, JpegPilMeta, \
     TiffPilMeta, DngPilMeta, Jp2PilMeta, GifPilMeta, WebPPilMeta
 
@@ -45,6 +46,7 @@ class PilScraper(BaseScraper):
                     n_frames = 1
 
         except Exception as e:  # pylint: disable=invalid-name, broad-except
+            LOGGER.warning("Error analyzing file", exc_info=True)
             self._errors.append("Error in analyzing file.")
             self._errors.append(str(e))
             return

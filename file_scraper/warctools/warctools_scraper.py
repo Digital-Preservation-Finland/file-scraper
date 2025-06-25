@@ -6,6 +6,7 @@ from io import open as io_open
 
 from file_scraper.base import BaseScraper
 from file_scraper.defaults import UNAC, UNAV
+from file_scraper.logger import LOGGER
 from file_scraper.shell import Shell
 from file_scraper.warctools.warctools_model import (GzipWarctoolsMeta,
                                                     WarctoolsMeta)
@@ -46,10 +47,14 @@ class WarctoolsScraper(BaseScraper):
             # First assume archive is compressed
             with gzip.open(self.filename) as warc_fd:
                 line = warc_fd.readline()
+                LOGGER.debug("WARC %s is GZIP compressed", self.filename)
         except OSError:
             # Not compressed archive
             with io_open(self.filename, "rb") as warc_fd:
                 line = warc_fd.readline()
+                LOGGER.debug(
+                    "WARC %s is uncompressed", self.filename
+                )
         except Exception as exception:  # pylint: disable=broad-except
             # Compressed but corrupted gzip file
             self._errors.append(str(exception))

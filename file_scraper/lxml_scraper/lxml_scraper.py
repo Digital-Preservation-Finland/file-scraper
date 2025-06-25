@@ -6,6 +6,7 @@ except ImportError:
     pass
 
 from file_scraper.base import BaseScraper
+from file_scraper.logger import LOGGER
 from file_scraper.lxml_scraper.lxml_model import LxmlMeta
 from file_scraper.utils import normalize_charset
 
@@ -112,8 +113,16 @@ class LxmlScraper(BaseScraper):
                 md_model = md_class(**kwargs)
                 try:
                     for method in md_model.iterate_metadata_methods():
+                        LOGGER.debug(
+                            "Testing that method '%s' returns a valid "
+                            "value...",
+                            method.__name__
+                        )
                         method()
                 except Exception:  # pylint: disable=broad-except
+                    LOGGER.info(
+                        "Field did not return a valid value", exc_info=True
+                    )
                     self._errors.append("XML parsing failed: document "
                                         "information could not be gathered.")
                 else:

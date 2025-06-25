@@ -4,8 +4,9 @@ import shutil
 import tempfile
 
 from file_scraper.base import BaseScraper
-from file_scraper.shell import Shell
+from file_scraper.logger import LOGGER
 from file_scraper.office.office_model import OfficeMeta
+from file_scraper.shell import Shell
 
 
 class OfficeScraper(BaseScraper):
@@ -17,6 +18,9 @@ class OfficeScraper(BaseScraper):
     def scrape_file(self):
         """Scrape file."""
         temp_dir = tempfile.mkdtemp()
+        LOGGER.debug(
+            "Temporary directory %s created for OfficeScraper", temp_dir
+        )
 
         try:
             env = {"HOME": temp_dir}
@@ -32,6 +36,7 @@ class OfficeScraper(BaseScraper):
                     f"{shell.returncode}\n{shell.stderr}")
             self._messages.append(shell.stdout)
         except OSError as error:
+            LOGGER.warning("Error handling file", exc_info=True)
             self._errors.append(f"Error handling file: {error}")
         finally:
             shutil.rmtree(temp_dir)

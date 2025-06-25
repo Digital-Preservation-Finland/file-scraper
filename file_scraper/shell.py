@@ -1,9 +1,10 @@
 """Wrapper for calling external commands"""
 
 import os
-import subprocess
 import pty
+import subprocess
 
+from file_scraper.logger import LOGGER
 from file_scraper.utils import ensure_text
 from file_scraper.paths import resolve_command
 
@@ -98,6 +99,7 @@ class Shell:
         """
 
         if self._returncode is None:
+            LOGGER.debug("Executing '%s'...", self.command)
 
             # Some applications (*cough*, `pngcheck`) are stupid and check
             # if the stdin refers to a terminal device (using `isatty(0)`)
@@ -127,6 +129,18 @@ class Shell:
             if self._use_pty:
                 os.close(pty_master)
                 os.close(pty_slave)
+
+            LOGGER.info(
+                "Command '%s' finished with exit code %d",
+                self.command, self._returncode
+            )
+
+            if self._returncode != 0:
+                LOGGER.debug(
+                    "Command failed with stdout: %s, stderr: %s",
+                    self._stdout[0:8192],
+                    self._stderr[0:8192]
+                )
 
         return {
             "returncode": self._returncode,

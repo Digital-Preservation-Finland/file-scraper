@@ -10,6 +10,7 @@ from pathlib import Path
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
+from file_scraper.logger import LOGGER
 from file_scraper.defaults import UNAV
 from file_scraper.dbptk.dbptk_model import DbptkMeta
 
@@ -71,6 +72,10 @@ class DbptkScraper(BaseScraper):
             ).groups()[0]
             return {"DBPTK Developer": {"version":  version}}
         except StopIteration:
+            LOGGER.warning(
+                "Could not find version for dbptk from stdout: %s",
+                tool_shell.stdout
+            )
             self._errors.append("Could not parse version number from CLI "
                                 "output")
             return {"DBPTK Developer": {"version": UNAV}}

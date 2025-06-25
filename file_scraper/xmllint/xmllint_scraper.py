@@ -9,6 +9,7 @@ from xml_helpers.utils import iter_elements
 
 from file_scraper.base import BaseScraper
 from file_scraper.shell import Shell
+from file_scraper.logger import LOGGER
 from file_scraper.utils import ensure_text
 from file_scraper.xmllint.xmllint_model import XmllintMeta
 
@@ -284,6 +285,7 @@ class XmllintScraper(BaseScraper):
                     "Schema definition probably missing from XML catalog")
                 errors_to_remove.append(error)
         for error in errors_to_remove:
+            LOGGER.debug("Discarding harmless error '%s'", error)
             self._errors.remove(error)
         for error in errors_to_add:
             self._errors.append(error)

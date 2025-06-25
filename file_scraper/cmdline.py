@@ -6,6 +6,7 @@ Command line interface for file-scraper
 import json
 import click
 
+from file_scraper.logger import LOGGER
 from file_scraper.scraper import Scraper
 from file_scraper.utils import ensure_text
 
@@ -51,6 +52,8 @@ def scrape_file(
     :mimetype: Specified mimetype for the scraped file
     :version: Specified version for the scraped file
     """
+    LOGGER.info("Additional scraper args provided: %s", scraper_args)
+
     scraper = Scraper(filename, mimetype=mimetype, version=version,
                       **_extra_options_to_dict(scraper_args))
     scraper.scrape(check_wellformed=check_wellformed)

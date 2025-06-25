@@ -26,6 +26,7 @@ from file_scraper.jhove.jhove_scraper import (JHoveAiffScraper,
                                               JHovePdfScraper,
                                               JHoveTiffScraper,
                                               JHoveWavScraper)
+from file_scraper.logger import LOGGER
 from file_scraper.lxml_scraper.lxml_scraper import LxmlScraper
 from file_scraper.magic_scraper.magic_scraper import (MagicBinaryScraper,
                                                       MagicTextScraper)
@@ -126,6 +127,8 @@ def iter_scrapers(mimetype, version, check_wellformed=True, params=None):
         if scraper.is_supported(mimetype, version, check_wellformed, params):
             scraper_found = True
             yield scraper
+        else:
+            LOGGER.debug("Skipping unsupported scraper %s", scraper.__name__)
 
     if not scraper_found:
         yield ScraperNotFound
