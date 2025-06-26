@@ -2,8 +2,6 @@
 
 import hashlib
 import re
-import string
-import unicodedata
 import zipfile
 from itertools import chain
 from pathlib import Path
@@ -56,19 +54,6 @@ def hexdigest(filename, algorithm="sha1", extra_hash=None):
                 extra_hash = extra_hash.encode("utf-8")
             checksum.update(extra_hash)
     return checksum.hexdigest()
-
-
-def sanitize_string(dirty_string):
-    """
-    Strip non-printable control characters from unicode string.
-
-    :dirty_string: String to sanitize
-    :returns: Sanitized string
-    """
-    sanitized_string = "".join(
-        char for char in dirty_string if unicodedata.category(char)[0] != "C"
-        or char in string.printable)
-    return sanitized_string
 
 
 def normalize_charset(charset):
@@ -331,26 +316,6 @@ def concat(lines, prefix=""):
     :returns: Joined lines as string
     """
     return "\n".join([f"{prefix}{line}" for line in lines])
-
-
-def sanitize_bytestring(input_bytes):
-    """Sanitize unknown byte string as unicode string.
-
-    Function will take a byte string with unknown charset as input and
-    and convert it safely to unicode string, removing any non-printable
-    characters.
-
-    - decode as utf8 byte string
-    - replace non-utf8 characters
-    - remove non-printable characters
-    - encode string to utf8 before adding to errors
-
-    :input_bytes: Input as byte string
-    :returns: Sanitized string as unicode string
-    """
-    utf8string = input_bytes.decode("utf8", errors="replace")
-    sanitized_string = sanitize_string(utf8string)
-    return ensure_text(sanitized_string.encode("utf-8"))
 
 
 def iter_utf_bytes(file_handle, chunksize, charset):

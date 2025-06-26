@@ -9,13 +9,6 @@ requirements:
         - MD5 algorithm can also be used.
         - An extra hash can be given to the function and this extra hash is
           appended to the file in calculation
-    - sanitize_string
-        - For strings without any non-printable control characters, the
-          original string is returned.
-        - For strings containing one or more control characters, a new string
-          without the control character(s) is returned.
-        - For strings consisting of control characters, an empty string is
-          returned.
     - iso8601_duration
         - Seconds are rounded to two decimal places according to normal rules.
         - If decimal places are not needed, they are not printed, i.e. 1 s
@@ -112,8 +105,7 @@ from file_scraper.scraper import LOSE
 from file_scraper.utils import (_fill_importants, _merge_to_stream, concat,
                                 generate_metadata_dict, hexdigest, is_zipfile,
                                 iso8601_duration, iter_utf_bytes, metadata,
-                                normalize_charset, sanitize_string,
-                                strip_zeros)
+                                normalize_charset, strip_zeros)
 
 
 @pytest.mark.parametrize(
@@ -143,26 +135,6 @@ def test_hexdigest(filepath, extra_hash, algorithm, expected_hash):
     else:
         assert hexdigest(filepath, algorithm=algorithm,
                          extra_hash=extra_hash) == expected_hash
-
-
-@pytest.mark.parametrize(
-    ["original_string", "sanitized_string"],
-    [
-        ("already sanitized", "already sanitized"),
-        ("containsescape", "containsescape"),
-        ("containsmultiple", "containsmultiple"),
-        ("", ""),  # bell character
-        ("", "")  # multiple control characters
-    ]
-)
-def test_sanitize_string(original_string, sanitized_string):
-    """
-    Test sanitize_string.
-
-    :original_string: Original string
-    :sanitized_string: Sanitized string
-    """
-    assert sanitize_string(original_string) == sanitized_string
 
 
 @pytest.mark.parametrize(
