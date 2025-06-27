@@ -52,7 +52,7 @@ def test_invalid_config_and_command_parameter():
     be found from the configuration file or path.
     Also test resolve_path_from_config which searches only configuration file
     """
-    with pytest.raises(NameError):
+    with pytest.raises(FileNotFoundError):
         resolve_command("nowaythisconfigactuallyexists")
     with pytest.raises(NameError):
         resolve_path_from_config("nowaythisconfiactuallyexists")
