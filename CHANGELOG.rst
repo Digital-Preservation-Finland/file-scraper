@@ -8,6 +8,10 @@ and this project adheres to `Semantic Versioning <(https://semver.org/spec/v2.0.
 Unreleased
 ----------
 
+Changed
+~~~~~~~
+- The config file ``/etc/file-scraper/file-scraper.conf`` has now two sections ``[COMMANDS]`` and ``[PATHS]``
+
 Added
 ~~~~~
 - Add `Scraper.path` field to access file path as `pathlib.Path` object. `Scraper.filename` remains available for backwards compatibility.
