@@ -42,6 +42,9 @@ EXPECTED_UNAV_FIELDS_FOR_FILE = {
     "tests/data/image_jpeg/valid_2.2.1_exif_metadata.jpg":
         ["icc_profile_name"],
     "tests/data/image_jpeg/valid_2.2.1_exif_no_jfif.jpg": ["icc_profile_name"],
+    "tests/data/image_jpeg/valid_1.01_121_APP2_segments.jpg": [
+        "icc_profile_name"
+    ],
     "tests/data/image_png/valid_1.2.png": ["icc_profile_name"],
     "tests/data/image_png/valid_1.2_LA.png": ["icc_profile_name"],
     "tests/data/image_tiff/valid_6.0.tif": ["icc_profile_name"],
