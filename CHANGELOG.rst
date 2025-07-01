@@ -20,6 +20,10 @@ Changed
 ~~~~~~~
 - Moved grading to dpres-file-formats
 
+Fixed
+~~~~~
+- Fix detection of XML files using GPX 1.1 schema
+
 1.0.0 2025-05-27
 ----------------
 

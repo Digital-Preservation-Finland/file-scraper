@@ -54,6 +54,7 @@ PRONOM_DICT = {
     "fmt/640": ("video/mpeg", "2"),
     "fmt/649": ("video/mpeg", "1"),
     "fmt/997": ("application/x-spss-por", ""),
+    "fmt/1134": ("text/xml", None),  # GPX 1.1 XML schema
     "x-fmt/135": ("audio/x-aiff", "1.3"),
     "x-fmt/385": ("video/mp1s", ""),
     "x-fmt/386": ("video/mp2p", ""),
