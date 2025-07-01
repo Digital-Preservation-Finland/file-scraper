@@ -15,6 +15,7 @@ from file_scraper.mediainfo.mediainfo_model import (
     VersionlessFormatMeta,
     WmaMediainfoMeta,
     WmvMediainfoMeta,
+    ImageMediaInfoMeta,
     UnknownStreamFormatMeta
 )
 from file_scraper.defaults import UNAV
@@ -43,6 +44,7 @@ class MediainfoScraper(BaseScraper):
         WmaMediainfoMeta,
         WmvMediainfoMeta,
         VersionlessFormatMeta,
+        ImageMediaInfoMeta,
         UnknownStreamFormatMeta
     ]
 

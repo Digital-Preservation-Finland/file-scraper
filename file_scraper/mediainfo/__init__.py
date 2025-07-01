@@ -132,6 +132,14 @@ FORMATS = [
         "mimetype": "video/x-ms-wmv",
         "properties": {"format": "WMV3"}
     },
+    {
+        "mimetype": "image/jpeg",
+        "properties": {"internet_media_type": "image/jpeg"}
+    },
+    {
+        "mimetype": "image/png",
+        "properties": {"internet_media_type": "image/png"}
+    }
 ]
 
 

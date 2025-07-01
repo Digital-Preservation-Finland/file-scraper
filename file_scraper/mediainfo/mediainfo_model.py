@@ -54,6 +54,9 @@ class BaseMediainfoMeta(BaseMeta):
         if self._stream.track_type == "Video":
             return 'video'
 
+        if self._stream.track_type == "Image":
+            return 'image'
+
         # For example "General" tracks are not streams, unless they are
         # videocontainers
         return None
@@ -738,6 +741,10 @@ class VersionlessFormatMeta(BaseMediainfoMeta):
         have a version.
         """
         return UNAP
+
+
+class ImageMediaInfoMeta(BaseMediainfoMeta):
+    _supported = {"image/jpeg": [""], "image/png": [""]}
 
 
 class UnknownStreamFormatMeta(BaseMediainfoMeta):
