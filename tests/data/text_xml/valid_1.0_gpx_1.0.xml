@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx
+  version="1.1"
+  creator="Janne Pulkkinen @ CSC"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.topografix.com/GPX/1/1"
+  xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+    <wpt lat="60.177522000" lon="24.840290000"><ele>0.0</ele><time>2025-07-01T09:47:35Z</time></wpt>
+    <wpt lat="60.177440000" lon="24.842474000"><ele>0.0</ele><time>2025-07-01T09:47:36Z</time></wpt>
+    <wpt lat="60.176518000" lon="24.839859000"><ele>0.0</ele><time>2025-07-01T09:47:37Z</time></wpt>
+    <wpt lat="60.176025000" lon="24.841580000"><ele>0.0</ele><time>2025-07-01T09:47:38Z</time></wpt>
+    <wpt lat="60.175942000" lon="24.841580000"><ele>0.0</ele><time>2025-07-01T09:47:39Z</time></wpt>
+    <wpt lat="60.176123000" lon="24.842606000"><ele>0.0</ele><time>2025-07-01T09:47:40Z</time></wpt>
+</gpx>
