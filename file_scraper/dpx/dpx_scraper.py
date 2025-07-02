@@ -15,7 +15,7 @@ class DpxScraper(BaseScraper):
     def scrape_file(self):
         """Scrape DPX."""
 
-        shell = Shell(["dpxv-3", self.filename])
+        shell = Shell(["dpx-validator", self.filename])
 
         if shell.returncode != 0:
             self._errors.append(
