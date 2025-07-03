@@ -4,16 +4,20 @@ pytest-cov
 python-mimeparse
 olefile
 file-magic
-pymediainfo >= 7, < 8
 Pillow
 wand
 lxml
 click
 pyexiftool
+pymediainfo >= 7, < 8
 jpylyzer >= 2.2.0
-# Temporary patch for ffmpeg-python / jpeg2000 lossless detection
-git+https://github.com/Digital-Preservation-Finland/ffmpeg-python.git#egg=ffmpeg_python
-# Get our newest format string changes not yet present in official Fido repository
-git+https://github.com/Digital-Preservation-Finland/fido.git#egg=opf_fido
+
+git+https://github.com/Digital-Preservation-Finland/dpx-validator.git#egg=dpx_validator
 git+https://github.com/Digital-Preservation-Finland/xml-helpers.git#egg=xml_helpers
 git+https://github.com/Digital-Preservation-Finland/dpres-file-formats.git#egg=dpres-file-formats
+
+# Get our newest format string changes not yet present in official Fido repository
+git+https://github.com/Digital-Preservation-Finland/fido.git#egg=opf_fido
+
+# Temporary patch for ffmpeg-python / jpeg2000 lossless detection
+git+https://github.com/Digital-Preservation-Finland/ffmpeg-python.git#egg=ffmpeg_python
