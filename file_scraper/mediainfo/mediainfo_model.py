@@ -13,6 +13,8 @@ class BaseMediainfoMeta(BaseMeta):
     # pylint: disable=too-many-public-methods
     """Metadata models for streams scraped using MediainfoScraper."""
 
+    _handles = {}
+
     def __init__(self, tracks, index):
         """
         Initialize the metadata model.
@@ -29,6 +31,22 @@ class BaseMediainfoMeta(BaseMeta):
             self._container = tracks[0]
         else:
             self._container = None
+
+    @classmethod
+    def can_handle_stream(cls, mimetype, version=None):
+        """Checks if this metadata model can handle certain streams. This is
+        used instead of is_supported, because mediainfo_scraper does not
+        support some file formats, but we need to be aware of them inside
+        containers regardless. One such case is av containers containing image
+        data.
+        """
+
+        supported = cls._supported | cls._handles
+        if mimetype not in supported:
+            return False
+        if version in supported[mimetype] + [None] or cls._allow_versions:
+            return True
+        return False
 
     @metadata()
     def mimetype(self):
@@ -744,7 +762,7 @@ class VersionlessFormatMeta(BaseMediainfoMeta):
 
 
 class ImageMediaInfoMeta(BaseMediainfoMeta):
-    _supported = {"image/jpeg": [""], "image/png": [""]}
+    _handles = {"image/jpeg": [""], "image/png": [""]}
 
 
 class UnknownStreamFormatMeta(BaseMediainfoMeta):
