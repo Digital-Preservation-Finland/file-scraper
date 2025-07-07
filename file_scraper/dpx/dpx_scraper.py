@@ -1,9 +1,11 @@
 """DPX scraper"""
 
+from dpx_validator.api import validate_file
+from dpx_validator.messages import MessageType
+from dpx_validator import __version__ as dpx_version
+
 from file_scraper.base import BaseScraper
-from file_scraper.shell import Shell
 from file_scraper.dpx.dpx_model import DpxMeta
-from file_scraper.defaults import UNKN
 
 
 class DpxScraper(BaseScraper):
@@ -15,22 +17,24 @@ class DpxScraper(BaseScraper):
     def scrape_file(self):
         """Scrape DPX."""
 
-        shell = Shell(["dpx-validator", self.filename])
+        valid, output, logs = validate_file(self.filename, log=True)
 
-        if shell.returncode != 0:
-            self._errors.append(
-                f"DPX returned invalid return code: {shell.returncode}\n"
-                f"{shell.stderr}")
-
-        if shell.stderr:
-            self._errors += list(shell.stderr.splitlines())
-
-        if shell.stdout:
-            self._messages += list(shell.stdout.splitlines())
+        for log in logs:
+            msg_type, message = log
+            if msg_type == MessageType.ERROR:
+                self._errors.append(message)
+            elif msg_type == MessageType.INFO:
+                self._messages.append(message)
+            else:
+                self._errors.append(
+                    "Unknown message type returned by "
+                    "dpx_validator.api.validate_file"
+                )
+        if valid:
+            self._messages.append("is valid")
 
         self.streams = list(self.iterate_models(
-            well_formed=self.well_formed, messages=self._messages,
-            filename=self.filename))
+            well_formed=valid, output=output, filename=self.filename))
 
         self._check_supported()
 
@@ -41,7 +45,4 @@ class DpxScraper(BaseScraper):
 
         :returns: a dictionary with the used software or UNKN.
         """
-        # TODO TPASPKT-1502 dpx_validator is hardcoded to work from
-        # an rpm package and the validator cli doesn't have a get version flag
-        # or command, so the version is not currently available.
-        return {"Python DPX validator": {"version": UNKN}}
+        return {"dpx-validator": {"version": dpx_version}}

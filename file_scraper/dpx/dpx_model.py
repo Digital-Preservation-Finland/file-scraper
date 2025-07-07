@@ -11,7 +11,7 @@ class DpxMeta(BaseMeta):
     # Supported mimetype and version
     _supported = {"image/x-dpx": ["2.0", "1.0"]}
 
-    def __init__(self, well_formed, messages, filename):
+    def __init__(self, well_formed, output, filename):
         """
         Initialize metadata model.
 
@@ -20,7 +20,7 @@ class DpxMeta(BaseMeta):
         :filename: DPX file name
         """
         self._well_formed = well_formed
-        self._messages = messages
+        self._output = output
         self._filename = filename
 
     @metadata()
@@ -46,10 +46,9 @@ class DpxMeta(BaseMeta):
 
         for supported_version in self._supported["image/x-dpx"]:
 
-            version_string = (f"File {self._filename}: Validated "
-                              f"as V{supported_version}")
+            version_string = (f"V{supported_version}")
 
-            if version_string in self._messages:
+            if version_string == self._output["version"]:
                 return supported_version
 
         return UNAV

@@ -22,7 +22,6 @@ from pathlib import Path
 import pytest
 from tests.common import parse_results
 from file_scraper.dpx.dpx_scraper import DpxScraper
-from file_scraper.defaults import UNKN
 
 MIMETYPE = "image/x-dpx"
 
@@ -68,19 +67,19 @@ def test_scraper(filename, result_dict, evaluate_scraper):
     evaluate_scraper(scraper, correct)
 
 
-@pytest.mark.usefixtures("patch_shell_attributes_fx")
 def test_dpx_returns_invalid_return_code():
     """Test that a correct error message is given
     when the tool gives an invalid return code"""
     path = Path("tests/data", MIMETYPE.replace("/", "_"))
-    testfile = path / "valid_2.0.dpx"
+    testfile = path / "invalid_2.0_missing_data.dpx"
 
     scraper = DpxScraper(filename=testfile,
                          mimetype=MIMETYPE)
 
     scraper.scrape_file()
+    scraper.errors()
 
-    assert "DPX returned invalid return code: -1\n" in scraper.errors()
+    assert "Different file sizes from header" in scraper.errors()[0]
 
 
 def test_is_supported():
@@ -99,4 +98,4 @@ def test_tools():
     """ Test that tools were unknown """
 
     scraper = DpxScraper(filename=Path(""), mimetype="")
-    assert scraper.tools()["Python DPX validator"]["version"] is UNKN
+    assert scraper.tools()["dpx-validator"]["version"] == "0.19"
