@@ -1,17 +1,21 @@
 """File metadata scraper."""
+
+from __future__ import annotations
 import os
 from pathlib import Path
-from typing import Union
 
 from dpres_file_formats import graders
 
 from file_scraper.base import BaseExtractor
 from file_scraper.defaults import UNAV
-from file_scraper.detectors import (MagicCharset, ExifToolDetector)
-from file_scraper.dummy.dummy_extractor import (FileExists, MimeMatchExtractor)
+from file_scraper.detectors import (MagicCharset,
+                                    ExifToolDetector,
+                                    BaseDetector)
+from file_scraper.dummy.dummy_extractor import (MimeMatchExtractor)
 from file_scraper.iterator import iter_detectors, iter_extractors
 from file_scraper.jhove.jhove_extractor import JHoveUtf8Extractor
 from file_scraper.textfile.textfile_extractor import TextfileExtractor
+from file_scraper.exceptions import FileIsNotScrapable
 from file_scraper.utils import hexdigest, generate_metadata_dict
 from file_scraper.logger import LOGGER
 
@@ -21,40 +25,33 @@ LOSE = (None, UNAV, "")
 class Scraper:
     """File indentifier and scraper."""
 
-    # pylint: disable=no-member, too-many-instance-attributes
+    # pylint: disable=too-many-instance-attributes
 
-    def __init__(self,
-                 filename: Union[
-                     str,
-                     bytes,
-                     os.PathLike[str],
-                     os.PathLike[bytes]
-                 ],
-                 **kwargs):
-        """Initialize scraper.
-        :filename: File path
-        :kwargs: Extra arguments for certain scrapers.
+    def __init__(
+            self,
+            filename: str | bytes | os.PathLike[str] | os.PathLike[bytes],
+            **kwargs
+    ):
         """
-        try:
-            self.path = Path(os.fsdecode(filename))
-        except TypeError as exc:
-            raise TypeError("Expected a PathLike type as filename.") from exc
+        Initialize scraper.
+        The scraper checks filepath validity in initialization and
+        throws errors if the filepath given is not valid.
 
-        self.mimetype = None
-        self.version = None
-        self.streams = None
-        self.well_formed = None
-        self.info = None
-        self._params = kwargs
-        self._extractor_results = []
-        self._predefined_mimetype = None
-        self._predefined_version = None
-        self._file_exists = None
-        if self._params.get("mimetype", None) not in LOSE:
-            self._predefined_mimetype = self._params.get("mimetype").lower()
-            self._params["mimetype"] = self._params.get("mimetype").lower()
-        if self._params.get("version", None) not in LOSE:
-            self._predefined_version = self._params.get("version", None)
+        :param filepath: File path
+        :param kwargs: Extra arguments for certain scrapers.
+        :raises FileNotFoundError: The filepath given was not found.
+        :raises FileIsNotScrapable: The filepath given doesn't point to
+            a regular file.
+        :raises IsADirectoryError: The filepath given was a directory instead
+            of a file.
+        """
+        self.path = _validate_path(filename)
+        # TODO taking in arbitraty amount of kwargs makes it hard to document
+        # and define what keyword arguments are actually accepted to
+        # file-scraper. Part of the ticket TPASPKT-1540 to clean file-scraper
+        # parameters.
+        self._kwargs = kwargs
+        self.clear()
 
     @property
     def filename(self) -> bytes:
@@ -65,35 +62,69 @@ class Scraper:
         """
         return os.fsencode(self.path)
 
-    def _identify(self):
-        """Identify file format and version.
+    # TODO move initialization to init if detect_filetype no longer needs to
+    # reset the scraper class.
+    # pylint: disable=attribute-defined-outside-init
+    def clear(self):
         """
+        Clear the Scraper to an initial state.
+        """
+
+        self.mimetype = None
+        self.version = None
+        self.streams = None
+        self.well_formed = None
         self.info = {}
-        _mime = self._predefined_mimetype
-        _version = self._predefined_version
-        self._params["detected_mimetype"] = UNAV
-        self._params["detected_version"] = UNAV
+        self._extractor_results = []
 
-        for detector in iter_detectors():
-            LOGGER.info("Detecting file type using %s", detector.__name__)
-            tool = detector(self.path, _mime, _version)
-            self._update_filetype(tool)
+        if self._kwargs.get("mimetype", None) not in LOSE:
+            self._predefined_mimetype = self._kwargs.get("mimetype").lower()
+            self._kwargs["mimetype"] = self._kwargs.get("mimetype").lower()
+        else:
+            self._predefined_mimetype = None
+        if self._kwargs.get("version", None) not in LOSE:
+            self._predefined_version = self._kwargs.get("version", None)
+        else:
+            self._predefined_version = None
+        # self._detected_mimetype and self._detected_version exist so
+        # the predefined values above wouldn't get changed during the running
+        # of the scraper.
+        self._detected_mimetype = None
+        self._detected_version = None
+        # REFACTOR: The results get gathered back to the _kwargs
+        self._kwargs["detected_mimetype"] = UNAV
+        self._kwargs["detected_version"] = UNAV
 
-        if MagicCharset.is_supported(self._predefined_mimetype) and \
-                self._params.get("charset", None) is None:
+    def _identify(self):
+        """
+        Identify file format and version.
+        """
+
+        for detector_class in iter_detectors():
+            LOGGER.info(
+                "Detecting file type using %s", detector_class.__name__)
+            detector = detector_class(
+                self.path,
+                self._predefined_mimetype,
+                self._predefined_version
+                )
+            self._update_filetype(detector)
+
+        if MagicCharset.is_supported(self._detected_mimetype) and \
+                self._kwargs.get("charset", None) is None:
             charset_detector = MagicCharset(self.path)
             charset_detector.detect()
-            self._params["charset"] = charset_detector.charset
+            self._kwargs["charset"] = charset_detector.charset
 
         # PDF files should always be scrutinized further to determine if
         # they are PDF/A
         # Files predefined as tiff will be scrutinized further to check if they
         # are dng files in order to return the correct mimetype and version
-        if self._predefined_mimetype in ("image/tiff", "application/pdf"):
+        if self._detected_mimetype in ("image/tiff", "application/pdf"):
             exiftool_detector = ExifToolDetector(self.path)
             self._update_filetype(exiftool_detector)
 
-    def _update_filetype(self, tool):
+    def _update_filetype(self, detector: BaseDetector):
         """
         Run the detector and updates the file type based on its results.
 
@@ -101,25 +132,26 @@ class Scraper:
         present in the LOSE list or the new one is marked important by the
         detector.
 
-        :tool: Detector tool
+        :detector: Detector tool which updates
         """
-        tool.detect()
+        detector.detect()
         LOGGER.debug(
             "%s detected MIME type: %s, version: %s, important: %s, "
             "well-formed: %s",
-            tool.__class__.__name__, tool.mimetype, tool.version,
-            tool.get_important(), tool.well_formed
+            detector.__class__.__name__, detector.mimetype, detector.version,
+            detector.get_important(), detector.well_formed
         )
 
-        if tool.well_formed is False:
+        if detector.well_formed is False:
             self.well_formed = False
-        self.info[len(self.info)] = tool.info()
-        important = tool.get_important()
-        if self._predefined_mimetype in LOSE:
-            self._predefined_mimetype = tool.mimetype
-        if self._predefined_mimetype == tool.mimetype and \
-                self._predefined_version in LOSE:
-            self._predefined_version = tool.version
+        self.info[len(self.info)] = detector.info()
+        important = detector.get_important()
+
+        if self._detected_mimetype in LOSE:
+            self._detected_mimetype = detector.mimetype
+        if self._detected_mimetype == detector.mimetype and \
+                self._detected_version in LOSE:
+            self._detected_version = detector.version
         if "mimetype" in important and \
                 important["mimetype"] not in LOSE:
             LOGGER.info(
@@ -127,7 +159,7 @@ class Scraper:
                 "setting pre-defined MIME type",
                 important["mimetype"]
             )
-            self._predefined_mimetype = important["mimetype"]
+            self._detected_mimetype = important["mimetype"]
         if "version" in important and \
                 important["version"] not in LOSE:
             LOGGER.info(
@@ -135,22 +167,40 @@ class Scraper:
                 "setting pre-defined version",
                 important["version"]
             )
-            self._predefined_version = important["version"]
-        if tool.info()["class"] != "PredefinedDetector" and \
-                self._predefined_mimetype == tool.mimetype and \
-                ("version" in important or
-                 self._params["detected_version"] in LOSE):
+            self._detected_version = important["version"]
+        if detector.info()["class"] == "PredefinedDetector":
+            LOGGER.debug(
+                "detector used was PredefinedDetector so no changes to"
+                "the detected_mimetype or detected_version should occur")
+            return
+        if self._detected_mimetype != detector.mimetype:
+            LOGGER.debug(
+                "%s can't apply the MIME type found: %s on top of "
+                "another MIME type %s",
+                detector.__class__.__name__,
+                detector.mimetype,
+                self._detected_mimetype)
+            return
+        # If predefined mimetype is not None it means the user wants choose the
+        # mimetype which needs to be respected and the detected mimetype
+        # can't overrule the user.
+        if self._predefined_mimetype is not None and \
+                self._predefined_mimetype != self._detected_mimetype:
+            return
+
+        if ("version" in important or
+           self._kwargs["detected_version"] in LOSE):
             LOGGER.info(
                 "Detected MIME type and version changed. "
                 "MIME type: %s -> %s, version: %s -> %s",
-                self._params["detected_mimetype"],
-                tool.mimetype,
-                self._params["detected_version"],
-                tool.version
+                self._kwargs["detected_mimetype"],
+                detector.mimetype,
+                self._kwargs["detected_version"],
+                detector.version
             )
 
-            self._params["detected_mimetype"] = tool.mimetype
-            self._params["detected_version"] = tool.version
+            self._kwargs["detected_mimetype"] = detector.mimetype
+            self._kwargs["detected_version"] = detector.version
 
     def _use_extractor(self, extractor: BaseExtractor, check_wellformed: bool):
         """
@@ -189,11 +239,11 @@ class Scraper:
         :check_wellformed: Whether full scraping is used or not.
         """
         version = None
-        if self._params.get("version", None) not in LOSE:
-            version = self._params.get("version", None)
+        if self._kwargs.get("version", None) not in LOSE:
+            version = self._kwargs.get("version", None)
         scraper = MimeMatchExtractor(
             filename=self.path,
-            mimetype=self._predefined_mimetype,
+            mimetype=self._detected_mimetype,
             version=version,
             params={"mimetype": self.mimetype,
                     "version": self.version,
@@ -208,7 +258,7 @@ class Scraper:
         :check_wellformed: Whether full scraping is used or not.
         """
 
-        extractor_results = self._params.get("extractor_results", None)
+        extractor_results = self._kwargs.get("extractor_results", None)
         errors = []
         messages = []
 
@@ -242,75 +292,53 @@ class Scraper:
         """
         LOGGER.info("Scraping %s", self.path)
 
-        self.detect_filetype()
-
-        # MIME type could not be determined or file was not found.
-        if not self._predefined_mimetype or not self._file_exists:
-            LOGGER.info(
-                "MIME type could not be determined or file was not found"
-            )
-            self.streams = {}
-            self.mimetype = "(:unav)"
-            self.version = "(:unav)"
-            return
+        self._identify()
 
         for extractor_class in iter_extractors(
-                mimetype=self._predefined_mimetype,
-                version=self._predefined_version,
-                check_wellformed=check_wellformed, params=self._params):
+                mimetype=self._detected_mimetype,
+                version=self._detected_version,
+                check_wellformed=check_wellformed, params=self._kwargs):
             LOGGER.info("Scraping with %s", extractor_class.__name__)
 
             extractor = extractor_class(
                 filename=self.path,
-                mimetype=self._predefined_mimetype,
-                version=self._predefined_version,
-                params=self._params)
+                mimetype=self._detected_mimetype,
+                version=self._detected_version,
+                params=self._kwargs)
             self._use_extractor(extractor, check_wellformed)
-        self._params["extractor_results"] = self._extractor_results
 
+        self._kwargs["extractor_results"] = self._extractor_results
         self._merge_results(check_wellformed)
-        self._check_utf8(check_wellformed)
+        # If no streams exist the mimetype and version are unavailable
+        if not self.streams:
+            self.mimetype = UNAV
+            self.version = UNAV
+            return
 
+        self._check_utf8(check_wellformed)
         self.mimetype = self.streams[0]["mimetype"]
         self.version = self.streams[0]["version"]
 
         self._check_mime(check_wellformed)
 
-    def detect_filetype(self):
+    def detect_filetype(self) -> tuple[str | None, str | None]:
         """
-        Find out the MIME type and version of the file without metadata scrape.
+        Find out the MIME type and version of the file without metadata
+        extracting.
 
         All stream and file type information gathered during possible previous
         scraping or filetype detection calls is erased when this function is
         called.
 
         Please note that using only detectors can result in a file type result
-        that differs from the one obtained by the full scraper due to full
-        scraping using a more comprehensive set of tools.
+        that differs from the one obtained by the full extractor due to full
+        extractor using a more comprehensive set of tools.
 
         :returns: Predefined mimetype and version
         """
-        self.mimetype = None
-        self.version = None
-        self.streams = None
-        self.info = {}
-        self.well_formed = None
-        self._predefined_mimetype = None
-        self._predefined_version = None
-        if self._params.get("mimetype", None) not in LOSE:
-            self._predefined_mimetype = self._params.get("mimetype", None)
-        if self._params.get("version", None) not in LOSE:
-            self._predefined_version = self._params.get("version", None)
-
-        file_exists = FileExists(self.path, None)
-        self._use_extractor(file_exists, True)
-        if file_exists.well_formed is False:
-            self._file_exists = False
-            return (None, None)
-
-        self._file_exists = True
+        self.clear()
         self._identify()
-        return (self._predefined_mimetype, self._predefined_version)
+        return (self._detected_mimetype, self._detected_version)
 
     def is_textfile(self):
         """
@@ -336,3 +364,35 @@ class Scraper:
     def grade(self):
         """Return digital preservation grade."""
         return graders.grade(self.mimetype, self.version, self.streams)
+
+
+def _validate_path(
+    supposed_filepath: str | bytes | os.PathLike[str] | os.PathLike[bytes]
+) -> Path:
+    """
+    Checks if the supposed filepath is actually a valid file to scrape
+
+    :param supposed_filepath: any str, byte or Pathlike string or bytes
+    :raises FileIsNotScrapable: The file given cannot be scraped for
+        reason or another.
+    :raises FileNotFoundError: The file cannot be found from the path
+        given.
+    :raises TypeError: The file argument given was invalid.
+    :raises IsADirectoryError: The file given was a directory.
+    """
+    path = Path(os.fsdecode(supposed_filepath))
+    if not path.exists():
+        raise FileNotFoundError(
+            "A file couldn't be found from the path: " + str(path))
+    if path.is_dir():
+        raise IsADirectoryError(
+            "Instead of a file, a directory was found from the path: " +
+            str(path)
+        )
+    if not path.is_file():
+        raise FileIsNotScrapable(
+            "The file is not a regular file and can't be scrapable from"
+            " the path: " + str(path)
+        )
+
+    return path.resolve()

@@ -243,7 +243,7 @@ def _fill_importants(method, importants, lose):
         pass
 
 
-def generate_metadata_dict(extraction_results, lose):
+def generate_metadata_dict(extraction_results, lose) -> tuple[dict, dict]:
     """
     Generate a metadata dict from the given extraction results.
 
@@ -266,9 +266,9 @@ def generate_metadata_dict(extraction_results, lose):
               and a list of error messages due to conflicting values)
 
     """
-    # if there are no extraction results, return an empty dict
+    # if there are no extraction results, return an empty dict and empty errors
     if not any(extraction_results):
-        return {}
+        return {}, []
     streams = {}
 
     conflicts = []

@@ -28,7 +28,6 @@ def test_scrape_valid_file():
     runner = CliRunner()
     result = runner.invoke(cli, ["scrape-file", str(file_path)])
     assert result.exit_code == 0
-
     data = json.loads(result.stdout)
     assert data["well-formed"] is True
     assert data["path"] == str(file_path)
@@ -40,7 +39,29 @@ def test_scrape_invalid_file():
     runner = CliRunner()
     result = runner.invoke(cli, ["scrape-file", str(file_path)])
     assert result.exit_code == 0
-    assert json.loads(result.stdout)["well-formed"] == False
+    assert json.loads(result.stdout)["well-formed"] is False
+
+
+@pytest.mark.parametrize(
+    "message, input",
+    [
+        ("Instead of a file, a directory was found from the path: ", "dir"),
+        ("A file couldn't be found from the path: ", "nonSenseFiLe"),
+        ("The file is not a regular file and can't be scrapable "
+         + "from the path:", "/dev/null")
+    ]
+)
+def test_scraper_invalid_paths(tmp_path_factory, message: str, input: str):
+    """
+    Invalid paths are not
+    """
+
+    if input == "dir":
+        input = str(tmp_path_factory.mktemp("test"))
+    runner = CliRunner()
+    result = runner.invoke(cli, ["scrape-file", input])
+    assert result.exit_code > 0
+    assert message in result.stdout
 
 
 @pytest.mark.parametrize(
@@ -104,12 +125,17 @@ def test_missing_value_in_extra_argument():
 
 
 def test_argument_after_argument():
+    """
+    Test that an reasonable exception gets raised when the --fields option
+    is missing an argument.
+    """
     file_path = DATA_PATH / "text_csv/valid__ascii.csv"
     runner = CliRunner()
-    result = runner.invoke(cli, ["scrape-file", '--fields', '--quotechar', '"',
-                                 str(file_path)])
+    result = runner.invoke(
+        cli, ["scrape-file", '--fields', '--quotechar', '"', str(file_path)])
     assert result.exit_code == 2
-    assert "Invalid value for 'FILENAME': Path '\"' does not exist." in result.stdout
+    # the command parser affects the accuracy of the error message.
+    assert "Error: Got unexpected extra argument" in result.stdout
 
 
 def test_incorrect_extra_argument():
@@ -124,11 +150,10 @@ def test_mime_type_cases():
     file_path = DATA_PATH / "application_pdf/valid_1.2.pdf"
 
     runner = CliRunner()
-    result = runner.invoke(cli,
-                           ["scrape-file", "--mimetype", "Application/pdf",
-                            str(file_path)])
+    result = runner.invoke(
+        cli, ["scrape-file", "--mimetype", "Application/pdf", str(file_path)])
     assert result.exit_code == 0
-    assert json.loads(result.stdout)["well-formed"] == True
+    assert json.loads(result.stdout)["well-formed"] is True
 
 
 @pytest.mark.parametrize(
@@ -157,23 +182,34 @@ def test_verbose_flag(flag, expected_output, caplog):
 
 def test_valid_schematron_command():
     runner = CliRunner()
-    result = runner.invoke(cli, ["check-xml-schematron-features",
-                                 "--schematron",
-                                 "tests/data/text_xml/supplementary/local.sch",
-                                 "tests/data/text_xml/valid_1.0_well_formed.xml"])
+    result = runner.invoke(
+            cli,
+            [
+                "check-xml-schematron-features",
+                "--schematron",
+                "tests/data/text_xml/supplementary/local.sch",
+                "tests/data/text_xml/valid_1.0_well_formed.xml"
+            ]
+        )
     result_json = json.loads(result.stdout)
-    assert result_json["well-formed"] == True
+    assert result_json["well-formed"] is True
     assert result_json["MIME type"] == "text/xml"
     assert result_json["version"] == "1.0"
 
+
 def test_invalid_schematron_command():
     runner = CliRunner()
-    result = runner.invoke(cli, ["check-xml-schematron-features",
-                                 "--schematron",
-                                 "tests/data/text_xml/supplementary/local.sch",
-                                 "tests/data/text_xml/invalid_1.0_local_xsd.xml"])
+    result = runner.invoke(
+            cli,
+            [
+                "check-xml-schematron-features",
+                "--schematron",
+                "tests/data/text_xml/supplementary/local.sch",
+                "tests/data/text_xml/invalid_1.0_local_xsd.xml"
+            ]
+        )
     result_json = json.loads(result.stdout)
-    assert result_json["well-formed"] == False
+    assert result_json["well-formed"] is False
 
 
 def test_sgml_catalog_files_env_var_gets_overridden():
@@ -181,11 +217,11 @@ def test_sgml_catalog_files_env_var_gets_overridden():
     result = runner.invoke(cli, ["scrape-file",
                                  "tests/data/text_xml/valid_1.0_gpx_1.0.xml"])
     assert result.exit_code == 0
-    assert json.loads(result.stdout)["well-formed"] == True
+    assert json.loads(result.stdout)["well-formed"] is True
 
     runner = CliRunner()
     result = runner.invoke(cli, ["scrape-file",
                                  "--catalog-path", "/some/invalid/catalog",
                                  "tests/data/text_xml/valid_1.0_gpx_1.0.xml"])
     assert result.exit_code == 0
-    assert json.loads(result.stdout)["well-formed"] == False
+    assert json.loads(result.stdout)["well-formed"] is False

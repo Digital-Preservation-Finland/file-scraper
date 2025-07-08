@@ -30,6 +30,7 @@ from dpres_file_formats.defaults import Grades
 
 from file_scraper.scraper import Scraper
 from file_scraper.textfile.textfile_extractor import TextfileExtractor
+from file_scraper.exceptions import FileIsNotScrapable
 
 
 def test_is_textfile():
@@ -56,50 +57,25 @@ def test_checksum():
         "92103972564bca86230dbfd311eec01f422cead7"
     with pytest.raises(ValueError):
         assert scraper.checksum("foo")
-    with pytest.raises(IOError):
-        scraper = Scraper("non_exists")
-        assert scraper.checksum()
-
-
-def test_empty_file():
-    """Test empty file."""
-    scraper = Scraper("test/data/text_plain/invalid__empty.txt")
-    scraper.scrape()
-    assert not scraper.well_formed
-
-
-def test_missing_file():
-    """Test missing file."""
-    scraper = Scraper("missing_file", mimetype="application/pdf")
-    scraper.scrape()
-    assert not scraper.well_formed
-    assert len(scraper.info) == 1 and scraper.info[0]["class"] == "FileExists"
 
 
 @pytest.mark.parametrize(
     ["filename", "params", "expected_results"],
     [
         ("tests/data/image_png/valid_1.2.png", {},
-         {"_predefined_mimetype": "image/png", "_predefined_version": "1.0",
+         {"_detected_mimetype": "image/png", "_detected_version": "1.0",
           "well_formed": None}),
-        ("nonexistent_file", {},
-         {"_predefined_mimetype": None, "_predefined_version": None,
-          "well_formed": False}),
         ("tests/data/image_png/invalid_1.2_wrong_CRC.png", {},
-         {"_predefined_mimetype": "image/png", "_predefined_version": "1.0",
+         {"_detected_mimetype": "image/png", "_detected_version": "1.0",
           "well_formed": None}),
         ("tests/data/video_mp4/valid__h264_aac.mp4",
          {"mimetype": "video/mpeg"},
-         {"_predefined_mimetype": "video/mpeg", "_predefined_version": None,
+         {"_detected_mimetype": "video/mpeg", "_detected_version": None,
           "well_formed": None}),
         ("tests/data/application_pdf/valid_A-1a.pdf",
          {"mimetype": "application/pdf"},
-         {"_predefined_mimetype": "application/pdf",
-          "_predefined_version": "A-1a", "well_formed": None}),
-        ("missing_file",
-         {"mimetype": "application/pdf"},
-         {"_predefined_mimetype": "application/pdf",
-          "_predefined_version": None, "well_formed": False}),
+         {"_detected_mimetype": "application/pdf",
+          "_detected_version": "A-1a", "well_formed": None}),
     ]
 )
 def test_detect_filetype(filename, params, expected_results):
@@ -120,6 +96,7 @@ def test_detect_filetype(filename, params, expected_results):
                        attributes
     """
     # Filetype detection should work without scraping
+    # change it later to skip initial path validation
     scraper = Scraper(filename, **params)
     scraper.detect_filetype()
     for field, value in expected_results.items():
@@ -128,7 +105,7 @@ def test_detect_filetype(filename, params, expected_results):
     assert scraper.info
 
     # Even if scraping has been done previously, detection should erase all
-    # streams and other information
+    # streams and other information, except arguments given to scraper
     scraper.scrape()
     scraper.detect_filetype()
     for field, value in expected_results.items():
@@ -153,7 +130,7 @@ def test_charset_parameter(charset):
                       charset=charset)
     scraper.detect_filetype()
     # pylint: disable=protected-access
-    assert scraper._params["charset"] in [charset, "UTF-8"]
+    assert scraper._kwargs["charset"] in [charset, "UTF-8"]
 
 
 @pytest.mark.parametrize(
@@ -163,16 +140,6 @@ def test_charset_parameter(charset):
         (
             "tests/data/text_plain/valid__ascii.txt",
             "fi-dpres-recommended-file-format"
-        ),
-        # File that does not exist
-        (
-            "/this/path/does/not/exist",
-            "(:unav)"
-        ),
-        # Empty file
-        (
-            "tests/data/text_plain/invalid__empty.txt",
-            "fi-dpres-unacceptable-file-format"
         ),
         # Format version not accepted according to specification
         (
@@ -194,6 +161,7 @@ def test_charset_parameter(charset):
 )
 def test_grade(file_path, expected_grade):
     """Test that scraper returns correct digital preservation grade."""
+
     scraper = Scraper(file_path)
 
     # File can not be graded before scraping
@@ -259,26 +227,6 @@ class MockBytePath:
         return self.path
 
 
-@pytest.mark.parametrize("pathlike",
-                         ["tests/data/text_plain/valid__ascii.txt",
-                          Path("tests/data/text_plain/valid__ascii.txt"),
-                          b"tests/data/text_plain/valid__ascii.txt",
-                          MockBytePath(b"tests/data/text_plain/valid__ascii.txt")])
-def test_different_pathlike_types(pathlike):
-    scraper = Scraper(pathlike)
-    scraper.scrape()
-    assert scraper.well_formed
-
-
-@pytest.mark.parametrize("value", [None, 1, True, [], ()])
-def test_wrong_types(value):
-    with pytest.raises(TypeError) as type_error:
-        scraper = Scraper(value)
-        scraper.scrape()
-
-    assert str(type_error.value) == "Expected a PathLike type as filename."
-
-
 @pytest.mark.parametrize("path",
                          ["tests/data/audio_mpeg/invalid_contains_jpeg.mp3",
                           "tests/data/audio_mpeg/invalid_contains_png.mp3"])
@@ -292,6 +240,52 @@ def test_invalid_av_stream_combinations(path):
     assert scraper.well_formed is not True
     assert len(scraper.streams) == 3
     assert scraper.grade() == Grades.UNACCEPTABLE
+
+
+class TestPathValidation:
+    @pytest.mark.parametrize(
+            "pathlike",
+            [
+                "tests/data/text_plain/valid__ascii.txt",
+                Path("tests/data/text_plain/valid__ascii.txt"),
+                b"tests/data/text_plain/valid__ascii.txt",
+                MockBytePath(b"tests/data/text_plain/valid__ascii.txt")
+            ]
+        )
+    def test_different_pathlike_types(self, pathlike):
+        scraper = Scraper(pathlike)
+        scraper.scrape()
+        assert scraper.well_formed
+
+    @pytest.mark.parametrize("value", [None, 1, True, [], ()])
+    def test_wrong_types(self, value):
+        with pytest.raises(TypeError) as file_not_scrapable:
+            Scraper(value)
+
+        assert str(file_not_scrapable.value) == ("expected str, bytes or"
+               " os.PathLike object, not %s" % value.__class__.__name__)
+
+    @pytest.mark.parametrize(
+        "path, error_message, error",
+        [
+            (
+                "missing_file",
+                "A file couldn't be found from the path: missing_file",
+                FileNotFoundError
+            ),
+            (
+                "/dev/null",
+                "The file is not a regular file and can't be scrapable from"
+                + " the path: /dev/null",
+                FileIsNotScrapable
+            )
+        ]
+    )
+    def test_invalid_files(self, path, error_message, error):
+        """Test invalid file input"""
+        with pytest.raises(error) as err:
+            Scraper(path)
+        assert str(err.value) == error_message
 
 
 @pytest.mark.parametrize(('meta_classes', 'wellformed'), [
@@ -311,7 +305,7 @@ def test_results_merging(meta_class_fx, meta_classes, wellformed):
         results.append([meta_class_fx(meta_class)])
 
     scraper = Scraper(filename)
-    scraper._params["extractor_results"] = results
+    scraper._kwargs["extractor_results"] = results
     scraper.info = {}
     scraper._merge_results(True)
     assert scraper.well_formed == wellformed

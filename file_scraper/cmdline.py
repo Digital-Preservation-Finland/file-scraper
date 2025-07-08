@@ -4,12 +4,12 @@ Command line interface for file-scraper
 
 import json
 import logging
-
 import click
 
 from file_scraper.logger import LOGGER, enable_logging
 from file_scraper.schematron.schematron_scraper import SchematronScraper
 from file_scraper.scraper import Scraper
+from file_scraper.exceptions import FileIsNotScrapable
 from file_scraper.utils import ensure_text
 
 
@@ -20,7 +20,10 @@ def cli():
 
 # pylint: disable=too-many-arguments
 @cli.command("scrape-file")
-@click.argument("filename", type=click.Path(exists=True))
+@click.argument(
+    "filename",
+    type=click.Path()
+)
 @click.option("--skip-wellformed-check", "check_wellformed",
               default=True, flag_value=False,
               help="Don't check the file well-formedness, only scrape "
@@ -50,8 +53,8 @@ def cli():
 @click.option("--catalog-path",
               help="Specify the catalog environment for XML files.")
 def scrape_file(
-        filename, check_wellformed, tool_info, mimetype, version, verbose,
-        charset, delimiter, fields, separator, quotechar, schema,
+        filename, check_wellformed, tool_info, mimetype, version,
+        verbose, charset, delimiter, fields, separator, quotechar, schema,
         catalog_path):
     """
     Identify file type, collect metadata, and optionally check well-formedness.
@@ -70,6 +73,10 @@ def scrape_file(
         2: logging.DEBUG
     }
 
+    # Enable logging. If flag is provided an additional number of times,
+    # default to the highest possible verbosity.
+    enable_logging(level.get(verbose, logging.DEBUG))
+
     option_args = {"charset": charset, "delimiter": delimiter,
                    "fields": fields,
                    "separator": separator, "quotechar": quotechar,
@@ -77,15 +84,23 @@ def scrape_file(
 
     option_args = {k: v for k, v in option_args.items() if v is not None}
 
-    # Enable logging. If flag is provided an additional number of times,
-    # default to the highest possible verbosity.
-    enable_logging(level.get(verbose, logging.DEBUG))
-
     LOGGER.info("Additional scraper args provided: %s", option_args)
-    scraper = Scraper(filename, mimetype=mimetype, version=version,
-                      **option_args)
-    scraper.scrape(check_wellformed=check_wellformed)
+    try:
+        scraper = Scraper(filename, mimetype=mimetype, version=version,
+                          **option_args)
+    except (FileIsNotScrapable, IsADirectoryError, FileNotFoundError) as e:
+        raise click.BadParameter(e, param_hint="FILENAME")
 
+    scraper.scrape(check_wellformed=check_wellformed)
+    results = _collect_scraper_results(scraper, check_wellformed, tool_info)
+    click.echo(json.dumps(results, indent=4))
+
+
+def _collect_scraper_results(
+    scraper: Scraper,
+    check_wellformed: bool,
+    tool_info: bool
+):
     results = {
         "path": str(scraper.path),
         "MIME type": ensure_text(scraper.mimetype),
@@ -104,14 +119,11 @@ def scrape_file(
         if "ExtractorNotFound" in item["class"]:
             raise click.ClickException("Proper extractor was not found. The "
                                        "file was not analyzed.")
-
         if item["errors"]:
             errors[item["class"]] = item["errors"]
-
     if errors:
         results["errors"] = errors
-
-    click.echo(json.dumps(results, indent=4))
+    return results
 
 
 @cli.command("check-xml-schematron-features")

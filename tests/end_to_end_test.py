@@ -455,7 +455,7 @@ def test_invalid_combined(fullname, mimetype, version):
             pytest.skip(("[%s] mimetype mismatches with scraper "
                          "and scraper not found") % fullname)
 
-    assert not scraper.well_formed  # Should return either False or None
+    assert scraper.well_formed in [False, None]
     assert scraper.mimetype == mimetype or (
             fullname in UNAV_MIMETYPE_INVALID and scraper.mimetype == UNAV)
 

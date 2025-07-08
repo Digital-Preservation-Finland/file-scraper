@@ -2,16 +2,6 @@
 Test module for dummy.py
 
 This module tests the following extractor classes:
-    - FileExists
-        - Existing files, both well-formed and non-well-formed, are found and
-          their mimetype and streams are identified correctly whereas version
-          and well_formed should be reported as None. No errors should be
-          recorded.
-        - Non-existent files are reported as not well-formed and the fact that
-          the file does not exist is recorded in extractor errors. This behaviour
-          is independent of the given MIME type.
-        - Giving None as file path results in 'No filename given' being
-          reported in the extractor errors and well_formed is False.
     - ExtractorNotFound
         - well_formed is None.
         - MIME type and version are what is given to the extractor.
@@ -32,68 +22,12 @@ import pytest
 
 from file_scraper.defaults import UNAV
 from file_scraper.dummy.dummy_extractor import (
-    FileExists, ExtractorNotFound, MimeMatchExtractor,
+    ExtractorNotFound, MimeMatchExtractor,
     DetectedMimeVersionExtractor, DetectedMimeVersionMetadataExtractor)
 from tests.common import partial_message_included
 
 DEFAULTSTREAMS = {0: {"index": 0, "version": UNAV,
                       "stream_type": UNAV, "mimetype": UNAV}}
-
-
-@pytest.mark.parametrize(
-    "filepath",
-    [
-        "tests/data/image_gif/valid_1987a.gif",
-        "tests/data/image_gif/invalid_1987a_broken_header.gif",
-        "tests/data/image_gif/invalid__empty.gif",
-        "tests/data/application_pdf/valid_1.4.pdf"
-    ]
-)
-def test_existing_files(filepath):
-    """
-    Test that existent files are identified correctly.
-
-    :filepath: Existing test file name
-    """
-
-    extractor = FileExists(Path(filepath), None)
-    extractor.extract()
-
-    streams = DEFAULTSTREAMS.copy()
-
-    assert extractor.well_formed is None
-    assert not extractor.errors()
-    assert partial_message_included("was found", extractor.messages())
-    assert extractor.info()["class"] == "FileExists"
-    for stream_index, stream_metadata in streams.items():
-        scraped_metadata = extractor.streams[stream_index]
-        for key, value in stream_metadata.items():
-            assert getattr(scraped_metadata, key)() == value
-
-
-@pytest.mark.parametrize(
-    "filepath", "tests/data/image_gif/nonexistent_file.gif"
-)
-def test_nonexistent_files(filepath):
-    """
-    Test that non-existent files are identified correctly.
-
-    :filepath: Non-existing file path
-    """
-    extractor = FileExists(Path(filepath), None)
-    extractor.extract()
-
-    assert extractor.well_formed is False
-    assert partial_message_included("does not exist", extractor.errors())
-
-
-def test_none_filename():
-    """Test that giving None filename results in error."""
-    extractor = FileExists(None, None)
-    extractor.extract()
-
-    assert extractor.well_formed is False
-    assert partial_message_included("No filename given.", extractor.errors())
 
 
 @pytest.mark.parametrize(
@@ -118,9 +52,9 @@ def test_extractor_not_found(filepath):
 
     assert extractor.well_formed is False
     for stream_index, stream_metadata in streams.items():
-        scraped_metadata = extractor.streams[stream_index]
+        extracted_metadata = extractor.streams[stream_index]
         for key, value in stream_metadata.items():
-            assert getattr(scraped_metadata, key)() == value
+            assert getattr(extracted_metadata, key)() == value
 
 
 def test_extractor_not_found_with_given_mimetype_and_version():

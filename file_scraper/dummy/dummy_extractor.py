@@ -1,6 +1,4 @@
 """Dummy extractors."""
-import os
-
 from file_scraper.base import BaseExtractor
 from file_scraper.defaults import UNAV
 from file_scraper.dummy.dummy_model import (
@@ -20,7 +18,7 @@ class ExtractorNotFound(BaseExtractor):
     """Extractor for the case where extractor was not found."""
 
     def extract(self):
-        """No need to scrape anything, just collect."""
+        """No need to extract anything, just collect."""
         self._errors.append("Proper extractor was not found. "
                             "The file was not analyzed.")
         self.streams.append(
@@ -59,32 +57,12 @@ class NoWellformednessBaseExtractor(BaseExtractor):
         False - File is not well-formed (errors found)
         """
         valid = super().well_formed
-
-        return None if valid else valid
+        if valid:
+            return None
+        return False
 
     def tools(self):
         return {}
-
-
-class FileExists(NoWellformednessBaseExtractor):
-    """Extractor for the case where file was not found."""
-
-    def extract(self):
-        """Check if file exists."""
-        if self.filename:
-            path = self.filename
-
-        if not self.filename:
-            self._errors.append("No filename given.")
-        elif os.path.isfile(self.filename):
-            self._messages.append(
-                f"File {path} was found."
-            )
-        else:
-            self._errors.append(
-                f"File {path} does not exist."
-            )
-        self.streams.append(DummyMeta())
 
 
 class MimeMatchExtractor(NoWellformednessBaseExtractor):
@@ -106,7 +84,7 @@ class MimeMatchExtractor(NoWellformednessBaseExtractor):
 
     def extract(self):
         """
-        No need to scrape anything, just compare already collected metadata.
+        No need to extract anything, just compare already collected metadata.
         """
         mime = self._params.get("mimetype", UNAV)
         ver = self._params.get("version", UNAV)
