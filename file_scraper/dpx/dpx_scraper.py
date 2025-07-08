@@ -6,6 +6,7 @@ from dpx_validator import __version__ as dpx_version
 
 from file_scraper.base import BaseScraper
 from file_scraper.dpx.dpx_model import DpxMeta
+from file_scraper.logger import LOGGER
 
 
 class DpxScraper(BaseScraper):
@@ -30,8 +31,16 @@ class DpxScraper(BaseScraper):
                     "Unknown message type returned by "
                     "dpx_validator.api.validate_file"
                 )
+                LOGGER.error("Unknown message type returned by "
+                             "dpx_validator.api.validate_file")
         if valid:
             self._messages.append("is valid")
+            LOGGER.info(
+                "dpx-validator validated the file: " + str(self.filename) +
+                " as valid")
+        else:
+            LOGGER.info(
+                "dpx-validator invalidated the file: " + str(self.filename))
 
         self.streams = list(self.iterate_models(
             well_formed=valid, output=output, filename=self.filename))
