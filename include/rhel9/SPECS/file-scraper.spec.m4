@@ -43,6 +43,7 @@ Requires:       %{py3_dist ffmpeg-python}
 Requires:       %{py3_dist opf-fido}
 Requires:       %{py3_dist xml-helpers}
 Requires:       %{py3_dist dpres-file-formats}
+Requires:       %{py3_dist dpx-validator}
 Requires:       /usr/bin/ffmpeg
 Requires:       perl-Image-ExifTool
 Requires:       veraPDF
@@ -58,7 +59,6 @@ Conflicts:	ffmpeg-free
 Summary:        File scraper analysis tool - full installation
 Conflicts:      %{core_sp_name} < %{version}-%{release}, %{core_sp_name} > %{version}-%{release}
 Requires:       %{core_sp_name} = %{version}-%{release}
-Requires:       %{py3_dist dpx-validator}
 Requires:       %{py3_dist warctools}
 Requires:       dpres-xml-schemas
 Requires:       dbptk-developer
