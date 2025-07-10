@@ -36,8 +36,9 @@ class DpxScraper(BaseScraper):
         if valid:
             self._messages.append("is valid")
             LOGGER.info(
-                "dpx-validator validated the file: " + str(self.filename) +
-                " as valid")
+                "dpx-validator validated the file: %s as valid",
+                self.filename
+            )
         else:
             LOGGER.info(
                 "dpx-validator invalidated the file: " + str(self.filename))
