@@ -30,3 +30,4 @@ venv*/
 junit*.xml
 .coverage.*
 htmlcov/
+tags
