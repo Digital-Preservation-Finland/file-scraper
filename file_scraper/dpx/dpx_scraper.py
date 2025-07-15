@@ -18,7 +18,7 @@ class DpxScraper(BaseScraper):
     def scrape_file(self):
         """Scrape DPX."""
 
-        valid, output, logs = validate_file(self.filename, log=True)
+        valid, output, logs = validate_file(self.filename)
 
         for log in logs:
             msg_type, message = log
