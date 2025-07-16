@@ -26,6 +26,7 @@ import os
 from pathlib import Path
 
 import pytest
+from dpres_file_formats.defaults import Grades
 
 from file_scraper.scraper import Scraper
 from file_scraper.textfile.textfile_scraper import TextfileScraper
@@ -276,3 +277,14 @@ def test_wrong_types(value):
         scraper.scrape()
 
     assert str(type_error.value) == "Expected a PathLike type as filename."
+
+
+@pytest.mark.parametrize("path",
+                         ["tests/data/audio_mpeg/invalid_contains_jpeg.mp3",
+                          "tests/data/audio_mpeg/invalid_contains_png.mp3"])
+def test_invalid_av_stream_combinations(path):
+    scraper = Scraper(path)
+    scraper.scrape(check_wellformed=True)
+    assert scraper.well_formed is not True
+    assert len(scraper.streams) == 3
+    assert scraper.grade() == Grades.UNACCEPTABLE
