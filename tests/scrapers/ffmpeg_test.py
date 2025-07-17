@@ -428,7 +428,7 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
             {
                 "purpose": "Test invalid MPEG-1.",
                 "stdout_part": "",
-                "stderr_part": "end mismatch"
+                "stderr_part": "Warning MVs not available"
             },
             "video/mpeg"
         ),
@@ -446,7 +446,7 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
             {
                 "purpose": "Test invalid MPEG-2.",
                 "stdout_part": "",
-                "stderr_part": "end mismatch"
+                "stderr_part": "Warning MVs not available"
             },
             "video/mpeg"
         ),
