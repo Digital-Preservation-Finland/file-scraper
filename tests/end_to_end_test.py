@@ -233,6 +233,7 @@ UNAV_MIMETYPE_INVALID = [
     "tests/data/video_mp4/invalid__h264_aac_missing_data.mp4",
     "tests/data/video_x-matroska/invalid_4_ffv1_missing_data.mkv",
     "tests/data/video_MP2T/invalid__missing_data.ts",
+    "tests/data/audio_mpeg/invalid_1_missing_data.mp3",
     "tests/data/image_webp/invalid__missing_bitstream.webp",
     "tests/data/image_webp/invalid__missing_icc_profile.webp",
     "tests/data/image_webp/invalid__missing_image_data.webp",

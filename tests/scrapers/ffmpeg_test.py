@@ -487,7 +487,7 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
             "video/mp4"
         ),
         (
-            "invalid_1_missing_data.mp3",
+            "invalid_1_missing_header.mp3",
             {
                 "purpose": "Test invalid mp3.",
                 "stdout_part": "",
@@ -496,11 +496,11 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
             "audio/mpeg"
         ),
         (
-            "invalid_1_wrong_version.mp3",
+            "invalid_1_missing_data.mp3",
             {
                 "purpose": "Test invalid mp3.",
                 "stdout_part": "",
-                "stderr_part": "Error while decoding stream"
+                "stderr_part": "invalid new backstep"
             },
             "audio/mpeg"
         ),
