@@ -505,6 +505,15 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
             "audio/mpeg"
         ),
         (
+            "invalid_1_wrong_sampling_rate.mp3",
+            {
+                "purpose": "Test invalid mp3.",
+                "stdout_part": "",
+                "stderr_part": "Invalid data found when processing input"
+            },
+            "audio/mpeg"
+        ),
+        (
             "invalid__empty.mp3",
             {
                 "purpose": "Test empty mp3",
