@@ -283,6 +283,10 @@ def test_wrong_types(value):
                          ["tests/data/audio_mpeg/invalid_contains_jpeg.mp3",
                           "tests/data/audio_mpeg/invalid_contains_png.mp3"])
 def test_invalid_av_stream_combinations(path):
+    """
+    Test that files containing invalid stream combinations are rejected. In
+    this the files are mp3 files with embedded images.
+    """
     scraper = Scraper(path)
     scraper.scrape(check_wellformed=True)
     assert scraper.well_formed is not True
