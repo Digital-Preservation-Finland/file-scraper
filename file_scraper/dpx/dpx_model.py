@@ -16,7 +16,7 @@ class DpxMeta(BaseMeta):
         Initialize metadata model.
 
         :well_formed: Well-formed status from DPX scraper
-        :messages: Messages given by DPX scraper
+        :output: Messages given by DPX scraper
         :filename: DPX file name
         """
         self._well_formed = well_formed
