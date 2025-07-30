@@ -125,8 +125,7 @@ class MediainfoScraper(BaseScraper):
         :returns: Metadata model
         """
         for md_class in self._supported_metadata:
-            if md_class.is_supported(kwargs['mimetype'],
-                                     kwargs['version']):
+            if md_class.is_supported(kwargs['mimetype'], kwargs['version']):
                 md_object = md_class(kwargs['tracks'], kwargs['index'])
                 # Skip tracks that are not streams
                 if md_object.stream_type():

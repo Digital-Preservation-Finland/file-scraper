@@ -13,8 +13,6 @@ class BaseMediainfoMeta(BaseMeta):
     # pylint: disable=too-many-public-methods
     """Metadata models for streams scraped using MediainfoScraper."""
 
-    _handles = {}
-
     def __init__(self, tracks, index):
         """
         Initialize the metadata model.
@@ -746,6 +744,11 @@ class VersionlessFormatMeta(BaseMediainfoMeta):
 
 
 class ImageMediaInfoMeta(BaseMediainfoMeta):
+    """
+    Very simple metadata model for images, Mediainfo scraper needs to know
+    images that exist in containers, but more precise metadata can be gathered
+    with other scrapers
+    """
     _supported = {"image/jpeg": [""], "image/png": [""]}
     _allow_versions = True
 
