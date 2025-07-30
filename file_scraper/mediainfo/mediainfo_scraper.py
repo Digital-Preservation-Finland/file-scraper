@@ -125,8 +125,8 @@ class MediainfoScraper(BaseScraper):
         :returns: Metadata model
         """
         for md_class in self._supported_metadata:
-            if md_class.can_handle_stream(kwargs['mimetype'],
-                                          kwargs['version']):
+            if md_class.is_supported(kwargs['mimetype'],
+                                     kwargs['version']):
                 md_object = md_class(kwargs['tracks'], kwargs['index'])
                 # Skip tracks that are not streams
                 if md_object.stream_type():
@@ -150,10 +150,10 @@ class MediainfoScraper(BaseScraper):
             if track.istruncated == "Yes":
                 truncated = True
                 self._errors.append("The file is truncated.")
-            if track.track_type.lower() in ["audio", "video"]:
+            if track.track_type.lower() in ["audio", "video", "image"]:
                 track_found = True
         if not track_found:
-            self._errors.append("No audio or video tracks found.")
+            self._errors.append("No audio, video tracks or images found.")
         if truncated:
             self._errors.append("File contains a truncated track.")
 
@@ -191,6 +191,6 @@ class MediainfoScraper(BaseScraper):
                 "version": pymediaversion
             },
             "MediaInfoLib": {
-                    "version": libmediaversion
+                "version": libmediaversion
             }
         }

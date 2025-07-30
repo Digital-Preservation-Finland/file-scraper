@@ -128,7 +128,7 @@ from tests.scrapers.stream_dicts import (AIFF_AUDIO,
         ("invalid__empty.dv", {
             "purpose": "Test empty DV.",
             "stdout_part": "",
-            "stderr_part": "No audio or video tracks found"},
+            "stderr_part": "No audio, video tracks or images found."},
          "video/dv"),
     ])
 def test_mediainfo_scraper_mov(filename, result_dict, mimetype,
@@ -202,7 +202,7 @@ def test_mediainfo_scraper_mov(filename, result_dict, mimetype,
         ("invalid__empty.mkv", {
             "purpose": "Test empty MKV.",
             "stdout_part": "",
-            "stderr_part": "No audio or video tracks found"}),
+            "stderr_part": "No audio, video tracks or images found."}),
     ])
 def test_mediainfo_scraper_mkv(filename, result_dict, evaluate_scraper):
     """
@@ -247,7 +247,7 @@ def test_mediainfo_scraper_mkv(filename, result_dict, evaluate_scraper):
         ("invalid__empty.wav", {
             "purpose": "Test empty WAV.",
             "stdout_part": "",
-            "stderr_part": "No audio or video tracks found"}),
+            "stderr_part": "No audio, video tracks or images found."}),
     ])
 def test_mediainfo_scraper_wav(filename, result_dict, evaluate_scraper):
     """
@@ -288,7 +288,7 @@ def test_mediainfo_scraper_wav(filename, result_dict, evaluate_scraper):
         ("invalid__header_edited.flac", {
             "purpose": "Test invalid FLAC with broken header.",
             "stdout_part": "",
-            "stderr_part": "No audio or video tracks found."}),
+            "stderr_part": "No audio, video tracks or images found."}),
     ])
 def test_mediainfo_scraper_flac(filename, result_dict, evaluate_scraper):
     """
@@ -453,11 +453,11 @@ def test_mediainfo_scraper_wmv(filename, result_dict, evaluate_scraper):
         ("invalid_1_empty.m1v", {
             "purpose": "Test empty MPEG-1.",
             "stdout_part": "",
-            "stderr_part": "No audio or video tracks found"}),
+            "stderr_part": "No audio, video tracks or images found."}),
         ("invalid_2_empty.m2v", {
             "purpose": "Test empty MPEG-2.",
             "stdout_part": "",
-            "stderr_part": "No audio or video tracks found"})
+            "stderr_part": "No audio, video tracks or images found."})
     ])
 def test_mediainfo_scraper_mpeg(filename, result_dict, evaluate_scraper):
     """
@@ -519,7 +519,7 @@ def test_mediainfo_scraper_mpeg(filename, result_dict, evaluate_scraper):
             {
                 "purpose": "Test invalid MPEG-4.",
                 "stdout_part": "",
-                "stderr_part": "No audio or video tracks found"
+                "stderr_part": "No audio, video tracks or images found."
             }
         )
     ]
@@ -565,7 +565,7 @@ def test_mediainfo_scraper_mp4(filename, result_dict, evaluate_scraper):
             {
                 "purpose": "Test invalid m4a.",
                 "stdout_part": "",
-                "stderr_part": "No audio or video tracks found"
+                "stderr_part": "No audio, video tracks or images found."
             }
         )
     ]
@@ -604,7 +604,7 @@ def test_mediainfo_scraper_m4a(filename, result_dict, evaluate_scraper):
         ("invalid__empty.mp3", {
             "purpose": "Test empty mp3",
             "stdout_part": "",
-            "stderr_part": "No audio or video tracks found"})
+            "stderr_part": "No audio, video tracks or images found."})
     ])
 def test_mediainfo_scraper_mp3(filename, result_dict, evaluate_scraper):
     """
@@ -670,7 +670,7 @@ def test_mediainfo_scraper_mp3(filename, result_dict, evaluate_scraper):
             {
                 "purpose": "Test empty MPEG-TS.",
                 "stdout_part": "",
-                "stderr_part": "No audio or video tracks found"
+                "stderr_part": "No audio, video tracks or images found."
             }
         )
     ])
@@ -719,7 +719,7 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
             ("invalid__empty.mpg", {
                 "purpose": "Test empty MPEG-PS",
                 "stdout_part": "",
-                "stderr_part": "No audio or video tracks found."},
+                "stderr_part": "No audio, video tracks or images found."},
              "video/MP1S")
         ])
 def test_mediainfo_scraper_mpegps(filename, result_dict,

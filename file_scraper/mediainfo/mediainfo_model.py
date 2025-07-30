@@ -32,22 +32,6 @@ class BaseMediainfoMeta(BaseMeta):
         else:
             self._container = None
 
-    @classmethod
-    def can_handle_stream(cls, mimetype, version=None):
-        """Checks if this metadata model can handle certain streams. This is
-        used instead of is_supported, because mediainfo_scraper does not
-        support some file formats, but we need to be aware of them inside
-        containers regardless. One such case is av containers containing image
-        data.
-        """
-
-        supported = cls._supported | cls._handles
-        if mimetype not in supported:
-            return False
-        if version in supported[mimetype] + [None] or cls._allow_versions:
-            return True
-        return False
-
     @metadata()
     def mimetype(self):
         """Return mimetype for stream."""
@@ -762,7 +746,8 @@ class VersionlessFormatMeta(BaseMediainfoMeta):
 
 
 class ImageMediaInfoMeta(BaseMediainfoMeta):
-    _handles = {"image/jpeg": [""], "image/png": [""]}
+    _supported = {"image/jpeg": [""], "image/png": [""]}
+    _allow_versions = True
 
 
 class UnknownStreamFormatMeta(BaseMediainfoMeta):
