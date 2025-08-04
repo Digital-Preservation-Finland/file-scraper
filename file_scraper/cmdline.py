@@ -63,7 +63,7 @@ def cli():
                    "checks.")
 def scrape_file(
         filename, check_wellformed, tool_info, mimetype, version, verbose,
-        charset, delimeter, fields, separator, quotechar, no_network, schema,
+        charset, delimiter, fields, separator, quotechar, no_network, schema,
         schematron, schematron_verbose, cache, catalog_path, catalogs,
         extra_hash):
     """
@@ -83,7 +83,7 @@ def scrape_file(
         2: logging.DEBUG
     }
 
-    option_args = {"charset": charset, "delimeter": delimeter,
+    option_args = {"charset": charset, "delimiter": delimiter,
                    "fields": fields,
                    "separator": separator, "quotechar": quotechar,
                    "no_network": no_network, "schema": schema,
