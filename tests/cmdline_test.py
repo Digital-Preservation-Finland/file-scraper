@@ -98,34 +98,35 @@ def test_extra_arguments_with_space():
 def test_missing_value_in_extra_argument():
     file_path = DATA_PATH / "text_csv/valid__ascii.csv"
     runner = CliRunner()
-    result = runner.invoke(cli, ["scrape-file", str(file_path), '--fields'])
-    assert result.exit_code == 1
-    assert result.stdout == "Error: No value found for parameter 'fields'\n"
+    result = runner.invoke(cli, ["scrape-file", "--fields", str(file_path)])
+    assert result.exit_code == 2
+    assert "Error: Missing argument 'FILENAME'." in result.stdout
 
 
 def test_argument_after_argument():
     file_path = DATA_PATH / "text_csv/valid__ascii.csv"
     runner = CliRunner()
-    result = runner.invoke(cli, ["scrape-file", str(file_path), '--fields',
-                                 '--quotechar="\""'])
-    assert result.exit_code == 1
-    assert result.stdout == "Error: No value found for parameter 'fields'\n"
+    result = runner.invoke(cli, ["scrape-file", '--fields', '--quotechar', '"',
+                                 str(file_path)])
+    assert result.exit_code == 2
+    assert "Invalid value for 'FILENAME': Path '\"' does not exist." in result.stdout
 
 
 def test_incorrect_extra_argument():
     file_path = DATA_PATH / "application_pdf/valid_A-1a.pdf"
     runner = CliRunner()
-    result = runner.invoke(cli, ["scrape-file", str(file_path), "abc"])
-    assert result.exit_code == 1
-    assert result.stdout == ("Error: Unexpected positional "
-                             "argument 'abc' encountered\n")
+    result = runner.invoke(cli, ["scrape-file", "--abc", str(file_path)])
+    assert result.exit_code == 2
+    assert "Error: Invalid value for 'FILENAME': Path '--abc' does not exist." in result.stdout
 
 
 def test_mime_type_cases():
     file_path = DATA_PATH / "application_pdf/valid_1.2.pdf"
 
     runner = CliRunner()
-    result = runner.invoke(cli, ["scrape-file", "--mimetype", "Application/pdf", str(file_path)])
+    result = runner.invoke(cli,
+                           ["scrape-file", "--mimetype", "Application/pdf",
+                            str(file_path)])
     assert result.exit_code == 0
     assert json.loads(result.stdout)["well-formed"] == True
 

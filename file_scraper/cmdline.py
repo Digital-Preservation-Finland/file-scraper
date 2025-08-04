@@ -2,7 +2,6 @@
 Command line interface for file-scraper
 """
 
-
 import json
 import logging
 
@@ -22,7 +21,6 @@ def cli():
 @cli.command("scrape-file", context_settings={'ignore_unknown_options': True,
                                               'allow_extra_args': True})
 @click.argument("filename", type=click.Path(exists=True))
-@click.argument("scraper_args", nargs=-1, type=click.UNPROCESSED)
 @click.option("--skip-wellformed-check", "check_wellformed",
               default=True, flag_value=False,
               help="Don't check the file well-formedness, only scrape "
@@ -37,23 +35,40 @@ def cli():
 @click.option(
     "--verbose", "-v", count=True,
     help=(
-        "Print detailed information about execution. "
-        "Can be provided twice for additional verbosity."
+            "Print detailed information about execution. "
+            "Can be provided twice for additional verbosity."
     )
 )
-@click.pass_context
+@click.option("--charset", help="Specify the encoding used in text files.")
+@click.option("--delimiter",
+              help="Specify the delimiter in CSV files.")
+@click.option("--fields", help="Specify the headers in CSV files.")
+@click.option("--separator",
+              help="Specify the separator (line terminator) in CSV files.")
+@click.option("--quotechar", help="Specify the quote character in CSV files.")
+@click.option("--no_network", type=click.BOOL,
+              help="Disallow network usage for XML files.")
+@click.option("--schema", help="Specify the schema file for XML files.")
+@click.option("--schematron",
+              help="Specify the schematron file for XML schematron checks.")
+@click.option("--schematron_verbose", type=click.BOOL,
+              help="Specify the verboseness for XML schematron checks")
+@click.option("--cache", type=click.BOOL,
+              help="Specify caching for XML schematron checks.")
+@click.option("--catalog_path",
+              help="Specify the catalog environment for XML files.")
+@click.option("--catalogs", help="Use local catalog schemas for XML files.")
+@click.option("--extra_hash",
+              help="Hash of related abstract patterns for XML schematron checks.")
 def scrape_file(
-        ctx, filename, scraper_args, check_wellformed, tool_info, mimetype,
-        version, verbose):
+        filename, check_wellformed, tool_info, mimetype, version, verbose,
+        charset, delimeter, fields, separator, quotechar, no_network, schema,
+        schematron, schematron_verbose, cache, catalog_path, catalogs,
+        extra_hash):
     """
     Identify file type, collect metadata, and optionally check well-formedness.
-
-    In addition to the given options, the user can provide any extra options
-    after FILENAME that are passed onto the scraper. These options must be
-    in the long form, e.g. "--charset=UTF-8" or "--charset UTF-8".
     \f
 
-    :ctx: Context object
     :filename: Path to the file that should be scraped
     :check_wellformed: Flag whether the scraper checks wellformedness
     :tool_info: Flag whether the scraper includes messages from different 3rd
@@ -67,14 +82,21 @@ def scrape_file(
         2: logging.DEBUG
     }
 
+    option_args = {"charset": charset, "delimeter": delimeter,
+                   "fields": fields,
+                   "separator": separator, "quotechar": quotechar,
+                   "no_network": no_network, "schema": schema,
+                   "schematron": schematron, "verbose": schematron_verbose,
+                   "cache": cache, "catalog_path": catalog_path,
+                   "catalogs": catalogs,
+                   "extra_hash": extra_hash}
+
     # Enable logging. If flag is provided an additional number of times,
     # default to the highest possible verbosity.
     enable_logging(level.get(verbose, logging.DEBUG))
 
-    LOGGER.info("Additional scraper args provided: %s", scraper_args)
-
     scraper = Scraper(filename, mimetype=mimetype, version=version,
-                      **_extra_options_to_dict(scraper_args))
+                      **option_args)
     scraper.scrape(check_wellformed=check_wellformed)
 
     results = {
@@ -103,67 +125,6 @@ def scrape_file(
         results["errors"] = errors
 
     click.echo(json.dumps(results, indent=4))
-
-
-def _extra_options_to_dict(args):
-    """
-    Create a dict from the extra options and return it.
-
-    If string representations of boolean values (e.g. "True") are encountered,
-    their boolean counterparts are used.
-
-    These extra parameters are expected to be in format `--key=value` or
-    `--key value`. Missing values or encountered positional arguments raise a
-    ClickException with an explanatory message to be printed to the user by
-    click.
-
-    :args: A list of arguments that were not handled by click.
-    :returns: A dictionary containing option names (as dictionary keys) and
-              their values.
-    """
-    option_dict = {}
-    next_option_index = 0
-    while next_option_index < len(args):
-        current_option = args[next_option_index]
-
-        if current_option.find("--") != 0:
-            raise click.ClickException(
-                f"Unexpected positional argument "
-                f"'{current_option}' encountered")
-        current_option = current_option.lstrip("--")
-
-        if "=" in current_option:  # --key=value
-            [key, value] = current_option.split("=", 1)
-            next_option_index += 1
-        else:  # --key value
-            key = current_option
-
-            try:
-                value = args[next_option_index + 1]
-            except IndexError:
-                # ClickException is a special type of exception that signals to
-                # the user that not everything went well. No need for the
-                # enhanced stack trace there.
-                # pylint: disable=raise-missing-from
-                raise click.ClickException(
-                    f"No value found for parameter '{key}'")
-
-            if value[0] == "-":
-                raise click.ClickException(
-                    f"No value found for parameter '{key}'")
-            next_option_index += 2
-        option_dict[key] = _string_to_bool(value)
-
-    return option_dict
-
-
-def _string_to_bool(element):
-    if element.lower() == "true":
-        element = True
-    elif element.lower() == "false":
-        element = False
-
-    return element
 
 
 if __name__ == "__main__":

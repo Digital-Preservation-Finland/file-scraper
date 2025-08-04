@@ -218,7 +218,7 @@ Command line tool
 
 The file scraper has a command line tool for scraping individual files. After installing the file-scraper package, it can be used with::
 
-    scraper scrape-file [OPTIONS] FILENAME -- [EXTRA PARAMETERS]
+    scraper scrape-file [OPTIONS] FILENAME
 
 The options that can be given to the tool are:
 
@@ -226,11 +226,11 @@ The options that can be given to the tool are:
     * Print tool info: ``--tool-info``. Include errors and messages from different 3rd party tools that were used.
     * Specify MIME type: ``--mimetype=<mimetype>``
     * Specify version: ``--version=<version>``
+    * Also additional arguments specified earlier can be used as options. Note that XML Schematron's verbose must used as schematron_verbose, since there is a naming conflict.
 
-In addition to these specific options, the user can provide any extra options that will then be passed onto the scraper.
-`--` must be used to separate known arguments and filename from the extra options.
-These options must be in the long form, e.g. ``--charset=UTF-8`` or ``--charset UTF-8``.
-Only string and boolean values are currently accepted.
+All possible options can be obtained with::
+
+    scraper scrape-file --help
 
 The tool will always print out detector/scraper errors if there are any.
 
