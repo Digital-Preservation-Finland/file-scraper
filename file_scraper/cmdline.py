@@ -59,7 +59,8 @@ def cli():
               help="Specify the catalog environment for XML files.")
 @click.option("--catalogs", help="Use local catalog schemas for XML files.")
 @click.option("--extra_hash",
-              help="Hash of related abstract patterns for XML schematron checks.")
+              help="Hash of related abstract patterns for XML schematron "
+                   "checks.")
 def scrape_file(
         filename, check_wellformed, tool_info, mimetype, version, verbose,
         charset, delimeter, fields, separator, quotechar, no_network, schema,
@@ -95,6 +96,7 @@ def scrape_file(
     # default to the highest possible verbosity.
     enable_logging(level.get(verbose, logging.DEBUG))
 
+    LOGGER.info("Additional scraper args provided: %s", option_args)
     scraper = Scraper(filename, mimetype=mimetype, version=version,
                       **option_args)
     scraper.scrape(check_wellformed=check_wellformed)
