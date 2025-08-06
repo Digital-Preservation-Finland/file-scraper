@@ -58,8 +58,6 @@ class SchematronScraper(BaseScraper):
         """
         Return True if the MIME type and version are supported.
 
-        We use this scraper only with a schematron file.
-
         :mimetype: Identified mimetype
         :version: Identified version (if needed)
         :check_wellformed: True for the full well-formed check, False for just
@@ -69,8 +67,6 @@ class SchematronScraper(BaseScraper):
         """
         if params is None:
             params = {}
-        if "schematron" not in params:
-            return False
         return super().is_supported(
             mimetype, version, check_wellformed, params)
 

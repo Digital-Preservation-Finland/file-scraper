@@ -24,8 +24,6 @@ class LxmlScraper(BaseScraper):
         """
         Return True if given MIME type and version are supported.
 
-        This is not a Schematron scraper, we skip this in such case.
-
         :mimetype: Identified mimetype
         :version: Identified version (if needed)
         :check_wellformed: True for the full well-formed check, False for just
@@ -35,8 +33,6 @@ class LxmlScraper(BaseScraper):
         """
         if params is None:
             params = {}
-        if "schematron" in params:
-            return False
         if mimetype == "text/xml" and check_wellformed:
             return True
         return super().is_supported(mimetype, version,

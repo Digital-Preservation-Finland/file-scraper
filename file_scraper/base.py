@@ -2,7 +2,7 @@
 
 import abc
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Iterable, Callable
 
 from file_scraper.defaults import UNAP, UNAV
 from file_scraper.utils import (metadata, is_metadata, filter_unwanted_chars)
@@ -170,7 +170,7 @@ class BaseScraper(_BaseScraperDetector):
             f"MIME type {mimetype} with version {version} is not supported."
         )
 
-    def iterate_models(self, **kwargs):
+    def iterate_models(self, **kwargs) -> Iterable["BaseMeta"]:
         """
         Iterate Scraper models.
 
@@ -255,7 +255,7 @@ class BaseMeta:
             return True
         return False
 
-    def iterate_metadata_methods(self):
+    def iterate_metadata_methods(self) -> Iterable[Callable[[], str]]:
         """Iterate through all metadata methods."""
         for method in dir(self):
             if is_metadata(getattr(self, method)):

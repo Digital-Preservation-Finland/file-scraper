@@ -79,8 +79,6 @@ class XmllintScraper(BaseScraper):
         """
         Return True if MIME type and version are supported.
 
-        This is not a Schematron scraper, so if params contain "schematron",
-        False is returned.
 
         :mimetype: Identified mimetype
         :version: Identified version (if needed)
@@ -91,8 +89,6 @@ class XmllintScraper(BaseScraper):
         """
         if params is None:
             params = {}
-        if "schematron" in params:
-            return False
         return super().is_supported(mimetype, version,
                                     check_wellformed,
                                     params)

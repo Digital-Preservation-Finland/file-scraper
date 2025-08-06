@@ -107,8 +107,6 @@ class XmlFileMagicMeta(TextMagicBaseMeta):
         """
         Return True if given MIME type and version are supported.
 
-        This is not a Schematron scraper, skip this in such case.
-
         :mimetype: Identified mimetype
         :version: Identified version (if needed)
         :params: Extra parameters needed for the scraper
@@ -116,8 +114,6 @@ class XmlFileMagicMeta(TextMagicBaseMeta):
         """
         if params is None:
             params = {}
-        if "schematron" in params:
-            return False
         return super().is_supported(mimetype, version,
                                     params)
 
