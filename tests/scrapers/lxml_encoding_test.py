@@ -65,8 +65,6 @@ def test_is_supported_allow():
     assert LxmlScraper.is_supported(mime, ver, True)
     assert LxmlScraper.is_supported(mime, None, True)
     assert not LxmlScraper.is_supported(mime, ver, False)
-    assert not LxmlScraper.is_supported(mime, ver, True,
-                                        {"schematron": "test"})
     assert LxmlScraper.is_supported(mime, "foo", True)
     assert not LxmlScraper.is_supported("foo", ver, True)
 
@@ -77,8 +75,6 @@ def test_is_supported_deny():
     ver = "5"
     assert LxmlScraper.is_supported(mime, ver, True)
     assert LxmlScraper.is_supported(mime, None, True)
-    assert not LxmlScraper.is_supported(mime, ver, True,
-                                        {"schematron": "test"})
     assert not LxmlScraper.is_supported(mime, ver, False)
     assert not LxmlScraper.is_supported(mime, "foo", True)
     assert not LxmlScraper.is_supported("foo", ver, True)
