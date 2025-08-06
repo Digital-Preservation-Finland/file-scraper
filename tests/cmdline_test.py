@@ -117,7 +117,7 @@ def test_incorrect_extra_argument():
     runner = CliRunner()
     result = runner.invoke(cli, ["scrape-file", "--abc", str(file_path)])
     assert result.exit_code == 2
-    assert "Error: Invalid value for 'FILENAME': Path '--abc' does not exist." in result.stdout
+    assert "Error: No such option: --abc" in result.stdout
 
 
 def test_mime_type_cases():

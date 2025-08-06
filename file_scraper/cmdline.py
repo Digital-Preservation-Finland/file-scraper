@@ -18,8 +18,7 @@ def cli():
 
 
 # pylint: disable=too-many-arguments
-@cli.command("scrape-file", context_settings={'ignore_unknown_options': True,
-                                              'allow_extra_args': True})
+@cli.command("scrape-file")
 @click.argument("filename", type=click.Path(exists=True))
 @click.option("--skip-wellformed-check", "check_wellformed",
               default=True, flag_value=False,
