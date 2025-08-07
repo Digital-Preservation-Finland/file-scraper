@@ -46,9 +46,16 @@ def cli():
 @click.option("--separator",
               help="Specify the separator (line terminator) in CSV files.")
 @click.option("--quotechar", help="Specify the quote character in CSV files.")
+@click.option("--schema", help="Specify the schema file for XML files.")
+@click.option("--catalogs", help="Use local catalog schemas for XML files.")
+@click.option("--no_network", type=click.BOOL,
+              help="Disallow network usage for XML files.")
+@click.option("--catalog_path",
+              help="Specify the catalog environment for XML files.")
 def scrape_file(
         filename, check_wellformed, tool_info, mimetype, version, verbose,
-        charset, delimiter, fields, separator, quotechar):
+        charset, delimiter, fields, separator, quotechar, schema, catalogs,
+        no_network, catalog_path):
     """
     Identify file type, collect metadata, and optionally check well-formedness.
     \f
@@ -68,7 +75,9 @@ def scrape_file(
 
     option_args = {"charset": charset, "delimiter": delimiter,
                    "fields": fields,
-                   "separator": separator, "quotechar": quotechar}
+                   "separator": separator, "quotechar": quotechar,
+                   "schema": schema, "catalogs": catalogs,
+                   "no_network": no_network, "catalog_path": catalog_path}
 
     # Enable logging. If flag is provided an additional number of times,
     # default to the highest possible verbosity.
