@@ -153,3 +153,24 @@ def test_verbose_flag(flag, expected_output, caplog):
     result = runner.invoke(cli, ["scrape-file", flag, str(file_path)])
 
     assert expected_output in result.stderr
+
+
+def test_valid_schematron_command():
+    runner = CliRunner()
+    result = runner.invoke(cli, ["check-xml-schematron-features",
+                                 "--schematron",
+                                 "tests/data/text_xml/supplementary/local.sch",
+                                 "tests/data/text_xml/valid_1.0_well_formed.xml"])
+    result_json = json.loads(result.stdout)
+    assert result_json["well-formed"] == True
+    assert result_json["MIME type"] == "text/xml"
+    assert result_json["version"] == "1.0"
+
+def test_invalid_schematron_command():
+    runner = CliRunner()
+    result = runner.invoke(cli, ["check-xml-schematron-features",
+                                 "--schematron",
+                                 "tests/data/text_xml/supplementary/local.sch",
+                                 "tests/data/text_xml/invalid_1.0_local_xsd.xml"])
+    result_json = json.loads(result.stdout)
+    assert result_json["well-formed"] == False
