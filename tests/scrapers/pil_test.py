@@ -1,12 +1,12 @@
 """
-Tests for PIL scraper.
+Tests for PIL extractor.
 
 This module tests that:
     - The MIME type, version, streams and well-formedness are scraped
       correctly from well-formed tif, jpg, jp2, png, gif and WebP files with
-      scraper messages containing 'successfully'
+      extractor messages containing 'successfully'
     - These are also scraped correctly from files of same type with errors
-      such as missing data, broken header or empty file, with scraper errors
+      such as missing data, broken header or empty file, with extractor errors
       containing 'Error in analyzing file'.
     - The following MIME type and version pairs are supported both with and
       without well-formedness check:
@@ -25,7 +25,7 @@ import PIL
 import pytest
 
 from file_scraper.defaults import UNAV, UNAP
-from file_scraper.pil.pil_scraper import PilScraper
+from file_scraper.pil.pil_extractor import PilExtractor
 from tests.common import (parse_results, partial_message_included)
 
 VALID_MSG = "successfully"
@@ -112,9 +112,9 @@ def _new_pil_version(version):
             "streams": {0: STREAM_INVALID.copy()}}),
     ]
 )
-def test_scraper_tif(filename, result_dict, evaluate_scraper):
+def test_extractor_tif(filename, result_dict, evaluate_extractor):
     """
-    Test scraper with tiff files.
+    Test extractor with tiff files.
 
     :filename: Test file name
     :result_dict: Result dict containing the test purpose, parts of
@@ -128,20 +128,20 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
     else:
         correct.stdout_part = ""
         correct.stderr_part = INVALID_MSG
-    scraper = PilScraper(filename=correct.filename, mimetype="image/tiff")
-    scraper.scrape_file()
+    extractor = PilExtractor(filename=correct.filename, mimetype="image/tiff")
+    extractor.scrape_file()
 
     if correct.well_formed is not False:
         for index, _ in enumerate(correct.streams):
             correct.streams[index]["version"] = UNAV
-        evaluate_scraper(scraper, correct)
+        evaluate_extractor(extractor, correct)
     else:
-        assert scraper.well_formed is False
+        assert extractor.well_formed is False
         assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
+                                        extractor.messages())
         assert partial_message_included(correct.stderr_part,
-                                        scraper.errors())
-        assert not scraper.streams
+                                        extractor.errors())
+        assert not extractor.streams
 
 
 @pytest.mark.parametrize(
@@ -158,9 +158,9 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
             "streams": {0: STREAM_INVALID.copy()}})
     ]
 )
-def test_scraper_dng(filename, result_dict, evaluate_scraper):
+def test_extractor_dng(filename, result_dict, evaluate_extractor):
     """
-    Test scraper with dng files.
+    Test extractor with dng files.
 
     :filename: Test file name
     :result_dict: Result dict containing the test purpose and expected streams"
@@ -175,18 +175,18 @@ def test_scraper_dng(filename, result_dict, evaluate_scraper):
         correct.stdout_part = ""
         correct.stderr_part = INVALID_MSG
     correct.streams[0]["version"] = UNAV
-    scraper = PilScraper(filename=correct.filename,
-                         mimetype="image/x-adobe-dng")
-    scraper.scrape_file()
+    extractor = PilExtractor(filename=correct.filename,
+                           mimetype="image/x-adobe-dng")
+    extractor.scrape_file()
     if correct.well_formed is not False:
-        evaluate_scraper(scraper, correct)
+        evaluate_extractor(extractor, correct)
     else:
-        assert scraper.well_formed is False
+        assert extractor.well_formed is False
         assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
+                                        extractor.messages())
         assert partial_message_included(correct.stderr_part,
-                                        scraper.errors())
-        assert not scraper.streams
+                                        extractor.errors())
+        assert not extractor.streams
 
 
 @pytest.mark.parametrize(
@@ -208,9 +208,9 @@ def test_scraper_dng(filename, result_dict, evaluate_scraper):
             "streams": {0: STREAM_INVALID.copy()}}),
     ]
 )
-def test_scraper_jpg(filename, result_dict, evaluate_scraper):
+def test_extractor_jpg(filename, result_dict, evaluate_extractor):
     """
-    Test scraper with jpeg files.
+    Test extractor with jpeg files.
 
     :filename: Test file name
     :result_dict: Result dict containing the test purpose, parts of
@@ -233,18 +233,18 @@ def test_scraper_jpg(filename, result_dict, evaluate_scraper):
         correct.stdout_part = ""
         correct.stderr_part = INVALID_MSG
 
-    scraper = PilScraper(filename=correct.filename, mimetype="image/jpeg")
-    scraper.scrape_file()
+    extractor = PilExtractor(filename=correct.filename, mimetype="image/jpeg")
+    extractor.scrape_file()
 
     if correct.well_formed is not False:
-        evaluate_scraper(scraper, correct)
+        evaluate_extractor(extractor, correct)
     else:
-        assert scraper.well_formed is False
+        assert extractor.well_formed is False
         assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
+                                        extractor.messages())
         assert partial_message_included(correct.stderr_part,
-                                        scraper.errors())
-        assert not scraper.streams
+                                        extractor.errors())
+        assert not extractor.streams
 
 
 @pytest.mark.parametrize(
@@ -261,9 +261,9 @@ def test_scraper_jpg(filename, result_dict, evaluate_scraper):
             "streams": {0: STREAM_INVALID.copy()}}),
     ]
 )
-def test_scraper_jp2(filename, result_dict, evaluate_scraper):
+def test_extractor_jp2(filename, result_dict, evaluate_extractor):
     """
-    Test scraper with jp2 files.
+    Test extractor with jp2 files.
 
     :filename: Test file name
     :result_dict: Result dict containing the test purpose, parts of
@@ -277,18 +277,18 @@ def test_scraper_jp2(filename, result_dict, evaluate_scraper):
     else:
         correct.stdout_part = ""
         correct.stderr_part = INVALID_MSG
-    scraper = PilScraper(filename=correct.filename, mimetype="image/jp2")
-    scraper.scrape_file()
+    extractor = PilExtractor(filename=correct.filename, mimetype="image/jp2")
+    extractor.scrape_file()
 
     if correct.well_formed is not False:
-        evaluate_scraper(scraper, correct)
+        evaluate_extractor(extractor, correct)
     else:
-        assert scraper.well_formed is False
+        assert extractor.well_formed is False
         assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
+                                        extractor.messages())
         assert partial_message_included(correct.stderr_part,
-                                        scraper.errors())
-        assert not scraper.streams
+                                        extractor.errors())
+        assert not extractor.streams
 
 
 @pytest.mark.parametrize(
@@ -318,9 +318,9 @@ def test_scraper_jp2(filename, result_dict, evaluate_scraper):
             "streams": {0: STREAM_INVALID.copy()}}),
     ]
 )
-def test_scraper_png(filename, result_dict, evaluate_scraper):
+def test_extractor_png(filename, result_dict, evaluate_extractor):
     """
-    Test scraper with png files.
+    Test extractor with png files.
 
     :filename: Test file name
     :result_dict: Result dict containing the test purpose, parts of
@@ -335,17 +335,17 @@ def test_scraper_png(filename, result_dict, evaluate_scraper):
     else:
         correct.stdout_part = ""
         correct.stderr_part = INVALID_MSG
-    scraper = PilScraper(filename=correct.filename, mimetype="image/png")
-    scraper.scrape_file()
+    extractor = PilExtractor(filename=correct.filename, mimetype="image/png")
+    extractor.scrape_file()
 
     if correct.well_formed is not False:
-        evaluate_scraper(scraper, correct)
+        evaluate_extractor(extractor, correct)
     else:
-        assert scraper.well_formed is False
+        assert extractor.well_formed is False
         assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
-        assert partial_message_included(correct.stderr_part, scraper.errors())
-        assert not scraper.streams
+                                        extractor.messages())
+        assert partial_message_included(correct.stderr_part, extractor.errors())
+        assert not extractor.streams
 
 
 @pytest.mark.parametrize(
@@ -377,9 +377,9 @@ def test_scraper_png(filename, result_dict, evaluate_scraper):
             "streams": {0: STREAM_INVALID.copy()}})
     ]
 )
-def test_scraper_gif(filename, result_dict, evaluate_scraper):
+def test_extractor_gif(filename, result_dict, evaluate_extractor):
     """
-    Test scraper with gif files.
+    Test extractor with gif files.
 
     :filename: Test file name
     :result_dict: Result dict containing the test purpose, parts of
@@ -404,18 +404,18 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
         correct.stdout_part = ""
         correct.stderr_part = INVALID_MSG
 
-    scraper = PilScraper(filename=correct.filename, mimetype="image/gif")
-    scraper.scrape_file()
+    extractor = PilExtractor(filename=correct.filename, mimetype="image/gif")
+    extractor.scrape_file()
 
     if correct.well_formed is not False:
-        evaluate_scraper(scraper, correct)
+        evaluate_extractor(extractor, correct)
     else:
-        assert scraper.well_formed is False
+        assert extractor.well_formed is False
         assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
+                                        extractor.messages())
         assert partial_message_included(correct.stderr_part,
-                                        scraper.errors())
-        assert not scraper.streams
+                                        extractor.errors())
+        assert not extractor.streams
 
 
 @pytest.mark.parametrize(
@@ -444,7 +444,7 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
             "streams": {0: STREAM_VALID_RGB.copy()}}),
     ]
 )
-def test_scraper_webp(filename, result_dict, evaluate_scraper):
+def test_extractor_webp(filename, result_dict, evaluate_extractor):
     """Test screaper with WebP files.
 
     :filename: Test file name
@@ -460,18 +460,18 @@ def test_scraper_webp(filename, result_dict, evaluate_scraper):
         correct.stderr_part = INVALID_MSG
 
     correct.streams[0]["version"] = UNAP
-    scraper = PilScraper(filename=correct.filename, mimetype="image/webp")
-    scraper.scrape_file()
+    extractor = PilExtractor(filename=correct.filename, mimetype="image/webp")
+    extractor.scrape_file()
 
     if correct.well_formed is not False:
-        evaluate_scraper(scraper, correct)
+        evaluate_extractor(extractor, correct)
     else:
-        assert scraper.well_formed is False
+        assert extractor.well_formed is False
         assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
+                                        extractor.messages())
         assert partial_message_included(correct.stderr_part,
-                                        scraper.errors())
-        assert not scraper.streams
+                                        extractor.errors())
+        assert not extractor.streams
 
 
 @pytest.mark.parametrize(
@@ -492,14 +492,14 @@ def test_is_supported(mime, ver):
     :mime: MIME type
     :ver: File format version
     """
-    assert PilScraper.is_supported(mime, ver, True)
-    assert PilScraper.is_supported(mime, None, True)
-    assert PilScraper.is_supported(mime, ver, False)
-    assert PilScraper.is_supported(mime, "foo", True)
-    assert not PilScraper.is_supported("foo", ver, True)
+    assert PilExtractor.is_supported(mime, ver, True)
+    assert PilExtractor.is_supported(mime, None, True)
+    assert PilExtractor.is_supported(mime, ver, False)
+    assert PilExtractor.is_supported(mime, "foo", True)
+    assert not PilExtractor.is_supported("foo", ver, True)
 
 
 def test_tools():
     """Test that tools give version"""
-    scraper = PilScraper(filename=Path(""), mimetype="")
-    assert scraper.tools()["Pillow"]["version"][0].isdigit()
+    extractor = PilExtractor(filename=Path(""), mimetype="")
+    assert extractor.tools()["Pillow"]["version"][0].isdigit()

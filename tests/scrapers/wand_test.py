@@ -1,60 +1,60 @@
 """
-Tests for ImageMagick scraper.
+Tests for ImageMagick extractor.
 
 This module tests that:
     - streams and well-formedness are scraped correctly for tiff files.
-        - For valid files containing one or more images, scraper messages
+        - For valid files containing one or more images, extractor messages
           contain "successfully".
-        - For file where payload has been altered, scraper errors contain
+        - For file where payload has been altered, extractor errors contain
           "Failed to allocate memory for to read TIFF directory (0 elements of
           12 bytes each)."
-        - For file with wrong byte order reported in the header, scraper errors
+        - For file with wrong byte order reported in the header, extractor errors
           contain "Not a TIFF file, bad version number 10752".
-        - For an empty file, scraper errors contain "Cannot read TIFF header."
+        - For an empty file, extractor errors contain "Cannot read TIFF header."
     - streams and well-formedness are scraped correctly for dng files.
-        - For valid files, scraper messages contain "successfully".
-        - For invalid file with edited header, scraper errors contain "unable
+        - For valid files, extractor messages contain "successfully".
+        - For invalid file with edited header, extractor errors contain "unable
           to open image".
-        - For empty file, scraper errors contain "unable to open image".
+        - For empty file, extractor errors contain "unable to open image".
     - streams and well-formedness are scraped correctly for jpeg files.
-        - For well-formed files, scraper messages contain "successfully".
-        - For file with altered payload, scraper errors contain "Bogus marker
+        - For well-formed files, extractor messages contain "successfully".
+        - For file with altered payload, extractor errors contain "Bogus marker
           length".
-        - For file without start marker, scraper errors contain "starts with
+        - For file without start marker, extractor errors contain "starts with
           0xff 0xe0".
-        - For empty file, scraper errors contain "insufficient image data in
+        - For empty file, extractor errors contain "insufficient image data in
           file".
         - For Exif JPEGs, version is interpreted and set
         - For JFIFs, version is unavailable
     - streams and well-formedness are scraped correctly for jp2 files.
-        - For well-formed files, scraper messages contain "successfully".
-        - For an empty file, scraper errors contain "MagickReadImage returns
+        - For well-formed files, extractor messages contain "successfully".
+        - For an empty file, extractor errors contain "MagickReadImage returns
           false, but did not raise ImageMagick exception.".
-        - For a file with missing data, scraper errors contain "Malformed JP2
+        - For a file with missing data, extractor errors contain "Malformed JP2
           file format: second box must be file type box"
     - streams and well-formedness are scraped correctly for png files.
-        - For well-formed files, scraper messages contain "successfully".
-        - For file with missing IEND or IHDR chunk scraper errors contain
+        - For well-formed files, extractor messages contain "successfully".
+        - For file with missing IEND or IHDR chunk extractor errors contain
           "MagickReadImage returns false, but did not raise ImageMagick
           exception.".
-        - For file with invalid header, scraper errors contain "improper
+        - For file with invalid header, extractor errors contain "improper
           image header".
-        - For empty file, scraper errors contain "improper image header".
+        - For empty file, extractor errors contain "improper image header".
     - streams and well-formedness are scraped correctly for gif files.
-        - For well-formed files with one or more images, scraper messages
+        - For well-formed files with one or more images, extractor messages
           contain "successfully".
-        - For images with broken header, scraper errors contains "improper
+        - For images with broken header, extractor errors contains "improper
           image header".
-        - For truncated version 1987a file, scraper errors contains "corrupt
+        - For truncated version 1987a file, extractor errors contains "corrupt
           image".
-        - For truncated version 1989a file, scraper errors contains "negative
+        - For truncated version 1989a file, extractor errors contains "negative
           or zero image size".
-        - For empty file, scraper errors contains "improper image header".
+        - For empty file, extractor errors contains "improper image header".
     - streams and well-formedness are scraped correctly for WebP files.
-        - For well-formed files, scraper messages contain "successfully".
-        - For images with missing headers or image data, scraper errors contain
+        - For well-formed files, extractor messages contain "successfully".
+        - For images with missing headers or image data, extractor errors contain
           "insufficient image data in file".
-        - For mismatched headers and data, scraper errors contain "corrupt
+        - For mismatched headers and data, extractor errors contain "corrupt
           image".
     - WandTiffMeta model is supported for TIFF files, WandExifMeta for
       JPEG files, WandWebPMeta for WebP files and WandImageMeta for other image
@@ -62,7 +62,7 @@ This module tests that:
     - Image colorspace detected as "sRGB" will be detected as "RGB" unless
       explicitly expressed by a metadata for colorspace to be sRGB.
     - With or without well-formedness check, the following MIME type and
-      version pairs are supported by both WandScraper and their corresponding
+      version pairs are supported by both WandExtractor and their corresponding
       metadata models:
         - image/tiff, 6.0
         - image/x-adobe-dng, ''
@@ -84,7 +84,7 @@ import wand
 from file_scraper.defaults import UNAV, UNAP
 from file_scraper.wand.wand_model import (WandImageMeta, WandTiffMeta,
                                           WandExifMeta, WandWebPMeta)
-from file_scraper.wand.wand_scraper import WandScraper
+from file_scraper.wand.wand_extractor import WandExtractor
 from tests.common import (parse_results, partial_message_included)
 
 # CentOS 7 uses older version of ImageMagick than RHEL 9
@@ -141,9 +141,9 @@ GIF_APPEND = {
             "stderr_part": ""})
     ]
 )
-def test_scraper_tif(filename, result_dict, evaluate_scraper):
+def test_extractor_tif(filename, result_dict, evaluate_extractor):
     """
-    Test scraper with valid tiff files.
+    Test extractor with valid tiff files.
 
     :filename: Test file name
     :result_dict: Result dict containing the test purpose, parts of
@@ -160,9 +160,9 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
             correct.streams[0]["stream_type"]
         correct.streams[index]["version"] = UNAV
 
-    scraper = WandScraper(filename=correct.filename, mimetype="image/tiff")
-    scraper.scrape_file()
-    evaluate_scraper(scraper, correct)
+    extractor = WandExtractor(filename=correct.filename, mimetype="image/tiff")
+    extractor.scrape_file()
+    evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize(
@@ -183,19 +183,19 @@ def test_scraper_tif(filename, result_dict, evaluate_scraper):
                 })
         ]
 )
-def test_scraper_dng(filename, result_dict, evaluate_scraper):
+def test_extractor_dng(filename, result_dict, evaluate_extractor):
     """
-    Test scraper with a valid dng file.
+    Test extractor with a valid dng file.
 
     :filename: Test file name
     :result_dict: Result dict containing test purpose, and parts of expected
               results of stdout and stderr
     """
     correct = parse_results(filename, "image/x-adobe-dng", result_dict, False)
-    scraper = WandScraper(filename=correct.filename,
-                          mimetype="image/x-adobe-dng")
-    scraper.scrape_file()
-    evaluate_scraper(scraper, correct)
+    extractor = WandExtractor(filename=correct.filename,
+                            mimetype="image/x-adobe-dng")
+    extractor.scrape_file()
+    evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize(
@@ -223,9 +223,9 @@ def test_scraper_dng(filename, result_dict, evaluate_scraper):
             "stderr_part": ""}),
     ]
 )
-def test_scraper_jpg(filename, result_dict, evaluate_scraper):
+def test_extractor_jpg(filename, result_dict, evaluate_extractor):
     """
-    Test scraper with valid jpeg files.
+    Test extractor with valid jpeg files.
 
     :filename: Test file name
     :result_dict: Result dict containing the test purpose, parts of
@@ -236,9 +236,9 @@ def test_scraper_jpg(filename, result_dict, evaluate_scraper):
     if correct.well_formed is not False:
         correct.streams[0]["compression"] = "jpeg"
 
-    scraper = WandScraper(filename=correct.filename, mimetype="image/jpeg")
-    scraper.scrape_file()
-    evaluate_scraper(scraper, correct)
+    extractor = WandExtractor(filename=correct.filename, mimetype="image/jpeg")
+    extractor.scrape_file()
+    evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize(
@@ -258,9 +258,9 @@ def test_scraper_jpg(filename, result_dict, evaluate_scraper):
             "stderr_part": ""}),
     ]
 )
-def test_scraper_jp2(filename, result_dict, evaluate_scraper):
+def test_extractor_jp2(filename, result_dict, evaluate_extractor):
     """
-    Test scraper with valid jp2 files.
+    Test extractor with valid jp2 files.
 
     :filename: Test file name
     :result_dict: Result dict containing the test purpose, parts of
@@ -273,9 +273,9 @@ def test_scraper_jp2(filename, result_dict, evaluate_scraper):
         correct.streams[0]["colorspace"] = "rgb"
         correct.streams[0]["version"] = UNAV
 
-    scraper = WandScraper(filename=correct.filename, mimetype="image/jp2")
-    scraper.scrape_file()
-    evaluate_scraper(scraper, correct)
+    extractor = WandExtractor(filename=correct.filename, mimetype="image/jp2")
+    extractor.scrape_file()
+    evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize(
@@ -288,9 +288,9 @@ def test_scraper_jp2(filename, result_dict, evaluate_scraper):
             "stderr_part": ""}),
     ]
 )
-def test_scraper_png(filename, result_dict, evaluate_scraper):
+def test_extractor_png(filename, result_dict, evaluate_extractor):
     """
-    Test scraper with valid png files.
+    Test extractor with valid png files.
 
     :filename: Test file name
     :result_dict: Result dict containing the test purpose, parts of
@@ -302,9 +302,9 @@ def test_scraper_png(filename, result_dict, evaluate_scraper):
         correct.streams[0]["compression"] = "zip"
     correct.streams[0]["version"] = UNAV
 
-    scraper = WandScraper(filename=correct.filename, mimetype="image/png")
-    scraper.scrape_file()
-    evaluate_scraper(scraper, correct)
+    extractor = WandExtractor(filename=correct.filename, mimetype="image/png")
+    extractor.scrape_file()
+    evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize(
@@ -324,9 +324,9 @@ def test_scraper_png(filename, result_dict, evaluate_scraper):
             "stderr_part": ""}),
     ]
 )
-def test_scraper_gif(filename, result_dict, evaluate_scraper):
+def test_extractor_gif(filename, result_dict, evaluate_extractor):
     """
-    Test scraper with valid gif files.
+    Test extractor with valid gif files.
 
     :filename: Test file name
     :result_dict: Result dict containing the test purpose, parts of
@@ -339,9 +339,9 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
     for stream in correct.streams.values():
         stream["version"] = UNAV
 
-    scraper = WandScraper(filename=correct.filename, mimetype="image/gif")
-    scraper.scrape_file()
-    evaluate_scraper(scraper, correct)
+    extractor = WandExtractor(filename=correct.filename, mimetype="image/gif")
+    extractor.scrape_file()
+    evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize(
@@ -359,9 +359,9 @@ def test_scraper_gif(filename, result_dict, evaluate_scraper):
             "stderr_part": ""}),
     ]
 )
-def test_scraper_webp(filename, result_dict, evaluate_scraper):
+def test_extractor_webp(filename, result_dict, evaluate_extractor):
     """
-    Test scraper with valid webp files
+    Test extractor with valid webp files
 
     :filename: Test file name
     :result_dict: Result dict containing the test purpose, parts of
@@ -374,14 +374,14 @@ def test_scraper_webp(filename, result_dict, evaluate_scraper):
         stream["height"] = "16"
         stream["width"] = "16"
 
-    scraper = WandScraper(filename=correct.filename, mimetype="image/webp")
-    scraper.scrape_file()
-    evaluate_scraper(scraper, correct)
+    extractor = WandExtractor(filename=correct.filename, mimetype="image/webp")
+    extractor.scrape_file()
+    evaluate_extractor(extractor, correct)
 
     if "lossless" in filename:
-        assert scraper.streams[0].compression() == "VP8 Lossless"
+        assert extractor.streams[0].compression() == "VP8 Lossless"
     if "lossy" in filename:
-        assert scraper.streams[0].compression() == "VP8 Lossy"
+        assert extractor.streams[0].compression() == "VP8 Lossy"
 
 
 @pytest.mark.parametrize(("mimetype", "filename", "expected"), [
@@ -399,17 +399,17 @@ def test_scraper_webp(filename, result_dict, evaluate_scraper):
     ("image/webp", "valid__lossless.webp", "SRGB"),
     ("image/webp", "valid__lossy.webp", "SRGB"),
 ])
-def test_scraper_colorspace(mimetype, filename, expected):
+def test_extractor_colorspace(mimetype, filename, expected):
     """
     Test that correct colorspace is returned.
     """
-    scraper = WandScraper(
+    extractor = WandExtractor(
         filename=os.path.join("tests/data/", mimetype.replace("/", "_"),
                               filename),
         mimetype=mimetype)
-    scraper.scrape_file()
+    extractor.scrape_file()
 
-    assert scraper.streams[0].colorspace().lower() == expected.lower()
+    assert extractor.streams[0].colorspace().lower() == expected.lower()
 
 
 @pytest.mark.parametrize(
@@ -467,25 +467,25 @@ def test_scraper_colorspace(mimetype, filename, expected):
          "corrupt image")
     ]
 )
-def test_scraper_invalid(filename, mimetype, stderr_part):
+def test_extractor_invalid(filename, mimetype, stderr_part):
     """
-    Test WandScraper with invalid files.
+    Test WandExtractor with invalid files.
 
     :filename: Test file name
     :mimetype: File MIME type
     :stderr_part: Part of the expected stderr
     """
 
-    scraper = WandScraper(
+    extractor = WandExtractor(
         filename=os.path.join("tests/data/", mimetype.replace("/", "_"),
                               filename),
         mimetype=mimetype)
-    scraper.scrape_file()
+    extractor.scrape_file()
 
-    assert not scraper.streams
-    assert scraper.info()["class"] == "WandScraper"
-    assert partial_message_included(stderr_part, scraper.errors())
-    assert scraper.well_formed is False
+    assert not extractor.streams
+    assert extractor.info()["class"] == "WandExtractor"
+    assert partial_message_included(stderr_part, extractor.errors())
+    assert extractor.well_formed is False
 
 
 @pytest.mark.parametrize(
@@ -526,21 +526,21 @@ def test_model_is_supported(mime, ver, class_):
         ("image/webp", ""),
     ]
 )
-def test_scraper_is_supported(mime, ver):
+def test_extractor_is_supported(mime, ver):
     """
-    Test is_supported method for WandScraper
+    Test is_supported method for WandExtractor
 
     :mime: MIME type
     :ver: File format version
     """
-    assert WandScraper.is_supported(mime, ver, True)
-    assert WandScraper.is_supported(mime, None, True)
-    assert WandScraper.is_supported(mime, ver, False)
-    assert WandScraper.is_supported(mime, "foo", True)
-    assert not WandScraper.is_supported("foo", ver, True)
+    assert WandExtractor.is_supported(mime, ver, True)
+    assert WandExtractor.is_supported(mime, None, True)
+    assert WandExtractor.is_supported(mime, ver, False)
+    assert WandExtractor.is_supported(mime, "foo", True)
+    assert not WandExtractor.is_supported("foo", ver, True)
 
 
 def test_tools():
-    """:returns: tools used by the scraper as a dictionary"""
-    scraper = WandScraper(filename="", mimetype="")
-    assert scraper.tools()["ImageMagick"]["version"][0].isdigit()
+    """:returns: tools used by the extractor as a dictionary"""
+    extractor = WandExtractor(filename="", mimetype="")
+    assert extractor.tools()["ImageMagick"]["version"][0].isdigit()

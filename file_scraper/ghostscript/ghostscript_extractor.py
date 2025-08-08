@@ -1,12 +1,12 @@
 """
-Metadata scraper for pdf files, based on Ghostscript.
+Metadata extractor for pdf files, based on Ghostscript.
 
-This scraper does not scrape metadata but instead checks well-formedness of pdf
+This extractor does not scrape metadata but instead checks well-formedness of pdf
 versions 1.7, A-2a, A-2b, A-2u, A-3a, A-3b and A-3u.
 """
 import re
 
-from file_scraper.base import BaseScraper
+from file_scraper.base import BaseExtractor
 from file_scraper.ghostscript.ghostscript_model import GhostscriptMeta
 from file_scraper.shell import Shell
 from file_scraper.logger import LOGGER
@@ -14,8 +14,8 @@ from file_scraper.utils import ensure_text
 from file_scraper.defaults import UNAV
 
 
-class GhostscriptScraper(BaseScraper):
-    """Ghostscript pdf scraper."""
+class GhostscriptExtractor(BaseExtractor):
+    """Ghostscript pdf extractor."""
 
     # Supported mimetype and versions
     _supported_metadata = [GhostscriptMeta]
@@ -57,7 +57,7 @@ class GhostscriptScraper(BaseScraper):
         Overwrite the normal well-formedness check to also look at the stdout.
 
         This is needed as ghostscript can log errors to stdout if it has been
-        able to repair the file. In these cases, scraper messages contain
+        able to repair the file. In these cases, extractor messages contain
         "**** Error" or "**** Warning" (any capitalization is detected), which
         is interpreted as well-formedness failure.
 
@@ -72,7 +72,7 @@ class GhostscriptScraper(BaseScraper):
     def tools(self):
         """
         Overwriting baseclass implementation
-        to collect information about software used by the scraper
+        to collect information about software used by the extractor
 
         :returns: a dictionary with the used software or UNAV.
         """

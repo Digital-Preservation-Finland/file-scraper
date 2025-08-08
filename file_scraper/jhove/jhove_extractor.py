@@ -1,4 +1,4 @@
-"""Scraper for gif, html, jpeg, tif, pdf and wav files using JHove."""
+"""Extractor for gif, html, jpeg, tif, pdf and wav files using JHove."""
 from pathlib import Path
 
 try:
@@ -7,7 +7,7 @@ except ImportError:
     pass
 import re
 
-from file_scraper.base import BaseScraper
+from file_scraper.base import BaseExtractor
 from file_scraper.shell import Shell
 from file_scraper.defaults import UNAV
 from file_scraper.logger import LOGGER
@@ -19,8 +19,8 @@ from file_scraper.jhove.jhove_model import (JHoveAiffMeta, JHoveDngMeta,
                                             get_field)
 
 
-class JHoveScraperBase(BaseScraper):
-    """Scraping methods for all specific JHove scrapers."""
+class JHoveExtractorBase(BaseExtractor):
+    """Scraping methods for all specific JHove extractors."""
 
     _supported_metadata = []
     _jhove_module = None
@@ -33,7 +33,7 @@ class JHoveScraperBase(BaseScraper):
         :filename: File path
         :mimetype: Predefined mimetype
         :version: Predefined file format version
-        :params: Extra parameters needed for the scraper
+        :params: Extra parameters needed for the extractor
         """
         self._report = None  # JHove report
         super().__init__(
@@ -68,7 +68,7 @@ class JHoveScraperBase(BaseScraper):
     def tools(self):
         """
         Overwriting baseclass implementation
-        to collect information about software used by the scraper
+        to collect information about software used by the extractor
 
         :returns: a dictionary with the used software or UNAV.
         """
@@ -92,14 +92,14 @@ class JHoveScraperBase(BaseScraper):
         }
 
 
-class JHoveGifScraper(JHoveScraperBase):
+class JHoveGifExtractor(JHoveExtractorBase):
     """Variables for scraping gif files."""
 
     _jhove_module = "GIF-hul"
     _supported_metadata = [JHoveGifMeta]
 
 
-class JHoveHtmlScraper(JHoveScraperBase):
+class JHoveHtmlExtractor(JHoveExtractorBase):
     """Variables for scraping html files."""
 
     _jhove_module = "HTML-hul"
@@ -112,7 +112,7 @@ class JHoveHtmlScraper(JHoveScraperBase):
         Check the character encoding declaration additionally. JHove HTML
         module seems to check only the declaration or metadata elements from
         the (X)HTML file, and these are optional in practice. If these are
-        missing, then we just need to rely on other scraper tools.
+        missing, then we just need to rely on other extractor tools.
         """
         super().scrape_file()
 
@@ -133,22 +133,22 @@ class JHoveHtmlScraper(JHoveScraperBase):
                 f"expected.")
 
 
-class JHoveJpegScraper(JHoveScraperBase):
+class JHoveJpegExtractor(JHoveExtractorBase):
     """Variables for scraping jpeg files."""
 
     _jhove_module = "JPEG-hul"
     _supported_metadata = [JHoveJpegMeta]
 
 
-class JHoveTiffScraper(JHoveScraperBase):
+class JHoveTiffExtractor(JHoveExtractorBase):
     """Variables for scraping tiff files."""
 
     _jhove_module = "TIFF-hul"
     _supported_metadata = [JHoveTiffMeta]
 
 
-class JHovePdfScraper(JHoveScraperBase):
-    """PDF scraper using JHove."""
+class JHovePdfExtractor(JHoveExtractorBase):
+    """PDF extractor using JHove."""
 
     _jhove_module = "PDF-hul"
     _supported_metadata = [JHovePdfMeta]
@@ -178,7 +178,7 @@ class JHovePdfScraper(JHoveScraperBase):
                 self._messages.append(f"PDF root version is {version}")
 
 
-class JHoveWavScraper(JHoveScraperBase):
+class JHoveWavExtractor(JHoveExtractorBase):
     """Variables for scraping wav files."""
 
     _jhove_module = "WAVE-hul"
@@ -194,9 +194,9 @@ class JHoveWavScraper(JHoveScraperBase):
             self._errors.append("RF64 is not a supported format")
 
 
-class JHoveUtf8Scraper(JHoveScraperBase):
+class JHoveUtf8Extractor(JHoveExtractorBase):
     """
-    Scraper for checking wether a text file is a valid UTF-8 file.
+    Extractor for checking wether a text file is a valid UTF-8 file.
 
     We don't want to run this for all files, but just for UTF-8 text files
     separately. This must be run after actual scraping, since we have to know
@@ -212,29 +212,29 @@ class JHoveUtf8Scraper(JHoveScraperBase):
 
     def iterate_models(self, **kwargs):
         """
-        Iterate Scraper models and create streams.
+        Iterate extractor models and create streams.
 
         We need to override this since _supported attribute is empty and
-        the scraper is run differenty.
+        the extractor is run differenty.
         """
         yield self._supported_metadata[0](**kwargs)
 
 
-class JHoveEpubScraper(JHoveScraperBase):
+class JHoveEpubExtractor(JHoveExtractorBase):
     """Variables for scraping EPUB files."""
 
     _jhove_module = "EPUB-ptc"
     _supported_metadata = [JHoveEpubMeta]
 
 
-class JHoveDngScraper(JHoveScraperBase):
+class JHoveDngExtractor(JHoveExtractorBase):
     """Variables for scraping dng files."""
 
     _jhove_module = "TIFF-hul"
     _supported_metadata = [JHoveDngMeta]
 
 
-class JHoveAiffScraper(JHoveScraperBase):
+class JHoveAiffExtractor(JHoveExtractorBase):
     """Variables for scraping AIFF files."""
 
     _jhove_module = "AIFF-hul"

@@ -1,23 +1,23 @@
 """
-Xmllint scraper tests
+Xmllint extractor tests
 
 This module tests that:
     - MIME type, version, streams and well-formedness of xml files are scraped
-      correctly and scraper messages do not contain "<note>".
-    - For a well-formed document without schema, scraper messages contains
+      correctly and extractor messages do not contain "<note>".
+    - For a well-formed document without schema, extractor messages contains
       "Document is well-formed but does not contain schema."
-    - For other well-formed files, scraper messages contains "Success".
-    - For file with missing closing tag, scraper messages contains "Opening
+    - For other well-formed files, extractor messages contains "Success".
+    - For file with missing closing tag, extractor messages contains "Opening
       and ending tag mismatch".
-    - For invalid given schema and a file without schema, scraper errors
+    - For invalid given schema and a file without schema, extractor errors
       contains "Schemas validity error".
-    - For invalid given schema and a valid file with schema, scraper errors
+    - For invalid given schema and a valid file with schema, extractor errors
       contains "parser error".
-    - For invalid file with local catalog, scraper errors contains "Missing
+    - For invalid file with local catalog, extractor errors contains "Missing
       child element(s)".
-    - For invalid file with DTD, scraper errors contains "does not follow the
+    - For invalid file with DTD, extractor errors contains "does not follow the
       DTD".
-    - For empty file, scraper errors contains "Document is empty".
+    - For empty file, extractor errors contains "Document is empty".
     - XML files without the header can be reported as well-formed.
 
     - MIME type text/xml with version 1.0 or None is supported when well-
@@ -32,7 +32,7 @@ import os
 from pathlib import Path
 import pytest
 
-from file_scraper.xmllint.xmllint_scraper import XmllintScraper
+from file_scraper.xmllint.xmllint_extractor import XmllintExtractor
 from tests.common import (parse_results, partial_message_included)
 
 ROOTPATH = os.path.abspath(os.path.join(
@@ -98,31 +98,31 @@ ROOTPATH = os.path.abspath(os.path.join(
          {"catalogs": False})
     ]
 )
-def test_scraper_valid(filename, result_dict, params, evaluate_scraper):
+def test_extractor_valid(filename, result_dict, params, evaluate_extractor):
     """
-    Test scraper with valid files.
+    Test extractor with valid files.
 
     :filename: Test file name
     :result_dict: Result dict containing test purpose, and parts of
                   expected results of stdout and stderr
-    :params: Extra parameters for Scraper
+    :params: Extra parameters for Extractor
     """
     correct = parse_results(filename, "text/xml",
                             result_dict, True, params)
-    scraper = XmllintScraper(filename=Path(correct.filename),
-                             mimetype="text/xml",
-                             params=correct.params)
-    scraper.scrape_file()
+    extractor = XmllintExtractor(filename=Path(correct.filename),
+                               mimetype="text/xml",
+                               params=correct.params)
+    extractor.scrape_file()
 
     if not correct.well_formed:
-        assert not scraper.well_formed
-        assert not scraper.streams
+        assert not extractor.well_formed
+        assert not extractor.streams
         assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
-        assert partial_message_included(correct.stderr_part, scraper.errors())
+                                        extractor.messages())
+        assert partial_message_included(correct.stderr_part, extractor.errors())
     else:
-        evaluate_scraper(scraper, correct)
-    assert not partial_message_included("<note>", scraper.messages())
+        evaluate_extractor(extractor, correct)
+    assert not partial_message_included("<note>", extractor.messages())
 
 
 @pytest.mark.parametrize(
@@ -190,21 +190,21 @@ def test_scraper_valid(filename, result_dict, params, evaluate_scraper):
           "catalogs": True}),
     ]
 )
-def test_scraper_invalid(filename, result_dict, params, evaluate_scraper):
+def test_extractor_invalid(filename, result_dict, params, evaluate_extractor):
     """
-    Test scraper with invalid files.
+    Test extractor with invalid files.
 
     :filename: Test file name
     :result_dict: Result dict containing test purpose, and parts of
                   expected results of stdout and stderr
-    :params: Extra parameters for Scraper
+    :params: Extra parameters for Extractor
     """
     correct = parse_results(filename, "text/xml",
                             result_dict, True, params)
-    scraper = XmllintScraper(filename=Path(correct.filename),
-                             mimetype="text/xml",
-                             params=correct.params)
-    scraper.scrape_file()
+    extractor = XmllintExtractor(filename=Path(correct.filename),
+                               mimetype="text/xml",
+                               params=correct.params)
+    extractor.scrape_file()
     if any(item in filename for item in ["empty",
                                          "no_closing_tag",
                                          "no_namespace_catalog",
@@ -214,52 +214,52 @@ def test_scraper_invalid(filename, result_dict, params, evaluate_scraper):
         correct.streams[0]["version"] = None
 
     if not correct.well_formed:
-        assert not scraper.well_formed
-        assert not scraper.streams
+        assert not extractor.well_formed
+        assert not extractor.streams
         assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
-        assert partial_message_included(correct.stderr_part, scraper.errors())
+                                        extractor.messages())
+        assert partial_message_included(correct.stderr_part, extractor.errors())
     else:
-        evaluate_scraper(scraper, correct)
-    assert not partial_message_included("<note>", scraper.messages())
+        evaluate_extractor(extractor, correct)
+    assert not partial_message_included("<note>", extractor.messages())
 
 
 def test_is_supported():
     """Test is_supported method."""
     mime = "text/xml"
     ver = "1.0"
-    assert XmllintScraper.is_supported(mime, ver, True)
-    assert XmllintScraper.is_supported(mime, None, True)
-    assert not XmllintScraper.is_supported(mime, ver, False)
-    assert XmllintScraper.is_supported(mime, "foo", True)
-    assert not XmllintScraper.is_supported("foo", ver, True)
+    assert XmllintExtractor.is_supported(mime, ver, True)
+    assert XmllintExtractor.is_supported(mime, None, True)
+    assert not XmllintExtractor.is_supported(mime, ver, False)
+    assert XmllintExtractor.is_supported(mime, "foo", True)
+    assert not XmllintExtractor.is_supported("foo", ver, True)
 
 
 def test_parameters():
     """Test that parameters and default values work properly."""
     # pylint: disable=protected-access
-    scraper = XmllintScraper(Path("testsfile"), "test/mimetype")
-    assert scraper._schema is None
-    assert scraper._catalogs
-    assert scraper._no_network
-    assert scraper._catalog_path is None
+    extractor = XmllintExtractor(Path("testsfile"), "test/mimetype")
+    assert extractor._schema is None
+    assert extractor._catalogs
+    assert extractor._no_network
+    assert extractor._catalog_path is None
 
-    scraper = XmllintScraper(
+    extractor = XmllintExtractor(
         filename=Path("testsfile"), mimetype="text/xml",
         params={"schema": "schemafile", "catalogs": False,
                 "no_network": False})
-    assert scraper._schema == "schemafile"
-    assert not scraper._catalogs
-    assert not scraper._no_network
+    assert extractor._schema == "schemafile"
+    assert not extractor._catalogs
+    assert not extractor._no_network
 
-    scraper = XmllintScraper(filename=Path("testsfile"),
-                             mimetype="text/xml",
-                             params={"catalog_path": "catpath"})
-    assert scraper._catalogs
-    assert scraper._catalog_path == "catpath"
+    extractor = XmllintExtractor(filename=Path("testsfile"),
+                               mimetype="text/xml",
+                               params={"catalog_path": "catpath"})
+    assert extractor._catalogs
+    assert extractor._catalog_path == "catpath"
 
 
 def test_tools():
-    """Test that scraper returns correct version"""
-    scraper = XmllintScraper(filename=Path(""), mimetype="")
-    assert scraper.tools()["lxml"]["version"].replace(".", "").isnumeric()
+    """Test that extractor returns correct version"""
+    extractor = XmllintExtractor(filename=Path(""), mimetype="")
+    assert extractor.tools()["lxml"]["version"].replace(".", "").isnumeric()

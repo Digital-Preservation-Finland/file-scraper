@@ -1,21 +1,20 @@
 """
-Tests office-file scraping with combination of Office-scraper and
-File-scraper.
+Tests office-file scraping with Office-extractor.
 
 This module tests that:
-    - For a well-formed odt file, all scrapers supporting
+    - For a well-formed odt file, all extractors supporting
       application/vnd.oasis.opendocument.text version 1.2 report it as
       well-formed or None.
-    - For a corrupted odt file, at least one scraper supporting
+    - For a corrupted odt file, at least one extractor supporting
       application/vnd.oasis.opendocument.text reports it as not well-formed.
-    - When a valid odt file is scraped with scrapers selected using wrong MIME
+    - When a valid odt file is scraped with extractors selected using wrong MIME
       type (application/msword) at least one of them reports it as not well-
       formed.
 """
 
 import os
 import pytest
-from file_scraper.iterator import iter_scrapers
+from file_scraper.iterator import iter_extractors
 
 BASEPATH = "tests/data"
 
@@ -34,23 +33,23 @@ def test_scrape_valid_file(filename, mimetype):
     :filename: Test file name
     :mimetype: File MIME type
     """
-    for class_ in iter_scrapers(mimetype, None):
-        scraper = class_(
+    for class_ in iter_extractors(mimetype, None):
+        extractor = class_(
             filename=os.path.join(BASEPATH, mimetype.replace('/', '_'),
                                   filename),
             mimetype=mimetype)
-        scraper.scrape_file()
-        assert scraper.well_formed in [True, None]
+        extractor.scrape_file()
+        assert extractor.well_formed in [True, None]
 
 
 # Test invalid files
 @pytest.mark.parametrize(
     ['filename', 'mimetype'],
     [
-        # Corrupted file - caught by Office scraper
+        # Corrupted file - caught by Office extractor
         ("ODF_Text_Document_corrupted.odt",
          "application/vnd.oasis.opendocument.text"),
-        # Wrong MIME - caught by File scraper
+        # Wrong MIME
         ("valid_1.2.odt", "application/msword"),
     ]
 )
@@ -61,13 +60,13 @@ def test_scrape_invalid_file(filename, mimetype):
     :filename: Test file name
     :mimetype: File MIME type
     """
-    scraper_results = []
-    for class_ in iter_scrapers(mimetype, None):
-        scraper = class_(
+    extractor_results = []
+    for class_ in iter_extractors(mimetype, None):
+        extractor = class_(
             filename=os.path.join(
                 BASEPATH, "application_vnd.oasis.opendocument.text", filename),
             mimetype=mimetype)
-        scraper_results.append(scraper.well_formed)
+        extractor_results.append(extractor.well_formed)
 
-    assert not all(scraper_results)
-    assert scraper_results
+    assert not all(extractor_results)
+    assert extractor_results

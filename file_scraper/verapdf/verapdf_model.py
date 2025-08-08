@@ -16,7 +16,7 @@ class VerapdfMeta(BaseMeta):
         """
         Initialize the metadata model.
 
-        :well_formed: Well-formed status from scraper
+        :well_formed: Well-formed status from extractor
         :profile: profileName from verapdf report
         """
         self._well_formed = well_formed
@@ -27,7 +27,7 @@ class VerapdfMeta(BaseMeta):
         """
         Return mime type.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual MIME type.
         """
         return "application/pdf" if self._well_formed else UNAV
@@ -37,10 +37,10 @@ class VerapdfMeta(BaseMeta):
         """
         Return the version based on the profile given to the constructor.
 
-        For files that are not PDF/A, other scrapers need to be used to
+        For files that are not PDF/A, other extractors need to be used to
         determine the version.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual version.
         """
         if self._well_formed and self._profile is not None:

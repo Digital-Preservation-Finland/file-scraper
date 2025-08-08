@@ -1,7 +1,7 @@
 """Module for checking if the file is suitable as text file or not."""
 from pathlib import Path
 
-from file_scraper.base import BaseScraper
+from file_scraper.base import BaseExtractor
 from file_scraper.defaults import UNAV
 from file_scraper.exceptions import (ForbiddenCharacterError,
                                      UnknownEncodingError)
@@ -12,9 +12,9 @@ from file_scraper.textfile.textfile_model import (TextFileMeta,
                                                   TextEncodingMeta)
 
 
-class TextfileScraper(BaseScraper):
+class TextfileExtractor(BaseExtractor):
     """
-    Text file detection scraper.
+    Text file detection extractor.
 
     file (libmagick) checks mime-type and that if it is a text
     file with the soft option that excludes libmagick.
@@ -26,9 +26,9 @@ class TextfileScraper(BaseScraper):
 
     @property
     def well_formed(self):
-        """TextfileScraper is not able to check well-formedness.
+        """TextfileExtractor is not able to check well-formedness.
 
-        :returns: False if TextfileScraper can not open or handle the file,
+        :returns: False if TextfileExtractor can not open or handle the file,
                   None otherwise.
         """
         valid = super().well_formed
@@ -59,7 +59,7 @@ class TextfileScraper(BaseScraper):
         charset = self._params.get("charset", None)
         if charset is not None and charset.upper() in ["UTF-32", "UTF-16"]:
             self._messages.append(
-                f"Scraper not supported with charset {charset}. Predefined "
+                f"Extractor not supported with charset {charset}. Predefined "
                 f"metadata is collected.")
         else:
             self._messages.append("Trying text detection...")
@@ -79,17 +79,17 @@ class TextfileScraper(BaseScraper):
     def tools(self):
         """
         Overwriting baseclass implementation
-        to collect information about software used by the scraper
+        to collect information about software used by the extractor
 
         :returns: a dictionary with the used software or UNAV.
         """
-        tool_scraper = Shell(["file", "--version"])
-        return {"file": {"version": tool_scraper.stdout.split("\n")[0][5:]}}
+        file_output = Shell(["file", "--version"])
+        return {"file": {"version": file_output.stdout.split("\n")[0][5:]}}
 
 
-class TextEncodingMetaScraper(BaseScraper):
+class TextEncodingMetaExtractor(BaseExtractor):
     """
-    Scraper to set predefined character encoding to metadata.
+    Extractor to set predefined character encoding to metadata.
 
     This is run in the iterator only when well-formed checking is not done.
     Otherwise the charset information is not collected with some encondings,
@@ -99,7 +99,7 @@ class TextEncodingMetaScraper(BaseScraper):
 
     def __init__(self, filename: Path, mimetype, version=None, params=None):
         """
-        Initialize scraper. Add given charset.
+        Initialize extractor. Add given charset.
 
         :filename: File name
         :mimetype: File MIME type
@@ -114,9 +114,9 @@ class TextEncodingMetaScraper(BaseScraper):
 
     @property
     def well_formed(self):
-        """TextEncodingMetaScraper is not able to check well-formedness.
+        """TextEncodingMetaExtractor is not able to check well-formedness.
 
-        :returns: False if TextEncodingMetaScraper can not open or handle
+        :returns: False if TextEncodingMetaExtractor can not open or handle
                   the file,
                   None otherwise.
         """
@@ -156,16 +156,16 @@ class TextEncodingMetaScraper(BaseScraper):
     def tools(self):
         """
         Overwriting baseclass implementation
-        to collect information about software used by the scraper
+        to collect information about software used by the extractor
 
         :returns: a dictionary with the used software or UNAV.
         """
         return {}
 
 
-class TextEncodingScraper(BaseScraper):
+class TextEncodingExtractor(BaseExtractor):
     """
-    Text encoding scraper.
+    Text encoding extractor.
 
     Tries to use decode() and checks some of illegal character values.
 
@@ -192,7 +192,7 @@ class TextEncodingScraper(BaseScraper):
 
     def __init__(self, filename: Path, mimetype, version=None, params=None):
         """
-        Initialize scraper. Add given charset.
+        Initialize extractor. Add given charset.
 
         :filename: File name
         :mimetype: File MIME type
@@ -369,7 +369,7 @@ class TextEncodingScraper(BaseScraper):
     def tools(self):
         """
         Overwriting baseclass implementation
-        to collect information about software used by the scraper
+        to collect information about software used by the extractor
 
         :returns: a dictionary with the used software or UNAV.
         """

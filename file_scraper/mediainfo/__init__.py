@@ -1,4 +1,4 @@
-"""Mediainfo scraper and metadata model."""
+"""Mediainfo extractor and metadata model."""
 
 # This list contains mimetypes of all formats that can be identified
 # with mediainfo, and properties of pymediainfo track that are used for

@@ -1,18 +1,18 @@
 """
-Tests for Csv scraper
+Tests for Csv extractor
 
 This module tests that:
     - mimetype, version and streams are scraped correctly when a csv file is
       scraped.
-    - scraper class used for csv scraping is CsvScraper.
+    - extractor class used for csv scraping is CsvExtractor.
     - well-formedness of csv files is determined accurately.
-    - scraper reports errors in scraping as expected when there is a missing
+    - extractor reports errors in scraping as expected when there is a missing
       quote or wrong field delimiter is given.
     - scraping a file other than csv file results in:
         - not well-formed
-        - success not reported in scraper messages
-        - some error recorded by the scraper
-    - scraper is able to extract the MIME type of a well-formed file and
+        - success not reported in extractor messages
+        - some error recorded by the extractor
+    - extractor is able to extract the MIME type of a well-formed file and
       guess the file as a well-formed one also when separator, delimiter
       and fields are not given by user.
     - all files with MIME type 'text/csv' are reported to be supported
@@ -31,8 +31,8 @@ from pathlib import Path
 
 import pytest
 
-from file_scraper.csv_scraper.csv_model import CsvMeta
-from file_scraper.csv_scraper.csv_scraper import CsvScraper
+from file_scraper.csv_extractor.csv_model import CsvMeta
+from file_scraper.csv_extractor.csv_extractor import CsvExtractor
 from file_scraper.defaults import UNAP, UNAV
 from tests.common import parse_results, partial_message_included
 
@@ -162,8 +162,8 @@ TEST_DATA_PATH = "tests/data/text_csv"
          ["year,brand,model,detail,other"], {"charset": "utf-8"})
     ]
 )
-def test_scraper(filename, result_dict, header,
-                 extra_params, evaluate_scraper):
+def test_extractor(filename, result_dict, header,
+                 extra_params, evaluate_extractor):
     """
     Write test data and run csv scraping for the file.
 
@@ -171,7 +171,7 @@ def test_scraper(filename, result_dict, header,
     :result_dict: Result dict containing purpose of the test, parts of
                   expected stdout and stderr, and expected streams
     :header: CSV header line
-    :extra_params: Extra parameters for the scraper (e.g. charset)
+    :extra_params: Extra parameters for the extractor (e.g. charset)
     """
     correct = parse_results(filename, "text/csv", result_dict,
                             True)
@@ -181,11 +181,11 @@ def test_scraper(filename, result_dict, header,
         "fields": header,
         "mimetype": MIMETYPE}
     params.update(extra_params)
-    scraper = CsvScraper(filename=correct.filename, mimetype=MIMETYPE,
-                         params=params)
-    scraper.scrape_file()
+    extractor = CsvExtractor(filename=correct.filename, mimetype=MIMETYPE,
+                           params=params)
+    extractor.scrape_file()
 
-    evaluate_scraper(scraper, correct)
+    evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize(
@@ -221,7 +221,7 @@ def test_scraper(filename, result_dict, header,
 )
 def test_large_field(filename, result_dict, header,
                      extra_params, size,
-                     evaluate_scraper, tmpdir):
+                     evaluate_extractor, tmpdir):
     """
     Test that large field sizes are properly handled.
     Large test files are created on the fly so as not to take up space.
@@ -230,7 +230,7 @@ def test_large_field(filename, result_dict, header,
     :result_dict: Result dict containing purpose of the test, parts of
                   expected stdout and stderr, and expected streams
     :header: CSV header line
-    :extra_params: Extra parameters for the scraper (e.g. charset)
+    :extra_params: Extra parameters for the extractor (e.g. charset)
     :size: Amount of bytes in the large field
     """
     tempdatapath = os.path.join(tmpdir, "text_csv")
@@ -248,11 +248,11 @@ def test_large_field(filename, result_dict, header,
         "fields": header,
         "mimetype": "text/csv"}
     params.update(extra_params)
-    scraper = CsvScraper(filename=correct.filename, mimetype=MIMETYPE,
-                         params=params)
-    scraper.scrape_file()
+    extractor = CsvExtractor(filename=correct.filename, mimetype=MIMETYPE,
+                           params=params)
+    extractor.scrape_file()
 
-    evaluate_scraper(scraper, correct)
+    evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize("filename, charset", [
@@ -269,21 +269,21 @@ def test_first_line_charset(filename, charset):
     params = {"delimiter": ",", "separator": "CR+LF",
               "mimetype": "text/csv", "charset": charset}
 
-    scraper = CsvScraper(Path(filename), mimetype="text/csv", params=params)
-    scraper.scrape_file()
-    assert scraper.well_formed
-    assert scraper.streams[0].first_line() == \
+    extractor = CsvExtractor(Path(filename), mimetype="text/csv", params=params)
+    extractor.scrape_file()
+    assert extractor.well_formed
+    assert extractor.streams[0].first_line() == \
         ["year", "bränd", "mödel", "detail", "other"]
 
 
 def test_pdf_as_csv():
-    """Test CSV scraper with PDF files."""
-    scraper = CsvScraper(filename=PDF_PATH, mimetype="text/csv")
-    scraper.scrape_file()
+    """Test CSV extractor with PDF files."""
+    extractor = CsvExtractor(filename=PDF_PATH, mimetype="text/csv")
+    extractor.scrape_file()
 
-    assert not scraper.well_formed, scraper.messages() + scraper.errors()
-    assert not partial_message_included("successfully", scraper.messages())
-    assert scraper.errors()
+    assert not extractor.well_formed, extractor.messages() + extractor.errors()
+    assert not partial_message_included("successfully", extractor.messages())
+    assert extractor.errors()
 
 
 @pytest.mark.parametrize(
@@ -293,9 +293,9 @@ def test_pdf_as_csv():
         ("valid__ascii_header.csv")
     ]
 )
-def test_no_parameters(filename, evaluate_scraper):
+def test_no_parameters(filename, evaluate_extractor):
     """
-    Test scraper without separate parameters.
+    Test extractor without separate parameters.
 
     :filename: Test file name
     """
@@ -314,9 +314,9 @@ def test_no_parameters(filename, evaluate_scraper):
                                   "first_line": ["year", "brand", "model",
                                                  "detail", "other"]}}},
                             True)
-    scraper = CsvScraper(correct.filename, mimetype="text/csv")
-    scraper.scrape_file()
-    evaluate_scraper(scraper, correct)
+    extractor = CsvExtractor(correct.filename, mimetype="text/csv")
+    extractor.scrape_file()
+    evaluate_extractor(extractor, correct)
 
 
 def test_bad_parameters():
@@ -338,33 +338,33 @@ def test_empty_file():
 
     We first test with empty file that sniffer raises exception if the
     parameters are not given. Secondly, sniffer is skipped when parameters
-    are given, but the then scraper raises exception elsewhere.
+    are given, but the then extractor raises exception elsewhere.
     """
-    scraper = CsvScraper(Path("tests/data/text_csv/invalid__empty.csv"),
-                         mimetype=MIMETYPE)
-    scraper.scrape_file()
+    extractor = CsvExtractor(Path("tests/data/text_csv/invalid__empty.csv"),
+                           mimetype=MIMETYPE)
+    extractor.scrape_file()
     assert partial_message_included("Could not determine delimiter",
-                                    scraper.errors())
-    assert not scraper.well_formed
+                                    extractor.errors())
+    assert not extractor.well_formed
 
-    scraper = CsvScraper(Path("tests/data/text_csv/invalid__empty.csv"),
-                         mimetype=MIMETYPE,
-                         params={"delimiter": ";", "separator": "CRLF"})
-    scraper.scrape_file()
+    extractor = CsvExtractor(Path("tests/data/text_csv/invalid__empty.csv"),
+                           mimetype=MIMETYPE,
+                           params={"delimiter": ";", "separator": "CRLF"})
+    extractor.scrape_file()
     assert partial_message_included("Error reading file as CSV",
-                                    scraper.errors())
-    assert not scraper.well_formed
+                                    extractor.errors())
+    assert not extractor.well_formed
 
 
 def test_nonexistent_file():
     """
-    Test that CsvScraper logs an error when file is not found.
+    Test that CsvExtractor logs an error when file is not found.
     """
-    scraper = CsvScraper(filename=Path("nonexistent/file.csv"), mimetype="text/csv")
-    scraper.scrape_file()
+    extractor = CsvExtractor(filename=Path("nonexistent/file.csv"), mimetype="text/csv")
+    extractor.scrape_file()
     assert partial_message_included("Error when reading the file: ",
-                                    scraper.errors())
-    assert not scraper.well_formed
+                                    extractor.errors())
+    assert not extractor.well_formed
 
 
 def test_is_supported():
@@ -373,16 +373,16 @@ def test_is_supported():
     """
     mime = MIMETYPE
     ver = ""
-    assert CsvScraper.is_supported(mime, ver, True)
-    assert CsvScraper.is_supported(mime, None, True)
-    assert CsvScraper.is_supported(mime, ver, False)
-    assert CsvScraper.is_supported(mime, "foo", True)
-    assert not CsvScraper.is_supported("foo", ver, True)
+    assert CsvExtractor.is_supported(mime, ver, True)
+    assert CsvExtractor.is_supported(mime, None, True)
+    assert CsvExtractor.is_supported(mime, ver, False)
+    assert CsvExtractor.is_supported(mime, "foo", True)
+    assert not CsvExtractor.is_supported("foo", ver, True)
 
 
 def test_tools():
     """
     Test that there are no thirdparty dependencies for csv.
     """
-    scraper = CsvScraper(Path("testfilename"), "test/mimetype")
-    assert scraper.tools() == {}
+    extractor = CsvExtractor(Path("testfilename"), "test/mimetype")
+    assert extractor.tools() == {}

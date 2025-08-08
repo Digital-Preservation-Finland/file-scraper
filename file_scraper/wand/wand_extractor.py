@@ -1,4 +1,4 @@
-"""Metadata scraper for image file formats.
+"""Metadata extractor for image file formats.
 
 Wand is a ctypes-based simple ImageMagick binding for Python.
 
@@ -13,7 +13,7 @@ tool.
 """
 import re
 
-from file_scraper.base import BaseScraper
+from file_scraper.base import BaseExtractor
 from file_scraper.wand.wand_model import (WandImageMeta, WandTiffMeta,
                                           WandExifMeta, WandWebPMeta)
 from file_scraper.defaults import UNAV
@@ -26,15 +26,15 @@ except ImportError:
     pass
 
 
-class WandScraper(BaseScraper):
-    """Scraper for the Wand/ImageMagick library."""
+class WandExtractor(BaseExtractor):
+    """Extractor for the Wand/ImageMagick library."""
 
     _supported_metadata = [WandExifMeta, WandTiffMeta, WandImageMeta,
                            WandWebPMeta]
 
     def __init__(self, *args, **kwargs):
         """
-        Initialize WandScraper.
+        Initialize WandExtractor.
 
         The class inherits the __init__ method from its parent class
         while adding the image file data as _wandresults.
@@ -89,7 +89,7 @@ class WandScraper(BaseScraper):
     def tools(self):
         """
         Overwriting baseclass implementation
-        to collect information about software used by the scraper
+        to collect information about software used by the extractor
 
         :returns: a dictionary with the used software or UNAV.
         """

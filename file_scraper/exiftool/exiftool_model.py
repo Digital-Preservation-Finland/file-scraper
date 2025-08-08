@@ -31,10 +31,10 @@ class ExifToolDngMeta(ExifToolBaseMeta):
         """
         Return mimetype.
 
-        Decorator is marked as important because other scrapers may not
+        Decorator is marked as important because other extractors may not
         recognize the mimetype of a dng file as dng, but tiff. This way a
         conflict can be avoided and the mimetype of dng files will be scraped
-        correctly when merging the results from different scrapers.
+        correctly when merging the results from different extractors.
         """
         return super().mimetype()
 
@@ -43,7 +43,7 @@ class ExifToolDngMeta(ExifToolBaseMeta):
         """
         Return version with one decimal digit, eg. "1.3".
 
-        Decorator is marked as important because other scrapers may not
+        Decorator is marked as important because other extractors may not
         recognize the version of a dng file correctly.
         """
         if "EXIF:DNGVersion" in self._metadata:

@@ -1,4 +1,4 @@
-"""Base module for scrapers."""
+"""Base module for extractors and detectors."""
 
 import abc
 from pathlib import Path
@@ -8,12 +8,12 @@ from file_scraper.defaults import UNAP, UNAV
 from file_scraper.utils import (metadata, is_metadata, filter_unwanted_chars)
 
 
-class _BaseScraperDetector(metaclass=abc.ABCMeta):
+class BaseApparatus(metaclass=abc.ABCMeta):
 
-    """Base class for Scrapers and detectors."""
+    """Base class for extractors and detectors."""
 
     def __init__(self, filename: Path, mimetype=None, version=None):
-        """Initialize scraper/detector.
+        """Initialize extractor/detector.
 
         :filename: Path to the file that is to be scraped
         """
@@ -44,13 +44,13 @@ class _BaseScraperDetector(metaclass=abc.ABCMeta):
     def tools(self):
         """
         Implement this function
-        collect information about software used by the scraper or detector
+        collect information about software used by the extractor or detector
 
         :returns: a dictionary with the used software, UNAV or UNKN.
         """
 
     def info(self):
-        """Return basic info of detector/scraper.
+        """Return basic info of detector/extractor.
 
         The returned dict contains keys "class", "messages", "errors"
         and "tools", where:
@@ -69,23 +69,23 @@ class _BaseScraperDetector(metaclass=abc.ABCMeta):
             "tools": self.tools()}
 
 
-class BaseScraper(_BaseScraperDetector):
-    """Base scraper implements common methods for all scrapers."""
+class BaseExtractor(BaseApparatus):
+    """Base extractor implements common methods for all extractors."""
 
     _supported_metadata = []
     _only_wellformed = False
 
     def __init__(self, filename: Path, mimetype, version=None, params=None):
         """
-        Initialize scraper.
+        Initialize extractor.
 
-        BaseScraper.stream will contain all streams in standardized metadata
+        BaseExtractor.stream will contain all streams in standardized metadata
         data model.
 
         :filename: Path to the file that is to be scraped
         :mimetype: Predefined mimetype
         :version: Predefined file format version
-        :params: Extra parameters that some scrapers can use.
+        :params: Extra parameters that some extractors can use.
         """
         super().__init__(filename, mimetype, version)
         self.streams = []
@@ -96,7 +96,7 @@ class BaseScraper(_BaseScraperDetector):
         """
         Return well-formedness status of the scraped file.
 
-        :returns: None if scraper does not check well-formedness, True if the
+        :returns: None if extractor does not check well-formedness, True if the
                   file has been scraped without errors and otherwise False
         """
         return len(self._messages) > 0 and len(self._errors) == 0
@@ -105,11 +105,11 @@ class BaseScraper(_BaseScraperDetector):
     def is_supported(cls, mimetype, version=None, check_wellformed=True,
                      params=None):  # pylint: disable=unused-argument
         """
-        Report whether the scraper supports the given MIME type and version.
+        Report whether the extractor supports the given MIME type and version.
 
-        The scraper is considered to support the MIME type and version
+        The extractor is considered to support the MIME type and version
         combination if at least one of the metadata models supported by the
-        scraper supports the combination. If the scraper can only be used to
+        extractor supports the combination. If the extractor can only be used to
         check the well-formedness of the file and well-formedness check is not
         wanted, False is returned.
 
@@ -136,11 +136,11 @@ class BaseScraper(_BaseScraperDetector):
         :allow_unav_version: True if (:unav) is an acceptable version
         :allow_unap_version: True if (:unap) is an acceptable version
         """
-        # If there are no streams, the scraper does not support the determined
+        # If there are no streams, the extractor does not support the determined
         # MIME type and version combination at all (i.e. the initial MIME type
-        # guess used to choose scrapers has been inaccurate).
+        # guess used to choose extractors has been inaccurate).
         if not self.streams:
-            self._errors.append("MIME type not supported by this scraper.")
+            self._errors.append("MIME type not supported by this extractor.")
             return
 
         mimetype = self.streams[0].mimetype()
@@ -172,7 +172,7 @@ class BaseScraper(_BaseScraperDetector):
 
     def iterate_models(self, **kwargs) -> Iterable["BaseMeta"]:
         """
-        Iterate Scraper models.
+        Iterate Extractor models.
 
         :kwargs: Model specific parameters
         :returns: Metadata model
@@ -267,7 +267,7 @@ class BaseMeta:
         return cls._supported
 
 
-class BaseDetector(_BaseScraperDetector):
+class BaseDetector(BaseApparatus):
     """Class to identify file format."""
 
     def __init__(self, filename: Path, mimetype=None, version=None):

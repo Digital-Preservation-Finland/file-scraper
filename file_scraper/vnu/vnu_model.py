@@ -14,7 +14,7 @@ class VnuMeta(BaseMeta):
         """
         Initialize the metadata model.
 
-        :well_formed: Well-formed status from scraper
+        :well_formed: Well-formed status from extractor
         """
         self._well_formed = well_formed
 
@@ -23,7 +23,7 @@ class VnuMeta(BaseMeta):
         """
         Return mimetype.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual MIME type.
         """
         return "text/html" if self._well_formed else UNAV
@@ -33,7 +33,7 @@ class VnuMeta(BaseMeta):
         """
         Return version.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual version.
         """
         return "5" if self._well_formed else UNAV
@@ -43,7 +43,7 @@ class VnuMeta(BaseMeta):
         """
         Return file type.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual stream type.
         """
         return "text" if self._well_formed else UNAV

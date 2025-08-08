@@ -1,17 +1,17 @@
-"""A HTML5 scraper module using The Nu Html Checker."""
+"""A HTML5 extractor module using The Nu Html Checker."""
 
 import os
 import re
 
-from file_scraper.base import BaseScraper
+from file_scraper.base import BaseExtractor
 from file_scraper.shell import Shell
 from file_scraper.logger import LOGGER
 from file_scraper.vnu.vnu_model import VnuMeta
 from file_scraper.defaults import UNAV
 
 
-class VnuScraper(BaseScraper):
-    """Vnu scraper. Supports only HTML version 5."""
+class VnuExtractor(BaseExtractor):
+    """Vnu extractor. Supports only HTML version 5."""
 
     _supported_metadata = [VnuMeta]
     _only_wellformed = True              # Only well-formed check
@@ -40,7 +40,7 @@ class VnuScraper(BaseScraper):
     def tools(self):
         """
         Overwriting baseclass implementation
-        to collect information about software used by the scraper
+        to collect information about software used by the extractor
 
         :returns: a dictionary with the used software or UNAV.
         """

@@ -1,8 +1,8 @@
-"""Dummy scrapers."""
+"""Dummy extractors."""
 import os
 from pathlib import Path
 
-from file_scraper.base import BaseScraper
+from file_scraper.base import BaseExtractor
 from file_scraper.defaults import UNAV
 from file_scraper.utils import generate_metadata_dict
 from file_scraper.dummy.dummy_model import (
@@ -12,21 +12,21 @@ from file_scraper.dummy.dummy_model import (
     DetectedSpssVersionMeta,
     DetectedTextVersionMeta,
     DummyMeta,
-    ScraperNotFoundMeta
+    ExtractorNotFoundMeta
 )
 
 LOSE = (None, UNAV, "")
 
 
-class ScraperNotFound(BaseScraper):
-    """Scraper for the case where scraper was not found."""
+class ExtractorNotFound(BaseExtractor):
+    """Extractor for the case where extractor was not found."""
 
     def scrape_file(self):
         """No need to scrape anything, just collect."""
-        self._errors.append("Proper scraper was not found. "
+        self._errors.append("Proper extractor was not found. "
                             "The file was not analyzed.")
         self.streams.append(
-            ScraperNotFoundMeta(
+            ExtractorNotFoundMeta(
                 mimetype=self._predefined_mimetype,
                 version=self._predefined_version
             )
@@ -36,7 +36,7 @@ class ScraperNotFound(BaseScraper):
     def well_formed(self):
         """
         Academically, well-formedness is not known and therefore result
-        should be None. However, ScraperNotFound should always be unwanted
+        should be None. However, ExtractorNotFound should always be unwanted
         output, and therefore we return False.
         """
         return False
@@ -45,15 +45,15 @@ class ScraperNotFound(BaseScraper):
         return {}
 
 
-class NoWellformednessBaseScraper(BaseScraper):
+class NoWellformednessBaseExtractor(BaseExtractor):
     """
-    The scrapers in this module do not check well-formedness of the file.
+    The extractors in this module do not check well-formedness of the file.
     """
 
     @property
     def well_formed(self):
         """
-        The scrapers in this module do not check well-formedness of the file.
+        The extractors in this module do not check well-formedness of the file.
         Therefore, None is returned as well-formedness, unless an error is
         found. True is never returned.
 
@@ -68,8 +68,8 @@ class NoWellformednessBaseScraper(BaseScraper):
         return {}
 
 
-class FileExists(NoWellformednessBaseScraper):
-    """Scraper for the case where file was not found."""
+class FileExists(NoWellformednessBaseExtractor):
+    """Extractor for the case where file was not found."""
 
     def scrape_file(self):
         """Check if file exists."""
@@ -89,9 +89,9 @@ class FileExists(NoWellformednessBaseScraper):
         self.streams.append(DummyMeta())
 
 
-class MimeMatchScraper(NoWellformednessBaseScraper):
+class MimeMatchExtractor(NoWellformednessBaseExtractor):
     """
-    Scraper to check if the predefined mimetype and version match with the
+    Extractor to check if the predefined mimetype and version match with the
     resulted ones.
     """
 
@@ -142,7 +142,7 @@ class MimeMatchScraper(NoWellformednessBaseScraper):
                               allow_unap_version=True)
 
 
-class DetectedMimeVersionScraper(NoWellformednessBaseScraper):
+class DetectedMimeVersionExtractor(NoWellformednessBaseExtractor):
     """
     Use the detected file format version for some file formats.
     Support in metadata scraping and well-formedness checking.
@@ -166,9 +166,9 @@ class DetectedMimeVersionScraper(NoWellformednessBaseScraper):
                               allow_unap_version=True)
 
 
-class DetectedMimeVersionMetadataScraper(DetectedMimeVersionScraper):
+class DetectedMimeVersionMetadataExtractor(DetectedMimeVersionExtractor):
     """
-    Variation of DetectedMimeVersionScraper for SPSS Portable, text,
+    Variation of DetectedMimeVersionExtractor for SPSS Portable, text,
     and PDF files. Support only in metadata scraping.
     """
 
@@ -195,10 +195,10 @@ class DetectedMimeVersionMetadataScraper(DetectedMimeVersionScraper):
             mimetype, version, check_wellformed, params)
 
 
-class ResultsMergeScraper(NoWellformednessBaseScraper):
+class ResultsMergeExtractor(NoWellformednessBaseExtractor):
     """
-    Scraper to merge the scraper results and handle possible conflicts
-    between the scraper tools.
+    Extractor to merge the extractor results and handle possible conflicts
+    between the extractor tools.
     """
 
     _supported_metadata = [DummyMeta]
@@ -222,4 +222,4 @@ class ResultsMergeScraper(NoWellformednessBaseScraper):
         self.streams = streams
         for error_message in conflicts:
             self._errors.append(error_message)
-        self._messages.append("Scraper results merged into streams")
+        self._messages.append("Extractor results merged into streams")

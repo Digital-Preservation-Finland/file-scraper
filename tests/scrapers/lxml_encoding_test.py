@@ -12,14 +12,14 @@ This module tests that:
     - A correct MIME type with made up version is reported as supported for
       text/xml files but not for text/html files.
     - A made up MIME type with correct version is reported as not supported.
-    - Scraper works as designed with charset parameter.
+    - Extractor works as designed with charset parameter.
 """
 
 from pathlib import Path
 
 import pytest
 
-from file_scraper.lxml_scraper.lxml_scraper import LxmlScraper
+from file_scraper.lxml_extractor.lxml_extractor import LxmlExtractor
 from tests.common import partial_message_included
 
 
@@ -52,32 +52,32 @@ def test_xml_encoding_normalized(tmpdir, encoding, py_codec, norm_encoding):
     with open(tmppath, "wb") as file_:
         file_.write(xml.encode(py_codec))
 
-    scraper = LxmlScraper(filename=tmppath, mimetype="text/xml",
-                          params={"charset": norm_encoding})
-    scraper.scrape_file()
-    assert scraper.well_formed
+    extractor = LxmlExtractor(filename=tmppath, mimetype="text/xml",
+                            params={"charset": norm_encoding})
+    extractor.scrape_file()
+    assert extractor.well_formed
 
 
 def test_is_supported_allow():
     """Test is_supported method for xml 1.0 files."""
     mime = "text/xml"
     ver = "1.0"
-    assert LxmlScraper.is_supported(mime, ver, True)
-    assert LxmlScraper.is_supported(mime, None, True)
-    assert not LxmlScraper.is_supported(mime, ver, False)
-    assert LxmlScraper.is_supported(mime, "foo", True)
-    assert not LxmlScraper.is_supported("foo", ver, True)
+    assert LxmlExtractor.is_supported(mime, ver, True)
+    assert LxmlExtractor.is_supported(mime, None, True)
+    assert not LxmlExtractor.is_supported(mime, ver, False)
+    assert LxmlExtractor.is_supported(mime, "foo", True)
+    assert not LxmlExtractor.is_supported("foo", ver, True)
 
 
 def test_is_supported_deny():
     """Test is_supported method for html 5 files."""
     mime = "text/html"
     ver = "5"
-    assert LxmlScraper.is_supported(mime, ver, True)
-    assert LxmlScraper.is_supported(mime, None, True)
-    assert not LxmlScraper.is_supported(mime, ver, False)
-    assert not LxmlScraper.is_supported(mime, "foo", True)
-    assert not LxmlScraper.is_supported("foo", ver, True)
+    assert LxmlExtractor.is_supported(mime, ver, True)
+    assert LxmlExtractor.is_supported(mime, None, True)
+    assert not LxmlExtractor.is_supported(mime, ver, False)
+    assert not LxmlExtractor.is_supported(mime, "foo", True)
+    assert not LxmlExtractor.is_supported("foo", ver, True)
 
 
 @pytest.mark.parametrize(
@@ -102,23 +102,23 @@ def test_charset(filename, mimetype, charset, well_formed):
     :well_formed: Expected result of well-formedness
     """
     params = {"charset": charset}
-    scraper = LxmlScraper(filename=Path(filename), mimetype=mimetype, params=params)
-    scraper.scrape_file()
-    assert scraper.well_formed == well_formed
+    extractor = LxmlExtractor(filename=Path(filename), mimetype=mimetype, params=params)
+    extractor.scrape_file()
+    assert extractor.well_formed == well_formed
     if charset:
         if well_formed:
-            assert not scraper.errors()
+            assert not extractor.errors()
         else:
             assert partial_message_included(
-                "Found encoding declaration UTF-8", scraper.errors())
+                "Found encoding declaration UTF-8", extractor.errors())
     else:
         assert partial_message_included("encoding not defined",
-                                        scraper.errors())
+                                        extractor.errors())
 
 
 @pytest.mark.parametrize("tool", ["lxml", "libxml2"])
 def test_tools(tool):
     """Test that the versions are numeric"""
-    scraper = LxmlScraper(filename=Path("tests/data/text_xml/valid_1.0_xsd.xml"),
-                          mimetype="text/xml", params={"charset": "UTF-8"})
-    assert scraper.tools()[tool]["version"].replace(".", "").isnumeric()
+    extractor = LxmlExtractor(filename=Path("tests/data/text_xml/valid_1.0_xsd.xml"),
+                            mimetype="text/xml", params={"charset": "UTF-8"})
+    assert extractor.tools()[tool]["version"].replace(".", "").isnumeric()

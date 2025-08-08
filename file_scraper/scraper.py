@@ -7,11 +7,11 @@ from dpres_file_formats import graders
 
 from file_scraper.defaults import UNAV
 from file_scraper.detectors import (MagicCharset, ExifToolDetector)
-from file_scraper.dummy.dummy_scraper import (FileExists, MimeMatchScraper,
-                                              ResultsMergeScraper)
-from file_scraper.iterator import iter_detectors, iter_scrapers
-from file_scraper.jhove.jhove_scraper import JHoveUtf8Scraper
-from file_scraper.textfile.textfile_scraper import TextfileScraper
+from file_scraper.dummy.dummy_extractor import (FileExists, MimeMatchExtractor,
+                                                ResultsMergeExtractor)
+from file_scraper.iterator import iter_detectors, iter_extractors
+from file_scraper.jhove.jhove_extractor import JHoveUtf8Extractor
+from file_scraper.textfile.textfile_extractor import TextfileExtractor
 from file_scraper.utils import hexdigest
 from file_scraper.logger import LOGGER
 
@@ -178,8 +178,8 @@ class Scraper:
             return
         if "charset" in self.streams[0] and \
                 self.streams[0]["charset"] == "UTF-8":
-            scraper = JHoveUtf8Scraper(filename=self.path,
-                                       mimetype=UNAV)
+            scraper = JHoveUtf8Extractor(filename=self.path,
+                                         mimetype=UNAV)
             self._scrape_file(scraper, True)
 
     def _check_mime(self, check_wellformed):
@@ -191,7 +191,7 @@ class Scraper:
         version = None
         if self._params.get("version", None) not in LOSE:
             version = self._params.get("version", None)
-        scraper = MimeMatchScraper(
+        scraper = MimeMatchExtractor(
             filename=self.path,
             mimetype=self._predefined_mimetype,
             version=version,
@@ -207,7 +207,7 @@ class Scraper:
 
         :check_wellformed: Whether full scraping is used or not.
         """
-        scraper = ResultsMergeScraper(
+        scraper = ResultsMergeExtractor(
             filename=self.path,
             mimetype=self._predefined_mimetype,
             version=self._predefined_version,
@@ -234,7 +234,7 @@ class Scraper:
             self.version = "(:unav)"
             return
 
-        for scraper_class in iter_scrapers(
+        for scraper_class in iter_extractors(
                 mimetype=self._predefined_mimetype,
                 version=self._predefined_version,
                 check_wellformed=check_wellformed, params=self._params):
@@ -298,7 +298,7 @@ class Scraper:
 
         :returns: True, if file is a text file, false otherwise
         """
-        scraper = TextfileScraper(self.path, "text/plain")
+        scraper = TextfileExtractor(self.path, "text/plain")
         scraper.scrape_file()
         if scraper.well_formed is False:
             return False

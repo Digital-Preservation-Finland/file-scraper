@@ -1,17 +1,17 @@
 """
-Tests for Jpylyzer scraper.
+Tests for Jpylyzer extractor.
 
 This module tests that:
     - Well-formedness of jp2 files is scraped correctly.
-    - For valid files scraper messages contain "File is well-formed and valid".
-    - For invalid files, scraper errors contain "document is not well-formed".
+    - For valid files extractor messages contain "File is well-formed and valid".
+    - For invalid files, extractor errors contain "document is not well-formed".
 
 """
 from pathlib import Path
 
 import pytest
 
-from file_scraper.jpylyzer.jpylyzer_scraper import JpylyzerScraper
+from file_scraper.jpylyzer.jpylyzer_extractor import JpylyzerExtractor
 from tests.common import (parse_results, partial_message_included)
 
 
@@ -45,9 +45,9 @@ from tests.common import (parse_results, partial_message_included)
             })
     ]
 )
-def test_scraper_jp2(filename, result_dict):
+def test_extractor_jp2(filename, result_dict):
     """
-    Test scraper with jp2 files.
+    Test extractor with jp2 files.
 
     :filename: Test file name
     :result_dict: Result dict containing test purpose, and parts of expected
@@ -56,20 +56,20 @@ def test_scraper_jp2(filename, result_dict):
     """
     correct = parse_results(filename, "image/jp2", result_dict, True)
 
-    scraper = JpylyzerScraper(filename=Path(correct.filename),
-                              mimetype="image/jp2")
+    extractor = JpylyzerExtractor(filename=Path(correct.filename),
+                                mimetype="image/jp2")
 
-    scraper.scrape_file()
+    extractor.scrape_file()
 
-    assert scraper.well_formed == correct.well_formed
+    assert extractor.well_formed == correct.well_formed
 
     assert partial_message_included(correct.stdout_part,
-                                    scraper.messages())
+                                    extractor.messages())
     assert partial_message_included(correct.stderr_part,
-                                    scraper.errors())
+                                    extractor.errors())
 
 
 def test_tools():
-    scraper = JpylyzerScraper(filename=Path("valid__jpylyzer_reference.jp2"),
-                              mimetype="image/jp2")
-    assert scraper.tools()["jpylyzer"]["version"][0].isdigit()
+    extractor = JpylyzerExtractor(filename=Path("valid__jpylyzer_reference.jp2"),
+                                mimetype="image/jp2")
+    assert extractor.tools()["jpylyzer"]["version"][0].isdigit()

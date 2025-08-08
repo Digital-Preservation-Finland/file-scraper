@@ -5,13 +5,13 @@ try:
 except ImportError:
     pass
 
-from file_scraper.base import BaseScraper
+from file_scraper.base import BaseExtractor
 from file_scraper.logger import LOGGER
-from file_scraper.lxml_scraper.lxml_model import LxmlMeta
+from file_scraper.lxml_extractor.lxml_model import LxmlMeta
 from file_scraper.utils import normalize_charset
 
 
-class LxmlScraper(BaseScraper):
+class LxmlExtractor(BaseExtractor):
     """Scrape character encoding from XML/HTML header."""
 
     # We use JHOVE for HTML4 and XHTML files.
@@ -26,15 +26,15 @@ class LxmlScraper(BaseScraper):
         scraper supports text/xml files regardless of version. Also
         text/html versions 4.01 and 5 are supported.
 
-        BaseScraper's is_supported is not intricate enough to handle such
+        BaseExtractor's is_supported is not intricate enough to handle such
         functionality, so it has to be overridden.
 
         :mimetype: Identified mimetype
         :version: Identified version (if needed)
         :check_wellformed: True for the full well-formed check, False for just
                            detection and metadata scraping
-        :params: Extra parameters needed for the scraper
-        :returns: True if scraper is supported
+        :params: Extra parameters needed for the extractor
+        :returns: True if extractor is supported
         """
         if params is None:
             params = {}
@@ -76,7 +76,7 @@ class LxmlScraper(BaseScraper):
             norm_encoding = normalize_charset(encoding)
 
             # If encoding was provided in the XML header, ensure
-            # that it matches the encoding provided to the scraper beforehand
+            # that it matches the encoding provided to the extractor beforehand
             # in either the original or normalized form
             encoding_matches = (
                     encoding is None
@@ -132,7 +132,7 @@ class LxmlScraper(BaseScraper):
     def tools(self):
         """
         Overwriting baseclass implementation
-        to collect information about software used by the scraper
+        to collect information about software used by the extractor
 
         :returns: a dictionary with the used software or UNAV.
         """

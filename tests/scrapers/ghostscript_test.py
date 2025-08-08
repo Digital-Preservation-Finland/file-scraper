@@ -1,16 +1,16 @@
 """
-Test for Ghostscript scraper.
+Test for Ghostscript extractor.
 
 This module tests that:
     - The following results are reported:
         - the file is well-formed
         - MIME type and version are '(:unav)'
-        - scraper messages do not contain the word 'Error'
+        - extractor messages do not contain the word 'Error'
     - Files containing JPEG2000 images are scraped correctly.
     - When scraping is done for a file where the payload has been altered,
       or an XREF entry in XREF table has been removed, the results are similar
-      but the file is not well-formed, scraper messages are not checked and
-      scraper errors contain 'An error occurred while reading an XREF table.'
+      but the file is not well-formed, extractor messages are not checked and
+      extractor errors contain 'An error occurred while reading an XREF table.'
     - MIME type application/pdf with version 1.7 is reported as
       supported when full scraping is done
     - When full scraping is not done, application/pdf version 1.7 is reported
@@ -24,7 +24,7 @@ from pathlib import Path
 import pytest
 
 from file_scraper.defaults import UNAV
-from file_scraper.ghostscript.ghostscript_scraper import GhostscriptScraper
+from file_scraper.ghostscript.ghostscript_extractor import GhostscriptExtractor
 from tests.common import (parse_results, partial_message_included)
 
 
@@ -53,9 +53,9 @@ from tests.common import (parse_results, partial_message_included)
             "stderr_part": ""}),
     ]
 )
-def test_scraper_pdf(filename, result_dict, evaluate_scraper):
+def test_extractor_pdf(filename, result_dict, evaluate_extractor):
     """
-    Test Ghostscript scraper.
+    Test Ghostscript extractor.
 
     :filename: Test filename. Character X is replaced with versions 1.7,
                A-1a, A-2b, and A-3b. All of these files must be found.
@@ -66,27 +66,27 @@ def test_scraper_pdf(filename, result_dict, evaluate_scraper):
         filename = filename.replace("X", ver)
         correct = parse_results(filename, "application/pdf",
                                 result_dict, True)
-        scraper = GhostscriptScraper(filename=correct.filename,
-                                     mimetype="application/pdf")
-        scraper.scrape_file()
+        extractor = GhostscriptExtractor(filename=correct.filename,
+                                       mimetype="application/pdf")
+        extractor.scrape_file()
 
         # Ghostscript cannot handle version or MIME type
         correct.streams[0]["version"] = UNAV
         correct.streams[0]["mimetype"] = UNAV
 
-        evaluate_scraper(scraper, correct, eval_output=False)
+        evaluate_extractor(extractor, correct, eval_output=False)
 
-        if scraper.well_formed:
-            assert not partial_message_included("Error", scraper.messages())
-            assert not scraper.errors()
+        if extractor.well_formed:
+            assert not partial_message_included("Error", extractor.messages())
+            assert not extractor.errors()
         else:
             assert partial_message_included(correct.stderr_part,
-                                            scraper.errors())
+                                            extractor.errors())
             assert partial_message_included(correct.stdout_part,
-                                            scraper.errors())
+                                            extractor.errors())
 
 
-def test_jpeg2000_inside_pdf(evaluate_scraper):
+def test_jpeg2000_inside_pdf(evaluate_extractor):
     """
     Test scraping a pdf file containing JPEG2000 image.
 
@@ -101,14 +101,14 @@ def test_jpeg2000_inside_pdf(evaluate_scraper):
                    "stderr_part": ""}
     correct = parse_results(filename, mimetype, result_dict, True)
 
-    scraper = GhostscriptScraper(filename=correct.filename, mimetype=mimetype)
-    scraper.scrape_file()
+    extractor = GhostscriptExtractor(filename=correct.filename, mimetype=mimetype)
+    extractor.scrape_file()
 
     # Ghostscript cannot handle version or MIME type
     correct.streams[0]["version"] = UNAV
     correct.streams[0]["mimetype"] = UNAV
 
-    evaluate_scraper(scraper, correct, eval_output=False)
+    evaluate_extractor(extractor, correct, eval_output=False)
 
 
 @pytest.mark.usefixtures("patch_shell_attributes_fx")
@@ -119,27 +119,27 @@ def test_ghostscript_returns_invalid_return_code():
     path = os.path.join("tests/data", mimetype.replace("/", "_"))
     testfile = os.path.join(path, "valid_X.pdf")
 
-    scraper = GhostscriptScraper(filename=Path(testfile),
-                                 mimetype=mimetype)
+    extractor = GhostscriptExtractor(filename=Path(testfile),
+                                   mimetype=mimetype)
 
-    scraper.scrape_file()
+    extractor.scrape_file()
 
-    assert "Ghostscript returned invalid return code: -1\n" in scraper.errors()
+    assert "Ghostscript returned invalid return code: -1\n" in extractor.errors()
 
 
 def test_is_supported():
     """Test is_supported method."""
     mime = "application/pdf"
     ver = "1.7"
-    assert GhostscriptScraper.is_supported(mime, ver, True)
-    assert GhostscriptScraper.is_supported(mime, None, True)
-    assert not GhostscriptScraper.is_supported(mime, ver, False)
-    assert not GhostscriptScraper.is_supported(mime, "foo", True)
-    assert not GhostscriptScraper.is_supported("foo", ver, True)
+    assert GhostscriptExtractor.is_supported(mime, ver, True)
+    assert GhostscriptExtractor.is_supported(mime, None, True)
+    assert not GhostscriptExtractor.is_supported(mime, ver, False)
+    assert not GhostscriptExtractor.is_supported(mime, "foo", True)
+    assert not GhostscriptExtractor.is_supported("foo", ver, True)
 
 
 def test_tools():
     """Test verifies that tools will be returned"""
-    scraper = GhostscriptScraper(filename=Path("None"), mimetype="None")
+    extractor = GhostscriptExtractor(filename=Path("None"), mimetype="None")
 
-    assert scraper.tools()["Ghostscript"]["version"] not in (UNAV, None)
+    assert extractor.tools()["Ghostscript"]["version"] not in (UNAV, None)

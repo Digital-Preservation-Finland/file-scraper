@@ -1,17 +1,17 @@
 """
-Tests for ExifTool scraper.
+Tests for ExifTool extractor.
 
 This module tests that:
     - MIME type and version of dng files is scraped correctly.
-    - For valid files scraper messages contain "successfully".
-    - For an empty file, scraper errors contain "File is empty".
+    - For valid files extractor messages contain "successfully".
+    - For an empty file, extractor errors contain "File is empty".
 
 """
 from pathlib import Path
 
 import pytest
 
-from file_scraper.exiftool.exiftool_scraper import ExifToolDngScraper
+from file_scraper.exiftool.exiftool_extractor import ExifToolDngExtractor
 from tests.common import (parse_results, partial_message_included)
 
 
@@ -30,9 +30,9 @@ from tests.common import (parse_results, partial_message_included)
             })
     ]
 )
-def test_scraper_dng(filename, result_dict, evaluate_scraper):
+def test_extractor_dng(filename, result_dict, evaluate_extractor):
     """
-    Test scraper with dng files.
+    Test extractor with dng files.
 
     :filename: Test file name
     :result_dict: Result dict containing test purpose, and parts of expected
@@ -40,25 +40,25 @@ def test_scraper_dng(filename, result_dict, evaluate_scraper):
     """
     correct = parse_results(filename, "image/x-adobe-dng", result_dict, False)
 
-    scraper = ExifToolDngScraper(filename=correct.filename,
-                                 mimetype="image/x-adobe-dng")
-    scraper.scrape_file()
+    extractor = ExifToolDngExtractor(filename=correct.filename,
+                                   mimetype="image/x-adobe-dng")
+    extractor.scrape_file()
 
     if correct.well_formed is not False:
-        evaluate_scraper(scraper, correct)
+        evaluate_extractor(extractor, correct)
     else:
-        assert not scraper.well_formed
+        assert not extractor.well_formed
         assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
+                                        extractor.messages())
         assert partial_message_included(correct.stderr_part,
-                                        scraper.errors())
+                                        extractor.errors())
 
 
 def test_tools():
     """
     Test tools return correctly
     """
-    scraper = ExifToolDngScraper(filename=Path("valid_1.4.dng"),
-                                 mimetype="image/x-adobe-dng")
-    assert scraper.tools() is not None
-    assert scraper.tools()["ExifTool"]["version"][0].isdigit()
+    extractor = ExifToolDngExtractor(filename=Path("valid_1.4.dng"),
+                                   mimetype="image/x-adobe-dng")
+    assert extractor.tools() is not None
+    assert extractor.tools()["ExifTool"]["version"][0].isdigit()

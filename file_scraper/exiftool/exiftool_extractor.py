@@ -1,26 +1,26 @@
-"""Scraper for dng files using ExifTool """
+"""Extractor for dng files using ExifTool """
 
 import json
 from pathlib import Path
 import exiftool
 
-from file_scraper.base import BaseScraper
+from file_scraper.base import BaseExtractor
 from file_scraper.exiftool.exiftool_model import ExifToolDngMeta
 
 
-class ExifToolScraperBase(BaseScraper):
+class ExifToolExtractorBase(BaseExtractor):
     """
-    Scraping methods for the ExifTool scraper
+    Scraping methods for the ExifTool extractor
     """
 
     def __init__(self, filename: Path, mimetype, version=None, params=None):
         """
-        Initialize ExifTool base scraper.
+        Initialize ExifTool base extractor.
 
         :filename: File path
         :mimetype: Predefined mimetype
         :version: Predefined file format version
-        :params: Extra parameters needed for the scraper
+        :params: Extra parameters needed for the extractor
         """
         super().__init__(
             filename=filename, mimetype=mimetype, version=version,
@@ -69,7 +69,7 @@ class ExifToolScraperBase(BaseScraper):
     def tools(self):
         """
         Overwriting baseclass implementation
-        to collect information about software used by the scraper
+        to collect information about software used by the extractor
 
         :returns: a dictionary with the used software.
         """
@@ -78,7 +78,7 @@ class ExifToolScraperBase(BaseScraper):
             return {"ExifTool": {"version": et.version}}
 
 
-class ExifToolDngScraper(ExifToolScraperBase):
+class ExifToolDngExtractor(ExifToolExtractorBase):
     """Variables for scraping dng files."""
 
     _supported_metadata = [ExifToolDngMeta]

@@ -1,4 +1,4 @@
-"""DPX scraper"""
+"""DPX extractor"""
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAV
@@ -15,8 +15,8 @@ class DpxMeta(BaseMeta):
         """
         Initialize metadata model.
 
-        :well_formed: Well-formed status from DPX scraper
-        :output: Messages given by DPX scraper
+        :well_formed: Well-formed status from DPX extractor
+        :output: Messages given by DPX extractor
         :filename: DPX file name
         """
         self._well_formed = well_formed
@@ -28,7 +28,7 @@ class DpxMeta(BaseMeta):
         """
         Return mimetype.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual MIME type.
         """
         return "image/x-dpx" if self._well_formed else UNAV
@@ -38,7 +38,7 @@ class DpxMeta(BaseMeta):
         """
         Return file format version.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual version.
         """
         if not self._well_formed:
@@ -58,7 +58,7 @@ class DpxMeta(BaseMeta):
         """
         Return file type.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual stream type.
         """
         return "image" if self._well_formed else UNAV

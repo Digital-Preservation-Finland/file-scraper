@@ -1,10 +1,10 @@
-"""Warc file scraper."""
+"""Warc file extractor."""
 
 import gzip
 import os.path
 from io import open as io_open
 
-from file_scraper.base import BaseScraper
+from file_scraper.base import BaseExtractor
 from file_scraper.defaults import UNAC, UNAV
 from file_scraper.logger import LOGGER
 from file_scraper.shell import Shell
@@ -12,11 +12,11 @@ from file_scraper.warctools.warctools_model import (GzipWarctoolsMeta,
                                                     WarctoolsMeta)
 
 
-class WarctoolsScraper(BaseScraper):
+class WarctoolsExtractor(BaseExtractor):
     """
-    Implements WARC file format scraper for metadata collecting.
+    Implements WARC file format extractor for metadata collecting.
 
-    This scraper uses Internet Archives warctools scraper.
+    This extractor uses Internet Archives warctools extractor.
 
     .. seealso:: https://github.com/internetarchive/warctools
     """
@@ -68,18 +68,18 @@ class WarctoolsScraper(BaseScraper):
     def tools(self):
         """
         Overwriting baseclass implementation
-        to collect information about software used by the scraper
+        to collect information about software used by the extractor
 
         :returns: a dictionary with the used software.
         """
         return {}
 
 
-class WarctoolsFullScraper(WarctoolsScraper):
+class WarctoolsFullExtractor(WarctoolsExtractor):
     """
-    Implements WARC file format scraper for validation.
+    Implements WARC file format extractor for validation.
 
-    This scraper uses Internet Archives warctools scraper.
+    This extractor uses Internet Archives warctools extractor.
 
     .. seealso:: https://github.com/internetarchive/warctools
     """
@@ -91,7 +91,7 @@ class WarctoolsFullScraper(WarctoolsScraper):
     def is_supported(cls, mimetype, version=None, check_wellformed=True,
                      params=None):  # pylint: disable=unused-argument
         """
-        Use the default is_supported method from BaseScraper.
+        Use the default is_supported method from BaseExtractor.
         Super class has a special is_supported() method.
 
         :mimetype: MIME type of a file
@@ -131,7 +131,7 @@ class WarctoolsFullScraper(WarctoolsScraper):
     def tools(self):
         """
         Overwriting baseclass implementation
-        to collect information about software used by the scraper
+        to collect information about software used by the extractor
 
         :returns: a dictionary with the used software or UNKN.
         """
@@ -139,23 +139,23 @@ class WarctoolsFullScraper(WarctoolsScraper):
         return {"warctools": {"version": UNAC}}
 
 
-class GzipWarctoolsScraper(WarctoolsFullScraper):
-    """Scraper for compressed Warcs."""
+class GzipWarctoolsExtractor(WarctoolsFullExtractor):
+    """Extractor for compressed Warcs."""
 
     _supported_metadata = [GzipWarctoolsMeta]
     _only_wellformed = True  # Only well-formed check
 
     def info(self):
         """
-        Return scraper info.
+        Return extractor info.
 
-        If WarctoolsScraper could scrape the gzip file,
-        that class is reported as the scraper class. For failures,
-        the class is GzipWarctoolsScraper.
+        If WarctoolsExtractor could scrape the gzip file,
+        that class is reported as the extractor class. For failures,
+        the class is GzipWarctoolsExtractor.
         """
         info = super().info()
         if self.streams:
-            info["class"] = "WarctoolsFullScraper"
+            info["class"] = "WarctoolsFullExtractor"
         return info
 
     def _check_supported(self, allow_unav_mime=False, allow_unav_version=False,
@@ -163,13 +163,13 @@ class GzipWarctoolsScraper(WarctoolsFullScraper):
         """
         Check that the scraped MIME type and version are supported.
 
-        This scraper uses the Warc scraper to check the file and get the
+        This extractor uses the Warc extractor to check the file and get the
         metadata, so in addition to the normal metadata model check, it is also
-        sufficient if the Warc scraper supports the MIME type and
+        sufficient if the Warc extractor supports the MIME type and
         version combination.
         """
         if not self.streams:
-            self._errors.append("MIME type not supported by this scraper.")
+            self._errors.append("MIME type not supported by this extractor.")
 
         mimetype = self.streams[0].mimetype()
         version = self.streams[0].version()
@@ -182,9 +182,9 @@ class GzipWarctoolsScraper(WarctoolsFullScraper):
             if mimetype in md_class.supported_mimetypes():
                 return
 
-        # also check the used scraper class: final result of warc,
+        # also check the used extractor class: final result of warc,
         # corresponding to the compressed file, is also ok
-        if WarctoolsFullScraper.is_supported(mimetype, version):
+        if WarctoolsFullExtractor.is_supported(mimetype, version):
             return
 
         self._errors.append(

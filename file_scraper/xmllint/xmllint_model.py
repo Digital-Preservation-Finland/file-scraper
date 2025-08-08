@@ -17,7 +17,7 @@ class XmllintMeta(BaseMeta):
         """
         Initialize the metadata model.
 
-        :well_formed: Well-formed status from scraper
+        :well_formed: Well-formed status from extractor
         :tree: XML element tree for the scraped file
         """
         self._well_formed = well_formed
@@ -28,7 +28,7 @@ class XmllintMeta(BaseMeta):
         """
         Return mimetype.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual MIME type.
         """
         return "text/xml" if self._well_formed else UNAV
@@ -46,7 +46,7 @@ class XmllintMeta(BaseMeta):
         """
         Return file type.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual stream type.
         """
         return "text" if self._well_formed else UNAV

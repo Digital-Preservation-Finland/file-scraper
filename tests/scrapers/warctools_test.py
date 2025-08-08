@@ -1,35 +1,35 @@
 """
-Test the file_scraper.scrapers.warctools module
+Test the file_scraper.warctools.warctools_extractor module
 
 This module tests that:
     - MIME type, version, streams and well-formedneess are scraped correctly
-      using all scrapers.
-        - For all well-formed files, scraper messages contain "successfully".
-    - When using GzipWarctoolsScraper:
-        - For empty files, scraper errors contains "Empty file."
-        - For files with missing data, scraper errors contains "unpack
+      using all extractors.
+        - For all well-formed files, extractor messages contain "successfully".
+    - When using GzipWarctoolsExtractor:
+        - For empty files, extractor errors contains "Empty file."
+        - For files with missing data, extractor errors contains "unpack
           requires a string argument of length 4".
-    - When using WarctoolsFullScraper:
+    - When using WarctoolsFullExtractor:
         - For whiles where the reported content length is shorter than the
-          actual content, scraper errors contains "warc errors at".
+          actual content, extractor errors contains "warc errors at".
 
     - With well-formedness check, the following MIME types and versions are
       supported:
-        - GzipWarctoolsScraper supports application/gzip with "", None or a
+        - GzipWarctoolsExtractor supports application/gzip with "", None or a
           made up string as a version.
-        - WarctoolsScraper and WarctoolsFullScraper support
+        - WarctoolsExtractor and WarctoolsFullExtractor support
           application/warc with "", None or a made up string as a version.
     - Without well-formedness check, these MIME types are supported only in
-      WarctoolsScraper.
-    - None of these scrapers supports a made up MIME type.
+      WarctoolsExtractor.
+    - None of these extractors supports a made up MIME type.
 """
 from pathlib import Path
 
 import pytest
 
 from file_scraper.defaults import UNAV
-from file_scraper.warctools.warctools_scraper import (
-    GzipWarctoolsScraper, WarctoolsFullScraper, WarctoolsScraper)
+from file_scraper.warctools.warctools_extractor import (
+    GzipWarctoolsExtractor, WarctoolsFullExtractor, WarctoolsExtractor)
 from tests.common import (parse_results, partial_message_included)
 
 
@@ -51,34 +51,34 @@ from tests.common import (parse_results, partial_message_included)
                            " marker was reached"}),
     ]
 )
-def test_gzip_scraper(filename, result_dict, evaluate_scraper):
+def test_gzip_extractor(filename, result_dict, evaluate_extractor):
     """
-    Test scraper for gzip files.
+    Test extractor for gzip files.
 
     :filename: Test file name
     :result_dict: Result dict containing test purpose, and parts of
                   expected results of stdout and stderr
     """
     mime = "application/warc"
-    classname = "WarctoolsFullScraper"
+    classname = "WarctoolsFullExtractor"
     correct = parse_results(filename, mime,
                             result_dict, True)
-    scraper = GzipWarctoolsScraper(filename=correct.filename,
-                                   mimetype="application/gzip")
-    scraper.scrape_file()
+    extractor = GzipWarctoolsExtractor(filename=correct.filename,
+                                     mimetype="application/gzip")
+    extractor.scrape_file()
 
     if not correct.well_formed and correct.streams[0]["version"] == UNAV:
         correct.update_mimetype("application/gzip")
-        classname = "GzipWarctoolsScraper"
+        classname = "GzipWarctoolsExtractor"
 
     if not correct.well_formed:
-        assert not scraper.well_formed
-        assert not scraper.streams
+        assert not extractor.well_formed
+        assert not extractor.streams
         assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
-        assert partial_message_included(correct.stderr_part, scraper.errors())
+                                        extractor.messages())
+        assert partial_message_included(correct.stderr_part, extractor.errors())
     else:
-        evaluate_scraper(scraper, correct, exp_scraper_cls=classname)
+        evaluate_extractor(extractor, correct, exp_extractor_cls=classname)
 
 
 @pytest.mark.parametrize(
@@ -114,9 +114,9 @@ def test_gzip_scraper(filename, result_dict, evaluate_scraper):
             "stderr_part": "Empty file."})
     ]
 )
-def test_warc_scraper(filename, result_dict, evaluate_scraper):
+def test_warc_extractor(filename, result_dict, evaluate_extractor):
     """
-    Test scraper for warc files.
+    Test extractor for warc files.
 
     :filename: Test file name
     :result_dict: Result dict containing test purpose, and parts of
@@ -124,18 +124,18 @@ def test_warc_scraper(filename, result_dict, evaluate_scraper):
     """
     correct = parse_results(filename, "application/warc",
                             result_dict, True)
-    scraper = WarctoolsFullScraper(filename=correct.filename,
-                                   mimetype="application/warc")
-    scraper.scrape_file()
+    extractor = WarctoolsFullExtractor(filename=correct.filename,
+                                     mimetype="application/warc")
+    extractor.scrape_file()
 
     if not correct.well_formed:
-        assert not scraper.well_formed
-        assert not scraper.streams
+        assert not extractor.well_formed
+        assert not extractor.streams
         assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
-        assert partial_message_included(correct.stderr_part, scraper.errors())
+                                        extractor.messages())
+        assert partial_message_included(correct.stderr_part, extractor.errors())
     else:
-        evaluate_scraper(scraper, correct)
+        evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.usefixtures("patch_shell_attributes_fx")
@@ -146,25 +146,25 @@ def test_warctools_returns_invalid_return_code():
     path = Path("tests/data", mimetype.replace("/", "_"))
     testfile = path / "valid_0.17.warc"
 
-    scraper = WarctoolsFullScraper(filename=testfile,
-                                   mimetype=mimetype)
+    extractor = WarctoolsFullExtractor(filename=testfile,
+                                     mimetype=mimetype)
 
-    scraper.scrape_file()
+    extractor.scrape_file()
 
-    assert "Warctools returned invalid return code: -1\n" in scraper.errors()
+    assert "Warctools returned invalid return code: -1\n" in extractor.errors()
 
 
 @pytest.mark.parametrize(
-    ["scraper_class", "mimetype", "version", "only_wellformed"],
-    [(GzipWarctoolsScraper, "application/gzip", "", True),
-     (WarctoolsFullScraper, "application/warc", "1.0", True),
-     (WarctoolsScraper, "application/warc", "1.0", False)]
+    ["extractor_class", "mimetype", "version", "only_wellformed"],
+    [(GzipWarctoolsExtractor, "application/gzip", "", True),
+     (WarctoolsFullExtractor, "application/warc", "1.0", True),
+     (WarctoolsExtractor, "application/warc", "1.0", False)]
 )
-def test_is_supported(scraper_class, mimetype, version, only_wellformed):
+def test_is_supported(extractor_class, mimetype, version, only_wellformed):
     """Test is_supported method."""
-    assert scraper_class.is_supported(mimetype, version, only_wellformed)
-    assert scraper_class.is_supported(mimetype, None, only_wellformed)
-    assert not scraper_class.is_supported(mimetype, version,
+    assert extractor_class.is_supported(mimetype, version, only_wellformed)
+    assert extractor_class.is_supported(mimetype, None, only_wellformed)
+    assert not extractor_class.is_supported(mimetype, version,
                                           not only_wellformed)
-    assert scraper_class.is_supported(mimetype, "foo", only_wellformed)
-    assert not scraper_class.is_supported("foo", version, only_wellformed)
+    assert extractor_class.is_supported(mimetype, "foo", only_wellformed)
+    assert not extractor_class.is_supported("foo", version, only_wellformed)

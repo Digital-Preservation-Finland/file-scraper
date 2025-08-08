@@ -23,7 +23,7 @@ class BasePilMeta(BaseMeta):
 
     def __init__(self, pil, index):
         """
-        Initialize scraper. Copies metadata from PIL image frame to static
+        Initialize extractor. Copies metadata from PIL image frame to static
         variables.
 
         :pil: PIL image frame to extract metadata from
@@ -32,7 +32,7 @@ class BasePilMeta(BaseMeta):
         """
         self._pil_index = index
 
-        # Copy required data from PIL.Image to allow PilScraper to close
+        # Copy required data from PIL.Image to allow PilExtractor to close
         # filehandle in PIL.Image. This allows scraping more than 1024 files in
         # one process (default max filehandle limt"
 
@@ -113,17 +113,17 @@ class TiffPilMeta(BasePilMeta):
 
     @metadata()
     def width(self):
-        """We will get width from another scraper."""
+        """We will get width from another extractor."""
         return UNAV
 
     @metadata()
     def height(self):
-        """We will get height from another scraper."""
+        """We will get height from another extractor."""
         return UNAV
 
     @metadata()
     def colorspace(self):
-        """We will get colorspace from another scraper."""
+        """We will get colorspace from another extractor."""
         return UNAV
 
     @metadata()
@@ -155,17 +155,17 @@ class PngPilMeta(BasePilMeta):
 
     @metadata()
     def width(self):
-        """Return (:unav): we will get width from another scraper."""
+        """Return (:unav): we will get width from another extractor."""
         return UNAV
 
     @metadata()
     def height(self):
-        """Return (:unav): we will get height from another scraper."""
+        """Return (:unav): we will get height from another extractor."""
         return UNAV
 
     @metadata()
     def colorspace(self):
-        """Return (:unav): we will get colorspace from another scraper."""
+        """Return (:unav): we will get colorspace from another extractor."""
         return UNAV
 
 
@@ -202,17 +202,17 @@ class Jp2PilMeta(BasePilMeta):
 
     @metadata()
     def width(self):
-        """Return (:unav): we will get width from another scraper."""
+        """Return (:unav): we will get width from another extractor."""
         return UNAV
 
     @metadata()
     def height(self):
-        """Return (:unav): we will get height from another scraper."""
+        """Return (:unav): we will get height from another extractor."""
         return UNAV
 
     @metadata()
     def colorspace(self):
-        """Return (:unav): we will get colorspace from another scraper."""
+        """Return (:unav): we will get colorspace from another extractor."""
         return UNAV
 
 
@@ -224,17 +224,17 @@ class JpegPilMeta(BasePilMeta):
 
     @metadata()
     def width(self):
-        """Return (:unav): we will get width from another scraper."""
+        """Return (:unav): we will get width from another extractor."""
         return UNAV
 
     @metadata()
     def height(self):
-        """Return (:unav): We will get height from another scraper."""
+        """Return (:unav): We will get height from another extractor."""
         return UNAV
 
     @metadata()
     def colorspace(self):
-        """Return (:unav): We will get colorspace from another scraper."""
+        """Return (:unav): We will get colorspace from another extractor."""
         return UNAV
 
     @metadata()
@@ -259,12 +259,12 @@ class WebPPilMeta(BasePilMeta):
 
     @metadata()
     def height(self):
-        """Return (:unav): we will get height from another scraper."""
+        """Return (:unav): we will get height from another extractor."""
         return UNAV
 
     @metadata()
     def width(self):
-        """Return (:unav): we will get width from another scraper."""
+        """Return (:unav): we will get width from another extractor."""
         return UNAV
 
     @metadata()

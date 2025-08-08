@@ -1,14 +1,14 @@
 """
-Tests for Office scraper.
+Tests for Office extractor.
 
 This module tests that:
     - MIME type, version, streams and well-formedness of well-formed office
       files (odt, doc, docx, odp, ppt, pptx, ods, xsl, xlsx, odg and odf) are
-      determined correctly and without anything recorded in scraper errors.
+      determined correctly and without anything recorded in extractor errors.
     - MIME type, version, streams and well-formedness of corrupted office
       files are determined correctly with 'source file could not be loaded'
-      being recorded in scraper errors.
-    - Scraper uses parallel instances of LibreOffice properly.
+      being recorded in extractpr errors.
+    - Extractor uses parallel instances of LibreOffice properly.
     - The following MIME type and version combinations are supported:
         - application/vnd.oasis.opendocument.text, 1.2, 1.3
         - application/msword, 97-2003
@@ -33,7 +33,7 @@ from pathlib import Path
 import pytest
 
 from file_scraper.defaults import UNAV
-from file_scraper.office.office_scraper import OfficeScraper
+from file_scraper.office.office_extractor import OfficeExtractor
 from tests.common import parse_results, partial_message_included
 
 BASEPATH = "tests/data"
@@ -67,22 +67,22 @@ BASEPATH = "tests/data"
         ("valid_1.3.odf", "application/vnd.oasis.opendocument.formula"),
     ]
 )
-def test_scraper_valid_file(filename, mimetype, evaluate_scraper):
+def test_extractor_valid_file(filename, mimetype, evaluate_extractor):
     """
-    Test valid files with scraper.
+    Test valid files with extractor.
 
     :filename: Test file name
     :mimetype: File MIME type
     """
     correct = parse_results(filename, mimetype, {}, True)
-    scraper = OfficeScraper(filename=correct.filename, mimetype=mimetype)
-    scraper.scrape_file()
+    extractor = OfficeExtractor(filename=correct.filename, mimetype=mimetype)
+    extractor.scrape_file()
     correct.update_mimetype(UNAV)
     correct.update_version(UNAV)
 
-    evaluate_scraper(scraper, correct, False)
-    assert scraper.messages()
-    assert not scraper.errors()
+    evaluate_extractor(extractor, correct, False)
+    assert extractor.messages()
+    assert not extractor.errors()
 
 
 @pytest.mark.parametrize(
@@ -122,7 +122,7 @@ def test_scraper_valid_file(filename, mimetype, evaluate_scraper):
          "math"),
     ]
 )
-def test_scraper_correct_application(filename, mimetype, application):
+def test_extractor_correct_application(filename, mimetype, application):
     """
     Test that the correct LibreOffice application is selected.
 
@@ -139,11 +139,11 @@ def test_scraper_correct_application(filename, mimetype, application):
     testfile = Path("tests/data", mimetype.replace("/", "_"),
                     filename)
 
-    scraper = OfficeScraper(filename=testfile, mimetype=mimetype)
-    scraper.scrape_file()
+    extractor = OfficeExtractor(filename=testfile, mimetype=mimetype)
+    extractor.scrape_file()
 
     assert partial_message_included(f"using filter : {application}",
-                                    scraper.messages())
+                                    extractor.messages())
 
 
 @pytest.mark.parametrize(
@@ -177,9 +177,9 @@ def test_scraper_correct_application(filename, mimetype, application):
          ".formula"),
     ]
 )
-def test_scraper_invalid_file(filename, mimetype, evaluate_scraper):
+def test_extractor_invalid_file(filename, mimetype, evaluate_extractor):
     """
-    Test scraper with invalid files.
+    Test extractor with invalid files.
 
     :filename: Test file name
     :mimetype: File MIME type
@@ -189,20 +189,20 @@ def test_scraper_invalid_file(filename, mimetype, evaluate_scraper):
         "stdout_part": "",
         "stderr_part": "source file could not be loaded"}
     correct = parse_results(filename, mimetype, result_dict, True)
-    scraper = OfficeScraper(filename=correct.filename, mimetype=mimetype)
-    scraper.scrape_file()
+    extractor = OfficeExtractor(filename=correct.filename, mimetype=mimetype)
+    extractor.scrape_file()
     correct.streams[0]["version"] = UNAV
     correct.streams[0]["mimetype"] = UNAV
 
-    evaluate_scraper(scraper, correct)
+    evaluate_extractor(extractor, correct)
 
 
 def _scrape(filename, mimetype):
-    scraper = OfficeScraper(
+    extractor = OfficeExtractor(
         filename=Path(BASEPATH, mimetype.replace("/", "_"),
                       filename), mimetype=mimetype)
-    scraper.scrape_file()
-    return scraper.well_formed
+    extractor.scrape_file()
+    return extractor.well_formed
 
 
 @pytest.mark.parametrize(
@@ -239,12 +239,12 @@ def test_office_returns_invalid_return_code():
     path = Path("tests/data", mimetype.replace("/", "_"))
     testfile = path / "valid_1.2.odt"
 
-    scraper = OfficeScraper(filename=testfile,
-                            mimetype=mimetype)
+    extractor = OfficeExtractor(filename=testfile,
+                              mimetype=mimetype)
 
-    scraper.scrape_file()
+    extractor.scrape_file()
 
-    assert "Office returned invalid return code: -1\n" in scraper.errors()
+    assert "Office returned invalid return code: -1\n" in extractor.errors()
 
 
 @pytest.mark.parametrize(
@@ -278,14 +278,14 @@ def test_is_supported(mime, ver):
     :mime: MIME type
     :ver: File format version
     """
-    assert OfficeScraper.is_supported(mime, ver, True)
-    assert OfficeScraper.is_supported(mime, None, True)
-    assert not OfficeScraper.is_supported(mime, ver, False)
-    assert OfficeScraper.is_supported(mime, "foo", True)
-    assert not OfficeScraper.is_supported("foo", ver, True)
+    assert OfficeExtractor.is_supported(mime, ver, True)
+    assert OfficeExtractor.is_supported(mime, None, True)
+    assert not OfficeExtractor.is_supported(mime, ver, False)
+    assert OfficeExtractor.is_supported(mime, "foo", True)
+    assert not OfficeExtractor.is_supported("foo", ver, True)
 
 
 def test_tools():
     """Test that tool versions have at least one digit in the start"""
-    scraper = OfficeScraper(filename=Path(""), mimetype="")
-    assert scraper.tools()["libreoffice"]["version"][0].isdigit()
+    extractor = OfficeExtractor(filename=Path(""), mimetype="")
+    assert extractor.tools()["libreoffice"]["version"][0].isdigit()

@@ -1,5 +1,5 @@
 """
-Test TextfileScraper, which determines whether file is a text file or not.
+Test TextfileExtractor, which determines whether file is a text file or not.
 
 This module tests that:
     - Following files are correctly identified as text files and their MIME
@@ -23,9 +23,9 @@ import pytest
 
 from file_scraper.defaults import UNAP, UNAV
 from file_scraper.shell import Shell
-from file_scraper.textfile.textfile_scraper import (TextfileScraper,
-                                                    TextEncodingScraper,
-                                                    TextEncodingMetaScraper)
+from file_scraper.textfile.textfile_extractor import (TextfileExtractor,
+                                                      TextEncodingExtractor,
+                                                      TextEncodingMetaExtractor)
 from tests.common import parse_results, partial_message_included
 
 VALID_MSG = "is a text file"
@@ -60,10 +60,10 @@ def _new_file_version(version):
     ]
 )
 def test_existing_files(filename, mimetype, is_textfile, special_handling,
-                        evaluate_scraper):
+                        evaluate_extractor):
     """
     Test detecting whether file is a textfile.
-    The scraper tool is not able to detect UTF-16 files without BOM or
+    The extractor tool is not able to detect UTF-16 files without BOM or
     UTF-32 files.
 
     :filename: Test file name
@@ -76,9 +76,9 @@ def test_existing_files(filename, mimetype, is_textfile, special_handling,
     # therefore valid__utf32le_bom.txt needs special handling.
     special_handling = special_handling and not _new_file_version(5.36)
     correct = parse_results(filename, mimetype, {}, False)
-    scraper = TextfileScraper(filename=correct.filename,
-                              mimetype="text/plain")
-    scraper.scrape_file()
+    extractor = TextfileExtractor(filename=correct.filename,
+                                mimetype="text/plain")
+    extractor.scrape_file()
 
     if is_textfile:
         correct.streams[0]["stream_type"] = "text"
@@ -93,13 +93,13 @@ def test_existing_files(filename, mimetype, is_textfile, special_handling,
                            else None)
 
     if correct.well_formed is False:
-        assert partial_message_included(INVALID_MSG, scraper.errors())
-        assert scraper.errors()
-        assert scraper.well_formed is False
+        assert partial_message_included(INVALID_MSG, extractor.errors())
+        assert extractor.errors()
+        assert extractor.well_formed is False
     elif correct.well_formed is None:
         correct.stdout_part = VALID_MSG
         correct.stderr_part = ""
-        evaluate_scraper(scraper, correct)
+        evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize(
@@ -162,7 +162,7 @@ def test_existing_files(filename, mimetype, is_textfile, special_handling,
         ("invalid__unknown_encoding_cp437.txt", "ISO-8859-15", False),
     ]
 )
-def test_encoding_check(filename, charset, is_wellformed, evaluate_scraper):
+def test_encoding_check(filename, charset, is_wellformed, evaluate_extractor):
     """
     Test character encoding validation with brute force.
 
@@ -172,9 +172,9 @@ def test_encoding_check(filename, charset, is_wellformed, evaluate_scraper):
     """
     params = {"charset": charset}
     correct = parse_results(filename, "text/plain", {}, True, params)
-    scraper = TextEncodingScraper(filename=correct.filename,
-                                  mimetype="text/plain", params=params)
-    scraper.scrape_file()
+    extractor = TextEncodingExtractor(filename=correct.filename,
+                                    mimetype="text/plain", params=params)
+    extractor.scrape_file()
     if not is_wellformed:
         correct.update_mimetype(UNAV)
         correct.update_version(UNAV)
@@ -188,11 +188,11 @@ def test_encoding_check(filename, charset, is_wellformed, evaluate_scraper):
     if correct.well_formed:
         correct.stdout_part = "encoding validated successfully"
         correct.stderr_part = ""
-        evaluate_scraper(scraper, correct)
+        evaluate_extractor(extractor, correct)
     else:
-        assert partial_message_included("decoding error", scraper.errors())
-        assert scraper.errors()
-        assert not scraper.well_formed
+        assert partial_message_included("decoding error", extractor.errors())
+        assert extractor.errors()
+        assert not extractor.well_formed
 
 
 @pytest.mark.parametrize(
@@ -207,52 +207,52 @@ def test_encoding_not_defined(charset):
 
     :charset: Character encoding
     """
-    scraper = TextEncodingScraper(
+    extractor = TextEncodingExtractor(
         filename=Path("tests/data/text_plain/valid__utf8_without_bom.txt"),
         mimetype="text/plain", params={"charset": charset})
-    scraper.scrape_file()
+    extractor.scrape_file()
     assert partial_message_included(
-        "Character encoding not defined.", scraper.errors())
+        "Character encoding not defined.", extractor.errors())
 
 
 def test_decoding_limit(monkeypatch):
     """
     Test limiting the decoding.
     """
-    monkeypatch.setattr(TextEncodingScraper, "_chunksize", 4)
-    monkeypatch.setattr(TextEncodingScraper, "_limit", 8)
-    scraper = TextEncodingScraper(
+    monkeypatch.setattr(TextEncodingExtractor, "_chunksize", 4)
+    monkeypatch.setattr(TextEncodingExtractor, "_limit", 8)
+    extractor = TextEncodingExtractor(
         filename=Path("tests/data/text_plain/valid__utf8_bom.txt"),
         mimetype="text/plain", params={"charset": "UTF-8"})
-    scraper.scrape_file()
+    extractor.scrape_file()
     assert partial_message_included(
-        "First 8 bytes read, we skip the remainder", scraper.messages())
+        "First 8 bytes read, we skip the remainder", extractor.messages())
 
 
 def test_error_message_control_character():
     """
     Make sure that no actual illegal control characters are included
-    in the scraper error message, only their hex representation.
+    in the extractor error message, only their hex representation.
     The error message may be printed into an XML file, and XML
     files do not allow most control characters.
     """
-    scraper = TextEncodingScraper(
+    extractor = TextEncodingExtractor(
         filename=Path("tests/data/text_plain/invalid__control_character.txt"),
         mimetype="text/plain", params={"charset": "UTF-8"})
-    scraper.scrape_file()
-    assert not partial_message_included("\x1f", scraper.errors())
+    extractor.scrape_file()
+    assert not partial_message_included("\x1f", extractor.errors())
     character = "'\\x1f'"
     assert partial_message_included(
-            "Illegal character %s in position 4" % character, scraper.errors())
+            "Illegal character %s in position 4" % character, extractor.errors())
 
 
 def test_tools():
     """
     Test that tools return correct software
     """
-    text_scraper = TextfileScraper(filename=Path(""), mimetype="")
-    text_encoding_scraper = TextEncodingScraper(filename=Path(""), mimetype="")
-    text_meta_scraper = TextEncodingMetaScraper(filename=Path(""), mimetype="")
-    assert text_scraper.tools()["file"]["version"][0].isdigit()
-    assert text_encoding_scraper.tools() == {}
-    assert text_meta_scraper.tools() == {}
+    text_extractor = TextfileExtractor(filename=Path(""), mimetype="")
+    text_encoding_extractor = TextEncodingExtractor(filename=Path(""), mimetype="")
+    text_meta_extractor = TextEncodingMetaExtractor(filename=Path(""), mimetype="")
+    assert text_extractor.tools()["file"]["version"][0].isdigit()
+    assert text_encoding_extractor.tools() == {}
+    assert text_meta_extractor.tools() == {}

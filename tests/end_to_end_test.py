@@ -1,5 +1,5 @@
 """
-Integration test for scrapers:
+Integration test for scraper:
     - Scraping with checking the well-formedness for valid files,
       without and with user predefined MIME type and version.
     - Scraping with checking the well-formedness for invalid files.
@@ -159,7 +159,7 @@ EXPECTED_UNAV_FIELDS_FOR_FILE = {
 }
 
 # These are actually valid with another mimetype or version
-# or due to special parameters or missing scraper
+# or due to special parameters or missing extractor
 IGNORE_INVALID = [
 
     # invalid_1.4_wrong_version.pdf -- is valid PDF 1.7
@@ -451,7 +451,7 @@ def test_invalid_combined(fullname, mimetype, version):
     scraper.scrape()
 
     for _, info in scraper.info.items():
-        if scraper.mimetype != mimetype and info["class"] == "ScraperNotFound":
+        if scraper.mimetype != mimetype and info["class"] == "ExtractorNotFound":
             pytest.skip(("[%s] mimetype mismatches with scraper "
                          "and scraper not found") % fullname)
 

@@ -1,6 +1,6 @@
-"""Scraper for video and audio files scraped using MediaInfo."""
+"""Extractor for video and audio files scraped using MediaInfo."""
 
-from file_scraper.base import BaseScraper
+from file_scraper.base import BaseExtractor
 import file_scraper.mediainfo
 from file_scraper.mediainfo.mediainfo_model import (
     ContainerMediainfoMeta,
@@ -28,8 +28,8 @@ except ImportError:
     pass
 
 
-class MediainfoScraper(BaseScraper):
-    """Scraper for scraping audio and video files using Mediainfo."""
+class MediainfoExtractor(BaseExtractor):
+    """Extractor for scraping audio and video files using Mediainfo."""
 
     _supported_metadata = [
         ContainerMediainfoMeta,
@@ -53,7 +53,7 @@ class MediainfoScraper(BaseScraper):
         """
         Return well-formedness status of the scraped file.
 
-        :returns: None if scraper does not check well-formedness, True if the
+        :returns: None if extractor does not check well-formedness, True if the
                   file has been scraped without errors and otherwise False
         """
         valid = super().well_formed
@@ -161,7 +161,7 @@ class MediainfoScraper(BaseScraper):
     def tools(self):
         """
         Overwriting baseclass implementation
-        to collect information about software used by the scraper
+        to collect information about software used by the extractor
 
         :returns: a dictionary with the used software or UNAV.
         """

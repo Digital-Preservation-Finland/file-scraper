@@ -39,7 +39,7 @@ class JHoveBaseMeta(BaseMeta):
         """
         Initialize the metadata model.
 
-        :well_formed: Well-formed status from scraper
+        :well_formed: Well-formed status from extractor
         :report: JHove output as lxml.etree
         """
         self._well_formed = well_formed
@@ -66,7 +66,7 @@ class JHoveGifMeta(JHoveBaseMeta):
         or "1989a" is used. Hence "19" is prepended to the version returned by
         Jhove.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual version.
         """
         if not self._well_formed:
@@ -80,7 +80,7 @@ class JHoveGifMeta(JHoveBaseMeta):
         """
         Return file type.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual stream type.
         """
         return "image" if self._well_formed else UNAV
@@ -100,7 +100,7 @@ class JHoveHtmlMeta(JHoveBaseMeta):
         Jhove returns the version as "HTML 4.01" but only the "4.01" part is
         used. Hence we drop "HTML " prefix from the string returned by Jhove.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual version.
         """
         if not self._well_formed:
@@ -139,7 +139,7 @@ class JHoveHtmlMeta(JHoveBaseMeta):
         """
         Return MIME type.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual MIME type.
         """
         if not self._well_formed:
@@ -164,7 +164,7 @@ class JHoveHtmlMeta(JHoveBaseMeta):
         """
         Return file type.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual stream type.
         """
         return "text" if self._well_formed else UNAV
@@ -182,7 +182,7 @@ class JHoveJpegMeta(JHoveBaseMeta):
         """
         Return file type.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual stream type.
         """
         return "image" if self._well_formed else UNAV
@@ -199,7 +199,7 @@ class JHoveTiffMeta(JHoveBaseMeta):
         """
         Return version.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual version.
         """
         return "6.0" if self._well_formed else UNAV
@@ -209,7 +209,7 @@ class JHoveTiffMeta(JHoveBaseMeta):
         """
         Return file type.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual stream type.
         """
         return "image" if self._well_formed else UNAV
@@ -278,7 +278,7 @@ class JHoveWavMeta(JHoveBaseMeta):
         Set version as "2" or "(:unap)" if profile is BWF or PCMWAVEFORMAT,
         respectively. For now, we don't accept RF64.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual version.
         """
         if not self._well_formed:
@@ -301,7 +301,7 @@ class JHoveWavMeta(JHoveBaseMeta):
         """
         Return file type.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual stream type.
         """
         return "audio" if self._well_formed else UNAV
@@ -332,7 +332,7 @@ class JHoveUtf8Meta(JHoveBaseMeta):
         """
         Return file type.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual stream type.
         """
         return "text" if self._well_formed else UNAV
@@ -358,7 +358,7 @@ class JHoveEpubMeta(JHoveBaseMeta):
         """
         Return version.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual version.
         """
         if self._well_formed:
@@ -406,7 +406,7 @@ class JHoveAiffMeta(JHoveBaseMeta):
         """
         Return file type.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual stream type.
         """
         return "audio" if self._well_formed else UNAV
@@ -417,7 +417,7 @@ class JHoveAiffMeta(JHoveBaseMeta):
         Set version as "1.3" or "(:unap)" if profile is AIFF or AIFF-C
         respectively.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual version.
         """
         profile = get_field(self._report, "profile")

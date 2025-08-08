@@ -1,6 +1,6 @@
-"""A SIARD scraper module using DBPTK-developer.
+"""A SIARD extractor module using DBPTK-developer.
 
-This scraper does not scrape metadata but instead checks well-formedness
+This extractor does not scrape metadata but instead checks well-formedness
 of SIARD files.
 """
 
@@ -8,15 +8,15 @@ import os
 import re
 from pathlib import Path
 
-from file_scraper.base import BaseScraper
+from file_scraper.base import BaseExtractor
 from file_scraper.shell import Shell
 from file_scraper.logger import LOGGER
 from file_scraper.defaults import UNAV
 from file_scraper.dbptk.dbptk_model import DbptkMeta
 
 
-class DbptkScraper(BaseScraper):
-    """DBPTK (Database Prevervation Toolkit) scraper.
+class DbptkExtractor(BaseExtractor):
+    """DBPTK (Database Prevervation Toolkit) extractor.
     Supports only SIARD files."""
 
     _supported_metadata = [DbptkMeta]
@@ -51,7 +51,7 @@ class DbptkScraper(BaseScraper):
     def tools(self):
         """
         Overwriting baseclass implementation
-        to collect information about software used by the scraper
+        to collect information about software used by the extractor
 
         :returns: a dictionary with the used software or UNAV.
         """

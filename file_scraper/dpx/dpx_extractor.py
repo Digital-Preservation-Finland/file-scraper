@@ -1,16 +1,16 @@
-"""DPX scraper"""
+"""DPX extractor"""
 
 from dpx_validator.api import validate_file
 from dpx_validator.messages import MessageType
 from dpx_validator import __version__ as dpx_version
 
-from file_scraper.base import BaseScraper
+from file_scraper.base import BaseExtractor
 from file_scraper.dpx.dpx_model import DpxMeta
 from file_scraper.logger import LOGGER
 
 
-class DpxScraper(BaseScraper):
-    """DPX scraper."""
+class DpxExtractor(BaseExtractor):
+    """DPX extractor."""
 
     _supported_metadata = [DpxMeta]
     _only_wellformed = True
@@ -51,7 +51,7 @@ class DpxScraper(BaseScraper):
     def tools(self):
         """
         Overwriting baseclass implementation
-        to collect information about software used by the scraper
+        to collect information about software used by the extractor
 
         :returns: a dictionary with the used software or UNKN.
         """

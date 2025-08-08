@@ -1,4 +1,4 @@
-"""Metadata model for TextfileScraper."""
+"""Metadata model for TextfileExtractor."""
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAP, UNAV
@@ -15,7 +15,7 @@ class TextFileMeta(BaseMeta):
         """
         Initialize metadata model.
 
-        :well_formed: Well-formed status from scraper
+        :well_formed: Well-formed status from extractor
         """
         self._well_formed = well_formed
 
@@ -24,7 +24,7 @@ class TextFileMeta(BaseMeta):
         """
         Return mimetype.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual MIME type.
         """
         return "text/plain" if self._well_formed is not False else UNAV
@@ -33,7 +33,7 @@ class TextFileMeta(BaseMeta):
     def version(self):
         """Return version.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual version.
         """
         return UNAP if self._well_formed is not False else UNAV
@@ -43,7 +43,7 @@ class TextFileMeta(BaseMeta):
         """
         Return stream type.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual stream type.
         """
         return "text" if self._well_formed is not False else UNAV
@@ -63,8 +63,8 @@ class TextEncodingMeta(BaseMeta):
         """
         Initialize metadata model.
 
-        :well_formed: Well-formed status from scraper
-        :charset: Encoding from scraper
+        :well_formed: Well-formed status from extractor
+        :charset: Encoding from extractor
         :predefined_mimetype: Predefined mimetype
         """
         self._well_formed = well_formed
@@ -76,7 +76,7 @@ class TextEncodingMeta(BaseMeta):
         """
         Return mimetype only if text/plain expected and no errors occured.
 
-        Other scrapers are not able to figure out the mimetype for plain text
+        Other extractors are not able to figure out the mimetype for plain text
         files with some encodings, such as UTF-16 without BOM or UTF-32.
         """
         if (self._predefined_mimetype == "text/plain" and
@@ -90,7 +90,7 @@ class TextEncodingMeta(BaseMeta):
         """
         Return version only if text/plain expected and no errors occured.
 
-        Other scrapers are not able to figure out the mimetype for plain text
+        Other extractors are not able to figure out the mimetype for plain text
         files with some encodings, such as UTF-16 without BOM or UTF-32.
         """
         if (self._predefined_mimetype == "text/plain" and

@@ -38,45 +38,45 @@ def fido_cache_halting_file(tmpdir):
 
 
 @pytest.fixture(scope="function")
-def evaluate_scraper():
-    """Provide a function to evaluate between scraper- and correct-instance's
+def evaluate_extractor():
+    """Provide a function to evaluate between extractor- and correct-instance's
     values.
     """
 
-    def _func(scraper, correct, eval_output=True, exp_scraper_cls=None):
-        """Make common asserts between initialized scraper and correct
+    def _func(extractor, correct, eval_output=True, exp_extractor_cls=None):
+        """Make common asserts between initialized extractor and correct
             instance.
 
-        :param scraper: Scraper instance obj.
+        :param extractor: Extractor instance obj.
         :param correct: Correct instance obj.
         :param eval_output: True to also evaluate the stdin and stderr between
-            scraper and correct.
-        :param exp_scraper_cls: What is the actual expected scraper class name.
-            If None, will assume default type(scraper).__name__
+            extractor and correct.
+        :param exp_extractor_cls: What is the actual expected extractor class name.
+            If None, will assume default type(extractor).__name__
         """
-        if exp_scraper_cls is None:
-            exp_scraper_cls = type(scraper).__name__
+        if exp_extractor_cls is None:
+            exp_extractor_cls = type(extractor).__name__
 
         for stream_index, stream_metadata in correct.streams.items():
-            assert scraper.streams, ("Empty stream list resulted, "
+            assert extractor.streams, ("Empty stream list resulted, "
                                      "possibly unexpected predefined "
                                      "mimetype.")
-            scraped_metadata = scraper.streams[stream_index]
+            extracted_metadata = extractor.streams[stream_index]
             for key, value in stream_metadata.items():
-                assert getattr(scraped_metadata, key)() == value, (
+                assert getattr(extracted_metadata, key)() == value, (
                     "Expected {} to have value '{}', got '{}' instead".format(
-                        key, value, getattr(scraped_metadata, key)()
+                        key, value, getattr(extracted_metadata, key)()
                     )
                 )
 
-        assert scraper.info()["class"] == exp_scraper_cls
-        assert scraper.well_formed == correct.well_formed
+        assert extractor.info()["class"] == exp_extractor_cls
+        assert extractor.well_formed == correct.well_formed
 
         if eval_output:
             assert partial_message_included(correct.stdout_part,
-                                            scraper.messages())
+                                            extractor.messages())
             assert partial_message_included(correct.stderr_part,
-                                            scraper.errors())
+                                            extractor.errors())
 
     return _func
 

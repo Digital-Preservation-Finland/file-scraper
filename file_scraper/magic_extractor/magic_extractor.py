@@ -1,25 +1,25 @@
-"""Scraper for various binary and text file formats."""
+"""Extractor for various binary and text file formats."""
 
 import os
 
 from file_scraper.magiclib import magiclib, magic_analyze, magiclib_version
-from file_scraper.base import BaseScraper
-from file_scraper.magic_scraper.magic_model import (TextFileMagicMeta,
-                                                    XmlFileMagicMeta,
-                                                    XhtmlFileMagicMeta,
-                                                    HtmlFileMagicMeta,
-                                                    PdfFileMagicMeta,
-                                                    OfficeFileMagicMeta,
-                                                    PngFileMagicMeta,
-                                                    JpegFileMagicMeta,
-                                                    AiffFileMagicMeta,
-                                                    Jp2FileMagicMeta,
-                                                    TiffFileMagicMeta,
-                                                    GifFileMagicMeta)
+from file_scraper.base import BaseExtractor
+from file_scraper.magic_extractor.magic_model import (TextFileMagicMeta,
+                                                      XmlFileMagicMeta,
+                                                      XhtmlFileMagicMeta,
+                                                      HtmlFileMagicMeta,
+                                                      PdfFileMagicMeta,
+                                                      OfficeFileMagicMeta,
+                                                      PngFileMagicMeta,
+                                                      JpegFileMagicMeta,
+                                                      AiffFileMagicMeta,
+                                                      Jp2FileMagicMeta,
+                                                      TiffFileMagicMeta,
+                                                      GifFileMagicMeta)
 
 
-class MagicBaseScraper(BaseScraper):
-    """Scraper for scraping files using magic."""
+class MagicBaseExtractor(BaseExtractor):
+    """Extractor for scraping files using magic."""
 
     _allow_unav_mime = False
     _supported_metadata = []
@@ -76,16 +76,16 @@ class MagicBaseScraper(BaseScraper):
     def tools(self):
         """
         Overwriting baseclass implementation
-        to collect information about software used by the scraper
+        to collect information about software used by the extractor
 
         :returns: a dictionary with the used software or UNAV.
         """
         return {"libmagic": {"version": magiclib_version()}}
 
 
-class MagicTextScraper(MagicBaseScraper):
+class MagicTextExtractor(MagicBaseExtractor):
     """
-    Magic scraper for text files.
+    Magic extractor for text files.
 
     We have to allow (:unav) mimetype for text files, since we are not quite
     sure about the final mimetype. An XML file may also be plain text file.
@@ -95,9 +95,9 @@ class MagicTextScraper(MagicBaseScraper):
                            XhtmlFileMagicMeta, HtmlFileMagicMeta]
 
 
-class MagicBinaryScraper(MagicBaseScraper):
+class MagicBinaryExtractor(MagicBaseExtractor):
     """
-    Magic scraper for binary files.
+    Magic extractor for binary files.
 
     Currently, these are all mime types which can not be anything else at the
     same time. Therefore it is pretty safe to disallow (:unav) as a mimetype

@@ -45,8 +45,8 @@ def test_scrape_invalid_file():
 
 @pytest.mark.parametrize(
     "flag, output_contains",
-    # MimeMatchScraper gives an error when invalid PDF version is provided
-    [("--version=1.5", "MimeMatchScraper"),
+    # MimeMatchExtractor gives an error when invalid PDF version is provided
+    [("--version=1.5", "MimeMatchExtractor"),
      ("--tool-info", "tool_info")])
 def test_flags_change_output(flag, output_contains):
     """
@@ -71,7 +71,7 @@ def test_non_existent_file_type():
     result = runner.invoke(cli, ["scrape-file", str(file_path),
                                  "--mimetype=non/existent"])
     assert result.exit_code == 1
-    assert result.stdout == ("Error: Proper scraper was not found. The file "
+    assert result.stdout == ("Error: Proper extractor was not found. The file "
                              "was not analyzed.\n")
 
 

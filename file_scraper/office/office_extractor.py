@@ -1,16 +1,16 @@
-"""Office file scraper."""
+"""Office file extractor."""
 
 import shutil
 import tempfile
 
-from file_scraper.base import BaseScraper
+from file_scraper.base import BaseExtractor
 from file_scraper.logger import LOGGER
 from file_scraper.office.office_model import OfficeMeta
 from file_scraper.shell import Shell
 
 
-class OfficeScraper(BaseScraper):
-    """Office file format scraper."""
+class OfficeExtractor(BaseExtractor):
+    """Office file format extractor."""
 
     _supported_metadata = [OfficeMeta]
     _only_wellformed = True  # Only well-formed check
@@ -19,7 +19,7 @@ class OfficeScraper(BaseScraper):
         """Scrape file."""
         temp_dir = tempfile.mkdtemp()
         LOGGER.debug(
-            "Temporary directory %s created for OfficeScraper", temp_dir
+            "Temporary directory %s created for OfficeExtractor", temp_dir
         )
 
         try:
@@ -47,7 +47,7 @@ class OfficeScraper(BaseScraper):
     def tools(self):
         """
         Overwriting baseclass implementation
-        to collect information about software used by the scraper
+        to collect information about software used by the extractor
 
         :returns: a dictionary with the used software or UNAV.
         """

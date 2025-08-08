@@ -1,12 +1,12 @@
 """
-Test the file_scraper.scrapers.pngcheck module
+Test the file_scraper.pngcheck.pngcheck_extractor module
 
 This module tests that:
     - MIME type, version, streams and well-formedness of png files are scraped
       correctly.
-    - For well-formed files, scraper messages contains 'OK' and there are no
+    - For well-formed files, extractor messages contains 'OK' and there are no
       errors.
-    - For non-well-formed files, scraper error is recorded.
+    - For non-well-formed files, extractor error is recorded.
     - MIME type image/png is supported with version 1.2, None or a made up
       version when well-formedness is checked.
     - When well-formedness is not checked, image/png 1.2 is not supported.
@@ -16,7 +16,7 @@ This module tests that:
 import pytest
 
 from file_scraper.defaults import UNAV
-from file_scraper.pngcheck.pngcheck_scraper import PngcheckScraper
+from file_scraper.pngcheck.pngcheck_extractor import PngcheckExtractor
 from tests.common import parse_results
 
 MIMETYPE = "image/png"
@@ -39,17 +39,17 @@ MIMETYPE = "image/png"
             "purpose": "Test empty file."})
     ]
 )
-def test_scraper(filename, result_dict, evaluate_scraper):
+def test_extractor(filename, result_dict, evaluate_extractor):
     """
-    Test pngcheck scraper.
+    Test pngcheck extractor.
 
     :filename: Test file name
     :result_dict: Dict containing purpose of the test
     """
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
-    scraper = PngcheckScraper(filename=correct.filename, mimetype="image/png")
-    scraper.scrape_file()
+    extractor = PngcheckExtractor(filename=correct.filename, mimetype="image/png")
+    extractor.scrape_file()
     correct.version = None
     correct.update_mimetype(UNAV)
     correct.update_version(UNAV)
@@ -61,24 +61,24 @@ def test_scraper(filename, result_dict, evaluate_scraper):
         correct.stdout_part = ""
         correct.stderr_part = "Pngcheck returned invalid return code: 2\n"
 
-    evaluate_scraper(scraper, correct)
+    evaluate_extractor(extractor, correct)
 
 
 def test_is_supported():
     """Test is_supported method."""
     mime = MIMETYPE
     ver = "1.2"
-    assert PngcheckScraper.is_supported(mime, ver, True)
-    assert PngcheckScraper.is_supported(mime, None, True)
-    assert not PngcheckScraper.is_supported(mime, ver, False)
-    assert PngcheckScraper.is_supported(mime, "foo", True)
-    assert not PngcheckScraper.is_supported("foo", ver, True)
+    assert PngcheckExtractor.is_supported(mime, ver, True)
+    assert PngcheckExtractor.is_supported(mime, None, True)
+    assert not PngcheckExtractor.is_supported(mime, ver, False)
+    assert PngcheckExtractor.is_supported(mime, "foo", True)
+    assert not PngcheckExtractor.is_supported("foo", ver, True)
 
 
 def test_tools():
-    """Test scraper tools return correctly something non nullable"""
+    """Test extractor tools return correctly something non nullable"""
     correct = parse_results("valid_1.2.png", MIMETYPE, {
             "purpose": "Test valid file."}, True)
-    scraper = PngcheckScraper(filename=correct.filename,
-                              mimetype="image/png")
-    assert scraper.tools()["PNGcheck"]["version"][0].isdigit()
+    extractor = PngcheckExtractor(filename=correct.filename,
+                                mimetype="image/png")
+    assert extractor.tools()["PNGcheck"]["version"][0].isdigit()

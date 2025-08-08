@@ -1,17 +1,17 @@
-""""Scraper for jp2 files using Jpylyzer."""
+""""Extractor for jp2 files using Jpylyzer."""
 try:
     from jpylyzer import jpylyzer
 except ImportError:
     pass
 import xml.etree.ElementTree as ET
 
-from file_scraper.base import BaseScraper
+from file_scraper.base import BaseExtractor
 from file_scraper.jpylyzer.jpylyzer_model import JpylyzerMeta
 from file_scraper.utils import ensure_text
 
 
-class JpylyzerScraper(BaseScraper):
-    """Scraper to check the wellformedness of jp2 files."""
+class JpylyzerExtractor(BaseExtractor):
+    """Extractor to check the wellformedness of jp2 files."""
     _supported_metadata = [JpylyzerMeta]
     _only_wellformed = True   # Only well-formed check
 
@@ -37,7 +37,7 @@ class JpylyzerScraper(BaseScraper):
     def tools(self):
         """
         Overwriting baseclass implementation
-        to collect information about software used by the scraper
+        to collect information about software used by the extractor
 
         :returns: a dictionary with the used software or UNAV.
         """

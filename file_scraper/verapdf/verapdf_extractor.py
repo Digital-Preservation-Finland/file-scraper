@@ -1,4 +1,4 @@
-"""PDF/A scraper."""
+"""PDF/A extractor."""
 
 try:
     import lxml.etree as ET
@@ -7,7 +7,7 @@ except ImportError:
 
 import re
 
-from file_scraper.base import BaseScraper
+from file_scraper.base import BaseExtractor
 from file_scraper.logger import LOGGER
 from file_scraper.shell import Shell
 from file_scraper.defaults import UNAV
@@ -23,8 +23,8 @@ from file_scraper.verapdf.verapdf_model import VerapdfMeta
 OK_CODES = [0, 1, 7]
 
 
-class VerapdfScraper(BaseScraper):
-    """PDF/A scraper."""
+class VerapdfExtractor(BaseExtractor):
+    """PDF/A extractor."""
 
     # Supported mimetypes and versions
     _supported_metadata = [VerapdfMeta]
@@ -86,7 +86,7 @@ class VerapdfScraper(BaseScraper):
     def tools(self):
         """
         Overwriting baseclass implementation
-        to collect information about software used by the scraper
+        to collect information about software used by the extractor
 
         :returns: a dictionary with the used software or UNAV.
         """

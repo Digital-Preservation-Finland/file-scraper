@@ -1,4 +1,4 @@
-"""Schematron scraper."""
+"""Schematron extractor."""
 
 import os
 import shutil
@@ -8,7 +8,7 @@ from pathlib import Path
 
 from lxml import etree
 
-from file_scraper.base import BaseScraper
+from file_scraper.base import BaseExtractor
 from file_scraper.shell import Shell
 from file_scraper.paths import resolve_path_from_config
 from file_scraper.defaults import UNAV
@@ -17,8 +17,8 @@ from file_scraper.schematron.schematron_model import SchematronMeta
 from file_scraper.utils import hexdigest, ensure_text
 
 
-class SchematronScraper(BaseScraper):
-    """Schematron scraper."""
+class SchematronExtractor(BaseExtractor):
+    """Schematron extractor."""
 
     _supported_metadata = [SchematronMeta]
     _only_wellformed = True
@@ -30,7 +30,7 @@ class SchematronScraper(BaseScraper):
         :filename: File path
         :mimetype: Predefined mimetype of the file
         :version: Predefined file format version
-        :params: Extra parameters needed for the scraper. These may be:
+        :params: Extra parameters needed for the extractor. These may be:
                  verbose: Verbose output, False by default
                  cache: Use a Cache of compiled schematron files, True by
                         default
@@ -58,14 +58,14 @@ class SchematronScraper(BaseScraper):
         """
         Return True if the MIME type and version are supported.
 
-        We use this scraper only with a schematron file.
+        We use this extractor only with a schematron file.
 
         :mimetype: Identified mimetype
         :version: Identified version (if needed)
         :check_wellformed: True for the full well-formed check, False for just
                            detection and metadata scraping
-        :params: Extra parameters needed for the scraper
-        :returns: True if scraper is supported
+        :params: Extra parameters needed for the extractor
+        :returns: True if extractor is supported
         """
         if params is None:
             params = {}
@@ -233,7 +233,7 @@ class SchematronScraper(BaseScraper):
     def tools(self):
         """
         Overwriting baseclass implementation
-        to collect information about software used by the scraper
+        to collect information about software used by the extractor
 
         :returns: a dictionary with the used software or UNAV.
         """

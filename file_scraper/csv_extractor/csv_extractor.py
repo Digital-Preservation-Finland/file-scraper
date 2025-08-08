@@ -1,15 +1,15 @@
-"""Scraper for CSV file formats."""
+"""Extractor for CSV file formats."""
 
 import csv
 from io import open as io_open
 
-from file_scraper.base import BaseScraper
-from file_scraper.csv_scraper.csv_model import CsvMeta
+from file_scraper.base import BaseExtractor
+from file_scraper.csv_extractor.csv_model import CsvMeta
 from file_scraper.logger import LOGGER
 
 
-class CsvScraper(BaseScraper):
-    """Scraper for CSV files."""
+class CsvExtractor(BaseExtractor):
+    """Extractor for CSV files."""
 
     _supported_metadata = [CsvMeta]
 
@@ -138,7 +138,7 @@ class CsvScraper(BaseScraper):
     def tools(self):
         """
         Overwriting baseclass implementation
-        to collect information about software used by the scraper
+        to collect information about software used by the extractor
 
         :returns: a dictionary with the used software or UNAV.
         """

@@ -243,17 +243,17 @@ def _fill_importants(method, importants, lose):
         pass
 
 
-def generate_metadata_dict(scraper_results, lose):
+def generate_metadata_dict(extraction_results, lose):
     """
-    Generate a metadata dict from the given scraper results.
+    Generate a metadata dict from the given extraction results.
 
     The resulting dict contains the metadata of each stream as a dict,
     retrievable by using the index of the stream as a key. The indexing
     starts from zero. In case of conflicting values, the error messages
     are reported back to the scraper.
 
-    :scraper_results: A list containing lists of all metadata methods,
-                      methods of a single scraper in a single list. E.g.
+    :extraction_results: A list containing lists of all metadata methods,
+                      methods of a single extractor in a single list. E.g.
                       [[scraper1_stream1, scraper1_stream2],
                        [scraper2_stream1, scraper2_stream2]]
     :lose: A list of values that can be overwritten.
@@ -266,8 +266,8 @@ def generate_metadata_dict(scraper_results, lose):
               and a list of error messages due to conflicting values)
 
     """
-    # if there are no scraper results, return an empty dict
-    if not any(scraper_results):
+    # if there are no extraction results, return an empty dict
+    if not any(extraction_results):
         return {}
     streams = {}
 
@@ -275,8 +275,8 @@ def generate_metadata_dict(scraper_results, lose):
     importants = {}
 
     # First iterate methods to fill the importants dictionary with important
-    # metadata values from the scraper results
-    for model in chain.from_iterable(scraper_results):
+    # metadata values from the extraction results
+    for model in chain.from_iterable(extraction_results):
         for method in model.iterate_metadata_methods():
             try:
                 _fill_importants(method, importants, lose)
@@ -284,7 +284,7 @@ def generate_metadata_dict(scraper_results, lose):
                 conflicts.append(str(err))
 
     # Iterate methods to generate metadata dict
-    for model in chain.from_iterable(scraper_results):
+    for model in chain.from_iterable(extraction_results):
         stream_index = model.index()
 
         if stream_index not in streams:

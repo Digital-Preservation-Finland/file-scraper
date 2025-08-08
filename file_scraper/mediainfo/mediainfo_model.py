@@ -1,4 +1,4 @@
-"""Metadata scraper for AV files."""
+"""Metadata extractor for AV files."""
 
 import re
 
@@ -11,7 +11,7 @@ from file_scraper.utils import iso8601_duration, strip_zeros, metadata
 
 class BaseMediainfoMeta(BaseMeta):
     # pylint: disable=too-many-public-methods
-    """Metadata models for streams scraped using MediainfoScraper."""
+    """Metadata models for streams scraped using MediainfoExtractor."""
 
     def __init__(self, tracks, index):
         """
@@ -745,9 +745,9 @@ class VersionlessFormatMeta(BaseMediainfoMeta):
 
 class ImageMediaInfoMeta(BaseMediainfoMeta):
     """
-    Very simple metadata model for images, Mediainfo scraper needs to know
+    Very simple metadata model for images, Mediainfo extractor needs to know
     images that exist in containers, but more precise metadata can be gathered
-    with other scrapers
+    with other extractors
     """
     _supported = {"image/jpeg": [""], "image/png": [""]}
     _allow_versions = True

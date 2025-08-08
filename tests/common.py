@@ -80,7 +80,7 @@ def parse_results(filename, mimetype, results, check_wellformed,
               inverse: True to inverse the expected well-formedness
     :check_wellformed: True, if well-formed check, otherwise False
     :basepath: Base path
-    :params: Parameters for the scraper
+    :params: Parameters for the extractor
     :returns: Correct instance, with expected results for tests
     """
     # pylint: disable=too-many-locals, too-many-arguments, too-many-branches

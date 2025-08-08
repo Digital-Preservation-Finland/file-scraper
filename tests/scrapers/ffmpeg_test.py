@@ -20,7 +20,7 @@ This module tests that:
         - With video/MP2T files: "invalid new backstep"
         - With audio/mpeg files: "Error while decoding stream"
         - With video/dv files: "AC EOB marker is absent"
-    - The scraper should give an error if PCM stream is not LPCM. This
+    - The extractor should give an error if PCM stream is not LPCM. This
       is tested with a WAV file which includes A-law PCM format.
     - For mp3 files with wrong version reported in the header, the file
       is not well-formed and errors should contain "Error while decoding
@@ -38,7 +38,7 @@ This module tests that:
         - audio/x-wav
         - audio/x-aiff
         - video/x-ms-asf
-    - Whether well-formed check is performed or not, the scraper reports
+    - Whether well-formed check is performed or not, the extractor reports
       the following combinations of mimetypes and versions as supported:
         - video/mpeg, "1" or None
         - video/mp4, "" or None
@@ -52,9 +52,9 @@ This module tests that:
     - Supported MIME type is supported when well-formedness is not
       checked.
     - Scraping is done also when well-formedness is not checked.
-    - For containers that have unacceptable av streams, the scraper returns
+    - For containers that have unacceptable av streams, the extractor returns
       None for well-formedness.
-    - For unsupported formats, scraper doesn't return  True for
+    - For unsupported formats, extractor doesn't return  True for
       well-formedness.
 """
 from pathlib import Path
@@ -62,8 +62,8 @@ from pathlib import Path
 import pytest
 
 from file_scraper.defaults import UNAP, UNAV
-from file_scraper.ffmpeg.ffmpeg_scraper import (FFMpegScraper,
-                                                FFMpegMetaScraper)
+from file_scraper.ffmpeg.ffmpeg_extractor import (FFMpegExtractor,
+                                                  FFMpegMetaExtractor)
 from tests.common import parse_results
 from tests.scrapers.stream_dicts import (
     MXF_CONTAINER,
@@ -279,9 +279,9 @@ UNAV_MIME = []
     ]
 )
 def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
-                             evaluate_scraper):
+                             evaluate_extractor):
     """
-    Test FFMpegScraper with valid files when no metadata is scraped.
+    Test FFMpegExtractor with valid files when no metadata is scraped.
 
     :filename: Test file name
     :result_dict: Result dict containing, test purpose, and parts of
@@ -291,10 +291,10 @@ def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
     correct = parse_results(filename, mimetype, result_dict, True)
     correct.streams.update(NO_METADATA)
 
-    scraper = FFMpegScraper(filename=correct.filename, mimetype=mimetype.lower())
-    scraper.scrape_file()
+    extractor = FFMpegExtractor(filename=correct.filename, mimetype=mimetype.lower())
+    extractor.scrape_file()
 
-    evaluate_scraper(scraper, correct)
+    evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize(
@@ -357,10 +357,10 @@ def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
         ),
     ]
 )
-def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
-                              evaluate_scraper):
+def test_ffmpeg_extractor_valid(filename, result_dict, mimetype,
+                              evaluate_extractor):
     """
-    Test FFMpegScraper and FFMpegMetaScraper with valid files when metadata
+    Test FFMpegExtractor and FFMpegMetaExtractor with valid files when metadata
     is scraped.
 
     :filename: Test file name
@@ -370,18 +370,18 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
     """
     correct = parse_results(filename, mimetype, result_dict, True)
 
-    scraper = FFMpegScraper(filename=Path(correct.filename), mimetype=mimetype)
-    scraper.scrape_file()
+    extractor = FFMpegExtractor(filename=Path(correct.filename), mimetype=mimetype)
+    extractor.scrape_file()
 
-    evaluate_scraper(scraper, correct)
+    evaluate_extractor(extractor, correct)
 
     correct_meta = parse_results(filename, mimetype, result_dict, False)
 
-    scraper_meta = FFMpegMetaScraper(filename=correct_meta.filename,
-                                     mimetype=mimetype)
-    scraper_meta.scrape_file()
+    extractor_meta = FFMpegMetaExtractor(filename=correct_meta.filename,
+                                       mimetype=mimetype)
+    extractor_meta.scrape_file()
 
-    evaluate_scraper(scraper_meta, correct_meta)
+    evaluate_extractor(extractor_meta, correct_meta)
 
 
 @pytest.mark.parametrize(
@@ -541,7 +541,7 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
             "video/MP2T"
         ),
         # In EL9 ffmpeg does not print the "Invalid data" error anymore and
-        # scraper considers the file to be valid.
+        # extractor considers the file to be valid.
         # TODO Remove this test?
         # (
         #     "invalid__jpeg2000_wrong_signature.mxf",
@@ -621,10 +621,10 @@ def test_ffmpeg_scraper_valid(filename, result_dict, mimetype,
         )
     ]
 )
-def test_ffmpeg_scraper_invalid(filename, result_dict, mimetype,
-                                evaluate_scraper):
+def test_ffmpeg_extractor_invalid(filename, result_dict, mimetype,
+                                evaluate_extractor):
     """
-    Test FFMpegScraper with invalid files.
+    Test FFMpegExtractor with invalid files.
 
     :filename: Test file name
     :result_dict: Result dict containing test purpose, and parts of
@@ -634,11 +634,11 @@ def test_ffmpeg_scraper_invalid(filename, result_dict, mimetype,
     correct = parse_results(filename, mimetype, result_dict, True)
     correct.streams = {}
 
-    scraper = FFMpegScraper(filename=correct.filename,
-                            mimetype=mimetype)
-    scraper.scrape_file()
+    extractor = FFMpegExtractor(filename=correct.filename,
+                              mimetype=mimetype)
+    extractor.scrape_file()
 
-    evaluate_scraper(scraper, correct)
+    evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize(
@@ -658,20 +658,20 @@ def test_ffmpeg_scraper_invalid(filename, result_dict, mimetype,
         )
     ]
 )
-def test_ffmpeg_scraper_wellformed_none(filepath, mimetype):
+def test_ffmpeg_extractor_wellformed_none(filepath, mimetype):
     """
-    Test that FFMpegScraper returns None for well-formedness
+    Test that FFMpegExtractor returns None for well-formedness
     when all the streams are well-formed, but some of the av
     streams are not acceptable inside the container.
     """
-    scraper = FFMpegScraper(filename=Path(filepath), mimetype=mimetype)
-    scraper.scrape_file()
+    extractor = FFMpegExtractor(filename=Path(filepath), mimetype=mimetype)
+    extractor.scrape_file()
 
     # Ensure that file was validated to avoid false positive
     assert 'The file was analyzed successfully with FFMpeg.' \
-        in scraper.messages()
+        in extractor.messages()
 
-    assert scraper.well_formed is None
+    assert extractor.well_formed is None
 
 
 @pytest.mark.usefixtures("patch_shell_attributes_fx")
@@ -682,12 +682,12 @@ def test_ffmpeg_returns_invalid_return_code():
     path = Path("tests/data", mimetype.replace("/", "_"))
     testfile = path / "valid__mpeg2_mp3.avi"
 
-    scraper = FFMpegScraper(filename=testfile,
-                            mimetype=mimetype)
+    extractor = FFMpegExtractor(filename=testfile,
+                              mimetype=mimetype)
 
-    scraper.scrape_file()
+    extractor.scrape_file()
 
-    assert "FFMpeg returned invalid return code: -1\n" in scraper.errors()
+    assert "FFMpeg returned invalid return code: -1\n" in extractor.errors()
 
 
 @pytest.mark.parametrize(
@@ -707,19 +707,19 @@ def test_is_supported(mimetype, version):
     :mime: Predefined mimetype
     :ver: Predefined version
     """
-    assert FFMpegScraper.is_supported(mimetype, version, True)
-    assert FFMpegScraper.is_supported(mimetype, None, True)
-    assert not FFMpegScraper.is_supported(mimetype, version, False)
-    assert FFMpegScraper.is_supported(mimetype, "foo", True)
-    assert not FFMpegScraper.is_supported("foo", version, True)
+    assert FFMpegExtractor.is_supported(mimetype, version, True)
+    assert FFMpegExtractor.is_supported(mimetype, None, True)
+    assert not FFMpegExtractor.is_supported(mimetype, version, False)
+    assert FFMpegExtractor.is_supported(mimetype, "foo", True)
+    assert not FFMpegExtractor.is_supported("foo", version, True)
 
-    assert not FFMpegMetaScraper.is_supported(mimetype, version, True)
+    assert not FFMpegMetaExtractor.is_supported(mimetype, version, True)
 
     # Metadata gathering supported only for MXF
     if mimetype == "application/mxf":
-        assert FFMpegMetaScraper.is_supported(mimetype, version, False)
+        assert FFMpegMetaExtractor.is_supported(mimetype, version, False)
     else:
-        assert not FFMpegMetaScraper.is_supported(mimetype, version, False)
+        assert not FFMpegMetaExtractor.is_supported(mimetype, version, False)
 
 
 @pytest.mark.parametrize(
@@ -734,15 +734,15 @@ def test_is_supported(mimetype, version):
 def test_unsupported_format(filename):
     """Test that unsupported format is not well formed."""
     # Scrape the file. Use some supported mimetype, otherwise the
-    # Scraper will refuse to scrape.
-    scraper = FFMpegScraper(filename=Path(filename), mimetype="audio/mp4")
-    scraper.scrape_file()
+    # Extractor will refuse to scrape.
+    extractor = FFMpegExtractor(filename=Path(filename), mimetype="audio/mp4")
+    extractor.scrape_file()
 
     # Ensure that file was validated to avoid false positive
     assert 'The file was analyzed successfully with FFMpeg.' \
-        in scraper.messages()
+        in extractor.messages()
 
-    assert not scraper.well_formed
+    assert not extractor.well_formed
 
 
 def test_tools():
@@ -750,5 +750,5 @@ def test_tools():
     Test that tools don't return UNAV or None
     """
     # validity or invalidity of the file doesn't matter for tools
-    scraper = FFMpegScraper(filename=Path(""), mimetype="")
-    assert scraper.tools()["ffmpeg"]["version"] not in (UNAV, None)
+    extractor = FFMpegExtractor(filename=Path(""), mimetype="")
+    assert extractor.tools()["ffmpeg"]["version"] not in (UNAV, None)

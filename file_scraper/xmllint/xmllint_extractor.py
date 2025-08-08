@@ -7,7 +7,7 @@ from pathlib import Path
 
 from xml_helpers.utils import iter_elements
 
-from file_scraper.base import BaseScraper
+from file_scraper.base import BaseExtractor
 from file_scraper.shell import Shell
 from file_scraper.logger import LOGGER
 from file_scraper.utils import ensure_text
@@ -35,11 +35,11 @@ attributeFormDefault="unqualified">
 </xs:schema>"""
 
 
-class XmllintScraper(BaseScraper):
+class XmllintExtractor(BaseExtractor):
     """
-    Xmllint scraper class.
+    Xmllint extractor class.
 
-    This class implements a plugin interface for scraper module and
+    This class implements a plugin interface for extractor module and
     checks if XML files are well-formed using Xmllint tool.
     .. seealso:: http://xmlsoft.org/xmllint.html
     """
@@ -49,12 +49,12 @@ class XmllintScraper(BaseScraper):
 
     def __init__(self, filename: Path, mimetype, version=None, params=None):
         """
-        Initialize scraper.
+        Initialize extractor.
 
         :filename: File path
         :mimetype: Predefined mimetype
         :version: Predefined version
-        :params: Extra parameters needed for the scraper. The parameters are:
+        :params: Extra parameters needed for the extractor. The parameters are:
                  schema: Schema path, None by default
                  catalogs: True if XML catalog used (default), False otherwise
                  no_network: True if no network connections allowed (default),
@@ -271,7 +271,7 @@ class XmllintScraper(BaseScraper):
     def tools(self):
         """
         Overwriting baseclass implementation
-        to collect information about software used by the scraper
+        to collect information about software used by the extractor
 
         :returns: a dictionary with the used software or UNAV.
         """

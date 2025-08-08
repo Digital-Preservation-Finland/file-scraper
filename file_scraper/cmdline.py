@@ -103,8 +103,8 @@ def scrape_file(
     errors = {}
 
     for item in scraper.info.values():
-        if "ScraperNotFound" in item["class"]:
-            raise click.ClickException("Proper scraper was not found. The "
+        if "ExtractorNotFound" in item["class"]:
+            raise click.ClickException("Proper extractor was not found. The "
                                        "file was not analyzed.")
 
         if item["errors"]:

@@ -1,29 +1,29 @@
 """
 Test module for dummy.py
 
-This module tests the following scraper classes:
+This module tests the following extractor classes:
     - FileExists
         - Existing files, both well-formed and non-well-formed, are found and
           their mimetype and streams are identified correctly whereas version
           and well_formed should be reported as None. No errors should be
           recorded.
         - Non-existent files are reported as not well-formed and the fact that
-          the file does not exist is recorded in scraper errors. This behaviour
+          the file does not exist is recorded in extractor errors. This behaviour
           is independent of the given MIME type.
         - Giving None as file path results in 'No filename given' being
-          reported in the scraper errors and well_formed is False.
-    - ScraperNotFound
+          reported in the extractor errors and well_formed is False.
+    - ExtractorNotFound
         - well_formed is None.
-        - MIME type and version are what is given to the scraper.
+        - MIME type and version are what is given to the extractor.
         - Streams contain only one dict with stream_type as None
-          and MIME type and version as what was given to the scraper.
-    - MimeMatchScraper
+          and MIME type and version as what was given to the extractor.
+    - MimeMatchExtractor
         - well_formed is None if predefined file type (mimetype and version)
           and given file type match
         - well_formed is False if predefined filetype and given file type
           conflicts
-    - DetectedMimeVersionScraper, DetectedMimeVersionMetadataScraper
-        - Results given file format version as a scraper result
+    - DetectedMimeVersionExtractor, DetectedMimeVersionMetadataExtractor
+        - Results given file format version as a extractor result
         - Results error in MIME type is not supported
 """
 from pathlib import Path
@@ -31,10 +31,10 @@ from pathlib import Path
 import pytest
 
 from file_scraper.defaults import UNAV
-from file_scraper.dummy.dummy_scraper import (
-    FileExists, ScraperNotFound, MimeMatchScraper,
-    DetectedMimeVersionScraper, DetectedMimeVersionMetadataScraper,
-    ResultsMergeScraper)
+from file_scraper.dummy.dummy_extractor import (
+    FileExists, ExtractorNotFound, MimeMatchExtractor,
+    DetectedMimeVersionExtractor, DetectedMimeVersionMetadataExtractor,
+    ResultsMergeExtractor)
 from tests.common import partial_message_included
 
 DEFAULTSTREAMS = {0: {"index": 0, "version": UNAV,
@@ -57,17 +57,17 @@ def test_existing_files(filepath):
     :filepath: Existing test file name
     """
 
-    scraper = FileExists(Path(filepath), None)
-    scraper.scrape_file()
+    extractor = FileExists(Path(filepath), None)
+    extractor.scrape_file()
 
     streams = DEFAULTSTREAMS.copy()
 
-    assert scraper.well_formed is None
-    assert not scraper.errors()
-    assert partial_message_included("was found", scraper.messages())
-    assert scraper.info()["class"] == "FileExists"
+    assert extractor.well_formed is None
+    assert not extractor.errors()
+    assert partial_message_included("was found", extractor.messages())
+    assert extractor.info()["class"] == "FileExists"
     for stream_index, stream_metadata in streams.items():
-        scraped_metadata = scraper.streams[stream_index]
+        scraped_metadata = extractor.streams[stream_index]
         for key, value in stream_metadata.items():
             assert getattr(scraped_metadata, key)() == value
 
@@ -81,20 +81,20 @@ def test_nonexistent_files(filepath):
 
     :filepath: Non-existing file path
     """
-    scraper = FileExists(Path(filepath), None)
-    scraper.scrape_file()
+    extractor = FileExists(Path(filepath), None)
+    extractor.scrape_file()
 
-    assert scraper.well_formed is False
-    assert partial_message_included("does not exist", scraper.errors())
+    assert extractor.well_formed is False
+    assert partial_message_included("does not exist", extractor.errors())
 
 
 def test_none_filename():
     """Test that giving None filename results in error."""
-    scraper = FileExists(None, None)
-    scraper.scrape_file()
+    extractor = FileExists(None, None)
+    extractor.scrape_file()
 
-    assert scraper.well_formed is False
-    assert partial_message_included("No filename given.", scraper.errors())
+    assert extractor.well_formed is False
+    assert partial_message_included("No filename given.", extractor.errors())
 
 
 @pytest.mark.parametrize(
@@ -106,140 +106,140 @@ def test_none_filename():
         "tests/data/video_x-matroska/valid__ffv1.mkv"
     ]
 )
-def test_scraper_not_found(filepath):
+def test_extractor_not_found(filepath):
     """
-    Check ScraperNotFound results.
+    Check ExtractorNotFound results.
 
     :filepath: Test file
     """
-    scraper = ScraperNotFound(Path(filepath), None)
-    scraper.scrape_file()
+    extractor = ExtractorNotFound(Path(filepath), None)
+    extractor.scrape_file()
 
     streams = DEFAULTSTREAMS.copy()
 
-    assert scraper.well_formed is False
+    assert extractor.well_formed is False
     for stream_index, stream_metadata in streams.items():
-        scraped_metadata = scraper.streams[stream_index]
+        scraped_metadata = extractor.streams[stream_index]
         for key, value in stream_metadata.items():
             assert getattr(scraped_metadata, key)() == value
 
 
-def test_scraper_not_found_with_given_mimetype_and_version():
+def test_extractor_not_found_with_given_mimetype_and_version():
     """
-    Test that ScraperNotFound retains the MIME type that is given to it
+    Test that ExtractorNotFound retains the MIME type that is given to it
     when scraping the file.
     """
     filename = Path("tests/data/text_plain/valid__ascii.txt")
     expected_mimetype = "expected_mimetype"
     expected_version = "expected_version"
-    scraper = ScraperNotFound(
+    extractor = ExtractorNotFound(
         filename, mimetype=expected_mimetype, version=expected_version)
-    scraper.scrape_file()
-    stream = scraper.streams[0]
+    extractor.scrape_file()
+    stream = extractor.streams[0]
 
     assert stream.mimetype() == expected_mimetype
     assert stream.version() == expected_version
 
 
-def test_mime_match_scraper():
-    """Test scraper for MIME type and version match check."""
+def test_mime_match_extractor():
+    """Test extractor for MIME type and version match check."""
     filename = Path("tests/data/text_plain/valid__ascii.txt")
-    scraper = MimeMatchScraper(
+    extractor = MimeMatchExtractor(
         filename, mimetype="expected_mime", version="expected_version",
         params={"mimetype": "expected_mime", "version": "expected_version"})
-    scraper.scrape_file()
-    assert scraper.well_formed is None
+    extractor.scrape_file()
+    assert extractor.well_formed is None
 
-    scraper = MimeMatchScraper(
+    extractor = MimeMatchExtractor(
         filename, mimetype="mismatch", version="expected_version",
         params={"mimetype": "expected_mime", "version": "expected_version"})
-    scraper.scrape_file()
-    assert scraper.well_formed is False
+    extractor.scrape_file()
+    assert extractor.well_formed is False
 
-    scraper = MimeMatchScraper(
+    extractor = MimeMatchExtractor(
         filename, mimetype="expected_mime", version="mismatch",
         params={"mimetype": "expected_mime", "version": "expected_version"})
-    scraper.scrape_file()
-    assert scraper.well_formed is False
+    extractor.scrape_file()
+    assert extractor.well_formed is False
 
-    scraper = MimeMatchScraper(
+    extractor = MimeMatchExtractor(
         filename, mimetype="expected_mime", version="some_version",
         params={"mimetype": "expected_mime", "version": UNAV})
-    scraper.scrape_file()
+    extractor.scrape_file()
     assert partial_message_included(
-        "File format version is not supported", scraper.errors())
-    assert scraper.well_formed is False
+        "File format version is not supported", extractor.errors())
+    assert extractor.well_formed is False
 
-    scraper = MimeMatchScraper(
+    extractor = MimeMatchExtractor(
         filename, mimetype="application/vnd.oasis.opendocument.text",
         version="some_version",
         params={"mimetype": "application/vnd.oasis.opendocument.text",
                 "version": UNAV})
-    scraper.scrape_file()
+    extractor.scrape_file()
     assert partial_message_included(
-        "File format version can not be resolved", scraper.messages())
-    assert scraper.well_formed is None
+        "File format version can not be resolved", extractor.messages())
+    assert extractor.well_formed is None
 
 
-def test_detected_version_scraper():
-    """Test detected version scraper"""
+def test_detected_version_extractor():
+    """Test detected version extractor"""
     filename = Path("tests/data/text_plain/valid__ascii.txt")
-    scraper = DetectedMimeVersionMetadataScraper(
+    extractor = DetectedMimeVersionMetadataExtractor(
         filename, "text/xml", params={"detected_version": "123"})
-    scraper.scrape_file()
-    assert scraper.well_formed is False
-    assert scraper.streams[0].version() == "123"
+    extractor.scrape_file()
+    assert extractor.well_formed is False
+    assert extractor.streams[0].version() == "123"
 
-    scraper = DetectedMimeVersionMetadataScraper(
+    extractor = DetectedMimeVersionMetadataExtractor(
         filename, "text/xml", params=None)
-    scraper.scrape_file()
-    assert scraper.well_formed is None
-    assert scraper.streams[0].version() == "1.0"
+    extractor.scrape_file()
+    assert extractor.well_formed is None
+    assert extractor.streams[0].version() == "1.0"
 
-    scraper = DetectedMimeVersionMetadataScraper(
+    extractor = DetectedMimeVersionMetadataExtractor(
         filename, "text/plain", params=None)
-    scraper.scrape_file()
+    extractor.scrape_file()
     assert partial_message_included(
-        "MIME type not supported", scraper.errors())
+        "MIME type not supported", extractor.errors())
 
-    scraper = DetectedMimeVersionScraper(
+    extractor = DetectedMimeVersionExtractor(
         filename, "application/x-siard", params={"detected_version": "2.1.1"})
-    scraper.scrape_file()
-    assert scraper.well_formed is None
-    assert scraper.streams[0].version() == "2.1.1"
-    assert scraper.streams[0].stream_type() == "binary"
+    extractor.scrape_file()
+    assert extractor.well_formed is None
+    assert extractor.streams[0].version() == "2.1.1"
+    assert extractor.streams[0].stream_type() == "binary"
 
-    scraper = DetectedMimeVersionScraper(
+    extractor = DetectedMimeVersionExtractor(
         filename, "application/vnd.oasis.opendocument.text",
         params={"detected_version": "123"})
-    scraper.scrape_file()
-    assert scraper.well_formed is False
-    assert scraper.streams[0].version() == "123"
+    extractor.scrape_file()
+    assert extractor.well_formed is False
+    assert extractor.streams[0].version() == "123"
 
-    scraper = DetectedMimeVersionScraper(
+    extractor = DetectedMimeVersionExtractor(
         filename, "application/epub+zip",
         params={"detected_version": "3"})
-    scraper.scrape_file()
-    assert scraper.well_formed is None
-    assert scraper.streams[0].version() == "3"
+    extractor.scrape_file()
+    assert extractor.well_formed is None
+    assert extractor.streams[0].version() == "3"
 
     # File format for bit-level preservation
-    scraper = DetectedMimeVersionScraper(
+    extractor = DetectedMimeVersionExtractor(
         filename, "application/x.fi-dpres.segy",
         params={"detected_version": "(:unkn)"})
-    scraper.scrape_file()
-    assert scraper.well_formed is None
-    assert scraper.streams[0].mimetype() == "application/x.fi-dpres.segy"
-    assert scraper.streams[0].version() == "(:unkn)"
-    assert scraper.streams[0].stream_type() == "binary"
+    extractor.scrape_file()
+    assert extractor.well_formed is None
+    assert extractor.streams[0].mimetype() == "application/x.fi-dpres.segy"
+    assert extractor.streams[0].version() == "(:unkn)"
+    assert extractor.streams[0].stream_type() == "binary"
 
 
 @pytest.mark.parametrize(('meta_classes', 'wellformed'), [
     (['meta1', 'meta5'], None),
     (['meta1', 'meta2'], False)
 ])
-def test_results_merge_scraper(meta_class_fx, meta_classes, wellformed):
-    """Test scraper for merging scraper results. The test tests both
+def test_results_merge_extractor(meta_class_fx, meta_classes, wellformed):
+    """Test extractor for merging extractor results. The test tests both
     a successful case where metadata could be merged and a case with
     conflicts in metadata resulting in the well-formedness being
     false.
@@ -248,8 +248,8 @@ def test_results_merge_scraper(meta_class_fx, meta_classes, wellformed):
     results = []
     for meta_class in meta_classes:
         results.append([meta_class_fx(meta_class)])
-    scraper = ResultsMergeScraper(
+    extractor = ResultsMergeExtractor(
         filename, mimetype="expected_mime", version="expected_version",
         params={"scraper_results": results})
-    scraper.scrape_file()
-    assert scraper.well_formed == wellformed
+    extractor.scrape_file()
+    assert extractor.well_formed == wellformed

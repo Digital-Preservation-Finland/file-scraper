@@ -29,7 +29,7 @@ import pytest
 from dpres_file_formats.defaults import Grades
 
 from file_scraper.scraper import Scraper
-from file_scraper.textfile.textfile_scraper import TextfileScraper
+from file_scraper.textfile.textfile_extractor import TextfileExtractor
 
 
 def test_is_textfile():
@@ -236,14 +236,14 @@ def test_filter_unwanted_characters(monkeypatch):
         self._messages.append("short unicode \ufffe")
         self._errors.append("long unicode \U0005fffe")
 
-    monkeypatch.setattr(TextfileScraper, "scrape_file", mock_scrape)
+    monkeypatch.setattr(TextfileExtractor, "scrape_file", mock_scrape)
 
     scraper = Scraper("tests/data/text_plain/valid__ascii.txt")
     scraper.scrape()
 
     tfscraper = None
     for value in scraper.info.values():
-        if value["class"] == "TextfileScraper":
+        if value["class"] == "TextfileExtractor":
             tfscraper = value
             break
 

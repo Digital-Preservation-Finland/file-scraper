@@ -26,7 +26,7 @@ class WarctoolsMeta(BaseWarctoolsMeta):
         """
         Initialize the metadata model.
 
-        :well_formed: Well-formed status from scraper.
+        :well_formed: Well-formed status from extractor.
         :line: The first line of the warc archive.
         """
         self._well_formed = well_formed

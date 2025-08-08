@@ -1,4 +1,4 @@
-"""Module for pngcheck scraper."""
+"""Module for pngcheck extractor."""
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAV

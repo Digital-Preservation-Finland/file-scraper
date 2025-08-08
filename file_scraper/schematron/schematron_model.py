@@ -6,7 +6,7 @@ from file_scraper.base import BaseMeta
 
 
 class SchematronMeta(BaseMeta):
-    """Metadata model for SchematronScraper."""
+    """Metadata model for SchematronExtractor."""
 
     _supported = {"text/xml": []}  # Supported mimetypes
     _allow_versions = True

@@ -1,4 +1,4 @@
-"""Scraper for CSV file formats."""
+"""Extractor for CSV file formats."""
 
 
 from file_scraper.base import BaseMeta
@@ -16,7 +16,7 @@ class CsvMeta(BaseMeta):
         """
         Initialize for delimiter and separator info.
 
-        :well_formed: Well-formed status from scraper
+        :well_formed: Well-formed status from extractor
         :params: A dict containing the following keys:
                  delimiter:  the field delimiter used in the file
                  separator:  the line separator
@@ -42,7 +42,7 @@ class CsvMeta(BaseMeta):
         """
         Return mimetype.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual MIME type.
         """
         return "text/csv" if self._well_formed else UNAV
@@ -52,7 +52,7 @@ class CsvMeta(BaseMeta):
         """
         Return version.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual version.
         """
         return UNAP if self._well_formed else UNAV
@@ -82,7 +82,7 @@ class CsvMeta(BaseMeta):
         """
         Return file type.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual stream type.
         """
         return "text" if self._well_formed else UNAV

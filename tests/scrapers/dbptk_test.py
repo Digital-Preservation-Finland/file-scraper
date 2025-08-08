@@ -1,13 +1,13 @@
 """
-Tests for DBTK scraper.
+Tests for DBTK extractor.
 
 This module tests that:
     - MIME type, version, streams and well-formedness are scraped
       correctly for SIARD files.
-    - For well-formed file, scraper messages contain "SIARD is valid".
-    - For files that do not conform to SIARD specifications, scraper
+    - For well-formed file, extractor messages contain "SIARD is valid".
+    - For files that do not conform to SIARD specifications, extractor
       errors contain "SIARD is not valid"
-    - For file with unupported version, scraper errors contain "ERROR
+    - For file with unupported version, extractor errors contain "ERROR
       SIARD validator".
     - When well-formedness is checked, MIME type application/x-siard
       withh versions "2.1.1" or "2.2" are supported.
@@ -18,7 +18,7 @@ from pathlib import Path
 import pytest
 
 from file_scraper.defaults import UNAV
-from file_scraper.dbptk.dbptk_scraper import DbptkScraper
+from file_scraper.dbptk.dbptk_extractor import DbptkExtractor
 from tests.common import (parse_results, partial_message_included)
 
 MIMETYPE = "application/x-siard"
@@ -47,9 +47,9 @@ MIMETYPE = "application/x-siard"
                 "Validation process finished the SIARD is not valid.")}),
     ]
 )
-def test_scraper(filename, result_dict, evaluate_scraper):
+def test_extractor(filename, result_dict, evaluate_extractor):
     """
-    Test DBPTK scraper.
+    Test DBPTK extractor.
 
     :filename: Test file name
     :result_dict: Result dict containing test purpose, and parts of
@@ -58,17 +58,17 @@ def test_scraper(filename, result_dict, evaluate_scraper):
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
     correct.streams[0]["version"] = UNAV
-    scraper = DbptkScraper(filename=correct.filename, mimetype=MIMETYPE)
-    scraper.scrape_file()
+    extractor = DbptkExtractor(filename=correct.filename, mimetype=MIMETYPE)
+    extractor.scrape_file()
 
     if not correct.well_formed:
-        assert not scraper.well_formed
+        assert not extractor.well_formed
         assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
+                                        extractor.messages())
         assert partial_message_included(correct.stderr_part,
-                                        scraper.errors())
+                                        extractor.errors())
     else:
-        evaluate_scraper(scraper, correct)
+        evaluate_extractor(extractor, correct)
 
 
 def test_is_supported():
@@ -76,24 +76,24 @@ def test_is_supported():
     mime = MIMETYPE
     versions = ["2.1.1", "2.2"]
 
-    assert DbptkScraper.is_supported(mime, None, True)
-    assert not DbptkScraper.is_supported(mime, "foo", True)
+    assert DbptkExtractor.is_supported(mime, None, True)
+    assert not DbptkExtractor.is_supported(mime, "foo", True)
     for ver in versions:
-        assert DbptkScraper.is_supported(mime, ver, True)
-        assert not DbptkScraper.is_supported(mime, ver, False)
-        assert not DbptkScraper.is_supported("foo", ver, True)
+        assert DbptkExtractor.is_supported(mime, ver, True)
+        assert not DbptkExtractor.is_supported(mime, ver, False)
+        assert not DbptkExtractor.is_supported("foo", ver, True)
 
 
 def test_tools_not_empty():
-    """Test that dbptk scraper has exactly one dependency"""
-    scraper = DbptkScraper(filename=Path("valid_2.1.1.siard"), mimetype=MIMETYPE)
-    assert len(scraper.tools()) == 1
+    """Test that dbptk extractor has exactly one dependency"""
+    extractor = DbptkExtractor(filename=Path("valid_2.1.1.siard"), mimetype=MIMETYPE)
+    assert len(extractor.tools()) == 1
 
 
 def test_tools_returns_version():
-    """Test thatdbptk scraper tools
+    """Test thatdbptk extractor tools
     returns a somewhat valid version"""
-    scraper = DbptkScraper(filename=Path("invalid_2.1.1_schema_errors.siard"),
-                           mimetype=MIMETYPE)
+    extractor = DbptkExtractor(filename=Path("invalid_2.1.1_schema_errors.siard"),
+                             mimetype=MIMETYPE)
 
-    assert scraper.tools()["DBPTK Developer"]["version"] not in (UNAV, None)
+    assert extractor.tools()["DBPTK Developer"]["version"] not in (UNAV, None)

@@ -1,27 +1,27 @@
 """
-Tests for DPX scraper.
+Tests for DPX extractor.
 
 This module tests that:
     - MIME type, version, streams and well-formedness of files are scraped
-      correctly using DpxScraper scraper. This is done with a valid file and
+      correctly using DpxExtractor extractor. This is done with a valid file and
       files with different errors in them:
         - empty file
         - file size is larger than is reported in the header
         - last byte of the file is missing
         - header reports little-endian order but contents of the file are
           big-endian
-    - the scraper reports MIME type 'image/x-dpx' with version 2.0 as
+    - the extractor reports MIME type 'image/x-dpx' with version 2.0 as
       supported when full scraping is done
-    - the scraper reports other MIME type or version as not supported when
+    - the extractor reports other MIME type or version as not supported when
       full scraping is done
-    - the scraper reports MIME type 'image/x-dpx' with version 2.0 as not
+    - the extractor reports MIME type 'image/x-dpx' with version 2.0 as not
       supported when only well-formed check is performed
 """
 from pathlib import Path
 
 import pytest
 from tests.common import parse_results
-from file_scraper.dpx.dpx_scraper import DpxScraper
+from file_scraper.dpx.dpx_extractor import DpxExtractor
 
 MIMETYPE = "image/x-dpx"
 
@@ -51,9 +51,9 @@ MIMETYPE = "image/x-dpx"
             "stderr_part": "is more than file size"}),
     ]
 )
-def test_scraper(filename, result_dict, evaluate_scraper):
+def test_extractor(filename, result_dict, evaluate_extractor):
     """
-    Test DPX scraper functionality.
+    Test DPX extractor functionality.
 
     :filename: Test file name
     :result_dict: Result dict containing purpose of the test, and
@@ -61,10 +61,10 @@ def test_scraper(filename, result_dict, evaluate_scraper):
     """
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
-    scraper = DpxScraper(filename=correct.filename, mimetype=MIMETYPE)
-    scraper.scrape_file()
+    extractor = DpxExtractor(filename=correct.filename, mimetype=MIMETYPE)
+    extractor.scrape_file()
 
-    evaluate_scraper(scraper, correct)
+    evaluate_extractor(extractor, correct)
 
 
 def test_dpx_returns_invalid_return_code():
@@ -73,29 +73,29 @@ def test_dpx_returns_invalid_return_code():
     path = Path("tests/data", MIMETYPE.replace("/", "_"))
     testfile = path / "invalid_2.0_missing_data.dpx"
 
-    scraper = DpxScraper(filename=testfile,
-                         mimetype=MIMETYPE)
+    extractor = DpxExtractor(filename=testfile,
+                           mimetype=MIMETYPE)
 
-    scraper.scrape_file()
-    scraper.errors()
+    extractor.scrape_file()
+    extractor.errors()
 
-    assert "Different file sizes from header" in scraper.errors()[0]
+    assert "Different file sizes from header" in extractor.errors()[0]
 
 
 def test_is_supported():
     """Test is_supported method."""
     mime = MIMETYPE
-    assert DpxScraper.is_supported(mime, "2.0", True)
-    assert DpxScraper.is_supported(mime, None, True)
-    assert DpxScraper.is_supported(mime, "1.0", True)
-    assert not DpxScraper.is_supported(mime, "2.0", False)
-    assert not DpxScraper.is_supported(mime, "3.0", False)
-    assert not DpxScraper.is_supported(mime, "foo", True)
-    assert not DpxScraper.is_supported("foo", "2.0", True)
+    assert DpxExtractor.is_supported(mime, "2.0", True)
+    assert DpxExtractor.is_supported(mime, None, True)
+    assert DpxExtractor.is_supported(mime, "1.0", True)
+    assert not DpxExtractor.is_supported(mime, "2.0", False)
+    assert not DpxExtractor.is_supported(mime, "3.0", False)
+    assert not DpxExtractor.is_supported(mime, "foo", True)
+    assert not DpxExtractor.is_supported("foo", "2.0", True)
 
 
 def test_tools():
     """ Test that tools were unknown """
 
-    scraper = DpxScraper(filename=Path(""), mimetype="")
-    assert scraper.tools()["dpx-validator"]["version"] == "0.19"
+    extractor = DpxExtractor(filename=Path(""), mimetype="")
+    assert extractor.tools()["dpx-validator"]["version"] == "0.19"

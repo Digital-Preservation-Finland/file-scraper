@@ -1,17 +1,17 @@
 """
-FFMpeg scraper for gathering metadata and well-formed checking.
+FFMpeg extractor for gathering metadata and well-formed checking.
 
 For most file types, no real metadata is scraped: for those files
 FFMpegSimpleMeta metadata model is used. This is done as both
 Mediainfo and FFMpeg cannot be used simultaneously to scrape the
-metadata as reliable matching of streams from two scrapers is not
+metadata as reliable matching of streams from two extractors is not
 currently possible. For AVI files, Mediainfo is not able to report
 all required metadata, so for those files all metadata collection is
-done with FFMpegScraper, using FFMpegMeta as the metadata model.
+done with FFMpegExtractor, using FFMpegMeta as the metadata model.
 """
 import re
 
-from file_scraper.base import BaseScraper
+from file_scraper.base import BaseExtractor
 from file_scraper.shell import Shell
 from file_scraper.ffmpeg.ffmpeg_model import FFMpegSimpleMeta, FFMpegMeta
 from file_scraper.utils import ensure_text
@@ -24,9 +24,9 @@ except ImportError:
     pass
 
 
-class FFMpegMetaScraper(BaseScraper):
+class FFMpegMetaExtractor(BaseExtractor):
     """
-    Scraper using FFMpeg to gather metadata without well-formed check.
+    Extractor using FFMpeg to gather metadata without well-formed check.
     """
 
     # Supported metadata models
@@ -48,7 +48,7 @@ class FFMpegMetaScraper(BaseScraper):
                      params=None):
         """
         Metadata gathering is needed also in well-formed check, so it is not
-        necessary to run this scraper with well-formed check.
+        necessary to run this extractor with well-formed check.
         """
         if check_wellformed:
             return False
@@ -134,7 +134,7 @@ class FFMpegMetaScraper(BaseScraper):
 
     def iterate_models(self, **kwargs):
         """
-        Iterate Scraper models.
+        Iterate Extractor models.
 
         :kwargs: FFProbe results and index
         :returns: Metadata model
@@ -149,7 +149,7 @@ class FFMpegMetaScraper(BaseScraper):
     def tools(self):
         """
         Overwriting baseclass implementation
-        to collect information about software used by the scraper
+        to collect information about software used by the extractor
 
         :returns: a dictionary with the used software or UNAV.
         """
@@ -172,14 +172,14 @@ class FFMpegMetaScraper(BaseScraper):
         return {"ffmpeg": {"version": version}}
 
 
-class FFMpegScraper(FFMpegMetaScraper):
+class FFMpegExtractor(FFMpegMetaExtractor):
     """
-    Scraper using FFMpeg to check well-formedness and gather metadata.
+    Extractor using FFMpeg to check well-formedness and gather metadata.
     """
 
     # Supported metadata models
     _supported_metadata = [FFMpegSimpleMeta, FFMpegMeta]
-    # Run only when checking well-formedness. There is another scraper for
+    # Run only when checking well-formedness. There is another extractor for
     # the case without checking. The proper metadata is still gathered.
     _only_wellformed = True
 
@@ -187,11 +187,11 @@ class FFMpegScraper(FFMpegMetaScraper):
     def is_supported(cls, mimetype, version=None, check_wellformed=True,
                      params=None):
         """
-        Report whether the scraper supports the given MIME type and version.
+        Report whether the extractor supports the given MIME type and version.
 
-        Use super class of super class, i.e. BaseScraper.
+        Use super class of super class, i.e. BaseExtractor.
         """
-        return super(FFMpegMetaScraper, cls).is_supported(
+        return super(FFMpegMetaExtractor, cls).is_supported(
             mimetype=mimetype, version=version,
             check_wellformed=check_wellformed, params=params)
 
@@ -200,7 +200,7 @@ class FFMpegScraper(FFMpegMetaScraper):
         """
         Return well-formedness status of the scraped file.
         If the file contains streams that can not be identified or
-        is a container with unacceptable av streams, the scraper
+        is a container with unacceptable av streams, the extractor
         can not check well-formedness.
 
         :returns: None if there were no errors but a stream was not
@@ -208,8 +208,8 @@ class FFMpegScraper(FFMpegMetaScraper):
                   True if the file has been scraped without errors
                   and otherwise False
         """
-        # Use super class of super class, i.e. BaseScraper for initial result.
-        valid = super(FFMpegMetaScraper, self).well_formed
+        # Use super class of super class, i.e. BaseExtractor for initial result.
+        valid = super(FFMpegMetaExtractor, self).well_formed
         unsupported_av_format_found = any(
             stream.av_format_supported() is False for stream in self.streams)
 
@@ -223,7 +223,7 @@ class FFMpegScraper(FFMpegMetaScraper):
 
         We need to probe streams also for checking well-formedness, because
         otherwise we don't know if the MIME types of streams are supported by
-        Scraper or not. If the a stream can not be identified by Scraper, then
+        Extractor or not. If the a stream can not be identified by Extractor, then
         well-formedness can not be True.
         """
         super().scrape_file()

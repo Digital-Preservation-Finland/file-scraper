@@ -1,11 +1,11 @@
-"""Metadata model for office file scraper."""
+"""Metadata model for office file extractor."""
 
 from file_scraper.base import BaseMeta
 from file_scraper.utils import metadata
 
 
 class OfficeMeta(BaseMeta):
-    """Office file format scraper."""
+    """Office file format extractor."""
 
     # Supported mimetypes and versions
     _supported = {

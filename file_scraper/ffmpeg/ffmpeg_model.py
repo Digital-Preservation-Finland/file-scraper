@@ -1,4 +1,4 @@
-"""Metadata model for FFMpeg scraper."""
+"""Metadata model for FFMpeg extractor."""
 
 import re
 from fractions import Fraction
@@ -586,7 +586,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
         if "codec_long_name" not in self._ffmpeg_stream:
             raise SkipElementException()
         if "MP3" in self._ffmpeg_stream["codec_long_name"]:
-            return "MPEG Audio"  # as other scrapers
+            return "MPEG Audio"  # as other extractors
         return self._ffmpeg_stream["codec_long_name"].split(" ")[0]
 
     @metadata()

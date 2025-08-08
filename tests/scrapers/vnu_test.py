@@ -1,15 +1,15 @@
 """
-Tests for Vnu scraper.
+Tests for Vnu extractor.
 
 This module tests that:
     - MIME type, version, streams and well-formedness are scraped correctly for
       html 5 files.
-    - For well-formed file, scraper messages contain "valid_5.html".
-    - For file without doctype, scraper errors contain  "Start tag seen
+    - For well-formed file, extractor messages contain "valid_5.html".
+    - For file without doctype, extractor errors contain  "Start tag seen
       without seeing a doctype first."
-    - For file with illegal tags in it, scraper errors contain "not allowed as
+    - For file with illegal tags in it, extractor errors contain "not allowed as
       child of element".
-    - For empty file, scraper errors contain "End of file seen without seeing
+    - For empty file, extractor errors contain "End of file seen without seeing
       a doctype first".
     - When well-formedness is checked, MIME type text/html versions 5 and
       None are supported. When well-formedness is not checked, this combination
@@ -20,7 +20,7 @@ from pathlib import Path
 
 import pytest
 
-from file_scraper.vnu.vnu_scraper import VnuScraper
+from file_scraper.vnu.vnu_extractor import VnuExtractor
 from tests.common import (parse_results, partial_message_included)
 
 MIMETYPE = "text/html"
@@ -56,9 +56,9 @@ MIMETYPE = "text/html"
             "stderr_part": ""}),
     ]
 )
-def test_scraper(filename, result_dict, evaluate_scraper):
+def test_extractor(filename, result_dict, evaluate_extractor):
     """
-    Test vnu scraper.
+    Test vnu extractor.
 
     :filename: Test file name
     :result_dict: Result dict containing test purpose, and parts of
@@ -66,18 +66,18 @@ def test_scraper(filename, result_dict, evaluate_scraper):
     """
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
-    scraper = VnuScraper(filename=correct.filename, mimetype=MIMETYPE)
-    scraper.scrape_file()
+    extractor = VnuExtractor(filename=correct.filename, mimetype=MIMETYPE)
+    extractor.scrape_file()
 
     if not correct.well_formed:
-        assert not scraper.well_formed
-        assert not scraper.streams
+        assert not extractor.well_formed
+        assert not extractor.streams
         assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
+                                        extractor.messages())
         assert partial_message_included(correct.stderr_part,
-                                        scraper.errors())
+                                        extractor.errors())
     else:
-        evaluate_scraper(scraper, correct)
+        evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.usefixtures("patch_shell_attributes_fx")
@@ -87,26 +87,26 @@ def test_vnu_returns_invalid_return_code():
     path = Path("tests/data", MIMETYPE.replace("/", "_"))
     testfile = path / "valid_5.html"
 
-    scraper = VnuScraper(filename=testfile,
-                         mimetype=MIMETYPE)
+    extractor = VnuExtractor(filename=testfile,
+                           mimetype=MIMETYPE)
 
-    scraper.scrape_file()
+    extractor.scrape_file()
 
-    assert "Vnu returned invalid return code: -1\n" in scraper.errors()
+    assert "Vnu returned invalid return code: -1\n" in extractor.errors()
 
 
 def test_is_supported():
     """Test is_supported method."""
     mime = MIMETYPE
     ver = "5"
-    assert VnuScraper.is_supported(mime, ver, True)
-    assert VnuScraper.is_supported(mime, None, True)
-    assert not VnuScraper.is_supported(mime, ver, False)
-    assert not VnuScraper.is_supported(mime, "foo", True)
-    assert not VnuScraper.is_supported("foo", ver, True)
+    assert VnuExtractor.is_supported(mime, ver, True)
+    assert VnuExtractor.is_supported(mime, None, True)
+    assert not VnuExtractor.is_supported(mime, ver, False)
+    assert not VnuExtractor.is_supported(mime, "foo", True)
+    assert not VnuExtractor.is_supported("foo", ver, True)
 
 
 def test_tools():
     """Test that tools return expected version of software used."""
-    scraper = VnuScraper(filename=Path(""), mimetype="")
-    assert scraper.tools()["Validator.nu"]["version"][0].isdigit()
+    extractor = VnuExtractor(filename=Path(""), mimetype="")
+    assert extractor.tools()["Validator.nu"]["version"][0].isdigit()

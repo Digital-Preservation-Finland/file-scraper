@@ -1,6 +1,6 @@
-"""Metadata scraper for image file formats."""
+"""Metadata extractor for image file formats."""
 
-from file_scraper.base import BaseScraper
+from file_scraper.base import BaseExtractor
 from file_scraper.logger import LOGGER
 from file_scraper.pil.pil_model import PngPilMeta, JpegPilMeta, \
     TiffPilMeta, DngPilMeta, Jp2PilMeta, GifPilMeta, WebPPilMeta
@@ -11,8 +11,8 @@ except ImportError:
     pass
 
 
-class PilScraper(BaseScraper):
-    """Scraper that uses PIL to scrape tiff, png, jpeg, gif and webp images."""
+class PilExtractor(BaseExtractor):
+    """Extractor that uses PIL to scrape tiff, png, jpeg, gif and webp images."""
 
     _supported_metadata = [TiffPilMeta, DngPilMeta, PngPilMeta, GifPilMeta,
                            JpegPilMeta, Jp2PilMeta, WebPPilMeta]
@@ -64,7 +64,7 @@ class PilScraper(BaseScraper):
     def tools(self):
         """
         Overwriting baseclass implementation
-        to collect information about software used by the scraper
+        to collect information about software used by the extractor
 
         :returns: a dictionary with the used software or UNAV.
         """

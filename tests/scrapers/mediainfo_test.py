@@ -1,7 +1,7 @@
 """
 Test module for Mediainfo.
 
-NOTE: Mediainfo accepts practically any file. We use another scrapers
+NOTE: Mediainfo accepts practically any file. We use another extractors
 for well-formed checks.
 
 This module tests that:
@@ -11,8 +11,8 @@ This module tests that:
       Additionally, this is scraped correctly to mov video container
       containing dv video and lpcm8 audio, and to mkv container
       containing ffv1 video without sound and with lpcm8 and flac sound.
-      For valid files scraper messages contains 'file was analyzed
-      successfully' and for empty file scraper errors contains 'No audio
+      For valid files extractor messages contains 'file was analyzed
+      successfully' and for empty file extractor errors contains 'No audio
       or video tracks found'.
     - The following MIME type and version combinations are supported
       whether well-formedness is checked or not:
@@ -33,7 +33,7 @@ from pathlib import Path
 import pytest
 
 from file_scraper.defaults import UNAP, UNAV
-from file_scraper.mediainfo.mediainfo_scraper import MediainfoScraper
+from file_scraper.mediainfo.mediainfo_extractor import MediainfoExtractor
 from tests.common import (parse_results, partial_message_included)
 from tests.scrapers.stream_dicts import (AIFF_AUDIO,
                                          AIFF_C_AUDIO,
@@ -131,8 +131,8 @@ from tests.scrapers.stream_dicts import (AIFF_AUDIO,
             "stderr_part": "No audio, video tracks or images found."},
          "video/dv"),
     ])
-def test_mediainfo_scraper_mov(filename, result_dict, mimetype,
-                               evaluate_scraper):
+def test_mediainfo_extractor_mov(filename, result_dict, mimetype,
+                               evaluate_extractor):
     """
     Test Quicktime and DV scraping with Mediainfo.
 
@@ -143,8 +143,8 @@ def test_mediainfo_scraper_mov(filename, result_dict, mimetype,
     :mimetype: File MIME type
     """
     correct = parse_results(filename, mimetype, result_dict, False)
-    scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
-    scraper.scrape_file()
+    extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype)
+    extractor.scrape_file()
 
     if filename == "valid__h264_aac_no_ftyp_atom.mov":
         correct.streams[0]["codec_name"] = "QuickTime"
@@ -153,11 +153,11 @@ def test_mediainfo_scraper_mov(filename, result_dict, mimetype,
 
     if "empty" in filename:
         assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
-        assert partial_message_included(correct.stderr_part, scraper.errors())
-        assert not scraper.streams
+                                        extractor.messages())
+        assert partial_message_included(correct.stderr_part, extractor.errors())
+        assert not extractor.streams
     else:
-        evaluate_scraper(scraper, correct)
+        evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize(
@@ -204,7 +204,7 @@ def test_mediainfo_scraper_mov(filename, result_dict, mimetype,
             "stdout_part": "",
             "stderr_part": "No audio, video tracks or images found."}),
     ])
-def test_mediainfo_scraper_mkv(filename, result_dict, evaluate_scraper):
+def test_mediainfo_extractor_mkv(filename, result_dict, evaluate_extractor):
     """
     Test Matroska scraping with Mediainfo.
 
@@ -215,8 +215,8 @@ def test_mediainfo_scraper_mkv(filename, result_dict, evaluate_scraper):
     """
     mimetype = "video/x-matroska"
     correct = parse_results(filename, mimetype, result_dict, False)
-    scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
-    scraper.scrape_file()
+    extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype)
+    extractor.scrape_file()
     if "empty" in filename:
         correct.version = None
         correct.streams[0]["version"] = None
@@ -224,11 +224,11 @@ def test_mediainfo_scraper_mkv(filename, result_dict, evaluate_scraper):
 
     if "invalid" in filename:
         assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
-        assert partial_message_included(correct.stderr_part, scraper.errors())
-        assert not scraper.streams
+                                        extractor.messages())
+        assert partial_message_included(correct.stderr_part, extractor.errors())
+        assert not extractor.streams
     else:
-        evaluate_scraper(scraper, correct)
+        evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize(
@@ -249,7 +249,7 @@ def test_mediainfo_scraper_mkv(filename, result_dict, evaluate_scraper):
             "stdout_part": "",
             "stderr_part": "No audio, video tracks or images found."}),
     ])
-def test_mediainfo_scraper_wav(filename, result_dict, evaluate_scraper):
+def test_mediainfo_extractor_wav(filename, result_dict, evaluate_extractor):
     """
     Test WAV scraping with Mediainfo.
 
@@ -265,16 +265,16 @@ def test_mediainfo_scraper_wav(filename, result_dict, evaluate_scraper):
     else:
         correct.streams[0]["version"] = UNAP
 
-    scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
-    scraper.scrape_file()
+    extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype)
+    extractor.scrape_file()
 
     if "empty" in filename:
         assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
-        assert partial_message_included(correct.stderr_part, scraper.errors())
-        assert not scraper.streams
+                                        extractor.messages())
+        assert partial_message_included(correct.stderr_part, extractor.errors())
+        assert not extractor.streams
     else:
-        evaluate_scraper(scraper, correct)
+        evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize(
@@ -290,7 +290,7 @@ def test_mediainfo_scraper_wav(filename, result_dict, evaluate_scraper):
             "stdout_part": "",
             "stderr_part": "No audio, video tracks or images found."}),
     ])
-def test_mediainfo_scraper_flac(filename, result_dict, evaluate_scraper):
+def test_mediainfo_extractor_flac(filename, result_dict, evaluate_extractor):
     """
     Test FLAC audio file scraping with Mediainfo.
 
@@ -302,16 +302,16 @@ def test_mediainfo_scraper_flac(filename, result_dict, evaluate_scraper):
     mimetype = "audio/flac"
     correct = parse_results(filename, mimetype, result_dict, False)
 
-    scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
-    scraper.scrape_file()
+    extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype)
+    extractor.scrape_file()
 
     if "header_edited" in filename:
         assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
-        assert partial_message_included(correct.stderr_part, scraper.errors())
-        assert not scraper.streams
+                                        extractor.messages())
+        assert partial_message_included(correct.stderr_part, extractor.errors())
+        assert not extractor.streams
     else:
-        evaluate_scraper(scraper, correct)
+        evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize(
@@ -333,7 +333,7 @@ def test_mediainfo_scraper_flac(filename, result_dict, evaluate_scraper):
             "stderr_part": "File contains a truncated track",
             "streams": {0: AIFF_AUDIO.copy()}}),
     ])
-def test_mediainfo_scraper_aiff(filename, result_dict, evaluate_scraper):
+def test_mediainfo_extractor_aiff(filename, result_dict, evaluate_extractor):
     """
     Test AIFF scraping with Mediainfo.
 
@@ -349,16 +349,16 @@ def test_mediainfo_scraper_aiff(filename, result_dict, evaluate_scraper):
     if "aiff-c" in filename:
         correct.streams[0].pop("data_rate", None)
 
-    scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
-    scraper.scrape_file()
+    extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype)
+    extractor.scrape_file()
 
     if "data_bytes_missing" in filename:
         assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
-        assert partial_message_included(correct.stderr_part, scraper.errors())
-        assert not scraper.streams
+                                        extractor.messages())
+        assert partial_message_included(correct.stderr_part, extractor.errors())
+        assert not extractor.streams
     else:
-        evaluate_scraper(scraper, correct)
+        evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize(
@@ -377,7 +377,7 @@ def test_mediainfo_scraper_aiff(filename, result_dict, evaluate_scraper):
             "streams": {0: ASF_CONTAINER.copy(),
                         1: WMA_7_AUDIO.copy()}}),
     ])
-def test_mediainfo_scraper_wma(filename, result_dict, evaluate_scraper):
+def test_mediainfo_extractor_wma(filename, result_dict, evaluate_extractor):
     """
     Test WMA scraping with Mediainfo.
 
@@ -396,10 +396,10 @@ def test_mediainfo_scraper_wma(filename, result_dict, evaluate_scraper):
         correct.streams[0]["version"] = UNAP
         correct.well_formed = None
 
-    scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
-    scraper.scrape_file()
+    extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype)
+    extractor.scrape_file()
 
-    evaluate_scraper(scraper, correct)
+    evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize(
@@ -419,7 +419,7 @@ def test_mediainfo_scraper_wma(filename, result_dict, evaluate_scraper):
                         1: WMV_VIDEO.copy(),
                         2: WMV_WMA_AUDIO.copy()}}),
     ])
-def test_mediainfo_scraper_wmv(filename, result_dict, evaluate_scraper):
+def test_mediainfo_extractor_wmv(filename, result_dict, evaluate_extractor):
     """
     Test WMV scraping with Mediainfo.
 
@@ -431,10 +431,10 @@ def test_mediainfo_scraper_wmv(filename, result_dict, evaluate_scraper):
     mimetype = "video/x-ms-asf"
     correct = parse_results(filename, mimetype, result_dict, False)
 
-    scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
-    scraper.scrape_file()
+    extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype)
+    extractor.scrape_file()
 
-    evaluate_scraper(scraper, correct)
+    evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize(
@@ -459,9 +459,9 @@ def test_mediainfo_scraper_wmv(filename, result_dict, evaluate_scraper):
             "stdout_part": "",
             "stderr_part": "No audio, video tracks or images found."})
     ])
-def test_mediainfo_scraper_mpeg(filename, result_dict, evaluate_scraper):
+def test_mediainfo_extractor_mpeg(filename, result_dict, evaluate_extractor):
     """
-    Test MPEG scraping with MediainfoScraper.
+    Test MPEG scraping with MediainfoExtractor.
 
     :filename: Test file name
     :result_dict: Result dict containing the test purpose, parts of
@@ -470,15 +470,15 @@ def test_mediainfo_scraper_mpeg(filename, result_dict, evaluate_scraper):
     """
     mimetype = "video/mpeg"
     correct = parse_results(filename, mimetype, result_dict, False)
-    scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
-    scraper.scrape_file()
+    extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype)
+    extractor.scrape_file()
     if "empty" in filename:
         assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
-        assert partial_message_included(correct.stderr_part, scraper.errors())
-        assert not scraper.streams
+                                        extractor.messages())
+        assert partial_message_included(correct.stderr_part, extractor.errors())
+        assert not extractor.streams
     else:
-        evaluate_scraper(scraper, correct)
+        evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize(
@@ -524,9 +524,9 @@ def test_mediainfo_scraper_mpeg(filename, result_dict, evaluate_scraper):
         )
     ]
 )
-def test_mediainfo_scraper_mp4(filename, result_dict, evaluate_scraper):
+def test_mediainfo_extractor_mp4(filename, result_dict, evaluate_extractor):
     """
-    Test MP4 scraping with MediainfoScraper.
+    Test MP4 scraping with MediainfoExtractor.
 
     :filename: Test file name
     :result_dict: Result dict containing the test purpose, parts of
@@ -535,16 +535,16 @@ def test_mediainfo_scraper_mp4(filename, result_dict, evaluate_scraper):
     """
     mimetype = "video/mp4"
     correct = parse_results(filename, mimetype, result_dict, False)
-    scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
-    scraper.scrape_file()
+    extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype)
+    extractor.scrape_file()
 
     if "invalid" in filename:
         assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
-        assert partial_message_included(correct.stderr_part, scraper.errors())
-        assert not scraper.streams
+                                        extractor.messages())
+        assert partial_message_included(correct.stderr_part, extractor.errors())
+        assert not extractor.streams
     else:
-        evaluate_scraper(scraper, correct)
+        evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize(
@@ -570,9 +570,9 @@ def test_mediainfo_scraper_mp4(filename, result_dict, evaluate_scraper):
         )
     ]
 )
-def test_mediainfo_scraper_m4a(filename, result_dict, evaluate_scraper):
+def test_mediainfo_extractor_m4a(filename, result_dict, evaluate_extractor):
     """
-    Test M4A scraping with MediainfoScraper.
+    Test M4A scraping with MediainfoExtractor.
 
     :filename: Test file name
     :result_dict: Result dict containing the test purpose, parts of
@@ -581,16 +581,16 @@ def test_mediainfo_scraper_m4a(filename, result_dict, evaluate_scraper):
     """
     mimetype = "audio/mp4"
     correct = parse_results(filename, mimetype, result_dict, False)
-    scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
-    scraper.scrape_file()
+    extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype)
+    extractor.scrape_file()
 
     if "empty" in filename:
         assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
-        assert partial_message_included(correct.stderr_part, scraper.errors())
-        assert not scraper.streams
+                                        extractor.messages())
+        assert partial_message_included(correct.stderr_part, extractor.errors())
+        assert not extractor.streams
     else:
-        evaluate_scraper(scraper, correct)
+        evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize(
@@ -606,9 +606,9 @@ def test_mediainfo_scraper_m4a(filename, result_dict, evaluate_scraper):
             "stdout_part": "",
             "stderr_part": "No audio, video tracks or images found."})
     ])
-def test_mediainfo_scraper_mp3(filename, result_dict, evaluate_scraper):
+def test_mediainfo_extractor_mp3(filename, result_dict, evaluate_extractor):
     """
-    Test MP3 scraping with MediainfoScraper.
+    Test MP3 scraping with MediainfoExtractor.
 
     :filename: Test file name
     :result_dict: Result dict containing the test purpose, parts of
@@ -617,17 +617,17 @@ def test_mediainfo_scraper_mp3(filename, result_dict, evaluate_scraper):
     """
     mimetype = "audio/mpeg"
     correct = parse_results(filename, mimetype, result_dict, False)
-    scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
-    scraper.scrape_file()
+    extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype)
+    extractor.scrape_file()
 
     if "empty" in filename:
         assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
-        assert partial_message_included(correct.stderr_part, scraper.errors())
-        assert not scraper.streams
+                                        extractor.messages())
+        assert partial_message_included(correct.stderr_part, extractor.errors())
+        assert not extractor.streams
     else:
         correct.streams[0].pop("stream_type", None)
-        evaluate_scraper(scraper, correct)
+        evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize(
@@ -674,9 +674,9 @@ def test_mediainfo_scraper_mp3(filename, result_dict, evaluate_scraper):
             }
         )
     ])
-def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
+def test_mediainfo_extractor_mpegts(filename, result_dict, evaluate_extractor):
     """
-    Test MPEG Transport Stream scraping with MediainfoScraper.
+    Test MPEG Transport Stream scraping with MediainfoExtractor.
 
     :filename: Test file name
     :result_dict: Result dict containing the test purpose, parts of
@@ -685,16 +685,16 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
     """
     mimetype = "video/MP2T"
     correct = parse_results(filename, mimetype, result_dict, False)
-    scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype.lower())
-    scraper.scrape_file()
+    extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype.lower())
+    extractor.scrape_file()
 
     if "empty" in filename:
         assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
-        assert partial_message_included(correct.stderr_part, scraper.errors())
-        assert not scraper.streams
+                                        extractor.messages())
+        assert partial_message_included(correct.stderr_part, extractor.errors())
+        assert not extractor.streams
     else:
-        evaluate_scraper(scraper, correct)
+        evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize(
@@ -722,10 +722,10 @@ def test_mediainfo_scraper_mpegts(filename, result_dict, evaluate_scraper):
                 "stderr_part": "No audio, video tracks or images found."},
              "video/MP1S")
         ])
-def test_mediainfo_scraper_mpegps(filename, result_dict,
-                                  mimetype, evaluate_scraper):
+def test_mediainfo_extractor_mpegps(filename, result_dict,
+                                  mimetype, evaluate_extractor):
     """
-    Test MPEG Program Stream scraping with MediainfoScraper.
+    Test MPEG Program Stream scraping with MediainfoExtractor.
 
     :filename: Test file name
     :result_dict: Result dict containing the test purpose, parts of
@@ -733,20 +733,20 @@ def test_mediainfo_scraper_mpegps(filename, result_dict,
                   streams
     """
     correct = parse_results(filename, mimetype, result_dict, False)
-    scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype.lower())
-    scraper.scrape_file()
+    extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype.lower())
+    extractor.scrape_file()
 
     if "empty" in filename:
         assert partial_message_included(correct.stdout_part,
-                                        scraper.messages())
-        assert partial_message_included(correct.stderr_part, scraper.errors())
-        assert not scraper.streams
+                                        extractor.messages())
+        assert partial_message_included(correct.stderr_part, extractor.errors())
+        assert not extractor.streams
     else:
-        evaluate_scraper(scraper, correct)
+        evaluate_extractor(extractor, correct)
 
 
-def test_mediainfo_scraper_avi(evaluate_scraper):
-    """Test AVI scraping with MediainfoScraper."""
+def test_mediainfo_extractor_avi(evaluate_extractor):
+    """Test AVI scraping with MediainfoExtractor."""
     filename = "valid__mpeg2_mp3.avi"
     mimetype = "video/avi"
     result_dict = {
@@ -759,10 +759,10 @@ def test_mediainfo_scraper_avi(evaluate_scraper):
     }
 
     correct = parse_results(filename, mimetype, result_dict, False)
-    scraper = MediainfoScraper(filename=correct.filename, mimetype=mimetype)
-    scraper.scrape_file()
+    extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype)
+    extractor.scrape_file()
 
-    evaluate_scraper(scraper, correct)
+    evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize(
@@ -790,15 +790,15 @@ def test_is_supported(mime, ver):
     :mime: MIME type
     :ver: File format version
     """
-    assert MediainfoScraper.is_supported(mime, ver, True)
-    assert MediainfoScraper.is_supported(mime, None, True)
-    assert MediainfoScraper.is_supported(mime, ver, False)
-    assert MediainfoScraper.is_supported(mime, "foo", True)
-    assert not MediainfoScraper.is_supported("foo", ver, True)
+    assert MediainfoExtractor.is_supported(mime, ver, True)
+    assert MediainfoExtractor.is_supported(mime, None, True)
+    assert MediainfoExtractor.is_supported(mime, ver, False)
+    assert MediainfoExtractor.is_supported(mime, "foo", True)
+    assert not MediainfoExtractor.is_supported("foo", ver, True)
 
 
 def test_mediainfo_tools():
     """Test that tool versions have at least one digit in the start"""
-    scraper = MediainfoScraper(filename=Path(""), mimetype="")
-    assert scraper.tools()["pymediainfo"]["version"][0].isdigit()
-    assert scraper.tools()["MediaInfoLib"]["version"][0].isdigit()
+    extractor = MediainfoExtractor(filename=Path(""), mimetype="")
+    assert extractor.tools()["pymediainfo"]["version"][0].isdigit()
+    assert extractor.tools()["MediaInfoLib"]["version"][0].isdigit()

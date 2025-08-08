@@ -1,163 +1,163 @@
 """
-Test for file_scraper.scrapers.
+Test for file_scraper.extractor.
 
 This module tests that:
-    - iter_scrapers(mimetype, version) returns the correct scrapers.
+    - iter_extractors(mimetype, version) returns the correct extractors.
     - iter_detectors() returns the correct detectors.
 """
 
 import pytest
 
-from file_scraper.iterator import iter_scrapers, iter_detectors
+from file_scraper.iterator import iter_extractors, iter_detectors
 
 
-WELLFORMED_SCRAPERS = [
-    "DpxScraper", "FFMpegScraper", "GhostscriptScraper", "JHoveAiffScraper",
-    "JHoveEpubScraper", "JHoveGifScraper", "JHoveHtmlScraper",
-    "JHoveJpegScraper", "JHoveTiffScraper", "JHovePdfScraper",
-    "JHoveWavScraper", "JHoveUtf8Scraper", "LxmlScraper", "OfficeScraper",
-    "PngcheckScraper", "PsppScraper", "SchematronScraper",
-    "TextEncodingScraper", "VerapdfScraper", "VnuScraper",
-    "WarctoolsFullScraper", "GzipWarctoolsScraper", "XmllintScraper"
+WELLFORMED_EXTRACTORS = [
+    "DpxExtractor", "FFMpegExtractor", "GhostscriptExtractor", "JHoveAiffExtractor",
+    "JHoveEpubExtractor", "JHoveGifExtractor", "JHoveHtmlExtractor",
+    "JHoveJpegExtractor", "JHoveTiffExtractor", "JHovePdfExtractor",
+    "JHoveWavExtractor", "JHoveUtf8Extractor", "LxmlExtractor", "OfficeExtractor",
+    "PngcheckExtractor", "PsppExtractor", "SchematronExtractor",
+    "TextEncodingExtractor", "VerapdfExtractor", "VnuExtractor",
+    "WarctoolsFullExtractor", "GzipWarctoolsExtractor", "XmllintExtractor"
 ]
 
 
 @pytest.mark.parametrize(
-    ["mimetype", "version", "scraper_classes"],
+    ["mimetype", "version", "extractor_classes"],
     [
-        ("image/x-dpx", None, ["DpxScraper"]),
-        ("application/x-spss-por", None, ["PsppScraper"]),
-        ("text/csv", None, ["CsvScraper", "MagicTextScraper",
-                            "TextEncodingScraper"]),
-        ("text/plain", None, ["MagicTextScraper", "TextfileScraper",
-                              "TextEncodingScraper"]),
-        ("video/mpeg", None, ["MediainfoScraper", "FFMpegScraper"]),
-        ("video/mp4", None, ["MediainfoScraper", "FFMpegScraper"]),
-        ("video/mp2t", None, ["MediainfoScraper", "FFMpegScraper"]),
-        ("video/x-matroska", None, ["MediainfoScraper", "FFMpegScraper"]),
-        ("video/dv", None, ["MediainfoScraper", "FFMpegScraper"]),
-        ("video/quicktime", None, ["MediainfoScraper", "FFMpegScraper"]),
-        ("application/epub+zip", "3", ["JHoveEpubScraper",
-                                       "DetectedMimeVersionScraper"]),
-        ("application/mxf", None, ["FFMpegScraper"]),
-        ("application/pdf", "1.2", ["MagicBinaryScraper", "JHovePdfScraper",
-                                    "GhostscriptScraper"]),
-        ("application/pdf", "1.3", ["MagicBinaryScraper", "JHovePdfScraper",
-                                    "GhostscriptScraper"]),
-        ("application/pdf", "1.4", ["MagicBinaryScraper", "JHovePdfScraper",
-                                    "GhostscriptScraper"]),
-        ("application/pdf", "1.5", ["MagicBinaryScraper", "JHovePdfScraper",
-                                    "GhostscriptScraper"]),
-        ("application/pdf", "1.6", ["MagicBinaryScraper", "JHovePdfScraper",
-                                    "GhostscriptScraper"]),
-        ("application/pdf", "A-1a", ["MagicBinaryScraper", "JHovePdfScraper",
-                                     "VerapdfScraper", "GhostscriptScraper"]),
-        ("application/pdf", "A-1b", ["MagicBinaryScraper", "JHovePdfScraper",
-                                     "VerapdfScraper", "GhostscriptScraper"]),
-        ("application/pdf", "A-2a", ["MagicBinaryScraper", "JHovePdfScraper",
-                                     "VerapdfScraper", "GhostscriptScraper"]),
-        ("application/pdf", "A-2b", ["MagicBinaryScraper", "JHovePdfScraper",
-                                     "VerapdfScraper", "GhostscriptScraper"]),
-        ("application/pdf", "A-2u", ["MagicBinaryScraper", "JHovePdfScraper",
-                                     "VerapdfScraper", "GhostscriptScraper"]),
-        ("application/pdf", "A-3a", ["MagicBinaryScraper", "JHovePdfScraper",
-                                     "VerapdfScraper", "GhostscriptScraper"]),
-        ("application/pdf", "A-3b", ["MagicBinaryScraper", "JHovePdfScraper",
-                                     "VerapdfScraper", "GhostscriptScraper"]),
-        ("application/pdf", "A-3u", ["MagicBinaryScraper", "JHovePdfScraper",
-                                     "VerapdfScraper", "GhostscriptScraper"]),
-        ("application/pdf", "1.7", ["MagicBinaryScraper", "JHovePdfScraper",
-                                    "GhostscriptScraper"]),
-        ("image/tiff", None, ["JHoveTiffScraper", "MagicBinaryScraper",
-                              "PilScraper", "WandScraper"]),
-        ("image/jpeg", None, ["JHoveJpegScraper", "MagicBinaryScraper",
-                              "MediainfoScraper", "PilScraper",
-                              "WandScraper"]),
-        ("image/gif", None, ["JHoveGifScraper", "MagicBinaryScraper",
-                             "PilScraper", "WandScraper"]),
-        ("text/html", "4.01", ["JHoveHtmlScraper", "LxmlScraper",
-                               "MagicTextScraper",
-                               "TextEncodingScraper"]),
-        ("text/html", "5", ["VnuScraper",
-                            "LxmlScraper", "MagicTextScraper",
-                            "TextEncodingScraper"]),
-        ("image/png", None, ["PngcheckScraper", "MagicBinaryScraper",
-                             "PilScraper", "MediainfoScraper", "WandScraper"]),
-        ("application/gzip", None, ["GzipWarctoolsScraper"]),
-        ("application/warc", None, ["WarctoolsFullScraper"]),
-        ("text/xml", "1.0", ["XmllintScraper",
-                             "LxmlScraper", "MagicTextScraper",
-                             "TextEncodingScraper"]),
-        ("application/xhtml+xml", "1.0", ["JHoveHtmlScraper",
-                                          "MagicTextScraper",
-                                          "TextEncodingScraper"]),
-        ("audio/x-wav", None, ["FFMpegScraper", "JHoveWavScraper",
-                               "MediainfoScraper"]),
+        ("image/x-dpx", None, ["DpxExtractor"]),
+        ("application/x-spss-por", None, ["PsppExtractor"]),
+        ("text/csv", None, ["CsvExtractor", "MagicTextExtractor",
+                            "TextEncodingExtractor"]),
+        ("text/plain", None, ["MagicTextExtractor", "TextfileExtractor",
+                              "TextEncodingExtractor"]),
+        ("video/mpeg", None, ["MediainfoExtractor", "FFMpegExtractor"]),
+        ("video/mp4", None, ["MediainfoExtractor", "FFMpegExtractor"]),
+        ("video/mp2t", None, ["MediainfoExtractor", "FFMpegExtractor"]),
+        ("video/x-matroska", None, ["MediainfoExtractor", "FFMpegExtractor"]),
+        ("video/dv", None, ["MediainfoExtractor", "FFMpegExtractor"]),
+        ("video/quicktime", None, ["MediainfoExtractor", "FFMpegExtractor"]),
+        ("application/epub+zip", "3", ["JHoveEpubExtractor",
+                                       "DetectedMimeVersionExtractor"]),
+        ("application/mxf", None, ["FFMpegExtractor"]),
+        ("application/pdf", "1.2", ["MagicBinaryExtractor", "JHovePdfExtractor",
+                                    "GhostscriptExtractor"]),
+        ("application/pdf", "1.3", ["MagicBinaryExtractor", "JHovePdfExtractor",
+                                    "GhostscriptExtractor"]),
+        ("application/pdf", "1.4", ["MagicBinaryExtractor", "JHovePdfExtractor",
+                                    "GhostscriptExtractor"]),
+        ("application/pdf", "1.5", ["MagicBinaryExtractor", "JHovePdfExtractor",
+                                    "GhostscriptExtractor"]),
+        ("application/pdf", "1.6", ["MagicBinaryExtractor", "JHovePdfExtractor",
+                                    "GhostscriptExtractor"]),
+        ("application/pdf", "A-1a", ["MagicBinaryExtractor", "JHovePdfExtractor",
+                                     "VerapdfExtractor", "GhostscriptExtractor"]),
+        ("application/pdf", "A-1b", ["MagicBinaryExtractor", "JHovePdfExtractor",
+                                     "VerapdfExtractor", "GhostscriptExtractor"]),
+        ("application/pdf", "A-2a", ["MagicBinaryExtractor", "JHovePdfExtractor",
+                                     "VerapdfExtractor", "GhostscriptExtractor"]),
+        ("application/pdf", "A-2b", ["MagicBinaryExtractor", "JHovePdfExtractor",
+                                     "VerapdfExtractor", "GhostscriptExtractor"]),
+        ("application/pdf", "A-2u", ["MagicBinaryExtractor", "JHovePdfExtractor",
+                                     "VerapdfExtractor", "GhostscriptExtractor"]),
+        ("application/pdf", "A-3a", ["MagicBinaryExtractor", "JHovePdfExtractor",
+                                     "VerapdfExtractor", "GhostscriptExtractor"]),
+        ("application/pdf", "A-3b", ["MagicBinaryExtractor", "JHovePdfExtractor",
+                                     "VerapdfExtractor", "GhostscriptExtractor"]),
+        ("application/pdf", "A-3u", ["MagicBinaryExtractor", "JHovePdfExtractor",
+                                     "VerapdfExtractor", "GhostscriptExtractor"]),
+        ("application/pdf", "1.7", ["MagicBinaryExtractor", "JHovePdfExtractor",
+                                    "GhostscriptExtractor"]),
+        ("image/tiff", None, ["JHoveTiffExtractor", "MagicBinaryExtractor",
+                              "PilExtractor", "WandExtractor"]),
+        ("image/jpeg", None, ["JHoveJpegExtractor", "MagicBinaryExtractor",
+                              "MediainfoExtractor", "PilExtractor",
+                              "WandExtractor"]),
+        ("image/gif", None, ["JHoveGifExtractor", "MagicBinaryExtractor",
+                             "PilExtractor", "WandExtractor"]),
+        ("text/html", "4.01", ["JHoveHtmlExtractor", "LxmlExtractor",
+                               "MagicTextExtractor",
+                               "TextEncodingExtractor"]),
+        ("text/html", "5", ["VnuExtractor",
+                            "LxmlExtractor", "MagicTextExtractor",
+                            "TextEncodingExtractor"]),
+        ("image/png", None, ["PngcheckExtractor", "MagicBinaryExtractor",
+                             "PilExtractor", "MediainfoExtractor", "WandExtractor"]),
+        ("application/gzip", None, ["GzipWarctoolsExtractor"]),
+        ("application/warc", None, ["WarctoolsFullExtractor"]),
+        ("text/xml", "1.0", ["XmllintExtractor",
+                             "LxmlExtractor", "MagicTextExtractor",
+                             "TextEncodingExtractor"]),
+        ("application/xhtml+xml", "1.0", ["JHoveHtmlExtractor",
+                                          "MagicTextExtractor",
+                                          "TextEncodingExtractor"]),
+        ("audio/x-wav", None, ["FFMpegExtractor", "JHoveWavExtractor",
+                               "MediainfoExtractor"]),
         ("application/vnd.oasis.opendocument.text", None,
-         ["DetectedMimeVersionScraper", "OfficeScraper",
-          "MagicBinaryScraper"]),
+         ["DetectedMimeVersionExtractor", "OfficeExtractor",
+          "MagicBinaryExtractor"]),
         ("application/vnd.oasis.opendocument.spreadsheet", None,
-         ["DetectedMimeVersionScraper", "OfficeScraper",
-          "MagicBinaryScraper"]),
+         ["DetectedMimeVersionExtractor", "OfficeExtractor",
+          "MagicBinaryExtractor"]),
         ("application/vnd.oasis.opendocument.presentation", None,
-         ["DetectedMimeVersionScraper", "OfficeScraper",
-          "MagicBinaryScraper"]),
+         ["DetectedMimeVersionExtractor", "OfficeExtractor",
+          "MagicBinaryExtractor"]),
         ("application/vnd.oasis.opendocument.graphics", None,
-         ["DetectedMimeVersionScraper", "OfficeScraper",
-          "MagicBinaryScraper"]),
+         ["DetectedMimeVersionExtractor", "OfficeExtractor",
+          "MagicBinaryExtractor"]),
         ("application/vnd.oasis.opendocument.formula", None,
-         ["DetectedMimeVersionScraper", "OfficeScraper",
-          "MagicBinaryScraper"]),
-        ("application/msword", "97-2003", ["OfficeScraper",
-                                           "MagicBinaryScraper"]),
-        ("application/vnd.ms-excel", "8X", ["OfficeScraper",
-                                            "MagicBinaryScraper"]),
+         ["DetectedMimeVersionExtractor", "OfficeExtractor",
+          "MagicBinaryExtractor"]),
+        ("application/msword", "97-2003", ["OfficeExtractor",
+                                           "MagicBinaryExtractor"]),
+        ("application/vnd.ms-excel", "8X", ["OfficeExtractor",
+                                            "MagicBinaryExtractor"]),
         ("application/vnd.ms-powerpoint", "97-2003",
-         ["OfficeScraper", "MagicBinaryScraper"]),
+         ["OfficeExtractor", "MagicBinaryExtractor"]),
         ("application/vnd.openxmlformats-officedocument.wordprocessingml."
-         "document", "2007 onwards", ["OfficeScraper", "MagicBinaryScraper"]),
+         "document", "2007 onwards", ["OfficeExtractor", "MagicBinaryExtractor"]),
         ("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-         "2007 onwards", ["OfficeScraper", "MagicBinaryScraper"]),
+         "2007 onwards", ["OfficeExtractor", "MagicBinaryExtractor"]),
         ("application/vnd.openxmlformats-officedocument.presentationml."
-         "presentation", "2007 onwards", ["OfficeScraper",
-                                          "MagicBinaryScraper"]),
-        ("audio/x-aiff", "1.3", ["FFMpegScraper", "JHoveAiffScraper",
-                                 "MagicBinaryScraper", "MediainfoScraper"]),
-        ("audio/x-ms-wma", "9", ["FFMpegScraper", "MediainfoScraper"]),
-        ("video/x-ms-wmv", "9", ["FFMpegScraper", "MediainfoScraper"]),
-        ("test/unknown", None, ["ScraperNotFound"])
+         "presentation", "2007 onwards", ["OfficeExtractor",
+                                          "MagicBinaryExtractor"]),
+        ("audio/x-aiff", "1.3", ["FFMpegExtractor", "JHoveAiffExtractor",
+                                 "MagicBinaryExtractor", "MediainfoExtractor"]),
+        ("audio/x-ms-wma", "9", ["FFMpegExtractor", "MediainfoExtractor"]),
+        ("video/x-ms-wmv", "9", ["FFMpegExtractor", "MediainfoExtractor"]),
+        ("test/unknown", None, ["ExtractorNotFound"])
     ])
-def test_iter_scrapers(mimetype, version, scraper_classes):
+def test_iter_extractors(mimetype, version, extractor_classes):
     """
-    Test scraper discovery.
+    Test extractor discovery.
 
     :mimetype: Detected mimetype
     :version: Detected file format version
-    :scraper_classes: Expected Scraper classes which are run
+    :extractor_classes: Expected Extractor classes which are run
     """
-    scrapers = iter_scrapers(mimetype, version)
-    assert {x.__name__ for x in scrapers} == set(scraper_classes)
+    extractors = iter_extractors(mimetype, version)
+    assert {x.__name__ for x in extractors} == set(extractor_classes)
 
-    scraper_classes = [
-        "TextEncodingMetaScraper" if x == "TextEncodingScraper" else x
-        for x in scraper_classes
+    extractor_classes = [
+        "TextEncodingMetaExtractor" if x == "TextEncodingExtractor" else x
+        for x in extractor_classes
     ]
-    scraper_classes = [
-        "WarctoolsScraper" if x == "WarctoolsFullScraper" else x
-        for x in scraper_classes
+    extractor_classes = [
+        "WarctoolsExtractor" if x == "WarctoolsFullExtractor" else x
+        for x in extractor_classes
     ]
     if mimetype == "application/mxf":
-        scraper_classes = ["FFMpegMetaScraper"]
+        extractor_classes = ["FFMpegMetaExtractor"]
     if mimetype in ["application/x-spss-por", "text/html", "text/xml"] or \
             mimetype == "application/pdf" and version in \
             ["A-1a", "A-1b", "A-2a", "A-2b", "A-2u", "A-3a", "A-3b", "A-3u"]:
-        scraper_classes.append("DetectedMimeVersionMetadataScraper")
+        extractor_classes.append("DetectedMimeVersionMetadataExtractor")
 
-    scrapers = iter_scrapers(mimetype, version, False)
-    scraper_set = set(scraper_classes).difference(set(WELLFORMED_SCRAPERS))
+    extractors = iter_extractors(mimetype, version, False)
+    extractor_set = set(extractor_classes).difference(set(WELLFORMED_EXTRACTORS))
     if mimetype in ["application/gzip", "image/x-dpx"]:
-        scraper_set = {"ScraperNotFound"}
-    assert {x.__name__ for x in scrapers} == scraper_set
+        extractor_set = {"ExtractorNotFound"}
+    assert {x.__name__ for x in extractors} == extractor_set
 
 
 def test_iter_detectors():

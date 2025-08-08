@@ -1,4 +1,4 @@
-"""Metadata model for PSPP scraper."""
+"""Metadata model for PSPP extractor."""
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAP, UNAV
@@ -14,7 +14,7 @@ class PsppMeta(BaseMeta):
     def __init__(self, well_formed):
         """Initialize model.
 
-        :well_formed: Well-formed status from scraper
+        :well_formed: Well-formed status from extractor
         """
         self._well_formed = well_formed
 
@@ -23,7 +23,7 @@ class PsppMeta(BaseMeta):
         """
         Return MIME type.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual MIME type.
         """
         return "application/x-spss-por" if self._well_formed else UNAV
@@ -32,7 +32,7 @@ class PsppMeta(BaseMeta):
     def version(self):
         """Return version.
 
-        If the well-formed status from scraper is False,
+        If the well-formed status from extractor is False,
         then we do not know the actual version.
         """
         return UNAP if self._well_formed else UNAV

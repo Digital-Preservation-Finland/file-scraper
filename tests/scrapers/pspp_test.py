@@ -1,14 +1,14 @@
 """
-Tests for PSPP scraper.
+Tests for PSPP extractor.
 
 This module tests that:
     - MIME type, version, streams and well-formedness of por and sav files are
       scraped correctly.
-    - When the format of the file is wrong, scraper errors contains 'File is
+    - When the format of the file is wrong, extractor errors contains 'File is
       not SPSS Portable format.'
-    - When file with altered header is scraped, scraper errors contains 'Bad
+    - When file with altered header is scraped, extractor errors contains 'Bad
       date string length'.
-    - When file with missing data is scraped, scraper errors contains
+    - When file with missing data is scraped, extractor errors contains
       'unexpected end of file'.
     - When well-formedness is checked, MIME type application/x-spss-por is
       supported with '', None or 'foo' as a version
@@ -21,7 +21,7 @@ from pathlib import Path
 import pytest
 
 from file_scraper.defaults import UNAP, UNAV
-from file_scraper.pspp.pspp_scraper import PsppScraper
+from file_scraper.pspp.pspp_extractor import PsppExtractor
 from tests.common import parse_results
 
 MIMETYPE = "application/x-spss-por"
@@ -62,9 +62,9 @@ MIMETYPE = "application/x-spss-por"
             "stderr_part": "unexpected end of file"})
     ]
 )
-def test_scraper(filename, result_dict, evaluate_scraper):
+def test_extractor(filename, result_dict, evaluate_extractor):
     """
-    Test PSPP scraper.
+    Test PSPP extractor.
 
     :filename: Test file name
     :result_dict: Result dict containing test purpose, and parts of
@@ -78,11 +78,11 @@ def test_scraper(filename, result_dict, evaluate_scraper):
     else:
         correct.streams[0]["version"] = UNAV
 
-    scraper = PsppScraper(filename=correct.filename,
-                          mimetype="application/x-spss-por")
-    scraper.scrape_file()
+    extractor = PsppExtractor(filename=correct.filename,
+                            mimetype="application/x-spss-por")
+    extractor.scrape_file()
 
-    evaluate_scraper(scraper, correct)
+    evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.usefixtures("patch_shell_attributes_fx")
@@ -92,30 +92,30 @@ def test_pspp_returns_invalid_return_code():
     path = Path("tests/data", MIMETYPE.replace("/", "_"))
     testfile = path / "valid__spss24-dot.por"
 
-    scraper = PsppScraper(filename=testfile,
-                          mimetype=MIMETYPE)
+    extractor = PsppExtractor(filename=testfile,
+                            mimetype=MIMETYPE)
 
-    scraper.scrape_file()
+    extractor.scrape_file()
 
-    assert "PSPP returned invalid return code: -1\n" in scraper.errors()
+    assert "PSPP returned invalid return code: -1\n" in extractor.errors()
 
 
 def test_is_supported():
     """Test is_supported method."""
     mime = MIMETYPE
     ver = ""
-    assert PsppScraper.is_supported(mime, ver, True)
-    assert PsppScraper.is_supported(mime, None, True)
-    assert not PsppScraper.is_supported(mime, ver, False)
-    assert PsppScraper.is_supported(mime, "foo", True)
-    assert not PsppScraper.is_supported("foo", ver, True)
+    assert PsppExtractor.is_supported(mime, ver, True)
+    assert PsppExtractor.is_supported(mime, None, True)
+    assert not PsppExtractor.is_supported(mime, ver, False)
+    assert PsppExtractor.is_supported(mime, "foo", True)
+    assert not PsppExtractor.is_supported("foo", ver, True)
 
 
 def test_tools():
-    """Test scraper tools return correctly something non nullable"""
+    """Test extractor tools return correctly something non nullable"""
     path = Path("tests/data", MIMETYPE.replace("/", "_"))
     testfile = path / "valid__spss24-dot.por"
 
-    scraper = PsppScraper(filename=testfile,
-                          mimetype=MIMETYPE)
-    assert scraper.tools()["GNU PSPP"]["version"][0].isdigit()
+    extractor = PsppExtractor(filename=testfile,
+                            mimetype=MIMETYPE)
+    assert extractor.tools()["GNU PSPP"]["version"][0].isdigit()
