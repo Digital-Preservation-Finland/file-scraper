@@ -1,22 +1,31 @@
-"""Base module for extractors and detectors."""
+"""Base module for scrapers."""
+
+from __future__ import annotations
 
 import abc
-from abc import abstractmethod
+from collections.abc import Callable, Iterator
 from pathlib import Path
-from typing import Optional, Iterable, Callable
+from typing import Any, Literal
 
 from file_scraper.defaults import UNAP, UNAV
-from file_scraper.utils import (metadata, is_metadata, filter_unwanted_chars)
+from file_scraper.utils import metadata, is_metadata, filter_unwanted_chars
 
 
 class BaseApparatus(metaclass=abc.ABCMeta):
 
     """Base class for extractors and detectors."""
 
-    def __init__(self, filename: Path, mimetype=None, version=None):
+    def __init__(
+        self,
+        filename: Path,
+        mimetype: str | None = None,
+        version: str | None = None,
+    ) -> None:
         """Initialize extractor/detector.
 
-        :filename: Path to the file that is to be scraped
+        :param filename: Path to the file that is to be scraped
+        :param mimetype: Predefined mimetype
+        :param version: Predefined file format version
         """
 
         self.filename = filename
@@ -25,24 +34,28 @@ class BaseApparatus(metaclass=abc.ABCMeta):
         self._messages = []
         self._errors = []
 
-    def errors(self):
+    def errors(self) -> list[str]:
         """Return the logged errors in a list.
 
         :returns: copied list containing the logged errors
         """
-        return [filter_unwanted_chars(error) for
-                error in self._errors if error]
+        return [
+            filter_unwanted_chars(error) for error in self._errors if error
+        ]
 
-    def messages(self):
+    def messages(self) -> list[str]:
         """Return logged non-empty messages in a list.
 
         :returns: list containing the logged messages
         """
-        return [filter_unwanted_chars(message) for
-                message in self._messages if message]
+        return [
+            filter_unwanted_chars(message)
+            for message in self._messages
+            if message
+        ]
 
     @abc.abstractmethod
-    def tools(self):
+    def tools(self) -> dict:
         """
         Implement this function
         collect information about software used by the extractor or detector
@@ -50,7 +63,7 @@ class BaseApparatus(metaclass=abc.ABCMeta):
         :returns: a dictionary with the used software, UNAV or UNKN.
         """
 
-    def info(self):
+    def info(self) -> dict:
         """Return basic info of detector/extractor.
 
         The returned dict contains keys "class", "messages", "errors"
@@ -67,44 +80,56 @@ class BaseApparatus(metaclass=abc.ABCMeta):
             "class": self.__class__.__name__,
             "messages": self.messages(),
             "errors": self.errors(),
-            "tools": self.tools()}
+            "tools": self.tools(),
+        }
 
 
 class BaseExtractor(BaseApparatus):
     """Base extractor implements common methods for all extractors."""
 
-    _supported_metadata = []
+    _supported_metadata: list[type[BaseMeta]] = []
     _only_wellformed = False
 
-    def __init__(self, filename: Path, mimetype, version=None, params=None):
+    def __init__(
+        self,
+        filename: Path,
+        mimetype: str,
+        version: str | None = None,
+        params: dict | None = None,
+    ) -> None:
         """
         Initialize extractor.
 
         BaseExtractor.stream will contain all streams in standardized metadata
         data model.
 
-        :filename: Path to the file that is to be scraped
-        :mimetype: Predefined mimetype
-        :version: Predefined file format version
-        :params: Extra parameters that some extractors can use.
+        :param filename: Path to the file that is to be scraped
+        :param mimetype: Predefined mimetype
+        :param version: Predefined file format version
+        :param params: Extra parameters that some extractors can use.
         """
         super().__init__(filename, mimetype, version)
         self.streams = []
         self._params = params if params is not None else {}
 
     @property
-    def well_formed(self):
+    def well_formed(self) -> bool | None:
         """
         Return well-formedness status of the scraped file.
 
         :returns: None if extractor does not check well-formedness, True if the
-                  file has been scraped without errors and otherwise False
+            file has been scraped without errors and otherwise False
         """
         return len(self._messages) > 0 and len(self._errors) == 0
 
     @classmethod
-    def is_supported(cls, mimetype, version=None, check_wellformed=True,
-                     params=None):  # pylint: disable=unused-argument
+    def is_supported(
+        cls,
+        mimetype: str,
+        version: str | None = None,
+        check_wellformed: bool = True,
+        params: dict | None = None,  # pylint: disable=unused-argument
+    ) -> bool:
         """
         Report whether the extractor supports the given MIME type and version.
 
@@ -117,25 +142,29 @@ class BaseExtractor(BaseApparatus):
         :mimetype: MIME type of a file
         :version: Version of a file. Defaults to None.
         :check_wellformed: True for scraping with well-formedness check, False
-                           for skipping the check. Defaults to True.
+            for skipping the check. Defaults to True.
         :params: dict of other parameters that can be used by overriding
-                 methods
+            methods
         :returns: True if the MIME type and version are supported, False if not
         """
         if cls._only_wellformed and not check_wellformed:
             return False
-        return any(x.is_supported(mimetype, version) for x in
-                   cls._supported_metadata)
+        return any(
+            x.is_supported(mimetype, version) for x in cls._supported_metadata
+        )
 
-    def _check_supported(self, allow_unav_mime=False,
-                         allow_unav_version=False,
-                         allow_unap_version=False):
+    def _check_supported(
+        self,
+        allow_unav_mime: bool = False,
+        allow_unav_version: bool = False,
+        allow_unap_version: bool = False,
+    ) -> None:
         """
         Check that the determined MIME type and version are supported.
 
-        :allow_unav_mime: True if (:unav) is an acceptable MIME type
-        :allow_unav_version: True if (:unav) is an acceptable version
-        :allow_unap_version: True if (:unap) is an acceptable version
+        :param allow_unav_mime: True if (:unav) is an acceptable MIME type
+        :param allow_unav_version: True if (:unav) is an acceptable version
+        :param allow_unap_version: True if (:unap) is an acceptable version
         """
         # If there are no streams, the extractor does not support the
         # determined MIME type and version combination at all (i.e. the
@@ -163,8 +192,9 @@ class BaseExtractor(BaseApparatus):
                 if not md_class.supported_mimetypes()[mimetype]:
                     return
                 # version is (:unav) or (:unap) but that is allowed
-                if ((allow_unav_version and version == UNAV) or
-                        (allow_unap_version and version == UNAP)):
+                if (allow_unav_version and version == UNAV) or (
+                    allow_unap_version and version == UNAP
+                ):
                     return
 
         # No supporting metadata models found.
@@ -172,24 +202,27 @@ class BaseExtractor(BaseApparatus):
             f"MIME type {mimetype} with version {version} is not supported."
         )
 
-    def iterate_models(self, **kwargs) -> Iterable["BaseMeta"]:
+    def iterate_models(self, **kwargs: Any) -> Iterator[BaseMeta]:
         """
         Iterate Extractor models.
 
-        :kwargs: Model specific parameters
+        :param kwargs: Model specific parameters
         :returns: Metadata model
         """
         for md_class in self._supported_metadata:
-            if md_class.is_supported(self._predefined_mimetype,
-                                     self._predefined_version, self._params):
+            if md_class.is_supported(
+                self._predefined_mimetype,
+                self._predefined_version,
+                self._params,
+            ):
                 yield md_class(**kwargs)
 
-    @abstractmethod
+    @abc.abstractmethod
     def extract(self):
-        pass
+        """Implemented in subclasses."""
 
 
-class BaseMeta:
+class BaseMeta():
     """
     All metadata is formalized in common data model.
 
@@ -203,7 +236,7 @@ class BaseMeta:
     _allow_versions = False
 
     @metadata()
-    def mimetype(self):
+    def mimetype(self) -> str:
         """
         BaseMeta does no real scraping. Should be implemented in subclasses.
         Resolve only if unambiguous.
@@ -213,7 +246,7 @@ class BaseMeta:
         return UNAV
 
     @metadata()
-    def version(self):
+    def version(self) -> str:
         """
         BaseMeta does no real scraping. Should be implemented in subclasses.
         Resolve only if unambiguous.
@@ -223,7 +256,7 @@ class BaseMeta:
         return UNAV
 
     @metadata()
-    def index(self):
+    def index(self) -> int:
         """
         BaseMeta does no real scraping. Should be implemented in subclasses.
 
@@ -232,7 +265,7 @@ class BaseMeta:
         return 0
 
     @metadata()
-    def stream_type(self):
+    def stream_type(self) -> str:
         """
         BaseMeta does no real scraping. Should be implemented in subclasses.
         Resolve only if unambiguous.
@@ -242,33 +275,37 @@ class BaseMeta:
         return UNAV
 
     @classmethod
-    def is_supported(cls, mimetype, version=None, params=None):
+    def is_supported(
+        cls,
+        mimetype: str | None,
+        version: str | None = None,
+        params: dict | None = None,  # pylint: disable=unused-argument
+    ) -> bool:
         """
         Report whether this model supports the given MIME type and version.
 
         Version None is considered to be a supported version.
 
-        :mimetype: MIME type to be checked
-        :version: Version to be checked, defaults to None
-        :params: Parameter dict that can be used by some metadata models.
+        :param mimetype: MIME type to be checked
+        :param version: Version to be checked, defaults to None
+        :param params: Parameter dict that can be used by some metadata models.
         :returns: True if MIME type is supported and all versions are allowed
                   or the version is supported too.
         """
-        # pylint: disable=unused-argument
         if mimetype not in cls._supported:
             return False
         if version in cls._supported[mimetype] + [None] or cls._allow_versions:
             return True
         return False
 
-    def iterate_metadata_methods(self) -> Iterable[Callable[[], str]]:
+    def iterate_metadata_methods(self) -> Iterator[Callable[[], Any]]:
         """Iterate through all metadata methods."""
         for method in dir(self):
             if is_metadata(getattr(self, method)):
                 yield getattr(self, method)
 
     @classmethod
-    def supported_mimetypes(cls):
+    def supported_mimetypes(cls) -> dict:
         """Return the dict containing supported mimetypes and versions."""
         return cls._supported
 
@@ -276,14 +313,20 @@ class BaseMeta:
 class BaseDetector(BaseApparatus):
     """Class to identify file format."""
 
-    def __init__(self, filename: Path, mimetype=None, version=None):
+    def __init__(
+        self,
+        filename: Path,
+        mimetype: str | None = None,
+        version: str | None = None,
+    ) -> None:
         """Initialize detector.
 
         Detectors can use the user-supplied MIME types and versions to
         refine or even fully determine the file format.
 
-        :filename: Path to the identified file
-        :mimetype: The MIME type of the file from another source, e.g. METS.
+        :param filename: Path to the identified file
+        :param mimetype: The MIME type of the file from another source, e.g.
+            METS.
         :version: Version of the file from another source, e.g. METS.
         """
         super().__init__(filename, mimetype, version)
@@ -292,7 +335,7 @@ class BaseDetector(BaseApparatus):
         self.version = None  # Identified file version
 
     @property
-    def well_formed(self):
+    def well_formed(self) -> Literal[False] | None:
         """Return well-formedness status of the detected file.
 
         This can be either None or False, because detectors do not validate.
@@ -302,10 +345,10 @@ class BaseDetector(BaseApparatus):
         return False if self._errors else None
 
     @abc.abstractmethod
-    def detect(self):
+    def detect(self) -> None:
         """Detect file. Must be implemented in detectors."""
 
-    def get_important(self):
+    def get_important(self) -> dict:
         """
         Return dict of important values determined by the detector.
 
@@ -315,11 +358,13 @@ class BaseDetector(BaseApparatus):
         return {}
 
     @property
-    def mimetype(self) -> Optional[str]:
+    def mimetype(self) -> str | None:
+        """Return mimetype"""
         return self._mimetype
 
     @mimetype.setter
-    def mimetype(self, value: Optional[str]):
+    def mimetype(self, value: str | None) -> None:
+        """Setter for mimetype property"""
         if value is None:
             self._mimetype = None
         else:
