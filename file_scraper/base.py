@@ -109,9 +109,9 @@ class BaseExtractor(BaseApparatus):
 
         The extractor is considered to support the MIME type and version
         combination if at least one of the metadata models supported by the
-        extractor supports the combination. If the extractor can only be used to
-        check the well-formedness of the file and well-formedness check is not
-        wanted, False is returned.
+        extractor supports the combination. If the extractor can only be
+        used to check the well-formedness of the file and well-formedness
+        check is not wanted, False is returned.
 
         :mimetype: MIME type of a file
         :version: Version of a file. Defaults to None.
@@ -136,9 +136,10 @@ class BaseExtractor(BaseApparatus):
         :allow_unav_version: True if (:unav) is an acceptable version
         :allow_unap_version: True if (:unap) is an acceptable version
         """
-        # If there are no streams, the extractor does not support the determined
-        # MIME type and version combination at all (i.e. the initial MIME type
-        # guess used to choose extractors has been inaccurate).
+        # If there are no streams, the extractor does not support the
+        # determined MIME type and version combination at all (i.e. the
+        # initial MIME type guess used to choose extractors has been
+        # inaccurate).
         if not self.streams:
             self._errors.append("MIME type not supported by this extractor.")
             return

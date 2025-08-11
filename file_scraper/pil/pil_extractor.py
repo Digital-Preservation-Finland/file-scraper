@@ -12,7 +12,8 @@ except ImportError:
 
 
 class PilExtractor(BaseExtractor):
-    """Extractor that uses PIL to scrape tiff, png, jpeg, gif and webp images."""
+    """Extractor that uses PIL to scrape tiff, png, jpeg, gif and webp
+    images."""
 
     _supported_metadata = [TiffPilMeta, DngPilMeta, PngPilMeta, GifPilMeta,
                            JpegPilMeta, Jp2PilMeta, WebPPilMeta]

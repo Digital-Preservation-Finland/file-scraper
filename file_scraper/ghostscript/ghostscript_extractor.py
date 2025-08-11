@@ -1,9 +1,8 @@
 """
 Metadata extractor for pdf files, based on Ghostscript.
 
-This extractor does not scrape metadata but instead checks well-formedness of pdf
-versions 1.7, A-2a, A-2b, A-2u, A-3a, A-3b and A-3u.
-"""
+This extractor does not scrape metadata but instead checks well-formedness
+of pdf versions 1.7, A-2a, A-2b, A-2u, A-3a, A-3b and A-3u."""
 import re
 
 from file_scraper.base import BaseExtractor

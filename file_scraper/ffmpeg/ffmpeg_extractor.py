@@ -208,7 +208,8 @@ class FFMpegExtractor(FFMpegMetaExtractor):
                   True if the file has been scraped without errors
                   and otherwise False
         """
-        # Use super class of super class, i.e. BaseExtractor for initial result.
+        # Use super class of super class, i.e. BaseExtractor for initial
+        # result.
         valid = super(FFMpegMetaExtractor, self).well_formed
         unsupported_av_format_found = any(
             stream.av_format_supported() is False for stream in self.streams)
@@ -222,9 +223,9 @@ class FFMpegExtractor(FFMpegMetaExtractor):
         """Scrape A/V files.
 
         We need to probe streams also for checking well-formedness, because
-        otherwise we don't know if the MIME types of streams are supported by
-        Extractor or not. If the a stream can not be identified by Extractor, then
-        well-formedness can not be True.
+        otherwise we don't know if the MIME types of streams are supported
+        by Extractor or not. If the a stream can not be identified by
+        Extractor, then well-formedness can not be True.
         """
         super().scrape_file()
         self._validate_file()

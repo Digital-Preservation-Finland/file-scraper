@@ -29,8 +29,8 @@ class PngcheckExtractor(BaseExtractor):
 
         self._messages.append(shell.stdout)
 
-        # This extractor does not know anything about the MIME type, so checking
-        # is not useful. Just add metadata models.
+        # This extractor does not know anything about the MIME type,
+        # so checking is not useful. Just add metadata models.
         self.streams = list(self.iterate_models())
 
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)
