@@ -544,7 +544,7 @@ def test_coded_filename(tmpdir, fullname, mimetype, version):
     ["filepath", "params", "well_formed", "expected_mimetype",
      "expected_version", "expected_charset", "meta_well_formed"],
     [
-        # Give the correct MIME type, let scrapers handle version
+        # Give the correct MIME type, let extractors handle version
         ("tests/data/image_tiff/valid_6.0.tif", {"mimetype": "image/tiff"},
          True, "image/tiff", "6.0", None, None),
 
@@ -608,7 +608,7 @@ def test_coded_filename(tmpdir, fullname, mimetype, version):
          False),
 
         # Scrape a file with MIME type that can produce "well-formed" result
-        # from some scrapers, but combining the results should reveal the file
+        # from some extractors, but combining the results should reveal the file
         # as not well-formed
         ("tests/data/image_gif/valid_1987a.gif", {"mimetype": "image/png"},
          False, "image/gif", UNAV, None, False),

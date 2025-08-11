@@ -65,7 +65,7 @@ from file_scraper.defaults import UNAP, UNAV
 from file_scraper.ffmpeg.ffmpeg_extractor import (FFMpegExtractor,
                                                   FFMpegMetaExtractor)
 from tests.common import parse_results
-from tests.scrapers.stream_dicts import (
+from tests.extractors.stream_dicts import (
     MXF_CONTAINER,
     MXF_JPEG2000_VIDEO,
     )

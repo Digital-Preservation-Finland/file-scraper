@@ -209,7 +209,7 @@ file scraper can be tested using the pytest library by using the command:
 
 the tests are located in the ``tests``` directory. The content of the directory generally attempts follow the same structure as the project itself
 the data used by the tests are defined in two locations ``data``` and ``config```.
-The ``data`` folder includes test data for scrapers to test agains and the ``config`` includes custom configuration data required by tests.
+The ``data`` folder includes test data for scraper, detectors and extractors to test against and the ``config`` includes custom configuration data required by tests.
 
 Currently tests are quite slow and take time to run. Currently around 30 minutes, but the test time can be halved to 15 minutes by leaving out the end to end tests.
 
@@ -232,7 +232,7 @@ All possible options can be obtained with::
 
     scraper scrape-file --help
 
-The tool will always print out detector/scraper errors if there are any.
+The tool will always print out detector/extractor errors if there are any.
 
 For better insight into how file-scraper determines the information for a given file, logging can be enabled with the ``-v`` flag. The flag can be provided twice for additional detail.
 

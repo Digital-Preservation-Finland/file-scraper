@@ -218,7 +218,7 @@ def test_undecodable_filename(tmpdir):
     scraper = Scraper(path)
     # Nowadays ZipFile works with path-like objects
     # (https://docs.python.org/3/library/zipfile.html#zipfile-objects)
-    # Note that all scrapers should be tested with undecodable filenames.
+    # Note that all extractors should be tested with undecodable filenames.
     assert scraper.detect_filetype() == ("text/plain", None)
     scraper.scrape()
     assert scraper.grade() == "fi-dpres-recommended-file-format"
