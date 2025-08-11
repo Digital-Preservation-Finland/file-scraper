@@ -17,7 +17,7 @@ from file_scraper.schematron.schematron_model import SchematronMeta
 from file_scraper.utils import hexdigest, ensure_text
 
 
-class SchematronExtractor(BaseExtractor):
+class SchematronScraper(BaseExtractor):
     """Schematron extractor."""
 
     _supported_metadata = [SchematronMeta]

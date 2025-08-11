@@ -36,8 +36,8 @@ import os
 from pathlib import Path
 import pytest
 
-from file_scraper.schematron.schematron_extractor import (SchematronExtractor,
-                                                          SchematronValidatorError)
+from file_scraper.schematron.schematron_scraper import (SchematronScraper,
+                                                        SchematronValidatorError)
 from tests.common import (parse_results, partial_message_included)
 
 ROOTPATH = os.path.abspath(os.path.join(
@@ -78,7 +78,7 @@ def test_extractor(filename, result_dict, params, evaluate_extractor):
     """
     correct = parse_results(filename, "text/xml",
                             result_dict, True, params)
-    extractor = SchematronExtractor(filename=correct.filename,
+    extractor = SchematronScraper(filename=correct.filename,
                                   mimetype="text/xml",
                                   params=correct.params)
     extractor.scrape_file()
@@ -92,7 +92,7 @@ def test_extractor_verbose(verbose):
     Test extractor and ensure `verbose` flag causes `xsltproc` to print a
     different message for a test file.
     """
-    extractor = SchematronExtractor(
+    extractor = SchematronScraper(
         filename=Path("tests/data/text_xml/valid_1.0_well_formed.xml"),
         mimetype="text/xml",
         params={
@@ -124,7 +124,7 @@ def test_schematron_returns_invalid_return_code():
     path = Path("tests/data", mimetype.replace("/", "_"))
     testfile = path / "valid_1.0_well_formed.xml"
 
-    extractor = SchematronExtractor(filename=testfile,
+    extractor = SchematronScraper(filename=testfile,
                                   mimetype=mimetype,
                                   params=params)
 
@@ -139,29 +139,29 @@ def test_is_supported():
     """Test is_supported method."""
     mime = "text/xml"
     ver = "1.0"
-    assert SchematronExtractor.is_supported(mime, ver, True,
-                                            {"schematron": None})
-    assert not SchematronExtractor.is_supported(mime, ver, True)
-    assert SchematronExtractor.is_supported(mime, None, True,
-                                            {"schematron": None})
-    assert not SchematronExtractor.is_supported(mime, ver, False,
-                                                {"schematron": None})
-    assert SchematronExtractor.is_supported(mime, "foo", True,
-                                            {"schematron": None})
-    assert not SchematronExtractor.is_supported("foo", ver, True,
-                                                {"schematron": None})
+    assert SchematronScraper.is_supported(mime, ver, True,
+                                          {"schematron": None})
+    assert not SchematronScraper.is_supported(mime, ver, True)
+    assert SchematronScraper.is_supported(mime, None, True,
+                                          {"schematron": None})
+    assert not SchematronScraper.is_supported(mime, ver, False,
+                                              {"schematron": None})
+    assert SchematronScraper.is_supported(mime, "foo", True,
+                                          {"schematron": None})
+    assert not SchematronScraper.is_supported("foo", ver, True,
+                                              {"schematron": None})
 
 
 def test_parameters():
     """Test that parameters and default values work properly."""
     # pylint: disable=protected-access
-    extractor = SchematronExtractor(Path("testsfile"), "test/mimetype")
+    extractor = SchematronScraper(Path("testsfile"), "test/mimetype")
     assert extractor._schematron_file is None
     assert extractor._extra_hash is None
     assert not extractor._verbose
     assert extractor._cache
 
-    extractor = SchematronExtractor(Path("testfile"), "text/xml",
+    extractor = SchematronScraper(Path("testfile"), "text/xml",
                                   params={"schematron": "schfile",
                                         "extra_hash": "abc",
                                         "verbose": True,
@@ -175,7 +175,7 @@ def test_parameters():
 def test_xslt_filename():
     """Test that checksum for xslt filename is calculated properly."""
     # pylint: disable=protected-access
-    extractor = SchematronExtractor(Path("filename"), "text/xml")
+    extractor = SchematronScraper(Path("filename"), "text/xml")
     extractor._schematron_file = "tests/data/text_xml/supplementary/local.sch"
     assert "76ed62" in extractor._generate_xslt_filename()
     extractor._verbose = True
@@ -205,7 +205,7 @@ def test_filter_duplicate_elements():
                <svrl:fired-rule context="context"/>
                <svrl:active-pattern id="id"/>
            </svrl:schematron-output>"""
-    extractor = SchematronExtractor(Path("filename"), "text/xml")
+    extractor = SchematronScraper(Path("filename"), "text/xml")
     result = extractor._filter_duplicate_elements(schtest)
     assert result.count(b"<svrl:active-pattern") == 1
     assert result.count(b"<svrl:fired-rule") == 1
@@ -213,7 +213,7 @@ def test_filter_duplicate_elements():
 
 
 def test_tools():
-    extractor = SchematronExtractor(Path("testsfile"), "test/mimetype")
+    extractor = SchematronScraper(Path("testsfile"), "test/mimetype")
     result = extractor.tools()
     assert result["libxml2"]["version"][0].isdigit()
     assert result["libxslt"]["version"][0].isdigit()
