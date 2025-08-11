@@ -726,25 +726,24 @@ class ODFDetector(BaseDetector):
             3) Valid format version is defined in "meta.xml" file
         """
         # Try to read "mimetype" and "meta.xml" files from zip
-        if is_zipfile(self.filename):
-            with zipfile.ZipFile(self.filename) as zipf:
-                if {'mimetype', 'meta.xml'} <= set(zipf.namelist()):
-                    try:
-                        mimetype_file = zipf.read('mimetype')
-                        meta_xml_file = zipf.read('meta.xml')
-                    except OSError as exception:
-                        if exception.errno == errno.EINVAL:
-                            self._errors.append('Corrupted ZIP archive')
-                            return
-                        # Unknown error
-                        raise
-                else:
-                    # ZIP does not contains required files, so it is not
-                    # ODF
-                    return
-        else:
-            # The file is no ZIP, so it is not ODF
+        if not is_zipfile(self.filename):
+            # The file is not ZIP, so it is not ODF
             return
+        with zipfile.ZipFile(self.filename) as zipf:
+            if {'mimetype', 'meta.xml'} <= set(zipf.namelist()):
+                try:
+                    mimetype_file = zipf.read('mimetype')
+                    meta_xml_file = zipf.read('meta.xml')
+                except OSError as exception:
+                    if exception.errno == errno.EINVAL:
+                        self._errors.append('Corrupted ZIP archive')
+                        return
+                    # Unknown error
+                    raise
+            else:
+                # ZIP does not contains required files, so it is not
+                # ODF
+                return
 
         # Detect mimetype from "mimetype" file.
         mimetype = mimetype_file.decode().strip()
