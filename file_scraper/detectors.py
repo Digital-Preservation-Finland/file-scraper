@@ -4,6 +4,7 @@ from __future__ import annotations
 import errno
 import os
 
+from typing import Literal
 import zipfile
 from pathlib import Path
 import lxml.etree
@@ -461,13 +462,16 @@ class SegYDetector(BaseDetector):
     Detector used with SEG-Y files. Identifies SEG-Y files and, if possible,
     their file format version.
     """
-    def _analyze_version(self, content):
+    def _analyze_version(
+        self, content: str
+    ) -> Literal["1.0", "2.0", "(:unkn)"] | None:
         """
         Analyze if the content is SEG-Y textual header.
         We use UNKN instead of UNAV, because the value is known to be unknown.
         UNAV is used for missing (incomplete) value.
-        :returns: "1.0", "2.0" or "(:unkn)" as file format version, and
-                  None if the file is not SEG-Y file
+
+        :returns: "1.0", "2.0" or "(:unkn)" as file format version or
+            None if the file is not SEG-Y file
         """
         if len(content) < 3200:
             return None
@@ -480,16 +484,21 @@ class SegYDetector(BaseDetector):
         # Header contains 40 "cards". Each of them are 80 characters long
         # and begin with a card number "C 1 " ... "C40 ". Here we also allow
         # left-justified card numbering, i.e. "C1  " instead of "C 1 ".
-        if content[3120:3143] == "C40 END TEXTUAL HEADER " or \
-                content[3120:3135] == "C40 END EBCDIC " or \
-                content[3120:3128] == "C40 EOF.":
+        markers = (
+            "C40 END TEXTUAL HEADER ",
+            "C40 END EBCDIC ",
+            "C40 EOF.",
+        )
+        if any(
+            content[3120:3120 + len(marker)] == marker for marker in markers
+        ):
             for index in range(0, 40):
                 allowed_markers = [
-                    f"C{index + 1:2d} ",   # "C1 "
+                    f"C{index + 1:2d} ",  # "C1 "
                     f"C{index + 1:<2d} ",  # "C 1 "
                     f"C{index + 1:02d} ",  # "C01 "
                 ]
-                if content[index*80:index*80+4] not in allowed_markers:
+                if content[index * 80:index * 80 + 4] not in allowed_markers:
                     return None
 
             return UNKN
@@ -505,7 +514,7 @@ class SegYDetector(BaseDetector):
 
         return None
 
-    def detect(self):
+    def detect(self) -> None:
         """
         Run detection to find MIME type and version.
         """
@@ -545,8 +554,7 @@ class SegYDetector(BaseDetector):
                     self.mimetype = "application/x.fi-dpres.segy"
                     self.version = UNKN
                     return
-                else:
-                    raise ValueError
+                raise ValueError
             else:
                 raise ValueError
         except (IndexError, ValueError):
@@ -564,7 +572,7 @@ class SegYDetector(BaseDetector):
                 "not be detected."
             )
 
-    def get_important(self):
+    def get_important(self) -> dict:
         """
         If SegYDetector determines the mimetype as SEG-Y, the mimetype
         and version are marked as important. This is to make sure that
@@ -580,7 +588,7 @@ class SegYDetector(BaseDetector):
             important["version"] = self.version
         return important
 
-    def tools(self):
+    def tools(self) -> dict:
         """
         Overwriting baseclass implementation
         to collect information about software used by the detector
