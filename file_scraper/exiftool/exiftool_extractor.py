@@ -1,11 +1,16 @@
 """Extractor for dng files using ExifTool """
+from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Literal
 import exiftool
+from exiftool.exceptions import ExifToolExecuteError
 
 from file_scraper.base import BaseExtractor
 from file_scraper.exiftool.exiftool_model import ExifToolDngMeta
+
+EXIF_ERROR = "ExifTool:Error"
 
 
 class ExifToolExtractorBase(BaseExtractor):
@@ -13,21 +18,30 @@ class ExifToolExtractorBase(BaseExtractor):
     Scraping methods for the ExifTool extractor
     """
 
-    def __init__(self, filename: Path, mimetype, version=None, params=None):
+    def __init__(
+        self,
+        filename: Path,
+        mimetype: str,
+        version: str | None = None,
+        params: dict | None = None,
+    ) -> None:
         """
         Initialize ExifTool base extractor.
 
-        :filename: File path
-        :mimetype: Predefined mimetype
-        :version: Predefined file format version
-        :params: Extra parameters needed for the extractor
+        :param filename: File path
+        :param mimetype: Predefined mimetype
+        :param version: Predefined file format version
+        :param params: Extra parameters needed for the extractor
         """
         super().__init__(
-            filename=filename, mimetype=mimetype, version=version,
-            params=params)
+            filename=filename,
+            mimetype=mimetype,
+            version=version,
+            params=params,
+        )
 
     @property
-    def well_formed(self):
+    def well_formed(self) -> Literal[False] | None:
         """ExifTool is not able to check well-formedness.
 
         :returns: False if ExifTool can not open or handle the file,
@@ -39,7 +53,7 @@ class ExifToolExtractorBase(BaseExtractor):
 
         return None
 
-    def extract(self):
+    def extract(self) -> None:
         """
         Scrape data from file.
         """
@@ -47,18 +61,17 @@ class ExifToolExtractorBase(BaseExtractor):
         try:
             with exiftool.ExifTool() as et:
                 metadata = et.get_metadata(self.filename)
-            if "ExifTool:Error" in metadata:
-                self._errors.append(metadata["ExifTool:Error"])
+            if EXIF_ERROR in metadata:
+                self._errors.append(metadata[EXIF_ERROR])
             else:
                 self._messages.append("The file was analyzed successfully.")
         except AttributeError:
             with exiftool.ExifToolHelper() as et:
-                from exiftool.exceptions import ExifToolExecuteError
                 try:
-                    metadata = et.get_metadata(self.filename)[0]
+                    metadata = et.get_metadata(str(self.filename))[0]
                 except ExifToolExecuteError as eee:
                     metadata = json.loads(eee.stdout)[0]
-                    self._errors.append(metadata["ExifTool:Error"])
+                    self._errors.append(metadata[EXIF_ERROR])
                 else:
                     self._messages.append(
                         "The file was analyzed successfully.")
@@ -66,7 +79,7 @@ class ExifToolExtractorBase(BaseExtractor):
         self.streams = list(self.iterate_models(metadata=metadata))
         self._check_supported(allow_unav_version=True)
 
-    def tools(self):
+    def tools(self) -> dict:
         """
         Overwriting baseclass implementation
         to collect information about software used by the extractor
