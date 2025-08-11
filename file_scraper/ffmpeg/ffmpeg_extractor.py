@@ -9,7 +9,11 @@ currently possible. For AVI files, Mediainfo is not able to report
 all required metadata, so for those files all metadata collection is
 done with FFMpegExtractor, using FFMpegMeta as the metadata model.
 """
+from __future__ import annotations
+
 import re
+from typing import Literal
+from collections.abc import Iterator
 
 from file_scraper.base import BaseExtractor
 from file_scraper.shell import Shell
@@ -33,7 +37,7 @@ class FFMpegMetaExtractor(BaseExtractor):
     _supported_metadata = [FFMpegMeta]
 
     @property
-    def well_formed(self):
+    def well_formed(self) -> Literal[False] | None:
         """
         Do not check well-formedness.
 
@@ -44,8 +48,13 @@ class FFMpegMetaExtractor(BaseExtractor):
         return None if valid else valid
 
     @classmethod
-    def is_supported(cls, mimetype, version=None, check_wellformed=True,
-                     params=None):
+    def is_supported(
+        cls,
+        mimetype: str,
+        version: str | None = None,
+        check_wellformed: bool = True,
+        params: dict | None = None,
+    ) -> bool:
         """
         Metadata gathering is needed also in well-formed check, so it is not
         necessary to run this extractor with well-formed check.
@@ -54,16 +63,19 @@ class FFMpegMetaExtractor(BaseExtractor):
             return False
 
         return super().is_supported(
-            mimetype=mimetype, version=version,
-            check_wellformed=check_wellformed, params=params)
+            mimetype=mimetype,
+            version=version,
+            check_wellformed=check_wellformed,
+            params=params,
+        )
 
-    def extract(self):
+    def extract(self) -> None:
         """Scrape A/V files."""
         self._gather_metadata()
         self._check_supported(allow_unav_mime=True,
                               allow_unav_version=True)
 
-    def _gather_metadata(self):
+    def _gather_metadata(self) -> None:
         """Gather video and audio stream metadata with FFProbe.
         """
         try:
@@ -132,7 +144,7 @@ class FFMpegMetaExtractor(BaseExtractor):
             self._errors.append("Error in analyzing file with FFProbe.")
             self._errors.append(ensure_text(err.stderr))
 
-    def iterate_models(self, **kwargs):
+    def iterate_models(self, **kwargs) -> Iterator[FFMpegMeta]:
         """
         Iterate Extractor models.
 
@@ -146,7 +158,7 @@ class FFMpegMetaExtractor(BaseExtractor):
                 if md_object.av_format_supported() is not None:
                     yield md_object
 
-    def tools(self):
+    def tools(self) -> dict:
         """
         Overwriting baseclass implementation
         to collect information about software used by the extractor
