@@ -1,4 +1,5 @@
 """File format detectors."""
+from __future__ import annotations
 
 import errno
 import os
@@ -148,7 +149,12 @@ class _FidoReader(_FidoCachedFormats):
 class FidoDetector(BaseDetector):
     """Fido detector."""
 
-    def __init__(self, filename: Path, mimetype=None, version=None):
+    def __init__(
+        self,
+        filename: Path,
+        mimetype: str | None = None,
+        version: str | None = None,
+    ) -> None:
         """
         Initialize detector.
 
@@ -156,11 +162,10 @@ class FidoDetector(BaseDetector):
         :mimetype: Mimetype from another source, e.g. METS
         :version: File format version from another source, e.g. METS
         """
-        super().__init__(filename, mimetype=mimetype,
-                         version=version)
+        super().__init__(filename, mimetype=mimetype, version=version)
         self._puid = None
 
-    def detect(self):
+    def detect(self) -> None:
         """Detect file format and version."""
         fido = _FidoReader(self.filename)
         fido.identify()
@@ -168,7 +173,7 @@ class FidoDetector(BaseDetector):
         self.version = fido.version
         self._puid = fido.puid
 
-    def get_important(self):
+    def get_important(self) -> dict:
         """
         Return important mime types.
 
@@ -184,14 +189,21 @@ class FidoDetector(BaseDetector):
         :returns: A dict possibly containing key "mimetype"
         """
         important = {}
-        if not self._predefined_mimetype:
-            if self._puid in ["fmt/471", "fmt/100"]:
-                important["mimetype"] = self.mimetype
-            elif self.mimetype not in [None, "text/html", "application/zip"]:
-                important["mimetype"] = self.mimetype
+
+        arc_or_formula = self._puid in ["fmt/471", "fmt/100"]
+        nonstandard_mimetype = self.mimetype not in {
+            None,
+            "text/html",
+            "application/zip",
+        }
+
+        if not self._predefined_mimetype and (
+            arc_or_formula or nonstandard_mimetype
+        ):
+            important["mimetype"] = self.mimetype
         return important
 
-    def tools(self):
+    def tools(self) -> dict:
         """
         Overwriting baseclass implementation
         to collect information about software used by the detector
@@ -537,7 +549,7 @@ class SegYDetector(BaseDetector):
                     raise ValueError
             else:
                 raise ValueError
-        except (UnicodeDecodeError, IndexError, ValueError):
+        except (IndexError, ValueError):
             return
 
         version = self._analyze_version(content)
@@ -827,7 +839,6 @@ class EpubDetector(BaseDetector):
                                 "Ignoring unparseable XML file '%s' in '%s'",
                                 filepath, self.filename
                             )
-                            pass
 
         # Map the valid attribute values to supported versions
         if version == "2.0":
