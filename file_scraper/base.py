@@ -109,7 +109,7 @@ class BaseExtractor(BaseApparatus):
         :param params: Extra parameters that some extractors can use.
         """
         super().__init__(filename, mimetype, version)
-        self.streams = []
+        self.streams: list[BaseMeta] = []
         self._params = params if params is not None else {}
 
     @property
@@ -184,18 +184,18 @@ class BaseExtractor(BaseApparatus):
             return
 
         for md_class in self._supported_metadata:
-            if mimetype in md_class.supported_mimetypes():
-                # version is in the list of supported versions
-                if version in md_class.supported_mimetypes()[mimetype]:
-                    return
-                # all versions are supported
-                if not md_class.supported_mimetypes()[mimetype]:
-                    return
-                # version is (:unav) or (:unap) but that is allowed
-                if (allow_unav_version and version == UNAV) or (
-                    allow_unap_version and version == UNAP
-                ):
-                    return
+            supported = md_class.supported_mimetypes().get(mimetype, None)
+            if supported is None:
+                continue
+            # version is in the list of supported versions
+            # or all versions are supported (empty list)
+            if version in supported or not supported:
+                return
+            # version is (:unav) or (:unap) but that is allowed
+            if (allow_unav_version and version == UNAV) or (
+                allow_unap_version and version == UNAP
+            ):
+                return
 
         # No supporting metadata models found.
         self._errors.append(
@@ -232,7 +232,7 @@ class BaseMeta():
     Additional metadata and processing is implemented in subclasses.
     """
 
-    _supported = {}
+    _supported: dict[str, list[str]] = {}
     _allow_versions = False
 
     @metadata()
@@ -305,7 +305,7 @@ class BaseMeta():
                 yield getattr(self, method)
 
     @classmethod
-    def supported_mimetypes(cls) -> dict:
+    def supported_mimetypes(cls) -> dict[str, list[str]]:
         """Return the dict containing supported mimetypes and versions."""
         return cls._supported
 
