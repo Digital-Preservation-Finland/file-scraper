@@ -101,7 +101,6 @@ class XmlFileMagicMeta(TextMagicBaseMeta):
     _endtag = " "                  # Text after version in magic output
     _allow_versions = True         # Allow any version
 
-
     @metadata()
     def version(self):
         """

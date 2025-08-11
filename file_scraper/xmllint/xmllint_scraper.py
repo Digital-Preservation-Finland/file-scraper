@@ -73,7 +73,6 @@ class XmllintScraper(BaseScraper):
         self._no_network = params.get("no_network", True)
         self._catalog_path = params.get("catalog_path", None)
 
-
     def _evaluate_xsd_location(self, location):
         """Determine whether or not the XSD schema is a
         local file in relation to the assigned XML file.
