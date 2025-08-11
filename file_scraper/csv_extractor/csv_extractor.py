@@ -91,10 +91,10 @@ class CsvExtractor(BaseExtractor):
                     "header parameter and the CSV header don't match."
                 )
 
-            # Read the whole file in case it contains errors. If there
-            # are any, an exception will be raised, triggering
-            # recording an error
             for _ in reader:
+                # Read the whole file in case it contains errors. If there
+                # are any, an exception will be raised, triggering
+                # recording an error
                 pass
 
         except OSError as err:
@@ -107,7 +107,6 @@ class CsvExtractor(BaseExtractor):
             else:
                 self._errors.append(f"CSV error: {exception}")
         except (UnicodeError,
-                UnicodeDecodeError,
                 StopIteration,
                 LookupError) as exception:
             self._errors.append(f"Error reading file as CSV: {exception}")
