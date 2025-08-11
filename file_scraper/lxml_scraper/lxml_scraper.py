@@ -22,7 +22,12 @@ class LxmlScraper(BaseScraper):
     def is_supported(cls, mimetype, version=None,
                      check_wellformed=True, params=None):
         """
-        Return True if given MIME type and version are supported.
+        This scraper is supported only if well-formedness is True. This
+        scraper supports text/xml files regardless of version. Also
+        text/html versions 4.01 and 5 are supported.
+
+        BaseScraper's is_supported is not intricate enough to handle such
+        functionality, so it has to be overridden.
 
         :mimetype: Identified mimetype
         :version: Identified version (if needed)
@@ -74,8 +79,8 @@ class LxmlScraper(BaseScraper):
             # that it matches the encoding provided to the scraper beforehand
             # in either the original or normalized form
             encoding_matches = (
-                encoding is None
-                or provided_encoding in (encoding, norm_encoding)
+                    encoding is None
+                    or provided_encoding in (encoding, norm_encoding)
             )
             if not encoding_matches:
                 self._errors.append(

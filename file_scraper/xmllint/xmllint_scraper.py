@@ -73,25 +73,6 @@ class XmllintScraper(BaseScraper):
         self._no_network = params.get("no_network", True)
         self._catalog_path = params.get("catalog_path", None)
 
-    @classmethod
-    def is_supported(cls, mimetype, version=None,
-                     check_wellformed=True, params=None):
-        """
-        Return True if MIME type and version are supported.
-
-
-        :mimetype: Identified mimetype
-        :version: Identified version (if needed)
-        :check_wellformed: True for the full well-formed check, False for just
-                           detection and metadata scraping
-        :params: Extra parameters needed for the scraper
-        :returns: True if scraper is supported
-        """
-        if params is None:
-            params = {}
-        return super().is_supported(mimetype, version,
-                                    check_wellformed,
-                                    params)
 
     def _evaluate_xsd_location(self, location):
         """Determine whether or not the XSD schema is a

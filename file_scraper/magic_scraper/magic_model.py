@@ -101,21 +101,6 @@ class XmlFileMagicMeta(TextMagicBaseMeta):
     _endtag = " "                  # Text after version in magic output
     _allow_versions = True         # Allow any version
 
-    @classmethod
-    def is_supported(cls, mimetype, version=None,
-                     params=None):
-        """
-        Return True if given MIME type and version are supported.
-
-        :mimetype: Identified mimetype
-        :version: Identified version (if needed)
-        :params: Extra parameters needed for the scraper
-        :returns: True if scraper is supported
-        """
-        if params is None:
-            params = {}
-        return super().is_supported(mimetype, version,
-                                    params)
 
     @metadata()
     def version(self):
