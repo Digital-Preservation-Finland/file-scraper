@@ -1,7 +1,8 @@
 """Extractor for CSV file formats."""
+from __future__ import annotations
 
 import csv
-from io import open as io_open
+from io import TextIOWrapper, open as io_open
 
 from file_scraper.base import BaseExtractor
 from file_scraper.csv_extractor.csv_model import CsvMeta
@@ -17,7 +18,7 @@ class CsvExtractor(BaseExtractor):
     csv.field_size_limit(1048576)
     # pylint: disable=too-many-branches
 
-    def extract(self):
+    def extract(self) -> None:
         """Scrape CSV file."""
 
         fields = self._params.get("fields", [])
@@ -34,42 +35,7 @@ class CsvExtractor(BaseExtractor):
         try:
             csvfile = self._open_csv_file(charset)
 
-            delimiter = self._params.get("delimiter", None)
-            separator = self._params.get("separator", None)
-            quotechar = self._params.get("quotechar", None)
-
-            if delimiter is None or separator is None:
-                # Sniffer may not be able to find any delimiter or separator
-                # with the default dialect. This will raise an exception.
-                # Therefore, sniffing should be skipped totally, if the
-                # characters are given as a parameter.
-                dialect = csv.Sniffer().sniff(csvfile.read(100*1024))
-                LOGGER.debug(
-                    "csv.Sniffer detected dialect with "
-                    "delimiter: %s, line terminator: %s, quotechar: %s",
-                    dialect.delimiter, dialect.lineterminator,
-                    dialect.quotechar
-                )
-                if delimiter is None:
-                    LOGGER.debug(
-                        "Using auto-detected delimeter: %s", dialect.delimiter
-                    )
-                    delimiter = dialect.delimiter
-                if separator is None:
-                    LOGGER.debug(
-                        "Using auto-detected separator: %s",
-                        dialect.lineterminator
-                    )
-                    separator = dialect.lineterminator
-                if quotechar is None:
-                    LOGGER.debug(
-                        "Using auto-detected quotechar: %s", dialect.quotechar
-                    )
-                    quotechar = dialect.quotechar
-
-            # Default quotechar according to csv module documentation is '"'.
-            if quotechar is None:
-                quotechar = "\""
+            delimiter, separator, quotechar = self._resolve_csv_format(csvfile)
 
             csv.register_dialect(
                 "new_dialect",
@@ -124,17 +90,66 @@ class CsvExtractor(BaseExtractor):
                                                   "first_line": first_line}))
         self._check_supported(allow_unap_version=True)
 
-    def _open_csv_file(self, charset):
+    def _resolve_csv_format(
+        self, csvfile: TextIOWrapper
+    ) -> tuple[str, str, str]:
+        """
+        Resolve CSV formatting parameters (delimiter, separator, quotechar),
+        either from user provided values or by auto-detecting using a sniffer.
+
+        :param csvfile: Opened CSV file handle.
+        :returns: (delimiter, separator, quotechar) tuple.
+        """
+        delimiter = self._params.get("delimiter", None)
+        separator = self._params.get("separator", None)
+        quotechar = self._params.get("quotechar", None)
+
+        if delimiter is None or separator is None:
+            # Sniffer may not be able to find any delimiter or separator
+            # with the default dialect. This will raise an exception.
+            # Therefore, sniffing should be skipped totally, if the
+            # characters are given as a parameter.
+            dialect = csv.Sniffer().sniff(csvfile.read(100 * 1024))
+            LOGGER.debug(
+                "csv.Sniffer detected dialect with "
+                "delimiter: %s, line terminator: %s, quotechar: %s",
+                dialect.delimiter,
+                dialect.lineterminator,
+                dialect.quotechar,
+            )
+            if delimiter is None:
+                LOGGER.debug(
+                    "Using auto-detected delimiter: %s", dialect.delimiter
+                )
+                delimiter = dialect.delimiter
+            if separator is None:
+                LOGGER.debug(
+                    "Using auto-detected separator: %s", dialect.lineterminator
+                )
+                separator = dialect.lineterminator
+            if quotechar is None:
+                LOGGER.debug(
+                    "Using auto-detected quotechar: %s", dialect.quotechar
+                )
+                quotechar = dialect.quotechar
+
+        # Default quotechar according to csv module documentation is '"'.
+        if quotechar is None:
+            quotechar = '"'
+
+        return delimiter, separator, quotechar
+
+    def _open_csv_file(self, charset: str | None) -> TextIOWrapper:
         """
         Open the file in mode dependent on the python version.
 
-        :charset: File encoding
-        :returns: handle to the newly-opened file
+        :param charset: File encoding
+        :param returns: handle to the newly-opened file
         :raises: IOError if the file cannot be read
         """
         return io_open(self.filename, "rt", encoding=charset)
 
-    def tools(self):
+    def tools(self) -> dict:
         """
         Overwriting baseclass implementation
         to collect information about software used by the extractor
