@@ -48,9 +48,9 @@ def cli():
 @click.option("--quotechar", help="Specify the quote character in CSV files.")
 @click.option("--schema", help="Specify the schema file for XML files.")
 @click.option("--catalogs", help="Use local catalog schemas for XML files.")
-@click.option("--no_network", type=click.BOOL,
+@click.option("--no-network", type=click.BOOL,
               help="Disallow network usage for XML files.")
-@click.option("--catalog_path",
+@click.option("--catalog-path",
               help="Specify the catalog environment for XML files.")
 def scrape_file(
         filename, check_wellformed, tool_info, mimetype, version, verbose,
