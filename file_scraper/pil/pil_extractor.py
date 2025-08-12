@@ -90,16 +90,18 @@ class PilExtractor(BaseExtractor):
             self._errors.append(str(e))
             return
         else:
-            with PIL.Image.open(self.filename,
-                                formats=self.pil_formats) as pil:
+            with PIL.Image.open(
+                self.filename, formats=self.pil_formats
+            ) as pil:
                 for pil_index in range(0, n_frames):
                     pil.seek(pil_index)
                     self.streams += list(
-                        self.iterate_models(pil=pil, index=pil_index))
+                        self.iterate_models(pil=pil, index=pil_index)
+                    )
 
-            self._check_supported(allow_unav_version=True)
+        self._check_supported(allow_unav_version=True)
 
-            self._messages.append("The file was analyzed successfully.")
+        self._messages.append("The file was analyzed successfully.")
 
     def tools(self):
         """
