@@ -44,9 +44,8 @@ class PngcheckExtractor(BaseExtractor):
         """
 
         tool_shell = Shell(["pngcheck"], use_pty=True)
-        """ Find version with capture group to capture integers and dots
-            until any other character appears.
-        """
+        # Find version with capture group to capture integers and dots
+        # until any other character appears.
         regex = r"[vV]ersion ([\d\.]+)"
         try:
             version = next(
