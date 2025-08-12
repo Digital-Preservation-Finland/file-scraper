@@ -8,7 +8,6 @@ import logging
 import click
 
 from file_scraper.logger import LOGGER, enable_logging
-from file_scraper.schematron.schematron_model import SchematronMeta
 from file_scraper.schematron.schematron_scraper import SchematronScraper
 from file_scraper.scraper import Scraper
 from file_scraper.utils import ensure_text
@@ -122,7 +121,7 @@ def scrape_file(
 @click.option("--no-network", type=click.BOOL,
               help="Disallow network usage for XML files.")
 @click.option("--schema", help="Specify the schema file for XML files.")
-@click.option("--schematron",
+@click.option("--schematron", required=True,
               help="Specify the schematron file for XML schematron checks.")
 @click.option("--schematron-verbose", type=click.BOOL,
               help="Specify the verboseness for XML schematron checks")
