@@ -226,7 +226,7 @@ The options that can be given to the tool are:
     * Print tool info: ``--tool-info``. Include errors and messages from different 3rd party tools that were used.
     * Specify MIME type: ``--mimetype=<mimetype>``
     * Specify version: ``--version=<version>``
-    * Also additional arguments specified earlier can be used as options. Note that XML Schematron's verbose must used as schematron_verbose, since there is a naming conflict.
+    * Also additional arguments specified earlier can be used as options. Note that the CLI options must be specified in kebab-case.
 
 All possible options can be obtained with::
 
@@ -240,7 +240,8 @@ There is also check-xml-schematron-features command, which checks validness of X
 
     scraper check-xml-schematron-features [OPTIONS] FILENAME
 
-Where options are options for XML and schematron validation.
+Where options are options for XML and schematron validation. Note that XML Schematron's verbose must used as schematron-verbose, since there is a naming conflict. In addition, CLI options must be specified in kebab-case.
+
 
 File type detection without full scraping
 -----------------------------------------
