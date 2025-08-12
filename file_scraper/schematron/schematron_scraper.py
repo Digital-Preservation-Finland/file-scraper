@@ -178,9 +178,8 @@ class SchematronScraper(BaseExtractor):
         xslt_filename = self._generate_xslt_filename()
         tempdir = tempfile.mkdtemp(dir=self._cachepath)
 
-        if self._cache:
-            if os.path.isfile(xslt_filename):
-                return xslt_filename
+        if self._cache and os.path.isfile(xslt_filename):
+            return xslt_filename
 
         try:
             self._compile_phase(
