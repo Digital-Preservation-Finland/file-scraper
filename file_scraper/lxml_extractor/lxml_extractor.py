@@ -46,7 +46,7 @@ class LxmlExtractor(BaseExtractor):
     def extract(self):
         """Scrape file."""
         parser = etree.XMLParser(dtd_validation=False, no_network=True,
-                                 recover=True)
+                                 recover=True, resolve_entities=False)
         with open(self.filename, "rb") as file_:
             try:
                 tree = etree.parse(file_, parser)
