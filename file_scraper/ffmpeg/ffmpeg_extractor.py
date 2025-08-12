@@ -89,25 +89,8 @@ class FFMpegMetaExtractor(BaseExtractor):
             self._messages.append(
                 "The file was analyzed successfully with FFProbe.")
 
-            # We deny e.g. A-law PCM, mu-law PCM, DPCM and ADPCM and allow
-            # only signed/unsigned linear PCM. Note that we need this check
-            # only if PCM audio is present. This should not be given e.g.
-            # for video streams nor audio streams of another type (such as
-            # MPEG). For AIFF-C, all kinds of PCM is allowed.
-
             if probe_results["format"].get("format_name", UNAV) != "aiff":
-
-                for stream in probe_results["streams"]:
-
-                    if "PCM" not in stream.get("codec_long_name", UNAV):
-                        continue
-
-                    if not any(
-                            stream.get("codec_long_name", UNAV).startswith(x)
-                            for x in ["PCM signed", "PCM unsigned"]):
-                        self._errors.append(
-                            f"{stream['codec_long_name']} does not seem to be "
-                            "LPCM format.")
+                self._verify_pcm_format(probe_results)
 
             container = False
             for index in range(len(probe_results["streams"]) + 1):
@@ -125,8 +108,7 @@ class FFMpegMetaExtractor(BaseExtractor):
                     probe_results=probe_results, index=index))
 
                 for stream in self.streams:
-                    if stream.hascontainer():
-                        container = True
+                    container = stream.hascontainer()
 
             # Some audio and video files need a bit of a special treatment.
             # They only have one stream, but because ffmpeg reports the format
@@ -143,6 +125,25 @@ class FFMpegMetaExtractor(BaseExtractor):
         except ffmpeg.Error as err:
             self._errors.append("Error in analyzing file with FFProbe.")
             self._errors.append(ensure_text(err.stderr))
+
+    def _verify_pcm_format(self, probe_results: dict) -> None:
+        # We deny e.g. A-law PCM, mu-law PCM, DPCM and ADPCM and allow
+        # only signed/unsigned linear PCM. Note that we need this check
+        # only if PCM audio is present. This should not be given e.g.
+        # for video streams nor audio streams of another type (such as
+        # MPEG). For AIFF-C, all kinds of PCM is allowed.
+        for stream in probe_results["streams"]:
+            if "PCM" not in stream.get("codec_long_name", UNAV):
+                continue
+
+            if not any(
+                stream.get("codec_long_name", UNAV).startswith(x)
+                for x in ["PCM signed", "PCM unsigned"]
+            ):
+                self._errors.append(
+                    f"{stream['codec_long_name']} does not seem to be "
+                    "LPCM format."
+                )
 
     def iterate_models(self, **kwargs) -> Iterator[FFMpegMeta]:
         """
