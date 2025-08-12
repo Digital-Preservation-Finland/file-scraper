@@ -94,11 +94,9 @@ class WandExtractor(BaseExtractor):
         :returns: a dictionary with the used software or UNAV.
         """
         version_str = wand.version.MAGICK_VERSION
-        """
-        ImageMagick following a group with any character, digit, number and
-        also can include dash or dot one or more times.
-        """
-        regex = r"ImageMagick ([\w\d\-.]*)"
+        # ImageMagick following a group with any character, digit, number and
+        # also can include dash or dot one or more times.
+        regex = r"ImageMagick ([\w\-.]+)"
         try:
             version = next(
                 re.finditer(regex, version_str, re.MULTILINE)
