@@ -1,6 +1,9 @@
 """Scraper iterator."""
 # flake8: noqa
+from __future__ import annotations
 
+from typing import Iterator
+from file_scraper.base import BaseDetector, BaseExtractor
 from file_scraper.csv_extractor.csv_extractor import CsvExtractor
 from file_scraper.detectors import (EpubDetector,
                                     FidoDetector,
@@ -49,34 +52,39 @@ from file_scraper.exiftool.exiftool_extractor import ExifToolDngExtractor
 from file_scraper.jpylyzer.jpylyzer_extractor import JpylyzerExtractor
 
 
-def iter_detectors():
+def iter_detectors() -> Iterator[type[BaseDetector]]:
     """
     Iterate detectors.
 
     We want to keep the detectors in ordered list.
     :returns: detector class
     """
-    yield from [EpubDetector,
-                FidoDetector,
-                MagicDetector,
-                PredefinedDetector,
-                AtlasTiDetector,
-                SiardDetector,
-                SegYDetector,
-                ODFDetector]
+    yield from [
+        EpubDetector,
+        FidoDetector,
+        MagicDetector,
+        PredefinedDetector,
+        AtlasTiDetector,
+        SiardDetector,
+        SegYDetector,
+        ODFDetector,
+    ]
 
 
-
-
-def iter_extractors(mimetype, version, check_wellformed=True, params=None):
+def iter_extractors(
+    mimetype: str,
+    version: str,
+    check_wellformed: bool = True,
+    params: dict | None = None,
+) -> Iterator[type[BaseScraper]]:
     """
     Iterate extractors.
 
-    :mimetype: Identified mimetype of the file
-    :version: Identified file format version
-    :check_wellformed: True for the full well-formed check, False for just
-                       identification and metadata scraping
-    :params: Extra parameters needed for the extractor
+    :param mimetype: Identified mimetype of the file
+    :param version: Identified file format version
+    :param check_wellformed: True for the full well-formed check, False for just
+        identification and metadata scraping
+    :param params: Extra parameters needed for the extractor
     :returns: extractor class
     """
     extractor_found = False

@@ -93,7 +93,7 @@ class BaseExtractor(BaseApparatus):
     def __init__(
         self,
         filename: Path,
-        mimetype: str,
+        mimetype: str | None,
         version: str | None = None,
         params: dict | None = None,
     ) -> None:
