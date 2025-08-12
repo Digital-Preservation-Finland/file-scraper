@@ -1,10 +1,14 @@
 """Utilities for scrapers."""
+from __future__ import annotations
 
+from collections.abc import Iterator
 import hashlib
 import re
+from typing import TypedDict
 import zipfile
 from itertools import chain
 from pathlib import Path
+from io import BufferedReader
 
 from file_scraper.defaults import UNAV
 from file_scraper.exceptions import SkipElementException
@@ -318,51 +322,21 @@ def concat(lines, prefix=""):
     return "\n".join([f"{prefix}{line}" for line in lines])
 
 
-def iter_utf_bytes(file_handle, chunksize, charset):
+def iter_utf_bytes(
+    file_handle: BufferedReader, chunksize: int, charset: str
+) -> Iterator[bytes]:
     """
     Iterate given file with matching the bytes with variable length UTF
     characters. The byte sequence might have incomplete UTF characer in the
     end. This is reserved for the next chunk.
 
-    :file_handle: File handle to read
-    :chunksize: Size of the chunk to read
-    :charset: Character encoding of the file
+    :param file_handle: File handle to read
+    :param chunksize: Size of the chunk to read
+    :param charset: Character encoding of the file
     :returns: Sequence from the file
     """
     utf_buffer = b""
     chunksize += 4 - chunksize % 4  # needs to be divisible by 4
-
-    def utf_sequence(chunk, sequence_params, possible_le=False):
-        """
-        Split the given byte chunk to UTF sequence and remainder. Remainder
-        is possible if last character of byte chunk is incomplete.
-
-        :chunk: Chunk to match
-        :sequenc_params: Dict of smallest and largest byte value of the first
-                         byte (or the second in big endian) of a character
-        :possible_le: True, little endian is possible, False otherwise
-        :returns: Tuple (x, y) where x is UTF sequence and y is remainder
-        """
-        if len(chunk) < 4:
-            return (chunk, b"")
-
-        for params in sequence_params:
-
-            for index in params["indexes"]:
-
-                if len(chunk) < index:
-                    continue
-
-                try:
-                    sequence_char = ord(chunk[-index])
-                except TypeError:
-                    sequence_char = chunk[-index]
-                if params["smallest"] <= sequence_char <= params["largest"]:
-                    if possible_le and index == 1:
-                        index = index + 1  # Move index left for little endian
-                    return chunk[:-index], chunk[-index:]
-
-        return (chunk, b"")
 
     while True:
         chunk = utf_buffer + file_handle.read(chunksize)
@@ -381,6 +355,46 @@ def iter_utf_bytes(file_handle, chunksize, charset):
                          "indexes": [1, 2]}], True)
 
         yield chunk
+
+
+class _SequenceParams(TypedDict):
+    smallest: int
+    largest: int
+    indexes: list[int]
+
+
+def utf_sequence(
+    chunk: bytes,
+    sequence_params: list[_SequenceParams],
+    possible_le: bool = False,
+) -> tuple[bytes, bytes]:
+    """
+    Split the given byte chunk to UTF sequence and remainder. Remainder
+    is possible if last character of byte chunk is incomplete.
+
+    :param chunk: Chunk to match
+    :param sequenc_params: List of dicts of smallest and largest byte value
+        of the first byte (or the second in big endian) of a character
+    :param possible_le: True, little endian is possible, False otherwise
+    :returns: Tuple (x, y) where x is UTF sequence and y is remainder
+    """
+    if len(chunk) < 4:
+        return (chunk, b"")
+
+    for params in sequence_params:
+
+        for index in params["indexes"]:
+
+            if len(chunk) < index:
+                continue
+
+            sequence_char = chunk[-index]
+            if params["smallest"] <= sequence_char <= params["largest"]:
+                if possible_le and index == 1:
+                    index = index + 1  # Move index left for little endian
+                return chunk[:-index], chunk[-index:]
+
+    return (chunk, b"")
 
 
 def is_zipfile(filename: Path):
