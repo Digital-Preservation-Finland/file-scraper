@@ -8,6 +8,7 @@ import logging
 import click
 
 from file_scraper.logger import LOGGER, enable_logging
+from file_scraper.schematron.schematron_model import SchematronMeta
 from file_scraper.schematron.schematron_scraper import SchematronScraper
 from file_scraper.scraper import Scraper
 from file_scraper.utils import ensure_text
@@ -118,19 +119,19 @@ def scrape_file(
 
 @cli.command("check-xml-schematron-features")
 @click.argument("filename", type=click.Path(exists=True))
-@click.option("--no_network", type=click.BOOL,
+@click.option("--no-network", type=click.BOOL,
               help="Disallow network usage for XML files.")
 @click.option("--schema", help="Specify the schema file for XML files.")
 @click.option("--schematron",
               help="Specify the schematron file for XML schematron checks.")
-@click.option("--schematron_verbose", type=click.BOOL,
+@click.option("--schematron-verbose", type=click.BOOL,
               help="Specify the verboseness for XML schematron checks")
 @click.option("--cache", type=click.BOOL,
               help="Specify caching for XML schematron checks.")
-@click.option("--catalog_path",
+@click.option("--catalog-path",
               help="Specify the catalog environment for XML files.")
 @click.option("--catalogs", help="Use local catalog schemas for XML files.")
-@click.option("--extra_hash",
+@click.option("--extra-hash",
               help="Hash of related abstract patterns for XML schematron "
                    "checks.")
 @click.option(
