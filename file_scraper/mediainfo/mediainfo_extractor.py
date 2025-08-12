@@ -178,7 +178,7 @@ class MediainfoExtractor(BaseExtractor):
             lib.MediaInfo_Close(handle)
             lib.MediaInfo_Delete(handle)
 
-        except Exception:  # pylint: broad-except
+        except Exception:  # pylint: disable=broad-exception-caught
             LOGGER.warning(
                 "Could not retrieve MediaInfo version due to exception",
                 exc_info=True
