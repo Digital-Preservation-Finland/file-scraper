@@ -84,7 +84,11 @@ class TextfileExtractor(BaseExtractor):
         :returns: a dictionary with the used software or UNAV.
         """
         file_output = Shell(["file", "--version"])
-        return {"file": {"version": file_output.stdout.split("\n")[0][5:]}}
+        return {
+            "file": {
+                "version": file_output.stdout.split("\n", maxsplit=1)[0][5:]
+            }
+        }
 
 
 class TextEncodingMetaExtractor(BaseExtractor):
@@ -309,7 +313,6 @@ class TextEncodingExtractor(BaseExtractor):
                 LOGGER.debug(
                     "Test chunk could not be parsed as ASCII", exc_info=True
                 )
-                pass
 
         # If ASCII did not work, but UTF-8 works, then we quite probably have
         # UTF-8.
@@ -340,8 +343,8 @@ class TextEncodingExtractor(BaseExtractor):
         """
         try:
             decoded_chunk = chunk.decode(charset)
-        except (UnicodeError, UnicodeDecodeError, LookupError) as err:
-            raise UnknownEncodingError(err)
+        except (UnicodeError, LookupError) as err:
+            raise UnknownEncodingError(err) from err
 
         forbidden = ["\x00", "\x01", "\x02", "\x03", "\x04", "\x05", "\x06",
                      "\x07", "\x08", "\x0B", "\x0C", "\x0E", "\x0F", "\x10",
