@@ -284,7 +284,7 @@ def _filter_stderr(errors):
     :returns: Filtered error message result
     """
     constructed_string = ""
-    repeat = re.compile("Last message repeated [0-9]+ times")
+    repeat = re.compile(r"Last message repeated \d+ times")
     for line in str(errors).split("\n"):
         if not line:
             continue
