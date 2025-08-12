@@ -110,7 +110,11 @@ class XmllintExtractor(BaseExtractor):
         # Try to check syntax by opening file in XML parser
         try:
             with io_open(self.filename, "rb") as file_:
-                parser = etree.XMLParser(dtd_validation=False, no_network=True)
+                parser = etree.XMLParser(
+                    dtd_validation=False,
+                    no_network=True,
+                    resolve_entities=False,
+                )
                 tree = etree.parse(file_, parser=parser)
         except etree.XMLSyntaxError as exception:
             self._errors.append("Failed: document is not well-formed.")
