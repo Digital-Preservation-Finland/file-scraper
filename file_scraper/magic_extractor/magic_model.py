@@ -175,7 +175,7 @@ class PdfFileMagicMeta(BinaryMagicBaseMeta):
         # This regex will return only the version number without any of the
         # extra information that "file" gives.
         orig_version = super().version()
-        filtered_version = re.match(r'([\d+\.\d]+).*', orig_version)
+        filtered_version = re.match(r'(\d+\.\d+)', orig_version)
         if filtered_version is not None:
             return filtered_version.group(1)
 
