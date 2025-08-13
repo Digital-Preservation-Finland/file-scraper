@@ -211,14 +211,14 @@ class ResultsMergeExtractor(NoWellformednessBaseExtractor):
             params=params)
         if params is None:
             params = {}
-        self._scraper_results = params.get("scraper_results", None)
+        self._extractor_results = params.get("extractor_results", None)
 
     def extract(self):
         """
         No need to scrape anything, just merge already collected metadata.
         """
         streams, conflicts = generate_metadata_dict(
-            self._scraper_results, LOSE)
+            self._extractor_results, LOSE)
         self.streams = streams
         for error_message in conflicts:
             self._errors.append(error_message)

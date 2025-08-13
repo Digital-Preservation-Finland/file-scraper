@@ -47,7 +47,7 @@ class Scraper:
         self.well_formed = None
         self.info = None
         self._params = kwargs
-        self._scraper_results = []
+        self._extractor_results = []
         self._predefined_mimetype = None
         self._predefined_version = None
         self._file_exists = None
@@ -162,7 +162,7 @@ class Scraper:
         """
         extractor.extract()
         if extractor.streams:
-            self._scraper_results.append(extractor.streams)
+            self._extractor_results.append(extractor.streams)
         self.info[len(self.info)] = extractor.info()
         if (self.well_formed is None and check_wellformed) or \
                 extractor.well_formed is False:
@@ -247,7 +247,7 @@ class Scraper:
                 version=self._predefined_version,
                 params=self._params)
             self._use_extractor(extractor, check_wellformed)
-        self._params["scraper_results"] = self._scraper_results
+        self._params["extractor_results"] = self._extractor_results
 
         self._merge_results(check_wellformed)
         self._check_utf8(check_wellformed)

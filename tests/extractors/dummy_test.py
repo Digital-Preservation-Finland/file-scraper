@@ -250,6 +250,6 @@ def test_results_merge_extractor(meta_class_fx, meta_classes, wellformed):
         results.append([meta_class_fx(meta_class)])
     extractor = ResultsMergeExtractor(
         filename, mimetype="expected_mime", version="expected_version",
-        params={"scraper_results": results})
+        params={"extractor_results": results})
     extractor.extract()
     assert extractor.well_formed == wellformed
