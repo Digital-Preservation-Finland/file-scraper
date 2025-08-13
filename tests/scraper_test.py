@@ -236,7 +236,7 @@ def test_filter_unwanted_characters(monkeypatch):
         self._messages.append("short unicode \ufffe")
         self._errors.append("long unicode \U0005fffe")
 
-    monkeypatch.setattr(TextfileExtractor, "scrape_file", mock_scrape)
+    monkeypatch.setattr(TextfileExtractor, "extract", mock_scrape)
 
     scraper = Scraper("tests/data/text_plain/valid__ascii.txt")
     scraper.scrape()

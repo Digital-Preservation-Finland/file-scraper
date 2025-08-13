@@ -173,6 +173,9 @@ class BaseMetaCustom(BaseMeta):
 class BaseExtractorSupported(BaseExtractor):
     """Basic extractor using BaseMetaCustom metadata model."""
 
+    def extract(self):
+        pass
+
     _supported_metadata = [BaseMetaCustom]
 
     def tools(self):
