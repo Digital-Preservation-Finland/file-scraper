@@ -3,12 +3,17 @@
 from __future__ import annotations
 
 import abc
-from collections.abc import Callable, Iterator
+from collections.abc import Iterator
 from pathlib import Path
 from typing import Any, Literal
 
 from file_scraper.defaults import UNAP, UNAV
-from file_scraper.utils import metadata, is_metadata, filter_unwanted_chars
+from file_scraper.utils import (
+    MetadataMethod,
+    metadata,
+    is_metadata,
+    filter_unwanted_chars,
+)
 
 
 class BaseApparatus(metaclass=abc.ABCMeta):
@@ -298,7 +303,7 @@ class BaseMeta():
             return True
         return False
 
-    def iterate_metadata_methods(self) -> Iterator[Callable[[], Any]]:
+    def iterate_metadata_methods(self) -> Iterator[MetadataMethod]:
         """Iterate through all metadata methods."""
         for method in dir(self):
             if is_metadata(getattr(self, method)):

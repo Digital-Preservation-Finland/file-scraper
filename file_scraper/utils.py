@@ -1,51 +1,69 @@
 """Utilities for scrapers."""
 from __future__ import annotations
 
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator, Iterable
+from pathlib import Path
+from typing import Any, Protocol, TypedDict, TYPE_CHECKING, cast
+
 import hashlib
 import re
-from typing import TypedDict
 import zipfile
 from itertools import chain
-from pathlib import Path
 from io import BufferedReader
 
 from file_scraper.defaults import UNAV
 from file_scraper.exceptions import SkipElementException
 from file_scraper.logger import LOGGER
 
+if TYPE_CHECKING:
+    from file_scraper.base import BaseMeta
 
-def metadata(important=False):
+
+class MetadataMethod(Protocol):
+    """Protocol for type hinting metadata methods."""
+    is_metadata: bool
+    is_important: bool
+    __name__: str
+    def __call__(self) -> Any: ...
+
+
+def metadata(important: bool = False) -> Callable[[Callable], MetadataMethod]:
     """
     Decorator for functions scraping metadata.
 
-    :important: True if metadata is important, False otherwise
+    :param important: True if metadata is important, False otherwise
     :returns: Decorator for function
     """
-    def _wrap(func):
-        func.is_metadata = True
-        func.is_important = important
-        return func
+
+    def _wrap(func: Callable) -> MetadataMethod:
+        setattr(func, "is_metadata", True)
+        setattr(func, "is_important", important)
+        return cast(MetadataMethod, func)
+
     return _wrap
 
 
-def is_metadata(func):
+def is_metadata(func: Callable) -> bool:
     """
     Return True if given a function with metadata flag, otherwise False.
 
-    :func: Function to check
+    :param func: Function to check
     :returns: True if function has metadata flag, False otherwise
     """
     return callable(func) and getattr(func, "is_metadata", False)
 
 
-def hexdigest(filename, algorithm="sha1", extra_hash=None):
+def hexdigest(
+    filename: str | Path,
+    algorithm: str = "sha1",
+    extra_hash: str | bytes | None = None,
+) -> str:
     """
     Calculte hash of given file.
 
-    :filename: File path
-    :algorithm: Hash algorithm. MD5 or SHA variant.
-    :extra_hash: Hash to be appended in calculation
+    :param filename: File path
+    :param algorithm: Hash algorithm. MD5 or SHA variant.
+    :param extra_hash: Hash to be appended in calculation
     :returns: Calculated hash
     """
     algorithm = algorithm.replace("-", "").lower().strip()
@@ -60,7 +78,7 @@ def hexdigest(filename, algorithm="sha1", extra_hash=None):
     return checksum.hexdigest()
 
 
-def normalize_charset(charset):
+def normalize_charset(charset: str | None) -> str:
     """
     Normalize charset to its most common and supported form.
 
@@ -82,7 +100,7 @@ def normalize_charset(charset):
     return charset.upper()
 
 
-def iso8601_duration(time):
+def iso8601_duration(time: float | int) -> str:
     """Convert seconds into ISO 8601 duration.
 
     PT[hours]H[minutes]M[seconds]S format is used with maximum of two decimal
@@ -101,7 +119,7 @@ def iso8601_duration(time):
     >>> iso8601_duration(0.001)
     "PT0S"
 
-    :time: Time in seconds
+    :param time: Time in seconds
     :returns: ISO 8601 representation of time
     """
     hours = int(time // (60 * 60))
@@ -130,7 +148,7 @@ def iso8601_duration(time):
     return duration
 
 
-def strip_zeros(float_str):
+def strip_zeros(float_str: str) -> str:
     """Recursively strip trailing zeros from a float.
 
     Zeros in integer part are not affected. If no decimal part is left, the
@@ -145,7 +163,7 @@ def strip_zeros(float_str):
     >>> strip_zeros("1_234_000.000_000")
     "1_234_000"
 
-    :float_str: Float number as string
+    :param float_str: Float number as string
     :returns: Stripped float as string
     """
 
@@ -157,7 +175,9 @@ def strip_zeros(float_str):
     return float_str
 
 
-def ensure_text(string, encoding="utf-8", errors="strict"):
+def ensure_text(
+    string: str | bytes, encoding: str = "utf-8", errors: str = "strict"
+):
     """Coerce string to str.
     """
     # pylint: disable=invalid-name
@@ -169,7 +189,12 @@ def ensure_text(string, encoding="utf-8", errors="strict"):
     raise TypeError(f"not expecting type '{type(string)}'")
 
 
-def _merge_to_stream(stream, method, lose, importants):
+def _merge_to_stream(
+    stream: dict[str, str],
+    method: MetadataMethod,
+    lose: list[str],
+    importants: dict[str, str],
+) -> None:
     """
     Merges the results of the method into the stream dict.
 
@@ -181,13 +206,13 @@ def _merge_to_stream(stream, method, lose, importants):
         - Values within the lose list are overwritten.
         - If neither entry is important or disposable, a ValueError is raised.
 
-    :stream: A dict representing the metadata of a single stream. E.g.
-             {"index": 0, "mimetype": "image/png", "width": "500"}
-    :method: A metadata method.
-    :lose: A list of values that can be overwritten.
-    :importants: A dict of keys and values that must not be overwritten.
+    :param stream: A dict representing the metadata of a single stream. E.g.
+        {"index": 0, "mimetype": "image/png", "width": "500"}
+    :param method: A metadata method.
+    :param lose: A list of values that can be overwritten.
+    :param importants: A dict of keys and values that must not be overwritten.
     :raises: ValueError if the old entry in the stream and the value returned
-             by the given method conflict but neither is disposable.
+        by the given method conflict but neither is disposable.
     """
     method_name = method.__name__
     method_value = method()
@@ -220,17 +245,17 @@ def _merge_to_stream(stream, method, lose, importants):
             f"for '{method_name}'.")
 
 
-def _fill_importants(method, importants, lose):
+def _fill_importants(
+    method: MetadataMethod, importants: dict[str, str], lose: list[str]
+) -> None:
     """
     Find the important metadata values for a method.
 
-    :method: A metadata method
-    :importants: A dictionary of important metadata values
-    :lose: List of values which can not be important
-    :returns: A dict of important metadata values,
-              e.g. {"charset": "UTF-8", ...}
+    :param method: A metadata method
+    :param importants: A dictionary of important metadata values
+    :param lose: List of values which can not be important
     :raises: ValueError if two different important values collide in a
-             method.
+        method.
     """
     try:
         method_name = method.__name__
@@ -247,7 +272,9 @@ def _fill_importants(method, importants, lose):
         pass
 
 
-def generate_metadata_dict(extraction_results, lose) -> tuple[dict, dict]:
+def generate_metadata_dict(
+    extraction_results: list[list[BaseMeta]], lose: list[str]
+) -> tuple[dict, list[str]]:
     """
     Generate a metadata dict from the given extraction results.
 
@@ -256,18 +283,22 @@ def generate_metadata_dict(extraction_results, lose) -> tuple[dict, dict]:
     starts from zero. In case of conflicting values, the error messages
     are reported back to the scraper.
 
-    :extraction_results: A list containing lists of all metadata methods,
-                      methods of a single extractor in a single list. E.g.
-                      [[scraper1_stream1, scraper1_stream2],
-                       [scraper2_stream1, scraper2_stream2]]
-    :lose: A list of values that can be overwritten.
+    :param extraction_results: A list containing lists of all metadata methods,
+        methods of a single extractor in a single list. E.g.
+        [[scraper1_stream1, scraper1_stream2],
+        [scraper2_stream1, scraper2_stream2]]
+    :param lose: A list of values that can be overwritten.
     :returns: A tuple of (a dict containing the metadata of the file,
-              metadata of each stream in its own dict. E.g.
-              {0: {'mimetype': 'video/h264', 'index': 1,
-                   'frame_rate': '30', ...},
-               1: {'mimetype': 'audio/aac', 'index': 2,
-                    'audio_data_encoding': 'AAC', ...}},
-              and a list of error messages due to conflicting values)
+        metadata of each stream in its own dict. E.g.
+        {
+            0: {'mimetype': 'video/h264',
+                'index': 1,
+                'frame_rate': '30', ...},
+            1: {'mimetype': 'audio/aac',
+                'index': 2,
+                'audio_data_encoding': 'AAC', ...}
+        },
+        and a list of error messages due to conflicting values)
 
     """
     # if there are no extraction results, return an empty dict and empty errors
@@ -311,12 +342,12 @@ def generate_metadata_dict(extraction_results, lose) -> tuple[dict, dict]:
     return streams, conflicts
 
 
-def concat(lines, prefix=""):
+def concat(lines: Iterable[str], prefix: str = "") -> str:
     """
     Join given list of strings to single string separated with newlines.
 
-    :lines: List of string to join
-    :prefix: Prefix to prepend each line with
+    :param lines: List of string to join
+    :param prefix: Prefix to prepend each line with
     :returns: Joined lines as string
     """
     return "\n".join([f"{prefix}{line}" for line in lines])
@@ -397,7 +428,7 @@ def utf_sequence(
     return (chunk, b"")
 
 
-def is_zipfile(filename: Path):
+def is_zipfile(filename: Path) -> bool:
     """
     Check if file is a ZIP file.
 
@@ -407,7 +438,7 @@ def is_zipfile(filename: Path):
 
     Relevant Github issue: https://github.com/python/cpython/issues/72680
 
-    :filename: File to check
+    :param filename: File to check
     """
     if zipfile.is_zipfile(filename):
         try:
@@ -419,7 +450,7 @@ def is_zipfile(filename: Path):
         return False
 
 
-def filter_unwanted_chars(info_string):
+def filter_unwanted_chars(info_string: str) -> str:
     """Filter out characters that are not compatible with XML 1.1
 
     Sometimes scraper output contains control characters from the scraping
@@ -429,7 +460,7 @@ def filter_unwanted_chars(info_string):
     Restricted characters in XML 1.1 are listed here:
     https://www.w3.org/TR/xml11/#charsets
 
-    :info_string: String to run filtering on
+    :param info_string: String to run filtering on
     :returns: Filtered string
     """
 
