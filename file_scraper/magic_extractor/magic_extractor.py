@@ -56,7 +56,7 @@ class MagicBaseExtractor(BaseExtractor):
                                               self.filename)
         return magic_result
 
-    def scrape_file(self):
+    def extract(self):
         """Populate streams with supported metadata objects."""
         if not os.path.exists(self.filename):
             self._errors.append("File not found.")

@@ -32,7 +32,7 @@ class PilExtractor(BaseExtractor):
 
         return None
 
-    def scrape_file(self):
+    def extract(self):
         """Scrape data from file."""
         try:
             # Raise the size limit to around a gigabyte for a 3 bpp image

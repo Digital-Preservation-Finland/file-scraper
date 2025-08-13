@@ -15,7 +15,7 @@ class JpylyzerExtractor(BaseExtractor):
     _supported_metadata = [JpylyzerMeta]
     _only_wellformed = True   # Only well-formed check
 
-    def scrape_file(self):
+    def extract(self):
         """Scrape data from file."""
         try:
             result = jpylyzer.checkOneFile(self.filename)

@@ -57,7 +57,7 @@ class FFMpegMetaExtractor(BaseExtractor):
             mimetype=mimetype, version=version,
             check_wellformed=check_wellformed, params=params)
 
-    def scrape_file(self):
+    def extract(self):
         """Scrape A/V files."""
         self._gather_metadata()
         self._check_supported(allow_unav_mime=True,
@@ -219,7 +219,7 @@ class FFMpegExtractor(FFMpegMetaExtractor):
 
         return valid
 
-    def scrape_file(self):
+    def extract(self):
         """Scrape A/V files.
 
         We need to probe streams also for checking well-formedness, because
@@ -227,7 +227,7 @@ class FFMpegExtractor(FFMpegMetaExtractor):
         by Extractor or not. If the a stream can not be identified by
         Extractor, then well-formedness can not be True.
         """
-        super().scrape_file()
+        super().extract()
         self._validate_file()
 
     def _validate_file(self):

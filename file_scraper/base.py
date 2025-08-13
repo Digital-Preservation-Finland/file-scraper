@@ -1,6 +1,7 @@
 """Base module for extractors and detectors."""
 
 import abc
+from abc import abstractmethod
 from pathlib import Path
 from typing import Optional, Iterable, Callable
 
@@ -182,6 +183,10 @@ class BaseExtractor(BaseApparatus):
             if md_class.is_supported(self._predefined_mimetype,
                                      self._predefined_version, self._params):
                 yield md_class(**kwargs)
+
+    @abstractmethod
+    def extract(self):
+        pass
 
 
 class BaseMeta:

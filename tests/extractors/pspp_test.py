@@ -80,7 +80,7 @@ def test_extractor(filename, result_dict, evaluate_extractor):
 
     extractor = PsppExtractor(filename=correct.filename,
                             mimetype="application/x-spss-por")
-    extractor.scrape_file()
+    extractor.extract()
 
     evaluate_extractor(extractor, correct)
 
@@ -95,7 +95,7 @@ def test_pspp_returns_invalid_return_code():
     extractor = PsppExtractor(filename=testfile,
                             mimetype=MIMETYPE)
 
-    extractor.scrape_file()
+    extractor.extract()
 
     assert "PSPP returned invalid return code: -1\n" in extractor.errors()
 

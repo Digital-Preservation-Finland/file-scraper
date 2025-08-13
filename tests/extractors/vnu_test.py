@@ -67,7 +67,7 @@ def test_extractor(filename, result_dict, evaluate_extractor):
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
     extractor = VnuExtractor(filename=correct.filename, mimetype=MIMETYPE)
-    extractor.scrape_file()
+    extractor.extract()
 
     if not correct.well_formed:
         assert not extractor.well_formed
@@ -90,7 +90,7 @@ def test_vnu_returns_invalid_return_code():
     extractor = VnuExtractor(filename=testfile,
                            mimetype=MIMETYPE)
 
-    extractor.scrape_file()
+    extractor.extract()
 
     assert "Vnu returned invalid return code: -1\n" in extractor.errors()
 

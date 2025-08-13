@@ -112,7 +112,7 @@ def test_extractor_valid(filename, result_dict, params, evaluate_extractor):
     extractor = XmllintExtractor(filename=Path(correct.filename),
                                mimetype="text/xml",
                                params=correct.params)
-    extractor.scrape_file()
+    extractor.extract()
 
     if not correct.well_formed:
         assert not extractor.well_formed
@@ -204,7 +204,7 @@ def test_extractor_invalid(filename, result_dict, params, evaluate_extractor):
     extractor = XmllintExtractor(filename=Path(correct.filename),
                                mimetype="text/xml",
                                params=correct.params)
-    extractor.scrape_file()
+    extractor.extract()
     if any(item in filename for item in ["empty",
                                          "no_closing_tag",
                                          "no_namespace_catalog",

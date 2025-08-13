@@ -5,6 +5,7 @@ from typing import Union
 
 from dpres_file_formats import graders
 
+from file_scraper.base import BaseExtractor
 from file_scraper.defaults import UNAV
 from file_scraper.detectors import (MagicCharset, ExifToolDetector)
 from file_scraper.dummy.dummy_extractor import (FileExists, MimeMatchExtractor,
@@ -152,20 +153,20 @@ class Scraper:
             self._params["detected_mimetype"] = tool.mimetype
             self._params["detected_version"] = tool.version
 
-    def _scrape_file(self, scraper, check_wellformed):
+    def _use_extractor(self, extractor: BaseExtractor, check_wellformed: bool):
         """
-        Scrape with the given scraper.
+        Use the given extractor, collect metadata and update well-formadness.
 
-        :scraper: Scraper instance
-        :check_wellformed: True for well-formed checking, False otherwise
+        :param extractor: Extractor instance
+        :param check_wellformed: True for well-formed checking, False otherwise
         """
-        scraper.scrape_file()
-        if scraper.streams:
-            self._scraper_results.append(scraper.streams)
-        self.info[len(self.info)] = scraper.info()
+        extractor.extract()
+        if extractor.streams:
+            self._scraper_results.append(extractor.streams)
+        self.info[len(self.info)] = extractor.info()
         if (self.well_formed is None and check_wellformed) or \
-                scraper.well_formed is False:
-            self.well_formed = scraper.well_formed
+                extractor.well_formed is False:
+            self.well_formed = extractor.well_formed
 
     def _check_utf8(self, check_wellformed):
         """
@@ -180,7 +181,7 @@ class Scraper:
                 self.streams[0]["charset"] == "UTF-8":
             scraper = JHoveUtf8Extractor(filename=self.path,
                                          mimetype=UNAV)
-            self._scrape_file(scraper, True)
+            self._use_extractor(scraper, True)
 
     def _check_mime(self, check_wellformed):
         """
@@ -198,7 +199,7 @@ class Scraper:
             params={"mimetype": self.mimetype,
                     "version": self.version,
                     "well_formed": self.well_formed})
-        self._scrape_file(scraper, check_wellformed)
+        self._use_extractor(scraper, check_wellformed)
 
     def _merge_results(self, check_wellformed):
         """
@@ -212,7 +213,7 @@ class Scraper:
             mimetype=self._predefined_mimetype,
             version=self._predefined_version,
             params=self._params)
-        self._scrape_file(scraper, check_wellformed)
+        self._use_extractor(scraper, check_wellformed)
         self.streams = scraper.streams
 
     def scrape(self, check_wellformed=True):
@@ -234,18 +235,18 @@ class Scraper:
             self.version = "(:unav)"
             return
 
-        for scraper_class in iter_extractors(
+        for extractor_class in iter_extractors(
                 mimetype=self._predefined_mimetype,
                 version=self._predefined_version,
                 check_wellformed=check_wellformed, params=self._params):
-            LOGGER.info("Scraping with %s", scraper_class.__name__)
+            LOGGER.info("Scraping with %s", extractor_class.__name__)
 
-            scraper = scraper_class(
+            extractor = extractor_class(
                 filename=self.path,
                 mimetype=self._predefined_mimetype,
                 version=self._predefined_version,
                 params=self._params)
-            self._scrape_file(scraper, check_wellformed)
+            self._use_extractor(extractor, check_wellformed)
         self._params["scraper_results"] = self._scraper_results
 
         self._merge_results(check_wellformed)
@@ -283,7 +284,7 @@ class Scraper:
             self._predefined_version = self._params.get("version", None)
 
         file_exists = FileExists(self.path, None)
-        self._scrape_file(file_exists, True)
+        self._use_extractor(file_exists, True)
         if file_exists.well_formed is False:
             self._file_exists = False
             return (None, None)
@@ -299,7 +300,7 @@ class Scraper:
         :returns: True, if file is a text file, false otherwise
         """
         scraper = TextfileExtractor(self.path, "text/plain")
-        scraper.scrape_file()
+        scraper.extract()
         if scraper.well_formed is False:
             return False
         return True

@@ -54,7 +54,7 @@ def test_xml_encoding_normalized(tmpdir, encoding, py_codec, norm_encoding):
 
     extractor = LxmlExtractor(filename=tmppath, mimetype="text/xml",
                             params={"charset": norm_encoding})
-    extractor.scrape_file()
+    extractor.extract()
     assert extractor.well_formed
 
 
@@ -103,7 +103,7 @@ def test_charset(filename, mimetype, charset, well_formed):
     """
     params = {"charset": charset}
     extractor = LxmlExtractor(filename=Path(filename), mimetype=mimetype, params=params)
-    extractor.scrape_file()
+    extractor.extract()
     assert extractor.well_formed == well_formed
     if charset:
         if well_formed:

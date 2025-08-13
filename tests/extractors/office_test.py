@@ -76,7 +76,7 @@ def test_extractor_valid_file(filename, mimetype, evaluate_extractor):
     """
     correct = parse_results(filename, mimetype, {}, True)
     extractor = OfficeExtractor(filename=correct.filename, mimetype=mimetype)
-    extractor.scrape_file()
+    extractor.extract()
     correct.update_mimetype(UNAV)
     correct.update_version(UNAV)
 
@@ -140,7 +140,7 @@ def test_extractor_correct_application(filename, mimetype, application):
                     filename)
 
     extractor = OfficeExtractor(filename=testfile, mimetype=mimetype)
-    extractor.scrape_file()
+    extractor.extract()
 
     assert partial_message_included(f"using filter : {application}",
                                     extractor.messages())
@@ -190,7 +190,7 @@ def test_extractor_invalid_file(filename, mimetype, evaluate_extractor):
         "stderr_part": "source file could not be loaded"}
     correct = parse_results(filename, mimetype, result_dict, True)
     extractor = OfficeExtractor(filename=correct.filename, mimetype=mimetype)
-    extractor.scrape_file()
+    extractor.extract()
     correct.streams[0]["version"] = UNAV
     correct.streams[0]["mimetype"] = UNAV
 
@@ -201,7 +201,7 @@ def _scrape(filename, mimetype):
     extractor = OfficeExtractor(
         filename=Path(BASEPATH, mimetype.replace("/", "_"),
                       filename), mimetype=mimetype)
-    extractor.scrape_file()
+    extractor.extract()
     return extractor.well_formed
 
 
@@ -242,7 +242,7 @@ def test_office_returns_invalid_return_code():
     extractor = OfficeExtractor(filename=testfile,
                               mimetype=mimetype)
 
-    extractor.scrape_file()
+    extractor.extract()
 
     assert "Office returned invalid return code: -1\n" in extractor.errors()
 

@@ -62,7 +62,7 @@ class MediainfoExtractor(BaseExtractor):
 
         return None
 
-    def scrape_file(self):
+    def extract(self):
         """Populate streams with supported metadata objects."""
         try:
             mediainfo = pymediainfo.MediaInfo.parse(self.filename)

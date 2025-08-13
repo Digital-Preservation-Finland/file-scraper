@@ -81,7 +81,7 @@ def test_extractor(filename, result_dict, params, evaluate_extractor):
     extractor = SchematronScraper(filename=correct.filename,
                                   mimetype="text/xml",
                                   params=correct.params)
-    extractor.scrape_file()
+    extractor.extract()
 
     evaluate_extractor(extractor, correct)
 
@@ -100,7 +100,7 @@ def test_extractor_verbose(verbose):
             "schematron": "tests/data/text_xml/supplementary/local.sch"
         }
     )
-    extractor.scrape_file()
+    extractor.extract()
 
     # If 'verbose' flag is *not* set, a specific message
     # will be printed indicating output is suppressed
@@ -129,7 +129,7 @@ def test_schematron_returns_invalid_return_code():
                                   params=params)
 
     with pytest.raises(SchematronValidatorError) as err:
-        extractor.scrape_file()
+        extractor.extract()
 
     assert str(err.value) == ("Schematron returned invalid return code -1\n"
                               "stdout:\n\nstderr:\n")

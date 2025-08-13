@@ -175,7 +175,7 @@ def test_extractor_valid(filename, mimetype, charset, extractor_class,
 
     extractor = extractor_class(filename=correct.filename, mimetype=mimetype,
                             params={"charset": charset})
-    extractor.scrape_file()
+    extractor.extract()
     if correct.streams[0]["mimetype"] == "application/xhtml+xml":
         correct.streams[0]["stream_type"] = "text"
     if ((correct.streams[0]["mimetype"] in office_unav_version_mimes) or
@@ -224,7 +224,7 @@ def test_invalid_office(filename, mimetype):
     correct.update_mimetype(mimetype)
     correct.update_version(filename.split("_")[1])
     extractor = MagicBinaryExtractor(filename=correct.filename, mimetype=mimetype)
-    extractor.scrape_file()
+    extractor.extract()
 
     assert extractor.well_formed is False
     assert partial_message_included(correct.stdout_part, extractor.messages())
@@ -256,7 +256,7 @@ def test_invalid_markup_pdf(filename, mimetype, extractor_class,
     if mimetype != "text/html":
         correct.update_version(filename.split("_")[1])
     extractor = extractor_class(filename=correct.filename, mimetype=mimetype)
-    extractor.scrape_file()
+    extractor.extract()
 
     correct.well_formed = None
 
@@ -285,7 +285,7 @@ def test_invalid_images(filename, mimetype):
     correct.update_mimetype(mimetype)
     correct.update_version(filename.split("_")[1])
     extractor = MagicBinaryExtractor(filename=correct.filename, mimetype=mimetype)
-    extractor.scrape_file()
+    extractor.extract()
 
     assert extractor.well_formed is False
     assert partial_message_included(correct.stdout_part, extractor.messages())
@@ -318,7 +318,7 @@ def test_msoffice_word_detected():
         ),
         mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     )
-    extractor.scrape_file()
+    extractor.extract()
 
     assert extractor.streams[0].mimetype() \
         == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"

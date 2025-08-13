@@ -144,7 +144,7 @@ def test_mediainfo_extractor_mov(filename, result_dict, mimetype,
     """
     correct = parse_results(filename, mimetype, result_dict, False)
     extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype)
-    extractor.scrape_file()
+    extractor.extract()
 
     if filename == "valid__h264_aac_no_ftyp_atom.mov":
         correct.streams[0]["codec_name"] = "QuickTime"
@@ -216,7 +216,7 @@ def test_mediainfo_extractor_mkv(filename, result_dict, evaluate_extractor):
     mimetype = "video/x-matroska"
     correct = parse_results(filename, mimetype, result_dict, False)
     extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype)
-    extractor.scrape_file()
+    extractor.extract()
     if "empty" in filename:
         correct.version = None
         correct.streams[0]["version"] = None
@@ -266,7 +266,7 @@ def test_mediainfo_extractor_wav(filename, result_dict, evaluate_extractor):
         correct.streams[0]["version"] = UNAP
 
     extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype)
-    extractor.scrape_file()
+    extractor.extract()
 
     if "empty" in filename:
         assert partial_message_included(correct.stdout_part,
@@ -303,7 +303,7 @@ def test_mediainfo_extractor_flac(filename, result_dict, evaluate_extractor):
     correct = parse_results(filename, mimetype, result_dict, False)
 
     extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype)
-    extractor.scrape_file()
+    extractor.extract()
 
     if "header_edited" in filename:
         assert partial_message_included(correct.stdout_part,
@@ -350,7 +350,7 @@ def test_mediainfo_extractor_aiff(filename, result_dict, evaluate_extractor):
         correct.streams[0].pop("data_rate", None)
 
     extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype)
-    extractor.scrape_file()
+    extractor.extract()
 
     if "data_bytes_missing" in filename:
         assert partial_message_included(correct.stdout_part,
@@ -397,7 +397,7 @@ def test_mediainfo_extractor_wma(filename, result_dict, evaluate_extractor):
         correct.well_formed = None
 
     extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype)
-    extractor.scrape_file()
+    extractor.extract()
 
     evaluate_extractor(extractor, correct)
 
@@ -432,7 +432,7 @@ def test_mediainfo_extractor_wmv(filename, result_dict, evaluate_extractor):
     correct = parse_results(filename, mimetype, result_dict, False)
 
     extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype)
-    extractor.scrape_file()
+    extractor.extract()
 
     evaluate_extractor(extractor, correct)
 
@@ -471,7 +471,7 @@ def test_mediainfo_extractor_mpeg(filename, result_dict, evaluate_extractor):
     mimetype = "video/mpeg"
     correct = parse_results(filename, mimetype, result_dict, False)
     extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype)
-    extractor.scrape_file()
+    extractor.extract()
     if "empty" in filename:
         assert partial_message_included(correct.stdout_part,
                                         extractor.messages())
@@ -536,7 +536,7 @@ def test_mediainfo_extractor_mp4(filename, result_dict, evaluate_extractor):
     mimetype = "video/mp4"
     correct = parse_results(filename, mimetype, result_dict, False)
     extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype)
-    extractor.scrape_file()
+    extractor.extract()
 
     if "invalid" in filename:
         assert partial_message_included(correct.stdout_part,
@@ -582,7 +582,7 @@ def test_mediainfo_extractor_m4a(filename, result_dict, evaluate_extractor):
     mimetype = "audio/mp4"
     correct = parse_results(filename, mimetype, result_dict, False)
     extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype)
-    extractor.scrape_file()
+    extractor.extract()
 
     if "empty" in filename:
         assert partial_message_included(correct.stdout_part,
@@ -618,7 +618,7 @@ def test_mediainfo_extractor_mp3(filename, result_dict, evaluate_extractor):
     mimetype = "audio/mpeg"
     correct = parse_results(filename, mimetype, result_dict, False)
     extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype)
-    extractor.scrape_file()
+    extractor.extract()
 
     if "empty" in filename:
         assert partial_message_included(correct.stdout_part,
@@ -686,7 +686,7 @@ def test_mediainfo_extractor_mpegts(filename, result_dict, evaluate_extractor):
     mimetype = "video/MP2T"
     correct = parse_results(filename, mimetype, result_dict, False)
     extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype.lower())
-    extractor.scrape_file()
+    extractor.extract()
 
     if "empty" in filename:
         assert partial_message_included(correct.stdout_part,
@@ -734,7 +734,7 @@ def test_mediainfo_extractor_mpegps(filename, result_dict,
     """
     correct = parse_results(filename, mimetype, result_dict, False)
     extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype.lower())
-    extractor.scrape_file()
+    extractor.extract()
 
     if "empty" in filename:
         assert partial_message_included(correct.stdout_part,
@@ -760,7 +760,7 @@ def test_mediainfo_extractor_avi(evaluate_extractor):
 
     correct = parse_results(filename, mimetype, result_dict, False)
     extractor = MediainfoExtractor(filename=correct.filename, mimetype=mimetype)
-    extractor.scrape_file()
+    extractor.extract()
 
     evaluate_extractor(extractor, correct)
 

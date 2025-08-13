@@ -183,7 +183,7 @@ def test_extractor(filename, result_dict, header,
     params.update(extra_params)
     extractor = CsvExtractor(filename=correct.filename, mimetype=MIMETYPE,
                            params=params)
-    extractor.scrape_file()
+    extractor.extract()
 
     evaluate_extractor(extractor, correct)
 
@@ -250,7 +250,7 @@ def test_large_field(filename, result_dict, header,
     params.update(extra_params)
     extractor = CsvExtractor(filename=correct.filename, mimetype=MIMETYPE,
                            params=params)
-    extractor.scrape_file()
+    extractor.extract()
 
     evaluate_extractor(extractor, correct)
 
@@ -270,7 +270,7 @@ def test_first_line_charset(filename, charset):
               "mimetype": "text/csv", "charset": charset}
 
     extractor = CsvExtractor(Path(filename), mimetype="text/csv", params=params)
-    extractor.scrape_file()
+    extractor.extract()
     assert extractor.well_formed
     assert extractor.streams[0].first_line() == \
         ["year", "bränd", "mödel", "detail", "other"]
@@ -279,7 +279,7 @@ def test_first_line_charset(filename, charset):
 def test_pdf_as_csv():
     """Test CSV extractor with PDF files."""
     extractor = CsvExtractor(filename=PDF_PATH, mimetype="text/csv")
-    extractor.scrape_file()
+    extractor.extract()
 
     assert not extractor.well_formed, extractor.messages() + extractor.errors()
     assert not partial_message_included("successfully", extractor.messages())
@@ -315,7 +315,7 @@ def test_no_parameters(filename, evaluate_extractor):
                                                  "detail", "other"]}}},
                             True)
     extractor = CsvExtractor(correct.filename, mimetype="text/csv")
-    extractor.scrape_file()
+    extractor.extract()
     evaluate_extractor(extractor, correct)
 
 
@@ -342,7 +342,7 @@ def test_empty_file():
     """
     extractor = CsvExtractor(Path("tests/data/text_csv/invalid__empty.csv"),
                            mimetype=MIMETYPE)
-    extractor.scrape_file()
+    extractor.extract()
     assert partial_message_included("Could not determine delimiter",
                                     extractor.errors())
     assert not extractor.well_formed
@@ -350,7 +350,7 @@ def test_empty_file():
     extractor = CsvExtractor(Path("tests/data/text_csv/invalid__empty.csv"),
                            mimetype=MIMETYPE,
                            params={"delimiter": ";", "separator": "CRLF"})
-    extractor.scrape_file()
+    extractor.extract()
     assert partial_message_included("Error reading file as CSV",
                                     extractor.errors())
     assert not extractor.well_formed
@@ -361,7 +361,7 @@ def test_nonexistent_file():
     Test that CsvExtractor logs an error when file is not found.
     """
     extractor = CsvExtractor(filename=Path("nonexistent/file.csv"), mimetype="text/csv")
-    extractor.scrape_file()
+    extractor.extract()
     assert partial_message_included("Error when reading the file: ",
                                     extractor.errors())
     assert not extractor.well_formed

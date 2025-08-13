@@ -176,7 +176,7 @@ def test_extractor_gif(filename, result_dict, evaluate_extractor):
         correct.update_mimetype("image/gif")
         extractor = JHoveGifExtractor(filename=correct.filename,
                                     mimetype="image/gif")
-        extractor.scrape_file()
+        extractor.extract()
 
         evaluate_extractor(extractor, correct)
 
@@ -239,7 +239,7 @@ def test_old_namespace(filename, result_dict, evaluate_extractor, monkeypatch):
         correct.update_mimetype("image/gif")
         extractor = JHoveGifExtractor(filename=correct.filename,
                                     mimetype="image/gif")
-        extractor.scrape_file()
+        extractor.extract()
         assert "hul.harvard.edu" in extractor._report.values()[0]
 
         evaluate_extractor(extractor, correct)
@@ -279,7 +279,7 @@ def test_extractor_tiff(filename, result_dict, evaluate_extractor):
     correct.update_mimetype("image/tiff")
     extractor = JHoveTiffExtractor(filename=correct.filename,
                                  mimetype="image/tiff")
-    extractor.scrape_file()
+    extractor.extract()
 
     evaluate_extractor(extractor, correct)
 
@@ -314,7 +314,7 @@ def test_extractor_dng(filename, result_dict, evaluate_extractor):
     correct.update_version(UNAV)
     extractor = JHoveDngExtractor(filename=correct.filename,
                                 mimetype="image/x-adobe-dng")
-    extractor.scrape_file()
+    extractor.extract()
 
     evaluate_extractor(extractor, correct)
 
@@ -351,7 +351,7 @@ def test_extractor_utf8(filename, result_dict, evaluate_extractor):
     extractor = JHoveUtf8Extractor(filename=correct.filename,
                                  mimetype="text/plain",
                                  params=correct.params)
-    extractor.scrape_file()
+    extractor.extract()
     correct.streams[0]["mimetype"] = UNAV
     correct.streams[0]["version"] = UNAV
 
@@ -389,7 +389,7 @@ def test_extractor_pdf_valid(filename, result_dict, evaluate_extractor):
             correct.update_version("1.4")
         extractor = JHovePdfExtractor(filename=correct.filename,
                                     mimetype="application/pdf")
-        extractor.scrape_file()
+        extractor.extract()
 
         evaluate_extractor(extractor, correct)
 
@@ -422,7 +422,7 @@ def test_extractor_pdf_invalid(filename, result_dict, evaluate_extractor):
         correct.update_mimetype("application/pdf")
         extractor = JHovePdfExtractor(filename=correct.filename,
                                     mimetype="application/pdf")
-        extractor.scrape_file()
+        extractor.extract()
 
         evaluate_extractor(extractor, correct)
 
@@ -444,7 +444,7 @@ def test_pdf_root_version_in_results(filename, version):
     extractor = JHovePdfExtractor(
         filename=filename,
         mimetype="application/pdf")
-    extractor.scrape_file()
+    extractor.extract()
     assert f"PDF root version is {version}" in extractor.messages()
 
 
@@ -461,7 +461,7 @@ def test_pdf_17_scraping_result_ignored():
     extractor = JHovePdfExtractor(
         filename=Path("tests/data/application_pdf/valid_1.7.pdf"),
         mimetype="application/pdf")
-    extractor.scrape_file()
+    extractor.extract()
     assert not extractor.errors()
     assert ("JHove does not support PDF 1.7: All errors and messages ignored."
             in extractor.messages())
@@ -484,7 +484,7 @@ def test_extractor_invalid_pdfversion(version_in_filename, found_version):
         filename=Path("tests/data/application_pdf/invalid_X_wrong_version"
                       ".pdf".replace("X", version_in_filename)),
         mimetype="application/pdf")
-    extractor.scrape_file()
+    extractor.extract()
     assert partial_message_included(
         "MIME type application/pdf with version {} is not "
         "supported.".format(found_version), extractor.errors())
@@ -525,7 +525,7 @@ def test_extractor_jpeg(filename, result_dict, evaluate_extractor):
     correct.update_mimetype("image/jpeg")
     extractor = JHoveJpegExtractor(filename=correct.filename,
                                  mimetype="image/jpeg")
-    extractor.scrape_file()
+    extractor.extract()
     correct.streams[0]["version"] = UNAV
 
     evaluate_extractor(extractor, correct)
@@ -622,7 +622,7 @@ def test_extractor_html(filename, result_dict, mimetype, charset,
     extractor = JHoveHtmlExtractor(filename=correct.filename,
                                  mimetype=mimetype,
                                  params=correct.params)
-    extractor.scrape_file()
+    extractor.extract()
 
     evaluate_extractor(extractor, correct)
 
@@ -670,7 +670,7 @@ def test_extractor_wav(filename, result_dict, evaluate_extractor):
     correct.update_mimetype("audio/x-wav")
     extractor = JHoveWavExtractor(filename=correct.filename,
                                 mimetype="audio/x-wav")
-    extractor.scrape_file()
+    extractor.extract()
 
     evaluate_extractor(extractor, correct)
 
@@ -703,7 +703,7 @@ def test_extractor_aiff(filename, result_dict, evaluate_extractor):
         correct.update_version("1.3")
     extractor = JHoveAiffExtractor(filename=correct.filename,
                                  mimetype="audio/x-aiff")
-    extractor.scrape_file()
+    extractor.extract()
 
     evaluate_extractor(extractor, correct)
 
@@ -801,7 +801,7 @@ def test_charset(filename, mimetype, charset, well_formed):
     params = {"charset": charset}
     extractor = JHoveHtmlExtractor(filename=Path(filename), mimetype=mimetype,
                                  params=params)
-    extractor.scrape_file()
+    extractor.extract()
     assert extractor.well_formed == well_formed
     if charset:
         if well_formed:
@@ -861,7 +861,7 @@ def test_extractor_epub(filename, result_dict, evaluate_extractor):
     correct.update_mimetype("application/epub+zip")
     extractor = JHoveEpubExtractor(filename=correct.filename,
                                  mimetype="application/epub+zip")
-    extractor.scrape_file()
+    extractor.extract()
 
     evaluate_extractor(extractor, correct)
 
@@ -877,7 +877,7 @@ def test_jhove_returns_invalid_return_code():
     extractor = JHovePdfExtractor(filename=testfile,
                                 mimetype=mimetype)
 
-    extractor.scrape_file()
+    extractor.extract()
 
     assert "JHove returned invalid return code: -1\n" in extractor.errors()
 

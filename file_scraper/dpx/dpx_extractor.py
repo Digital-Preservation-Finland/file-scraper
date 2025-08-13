@@ -15,7 +15,7 @@ class DpxExtractor(BaseExtractor):
     _supported_metadata = [DpxMeta]
     _only_wellformed = True
 
-    def scrape_file(self):
+    def extract(self):
         """Scrape DPX."""
 
         valid, output, logs = validate_file(self.filename)

@@ -30,7 +30,7 @@ class VerapdfExtractor(BaseExtractor):
     _supported_metadata = [VerapdfMeta]
     _only_wellformed = True  # Only well-formed check
 
-    def scrape_file(self):
+    def extract(self):
         """
         Scrape file.
 

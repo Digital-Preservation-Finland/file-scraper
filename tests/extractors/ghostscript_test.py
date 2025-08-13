@@ -68,7 +68,7 @@ def test_extractor_pdf(filename, result_dict, evaluate_extractor):
                                 result_dict, True)
         extractor = GhostscriptExtractor(filename=correct.filename,
                                        mimetype="application/pdf")
-        extractor.scrape_file()
+        extractor.extract()
 
         # Ghostscript cannot handle version or MIME type
         correct.streams[0]["version"] = UNAV
@@ -102,7 +102,7 @@ def test_jpeg2000_inside_pdf(evaluate_extractor):
     correct = parse_results(filename, mimetype, result_dict, True)
 
     extractor = GhostscriptExtractor(filename=correct.filename, mimetype=mimetype)
-    extractor.scrape_file()
+    extractor.extract()
 
     # Ghostscript cannot handle version or MIME type
     correct.streams[0]["version"] = UNAV
@@ -122,7 +122,7 @@ def test_ghostscript_returns_invalid_return_code():
     extractor = GhostscriptExtractor(filename=Path(testfile),
                                    mimetype=mimetype)
 
-    extractor.scrape_file()
+    extractor.extract()
 
     assert "Ghostscript returned invalid return code: -1\n" in extractor.errors()
 

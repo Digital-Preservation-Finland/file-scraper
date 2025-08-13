@@ -59,7 +59,7 @@ def test_extractor(filename, result_dict, evaluate_extractor):
                             result_dict, True)
     correct.streams[0]["version"] = UNAV
     extractor = DbptkExtractor(filename=correct.filename, mimetype=MIMETYPE)
-    extractor.scrape_file()
+    extractor.extract()
 
     if not correct.well_formed:
         assert not extractor.well_formed

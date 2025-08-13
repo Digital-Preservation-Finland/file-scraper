@@ -38,7 +38,7 @@ def test_scrape_valid_file(filename, mimetype):
             filename=os.path.join(BASEPATH, mimetype.replace('/', '_'),
                                   filename),
             mimetype=mimetype)
-        extractor.scrape_file()
+        extractor.extract()
         assert extractor.well_formed in [True, None]
 
 

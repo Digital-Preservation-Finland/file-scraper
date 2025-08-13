@@ -42,7 +42,7 @@ def test_extractor_dng(filename, result_dict, evaluate_extractor):
 
     extractor = ExifToolDngExtractor(filename=correct.filename,
                                    mimetype="image/x-adobe-dng")
-    extractor.scrape_file()
+    extractor.extract()
 
     if correct.well_formed is not False:
         evaluate_extractor(extractor, correct)

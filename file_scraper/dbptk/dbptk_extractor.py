@@ -27,7 +27,7 @@ class DbptkExtractor(BaseExtractor):
         self._path = f"/usr/lib/jvm/jre-1.8.0/bin{os.pathsep} \
         {os.environ['PATH']}"
 
-    def scrape_file(self):
+    def extract(self):
         """Scrape file using dbptk."""
         # Set $PATH so that Java 8 is favored if it's installed
 

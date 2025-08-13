@@ -16,7 +16,7 @@ class VnuExtractor(BaseExtractor):
     _supported_metadata = [VnuMeta]
     _only_wellformed = True              # Only well-formed check
 
-    def scrape_file(self):
+    def extract(self):
         """Scrape file using vnu.jar."""
         filterfile = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                   'vnu_filters.txt')

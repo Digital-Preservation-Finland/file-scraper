@@ -36,7 +36,7 @@ class BaseExtractorBasic(BaseExtractor):
 
     _supported_metadata = [BaseMetaBasic]  # Supported metadata models
 
-    def scrape_file(self):
+    def extract(self):
         """Do nothing, scraping not needed here."""
         self.streams.append(BaseMetaBasic([]))
 

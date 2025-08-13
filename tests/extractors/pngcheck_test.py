@@ -49,7 +49,7 @@ def test_extractor(filename, result_dict, evaluate_extractor):
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
     extractor = PngcheckExtractor(filename=correct.filename, mimetype="image/png")
-    extractor.scrape_file()
+    extractor.extract()
     correct.version = None
     correct.update_mimetype(UNAV)
     correct.update_version(UNAV)

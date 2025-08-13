@@ -63,7 +63,7 @@ def test_extractor(filename, result_dict, evaluate_extractor):
                                 result_dict, True)
         extractor = VerapdfExtractor(filename=correct.filename,
                                    mimetype=MIMETYPE)
-        extractor.scrape_file()
+        extractor.extract()
 
         if not correct.well_formed:
             assert not extractor.well_formed
@@ -102,7 +102,7 @@ def test_extractor_invalid_pdfa(filename, result_dict, evaluate_extractor):
                             result_dict, True)
     extractor = VerapdfExtractor(filename=correct.filename,
                                mimetype=MIMETYPE)
-    extractor.scrape_file()
+    extractor.extract()
 
     if not correct.well_formed:
         assert not extractor.well_formed
@@ -125,7 +125,7 @@ def test_extractor_no_file_extension(evaluate_extractor):
     }
     correct = parse_results(filename, MIMETYPE, result_dict, True)
     extractor = VerapdfExtractor(filename=correct.filename, mimetype=MIMETYPE)
-    extractor.scrape_file()
+    extractor.extract()
 
     evaluate_extractor(extractor, correct)
 
@@ -140,7 +140,7 @@ def test_verapdf_returns_invalid_return_code():
     extractor = VerapdfExtractor(filename=testfile,
                                mimetype=MIMETYPE)
 
-    extractor.scrape_file()
+    extractor.extract()
 
     assert "VeraPDF returned invalid return code: -1" in extractor.errors()
 

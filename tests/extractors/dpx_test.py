@@ -62,7 +62,7 @@ def test_extractor(filename, result_dict, evaluate_extractor):
     correct = parse_results(filename, MIMETYPE,
                             result_dict, True)
     extractor = DpxExtractor(filename=correct.filename, mimetype=MIMETYPE)
-    extractor.scrape_file()
+    extractor.extract()
 
     evaluate_extractor(extractor, correct)
 
@@ -76,7 +76,7 @@ def test_dpx_returns_invalid_return_code():
     extractor = DpxExtractor(filename=testfile,
                            mimetype=MIMETYPE)
 
-    extractor.scrape_file()
+    extractor.extract()
     extractor.errors()
 
     assert "Different file sizes from header" in extractor.errors()[0]

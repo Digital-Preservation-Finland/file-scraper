@@ -21,7 +21,7 @@ LOSE = (None, UNAV, "")
 class ExtractorNotFound(BaseExtractor):
     """Extractor for the case where extractor was not found."""
 
-    def scrape_file(self):
+    def extract(self):
         """No need to scrape anything, just collect."""
         self._errors.append("Proper extractor was not found. "
                             "The file was not analyzed.")
@@ -71,7 +71,7 @@ class NoWellformednessBaseExtractor(BaseExtractor):
 class FileExists(NoWellformednessBaseExtractor):
     """Extractor for the case where file was not found."""
 
-    def scrape_file(self):
+    def extract(self):
         """Check if file exists."""
         if self.filename:
             path = self.filename
@@ -106,7 +106,7 @@ class MimeMatchExtractor(NoWellformednessBaseExtractor):
     ]
     _supported_metadata = [DummyMeta]
 
-    def scrape_file(self):
+    def extract(self):
         """
         No need to scrape anything, just compare already collected metadata.
         """
@@ -151,7 +151,7 @@ class DetectedMimeVersionExtractor(NoWellformednessBaseExtractor):
     _supported_metadata = [DetectedMimeVersionMeta,
                            DetectedSiardVersionMeta]
 
-    def scrape_file(self):
+    def extract(self):
         """
         Enrich the metadata with the detected file format version for some
         file formats.
@@ -213,7 +213,7 @@ class ResultsMergeExtractor(NoWellformednessBaseExtractor):
             params = {}
         self._scraper_results = params.get("scraper_results", None)
 
-    def scrape_file(self):
+    def extract(self):
         """
         No need to scrape anything, just merge already collected metadata.
         """

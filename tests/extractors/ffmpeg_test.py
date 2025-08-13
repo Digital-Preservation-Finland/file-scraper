@@ -292,7 +292,7 @@ def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
     correct.streams.update(NO_METADATA)
 
     extractor = FFMpegExtractor(filename=correct.filename, mimetype=mimetype.lower())
-    extractor.scrape_file()
+    extractor.extract()
 
     evaluate_extractor(extractor, correct)
 
@@ -371,7 +371,7 @@ def test_ffmpeg_extractor_valid(filename, result_dict, mimetype,
     correct = parse_results(filename, mimetype, result_dict, True)
 
     extractor = FFMpegExtractor(filename=Path(correct.filename), mimetype=mimetype)
-    extractor.scrape_file()
+    extractor.extract()
 
     evaluate_extractor(extractor, correct)
 
@@ -379,7 +379,7 @@ def test_ffmpeg_extractor_valid(filename, result_dict, mimetype,
 
     extractor_meta = FFMpegMetaExtractor(filename=correct_meta.filename,
                                        mimetype=mimetype)
-    extractor_meta.scrape_file()
+    extractor_meta.extract()
 
     evaluate_extractor(extractor_meta, correct_meta)
 
@@ -636,7 +636,7 @@ def test_ffmpeg_extractor_invalid(filename, result_dict, mimetype,
 
     extractor = FFMpegExtractor(filename=correct.filename,
                               mimetype=mimetype)
-    extractor.scrape_file()
+    extractor.extract()
 
     evaluate_extractor(extractor, correct)
 
@@ -665,7 +665,7 @@ def test_ffmpeg_extractor_wellformed_none(filepath, mimetype):
     streams are not acceptable inside the container.
     """
     extractor = FFMpegExtractor(filename=Path(filepath), mimetype=mimetype)
-    extractor.scrape_file()
+    extractor.extract()
 
     # Ensure that file was validated to avoid false positive
     assert 'The file was analyzed successfully with FFMpeg.' \
@@ -685,7 +685,7 @@ def test_ffmpeg_returns_invalid_return_code():
     extractor = FFMpegExtractor(filename=testfile,
                               mimetype=mimetype)
 
-    extractor.scrape_file()
+    extractor.extract()
 
     assert "FFMpeg returned invalid return code: -1\n" in extractor.errors()
 
@@ -736,7 +736,7 @@ def test_unsupported_format(filename):
     # Scrape the file. Use some supported mimetype, otherwise the
     # Extractor will refuse to scrape.
     extractor = FFMpegExtractor(filename=Path(filename), mimetype="audio/mp4")
-    extractor.scrape_file()
+    extractor.extract()
 
     # Ensure that file was validated to avoid false positive
     assert 'The file was analyzed successfully with FFMpeg.' \

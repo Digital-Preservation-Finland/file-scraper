@@ -59,7 +59,7 @@ def test_extractor_jp2(filename, result_dict):
     extractor = JpylyzerExtractor(filename=Path(correct.filename),
                                 mimetype="image/jp2")
 
-    extractor.scrape_file()
+    extractor.extract()
 
     assert extractor.well_formed == correct.well_formed
 

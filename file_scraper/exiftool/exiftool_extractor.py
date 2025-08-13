@@ -39,7 +39,7 @@ class ExifToolExtractorBase(BaseExtractor):
 
         return None
 
-    def scrape_file(self):
+    def extract(self):
         """
         Scrape data from file.
         """

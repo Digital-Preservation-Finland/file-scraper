@@ -41,7 +41,7 @@ class WarctoolsExtractor(BaseExtractor):
         return super().is_supported(
             mimetype, version, check_wellformed, params)
 
-    def scrape_file(self):
+    def extract(self):
         """Scrape WARC file."""
         try:
             # First assume archive is compressed
@@ -106,7 +106,7 @@ class WarctoolsFullExtractor(WarctoolsExtractor):
         return any(x.is_supported(mimetype, version) for x in
                    cls._supported_metadata)
 
-    def scrape_file(self):
+    def extract(self):
         """Scrape WARC file."""
         size = os.path.getsize(self.filename)
         if size == 0:
@@ -126,7 +126,7 @@ class WarctoolsFullExtractor(WarctoolsExtractor):
 
         self._messages.append(shell.stdout)
 
-        super().scrape_file()
+        super().extract()
 
     def tools(self):
         """

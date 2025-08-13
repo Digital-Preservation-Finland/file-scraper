@@ -84,7 +84,12 @@ class SchematronScraper(BaseExtractor):
                 return True
         return False
 
+    # Keep the SchematronScraper interface intact
     def scrape_file(self):
+        """Do the Schematron check."""
+        self.extract()
+
+    def extract(self):
         """Do the Schematron check."""
         if self._schematron_file is None:
             self._errors.append("Schematron file missing from parameters.")

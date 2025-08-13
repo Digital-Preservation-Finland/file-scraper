@@ -161,7 +161,7 @@ def test_extractor_tif(filename, result_dict, evaluate_extractor):
         correct.streams[index]["version"] = UNAV
 
     extractor = WandExtractor(filename=correct.filename, mimetype="image/tiff")
-    extractor.scrape_file()
+    extractor.extract()
     evaluate_extractor(extractor, correct)
 
 
@@ -194,7 +194,7 @@ def test_extractor_dng(filename, result_dict, evaluate_extractor):
     correct = parse_results(filename, "image/x-adobe-dng", result_dict, False)
     extractor = WandExtractor(filename=correct.filename,
                             mimetype="image/x-adobe-dng")
-    extractor.scrape_file()
+    extractor.extract()
     evaluate_extractor(extractor, correct)
 
 
@@ -237,7 +237,7 @@ def test_extractor_jpg(filename, result_dict, evaluate_extractor):
         correct.streams[0]["compression"] = "jpeg"
 
     extractor = WandExtractor(filename=correct.filename, mimetype="image/jpeg")
-    extractor.scrape_file()
+    extractor.extract()
     evaluate_extractor(extractor, correct)
 
 
@@ -274,7 +274,7 @@ def test_extractor_jp2(filename, result_dict, evaluate_extractor):
         correct.streams[0]["version"] = UNAV
 
     extractor = WandExtractor(filename=correct.filename, mimetype="image/jp2")
-    extractor.scrape_file()
+    extractor.extract()
     evaluate_extractor(extractor, correct)
 
 
@@ -303,7 +303,7 @@ def test_extractor_png(filename, result_dict, evaluate_extractor):
     correct.streams[0]["version"] = UNAV
 
     extractor = WandExtractor(filename=correct.filename, mimetype="image/png")
-    extractor.scrape_file()
+    extractor.extract()
     evaluate_extractor(extractor, correct)
 
 
@@ -340,7 +340,7 @@ def test_extractor_gif(filename, result_dict, evaluate_extractor):
         stream["version"] = UNAV
 
     extractor = WandExtractor(filename=correct.filename, mimetype="image/gif")
-    extractor.scrape_file()
+    extractor.extract()
     evaluate_extractor(extractor, correct)
 
 
@@ -375,7 +375,7 @@ def test_extractor_webp(filename, result_dict, evaluate_extractor):
         stream["width"] = "16"
 
     extractor = WandExtractor(filename=correct.filename, mimetype="image/webp")
-    extractor.scrape_file()
+    extractor.extract()
     evaluate_extractor(extractor, correct)
 
     if "lossless" in filename:
@@ -407,7 +407,7 @@ def test_extractor_colorspace(mimetype, filename, expected):
         filename=os.path.join("tests/data/", mimetype.replace("/", "_"),
                               filename),
         mimetype=mimetype)
-    extractor.scrape_file()
+    extractor.extract()
 
     assert extractor.streams[0].colorspace().lower() == expected.lower()
 
@@ -480,7 +480,7 @@ def test_extractor_invalid(filename, mimetype, stderr_part):
         filename=os.path.join("tests/data/", mimetype.replace("/", "_"),
                               filename),
         mimetype=mimetype)
-    extractor.scrape_file()
+    extractor.extract()
 
     assert not extractor.streams
     assert extractor.info()["class"] == "WandExtractor"

@@ -78,7 +78,7 @@ def test_existing_files(filename, mimetype, is_textfile, special_handling,
     correct = parse_results(filename, mimetype, {}, False)
     extractor = TextfileExtractor(filename=correct.filename,
                                 mimetype="text/plain")
-    extractor.scrape_file()
+    extractor.extract()
 
     if is_textfile:
         correct.streams[0]["stream_type"] = "text"
@@ -174,7 +174,7 @@ def test_encoding_check(filename, charset, is_wellformed, evaluate_extractor):
     correct = parse_results(filename, "text/plain", {}, True, params)
     extractor = TextEncodingExtractor(filename=correct.filename,
                                     mimetype="text/plain", params=params)
-    extractor.scrape_file()
+    extractor.extract()
     if not is_wellformed:
         correct.update_mimetype(UNAV)
         correct.update_version(UNAV)
@@ -210,7 +210,7 @@ def test_encoding_not_defined(charset):
     extractor = TextEncodingExtractor(
         filename=Path("tests/data/text_plain/valid__utf8_without_bom.txt"),
         mimetype="text/plain", params={"charset": charset})
-    extractor.scrape_file()
+    extractor.extract()
     assert partial_message_included(
         "Character encoding not defined.", extractor.errors())
 
@@ -224,7 +224,7 @@ def test_decoding_limit(monkeypatch):
     extractor = TextEncodingExtractor(
         filename=Path("tests/data/text_plain/valid__utf8_bom.txt"),
         mimetype="text/plain", params={"charset": "UTF-8"})
-    extractor.scrape_file()
+    extractor.extract()
     assert partial_message_included(
         "First 8 bytes read, we skip the remainder", extractor.messages())
 
@@ -239,7 +239,7 @@ def test_error_message_control_character():
     extractor = TextEncodingExtractor(
         filename=Path("tests/data/text_plain/invalid__control_character.txt"),
         mimetype="text/plain", params={"charset": "UTF-8"})
-    extractor.scrape_file()
+    extractor.extract()
     assert not partial_message_included("\x1f", extractor.errors())
     character = "'\\x1f'"
     assert partial_message_included(

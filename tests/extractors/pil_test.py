@@ -129,7 +129,7 @@ def test_extractor_tif(filename, result_dict, evaluate_extractor):
         correct.stdout_part = ""
         correct.stderr_part = INVALID_MSG
     extractor = PilExtractor(filename=correct.filename, mimetype="image/tiff")
-    extractor.scrape_file()
+    extractor.extract()
 
     if correct.well_formed is not False:
         for index, _ in enumerate(correct.streams):
@@ -177,7 +177,7 @@ def test_extractor_dng(filename, result_dict, evaluate_extractor):
     correct.streams[0]["version"] = UNAV
     extractor = PilExtractor(filename=correct.filename,
                            mimetype="image/x-adobe-dng")
-    extractor.scrape_file()
+    extractor.extract()
     if correct.well_formed is not False:
         evaluate_extractor(extractor, correct)
     else:
@@ -234,7 +234,7 @@ def test_extractor_jpg(filename, result_dict, evaluate_extractor):
         correct.stderr_part = INVALID_MSG
 
     extractor = PilExtractor(filename=correct.filename, mimetype="image/jpeg")
-    extractor.scrape_file()
+    extractor.extract()
 
     if correct.well_formed is not False:
         evaluate_extractor(extractor, correct)
@@ -278,7 +278,7 @@ def test_extractor_jp2(filename, result_dict, evaluate_extractor):
         correct.stdout_part = ""
         correct.stderr_part = INVALID_MSG
     extractor = PilExtractor(filename=correct.filename, mimetype="image/jp2")
-    extractor.scrape_file()
+    extractor.extract()
 
     if correct.well_formed is not False:
         evaluate_extractor(extractor, correct)
@@ -336,7 +336,7 @@ def test_extractor_png(filename, result_dict, evaluate_extractor):
         correct.stdout_part = ""
         correct.stderr_part = INVALID_MSG
     extractor = PilExtractor(filename=correct.filename, mimetype="image/png")
-    extractor.scrape_file()
+    extractor.extract()
 
     if correct.well_formed is not False:
         evaluate_extractor(extractor, correct)
@@ -405,7 +405,7 @@ def test_extractor_gif(filename, result_dict, evaluate_extractor):
         correct.stderr_part = INVALID_MSG
 
     extractor = PilExtractor(filename=correct.filename, mimetype="image/gif")
-    extractor.scrape_file()
+    extractor.extract()
 
     if correct.well_formed is not False:
         evaluate_extractor(extractor, correct)
@@ -461,7 +461,7 @@ def test_extractor_webp(filename, result_dict, evaluate_extractor):
 
     correct.streams[0]["version"] = UNAP
     extractor = PilExtractor(filename=correct.filename, mimetype="image/webp")
-    extractor.scrape_file()
+    extractor.extract()
 
     if correct.well_formed is not False:
         evaluate_extractor(extractor, correct)

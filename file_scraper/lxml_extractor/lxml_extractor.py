@@ -43,7 +43,7 @@ class LxmlExtractor(BaseExtractor):
         return super().is_supported(mimetype, version,
                                     check_wellformed, params)
 
-    def scrape_file(self):
+    def extract(self):
         """Scrape file."""
         parser = etree.XMLParser(dtd_validation=False, no_network=True,
                                  recover=True)

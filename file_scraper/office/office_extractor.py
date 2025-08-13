@@ -15,7 +15,7 @@ class OfficeExtractor(BaseExtractor):
     _supported_metadata = [OfficeMeta]
     _only_wellformed = True  # Only well-formed check
 
-    def scrape_file(self):
+    def extract(self):
         """Scrape file."""
         temp_dir = tempfile.mkdtemp()
         LOGGER.debug(

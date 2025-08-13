@@ -65,7 +65,7 @@ def test_gzip_extractor(filename, result_dict, evaluate_extractor):
                             result_dict, True)
     extractor = GzipWarctoolsExtractor(filename=correct.filename,
                                      mimetype="application/gzip")
-    extractor.scrape_file()
+    extractor.extract()
 
     if not correct.well_formed and correct.streams[0]["version"] == UNAV:
         correct.update_mimetype("application/gzip")
@@ -126,7 +126,7 @@ def test_warc_extractor(filename, result_dict, evaluate_extractor):
                             result_dict, True)
     extractor = WarctoolsFullExtractor(filename=correct.filename,
                                      mimetype="application/warc")
-    extractor.scrape_file()
+    extractor.extract()
 
     if not correct.well_formed:
         assert not extractor.well_formed
@@ -149,7 +149,7 @@ def test_warctools_returns_invalid_return_code():
     extractor = WarctoolsFullExtractor(filename=testfile,
                                      mimetype=mimetype)
 
-    extractor.scrape_file()
+    extractor.extract()
 
     assert "Warctools returned invalid return code: -1\n" in extractor.errors()
 

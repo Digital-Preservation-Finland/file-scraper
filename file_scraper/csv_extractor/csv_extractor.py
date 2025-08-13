@@ -17,7 +17,7 @@ class CsvExtractor(BaseExtractor):
     csv.field_size_limit(1048576)
     # pylint: disable=too-many-branches
 
-    def scrape_file(self):
+    def extract(self):
         """Scrape CSV file."""
 
         fields = self._params.get("fields", [])

@@ -20,7 +20,7 @@ class GhostscriptExtractor(BaseExtractor):
     _supported_metadata = [GhostscriptMeta]
     _only_wellformed = True   # Only well-formed check
 
-    def scrape_file(self):
+    def extract(self):
         """Scrape file."""
         shell = Shell(["gs", "-o", "/dev/null", "-sDEVICE=nullpage",
                        self.filename])

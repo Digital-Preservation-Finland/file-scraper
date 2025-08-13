@@ -49,7 +49,7 @@ class TextfileExtractor(BaseExtractor):
 
         return shell.stdout.strip()
 
-    def scrape_file(self):
+    def extract(self):
         """Check MIME type determined by libmagic."""
 
         if self._file_mimetype() == "text/plain" and self._predefined_version:
@@ -144,7 +144,7 @@ class TextEncodingMetaExtractor(BaseExtractor):
         return super().is_supported(
             mimetype, version, check_wellformed, params)
 
-    def scrape_file(self):
+    def extract(self):
         """No actual scraping. Set the predefined character encoding value."""
         self._messages.append("Setting character encoding.")
         self.streams = list(self.iterate_models(
@@ -205,7 +205,7 @@ class TextEncodingExtractor(BaseExtractor):
             params=params)
         self._charset = self._params.get("charset", UNAV)
 
-    def scrape_file(self):
+    def extract(self):
         """
         Validate the file with decoding it with given character encoding.
         """

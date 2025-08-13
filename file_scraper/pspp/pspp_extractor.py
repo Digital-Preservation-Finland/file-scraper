@@ -21,7 +21,7 @@ class PsppExtractor(BaseExtractor):
     _supported_metadata = [PsppMeta]
     _only_wellformed = True                        # Only well-formed check
 
-    def scrape_file(self):
+    def extract(self):
         """Scrape file."""
         # Check file header
         with io_open(self.filename, "rb") as input_file:

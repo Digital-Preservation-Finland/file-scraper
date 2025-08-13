@@ -18,7 +18,7 @@ class PngcheckExtractor(BaseExtractor):
     _supported_metadata = [PngcheckMeta]
     _only_wellformed = True              # Only well-formed check
 
-    def scrape_file(self):
+    def extract(self):
         """Scrape file."""
         shell = Shell(["pngcheck", self.filename])
 

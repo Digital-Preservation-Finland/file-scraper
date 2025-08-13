@@ -94,7 +94,7 @@ class XmllintExtractor(BaseExtractor):
             return local_location.absolute()
         return location
 
-    def scrape_file(self):
+    def extract(self):
         """
         Check XML file with Xmllint and return a tuple of results.
 
