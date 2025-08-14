@@ -36,11 +36,13 @@ class PngcheckExtractor(BaseExtractor):
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)
 
     def tools(self):
-        """
-        Overwriting baseclass implementation
-        to collect information about software used by the extractor
+        """Return information about the software used by the extractor or
+        detector.
 
-        :returns: a dictionary with the used software or UNAV.
+        :returns: Dictionary where each key is the name of the software tool,
+            and each value is another dictionary containing details about the
+            tool (e.g. version). If no tools are available, an empty
+            dictionary is returned instead.
         """
 
         tool_shell = Shell(["pngcheck"], use_pty=True)

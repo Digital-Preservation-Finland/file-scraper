@@ -150,10 +150,4 @@ class CsvExtractor(BaseExtractor):
         return io_open(self.filename, "rt", encoding=charset)
 
     def tools(self) -> dict:
-        """
-        Overwriting baseclass implementation
-        to collect information about software used by the extractor
-
-        :returns: a dictionary with the used software or UNAV.
-        """
         return {}

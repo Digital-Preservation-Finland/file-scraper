@@ -66,12 +66,6 @@ class WarctoolsExtractor(BaseExtractor):
         self._check_supported()
 
     def tools(self):
-        """
-        Overwriting baseclass implementation
-        to collect information about software used by the extractor
-
-        :returns: a dictionary with the used software.
-        """
         return {}
 
 
@@ -129,11 +123,13 @@ class WarctoolsFullExtractor(WarctoolsExtractor):
         super().extract()
 
     def tools(self):
-        """
-        Overwriting baseclass implementation
-        to collect information about software used by the extractor
+        """Return information about the software used by the extractor or
+        detector.
 
-        :returns: a dictionary with the used software or UNKN.
+        :returns: Dictionary where each key is the name of the software tool,
+            and each value is another dictionary containing details about the
+            tool (e.g. version). If no tools are available, an empty
+            dictionary is returned instead.
         """
         # TODO TPASPKT-1506 add version information to warctools.
         return {"warctools": {"version": UNAC}}

@@ -60,12 +60,14 @@ class BaseApparatus(metaclass=abc.ABCMeta):
         ]
 
     @abc.abstractmethod
-    def tools(self) -> dict:
-        """
-        Implement this function
-        collect information about software used by the extractor or detector
+    def tools(self) -> dict[str, dict[str, Any]]:
+        """Return information about the software used by the extractor or
+        detector.
 
-        :returns: a dictionary with the used software, UNAV or UNKN.
+        :returns: Dictionary where each key is the name of the software tool,
+            and each value is another dictionary containing details about the
+            tool (e.g. version). If no tools are available, an empty
+            dictionary is returned instead.
         """
 
     def info(self) -> dict:
