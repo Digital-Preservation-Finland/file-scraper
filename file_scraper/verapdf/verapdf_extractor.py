@@ -94,10 +94,9 @@ class VerapdfExtractor(BaseExtractor):
         """
         tool_shell = Shell(["verapdf", "--version"])
 
-        """
-        Find verPDF string and capture a group after it containing
-        integers and dots until any other character appears.
-        """
+        # Find verPDF string and capture a group after it containing
+        # integers and dots until any other character appears.
+
         regex = r"veraPDF ([\d\.]+)"
         try:
             version = next(
