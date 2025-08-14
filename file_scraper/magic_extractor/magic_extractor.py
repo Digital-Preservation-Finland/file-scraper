@@ -43,16 +43,16 @@ class MagicBaseExtractor(BaseExtractor):
 
         :returns: Python dict of the three fetched values from magic
         """
-        MAGIC_LIB = magiclib()
+        magic_lib = magiclib()
         magicdict = {
-            "magic_mime_type": MAGIC_LIB.MAGIC_MIME_TYPE,
-            "magic_none": MAGIC_LIB.MAGIC_NONE,
-            "magic_mime_encoding": MAGIC_LIB.MAGIC_MIME_ENCODING
+            "magic_mime_type": magic_lib.MAGIC_MIME_TYPE,
+            "magic_none": magic_lib.MAGIC_NONE,
+            "magic_mime_encoding": magic_lib.MAGIC_MIME_ENCODING
         }
 
         magic_result = {}
         for key, value in magicdict.items():
-            magic_result[key] = magic_analyze(MAGIC_LIB, value,
+            magic_result[key] = magic_analyze(magic_lib, value,
                                               self.filename)
         return magic_result
 
