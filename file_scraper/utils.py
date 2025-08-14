@@ -298,14 +298,11 @@ def generate_metadata_dict(
                 'index': 2,
                 'audio_data_encoding': 'AAC', ...}
         },
-        and a list of error messages due to conflicting values)
+        and a list of error messages due to conflicting values). If there are
+        no extration results, the dict and list are empty.
 
     """
-    # if there are no extraction results, return an empty dict and empty errors
-    if not any(extraction_results):
-        return {}, []
     streams = {}
-
     conflicts = []
     importants = {}
 
@@ -321,10 +318,7 @@ def generate_metadata_dict(
     # Iterate methods to generate metadata dict
     for model in chain.from_iterable(extraction_results):
         stream_index = model.index()
-
-        if stream_index not in streams:
-            streams[stream_index] = {}
-        current_stream = streams[stream_index]
+        current_stream = streams.setdefault(stream_index, {})
 
         for method in model.iterate_metadata_methods():
             try:
