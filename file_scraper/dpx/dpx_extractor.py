@@ -41,7 +41,7 @@ class DpxExtractor(BaseExtractor):
             )
         else:
             LOGGER.info(
-                "dpx-validator invalidated the file: " + str(self.filename))
+                "dpx-validator invalidated the file: %s", str(self.filename))
 
         self.streams = list(self.iterate_models(
             well_formed=valid, output=output, filename=self.filename))
