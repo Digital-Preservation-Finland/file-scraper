@@ -2,7 +2,7 @@
 
 from file_scraper.base import BaseExtractor
 from file_scraper.logger import LOGGER
-from file_scraper.pil.pil_model import PngPilMeta, JpegPilMeta, \
+from file_scraper.pil.pil_model import BasePilMeta, PngPilMeta, JpegPilMeta, \
     TiffPilMeta, DngPilMeta, Jp2PilMeta, GifPilMeta, WebPPilMeta
 
 try:
@@ -11,12 +11,19 @@ except ImportError:
     pass
 
 
-class PilExtractor(BaseExtractor):
+class PilExtractor(BaseExtractor[BasePilMeta]):
     """Extractor that uses PIL to scrape tiff, png, jpeg, gif and webp
     images."""
 
-    _supported_metadata = [TiffPilMeta, DngPilMeta, PngPilMeta, GifPilMeta,
-                           JpegPilMeta, Jp2PilMeta, WebPPilMeta]
+    _supported_metadata: list[type[BasePilMeta]] = [
+        TiffPilMeta,
+        DngPilMeta,
+        PngPilMeta,
+        GifPilMeta,
+        JpegPilMeta,
+        Jp2PilMeta,
+        WebPPilMeta,
+    ]
 
     # We need to remove 'FLI' from the formats detected by PIL, because the
     # PIL FLI code erroneously detects TIFF images as FLI or FLIC.

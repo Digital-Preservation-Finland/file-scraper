@@ -21,9 +21,11 @@ if TYPE_CHECKING:
 
 class MetadataMethod(Protocol):
     """Protocol for type hinting metadata methods."""
+
     is_metadata: bool
     is_important: bool
     __name__: str
+
     def __call__(self) -> Any: ...
 
 
@@ -38,7 +40,7 @@ def metadata(important: bool = False) -> Callable[[Callable], MetadataMethod]:
     def _wrap(func: Callable) -> MetadataMethod:
         setattr(func, "is_metadata", True)
         setattr(func, "is_important", important)
-        return cast(MetadataMethod, func)
+        return cast("MetadataMethod", func)
 
     return _wrap
 
@@ -176,7 +178,7 @@ def strip_zeros(float_str: str) -> str:
 
 
 def ensure_text(
-    string: str | bytes, encoding: str = "utf-8", errors: str = "strict"
+    string: str | bytes | int, encoding: str = "utf-8", errors: str = "strict"
 ):
     """Coerce string to str.
     """
@@ -185,6 +187,8 @@ def ensure_text(
         return string.decode(encoding, errors)
     if isinstance(string, str):
         return string
+    if isinstance(string, int):
+        return str(string)
 
     raise TypeError(f"not expecting type '{type(string)}'")
 
@@ -192,7 +196,7 @@ def ensure_text(
 def _merge_to_stream(
     stream: dict[str, str],
     method: MetadataMethod,
-    lose: list[str],
+    lose: Iterable[str | None],
     importants: dict[str, str],
 ) -> None:
     """
@@ -246,7 +250,9 @@ def _merge_to_stream(
 
 
 def _fill_importants(
-    method: MetadataMethod, importants: dict[str, str], lose: list[str]
+    method: MetadataMethod,
+    importants: dict[str, str],
+    lose: Iterable[str | None],
 ) -> None:
     """
     Find the important metadata values for a method.
@@ -273,7 +279,7 @@ def _fill_importants(
 
 
 def generate_metadata_dict(
-    extraction_results: list[list[BaseMeta]], lose: list[str]
+    extraction_results: list[list[BaseMeta]], lose: Iterable[str | None]
 ) -> tuple[dict, list[str]]:
     """
     Generate a metadata dict from the given extraction results.

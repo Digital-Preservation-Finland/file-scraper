@@ -5,19 +5,18 @@ from __future__ import annotations
 import abc
 from collections.abc import Iterator
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Generic, Literal, TypeVar
 
 from file_scraper.defaults import UNAP, UNAV
 from file_scraper.utils import (
     MetadataMethod,
-    metadata,
-    is_metadata,
     filter_unwanted_chars,
+    is_metadata,
+    metadata,
 )
 
 
 class BaseApparatus(metaclass=abc.ABCMeta):
-
     """Base class for extractors and detectors."""
 
     def __init__(
@@ -32,7 +31,6 @@ class BaseApparatus(metaclass=abc.ABCMeta):
         :param mimetype: Predefined mimetype
         :param version: Predefined file format version
         """
-
         self.filename = filename
         self._predefined_mimetype = mimetype
         self._predefined_version = version
@@ -82,7 +80,6 @@ class BaseApparatus(metaclass=abc.ABCMeta):
 
         :returns: Info dict
         """
-
         return {
             "class": self.__class__.__name__,
             "messages": self.messages(),
@@ -91,10 +88,101 @@ class BaseApparatus(metaclass=abc.ABCMeta):
         }
 
 
-class BaseExtractor(BaseApparatus):
+class BaseMeta():
+    """
+    All metadata is formalized in common data model.
+
+    BaseMeta class will define common metadata for all file formats, such as:
+    filename, mimetype, version, checksum.
+
+    Additional metadata and processing is implemented in subclasses.
+    """
+
+    _supported: dict[str, list[str]] = {}
+    _allow_versions = False
+
+    @metadata()
+    def mimetype(self) -> str:
+        """
+        BaseMeta does no real scraping. Should be implemented in subclasses.
+        Resolve only if unambiguous.
+
+        :returns: "(:unav)"
+        """
+        return UNAV
+
+    @metadata()
+    def version(self) -> str:
+        """
+        BaseMeta does no real scraping. Should be implemented in subclasses.
+        Resolve only if unambiguous.
+
+        :returns: "(:unav)"
+        """
+        return UNAV
+
+    @metadata()
+    def index(self) -> int:
+        """
+        BaseMeta does no real scraping. Should be implemented in subclasses.
+
+        :returns: 0
+        """
+        return 0
+
+    @metadata()
+    def stream_type(self) -> str:
+        """
+        BaseMeta does no real scraping. Should be implemented in subclasses.
+        Resolve only if unambiguous.
+
+        :returns: "(:unav)"
+        """
+        return UNAV
+
+    @classmethod
+    def is_supported(
+        cls,
+        mimetype: str | None,
+        version: str | None = None,
+        params: dict | None = None,  # pylint: disable=unused-argument
+    ) -> bool:
+        """
+        Report whether this model supports the given MIME type and version.
+
+        Version None is considered to be a supported version.
+
+        :param mimetype: MIME type to be checked
+        :param version: Version to be checked, defaults to None
+        :param params: Parameter dict that can be used by some metadata models.
+        :returns: True if MIME type is supported and all versions are allowed
+            or the version is supported too.
+        """
+        if mimetype not in cls._supported:
+            return False
+        return (
+            version in cls._supported[mimetype] + [None] or cls._allow_versions
+        )
+
+    def iterate_metadata_methods(self) -> Iterator[MetadataMethod]:
+        """Iterate through all metadata methods."""
+        for method in dir(self):
+            if is_metadata(getattr(self, method)):
+                yield getattr(self, method)
+
+    @classmethod
+    def supported_mimetypes(cls) -> dict[str, list[str]]:
+        """Return the dict containing supported mimetypes and versions."""
+        return cls._supported
+
+
+AnyMeta = TypeVar("AnyMeta", bound=BaseMeta)
+
+
+class BaseExtractor(BaseApparatus, Generic[AnyMeta]):
     """Base extractor implements common methods for all extractors."""
 
-    _supported_metadata: list[type[BaseMeta]] = []
+    _supported_metadata: list[type[AnyMeta]] = []
     _only_wellformed = False
 
     def __init__(
@@ -116,7 +204,7 @@ class BaseExtractor(BaseApparatus):
         :param params: Extra parameters that some extractors can use.
         """
         super().__init__(filename, mimetype, version)
-        self.streams: list[BaseMeta] = []
+        self.streams: list[AnyMeta] = []
         self._params = params if params is not None else {}
 
     @property
@@ -132,7 +220,7 @@ class BaseExtractor(BaseApparatus):
     @classmethod
     def is_supported(
         cls,
-        mimetype: str,
+        mimetype: str | None,
         version: str | None = None,
         check_wellformed: bool = True,
         params: dict | None = None,  # pylint: disable=unused-argument
@@ -209,7 +297,7 @@ class BaseExtractor(BaseApparatus):
             f"MIME type {mimetype} with version {version} is not supported."
         )
 
-    def iterate_models(self, **kwargs: Any) -> Iterator[BaseMeta]:
+    def iterate_models(self, **kwargs: Any) -> Iterator[AnyMeta]:
         """
         Iterate Extractor models.
 
@@ -227,94 +315,6 @@ class BaseExtractor(BaseApparatus):
     @abc.abstractmethod
     def extract(self):
         """Implemented in subclasses."""
-
-
-class BaseMeta():
-    """
-    All metadata is formalized in common data model.
-
-    BaseMeta class will define common metadata for all file formats, such as:
-    filename, mimetype, version, checksum.
-
-    Additional metadata and processing is implemented in subclasses.
-    """
-
-    _supported: dict[str, list[str]] = {}
-    _allow_versions = False
-
-    @metadata()
-    def mimetype(self) -> str:
-        """
-        BaseMeta does no real scraping. Should be implemented in subclasses.
-        Resolve only if unambiguous.
-
-        :returns: "(:unav)"
-        """
-        return UNAV
-
-    @metadata()
-    def version(self) -> str:
-        """
-        BaseMeta does no real scraping. Should be implemented in subclasses.
-        Resolve only if unambiguous.
-
-        :returns: "(:unav)"
-        """
-        return UNAV
-
-    @metadata()
-    def index(self) -> int:
-        """
-        BaseMeta does no real scraping. Should be implemented in subclasses.
-
-        :returns: 0
-        """
-        return 0
-
-    @metadata()
-    def stream_type(self) -> str:
-        """
-        BaseMeta does no real scraping. Should be implemented in subclasses.
-        Resolve only if unambiguous.
-
-        :returns: "(:unav)"
-        """
-        return UNAV
-
-    @classmethod
-    def is_supported(
-        cls,
-        mimetype: str | None,
-        version: str | None = None,
-        params: dict | None = None,  # pylint: disable=unused-argument
-    ) -> bool:
-        """
-        Report whether this model supports the given MIME type and version.
-
-        Version None is considered to be a supported version.
-
-        :param mimetype: MIME type to be checked
-        :param version: Version to be checked, defaults to None
-        :param params: Parameter dict that can be used by some metadata models.
-        :returns: True if MIME type is supported and all versions are allowed
-                  or the version is supported too.
-        """
-        if mimetype not in cls._supported:
-            return False
-        if version in cls._supported[mimetype] + [None] or cls._allow_versions:
-            return True
-        return False
-
-    def iterate_metadata_methods(self) -> Iterator[MetadataMethod]:
-        """Iterate through all metadata methods."""
-        for method in dir(self):
-            if is_metadata(getattr(self, method)):
-                yield getattr(self, method)
-
-    @classmethod
-    def supported_mimetypes(cls) -> dict[str, list[str]]:
-        """Return the dict containing supported mimetypes and versions."""
-        return cls._supported
 
 
 class BaseDetector(BaseApparatus):

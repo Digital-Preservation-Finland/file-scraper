@@ -10,7 +10,7 @@ from file_scraper.jpylyzer.jpylyzer_model import JpylyzerMeta
 from file_scraper.utils import ensure_text
 
 
-class JpylyzerExtractor(BaseExtractor):
+class JpylyzerExtractor(BaseExtractor[JpylyzerMeta]):
     """Extractor to check the wellformedness of jp2 files."""
     _supported_metadata = [JpylyzerMeta]
     _only_wellformed = True   # Only well-formed check

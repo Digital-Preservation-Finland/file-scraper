@@ -11,7 +11,7 @@ from file_scraper.lxml_extractor.lxml_model import LxmlMeta
 from file_scraper.utils import normalize_charset
 
 
-class LxmlExtractor(BaseExtractor):
+class LxmlExtractor(BaseExtractor[LxmlMeta]):
     """Scrape character encoding from XML/HTML header."""
 
     # We use JHOVE for HTML4 and XHTML files.

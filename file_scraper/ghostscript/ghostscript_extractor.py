@@ -13,7 +13,7 @@ from file_scraper.utils import ensure_text
 from file_scraper.defaults import UNAV
 
 
-class GhostscriptExtractor(BaseExtractor):
+class GhostscriptExtractor(BaseExtractor[GhostscriptMeta]):
     """Ghostscript pdf extractor."""
 
     # Supported mimetype and versions

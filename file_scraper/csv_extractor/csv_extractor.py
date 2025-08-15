@@ -9,7 +9,7 @@ from file_scraper.csv_extractor.csv_model import CsvMeta
 from file_scraper.logger import LOGGER
 
 
-class CsvExtractor(BaseExtractor):
+class CsvExtractor(BaseExtractor[CsvMeta]):
     """Extractor for CSV files."""
 
     _supported_metadata = [CsvMeta]

@@ -12,7 +12,7 @@ from file_scraper.warctools.warctools_model import (GzipWarctoolsMeta,
                                                     WarctoolsMeta)
 
 
-class WarctoolsExtractor(BaseExtractor):
+class WarctoolsExtractor(BaseExtractor[WarctoolsMeta]):
     """
     Implements WARC file format extractor for metadata collecting.
 

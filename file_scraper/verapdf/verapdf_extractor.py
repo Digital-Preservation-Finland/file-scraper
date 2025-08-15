@@ -23,7 +23,7 @@ from file_scraper.verapdf.verapdf_model import VerapdfMeta
 OK_CODES = [0, 1, 7]
 
 
-class VerapdfExtractor(BaseExtractor):
+class VerapdfExtractor(BaseExtractor[VerapdfMeta]):
     """PDF/A extractor."""
 
     # Supported mimetypes and versions

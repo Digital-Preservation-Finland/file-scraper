@@ -3,17 +3,23 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Literal
+from typing import Literal, TypeVar
 import exiftool
 from exiftool.exceptions import ExifToolExecuteError
 
 from file_scraper.base import BaseExtractor
-from file_scraper.exiftool.exiftool_model import ExifToolDngMeta
+from file_scraper.exiftool.exiftool_model import (
+    ExifToolBaseMeta,
+    ExifToolDngMeta,
+)
 
 EXIF_ERROR = "ExifTool:Error"
 
 
-class ExifToolExtractorBase(BaseExtractor):
+ExifToolMetaT = TypeVar("ExifToolMetaT", bound=ExifToolBaseMeta)
+
+
+class ExifToolExtractorBase(BaseExtractor[ExifToolMetaT]):
     """
     Scraping methods for the ExifTool extractor
     """
@@ -92,7 +98,7 @@ class ExifToolExtractorBase(BaseExtractor):
             return {"ExifTool": {"version": et.version}}
 
 
-class ExifToolDngExtractor(ExifToolExtractorBase):
+class ExifToolDngExtractor(ExifToolExtractorBase[ExifToolDngMeta]):
     """Variables for scraping dng files."""
 
     _supported_metadata = [ExifToolDngMeta]

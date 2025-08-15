@@ -15,18 +15,19 @@ Priority:
     system path values found by the shutil library
 """
 from __future__ import annotations
+
 import configparser
 import os
 import shutil
 
 
-def get_config_path():
+def get_config_path() -> str:
     """:returns: configuration environment variable"""
     return os.getenv("FILE_SCRAPER_CONFIG",
                      "/etc/file-scraper/file-scraper.conf")
 
 
-def _find_from_config(section, config_name) -> str | None:
+def _find_from_config(section: str, config_name: str) -> str | None:
     """
     Attempts to find the given configuration name from the config file at
     the given section.
@@ -40,8 +41,9 @@ def _find_from_config(section, config_name) -> str | None:
 
     config_parser.read(get_config_path())
     if config_parser.has_section(section):
-        section = config_parser[section]
-        return section.get(config_name)
+        config_section = config_parser[section]
+        return config_section.get(config_name)
+    return None
 
 
 def resolve_command(command: str) -> str:
@@ -51,13 +53,10 @@ def resolve_command(command: str) -> str:
     the executable.
 
     :param command: command string to resolve
-
-    :raises: NameError if the command cannot be found.
-
     :returns: path specified by the configuration file or the path of the
-    executable.
+        executable.
+    :raises NameError: if the command cannot be found.
     """
-
     path_found = _find_from_config("COMMANDS", command)
 
     # Try to find the configuration value from the path.
@@ -73,13 +72,12 @@ def resolve_command(command: str) -> str:
     return path_found
 
 
-def resolve_path_from_config(config_name):
+def resolve_path_from_config(config_name: str) -> str:
     """
     Resolves section "PATHS" from the configuration file.
 
     :param config_name: the config name to be searched.
     """
-
     path_found = _find_from_config("PATHS", config_name)
     if path_found is None:
         raise NameError(f"Configuration path: {config_name} "

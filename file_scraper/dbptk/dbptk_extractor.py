@@ -16,7 +16,7 @@ from file_scraper.defaults import UNAV
 from file_scraper.dbptk.dbptk_model import DbptkMeta
 
 
-class DbptkExtractor(BaseExtractor):
+class DbptkExtractor(BaseExtractor[DbptkMeta]):
     """DBPTK (Database Prevervation Toolkit) extractor.
     Supports only SIARD files."""
 

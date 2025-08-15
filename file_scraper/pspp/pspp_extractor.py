@@ -15,7 +15,7 @@ from file_scraper.pspp.pspp_model import PsppMeta
 SPSS_PORTABLE_HEADER = b"SPSS PORT FILE"
 
 
-class PsppExtractor(BaseExtractor):
+class PsppExtractor(BaseExtractor[PsppMeta]):
     """PSPP extractor."""
 
     _supported_metadata = [PsppMeta]

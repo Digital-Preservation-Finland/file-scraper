@@ -3,6 +3,7 @@
 from file_scraper.base import BaseExtractor
 import file_scraper.mediainfo
 from file_scraper.mediainfo.mediainfo_model import (
+    BaseMediainfoMeta,
     ContainerMediainfoMeta,
     DvMediainfoMeta,
     FfvMediainfoMeta,
@@ -28,10 +29,10 @@ except ImportError:
     pass
 
 
-class MediainfoExtractor(BaseExtractor):
+class MediainfoExtractor(BaseExtractor[BaseMediainfoMeta]):
     """Extractor for scraping audio and video files using Mediainfo."""
 
-    _supported_metadata = [
+    _supported_metadata: list[type[BaseMediainfoMeta]] = [
         ContainerMediainfoMeta,
         DvMediainfoMeta,
         FfvMediainfoMeta,

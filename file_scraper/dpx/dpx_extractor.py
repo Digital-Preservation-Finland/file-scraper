@@ -9,7 +9,7 @@ from file_scraper.dpx.dpx_model import DpxMeta
 from file_scraper.logger import LOGGER
 
 
-class DpxExtractor(BaseExtractor):
+class DpxExtractor(BaseExtractor[DpxMeta]):
     """DPX extractor."""
 
     _supported_metadata = [DpxMeta]

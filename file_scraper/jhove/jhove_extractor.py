@@ -1,5 +1,7 @@
 """Extractor for gif, html, jpeg, tif, pdf and wav files using JHove."""
+from __future__ import annotations
 from pathlib import Path
+from typing import TypeVar
 
 try:
     import lxml.etree
@@ -11,36 +13,52 @@ from file_scraper.base import BaseExtractor
 from file_scraper.shell import Shell
 from file_scraper.defaults import UNAV
 from file_scraper.logger import LOGGER
-from file_scraper.jhove.jhove_model import (JHoveAiffMeta, JHoveDngMeta,
-                                            JHoveEpubMeta, JHoveGifMeta,
-                                            JHoveHtmlMeta, JHoveJpegMeta,
-                                            JHovePdfMeta, JHoveTiffMeta,
-                                            JHoveUtf8Meta, JHoveWavMeta,
-                                            get_field)
+from file_scraper.jhove.jhove_model import (
+    JHoveAiffMeta,
+    JHoveBaseMeta,
+    JHoveDngMeta,
+    JHoveEpubMeta,
+    JHoveGifMeta,
+    JHoveHtmlMeta,
+    JHoveJpegMeta,
+    JHovePdfMeta,
+    JHoveTiffMeta,
+    JHoveUtf8Meta,
+    JHoveWavMeta,
+    get_field,
+)
 
 
-class JHoveExtractorBase(BaseExtractor):
+JHoveMetaT = TypeVar("JHoveMetaT", bound=JHoveBaseMeta)
+
+
+class JHoveExtractorBase(BaseExtractor[JHoveMetaT]):
     """Scraping methods for all specific JHove extractors."""
 
-    _supported_metadata = []
     _jhove_module = None
     _only_wellformed = True
 
-    def __init__(self, filename: Path, mimetype, version=None, params=None):
+    def __init__(
+        self,
+        filename: Path,
+        mimetype: str,
+        version: str | None = None,
+        params: dict | None = None,
+    ) -> None:
         """
         Initialize JHove base scarper.
 
-        :filename: File path
-        :mimetype: Predefined mimetype
-        :version: Predefined file format version
-        :params: Extra parameters needed for the extractor
+        :param filename: File path
+        :param mimetype: Predefined mimetype
+        :param version: Predefined file format version
+        :param params: Extra parameters needed for the extractor
         """
         self._report = None  # JHove report
         super().__init__(
             filename=filename, mimetype=mimetype, version=version,
             params=params)
 
-    def extract(self):
+    def extract(self) -> None:
         """Run JHove command and store XML output to self.report."""
 
         shell = Shell(["jhove", "-h",
@@ -65,7 +83,7 @@ class JHoveExtractorBase(BaseExtractor):
         self._check_supported(allow_unav_version=True,
                               allow_unap_version=True)
 
-    def tools(self):
+    def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
         detector.
 
@@ -94,20 +112,20 @@ class JHoveExtractorBase(BaseExtractor):
         }
 
 
-class JHoveGifExtractor(JHoveExtractorBase):
+class JHoveGifExtractor(JHoveExtractorBase[JHoveGifMeta]):
     """Variables for scraping gif files."""
 
     _jhove_module = "GIF-hul"
     _supported_metadata = [JHoveGifMeta]
 
 
-class JHoveHtmlExtractor(JHoveExtractorBase):
+class JHoveHtmlExtractor(JHoveExtractorBase[JHoveHtmlMeta]):
     """Variables for scraping html files."""
 
     _jhove_module = "HTML-hul"
     _supported_metadata = [JHoveHtmlMeta]
 
-    def extract(self):
+    def extract(self) -> None:
         """
         Scrape the file.
 
@@ -135,27 +153,27 @@ class JHoveHtmlExtractor(JHoveExtractorBase):
                 f"expected.")
 
 
-class JHoveJpegExtractor(JHoveExtractorBase):
+class JHoveJpegExtractor(JHoveExtractorBase[JHoveJpegMeta]):
     """Variables for scraping jpeg files."""
 
     _jhove_module = "JPEG-hul"
     _supported_metadata = [JHoveJpegMeta]
 
 
-class JHoveTiffExtractor(JHoveExtractorBase):
+class JHoveTiffExtractor(JHoveExtractorBase[JHoveTiffMeta]):
     """Variables for scraping tiff files."""
 
     _jhove_module = "TIFF-hul"
     _supported_metadata = [JHoveTiffMeta]
 
 
-class JHovePdfExtractor(JHoveExtractorBase):
+class JHovePdfExtractor(JHoveExtractorBase[JHovePdfMeta]):
     """PDF extractor using JHove."""
 
     _jhove_module = "PDF-hul"
     _supported_metadata = [JHovePdfMeta]
 
-    def extract(self):
+    def extract(self) -> None:
         """
         Scrape the file, and check and log PDF root version.
 
@@ -180,13 +198,13 @@ class JHovePdfExtractor(JHoveExtractorBase):
                 self._messages.append(f"PDF root version is {version}")
 
 
-class JHoveWavExtractor(JHoveExtractorBase):
+class JHoveWavExtractor(JHoveExtractorBase[JHoveWavMeta]):
     """Variables for scraping wav files."""
 
     _jhove_module = "WAVE-hul"
     _supported_metadata = [JHoveWavMeta]
 
-    def extract(self):
+    def extract(self) -> None:
         """
         Scrape file.
         Add extra error message, if RF64 profile used.
@@ -196,7 +214,7 @@ class JHoveWavExtractor(JHoveExtractorBase):
             self._errors.append("RF64 is not a supported format")
 
 
-class JHoveUtf8Extractor(JHoveExtractorBase):
+class JHoveUtf8Extractor(JHoveExtractorBase[JHoveUtf8Meta]):
     """
     Extractor for checking wether a text file is a valid UTF-8 file.
 
@@ -207,9 +225,12 @@ class JHoveUtf8Extractor(JHoveExtractorBase):
     _jhove_module = "UTF8-hul"
     _supported_metadata = [JHoveUtf8Meta]
 
-    def _check_supported(self, allow_unav_mime=False,
-                         allow_unav_version=False,
-                         allow_unap_version=False):
+    def _check_supported(
+        self,
+        allow_unav_mime: bool = False,
+        allow_unav_version: bool = False,
+        allow_unap_version: bool = False,
+    ):
         """Do nothing: we dont care about the mimetype or version."""
 
     def iterate_models(self, **kwargs):
@@ -222,21 +243,21 @@ class JHoveUtf8Extractor(JHoveExtractorBase):
         yield self._supported_metadata[0](**kwargs)
 
 
-class JHoveEpubExtractor(JHoveExtractorBase):
+class JHoveEpubExtractor(JHoveExtractorBase[JHoveEpubMeta]):
     """Variables for scraping EPUB files."""
 
     _jhove_module = "EPUB-ptc"
     _supported_metadata = [JHoveEpubMeta]
 
 
-class JHoveDngExtractor(JHoveExtractorBase):
+class JHoveDngExtractor(JHoveExtractorBase[JHoveDngMeta]):
     """Variables for scraping dng files."""
 
     _jhove_module = "TIFF-hul"
     _supported_metadata = [JHoveDngMeta]
 
 
-class JHoveAiffExtractor(JHoveExtractorBase):
+class JHoveAiffExtractor(JHoveExtractorBase[JHoveAiffMeta]):
     """Variables for scraping AIFF files."""
 
     _jhove_module = "AIFF-hul"

@@ -26,7 +26,7 @@ except ImportError:
     pass
 
 
-class WandExtractor(BaseExtractor):
+class WandExtractor(BaseExtractor[WandImageMeta]):
     """Extractor for the Wand/ImageMagick library."""
 
     _supported_metadata = [WandExifMeta, WandTiffMeta, WandImageMeta,

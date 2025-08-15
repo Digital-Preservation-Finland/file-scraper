@@ -8,7 +8,7 @@ from file_scraper.pngcheck.pngcheck_model import PngcheckMeta
 from file_scraper.defaults import UNAV
 
 
-class PngcheckExtractor(BaseExtractor):
+class PngcheckExtractor(BaseExtractor[PngcheckMeta]):
     """
     Pngcheck extractor.
 

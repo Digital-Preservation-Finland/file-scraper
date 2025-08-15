@@ -1,28 +1,36 @@
 """Extractor for various binary and text file formats."""
 
 import os
+from typing import TypeVar
 
 from file_scraper.magiclib import magiclib, magic_analyze, magiclib_version
 from file_scraper.base import BaseExtractor
-from file_scraper.magic_extractor.magic_model import (TextFileMagicMeta,
-                                                      XmlFileMagicMeta,
-                                                      XhtmlFileMagicMeta,
-                                                      HtmlFileMagicMeta,
-                                                      PdfFileMagicMeta,
-                                                      OfficeFileMagicMeta,
-                                                      PngFileMagicMeta,
-                                                      JpegFileMagicMeta,
-                                                      AiffFileMagicMeta,
-                                                      Jp2FileMagicMeta,
-                                                      TiffFileMagicMeta,
-                                                      GifFileMagicMeta)
+from file_scraper.magic_extractor.magic_model import (
+    BaseMagicMeta,
+    BinaryMagicBaseMeta,
+    TextFileMagicMeta,
+    TextMagicBaseMeta,
+    XmlFileMagicMeta,
+    XhtmlFileMagicMeta,
+    HtmlFileMagicMeta,
+    PdfFileMagicMeta,
+    OfficeFileMagicMeta,
+    PngFileMagicMeta,
+    JpegFileMagicMeta,
+    AiffFileMagicMeta,
+    Jp2FileMagicMeta,
+    TiffFileMagicMeta,
+    GifFileMagicMeta,
+)
 
 
-class MagicBaseExtractor(BaseExtractor):
+MagicMetaT = TypeVar("MagicMetaT", bound=BaseMagicMeta)
+
+
+class MagicBaseExtractor(BaseExtractor[MagicMetaT]):
     """Extractor for scraping files using magic."""
 
     _allow_unav_mime = False
-    _supported_metadata = []
 
     @property
     def well_formed(self):
@@ -37,7 +45,7 @@ class MagicBaseExtractor(BaseExtractor):
 
         return None
 
-    def _magic_call(self):
+    def _magic_call(self) -> dict:
         """Fetch three values from file with using magic.
         These are: mimetype, info line (for version) and encoding.
 
@@ -56,7 +64,7 @@ class MagicBaseExtractor(BaseExtractor):
                                               self.filename)
         return magic_result
 
-    def extract(self):
+    def extract(self) -> None:
         """Populate streams with supported metadata objects."""
         if not os.path.exists(self.filename):
             self._errors.append("File not found.")
@@ -73,7 +81,7 @@ class MagicBaseExtractor(BaseExtractor):
                               allow_unap_version=True)
         self._messages.append("The file was analyzed successfully.")
 
-    def tools(self):
+    def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
         detector.
 
@@ -85,7 +93,7 @@ class MagicBaseExtractor(BaseExtractor):
         return {"libmagic": {"version": magiclib_version()}}
 
 
-class MagicTextExtractor(MagicBaseExtractor):
+class MagicTextExtractor(MagicBaseExtractor[TextMagicBaseMeta]):
     """
     Magic extractor for text files.
 
@@ -93,11 +101,15 @@ class MagicTextExtractor(MagicBaseExtractor):
     sure about the final mimetype. An XML file may also be plain text file.
     """
     _allow_unav_mime = True
-    _supported_metadata = [TextFileMagicMeta, XmlFileMagicMeta,
-                           XhtmlFileMagicMeta, HtmlFileMagicMeta]
+    _supported_metadata: list[type[TextMagicBaseMeta]] = [
+        TextFileMagicMeta,
+        XmlFileMagicMeta,
+        XhtmlFileMagicMeta,
+        HtmlFileMagicMeta,
+    ]
 
 
-class MagicBinaryExtractor(MagicBaseExtractor):
+class MagicBinaryExtractor(MagicBaseExtractor[BinaryMagicBaseMeta]):
     """
     Magic extractor for binary files.
 
@@ -105,7 +117,13 @@ class MagicBinaryExtractor(MagicBaseExtractor):
     same time. Therefore it is pretty safe to disallow (:unav) as a mimetype
     result.
     """
-    _supported_metadata = [PdfFileMagicMeta, OfficeFileMagicMeta,
-                           PngFileMagicMeta, JpegFileMagicMeta,
-                           Jp2FileMagicMeta, TiffFileMagicMeta,
-                           GifFileMagicMeta, AiffFileMagicMeta]
+    _supported_metadata: list[type[BinaryMagicBaseMeta]] = [
+        PdfFileMagicMeta,
+        OfficeFileMagicMeta,
+        PngFileMagicMeta,
+        JpegFileMagicMeta,
+        Jp2FileMagicMeta,
+        TiffFileMagicMeta,
+        GifFileMagicMeta,
+        AiffFileMagicMeta,
+    ]

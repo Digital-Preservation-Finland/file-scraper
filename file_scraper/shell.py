@@ -1,8 +1,10 @@
 """Wrapper for calling external commands"""
+from __future__ import annotations
 
 import os
 import pty
 import subprocess
+from typing import TypedDict
 
 from file_scraper.logger import LOGGER
 from file_scraper.utils import ensure_text
@@ -12,15 +14,21 @@ from file_scraper.paths import resolve_command
 class Shell:
     """Shell command handler for non-Python 3rd party software."""
 
-    def __init__(self, command: list, stdout=subprocess.PIPE,
-                 stderr=subprocess.PIPE, use_pty=False, env=None):
+    def __init__(
+        self,
+        command: list[str],
+        stdout: int = subprocess.PIPE,
+        stderr: int = subprocess.PIPE,
+        use_pty: bool = False,
+        env: dict | None = None,
+    ) -> None:
         """
         Initialize instance.
 
         :param command: Command to execute as list
         :param output_file: Output file handle
         :param use_pty: Fake a terminal device for stdin. Some applications
-                         will require this.
+            will require this.
         :param env: Environment variables
         """
         resolved_path = resolve_command(command.pop(0))
@@ -43,7 +51,7 @@ class Shell:
                 self._env[key] = value
 
     @property
-    def returncode(self):
+    def returncode(self) -> int | bytes:
         """
         Returncode from the command.
 
@@ -52,7 +60,7 @@ class Shell:
         return self.popen()["returncode"]
 
     @property
-    def stderr(self):
+    def stderr(self) -> str | None:
         """
         Standard error output from the command.
 
@@ -63,7 +71,7 @@ class Shell:
         return ensure_text(self.stderr_raw)
 
     @property
-    def stdout(self):
+    def stdout(self) -> str | None:
         """
         Command standard error output.
 
@@ -74,7 +82,7 @@ class Shell:
         return ensure_text(self.stdout_raw)
 
     @property
-    def stderr_raw(self):
+    def stderr_raw(self) -> bytes | None:
         """
         Standard error output from the command.
 
@@ -83,7 +91,7 @@ class Shell:
         return self.popen()["stderr"]
 
     @property
-    def stdout_raw(self):
+    def stdout_raw(self) -> bytes | None:
         """
         Command standard error output.
 
@@ -91,7 +99,12 @@ class Shell:
         """
         return self.popen()["stdout"]
 
-    def popen(self):
+    class _POpenResults(TypedDict):
+        returncode: int
+        stderr: bytes | None
+        stdout: bytes | None
+
+    def popen(self) -> _POpenResults:
         """
         Run the command and store results to class attributes for caching.
 
@@ -145,5 +158,5 @@ class Shell:
         return {
             "returncode": self._returncode,
             "stderr": self._stderr,
-            "stdout": self._stdout
-            }
+            "stdout": self._stdout,
+        }

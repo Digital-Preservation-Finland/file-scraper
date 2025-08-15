@@ -46,7 +46,7 @@ class DpxMeta(BaseMeta):
 
         for supported_version in self._supported["image/x-dpx"]:
 
-            version_string = (f"V{supported_version}")
+            version_string = f"V{supported_version}"
 
             if version_string == self._output["version"]:
                 return supported_version

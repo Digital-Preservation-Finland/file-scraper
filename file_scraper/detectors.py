@@ -15,7 +15,7 @@ from fido.fido import Fido, defaults
 from fido.pronomutils import get_local_pronom_versions
 from file_scraper.base import BaseDetector
 from file_scraper.defaults import (MIMETYPE_DICT, PRIORITY_PRONOM, PRONOM_DICT,
-                                   VERSION_DICT, UNKN, UNAP, UNAV)
+                                   VERSION_DICT, UNKN, UNAP)
 from file_scraper.logger import LOGGER
 from file_scraper.utils import is_zipfile, normalize_charset
 from file_scraper.magiclib import magiclib, magic_analyze, magiclib_version
@@ -38,7 +38,9 @@ class _FidoCachedFormats(Fido):
     _cached_puid_format_map = None
     _cached_puid_has_priority_over_map = None
 
-    def load_fido_xml(self, file):
+    def load_fido_xml(
+        self, file: str | os.PathLike
+    ) -> list[lxml.etree._Element]:
         """Overloads the default load_fido_xml so that it has an option to
         prevent being called again.
 
@@ -56,7 +58,7 @@ class _FidoCachedFormats(Fido):
 
         return self.formats
 
-    def setup_format_cache(self):
+    def setup_format_cache(self) -> None:
         """Function to explicitly cache the current formats. If cache has
         already been set, this function will not do anything."""
         if not _FidoCachedFormats._use_cached:
@@ -70,14 +72,14 @@ class _FidoCachedFormats(Fido):
 class _FidoReader(_FidoCachedFormats):
     """Fido wrapper to get pronom code, mimetype and version."""
 
-    def __init__(self, filename):
+    def __init__(self, filename: str | os.PathLike) -> None:
         """
         Initialize the reader.
 
         Fido is done with old-style python and does not inherit object,
         so super() is not available.
 
-        :filename: File path
+        :param filename: File path
         """
         self.filename = filename  # File path
         self.puid = None  # Identified pronom code
@@ -87,7 +89,7 @@ class _FidoReader(_FidoCachedFormats):
             "formats-v95.xml", "format_extensions.xml"])
         self.setup_format_cache()
 
-    def identify(self):
+    def identify(self) -> None:
         """Identify file format with using pronom registry."""
         versions = get_local_pronom_versions()
         defaults["xml_pronomSignature"] = versions.pronom_signature
@@ -103,14 +105,20 @@ class _FidoReader(_FidoCachedFormats):
             filename=str(self.filename), extension=False
         )
 
-    def print_matches(self, fullname, matches, delta_t, matchtype=""):
+    def print_matches(
+        self,
+        fullname: str,
+        matches: tuple[lxml.etree._Element, str],
+        delta_t: float,
+        matchtype: str = "",
+    ) -> None:
         """
         Get puid, mimetype and version.
 
-        :fullname: File path
-        :matches: Matches tuples in Fido
-        :delta_t: Not needed here, but originates from Fido
-        :matchtype: Not needed here, but originates from Fido
+        :param fullname: File path
+        :param matches: Matches tuples in Fido
+        :param delta_t: Not needed here, but originates from Fido
+        :param matchtype: Not needed here, but originates from Fido
         """
         for (item, _) in matches:
             self.puid = self.get_puid(item)
@@ -129,11 +137,11 @@ class _FidoReader(_FidoCachedFormats):
                 self.puid = self.get_puid(item)
                 self._find_mime(item)
 
-    def _find_mime(self, item):
+    def _find_mime(self, item) -> None:
         """
         Find mimetype and version in Fido.
 
-        :item: Fido result
+        :param item: Fido result
         """
         mime = item.find("mime")
         self.mimetype = mime.text if mime is not None else None
@@ -159,9 +167,9 @@ class FidoDetector(BaseDetector):
         """
         Initialize detector.
 
-        :filename: File name of file to detect
-        :mimetype: Mimetype from another source, e.g. METS
-        :version: File format version from another source, e.g. METS
+        :param filename: File name of file to detect
+        :param mimetype: Mimetype from another source, e.g. METS
+        :param version: File format version from another source, e.g. METS
         """
         super().__init__(filename, mimetype=mimetype, version=version)
         self._puid = None
@@ -221,10 +229,10 @@ class FidoDetector(BaseDetector):
 class MagicDetector(BaseDetector):
     """File magic detector."""
 
-    def detect(self):
+    def detect(self) -> None:
         """Detect mimetype."""
-        MAGIC_LIB = magiclib()
-        mimetype = magic_analyze(MAGIC_LIB, MAGIC_LIB.MAGIC_MIME_TYPE,
+        magic_lib = magiclib()
+        mimetype = magic_analyze(magic_lib, magic_lib.MAGIC_MIME_TYPE,
                                  self.filename)
         if mimetype in MIMETYPE_DICT:
             self.mimetype = MIMETYPE_DICT[mimetype]
@@ -238,8 +246,8 @@ class MagicDetector(BaseDetector):
         file_extension_check = self.filename.suffix == ".dv"
         if mime_check and file_extension_check:
             analyze = magic_analyze(
-                MAGIC_LIB,
-                MAGIC_LIB.MAGIC_NONE,
+                magic_lib,
+                magic_lib.MAGIC_NONE,
                 self.filename
             )
             if analyze == "DIF (DV) movie file (PAL)":
@@ -248,7 +256,7 @@ class MagicDetector(BaseDetector):
                 )
                 self.mimetype = "video/dv"
 
-    def get_important(self):
+    def get_important(self) -> dict[str, str | None]:
         """
         Important mime types.
 
@@ -264,7 +272,7 @@ class MagicDetector(BaseDetector):
             important["mimetype"] = self.mimetype
         return important
 
-    def tools(self):
+    def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
         detector.
 
@@ -279,7 +287,7 @@ class MagicDetector(BaseDetector):
 class PredefinedDetector(BaseDetector):
     """A detector for handling user-supplied MIME types and versions."""
 
-    def detect(self):
+    def detect(self) -> None:
         """
         No actual detection needed, just use the given values and log messages.
 
@@ -295,7 +303,7 @@ class PredefinedDetector(BaseDetector):
         if self._predefined_mimetype:
             self._messages.append("User-supplied file format used")
 
-    def get_important(self):
+    def get_important(self) -> dict[str, str | None]:
         """
         The results from this detector are always important.
 
@@ -304,7 +312,7 @@ class PredefinedDetector(BaseDetector):
         """
         return {"mimetype": self.mimetype, "version": self.version}
 
-    def tools(self):
+    def tools(self) -> dict:
         """Return information about the software used by the extractor or
         detector.
 
@@ -325,25 +333,31 @@ class MagicCharset(BaseDetector):
                   "text/xml",
                   "application/xhtml+xml"]
 
-    def __init__(self, filename: Path, mimetype=None, version=None):
+    def __init__(
+        self,
+        filename: Path,
+        mimetype: str | None = None,
+        version: str | None = None,
+    ) -> None:
         """Initialize detector."""
         self.charset = None
         super().__init__(filename, mimetype=mimetype,
                          version=version)
 
     @classmethod
-    def is_supported(cls, mimetype):
+    def is_supported(cls, mimetype: str | None) -> bool:
         """
         Check wheter the detector is supported with given mimetype.
 
-        :mimetype: Mimetype to check
+        :param mimetype: Mimetype to check
         :returns: True if mimetype is supported, False otherwise
         """
         return mimetype in cls._supported
 
-    def detect(self):
+    def detect(self) -> None:
         """Detect charset with MagicLib. A charset is detected from up to
-        1 megabytes of data from the beginning of file."""
+        1 megabytes of data from the beginning of file.
+        """
         charset = magic_analyze(magiclib(),
                                 magiclib().MAGIC_MIME_ENCODING,
                                 self.filename)
@@ -357,7 +371,7 @@ class MagicCharset(BaseDetector):
                 f"Character encoding detected as {self.charset}"
             )
 
-    def tools(self):
+    def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
         detector.
 
@@ -378,7 +392,7 @@ class ExifToolDetector(BaseDetector):
     - detect PDF/A version
     """
 
-    def detect(self):
+    def detect(self) -> None:
         """
         Run ExifToolDetector to find out the mimetype of a file and to check
         PDF/A conformance for pdf files. PDF/A file version is also detected.
@@ -400,7 +414,7 @@ class ExifToolDetector(BaseDetector):
             LOGGER.info("ExifTool could not process file", exc_info=True)
             self._set_info_exiftool_not_supported()
 
-    def _detect_pdf_a(self, metadata):
+    def _detect_pdf_a(self, metadata: dict) -> None:
         """
         Detect PDF/A and its version from metadata.
         """
@@ -412,7 +426,7 @@ class ExifToolDetector(BaseDetector):
         elif self.mimetype == "application/pdf":
             self._set_info_not_pdf_a()
 
-    def _set_info_not_pdf_a(self):
+    def _set_info_not_pdf_a(self) -> None:
         """
         Set info to reflect the fact that the file was not a PDF/A
         and thus PDF/A validation isn't performed.
@@ -422,7 +436,7 @@ class ExifToolDetector(BaseDetector):
             "performed when validating the file"
         )
 
-    def _set_info_exiftool_not_supported(self):
+    def _set_info_exiftool_not_supported(self) -> None:
         """
         Set info to reflect the fact that the file type is not supported by
         ExifTool, and thus file format detection isn't performed.
@@ -432,7 +446,7 @@ class ExifToolDetector(BaseDetector):
             "detection could not be performed by this tool"
         )
 
-    def get_important(self):
+    def get_important(self) -> dict[str, str]:
         """
         If ExifTool detector determines the mimetype as dng, it is marked as
         important. This is to make sure that this result overrides other
@@ -448,7 +462,7 @@ class ExifToolDetector(BaseDetector):
 
         return important
 
-    def tools(self):
+    def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
         detector.
 
@@ -464,7 +478,7 @@ class ExifToolDetector(BaseDetector):
             LOGGER.warning(
                 "Could not retrieve ExifTool version", exc_info=True
             )
-            return UNAV
+            return {}
 
 
 class SegYDetector(BaseDetector):
@@ -616,7 +630,7 @@ class AtlasTiDetector(BaseDetector):
     Will identify ATLPROJ files and their file format version.
     """
 
-    def detect(self):
+    def detect(self) -> None:
         """
         Run AtlasTiDetector to find out the mimetype and file format
         version of a file. The detector checks::
@@ -629,7 +643,7 @@ class AtlasTiDetector(BaseDetector):
             self.mimetype = "application/x.fi-dpres.atlproj"
             self.version = UNAP
 
-    def get_important(self):
+    def get_important(self) -> dict:
         """
         If AtlasTiDetector determines the mimetype as x.fi-dpres.atlproj,
         the mimetype and version are marked as important. This is to make
@@ -645,7 +659,7 @@ class AtlasTiDetector(BaseDetector):
             important["version"] = self.version
         return important
 
-    def tools(self):
+    def tools(self) -> dict:
         """Return information about the software used by the extractor or
         detector.
 
@@ -663,7 +677,7 @@ class SiardDetector(BaseDetector):
     file format version.
     """
 
-    def detect(self):
+    def detect(self) -> None:
         """
         Run SiardDetector to find out the mimetype and file format
         version of a file. The detector checks::
@@ -694,7 +708,7 @@ class SiardDetector(BaseDetector):
                     self.version = version
                     break
 
-    def get_important(self):
+    def get_important(self) -> dict:
         """
         If SiardDetector determines the mimetype as SIARD, the mimetype
         and version are marked as important. This is to make sure that
@@ -710,7 +724,7 @@ class SiardDetector(BaseDetector):
             important["version"] = self.version
         return important
 
-    def tools(self):
+    def tools(self) -> dict:
         """Return information about the software used by the extractor or
         detector.
 
@@ -732,7 +746,7 @@ class ODFDetector(BaseDetector):
     mimetype and format version of all other ODF files also.
     """
 
-    def detect(self):
+    def detect(self) -> None:
         """Detect the mimetype and file format version of a file.
 
         The detector checks that::
@@ -795,7 +809,7 @@ class ODFDetector(BaseDetector):
         self.mimetype = detected_mimetype
         self.version = detected_version
 
-    def get_important(self):
+    def get_important(self) -> dict[str, str]:
         """Return dict of important values determined by the detector.
 
         Mimetype and format version are important because other
@@ -807,7 +821,7 @@ class ODFDetector(BaseDetector):
         }
         return important
 
-    def tools(self):
+    def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
         detector.
 
@@ -829,7 +843,7 @@ class EpubDetector(BaseDetector):
     file format version.
     """
 
-    def detect(self):
+    def detect(self) -> None:
         """
         Run EpubDetector to find out the mimetype and file format
         version of a file. The detector checks::
@@ -873,7 +887,7 @@ class EpubDetector(BaseDetector):
             self.mimetype = "application/epub+zip"
             self.version = "3"
 
-    def get_important(self):
+    def get_important(self) -> dict[str, str]:
         """
         If EpubDetector determines the mimetype as EPUB, the mimetype
         and version are marked as important.
@@ -887,7 +901,7 @@ class EpubDetector(BaseDetector):
             important["version"] = self.version
         return important
 
-    def tools(self):
+    def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
         detector.
 

@@ -72,11 +72,11 @@ def iter_detectors() -> Iterator[type[BaseDetector]]:
 
 
 def iter_extractors(
-    mimetype: str,
-    version: str,
+    mimetype: str | None,
+    version: str | None,
     check_wellformed: bool = True,
     params: dict | None = None,
-) -> Iterator[type[BaseScraper]]:
+) -> Iterator[type[BaseExtractor]]:
     """
     Iterate extractors.
 
@@ -89,7 +89,7 @@ def iter_extractors(
     """
     extractor_found = False
 
-    extractors = [
+    extractors: list[type[BaseExtractor]] = [
         CsvExtractor,
         DbptkExtractor,
         DetectedMimeVersionMetadataExtractor,
@@ -126,7 +126,7 @@ def iter_extractors(
         WandExtractor,
         WarctoolsFullExtractor,
         WarctoolsExtractor,
-        XmllintExtractor
+        XmllintExtractor,
     ]
 
     for extractor in extractors:
@@ -134,7 +134,9 @@ def iter_extractors(
             extractor_found = True
             yield extractor
         else:
-            LOGGER.debug("Skipping unsupported extractor %s", extractor.__name__)
+            LOGGER.debug(
+                "Skipping unsupported extractor %s", extractor.__name__
+            )
 
     if not extractor_found:
         yield ExtractorNotFound

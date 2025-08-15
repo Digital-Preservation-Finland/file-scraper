@@ -12,7 +12,6 @@ done with FFMpegExtractor, using FFMpegMeta as the metadata model.
 from __future__ import annotations
 
 import re
-from typing import Literal
 from collections.abc import Iterator
 
 from file_scraper.base import BaseExtractor
@@ -28,7 +27,7 @@ except ImportError:
     pass
 
 
-class FFMpegMetaExtractor(BaseExtractor):
+class FFMpegMetaExtractor(BaseExtractor[FFMpegMeta]):
     """
     Extractor using FFMpeg to gather metadata without well-formed check.
     """
@@ -37,7 +36,7 @@ class FFMpegMetaExtractor(BaseExtractor):
     _supported_metadata = [FFMpegMeta]
 
     @property
-    def well_formed(self) -> Literal[False] | None:
+    def well_formed(self) -> bool | None:
         """
         Do not check well-formedness.
 
@@ -198,8 +197,13 @@ class FFMpegExtractor(FFMpegMetaExtractor):
     _only_wellformed = True
 
     @classmethod
-    def is_supported(cls, mimetype, version=None, check_wellformed=True,
-                     params=None):
+    def is_supported(
+        cls,
+        mimetype: str,
+        version: str | None = None,
+        check_wellformed: bool = True,
+        params: dict | None = None,
+    ):
         """
         Report whether the extractor supports the given MIME type and version.
 
@@ -210,7 +214,7 @@ class FFMpegExtractor(FFMpegMetaExtractor):
             check_wellformed=check_wellformed, params=params)
 
     @property
-    def well_formed(self):
+    def well_formed(self) -> bool | None:
         """
         Return well-formedness status of the scraped file.
         If the file contains streams that can not be identified or
@@ -233,7 +237,7 @@ class FFMpegExtractor(FFMpegMetaExtractor):
 
         return valid
 
-    def extract(self):
+    def extract(self) -> None:
         """Scrape A/V files.
 
         We need to probe streams also for checking well-formedness, because
@@ -244,7 +248,7 @@ class FFMpegExtractor(FFMpegMetaExtractor):
         super().extract()
         self._validate_file()
 
-    def _validate_file(self):
+    def _validate_file(self) -> None:
         """Validate A/V file"""
         shell = Shell(["ffmpeg", "-v", "error", "-max_muxing_queue_size",
                        "1024", "-f", "null", "-", "-i", self.filename])
@@ -263,7 +267,7 @@ class FFMpegExtractor(FFMpegMetaExtractor):
             self._errors.append(shell.stderr)
 
 
-def _filter_stderr(errors):
+def _filter_stderr(errors: str | None) -> str:
     """
     Filter out "bpno became negative" and "Last message repeated".
 
@@ -281,7 +285,7 @@ def _filter_stderr(errors):
     Note: Message "Last message repeated" may be targeted also
     to another (valid) error message. It will still be filtered.
 
-    :errors: Stderr result from Shell in scraping
+    :param errors: Stderr result from Shell in scraping
     :returns: Filtered error message result
     """
     constructed_string = ""

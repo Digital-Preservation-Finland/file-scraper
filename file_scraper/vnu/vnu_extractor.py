@@ -10,7 +10,7 @@ from file_scraper.vnu.vnu_model import VnuMeta
 from file_scraper.defaults import UNAV
 
 
-class VnuExtractor(BaseExtractor):
+class VnuExtractor(BaseExtractor[VnuMeta]):
     """Vnu extractor. Supports only HTML version 5."""
 
     _supported_metadata = [VnuMeta]

@@ -9,7 +9,7 @@ from file_scraper.office.office_model import OfficeMeta
 from file_scraper.shell import Shell
 
 
-class OfficeExtractor(BaseExtractor):
+class OfficeExtractor(BaseExtractor[OfficeMeta]):
     """Office file format extractor."""
 
     _supported_metadata = [OfficeMeta]

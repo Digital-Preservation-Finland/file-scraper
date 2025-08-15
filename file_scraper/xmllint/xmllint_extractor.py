@@ -1,4 +1,5 @@
 """Class for XML file well-formed check with Xmllint."""
+from __future__ import annotations
 
 import os
 import tempfile
@@ -35,7 +36,7 @@ attributeFormDefault="unqualified">
 </xs:schema>"""
 
 
-class XmllintExtractor(BaseExtractor):
+class XmllintExtractor(BaseExtractor[XmllintMeta]):
     """
     Xmllint extractor class.
 
@@ -47,14 +48,21 @@ class XmllintExtractor(BaseExtractor):
     _supported_metadata = [XmllintMeta]
     _only_wellformed = True  # Only well-formed check
 
-    def __init__(self, filename: Path, mimetype, version=None, params=None):
+    def __init__(
+        self,
+        filename: Path,
+        mimetype: str,
+        version: str | None = None,
+        params: dict | None = None,
+    ) -> None:
         """
         Initialize extractor.
 
-        :filename: File path
-        :mimetype: Predefined mimetype
-        :version: Predefined version
-        :params: Extra parameters needed for the extractor. The parameters are:
+        :param filename: File path
+        :param mimetype: Predefined mimetype
+        :param version: Predefined version
+        :param params: Extra parameters needed for the extractor.
+            The parameters are:
                  schema: Schema path, None by default
                  catalog_path: Path to XMLcatalog
         """
@@ -66,8 +74,9 @@ class XmllintExtractor(BaseExtractor):
         self._schema = params.get("schema", None)
         self._has_constructed_schema = False
         self._catalog_path = params.get("catalog_path", None)
+        self._errors = []
 
-    def _evaluate_xsd_location(self, location):
+    def _evaluate_xsd_location(self, location: str) -> str:
         """Determine whether or not the XSD schema is a
         local file in relation to the assigned XML file.
 
@@ -85,10 +94,10 @@ class XmllintExtractor(BaseExtractor):
         # direct path or relative path to the XML in question.
         local_location = self.filename.parent / location
         if local_location.is_file():
-            return local_location.absolute()
+            return str(local_location.absolute())
         return location
 
-    def extract(self):
+    def extract(self) -> None:
         """
         Check XML file with Xmllint and return a tuple of results.
 
@@ -161,7 +170,7 @@ class XmllintExtractor(BaseExtractor):
             well_formed=self.well_formed, tree=tree))
         self._check_supported()
 
-    def construct_xsd(self):
+    def construct_xsd(self) -> str | None:
         """
         Construct one schema file for the given document.
 
@@ -210,14 +219,16 @@ class XmllintExtractor(BaseExtractor):
 
             return schema
 
-        return []
+        return None
 
-    def exec_xmllint(self, dtd_check=False, schema=None):
+    def exec_xmllint(
+        self, dtd_check: bool = False, schema: list | None = None
+    ) -> tuple[int, str | None, str | None]:
         """
         Execute xmllint.
 
-        :dtd_check: True, if check against DTD, false otherwise
-        :schema: Schema file
+        :param dtd_check: True, if check against DTD, false otherwise
+        :param schema: Schema file
         :returns: tuple including: returncode, stdout, strderr
         """
         command = ["xmllint"]
@@ -242,7 +253,7 @@ class XmllintExtractor(BaseExtractor):
 
         return (shell.returncode, shell.stdout, shell.stderr)
 
-    def errors(self):
+    def errors(self) -> list[str]:
         """
         Return errors without unnecessary ones.
 
@@ -268,7 +279,7 @@ class XmllintExtractor(BaseExtractor):
 
         return super().errors()
 
-    def tools(self):
+    def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
         detector.
 

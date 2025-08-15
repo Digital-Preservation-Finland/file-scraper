@@ -4,26 +4,36 @@
    configuration paths, and will select these, if exist. If not, then
    system default file command is selected.
 """
+from __future__ import annotations
 import ctypes
+from pathlib import Path
+from typing import TYPE_CHECKING
 from file_scraper.paths import resolve_path_from_config
 
+if TYPE_CHECKING:
+    import magic
 
-def magic_analyze(magic_lib, magic_type, path):
+
+def magic_analyze(
+    magic_lib: type[magic], magic_type: int, path: str | Path
+) -> str | None:
     """Analyze file with given magic module.
 
-    :magic_lib: Magic module
-    :magic_type: Magic type to open magic library
-    :path: File path to analyze
+    :param magic_lib: Magic module
+    :param magic_type: Magic type to open magic library
+    :param path: File path to analyze
     :returns: Result from the magic module
     """
     magic_ = magic_lib.open(magic_type)
-    magic_.load()
-    magic_result = magic_.file(path)
-    magic_.close()
-    return magic_result
+    if magic_ is not None:
+        magic_.load()
+        magic_result = magic_.file(path)
+        magic_.close()
+        return magic_result
+    return None
 
 
-def magiclib():
+def magiclib() -> type[magic]:
     """Resolve magic library from the configuration path.
 
     :returns: Magic module
@@ -33,16 +43,12 @@ def magiclib():
     except OSError:
         pass
 
-    try:
-        # pylint: disable=import-outside-toplevel
-        import magic
-        return magic
-    except ImportError:
-        pass
-    return None
+    # pylint: disable=import-outside-toplevel
+    import magic
+    return magic
 
 
-def magiclib_version():
+def magiclib_version() -> str:
     """
     Define missing version function for the magic library
     :returns: magiclib version

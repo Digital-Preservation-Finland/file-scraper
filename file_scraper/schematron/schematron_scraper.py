@@ -1,4 +1,5 @@
 """Schematron extractor."""
+from __future__ import annotations
 
 import os
 import shutil
@@ -17,13 +18,19 @@ from file_scraper.schematron.schematron_model import SchematronMeta
 from file_scraper.utils import hexdigest, ensure_text
 
 
-class SchematronScraper(BaseExtractor):
+class SchematronScraper(BaseExtractor[SchematronMeta]):
     """Schematron extractor."""
 
     _supported_metadata = [SchematronMeta]
     _only_wellformed = True
 
-    def __init__(self, filename: Path, mimetype, version=None, params=None):
+    def __init__(
+        self,
+        filename: Path,
+        mimetype: str,
+        version: str | None = None,
+        params: dict | None = None,
+    ) -> None:
         """
         Initialize instance.
 
@@ -53,19 +60,24 @@ class SchematronScraper(BaseExtractor):
         self._extra_hash = params.get("extra_hash", None)
 
     @classmethod
-    def is_supported(cls, mimetype, version=None,
-                     check_wellformed=True, params=None):
+    def is_supported(
+        cls,
+        mimetype: str,
+        version: str | None = None,
+        check_wellformed: bool = True,
+        params: dict | None = None,
+    ) -> bool:
         """
         Return True if the MIME type and version are supported.
 
         We use this extractor only with a schematron file.
 
-        :mimetype: Identified mimetype
-        :version: Identified version (if needed)
-        :check_wellformed: True for the full well-formed check, False for just
-                           detection and metadata scraping
-        :params: Extra parameters needed for the extractor
-        :returns: True if extractor is supported
+        :param mimetype: Identified mimetype
+        :param version: Identified version (if needed)
+        :param check_wellformed: True for the full well-formed check, False for
+            just detection and metadata scraping
+        :param params: Extra parameters needed for the extractor
+        :param returns: True if extractor is supported
         """
         if params is None:
             params = {}
@@ -75,7 +87,7 @@ class SchematronScraper(BaseExtractor):
             mimetype, version, check_wellformed, params)
 
     @property
-    def well_formed(self):
+    def well_formed(self) -> bool:
         """Check if document resulted errors."""
         if not self.errors() and self.messages():
             if not any("<svrl:failed-assert " in message
@@ -85,11 +97,11 @@ class SchematronScraper(BaseExtractor):
         return False
 
     # Keep the SchematronScraper interface intact
-    def scrape_file(self):
+    def scrape_file(self) -> None:
         """Do the Schematron check."""
         self.extract()
 
-    def extract(self):
+    def extract(self) -> None:
         """Do the Schematron check."""
         if self._schematron_file is None:
             self._errors.append("Schematron file missing from parameters.")
@@ -115,7 +127,7 @@ class SchematronScraper(BaseExtractor):
 
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)
 
-    def _filter_duplicate_elements(self, result):
+    def _filter_duplicate_elements(self, result: str | bytes) -> bytes:
         """
         Filter duplicate elements from the result.
 
@@ -142,15 +154,22 @@ class SchematronScraper(BaseExtractor):
             encoding="UTF-8", with_comments=True)
 
     # pylint: disable=too-many-arguments
-    def _compile_phase(self, stylesheet, inputfile, allowed_codes,
-                       outputfile=None, outputfilter=False):
+    def _compile_phase(
+        self,
+        stylesheet: str | Path,
+        inputfile: str | Path,
+        allowed_codes: list[int],
+        outputfile: str | None = None,
+        outputfilter: bool = False,
+    ) -> Shell:
         """
         Compile one phase.
 
-        :stylesheet: XSLT file to used in the conversion
-        :inputfile: Input document filename
-        :outputfile: Filename of the resulted document, stdout if None
-        :outputfilter: Use outputfilter parameter with value only_messages
+        :param stylesheet: XSLT file to used in the conversion
+        :param inputfile: Input document filename
+        :param outputfile: Filename of the resulted document, stdout if None
+        :param outputfilter: Use outputfilter parameter with value only
+            messages
         :return: Shell instance
         """
         dir_path = resolve_path_from_config("schematron_dir")
@@ -169,7 +188,7 @@ class SchematronScraper(BaseExtractor):
             )
         return shell
 
-    def _compile_schematron(self):
+    def _compile_schematron(self) -> str:
         """
         Compile a schematron file.
 
@@ -212,7 +231,7 @@ class SchematronScraper(BaseExtractor):
 
         return xslt_filename
 
-    def _generate_xslt_filename(self):
+    def _generate_xslt_filename(self) -> str:
         """
         Generate XSLT filename from schematron file.
 
@@ -234,7 +253,7 @@ class SchematronScraper(BaseExtractor):
         return os.path.join(self._cachepath,
                             f"{schema_basename}.{schema_digest}.validator.xsl")
 
-    def tools(self):
+    def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
         detector.
 

@@ -1,5 +1,8 @@
 """Module for checking if the file is suitable as text file or not."""
+from __future__ import annotations
+from io import BufferedReader
 from pathlib import Path
+from typing import Literal
 
 from file_scraper.base import BaseExtractor
 from file_scraper.defaults import UNAV
@@ -12,7 +15,7 @@ from file_scraper.textfile.textfile_model import (TextFileMeta,
                                                   TextEncodingMeta)
 
 
-class TextfileExtractor(BaseExtractor):
+class TextfileExtractor(BaseExtractor[TextFileMeta]):
     """
     Text file detection extractor.
 
@@ -25,7 +28,7 @@ class TextfileExtractor(BaseExtractor):
     _supported_metadata = [TextFileMeta]
 
     @property
-    def well_formed(self):
+    def well_formed(self) -> Literal[False] | None:
         """TextfileExtractor is not able to check well-formedness.
 
         :returns: False if TextfileExtractor can not open or handle the file,
@@ -37,7 +40,7 @@ class TextfileExtractor(BaseExtractor):
 
         return None
 
-    def _file_mimetype(self):
+    def _file_mimetype(self) -> str:
         """
         Detect mimetype with the soft option that excludes libmagick.
 
@@ -49,7 +52,7 @@ class TextfileExtractor(BaseExtractor):
 
         return shell.stdout.strip()
 
-    def extract(self):
+    def extract(self) -> None:
         """Check MIME type determined by libmagic."""
 
         if self._file_mimetype() == "text/plain" and self._predefined_version:
@@ -76,7 +79,7 @@ class TextfileExtractor(BaseExtractor):
         self._check_supported(allow_unav_mime=True,
                               allow_unav_version=True)
 
-    def tools(self):
+    def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
         detector.
 
@@ -93,7 +96,7 @@ class TextfileExtractor(BaseExtractor):
         }
 
 
-class TextEncodingMetaExtractor(BaseExtractor):
+class TextEncodingMetaExtractor(BaseExtractor[TextEncodingMeta]):
     """
     Extractor to set predefined character encoding to metadata.
 
@@ -103,15 +106,21 @@ class TextEncodingMetaExtractor(BaseExtractor):
     """
     _supported_metadata = [TextEncodingMeta]
 
-    def __init__(self, filename: Path, mimetype, version=None, params=None):
+    def __init__(
+        self,
+        filename: Path,
+        mimetype: str,
+        version: str | None = None,
+        params: dict | None = None,
+    ) -> None:
         """
         Initialize extractor. Add given charset.
 
-        :filename: File name
-        :mimetype: File MIME type
-        :version: File format version
-        :params: Extra parameters as dict, the following is required:
-                 charset: File character encoding
+        :param filename: File name
+        :param mimetype: File MIME type
+        :param version: File format version
+        :param params: Extra parameters as dict, the following is required:
+            charset: File character encoding
         """
         super().__init__(
             filename=filename, mimetype=mimetype, version=version,
@@ -119,7 +128,7 @@ class TextEncodingMetaExtractor(BaseExtractor):
         self._charset = self._params.get("charset", UNAV)
 
     @property
-    def well_formed(self):
+    def well_formed(self) -> Literal[False] | None:
         """TextEncodingMetaExtractor is not able to check well-formedness.
 
         :returns: False if TextEncodingMetaExtractor can not open or handle
@@ -133,16 +142,21 @@ class TextEncodingMetaExtractor(BaseExtractor):
         return None
 
     @classmethod
-    def is_supported(cls, mimetype, version=None, check_wellformed=True,
-                     params=None):  # pylint: disable=unused-argument
+    def is_supported(
+        cls,
+        mimetype: str,
+        version: str | None = None,
+        check_wellformed: bool = True,
+        params: dict | None = None,
+    ) -> bool:
         """
         Support only when no checking of well-formedness is done.
 
-        :mimetype: MIME type of a file
-        :version: Version of a file. Defaults to None.
-        :check_wellformed: True for scraping with well-formedness check, False
-                           for skipping the check. Defaults to True.
-        :params: None
+        :param mimetype: MIME type of a file
+        :param version: Version of a file. Defaults to None.
+        :param check_wellformed: True for scraping with well-formedness check,
+            False for skipping the check. Defaults to True.
+        :param params: None
         :returns: True if the MIME type and version are supported, False if not
         """
         if check_wellformed:
@@ -150,7 +164,7 @@ class TextEncodingMetaExtractor(BaseExtractor):
         return super().is_supported(
             mimetype, version, check_wellformed, params)
 
-    def extract(self):
+    def extract(self) -> None:
         """No actual scraping. Set the predefined character encoding value."""
         self._messages.append("Setting character encoding.")
         self.streams = list(self.iterate_models(
@@ -159,11 +173,11 @@ class TextEncodingMetaExtractor(BaseExtractor):
         self._check_supported(allow_unav_mime=True,
                               allow_unav_version=True)
 
-    def tools(self):
+    def tools(self) -> dict:
         return {}
 
 
-class TextEncodingExtractor(BaseExtractor):
+class TextEncodingExtractor(BaseExtractor[TextEncodingMeta]):
     """
     Text encoding extractor.
 
@@ -190,22 +204,28 @@ class TextEncodingExtractor(BaseExtractor):
     # Limit file read in MB, 0 = unlimited. Must be divisible by _chunksize
     _limit = 5*_chunksize
 
-    def __init__(self, filename: Path, mimetype, version=None, params=None):
+    def __init__(
+        self,
+        filename: Path,
+        mimetype: str,
+        version: str | None = None,
+        params: dict | None = None,
+    ) -> None:
         """
         Initialize extractor. Add given charset.
 
-        :filename: File name
-        :mimetype: File MIME type
-        :version: File format version
-        :params: Extra parameters as dict, the following is required:
-                 charset: File character encoding
+        :param filename: File name
+        :param mimetype: File MIME type
+        :param version: File format version
+        :param params: Extra parameters as dict, the following is required:
+            charset: File character encoding
         """
         super().__init__(
             filename=filename, mimetype=mimetype, version=version,
             params=params)
         self._charset = self._params.get("charset", UNAV)
 
-    def extract(self):
+    def extract(self) -> None:
         """
         Validate the file with decoding it with given character encoding.
         """
@@ -260,7 +280,7 @@ class TextEncodingExtractor(BaseExtractor):
             predefined_mimetype=self._predefined_mimetype))
         self._check_supported(allow_unav_mime=True, allow_unav_version=True)
 
-    def _predetect_charset(self, infile):
+    def _predetect_charset(self, infile: BufferedReader) -> str:
         """
         Predetect charset.
 
@@ -278,7 +298,7 @@ class TextEncodingExtractor(BaseExtractor):
                 pass
         return self._charset
 
-    def _utf8_contradiction(self, chunk, position):
+    def _utf8_contradiction(self, chunk: bytes, position: int) -> bool:
         """
         Check that UTF-8 does not make a contradiction.
 
@@ -292,8 +312,8 @@ class TextEncodingExtractor(BaseExtractor):
         then UTF-8 decoding should fail too. Otherwise, we do probably have
         UTF-8 file.
 
-        :chunk: Byte chunk from a file
-        :position: Chunk position in file
+        :param chunk: Byte chunk from a file
+        :param position: Chunk position in file
         :returns: True if there is UTF-8 contradiction, otherwise False
         """
         if self._charset.upper() in ["UTF-8", "UTF-32"]:
@@ -322,7 +342,7 @@ class TextEncodingExtractor(BaseExtractor):
             return False
         return True
 
-    def _decode_chunk(self, chunk, charset, position):
+    def _decode_chunk(self, chunk: bytes, charset: str, position: int) -> None:
         """
         Decode given chunk and check forbidden characters.
 
@@ -330,9 +350,9 @@ class TextEncodingExtractor(BaseExtractor):
         exception of horizontal tab, carriage return, and line feed,
         which are allowed.
 
-        :chunk: Byte chunk from a file
-        :charset: Decoding charset
-        :position: Chunk position in a file
+        :param chunk: Byte chunk from a file
+        :param charset: Decoding charset
+        :param position: Chunk position in a file
         :raises UnknownEncodingError: When the decoding was unsuccessful
         :raises ForbiddenCharacterError: When a forbidden character was
             found.
@@ -365,5 +385,5 @@ class TextEncodingExtractor(BaseExtractor):
                     f"Illegal character '{repr(forb_char)[1:-1]}' in "
                     f"position {(position + index)}")
 
-    def tools(self):
+    def tools(self) -> dict:
         return {}
