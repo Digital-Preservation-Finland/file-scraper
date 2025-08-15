@@ -236,7 +236,9 @@ class XmllintExtractor(BaseExtractor):
                 "SGML_CATALOG_FILES": self._catalog_path
             }
         else:
-            environment = None
+            environment = {
+                "SGML_CATALOG_FILES": "/etc/xml/catalog"
+            }
 
         shell = Shell(command, env=environment)
 
