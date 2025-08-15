@@ -18,6 +18,28 @@ class PilExtractor(BaseExtractor):
     _supported_metadata = [TiffPilMeta, DngPilMeta, PngPilMeta, GifPilMeta,
                            JpegPilMeta, Jp2PilMeta, WebPPilMeta]
 
+    # We need to remove 'FLI' from the formats detected by PIL, because the
+    # PIL FLI code erroneously detects TIFF images as FLI or FLIC.
+    # PIL does file detection in two phases. First, a few basic formats and
+    # then all the rest. We aim to do the same here, but without 'FLI'.
+    # See KDKPAS-3594.
+    # These format list have been collected by debugging the PIL code.
+    # These are the common formats between Pillow 10.0.1 (in EPEL9) and
+    # 11.3.0, which is the newest release at the time of writing this code.
+    # If PIL gains support for new file formats which we want to support, these
+    # lists needs to be updated.
+    # If FLI/FLIC detection in PIL gets fixed, we can get rid of these lists
+    # and this implementation.
+    pil_basic_formats = ['BMP', 'DIB', 'GIF', 'JPEG', 'PPM', 'PNG']
+    pil_additional_formats = ['BLP', 'BUFR', 'CUR', 'PCX', 'DCX', 'DDS', 'EPS',
+                              'FITS', 'FTEX', 'GBR', 'GRIB', 'HDF5',
+                              'JPEG2000', 'ICNS', 'ICO', 'IM', 'IMT', 'IPTC',
+                              'MCIDAS', 'MPEG', 'TIFF', 'MSP', 'PCD', 'PIXAR',
+                              'PSD', 'QOI', 'SGI', 'TGA', 'WEBP', 'WMF', 'XBM',
+                              'XPM', 'XVTHUMB']
+    # Start with the basic format list
+    pil_formats = pil_basic_formats
+
     @property
     def well_formed(self):
         """
@@ -34,11 +56,30 @@ class PilExtractor(BaseExtractor):
 
     def extract(self):
         """Scrape data from file."""
-        try:
-            # Raise the size limit to around a gigabyte for a 3 bpp image
-            PIL.Image.MAX_IMAGE_PIXELS = int(1024 * 1024 * 1024 // 3)
+        # Raise the size limit to around a gigabyte for a 3 bpp image
+        PIL.Image.MAX_IMAGE_PIXELS = int(1024 * 1024 * 1024 // 3)
 
-            with PIL.Image.open(self.filename) as pil:
+        # Find out if we can use the minimal set of Pillow plugins to open
+        # the file. If not, use a larger set. If the file can not be opened at
+        # all, fail in the exception handler.
+        try:
+            with PIL.Image.open(self.filename,
+                                formats=self.pil_formats) as pil:
+                pass
+        except PIL.Image.UnidentifiedImageError:
+            self.pil_formats = self.pil_additional_formats
+        except Exception as e:
+            LOGGER.warning("Error analyzing file", exc_info=True)
+            self._errors.append("Error in analyzing file.")
+            self._errors.append(str(e))
+            return
+
+        # Do the metadata collection. We are either able to read the file
+        # with the PIL plugins we have in pil_formats or we fail in the
+        # (second) exception handler.
+        try:
+            with PIL.Image.open(self.filename,
+                                formats=self.pil_formats) as pil:
                 try:
                     n_frames = pil.n_frames
                 except (AttributeError, ValueError):
@@ -52,7 +93,8 @@ class PilExtractor(BaseExtractor):
             self._errors.append(str(e))
             return
         else:
-            with PIL.Image.open(self.filename) as pil:
+            with PIL.Image.open(self.filename,
+                                formats=self.pil_formats) as pil:
                 for pil_index in range(0, n_frames):
                     pil.seek(pil_index)
                     self.streams += list(
