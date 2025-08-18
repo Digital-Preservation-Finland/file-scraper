@@ -8,6 +8,7 @@ from file_scraper.base import BaseMeta
 # pylint: disable=too-few-public-methods
 class BaseWarctoolsMeta(BaseMeta):
     """Base metadata class for Warcs."""
+    _allow_versions = True  # Allow any version
 
     @metadata()
     def stream_type(self):
@@ -20,7 +21,6 @@ class WarctoolsMeta(BaseWarctoolsMeta):
 
     # Supported mimetype and versions
     _supported = {"application/warc": ["0.17", "0.18", "1.0"]}
-    _allow_versions = True  # Allow any version
 
     def __init__(self, well_formed, line=None):
         """
@@ -57,4 +57,3 @@ class GzipWarctoolsMeta(WarctoolsMeta):
     """Metadata model for compressed Warcs."""
 
     _supported = {"application/gzip": []}  # Supported mimetype
-    _allow_versions = True  # Allow any version
