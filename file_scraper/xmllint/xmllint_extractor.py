@@ -56,7 +56,6 @@ class XmllintExtractor(BaseExtractor):
         :version: Predefined version
         :params: Extra parameters needed for the extractor. The parameters are:
                  schema: Schema path, None by default
-                 catalogs: True if XML catalog used (default), False otherwise
                  no_network: True if no network connections allowed (default),
                              False will try to fetch schema files from
                              internet.
@@ -69,7 +68,6 @@ class XmllintExtractor(BaseExtractor):
             params = {}
         self._schema = params.get("schema", None)
         self._has_constructed_schema = False
-        self._catalogs = params.get("catalogs", True)
         self._no_network = params.get("no_network", True)
         self._catalog_path = params.get("catalog_path", None)
 
@@ -227,7 +225,7 @@ class XmllintExtractor(BaseExtractor):
         command += ["--huge"]
         command += ["--noout"]
         command += ["--nonet"] if self._no_network else []
-        command += ["--catalogs"] if self._catalogs else []
+        command += ["--catalogs"] if self._catalog_path else []
         command += ["--schema", schema] if schema else []
         command += [self.filename]
 

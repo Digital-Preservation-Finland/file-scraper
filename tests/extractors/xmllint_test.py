@@ -47,55 +47,51 @@ ROOTPATH = os.path.abspath(os.path.join(
             "stdout_part": "Document is well-formed but does not contain "
                            "schema.",
             "stderr_part": ""},
-         {"catalogs": False}),
+         {}),
         ("valid_1.0_local_xsd.xml", {
             "purpose": "Test valid xml with given schema.",
             "stdout_part": "Success",
             "stderr_part": ""},
-         {"catalogs": False,
-          "schema": os.path.join(
-              ROOTPATH, "tests/data/text_xml/supplementary/local.xsd")}),
+         {"schema": os.path.join(
+             ROOTPATH, "tests/data/text_xml/supplementary/local.xsd")}),
         ("valid_1.0_catalog.xml", {
             "purpose": "Test valid file with local catalog.",
             "stdout_part": "Success",
             "stderr_part": ""},
          {"catalog_path":
-          "tests/data/text_xml/supplementary/catalog_to_local_xsd.xml",
-          "catalogs": True}),
+              "tests/data/text_xml/supplementary/catalog_to_local_xsd.xml"}),
         ("valid_1.0_catalog.xml", {
             "purpose": "Test catalog order priority.",
             "stdout_part": "Success",
             "stderr_part": ""},
          {"catalog_path":
-          "tests/data/text_xml/supplementary/catalog_with_catalogs.xml",
-          "catalogs": True}),
+              "tests/data/text_xml/supplementary/catalog_with_catalogs.xml"}),
         ("valid_1.0_no_namespace_catalog.xml", {
             "purpose": "Test that no-namespace catalog would work",
             "stdout_part": "Success",
             "stderr_part": ""},
          {"catalog_path": ("tests/data/text_xml/supplementary/"
-                           "catalog_to_local_no_namespace_xsd.xml"),
-          "catalogs": True}),
+                           "catalog_to_local_no_namespace_xsd.xml")}),
         ("valid_1.0_dtd.xml", {
             "purpose": "Test valid xml with dtd.",
             "stdout_part": "Success",
             "stderr_part": ""},
-         {"catalogs": False}),
+         {}),
         ("valid_1.0_mets_noheader.xml", {
             "purpose": "Test valid file without XML header.",
             "stdout_part": "Success",
             "stderr_part": ""},
-         {"catalogs": False}),
+         {}),
         ("valid_1.0_addml.xml", {
             "purpose": "Test local XSD schema import and validation works",
             "stdout_part": "Success",
             "stderr_part": ""},
-         {"catalogs": False}),
+         {}),
         ("valid_1.0_no_namespace_xsd.xml", {
             "purpose": "Test local no namespace XSD",
             "stdout_part": "Success",
             "stderr_part": ""},
-         {"catalogs": False})
+         {})
     ]
 )
 def test_extractor_valid(filename, result_dict, params, evaluate_extractor):
@@ -132,49 +128,47 @@ def test_extractor_valid(filename, result_dict, params, evaluate_extractor):
             "purpose": "Test invalid file without schema.",
             "stdout_part": "",
             "stderr_part": "Opening and ending tag mismatch"},
-         {"catalogs": False}),
+         {}),
         ("invalid_1.0_local_xsd.xml", {
             "purpose": "Test invalid xml with given schema.",
             "stdout_part": "",
             "stderr_part": "Schemas validity error"},
-         {"catalogs": False, "schema": os.path.join(
+         {"schema": os.path.join(
              ROOTPATH, "tests/data/text_xml/supplementary/local.xsd")}),
         ("valid_1.0_local_xsd.xml", {
             "purpose": "Test valid xml with given invalid schema.",
             "inverse": True,
             "stdout_part": "",
             "stderr_part": "parser error"},
-         {"catalogs": False, "schema": os.path.join(
+         {"schema": os.path.join(
              ROOTPATH, "tests/data/text_xml/invalid_local.xsd")}),
         ("invalid_1.0_addml.xml", {
             "purpose": "Test invalid XML against local XSD",
             "stdout_part": "",
             "stderr_part": "Schemas validity error"},
-         {"catalogs": False}),
+         {}),
         ("invalid_1.0_catalog.xml", {
             "purpose": "Test invalid file with local catalog.",
             "stdout_part": "",
             "stderr_part": "Missing child element(s)"},
          {"catalog_path":
-          "tests/data/text_xml/supplementary/catalog_to_local_xsd.xml",
-          "catalogs": True}),
+              "tests/data/text_xml/supplementary/catalog_to_local_xsd.xml"}),
         ("valid_1.0_no_namespace_catalog.xml", {
             "purpose": "Test catalog priority.",
             "stdout_part": "",
             "stderr_part": "Schemas validity error"},
          {"catalog_path":
-          "tests/data/text_xml/supplementary/catalog_with_catalogs.xml",
-          "catalogs": True}),
+              "tests/data/text_xml/supplementary/catalog_with_catalogs.xml"}),
         ("invalid_1.0_dtd.xml", {
             "purpose": "Test invalid xml with dtd.",
             "stdout_part": "",
             "stderr_part": "does not follow the DTD"},
-         {"catalogs": False}),
+         {}),
         ("invalid_1.0_no_namespace_xsd.xml", {
             "purpose": "Test invalid XML against local no namespace XSD",
             "stdout_part": "",
             "stderr_part": "Missing child element(s)"},
-         {"catalogs": False}),
+         {}),
         ("invalid__empty.xml", {
             "purpose": "Test empty xml.",
             "stdout_part": "",
@@ -186,8 +180,7 @@ def test_extractor_valid(filename, result_dict, params, evaluate_extractor):
             "stderr_part": ("No matching global declaration available for "
                             "the validation root.")},
          {"catalog_path": ("tests/data/text_xml/supplementary/"
-                           "catalog_to_local_xsd_diacritics.xml"),
-          "catalogs": True}),
+                           "catalog_to_local_xsd_diacritics.xml")}),
     ]
 )
 def test_extractor_invalid(filename, result_dict, params, evaluate_extractor):
@@ -240,22 +233,18 @@ def test_parameters():
     # pylint: disable=protected-access
     extractor = XmllintExtractor(Path("testsfile"), "test/mimetype")
     assert extractor._schema is None
-    assert extractor._catalogs
     assert extractor._no_network
     assert extractor._catalog_path is None
 
     extractor = XmllintExtractor(
         filename=Path("testsfile"), mimetype="text/xml",
-        params={"schema": "schemafile", "catalogs": False,
-                "no_network": False})
+        params={"schema": "schemafile", "no_network": False})
     assert extractor._schema == "schemafile"
-    assert not extractor._catalogs
     assert not extractor._no_network
 
     extractor = XmllintExtractor(filename=Path("testsfile"),
                                mimetype="text/xml",
                                params={"catalog_path": "catpath"})
-    assert extractor._catalogs
     assert extractor._catalog_path == "catpath"
 
 

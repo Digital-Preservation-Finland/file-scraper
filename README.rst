@@ -166,7 +166,6 @@ The following additional arguments for the Scraper are also possible:
     * For XML file well-formed check:
 
         * Schema: ``schema=<schema file>`` - If not given, the scraper tries to find out the schema from the XML file.
-        * Use local schema catalogs: ``catalogs=True/False`` - True by default.
         * Environment for catalogs: ``catalog_path=<catalog path>``  - None by default. If None, then catalog is expected in /etc/xml/catalog
         * Disallow network use: ``no_network=True/False`` - True by default.
         * See giving the character encoding below.

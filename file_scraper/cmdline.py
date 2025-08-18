@@ -47,16 +47,14 @@ def cli():
               help="Specify the separator (line terminator) in CSV files.")
 @click.option("--quotechar", help="Specify the quote character in CSV files.")
 @click.option("--schema", help="Specify the schema file for XML files.")
-@click.option("--catalogs", type=click.BOOL,
-              help="Use local catalog schemas for XML files.")
 @click.option("--no-network", type=click.BOOL,
               help="Disallow network usage for XML files.")
 @click.option("--catalog-path",
               help="Specify the catalog environment for XML files.")
 def scrape_file(
         filename, check_wellformed, tool_info, mimetype, version, verbose,
-        charset, delimiter, fields, separator, quotechar, schema, catalogs,
-        no_network, catalog_path):
+        charset, delimiter, fields, separator, quotechar, schema, no_network,
+        catalog_path):
     """
     Identify file type, collect metadata, and optionally check well-formedness.
     \f
@@ -77,8 +75,8 @@ def scrape_file(
     option_args = {"charset": charset, "delimiter": delimiter,
                    "fields": fields,
                    "separator": separator, "quotechar": quotechar,
-                   "schema": schema, "catalogs": catalogs,
-                   "no_network": no_network, "catalog_path": catalog_path}
+                   "schema": schema, "no_network": no_network,
+                   "catalog_path": catalog_path}
 
     option_args = {k: v for k, v in option_args.items() if v is not None}
 
@@ -132,7 +130,6 @@ def scrape_file(
               help="Specify caching for XML schematron checks.")
 @click.option("--catalog-path",
               help="Specify the catalog environment for XML files.")
-@click.option("--catalogs", help="Use local catalog schemas for XML files.")
 @click.option("--extra-hash",
               help="Hash of related abstract patterns for XML schematron "
                    "checks.")
@@ -145,11 +142,11 @@ def scrape_file(
 )
 def check_xml_schematron_features(filename, no_network, schema, schematron,
                                   schematron_verbose, cache, catalog_path,
-                                  catalogs, extra_hash, verbose):
+                                  extra_hash, verbose):
     option_args = {"no_network": no_network, "schema": schema,
                    "schematron": schematron, "verbose": schematron_verbose,
                    "cache": cache, "catalog_path": catalog_path,
-                   "catalogs": catalogs, "extra_hash": extra_hash}
+                   "extra_hash": extra_hash}
 
     level = {
         0: logging.WARNING,
