@@ -47,7 +47,8 @@ def cli():
               help="Specify the separator (line terminator) in CSV files.")
 @click.option("--quotechar", help="Specify the quote character in CSV files.")
 @click.option("--schema", help="Specify the schema file for XML files.")
-@click.option("--catalogs", type=click.BOOL, help="Use local catalog schemas for XML files.")
+@click.option("--catalogs", type=click.BOOL,
+              help="Use local catalog schemas for XML files.")
 @click.option("--no-network", type=click.BOOL,
               help="Disallow network usage for XML files.")
 @click.option("--catalog-path",
@@ -79,7 +80,7 @@ def scrape_file(
                    "schema": schema, "catalogs": catalogs,
                    "no_network": no_network, "catalog_path": catalog_path}
 
-    option_args = {k:v for k,v in option_args.items() if v is not None}
+    option_args = {k: v for k, v in option_args.items() if v is not None}
 
     # Enable logging. If flag is provided an additional number of times,
     # default to the highest possible verbosity.
