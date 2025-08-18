@@ -174,3 +174,18 @@ def test_invalid_schematron_command():
                                  "tests/data/text_xml/invalid_1.0_local_xsd.xml"])
     result_json = json.loads(result.stdout)
     assert result_json["well-formed"] == False
+
+
+def test_sgml_catalog_files_env_var_gets_overridden():
+    runner = CliRunner(env={"SGML_CATALOG_FILES": "/some/invalid/catalog"})
+    result = runner.invoke(cli, ["scrape-file",
+                                 "tests/data/text_xml/valid_1.0_gpx_1.0.xml"])
+    assert result.exit_code == 0
+    assert json.loads(result.stdout)["well-formed"] == True
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["scrape-file",
+                                 "--catalog-path", "/some/invalid/catalog",
+                                 "tests/data/text_xml/valid_1.0_gpx_1.0.xml"])
+    assert result.exit_code == 0
+    assert json.loads(result.stdout)["well-formed"] == False
