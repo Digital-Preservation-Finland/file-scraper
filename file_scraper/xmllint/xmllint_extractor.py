@@ -225,7 +225,7 @@ class XmllintExtractor(BaseExtractor):
         command += ["--huge"]
         command += ["--noout"]
         command += ["--nonet"] if self._no_network else []
-        command += ["--catalogs"] if self._catalog_path else []
+        command += ["--catalogs"]
         command += ["--schema", schema] if schema else []
         command += [self.filename]
 
