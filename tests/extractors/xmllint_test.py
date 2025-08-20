@@ -25,7 +25,7 @@ This module tests that:
     - When well-formedness is not checked, text/xml 1.0 is not supported.
     - A made up MIME type is not supported, but version is.
 
-    - Schema, catalogs and network-usage can be defined as parameters.
+    - Schema and catalogs can be defined as parameters.
 """
 
 import os
@@ -234,14 +234,12 @@ def test_parameters():
     # pylint: disable=protected-access
     extractor = XmllintExtractor(Path("testsfile"), "test/mimetype")
     assert extractor._schema is None
-    assert extractor._no_network
     assert extractor._catalog_path is None
 
     extractor = XmllintExtractor(
         filename=Path("testsfile"), mimetype="text/xml",
-        params={"schema": "schemafile", "no_network": False})
+        params={"schema": "schemafile"})
     assert extractor._schema == "schemafile"
-    assert not extractor._no_network
 
     extractor = XmllintExtractor(filename=Path("testsfile"),
                                mimetype="text/xml",

@@ -56,9 +56,6 @@ class XmllintExtractor(BaseExtractor):
         :version: Predefined version
         :params: Extra parameters needed for the extractor. The parameters are:
                  schema: Schema path, None by default
-                 no_network: True if no network connections allowed (default),
-                             False will try to fetch schema files from
-                             internet.
                  catalog_path: Path to XMLcatalog
         """
         super().__init__(
@@ -68,7 +65,6 @@ class XmllintExtractor(BaseExtractor):
             params = {}
         self._schema = params.get("schema", None)
         self._has_constructed_schema = False
-        self._no_network = params.get("no_network", True)
         self._catalog_path = params.get("catalog_path", None)
 
     def _evaluate_xsd_location(self, location):
@@ -224,7 +220,7 @@ class XmllintExtractor(BaseExtractor):
         command += ["--valid"] if dtd_check else []
         command += ["--huge"]
         command += ["--noout"]
-        command += ["--nonet"] if self._no_network else []
+        command += ["--nonet"]
         command += ["--catalogs"]
         command += ["--schema", schema] if schema else []
         command += [self.filename]
