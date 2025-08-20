@@ -29,6 +29,7 @@ This module tests that:
 """
 
 import os
+import subprocess
 from pathlib import Path
 import pytest
 
@@ -252,3 +253,22 @@ def test_tools():
     """Test that extractor returns correct version"""
     extractor = XmllintExtractor(filename=Path(""), mimetype="")
     assert extractor.tools()["lxml"]["version"].replace(".", "").isnumeric()
+
+
+def test_no_network(monkeypatch):
+    old_popen_init = subprocess.Popen.__init__
+
+    def _new_popen_init(self, args, stdout, stderr, stdin, shell, env):
+        """
+        Arguments are taken from file_scraper.shell.Shell.popen()'s calling arguments
+        """
+        assert "--nonet" in args
+        return old_popen_init(self=self, args=args, stdin=stdin, stdout=stdout,
+                              stderr=stderr, shell=shell, env=env)
+
+    monkeypatch.setattr(subprocess.Popen, "__init__", _new_popen_init)
+
+    extractor = XmllintExtractor(
+        Path("tests/data/text_xml/valid_1.0_gpx_1.0.xml"), "text/xml")
+    extractor.extract()
+    assert extractor.well_formed
