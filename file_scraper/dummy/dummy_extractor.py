@@ -1,10 +1,8 @@
 """Dummy extractors."""
 import os
-from pathlib import Path
 
 from file_scraper.base import BaseExtractor
 from file_scraper.defaults import UNAV
-from file_scraper.utils import generate_metadata_dict
 from file_scraper.dummy.dummy_model import (
     DetectedMimeVersionMeta,
     DetectedPdfaVersionMeta,
@@ -194,32 +192,3 @@ class DetectedMimeVersionMetadataExtractor(DetectedMimeVersionExtractor):
         return super().is_supported(
             mimetype, version, check_wellformed, params)
 
-
-class ResultsMergeExtractor(NoWellformednessBaseExtractor):
-    """
-    Extractor to merge the extractor results and handle possible conflicts
-    between the extractor tools.
-    """
-
-    _supported_metadata = [DummyMeta]
-
-    def __init__(self, filename: Path, mimetype, version=None, params=None):
-        """
-        """
-        super().__init__(
-            filename=filename, mimetype=mimetype, version=version,
-            params=params)
-        if params is None:
-            params = {}
-        self._extractor_results = params.get("extractor_results", None)
-
-    def extract(self):
-        """
-        No need to scrape anything, just merge already collected metadata.
-        """
-        streams, conflicts = generate_metadata_dict(
-            self._extractor_results, LOSE)
-        self.streams = streams
-        for error_message in conflicts:
-            self._errors.append(error_message)
-        self._messages.append("Extractor results merged into streams")

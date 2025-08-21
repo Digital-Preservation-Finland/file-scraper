@@ -33,8 +33,8 @@ import pytest
 from file_scraper.defaults import UNAV
 from file_scraper.dummy.dummy_extractor import (
     FileExists, ExtractorNotFound, MimeMatchExtractor,
-    DetectedMimeVersionExtractor, DetectedMimeVersionMetadataExtractor,
-    ResultsMergeExtractor)
+    DetectedMimeVersionExtractor, DetectedMimeVersionMetadataExtractor)
+from file_scraper.scraper import Scraper
 from tests.common import partial_message_included
 
 DEFAULTSTREAMS = {0: {"index": 0, "version": UNAV,
@@ -248,8 +248,9 @@ def test_results_merge_extractor(meta_class_fx, meta_classes, wellformed):
     results = []
     for meta_class in meta_classes:
         results.append([meta_class_fx(meta_class)])
-    extractor = ResultsMergeExtractor(
-        filename, mimetype="expected_mime", version="expected_version",
-        params={"extractor_results": results})
-    extractor.extract()
-    assert extractor.well_formed == wellformed
+
+    scraper = Scraper(filename)
+    scraper._params["extractor_results"] = results
+    scraper.info = {}
+    scraper._merge_results(True)
+    assert scraper.well_formed == wellformed

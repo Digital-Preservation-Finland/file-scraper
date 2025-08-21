@@ -8,12 +8,11 @@ from dpres_file_formats import graders
 from file_scraper.base import BaseExtractor
 from file_scraper.defaults import UNAV
 from file_scraper.detectors import (MagicCharset, ExifToolDetector)
-from file_scraper.dummy.dummy_extractor import (FileExists, MimeMatchExtractor,
-                                                ResultsMergeExtractor)
+from file_scraper.dummy.dummy_extractor import (FileExists, MimeMatchExtractor)
 from file_scraper.iterator import iter_detectors, iter_extractors
 from file_scraper.jhove.jhove_extractor import JHoveUtf8Extractor
 from file_scraper.textfile.textfile_extractor import TextfileExtractor
-from file_scraper.utils import hexdigest
+from file_scraper.utils import hexdigest, generate_metadata_dict
 from file_scraper.logger import LOGGER
 
 LOSE = (None, UNAV, "")
@@ -208,13 +207,34 @@ class Scraper:
 
         :check_wellformed: Whether full scraping is used or not.
         """
-        scraper = ResultsMergeExtractor(
-            filename=self.path,
-            mimetype=self._predefined_mimetype,
-            version=self._predefined_version,
-            params=self._params)
-        self._use_extractor(scraper, check_wellformed)
-        self.streams = scraper.streams
+
+        _extractor_results = self._params.get("extractor_results", None)
+        _errors = []
+        _messages = []
+
+        streams, conflicts = generate_metadata_dict(_extractor_results, LOSE)
+        for error_message in conflicts:
+            _errors.append(error_message)
+        _messages.append("Extractor results merged into streams")
+
+        info = {
+            "class": "ResultsMergeExtractor",
+            "messages": _messages,
+            "errors": _errors,
+            "tools": {}}
+
+        if len(_messages) > 0 and len(_errors) == 0:
+            extractor_well_formed = None
+        else:
+            extractor_well_formed = False
+
+        if streams:
+            self._extractor_results.append(streams)
+        self.info[len(self.info)] = info
+        if (self.well_formed is None and check_wellformed) or \
+                extractor_well_formed is False:
+            self.well_formed = extractor_well_formed
+        self.streams = streams
 
     def scrape(self, check_wellformed=True):
         """Scrape file and collect metadata.
