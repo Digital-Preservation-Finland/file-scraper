@@ -26,6 +26,8 @@ This module tests that:
     - A made up MIME type is not supported, but version is.
 
     - Schema and catalogs can be defined as parameters.
+
+    - XMLlint is run with param that disables network usage.
 """
 
 import os
@@ -254,11 +256,26 @@ def test_tools():
 
 
 def test_no_network(monkeypatch):
+    """
+    Tests that xmllint is always called with a param 'nonet', that disables
+    the network usage (fetching schemas, etc.).
+
+    For cybersecurity reasons, we do not want to make excess internet
+    requests outside our controlled environment. This is why we want to stop
+    xmllint from using network.
+
+    If we move away from xmllint to some other tool, we should make sure
+    that network usage in the new tool is also disabled.
+    """
+
     old_popen_init = subprocess.Popen.__init__
 
     def _new_popen_init(self, args, stdout, stderr, stdin, shell, env):
         """
-        Arguments are taken from file_scraper.shell.Shell.popen()'s calling arguments
+        A patched version of subprocess.Popen.__init__. The purpose of the
+        patch is to check if the command is called with a param which
+        disallows network usage. Arguments are taken from
+        file_scraper.shell.Shell.popen()'s calling arguments
         """
         assert "--nonet" in args
         return old_popen_init(self=self, args=args, stdin=stdin, stdout=stdout,
