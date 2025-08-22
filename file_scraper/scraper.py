@@ -208,32 +208,31 @@ class Scraper:
         :check_wellformed: Whether full scraping is used or not.
         """
 
-        _extractor_results = self._params.get("extractor_results", None)
-        _errors = []
-        _messages = []
+        extractor_results = self._params.get("extractor_results", None)
+        errors = []
+        messages = []
 
-        streams, conflicts = generate_metadata_dict(_extractor_results, LOSE)
-        for error_message in conflicts:
-            _errors.append(error_message)
-        _messages.append("Extractor results merged into streams")
+        streams, conflicts = generate_metadata_dict(extractor_results, LOSE)
+        errors += conflicts
+        messages.append("Extractor results merged into streams")
 
         info = {
             "class": "ResultsMergeExtractor",
-            "messages": _messages,
-            "errors": _errors,
+            "messages": messages,
+            "errors": errors,
             "tools": {}}
 
-        if len(_messages) > 0 and len(_errors) == 0:
-            extractor_well_formed = None
+        if len(messages) > 0 and len(errors) == 0:
+            merge_well_formed = None
         else:
-            extractor_well_formed = False
+            merge_well_formed = False
 
         if streams:
             self._extractor_results.append(streams)
         self.info[len(self.info)] = info
         if (self.well_formed is None and check_wellformed) or \
-                extractor_well_formed is False:
-            self.well_formed = extractor_well_formed
+                merge_well_formed is False:
+            self.well_formed = merge_well_formed
         self.streams = streams
 
     def scrape(self, check_wellformed=True):
