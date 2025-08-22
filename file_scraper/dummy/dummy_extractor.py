@@ -191,4 +191,3 @@ class DetectedMimeVersionMetadataExtractor(DetectedMimeVersionExtractor):
             return False
         return super().is_supported(
             mimetype, version, check_wellformed, params)
-
