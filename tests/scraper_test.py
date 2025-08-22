@@ -292,3 +292,29 @@ def test_invalid_av_stream_combinations(path):
     assert scraper.well_formed is not True
     assert len(scraper.streams) == 3
     assert scraper.grade() == Grades.UNACCEPTABLE
+
+
+@pytest.mark.parametrize(('meta_classes', 'wellformed'), [
+    (['meta1', 'meta5'], None),
+    (['meta1', 'meta2'], False)
+])
+def test_results_merging(meta_class_fx, meta_classes, wellformed):
+    """Test that scraper merges extractor results properly. The test tests
+    both a successful case where metadata could be merged and a case with
+    conflicts in metadata resulting in the well-formedness being false. Also
+    in the conflicting case, tool errors are checked to contain a
+    descriptive error.
+    """
+    filename = Path("tests/data/text_plain/valid__ascii.txt")
+    results = []
+    for meta_class in meta_classes:
+        results.append([meta_class_fx(meta_class)])
+
+    scraper = Scraper(filename)
+    scraper._params["extractor_results"] = results
+    scraper.info = {}
+    scraper._merge_results(True)
+    assert scraper.well_formed == wellformed
+    if wellformed is False:
+        assert list(filter((lambda s: "Conflict with values" in s),
+                           scraper.info[0]["errors"]))

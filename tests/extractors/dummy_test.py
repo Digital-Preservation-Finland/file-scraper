@@ -34,7 +34,6 @@ from file_scraper.defaults import UNAV
 from file_scraper.dummy.dummy_extractor import (
     FileExists, ExtractorNotFound, MimeMatchExtractor,
     DetectedMimeVersionExtractor, DetectedMimeVersionMetadataExtractor)
-from file_scraper.scraper import Scraper
 from tests.common import partial_message_included
 
 DEFAULTSTREAMS = {0: {"index": 0, "version": UNAV,
@@ -232,25 +231,3 @@ def test_detected_version_extractor():
     assert extractor.streams[0].mimetype() == "application/x.fi-dpres.segy"
     assert extractor.streams[0].version() == "(:unkn)"
     assert extractor.streams[0].stream_type() == "binary"
-
-
-@pytest.mark.parametrize(('meta_classes', 'wellformed'), [
-    (['meta1', 'meta5'], None),
-    (['meta1', 'meta2'], False)
-])
-def test_results_merge_extractor(meta_class_fx, meta_classes, wellformed):
-    """Test extractor for merging extractor results. The test tests both
-    a successful case where metadata could be merged and a case with
-    conflicts in metadata resulting in the well-formedness being
-    false.
-    """
-    filename = Path("tests/data/text_plain/valid__ascii.txt")
-    results = []
-    for meta_class in meta_classes:
-        results.append([meta_class_fx(meta_class)])
-
-    scraper = Scraper(filename)
-    scraper._params["extractor_results"] = results
-    scraper.info = {}
-    scraper._merge_results(True)
-    assert scraper.well_formed == wellformed
