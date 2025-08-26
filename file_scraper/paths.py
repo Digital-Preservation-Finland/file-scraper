@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import configparser
 import os
+from pathlib import Path
 import shutil
 
 
@@ -27,7 +28,9 @@ def get_config_path() -> str:
                      "/etc/file-scraper/file-scraper.conf")
 
 
-def _find_from_config(section: str, config_name: str) -> str | None:
+def _find_from_config(
+    section: str, config_name: str | bytes | Path
+) -> str | None:
     """
     Attempts to find the given configuration name from the config file at
     the given section.
@@ -42,11 +45,11 @@ def _find_from_config(section: str, config_name: str) -> str | None:
     config_parser.read(get_config_path())
     if config_parser.has_section(section):
         config_section = config_parser[section]
-        return config_section.get(config_name)
+        return config_section.get(str(config_name))
     return None
 
 
-def resolve_command(command: str) -> str:
+def resolve_command(command: str | bytes | Path) -> str:
     """
     Resolve section "COMMAND" from the configuration file,
     otherwise uses shutil.which function to determine the path of
@@ -69,7 +72,7 @@ def resolve_command(command: str) -> str:
             f"Configuration path: {command} "
             f"cannot be found from {get_config_path()} "
             f"or from the path: {os.environ.get('PATH', '')}")
-    return path_found
+    return str(path_found)
 
 
 def resolve_path_from_config(config_name: str) -> str:

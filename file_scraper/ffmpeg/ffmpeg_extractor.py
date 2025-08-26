@@ -267,7 +267,7 @@ class FFMpegExtractor(FFMpegMetaExtractor):
             self._errors.append(shell.stderr)
 
 
-def _filter_stderr(errors: str | None) -> str:
+def _filter_stderr(errors: str) -> str:
     """
     Filter out "bpno became negative" and "Last message repeated".
 

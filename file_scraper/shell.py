@@ -1,10 +1,12 @@
 """Wrapper for calling external commands"""
 from __future__ import annotations
 
+from collections.abc import Sequence
 import os
+from pathlib import Path
 import pty
 import subprocess
-from typing import TypedDict
+from typing import TypedDict, IO
 
 from file_scraper.logger import LOGGER
 from file_scraper.utils import ensure_text
@@ -16,9 +18,9 @@ class Shell:
 
     def __init__(
         self,
-        command: list[str],
-        stdout: int = subprocess.PIPE,
-        stderr: int = subprocess.PIPE,
+        command: Sequence[str | bytes | Path],
+        stdout: int | IO[str] | IO[bytes] = subprocess.PIPE,
+        stderr: int | IO[str] | IO[bytes] = subprocess.PIPE,
         use_pty: bool = False,
         env: dict | None = None,
     ) -> None:
@@ -31,12 +33,13 @@ class Shell:
             will require this.
         :param env: Environment variables
         """
+        command = list(command)
         resolved_path = resolve_command(command.pop(0))
         command.insert(0, resolved_path)
         self.command = command
 
-        self._stdout = None
-        self._stderr = None
+        self._stdout = b""
+        self._stderr = b""
         self._returncode = None
 
         self.stdout_file = stdout
@@ -51,7 +54,7 @@ class Shell:
                 self._env[key] = value
 
     @property
-    def returncode(self) -> int | bytes:
+    def returncode(self) -> int:
         """
         Returncode from the command.
 
@@ -60,29 +63,25 @@ class Shell:
         return self.popen()["returncode"]
 
     @property
-    def stderr(self) -> str | None:
+    def stderr(self) -> str:
         """
         Standard error output from the command.
 
         :returns: Stderr as unicode string
         """
-        if self.stderr_raw is None:
-            return None
         return ensure_text(self.stderr_raw)
 
     @property
-    def stdout(self) -> str | None:
+    def stdout(self) -> str:
         """
         Command standard error output.
 
         :returns: Stdout as unicode string
         """
-        if self.stdout_raw is None:
-            return None
         return ensure_text(self.stdout_raw)
 
     @property
-    def stderr_raw(self) -> bytes | None:
+    def stderr_raw(self) -> bytes:
         """
         Standard error output from the command.
 
@@ -91,7 +90,7 @@ class Shell:
         return self.popen()["stderr"]
 
     @property
-    def stdout_raw(self) -> bytes | None:
+    def stdout_raw(self) -> bytes:
         """
         Command standard error output.
 
@@ -101,8 +100,8 @@ class Shell:
 
     class _POpenResults(TypedDict):
         returncode: int
-        stderr: bytes | None
-        stdout: bytes | None
+        stderr: bytes
+        stdout: bytes
 
     def popen(self) -> _POpenResults:
         """
@@ -137,6 +136,8 @@ class Shell:
                     shell=False,
                     env=self._env) as proc:
                 (self._stdout, self._stderr) = proc.communicate()
+                self._stdout = self._stdout or b""
+                self._stderr = self._stderr or b""
                 self._returncode = proc.returncode
 
             if self._use_pty:
@@ -154,7 +155,6 @@ class Shell:
                     self._stdout[0:8192],
                     self._stderr[0:8192]
                 )
-
         return {
             "returncode": self._returncode,
             "stderr": self._stderr,
