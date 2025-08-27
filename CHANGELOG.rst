@@ -6,54 +6,54 @@ The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.1.0/>`
 and this project adheres to `Semantic Versioning <(https://semver.org/spec/v2.0.0.html>`__.
 
 
-UNRELEASED
-----------
+2.0.0 - 2025-08-27
+------------------
 
 Changed
-~~~~~~~
-- Separated Schematron scraping into its own command.
+^^^^^^^
+- Separated Schematron scraping into its own ``check-xml-schematron-features`` command. Related command-line parameters were moved under the new command.
 - Renamed individual Scrapers to Extractors. This change is visible in Scraper.info's class strings.
 - Moved functionality from ResultsMergeExtractor into Scraper._merge_results. The class string in Scraper.info has been updated to reflect the change.
 
-1.2.0 2025-07-30
-----------------
+1.2.0 - 2025-07-30
+------------------
 
 Changed
-~~~~~~~
+^^^^^^^
 - dpx-validator is used via Python API instead of CLI
 
-1.1.0 2025-07-22
-----------------
+1.1.0 - 2025-07-22
+------------------
 
 Changed
-~~~~~~~
+^^^^^^^
 - The config file ``/etc/file-scraper/file-scraper.conf`` has now two sections ``[COMMANDS]`` and ``[PATHS]``
 
 Added
-~~~~~
+^^^^^
 - Add `Scraper.path` field to access file path as `pathlib.Path` object. `Scraper.filename` remains available for backwards compatibility.
 - Add `--verbose/-v` command-line flag to enable printing logs. Flag can be provided twice (`-vv`) for maximum verbosity.
 
 Changed
-~~~~~~~
+^^^^^^^
 - Moved grading to dpres-file-formats
 
 Fixed
-~~~~~
+^^^^^
 - Fix detection of XML files using GPX 1.1 schema
 
-1.0.0 2025-05-27
-----------------
+1.0.0 - 2025-05-27
+------------------
 
 Changed
-~~~~~~~
+^^^^^^^
 - Information of used 3rd party tools was added for each scraper and detector
 - The information about used 3rd party tools is now returned as a dictionary instead of a list
 - Update to compatibility with pymediainfo 7.0.1
 - Update to compatibility with libmediainfo 25.03
 
 Fixed
-~~~~~
+^^^^^
 - The --mimetype parameter is now case-insensitive
 
 Version 0.81
