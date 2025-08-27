@@ -17,6 +17,7 @@ This module tests that:
     - the extractor reports MIME type 'image/x-dpx' with version 2.0 as not
       supported when only well-formed check is performed
 """
+import re
 from pathlib import Path
 
 import pytest
@@ -98,4 +99,4 @@ def test_tools():
     """ Test that tools were unknown """
 
     extractor = DpxExtractor(filename=Path(""), mimetype="")
-    assert extractor.tools()["dpx-validator"]["version"] == "0.19"
+    assert re.fullmatch(r"\d+\.\d+\.\d+", extractor.tools()["dpx-validator"]["version"])
