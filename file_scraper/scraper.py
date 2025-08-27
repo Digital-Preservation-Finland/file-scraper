@@ -217,7 +217,7 @@ class Scraper:
         messages.append("Extractor results merged into streams")
 
         info = {
-            "class": "ResultsMergeExtractor",
+            "class": "Scraper (_merge_results)",
             "messages": messages,
             "errors": errors,
             "tools": {}}

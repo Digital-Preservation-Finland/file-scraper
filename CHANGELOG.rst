@@ -12,7 +12,8 @@ UNRELEASED
 Changed
 ~~~~~~~
 - Separated Schematron scraping into its own command.
-
+- Renamed individual Scrapers to Extractors. This change is visible in Scraper.info's class strings.
+- Moved functionality from ResultsMergeExtractor into Scraper._merge_results. The class string in Scraper.info has been updated to reflect the change.
 
 1.2.0 2025-07-30
 ----------------
