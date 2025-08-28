@@ -207,8 +207,9 @@ class Scraper:
         if extractor.streams:
             self._extractor_results.append(extractor.streams)
         self.info[len(self.info)] = extractor.info()
-        if (self.well_formed is None and check_wellformed) or \
-                extractor.well_formed is False:
+        if (
+            self.well_formed is None and check_wellformed
+        ) or extractor.well_formed is False:
             self.well_formed = extractor.well_formed
 
     def _check_utf8(self, check_wellformed: bool) -> None:
@@ -233,8 +234,8 @@ class Scraper:
         :param check_wellformed: Whether full scraping is used or not.
         """
         version = None
-        if self._kwargs.get("version", None) not in LOSE:
-            version = self._kwargs.get("version", None)
+        if (ver := self._kwargs.get("version")) not in LOSE:
+            version = ver
         scraper = MimeMatchExtractor(
             filename=self.path,
             mimetype=self._detected_mimetype,
@@ -263,7 +264,8 @@ class Scraper:
             "class": "Scraper (_merge_results)",
             "messages": messages,
             "errors": errors,
-            "tools": {}}
+            "tools": {},
+        }
 
         if len(messages) > 0 and len(errors) == 0:
             merge_well_formed = None
@@ -273,8 +275,9 @@ class Scraper:
         if streams:
             self._extractor_results.append(streams)
         self.info[len(self.info)] = info
-        if (self.well_formed is None and check_wellformed) or \
-                merge_well_formed is False:
+        if (
+            self.well_formed is None and check_wellformed
+        ) or merge_well_formed is False:
             self.well_formed = merge_well_formed
         self.streams = streams
 
@@ -342,9 +345,7 @@ class Scraper:
         """
         scraper = TextfileExtractor(self.path, "text/plain")
         scraper.extract()
-        if scraper.well_formed is False:
-            return False
-        return True
+        return scraper.well_formed is not False
 
     def checksum(self, algorithm: str = "MD5") -> str:
         """
