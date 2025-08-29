@@ -5,7 +5,7 @@ import os
 import pytest
 from tests.common import partial_message_included
 import file_scraper.shell
-from file_scraper.base import BaseMeta
+from file_scraper.base import BaseMeta, BaseApparatus
 from file_scraper.utils import metadata
 
 # Pylint does not understand pytest fixtures
@@ -43,7 +43,12 @@ def evaluate_extractor():
     values.
     """
 
-    def _func(extractor, correct, eval_output=True, exp_extractor_cls=None):
+    def _func(
+            extractor: BaseApparatus,
+            correct,
+            eval_output=True,
+            exp_extractor_cls=None
+    ):
         """Make common asserts between initialized extractor and correct
             instance.
 
@@ -51,16 +56,20 @@ def evaluate_extractor():
         :param correct: Correct instance obj.
         :param eval_output: True to also evaluate the stdin and stderr between
             extractor and correct.
-        :param exp_extractor_cls: What is the actual expected extractor class name.
-            If None, will assume default type(extractor).__name__
+        :param exp_extractor_cls: What is the actual expected extractor
+        classname. If None, will assume default type(extractor).__name__
         """
         if exp_extractor_cls is None:
             exp_extractor_cls = type(extractor).__name__
 
         for stream_index, stream_metadata in correct.streams.items():
-            assert extractor.streams, ("Empty stream list resulted, "
-                                     "possibly unexpected predefined "
-                                     "mimetype.")
+            if extractor._predefined_mimetype:
+                assert extractor.streams, (
+                    "Empty stream list resulted, possibly unexpected"
+                    "predefined mimetype: "
+                    + str(extractor._predefined_mimetype))
+            else:
+                assert extractor.streams, ("Streams list can't be empty")
             extracted_metadata = extractor.streams[stream_index]
             for key, value in stream_metadata.items():
                 assert getattr(extracted_metadata, key)() == value, (
