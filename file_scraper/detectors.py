@@ -3,22 +3,28 @@ from __future__ import annotations
 
 import errno
 import os
-
-from typing import Literal
 import zipfile
 from pathlib import Path
-import lxml.etree
-import exiftool
+from typing import Literal
 
+import exiftool
+import lxml.etree
 from fido import __version__ as fido_version
 from fido.fido import Fido, defaults
 from fido.pronomutils import get_local_pronom_versions
+
 from file_scraper.base import BaseDetector
-from file_scraper.defaults import (MIMETYPE_DICT, PRIORITY_PRONOM, PRONOM_DICT,
-                                   VERSION_DICT, UNKN, UNAP)
+from file_scraper.defaults import (
+    MIMETYPE_DICT,
+    PRIORITY_PRONOM,
+    PRONOM_DICT,
+    UNAP,
+    UNKN,
+    VERSION_DICT,
+)
 from file_scraper.logger import LOGGER
+from file_scraper.magiclib import magic_analyze, magiclib, magiclib_version
 from file_scraper.utils import is_zipfile, normalize_charset
-from file_scraper.magiclib import magiclib, magic_analyze, magiclib_version
 
 
 class _FidoCachedFormats(Fido):
@@ -108,7 +114,7 @@ class _FidoReader(_FidoCachedFormats):
     def print_matches(
         self,
         fullname: str,
-        matches: tuple[lxml.etree._Element, str],
+        matches: list[tuple[lxml.etree._Element, str]],
         delta_t: float,
         matchtype: str = "",
     ) -> None:
@@ -137,7 +143,7 @@ class _FidoReader(_FidoCachedFormats):
                 self.puid = self.get_puid(item)
                 self._find_mime(item)
 
-    def _find_mime(self, item) -> None:
+    def _find_mime(self, item: lxml.etree._Element) -> None:
         """
         Find mimetype and version in Fido.
 
@@ -149,10 +155,11 @@ class _FidoReader(_FidoCachedFormats):
         self.version = version.text if version is not None else None
         if self.mimetype in MIMETYPE_DICT:
             self.mimetype = MIMETYPE_DICT[self.mimetype]
-        if self.mimetype in VERSION_DICT:
-            if self.version in VERSION_DICT[self.mimetype]:
-                self.version = \
-                    VERSION_DICT[self.mimetype][self.version]
+        if (
+            self.mimetype in VERSION_DICT
+            and self.version in VERSION_DICT[self.mimetype]
+        ):
+            self.version = VERSION_DICT[self.mimetype][self.version]
 
 
 class FidoDetector(BaseDetector):
