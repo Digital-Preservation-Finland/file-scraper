@@ -45,6 +45,7 @@ class Scraper:
         :raises IsADirectoryError: The filepath given was a directory instead
             of a file.
         """
+        self.input_path = filename
         self.path = _validate_path(filename)
         # TODO taking in arbitraty amount of kwargs makes it hard to document
         # and define what keyword arguments are actually accepted to

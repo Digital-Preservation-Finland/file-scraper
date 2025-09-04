@@ -102,7 +102,7 @@ def _collect_scraper_results(
     tool_info: bool
 ):
     results = {
-        "path": str(scraper.path),
+        "path": str(scraper.input_path),
         "MIME type": ensure_text(scraper.mimetype),
         "version": ensure_text(scraper.version),
         "metadata": scraper.streams,
