@@ -21,7 +21,9 @@ class PilExtractor(BaseExtractor):
     # We need to remove 'FLI' from the formats detected by PIL, because the
     # PIL FLI code erroneously detects TIFF images as FLI or FLIC.
     # PIL does file detection in two phases. First, a few basic formats and
-    # then all the rest. We aim to do the same here, but without 'FLI'.
+    # then all the rest. We aim to do the same here, but only for the specific
+    # file formats that we actually support so PIL won't erroneously detect any
+    # other file formats.
     # See KDKPAS-3594.
     # These format list have been collected by debugging the PIL code.
     # These are the common formats between Pillow 10.0.1 (in EPEL9) and
@@ -30,13 +32,8 @@ class PilExtractor(BaseExtractor):
     # lists needs to be updated.
     # If FLI/FLIC detection in PIL gets fixed, we can get rid of these lists
     # and this implementation.
-    pil_basic_formats = ['BMP', 'DIB', 'GIF', 'JPEG', 'PPM', 'PNG']
-    pil_additional_formats = ['BLP', 'BUFR', 'CUR', 'PCX', 'DCX', 'DDS', 'EPS',
-                              'FITS', 'FTEX', 'GBR', 'GRIB', 'HDF5',
-                              'JPEG2000', 'ICNS', 'ICO', 'IM', 'IMT', 'IPTC',
-                              'MCIDAS', 'MPEG', 'TIFF', 'MSP', 'PCD', 'PIXAR',
-                              'PSD', 'QOI', 'SGI', 'TGA', 'WEBP', 'WMF', 'XBM',
-                              'XPM', 'XVTHUMB']
+    pil_basic_formats = ['GIF', 'JPEG', 'PNG']
+    pil_additional_formats = ['JPEG2000', 'TIFF', 'WEBP']
     # Start with the basic format list
     pil_formats = pil_basic_formats
 
