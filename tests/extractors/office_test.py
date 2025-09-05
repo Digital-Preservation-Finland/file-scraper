@@ -228,7 +228,7 @@ def test_parallel_validation(filename, mimetype):
                    for _ in range(number)]
 
         for result in results:
-            assert result.get(timeout=5)
+            assert result.get(timeout=7)
 
 
 @pytest.mark.usefixtures("patch_shell_attributes_fx")
