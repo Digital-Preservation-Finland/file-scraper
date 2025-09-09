@@ -361,19 +361,15 @@ class Scraper:
         return graders.grade(self.mimetype, self.version, self.streams)
 
 
-def _validate_path(
-    supposed_filepath: str | bytes | os.PathLike[str] | os.PathLike[bytes]
-) -> Path:
+def _validate_path(supposed_filepath: str | bytes | os.PathLike) -> Path:
     """
-    Checks if the supposed filepath is actually a valid file to scrape
+    Checks if the supposed filepath is actually a valid file to scrape.
 
-    :param supposed_filepath: any str, byte or Pathlike string or bytes
-    :raises FileIsNotScrapable: The file given cannot be scraped for
-        reason or another.
-    :raises FileNotFoundError: The file cannot be found from the path
-        given.
-    :raises TypeError: The file argument given was invalid.
-    :raises IsADirectoryError: The file given was a directory.
+    :param supposed_filepath: PathLike object.
+    :raises FileIsNotScrapable: The file given cannot be scraped.
+    :raises FileNotFoundError: The file cannot be found from the path.
+    :raises TypeError: The given file arguments are invalid.
+    :raises IsADirectoryError: The file is a directory.
     """
     path = Path(os.fsdecode(supposed_filepath))
     if not path.exists():
@@ -386,7 +382,7 @@ def _validate_path(
         )
     if not path.is_file():
         raise FileIsNotScrapable(
-            "The file is not a regular file and can't be scrapable from"
+            "The file is not a regular file and can't be scraped from"
             " the path: " + str(path)
         )
 

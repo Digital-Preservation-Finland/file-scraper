@@ -47,7 +47,7 @@ def test_scrape_invalid_file():
     [
         ("Instead of a file, a directory was found from the path: ", "dir"),
         ("A file couldn't be found from the path: ", "nonSenseFiLe"),
-        ("The file is not a regular file and can't be scrapable "
+        ("The file is not a regular file and can't be scraped "
          + "from the path:", "/dev/null")
     ]
 )

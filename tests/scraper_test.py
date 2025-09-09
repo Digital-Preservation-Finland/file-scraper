@@ -275,7 +275,7 @@ class TestPathValidation:
             ),
             (
                 "/dev/null",
-                "The file is not a regular file and can't be scrapable from"
+                "The file is not a regular file and can't be scraped from"
                 + " the path: /dev/null",
                 FileIsNotScrapable
             )
