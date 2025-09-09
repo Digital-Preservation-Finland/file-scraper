@@ -47,6 +47,9 @@ Requires:       %{py3_dist dpres-file-formats}
 Requires:       %{py3_dist dpx-validator}
 Requires:       /usr/bin/ffmpeg
 Requires:       perl-Image-ExifTool
+# Exiftool can process zlib-compressed PDFs better with package installed,
+# see https://jira.ci.csc.fi/browse/KDKPAS-3632
+Requires:       perl-IO-Compress
 Requires:       veraPDF
 Conflicts:      %{full_sp_name} < %{version}-%{release}, %{full_sp_name} > %{version}-%{release}
 # The ffmpeg-free package in EPEL does not have all the codecs we need for
