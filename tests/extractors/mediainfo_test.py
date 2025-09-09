@@ -29,6 +29,7 @@ This module tests that:
     - Made up MIME types are not supported.
 """
 from pathlib import Path
+import shutil
 
 import pytest
 
@@ -802,3 +803,32 @@ def test_mediainfo_tools():
     extractor = MediainfoExtractor(filename=Path(""), mimetype="")
     assert extractor.tools()["pymediainfo"]["version"][0].isdigit()
     assert extractor.tools()["MediaInfoLib"]["version"][0].isdigit()
+
+
+def test_multiple_jpegs_in_directory(tmp_path: Path):
+    """Test that JPEG file is not detected as image sequence.
+
+    If a directory contains many JPEG files, and the file names haves
+    sequential numbers, mediainfo might detect the files as a sequence
+    of images, which is a video stream with mimetype video/jpeg. This
+    test ensures that image sequence detection functionality is disabled
+    when JPEG images are extracted, and the images are detected as
+    individual images.
+    """
+    # Create a directory that contains 100 jpeg files
+    source_file = Path("tests/data/image_jpeg/valid_1.01.jpg")
+    for i in range(100):
+        dest_file = tmp_path / f"{i:03}.jpg"
+        shutil.copy(source_file, dest_file)
+
+    # Extract one of the files
+    test_file = tmp_path / "001.jpg"
+    extractor = MediainfoExtractor(test_file, "image/jpeg")
+    extractor.extract()
+
+    # One stream should be extracted
+    assert len(extractor.streams) == 1
+
+    # Stream should be "image/jpeg"
+    assert extractor.streams[0].stream_type() == "image"
+    assert extractor.streams[0].mimetype() == "image/jpeg"
