@@ -66,7 +66,11 @@ class MediainfoExtractor(BaseExtractor[BaseMediainfoMeta]):
     def extract(self):
         """Populate streams with supported metadata objects."""
         try:
-            mediainfo = pymediainfo.MediaInfo.parse(self.filename)
+            mediainfo = pymediainfo.MediaInfo.parse(
+                self.filename,
+                # Prevent detecting image files as image sequence
+                mediainfo_options={"File_TestContinuousFileNames": "0"},
+            )
         except Exception as e:  # pylint: disable=invalid-name, broad-except
             LOGGER.warning(
                 "Error analyzing file %s with MediaInfo",
