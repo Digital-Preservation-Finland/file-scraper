@@ -8,7 +8,13 @@ and this project adheres to `Semantic Versioning <(https://semver.org/spec/v2.0.
 Unreleased - 2025-09-03
 -----------------------
 
+Changed
+^^^^^^^
 - The Scraper.path variable is now absolute path.
+
+Fixed
+^^^^^
+- Bug that caused errors when scraping image files in directory that contains many files with sequentical names, for example 001.jpg, 002.jpg, 003.jpg and so on.
 
 2.0.0 - 2025-08-27
 ------------------
@@ -18,6 +24,10 @@ Changed
 - Separated Schematron scraping into its own ``check-xml-schematron-features`` command. Related command-line parameters were moved under the new command.
 - Renamed individual Scrapers to Extractors. This change is visible in Scraper.info's class strings.
 - Moved functionality from ResultsMergeExtractor into Scraper._merge_results. The class string in Scraper.info has been updated to reflect the change.
+
+Added
+^^^^^
+- Detect JPEG and PNG streams in audio/video containers
 
 1.2.0 - 2025-07-30
 ------------------
