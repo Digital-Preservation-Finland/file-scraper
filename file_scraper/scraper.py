@@ -157,29 +157,27 @@ class Scraper:
             "%s detected MIME type: %s, version: %s, important: %s, "
             "well-formed: %s",
             detector.__class__.__name__, detector.mimetype, detector.version,
-            detector.get_important(), detector.well_formed
+            detector.important, detector.well_formed
         )
 
         if detector.well_formed is False:
             self.well_formed = False
         self.info[len(self.info)] = detector.info()
-        important = detector.get_important()
+        important = detector.important
 
         if self._detected_mimetype in LOSE:
             self._detected_mimetype = detector.mimetype
         if self._detected_mimetype == detector.mimetype and \
                 self._detected_version in LOSE:
             self._detected_version = detector.version
-        if "mimetype" in important and \
-                important["mimetype"] not in LOSE:
+        if "mimetype" in important and important["mimetype"] not in LOSE:
             LOGGER.info(
                 "Tool provided important value '%s' for MIME type, "
                 "setting detected MIME type",
                 important["mimetype"]
             )
             self._detected_mimetype = important["mimetype"]
-        if "version" in important and \
-                important["version"] not in LOSE:
+        if "version" in important and important["version"] not in LOSE:
             LOGGER.info(
                 "Tool provided important value '%s' for file format version, "
                 "setting detected version",

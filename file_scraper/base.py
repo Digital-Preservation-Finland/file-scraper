@@ -340,6 +340,7 @@ class BaseDetector(BaseApparatus):
 
         self._mimetype = None  # Identified mimetype
         self.version = None  # Identified file version
+        self._important = {}
 
     @property
     def well_formed(self) -> Literal[False] | None:
@@ -355,14 +356,19 @@ class BaseDetector(BaseApparatus):
     def detect(self) -> None:
         """Detect file. Must be implemented in detectors."""
 
-    def get_important(self) -> dict:
+    @property
+    def important(self) -> dict:
         """
         Return dict of important values determined by the detector.
 
         By default this is an empty dict, but subclasses can override this
-        method to add "mimetype" and/or "version" keys to the dict.
+        property to add "mimetype" and/or "version" keys to the dict.
         """
-        return {}
+        return self._important
+
+    @abc.abstractmethod
+    def detect(self):
+        """Detect file. Must be implemented in detectors."""
 
     @property
     def mimetype(self) -> str | None:

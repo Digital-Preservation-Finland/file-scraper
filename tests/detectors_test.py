@@ -3,7 +3,7 @@ Tests for Fido and Magic detectors.
 
 This module tests that:
     - FidoDetector and MagicDetector detect MIME types correctly.
-    - FidoDetector returns an empty dict from get_important() with
+    - FidoDetector returns an empty dict from important() with
       certain mimetypes and MagicDetector returns certain mimetypes.
     - ExifToolDetector detects the MIME types correctly for tiff, dng
       and PDF/A files.
@@ -257,11 +257,11 @@ def test_important_pdf_dng(filepath, important):
     detector = ExifToolDetector(Path(filepath))
     detector.detect()
     if important:
-        assert "mimetype" in detector.get_important()
+        assert "mimetype" in detector.important
         if detector.mimetype == "application/pdf":
-            assert "version" in detector.get_important()
+            assert "version" in detector.important
     else:
-        assert detector.get_important() == {}
+        assert detector.important == {}
 
 
 @pytest.mark.parametrize(
@@ -282,9 +282,9 @@ def test_important_other(detector_class, mimetype):
     detector = detector_class(Path("testfilename"))
     detector.mimetype = mimetype
     if detector_class == FidoDetector:
-        assert detector.get_important() == {}
+        assert detector.important == {}
     else:
-        assert detector.get_important() == {"mimetype": mimetype}
+        assert detector.important == {"mimetype": mimetype}
 
 
 @pytest.mark.parametrize(
