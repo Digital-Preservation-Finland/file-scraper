@@ -1,9 +1,20 @@
 """Metadata extractor for image file formats."""
+from __future__ import annotations
+
+from typing import Literal
 
 from file_scraper.base import BaseExtractor
 from file_scraper.logger import LOGGER
-from file_scraper.pil.pil_model import BasePilMeta, PngPilMeta, JpegPilMeta, \
-    TiffPilMeta, DngPilMeta, Jp2PilMeta, GifPilMeta, WebPPilMeta
+from file_scraper.pil.pil_model import (
+    BasePilMeta,
+    DngPilMeta,
+    GifPilMeta,
+    Jp2PilMeta,
+    JpegPilMeta,
+    PngPilMeta,
+    TiffPilMeta,
+    WebPPilMeta,
+)
 
 try:
     import PIL.Image
@@ -13,7 +24,8 @@ except ImportError:
 
 class PilExtractor(BaseExtractor[BasePilMeta]):
     """Extractor that uses PIL to scrape tiff, png, jpeg, gif and webp
-    images."""
+    images.
+    """
 
     _supported_metadata: list[type[BasePilMeta]] = [
         TiffPilMeta,
@@ -45,12 +57,12 @@ class PilExtractor(BaseExtractor[BasePilMeta]):
     pil_formats = pil_basic_formats
 
     @property
-    def well_formed(self):
+    def well_formed(self) -> Literal[False] | None:
         """
         PIL is not able to check well-formedness.
 
         :returns: False if PIL can not open or handle the file,
-                  None otherwise.
+            None otherwise.
         """
         valid = super().well_formed
         if not valid:
@@ -58,17 +70,19 @@ class PilExtractor(BaseExtractor[BasePilMeta]):
 
         return None
 
-    def extract(self):
+    def extract(self) -> None:
         """Scrape data from file."""
         # Raise the size limit to around a gigabyte for a 3 bpp image
-        PIL.Image.MAX_IMAGE_PIXELS = int(1024 * 1024 * 1024 // 3)
+        PIL.Image.MAX_IMAGE_PIXELS = 1024 * 1024 * 1024 // 3
 
         # Find out if we can use the minimal set of Pillow plugins to open
         # the file. If not, use a larger set. If the file can not be opened at
         # all, fail in the exception handler.
         try:
-            with PIL.Image.open(self.filename,
-                                formats=self.pil_formats) as pil:
+            with PIL.Image.open(
+                self.filename, formats=self.pil_formats
+            ) as pil:
+                # File can be opened
                 pass
         except PIL.Image.UnidentifiedImageError:
             self.pil_formats = self.pil_additional_formats
@@ -82,8 +96,9 @@ class PilExtractor(BaseExtractor[BasePilMeta]):
         # with the PIL plugins we have in pil_formats or we fail in the
         # (second) exception handler.
         try:
-            with PIL.Image.open(self.filename,
-                                formats=self.pil_formats) as pil:
+            with PIL.Image.open(
+                self.filename, formats=self.pil_formats
+            ) as pil:
                 try:
                     n_frames = pil.n_frames
                 except (AttributeError, ValueError):
@@ -110,7 +125,7 @@ class PilExtractor(BaseExtractor[BasePilMeta]):
 
         self._messages.append("The file was analyzed successfully.")
 
-    def tools(self):
+    def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
         detector.
 
@@ -119,7 +134,6 @@ class PilExtractor(BaseExtractor[BasePilMeta]):
             tool (e.g. version). If no tools are available, an empty
             dictionary is returned instead.
         """
-
         return {
             "Pillow": {
                 "version": PIL.__version__
