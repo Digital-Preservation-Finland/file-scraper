@@ -8,24 +8,37 @@ import pathlib
 DATA_PATH = pathlib.Path(__file__).parent / "data"
 
 
+def get_cli_runner(*args, **kwargs):
+    """
+    Return CliRunner with separate stdout and stderr. Click 8.1 and older
+    requires a `mix_stderr=False` which has been removed in newer Click
+    """
+    try:
+        # Click 8.1 and older
+        return CliRunner(*args, **kwargs, mix_stderr=False)
+    except TypeError:
+        # Click 8.2 and newer
+        return CliRunner(*args, **kwargs)
+
+
 def test_group_command_lists_commands():
-    runner = CliRunner()
+    runner = get_cli_runner()
     result = runner.invoke(cli, [])
     assert result.exit_code == 0
-    assert "scrape-file" in result.output
+    assert "scrape-file" in result.stdout
 
 
 def test_scraper_without_arguments():
-    runner = CliRunner()
+    runner = get_cli_runner()
     result = runner.invoke(cli, ["scrape-file"])
     assert result.exit_code == 2
-    assert "Error: Missing argument 'FILENAME'" in result.output
+    assert "Error: Missing argument 'FILENAME'" in result.stderr
 
 
 def test_scrape_valid_file():
     file_path = DATA_PATH / "application_pdf/valid_1.2.pdf"
 
-    runner = CliRunner()
+    runner = get_cli_runner()
     result = runner.invoke(cli, ["scrape-file", str(file_path)])
     assert result.exit_code == 0
     data = json.loads(result.stdout)
@@ -36,7 +49,7 @@ def test_scrape_valid_file():
 def test_scrape_invalid_file():
     file_path = DATA_PATH / "application_pdf/invalid_1.2_payload_altered.pdf"
 
-    runner = CliRunner()
+    runner = get_cli_runner()
     result = runner.invoke(cli, ["scrape-file", str(file_path)])
     assert result.exit_code == 0
     assert json.loads(result.stdout)["well-formed"] is False
@@ -58,10 +71,10 @@ def test_scraper_invalid_paths(tmp_path_factory, message: str, input: str):
 
     if input == "dir":
         input = str(tmp_path_factory.mktemp("test"))
-    runner = CliRunner()
+    runner = get_cli_runner()
     result = runner.invoke(cli, ["scrape-file", input])
     assert result.exit_code > 0
-    assert message in result.stdout
+    assert message in result.stderr
 
 
 @pytest.mark.parametrize(
@@ -75,7 +88,7 @@ def test_flags_change_output(flag, output_contains):
     """
 
     file_path = DATA_PATH / "application_pdf/valid_A-1a.pdf"
-    runner = CliRunner()
+    runner = get_cli_runner()
     result = runner.invoke(cli, ["scrape-file", str(file_path), flag])
     result_noflag = runner.invoke(cli, ["scrape-file", str(file_path)])
     assert result != result_noflag
@@ -88,17 +101,17 @@ def test_flags_change_output(flag, output_contains):
 
 def test_non_existent_file_type():
     file_path = DATA_PATH / "application_pdf/valid_A-1a.pdf"
-    runner = CliRunner()
+    runner = get_cli_runner()
     result = runner.invoke(cli, ["scrape-file", str(file_path),
                                  "--mimetype=non/existent"])
     assert result.exit_code == 1
-    assert result.stdout == ("Error: Proper extractor was not found. The file "
+    assert result.stderr == ("Error: Proper extractor was not found. The file "
                              "was not analyzed.\n")
 
 
 def test_extra_arguments():
     file_path = DATA_PATH / "text_csv/valid__ascii.csv"
-    runner = CliRunner()
+    runner = get_cli_runner()
     result = runner.invoke(cli, ["scrape-file", str(file_path),
                                  '--fields=["a","b","c"]'])
     assert result.exit_code == 0
@@ -108,7 +121,7 @@ def test_extra_arguments():
 
 def test_extra_arguments_with_space():
     file_path = DATA_PATH / "text_csv/valid__ascii.csv"
-    runner = CliRunner()
+    runner = get_cli_runner()
     result = runner.invoke(cli, ["scrape-file", str(file_path), '--fields',
                                  '["a","b","c"]'])
     assert result.exit_code == 0
@@ -118,10 +131,10 @@ def test_extra_arguments_with_space():
 
 def test_missing_value_in_extra_argument():
     file_path = DATA_PATH / "text_csv/valid__ascii.csv"
-    runner = CliRunner()
+    runner = get_cli_runner()
     result = runner.invoke(cli, ["scrape-file", "--fields", str(file_path)])
     assert result.exit_code == 2
-    assert "Error: Missing argument 'FILENAME'." in result.stdout
+    assert "Error: Missing argument 'FILENAME'." in result.stderr
 
 
 def test_argument_after_argument():
@@ -130,26 +143,26 @@ def test_argument_after_argument():
     is missing an argument.
     """
     file_path = DATA_PATH / "text_csv/valid__ascii.csv"
-    runner = CliRunner()
+    runner = get_cli_runner()
     result = runner.invoke(
         cli, ["scrape-file", '--fields', '--quotechar', '"', str(file_path)])
     assert result.exit_code == 2
     # the command parser affects the accuracy of the error message.
-    assert "Error: Got unexpected extra argument" in result.stdout
+    assert "Error: Got unexpected extra argument" in result.stderr
 
 
 def test_incorrect_extra_argument():
     file_path = DATA_PATH / "application_pdf/valid_A-1a.pdf"
-    runner = CliRunner()
+    runner = get_cli_runner()
     result = runner.invoke(cli, ["scrape-file", "--abc", str(file_path)])
     assert result.exit_code == 2
-    assert "Error: No such option: --abc" in result.stdout
+    assert "Error: No such option: --abc" in result.stderr
 
 
 def test_mime_type_cases():
     file_path = DATA_PATH / "application_pdf/valid_1.2.pdf"
 
-    runner = CliRunner()
+    runner = get_cli_runner()
     result = runner.invoke(
         cli, ["scrape-file", "--mimetype", "Application/pdf", str(file_path)])
     assert result.exit_code == 0
@@ -170,10 +183,7 @@ def test_verbose_flag(flag, expected_output, caplog):
     """
     file_path = DATA_PATH / "application_pdf/valid_A-1a.pdf"
 
-    try:
-        runner = CliRunner(mix_stderr=False)
-    except TypeError:  # 'mix_stderr' removed in Click 8.2+
-        runner = CliRunner()
+    runner = get_cli_runner()
 
     result = runner.invoke(cli, ["scrape-file", flag, str(file_path)])
 
@@ -181,7 +191,7 @@ def test_verbose_flag(flag, expected_output, caplog):
 
 
 def test_valid_schematron_command():
-    runner = CliRunner()
+    runner = get_cli_runner()
     result = runner.invoke(
             cli,
             [
@@ -198,7 +208,7 @@ def test_valid_schematron_command():
 
 
 def test_invalid_schematron_command():
-    runner = CliRunner()
+    runner = get_cli_runner()
     result = runner.invoke(
             cli,
             [
@@ -213,13 +223,13 @@ def test_invalid_schematron_command():
 
 
 def test_sgml_catalog_files_env_var_gets_overridden():
-    runner = CliRunner(env={"SGML_CATALOG_FILES": "/some/invalid/catalog"})
+    runner = get_cli_runner(env={"SGML_CATALOG_FILES": "/some/invalid/catalog"})
     result = runner.invoke(cli, ["scrape-file",
                                  "tests/data/text_xml/valid_1.0_gpx_1.0.xml"])
     assert result.exit_code == 0
     assert json.loads(result.stdout)["well-formed"] is True
 
-    runner = CliRunner()
+    runner = get_cli_runner()
     result = runner.invoke(cli, ["scrape-file",
                                  "--catalog-path", "/some/invalid/catalog",
                                  "tests/data/text_xml/valid_1.0_gpx_1.0.xml"])
