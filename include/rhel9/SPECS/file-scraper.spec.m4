@@ -72,7 +72,7 @@ Requires:       libreoffice24.8-full
 Conflicts:      ffmpeg-free
 
 # Manually packaged Ghostscript and file with fixes not found in stock RHEL9
-Requires:       ghostscript-10.03
+Requires:       ghostscript-10.06
 Requires:       file-5.45
 
 %description -n %{full_sp_name}
