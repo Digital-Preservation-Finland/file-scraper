@@ -77,19 +77,50 @@ def test_scraper_invalid_paths(tmp_path_factory, message: str, input: str):
     assert message in result.stderr
 
 
+# Much slower than testing using only the scraper class, but also tests the
+# cli reaction to the incorrect parameters.
+@pytest.mark.parametrize(
+    "flags, error_message",
+    [(["--version=1.5"],
+      "Missing a mimetype parameter for the provided version"),
+     (["--mimetype=application/pdf", "--version=(:unav)"],
+      "Scraper doesn't support the use of other unknown values than (:unap) "
+      "for the version parameter."),
+     (["--mimetype=(:unap)"],
+      "Scraper doesn't support the use of unknown values for the mimetype "
+      "parameter")
+     ]
+)
+def test_incorrect_flags(flags: list[str], error_message: str):
+    """
+    Tests that scraper doesn't allow weird combination of flags
+    """
+
+    file_path = DATA_PATH / "application_pdf/valid_A-1a.pdf"
+    runner = get_cli_runner()
+    result = runner.invoke(cli, ["scrape-file", str(file_path), *flags])
+    assert result.exit_code == 2
+    assert error_message in result.stderr
+
+
+# TODO add mimetype and version combination flags when handled.
 @pytest.mark.parametrize(
     "flag, output_contains",
-    # MimeMatchExtractor gives an error when invalid PDF version is provided
-    [("--version=1.5", "MimeMatchExtractor"),
-     ("--tool-info", "tool_info")])
-def test_flags_change_output(flag, output_contains):
+    [
+        (["--mimetype=application/pdf", "--version=(:unap)"],
+            "Predefined version \'(:unap)\' and resulted version \'A-1a\' "
+            "mismatch."),
+        (["--tool-info"], "tool_info")
+    ]
+    )
+def test_flags(flag, output_contains):
     """
     Tests that the command gives output based on its flags.
     """
 
     file_path = DATA_PATH / "application_pdf/valid_A-1a.pdf"
     runner = get_cli_runner()
-    result = runner.invoke(cli, ["scrape-file", str(file_path), flag])
+    result = runner.invoke(cli, ["scrape-file", str(file_path), *flag])
     result_noflag = runner.invoke(cli, ["scrape-file", str(file_path)])
     assert result != result_noflag
     assert result.exit_code == 0
@@ -223,7 +254,8 @@ def test_invalid_schematron_command():
 
 
 def test_sgml_catalog_files_env_var_gets_overridden():
-    runner = get_cli_runner(env={"SGML_CATALOG_FILES": "/some/invalid/catalog"})
+    runner = get_cli_runner(
+        env={"SGML_CATALOG_FILES": "/some/invalid/catalog"})
     result = runner.invoke(cli, ["scrape-file",
                                  "tests/data/text_xml/valid_1.0_gpx_1.0.xml"])
     assert result.exit_code == 0

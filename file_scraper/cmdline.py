@@ -88,11 +88,48 @@ def scrape_file(
     try:
         scraper = Scraper(filename, mimetype=mimetype, version=version,
                           **option_args)
-    except (FileIsNotScrapable, IsADirectoryError, FileNotFoundError) as e:
-        raise click.BadParameter(e, param_hint="FILENAME")
+
+    except (FileIsNotScrapable, IsADirectoryError, FileNotFoundError) as error:
+        raise click.BadParameter(error, param_hint="FILENAME")
+    except ValueError as error:
+        if (
+                "Scraper doesn't support the use of unknown values for "
+                "the mimetype parameter." in str(error)
+        ):
+            raise click.BadOptionUsage("--mimetype", error)
+        if (
+                "Scraper doesn't support the use of other unknown values than "
+                "(:unap) for the version parameter." in str(error)
+        ):
+            raise click.BadOptionUsage("--version", error)
+
+        if (
+                "Missing a mimetype parameter for the provided version"
+                in str(error)
+        ):
+            raise click.BadOptionUsage("--mimetype", error)
+        if "Given mimetype %s is not supported" % mimetype in str(error):
+            raise click.BadOptionUsage("--mimetype", error)
+        if (
+                "Given version %s for the mimetype %s is not supported" %
+                (version, mimetype) in str(error)
+        ):
+            raise click.BadOptionUsage("--version", error)
+        if (
+            "Missing a mimetype parameter for the provided version"
+            in str(error)
+        ):
+            raise click.BadOptionUsage("--mimetype", error)
+
+        LOGGER.error("Unhandled error for ValueError encountered")
+        raise
 
     scraper.scrape(check_wellformed=check_wellformed)
-    results = _collect_scraper_results(scraper, check_wellformed, tool_info)
+    results = _collect_scraper_results(
+        scraper,
+        check_wellformed,
+        tool_info
+    )
     click.echo(json.dumps(results, indent=4))
 
 

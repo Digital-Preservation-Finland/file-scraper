@@ -5,7 +5,8 @@ import os
 from pathlib import Path
 from typing import Any
 
-from dpres_file_formats import graders
+from dpres_file_formats.defaults import UnknownValue
+from dpres_file_formats.graders import grade as file_formats_grade
 
 from file_scraper.base import BaseDetector, BaseExtractor
 from file_scraper.defaults import UNAV
@@ -18,7 +19,7 @@ from file_scraper.logger import LOGGER
 from file_scraper.textfile.textfile_extractor import TextfileExtractor
 from file_scraper.utils import generate_metadata_dict, hexdigest
 
-LOSE = (None, UNAV, "")
+LOSE = (None, UnknownValue.UNAV, "")
 
 
 class Scraper:
@@ -48,6 +49,7 @@ class Scraper:
         # parameters.
         self._kwargs = kwargs
         self.clear()
+        self._parameter_validation()
 
     @property
     def filename(self) -> bytes:
@@ -70,13 +72,13 @@ class Scraper:
         self.info = {}
         self._extractor_results = []
 
-        if (mime := self._kwargs.get("mimetype", None)) not in LOSE:
+        if (mime := self._kwargs.get("mimetype", None)) not in [None, ""]:
             self._predefined_mimetype = mime.lower()
             self._kwargs["mimetype"] = mime.lower()
         else:
             self._predefined_mimetype = None
 
-        if (version := self._kwargs.get("version", None)) not in LOSE:
+        if (version := self._kwargs.get("version", None)) not in [None, ""]:
             self._predefined_version = version
         else:
             self._predefined_version = None
@@ -88,6 +90,30 @@ class Scraper:
         # REFACTOR: The results get gathered back to the _kwargs
         self._kwargs["detected_mimetype"] = UNAV
         self._kwargs["detected_version"] = UNAV
+
+    def _parameter_validation(self):
+        """
+        Validate parameters given to the scraper and
+        raise proper error messages if wrong parameters
+        """
+        if self._predefined_mimetype in [unkn.value for unkn in UnknownValue]:
+            raise ValueError(
+                "Scraper doesn't support the use of unknown values for "
+                "the mimetype parameter."
+            )
+        if (
+            self._predefined_version in [unkn.value for unkn in UnknownValue]
+            and self._predefined_version != UnknownValue.UNAP
+        ):
+            raise ValueError(
+                "Scraper doesn't support the use of other unknown values than "
+                "(:unap) for the version parameter."
+            )
+        if not self._predefined_mimetype and self._predefined_version:
+            raise ValueError(
+                "Missing a mimetype parameter for the provided version %s" %
+                self._predefined_version
+            )
 
     def _identify(self):
         """Identify file format and version."""
@@ -148,7 +174,7 @@ class Scraper:
                 important["mimetype"] not in LOSE:
             LOGGER.info(
                 "Tool provided important value '%s' for MIME type, "
-                "setting pre-defined MIME type",
+                "setting detected MIME type",
                 important["mimetype"]
             )
             self._detected_mimetype = important["mimetype"]
@@ -156,7 +182,7 @@ class Scraper:
                 important["version"] not in LOSE:
             LOGGER.info(
                 "Tool provided important value '%s' for file format version, "
-                "setting pre-defined version",
+                "setting detected version",
                 important["version"]
             )
             self._detected_version = important["version"]
@@ -331,7 +357,7 @@ class Scraper:
         that differs from the one obtained by the full extractor due to full
         extractor using a more comprehensive set of tools.
 
-        :returns: Predefined mimetype and version
+        :returns: Detected mimetype and version
         """
         self.clear()
         self._identify()
@@ -358,7 +384,7 @@ class Scraper:
 
     def grade(self) -> str:
         """Return digital preservation grade."""
-        return graders.grade(self.mimetype, self.version, self.streams)
+        return file_formats_grade(self.mimetype, self.version, self.streams)
 
 
 def _validate_path(supposed_filepath: str | bytes | os.PathLike) -> Path:

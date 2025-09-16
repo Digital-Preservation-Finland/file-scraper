@@ -15,6 +15,7 @@ import shutil
 
 import pytest
 
+from dpres_file_formats.defaults import (UnknownValue)
 from file_scraper.defaults import (UNAP,
                                    UNAV,
                                    UNACCEPTABLE,
@@ -406,8 +407,17 @@ def test_valid_combined(fullname, mimetype, version):
 
     predefined_mimetype = GIVEN_MIMETYPES.get(fullname, None)
     predefined_charset = GIVEN_CHARSETS.get(fullname, None)
-    scraper = Scraper(fullname, mimetype=predefined_mimetype,
-                      charset=predefined_charset)
+    # Scraper no longer allows unknown values as parameters
+    # but it still might be useful that scraper can handle these values
+    scraper = None
+
+    if predefined_mimetype in [unkn.value for unkn in UnknownValue]:
+        scraper = Scraper(fullname, charset=predefined_charset)
+        scraper._detected_mimetype = predefined_mimetype
+    else:
+        scraper = Scraper(fullname, mimetype=predefined_mimetype,
+                          charset=predefined_charset)
+
     scraper.scrape()
 
     for _, info in scraper.info.items():
@@ -418,9 +428,24 @@ def test_valid_combined(fullname, mimetype, version):
     # Test that output does not change if MIME type and version are given
     # to be the ones scraper would determine them to be in any case.
 
-    given_scraper = Scraper(fullname, mimetype=scraper.mimetype,
-                            version=scraper.version,
-                            charset=scraper.streams[0].get("charset", None))
+    # Scraper no longer allows unknown values as parameters
+    # but it still might be useful that scraper can handle these values
+    given_scraper = None
+    if (
+        scraper.mimetype in [unkn.value for unkn in UnknownValue] or
+        scraper.version in [unkn.value for unkn in UnknownValue]
+    ):
+        given_scraper = Scraper(
+            fullname,
+            charset=scraper.streams[0].get("charset", None))
+        given_scraper._detected_mimetype = scraper.mimetype
+        given_scraper._detected_version = scraper.version
+    else:
+        given_scraper = Scraper(
+            fullname,
+            mimetype=scraper.mimetype,
+            version=scraper.version,
+            charset=scraper.streams[0].get("charset", None))
     given_scraper.scrape()
 
     assert given_scraper.mimetype == scraper.mimetype
