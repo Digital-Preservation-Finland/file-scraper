@@ -205,7 +205,6 @@ class FidoDetector(BaseDetector):
 
         :returns: A dict possibly containing key "mimetype"
         """
-        important = {}
 
         arc_or_formula = self._puid in ["fmt/471", "fmt/100"]
         nonstandard_mimetype = self.mimetype not in {
@@ -899,7 +898,7 @@ class EpubDetector(BaseDetector):
             self.version = "3"
 
     @property
-    def important(self)-> dict[str, str]:
+    def important(self) -> dict[str, str]:
         """
         If EpubDetector determines the mimetype as EPUB, the mimetype
         and version are marked as important.

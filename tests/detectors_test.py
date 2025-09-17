@@ -29,7 +29,6 @@ from file_scraper.detectors import (_FidoReader,
                                     ODFDetector,
                                     PredefinedDetector)
 from file_scraper.defaults import UNKN, UNAP
-from file_scraper.base import BaseDetector
 from tests.common import get_files, partial_message_included
 
 CHANGE_FIDO = {
@@ -193,7 +192,7 @@ def test_pdf_dng_detector(filepath, mimetype, version, message):
     :mimetype: Expected MIME type
     :version: Exprected file format version
     """
-    detector = ExifToolDetector(Path('tests/data/' , filepath))
+    detector = ExifToolDetector(Path('tests/data/', filepath))
     detector.detect()
     assert detector.mimetype == mimetype
     assert detector.version == version
@@ -357,7 +356,8 @@ def test_magic_charset(filename, charset):
 
             # SEG-Y file without signature, padded left-justified markers and
             # `C40 EOF.` header EOF marker. See TPASPKT-1325.
-            ("application_x.fi-dpres.segy/invalid__ebcdic_padded_ljust_eof.sgy",
+            ("application_x.fi-dpres.segy/"
+             "invalid__ebcdic_padded_ljust_eof.sgy",
              UNKN,
              "SEG-Y signature is missing"),
 
@@ -416,7 +416,9 @@ def test_atlas_ti_detector():
     :filepath: Test file
     :mimetype: Expected mimetype
     """
-    detector = AtlasTiDetector(Path('tests/data/' , 'application_x.fi-dpres.atlproj/invalid_empty.atlproj'))
+    detector = AtlasTiDetector(
+        Path('tests/data/',
+             'application_x.fi-dpres.atlproj/invalid_empty.atlproj'))
     detector.detect()
     assert detector.mimetype == "application/x.fi-dpres.atlproj"
     assert detector.version == UNAP
@@ -449,7 +451,7 @@ def test_odf_detector(filepath, mimetype, version):
     :mimetype: Expected mimetype
     :version: Expected format version
     """
-    detector = ODFDetector(Path('tests/data/' , filepath))
+    detector = ODFDetector(Path('tests/data/', filepath))
     detector.detect()
     assert detector.mimetype == mimetype
     assert detector.version == version
@@ -473,7 +475,7 @@ def test_invalid_odf(filepath, error):
     :filepath: Test file
     :error: Expected error message
     """
-    detector = ODFDetector(Path('tests/data/' , filepath))
+    detector = ODFDetector(Path('tests/data/', filepath))
     detector.detect()
     assert detector.mimetype is None
     assert detector.version is None

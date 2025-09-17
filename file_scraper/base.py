@@ -366,10 +366,6 @@ class BaseDetector(BaseApparatus):
         """
         return self._important
 
-    @abc.abstractmethod
-    def detect(self):
-        """Detect file. Must be implemented in detectors."""
-
     @property
     def mimetype(self) -> str | None:
         """Return mimetype"""
