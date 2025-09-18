@@ -40,6 +40,7 @@ VERSION_DICT = {
                         "2a": "A-2a", "2b": "A-2b", "2u": "A-2u",
                         "3a": "A-3a", "3b": "A-3b", "3u": "A-3u"},
     "audio/x-wav": {"2 Generic": "2"},
+    "audio/ac3": {None: "(:unap)"}
 }
 
 # Dict between detectors' pronom results and known mimetypes and versions.
