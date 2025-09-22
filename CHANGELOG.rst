@@ -5,8 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.1.0/>`__,
 and this project adheres to `Semantic Versioning <(https://semver.org/spec/v2.0.0.html>`__.
 
-Unreleased - 2025-09-03
------------------------
+2.1.0 - 2025-09-22
+------------------
 
 Changed
 ^^^^^^^
@@ -15,6 +15,7 @@ Changed
 Fixed
 ^^^^^
 - Bug that caused errors when scraping image files in directory that contains many files with sequentical names, for example 001.jpg, 002.jpg, 003.jpg and so on.
+- Some TIFF files were incorrectly detected as FLI
 
 2.0.0 - 2025-08-27
 ------------------
