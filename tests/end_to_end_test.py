@@ -320,6 +320,7 @@ ACCEPTABLE_FILES = [
 
 BIT_LEVEL_WITH_RECOMMENDED_FILES = [
     "tests/data/video_quicktime/invalid__prores_lpcm8.mov",
+    "tests/data/video_MP2P/invalid__mpeg2_ac3.mpg",
     "tests/data/application_x.fi-dpres.atlproj/invalid_empty.atlproj",
     "tests/data/audio_ac3/invalid__bit_level_format.ac3"
 ]
@@ -452,12 +453,13 @@ def test_invalid_combined(fullname, mimetype, version):
     scraper.scrape()
 
     for _, info in scraper.info.items():
-        if scraper.mimetype != mimetype and info["class"] == "ExtractorNotFound":
+        if scraper.mimetype != mimetype and info["class"] == (
+                "ExtractorNotFound"):
             pytest.skip(("[%s] mimetype mismatches with scraper "
                          "and scraper not found") % fullname)
 
     assert scraper.well_formed in [False, None]
-    assert scraper.mimetype == mimetype or (
+    assert scraper.mimetype == mimetype.lower() or (
             fullname in UNAV_MIMETYPE_INVALID and scraper.mimetype == UNAV)
 
 
