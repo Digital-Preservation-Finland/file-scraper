@@ -730,7 +730,8 @@ class VersionlessFormatMeta(BaseMediainfoMeta):
     """Generic metadata model for stream formats, which do not have a version.
     """
 
-    _supported = {"video/x.fi-dpres.prores": [""]}
+    _supported = {"video/x.fi-dpres.prores": [""],
+                  "audio/ac3": [""]}
     _allow_versions = True  # Allow any version
 
     @metadata()

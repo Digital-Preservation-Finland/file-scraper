@@ -139,6 +139,10 @@ FORMATS = [
     {
         "mimetype": "image/png",
         "properties": {"internet_media_type": "image/png"}
+    },
+    {
+        "mimetype": "audio/ac3",
+        "properties": {"format": "AC-3"}
     }
 ]
 
