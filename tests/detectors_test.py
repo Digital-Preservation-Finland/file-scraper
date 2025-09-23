@@ -17,6 +17,7 @@ import time
 from pathlib import Path
 import pytest
 from fido.fido import Fido
+from file_scraper.base import BaseDetector
 from file_scraper.detectors import (_FidoReader,
                                     EpubDetector,
                                     FidoDetector,
@@ -256,11 +257,10 @@ def test_important_pdf_dng(filepath, important):
     detector = ExifToolDetector(Path(filepath))
     detector.detect()
     if important:
-        assert "mimetype" in detector.important
         if detector.mimetype == "application/pdf":
-            assert "version" in detector.important
+            assert detector.important.version is not None
     else:
-        assert detector.important == {}
+        assert not detector.important
 
 
 @pytest.mark.parametrize(
@@ -271,7 +271,7 @@ def test_important_pdf_dng(filepath, important):
         (MagicDetector, "application/vnd.oasis.opendocument.formula")
     ]
 )
-def test_important_other(detector_class, mimetype):
+def test_important_other(detector_class: type[BaseDetector], mimetype):
     """
     Test important with crucial mimetypes using other detectors.
 
@@ -281,9 +281,10 @@ def test_important_other(detector_class, mimetype):
     detector = detector_class(Path("testfilename"))
     detector.mimetype = mimetype
     if detector_class == FidoDetector:
-        assert detector.important == {}
+        assert not detector.important
     else:
-        assert detector.important == {"mimetype": mimetype}
+        assert detector.important.mimetype == mimetype
+        assert detector.important.version is None
 
 
 @pytest.mark.parametrize(
@@ -539,7 +540,21 @@ def test_tools(detector, tool):
 
 def test_detector_mimetype_normalization():
     mimetype = "TEXT/PLAIN"
-    detector = PredefinedDetector(Path("tests/data/text_plain/valid__ascii.txt"),
-                                  mimetype=mimetype)
+    detector = PredefinedDetector(
+        Path("tests/data/text_plain/valid__ascii.txt"),
+        mimetype=mimetype)
     detector.detect()
     assert detector.mimetype == mimetype.lower()
+
+
+@pytest.mark.parametrize(
+    "Detector",
+    [
+        (FidoDetector), (MagicCharset), (MagicDetector), (SegYDetector),
+        (EpubDetector), (ExifToolDetector), (SiardDetector), (AtlasTiDetector),
+        (ODFDetector)
+    ]
+)
+def test_return_mimetype_result_state(Detector: type[BaseDetector]):
+    detector = Detector("tests/data/text_plain/valid__ascii.txt")
+    assert type(detector.important).__name__ == "MimetypeResultState"

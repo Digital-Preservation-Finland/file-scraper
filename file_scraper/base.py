@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, Generic, Literal, TypeVar
 
 from file_scraper.defaults import UNAP, UNAV
+from file_scraper.state import MimetypeState, MimetypeResultState
 from file_scraper.utils import (
     MetadataMethod,
     filter_unwanted_chars,
@@ -340,7 +341,7 @@ class BaseDetector(BaseApparatus):
 
         self._mimetype = None  # Identified mimetype
         self.version = None  # Identified file version
-        self._important = {}
+        self._important = MimetypeState(None, None)
 
     @property
     def well_formed(self) -> Literal[False] | None:
@@ -357,14 +358,19 @@ class BaseDetector(BaseApparatus):
         """Detect file. Must be implemented in detectors."""
 
     @property
-    def important(self) -> dict:
+    def important(self) -> MimetypeResultState:
         """
-        Return dict of important values determined by the detector.
+        Return important mimetype and version in a MimetypeResultState.
+        """
+        return MimetypeResultState(
+            self._important.mimetype,
+            self._important.version,
+            self
+        )
 
-        By default this is an empty dict, but subclasses can override this
-        property to add "mimetype" and/or "version" keys to the dict.
-        """
-        return self._important
+    @important.setter
+    def important(self, important):
+        self._important = important
 
     @property
     def mimetype(self) -> str | None:

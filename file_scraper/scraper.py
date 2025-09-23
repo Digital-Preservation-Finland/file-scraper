@@ -5,11 +5,13 @@ import os
 from pathlib import Path
 from typing import Any
 
-from dpres_file_formats.defaults import UnknownValue
-from dpres_file_formats.graders import grade as file_formats_grade
+from dpres_file_formats.defaults import (UnknownValue, Grades)
+from dpres_file_formats.graders import (grade as file_formats_grade,
+                                        MIMEGrader)
 
 from file_scraper.base import BaseDetector, BaseExtractor
 from file_scraper.defaults import UNAV
+from file_scraper.state import MimetypeResultState
 from file_scraper.detectors import ExifToolDetector, MagicCharset
 from file_scraper.dummy.dummy_extractor import MimeMatchExtractor
 from file_scraper.exceptions import FileIsNotScrapable
@@ -115,8 +117,37 @@ class Scraper:
                 self._predefined_version
             )
 
-    def _identify(self):
+        self._mimetype_and_version_validation()
+
+    def _mimetype_and_version_validation(self):
+        """
+        Validate that the mimetype and version combination
+        """
+        # Check if mimetype is supported (and an argument):
+        if self._predefined_mimetype is None:
+            return  # Both checks require _predefined_mimetype to exist
+
+        if not MIMEGrader.is_supported(self._predefined_mimetype):
+            raise ValueError("Given mimetype %s is not supported" %
+                             self._predefined_mimetype)
+
+        if self._predefined_version is not None:
+            grader = MIMEGrader(
+                self._predefined_mimetype, self._predefined_version, {})
+            if grader.grade() is Grades.UNACCEPTABLE:
+                raise ValueError(
+                    "Given version %s for the mimetype %s is not supported" %
+                    (self._predefined_version, self._predefined_mimetype)
+                )
+
+    def _identify(self) -> None:
         """Identify file format and version."""
+
+        self._detected_mimetype = self._predefined_mimetype
+        self._detected_version = self._predefined_version
+        self._kwargs["detected_mimetype"] = self._predefined_mimetype
+        self._kwargs["detected_version"] = self._predefined_version
+
         for detector_class in iter_detectors():
             LOGGER.info(
                 "Detecting file type using %s", detector_class.__name__)
@@ -125,6 +156,7 @@ class Scraper:
                 self._predefined_mimetype,
                 self._predefined_version
                 )
+            self._use_detector(detector)
             self._update_filetype(detector)
 
         if (
@@ -141,17 +173,10 @@ class Scraper:
         # are dng files in order to return the correct mimetype and version
         if self._detected_mimetype in {"image/tiff", "application/pdf"}:
             exiftool_detector = ExifToolDetector(self.path)
+            self._use_detector(exiftool_detector)
             self._update_filetype(exiftool_detector)
 
-    def _update_filetype(self, detector: BaseDetector) -> None:
-        """Run the detector and updates the file type based on its results.
-
-        The MIME type or version is only changed if the old one is either
-        present in the LOSE list or the new one is marked important by the
-        detector.
-
-        :param detector: Detector tool which updates
-        """
+    def _use_detector(self, detector: BaseDetector) -> None:
         detector.detect()
         LOGGER.debug(
             "%s detected MIME type: %s, version: %s, important: %s, "
@@ -163,60 +188,59 @@ class Scraper:
         if detector.well_formed is False:
             self.well_formed = False
         self.info[len(self.info)] = detector.info()
-        important = detector.important
 
-        if self._detected_mimetype in LOSE:
-            self._detected_mimetype = detector.mimetype
-        if self._detected_mimetype == detector.mimetype and \
-                self._detected_version in LOSE:
-            self._detected_version = detector.version
-        if "mimetype" in important and important["mimetype"] not in LOSE:
+    def _assign_important_results(self, results: MimetypeResultState):
+        """
+        Assigns the important results deemed by the detector
+        if the following conditions are met:
+            * The results must exist
+            * Predefined (user given) mimetype/version doesn't exist
+        """
+        if results.mimetype not in LOSE and not self._predefined_mimetype:
             LOGGER.info(
-                "Tool provided important value '%s' for MIME type, "
-                "setting detected MIME type",
-                important["mimetype"]
+                "Detected MIME type changed:"
+                "MIME type: %s -> %s",
+                self._kwargs["detected_mimetype"],
+                results.mimetype,
             )
-            self._detected_mimetype = important["mimetype"]
-        if "version" in important and important["version"] not in LOSE:
+            self._detected_mimetype = results.mimetype
+            self._kwargs["detected_mimetype"] = results.mimetype
+
+        if results.version not in LOSE and not self._predefined_version:
             LOGGER.info(
-                "Tool provided important value '%s' for file format version, "
-                "setting detected version",
-                important["version"]
+                "Detected version changed:"
+                "version: %s -> %s",
+                self._kwargs["detected_version"],
+                results.version
             )
-            self._detected_version = important["version"]
+            self._detected_version = results.version
+            self._kwargs["detected_version"] = results.version
+
+    def _update_filetype(self, detector: BaseDetector) -> None:
+        """Run the detector and updates the file type based on its results.
+
+        The MIME type or version is only changed if the old one is either
+        present in the LOSE list or the new one is marked important by the
+        detector.
+
+        :param detector: Detector tool which updates
+        """
         if detector.info()["class"] == "PredefinedDetector":
             LOGGER.debug(
                 "detector used was PredefinedDetector so no changes to"
                 "the detected_mimetype or detected_version should occur")
             return
-        if self._detected_mimetype != detector.mimetype:
-            LOGGER.debug(
-                "%s can't apply the MIME type found: %s on top of "
-                "another MIME type %s",
-                detector.__class__.__name__,
-                detector.mimetype,
-                self._detected_mimetype)
-            return
-        # If predefined mimetype is not None it means the user wants choose the
-        # mimetype which needs to be respected and the detected mimetype
-        # can't overrule the user.
-        if self._predefined_mimetype is not None and \
-                self._predefined_mimetype != self._detected_mimetype:
-            return
 
-        if ("version" in important or
-           self._kwargs["detected_version"] in LOSE):
-            LOGGER.info(
-                "Detected MIME type and version changed. "
-                "MIME type: %s -> %s, version: %s -> %s",
-                self._kwargs["detected_mimetype"],
-                detector.mimetype,
-                self._kwargs["detected_version"],
-                detector.version
-            )
+        if self._detected_mimetype in LOSE and not self._predefined_mimetype:
+            self._detected_mimetype = detector.mimetype
 
-            self._kwargs["detected_mimetype"] = detector.mimetype
-            self._kwargs["detected_version"] = detector.version
+        if (
+                self._detected_mimetype == detector.mimetype and
+                self._detected_version in LOSE and
+                not self._predefined_version
+        ):
+            self._detected_version = detector.version
+        self._assign_important_results(detector.important)
 
     def _use_extractor(
         self, extractor: BaseExtractor, check_wellformed: bool
