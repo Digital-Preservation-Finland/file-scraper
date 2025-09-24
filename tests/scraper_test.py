@@ -307,7 +307,8 @@ def test_results_merging(meta_class_fx, meta_classes, wellformed):
     scraper = Scraper(filename)
     scraper._kwargs["extractor_results"] = results
     scraper.info = {}
-    scraper._merge_results(True)
+    scraper.check_wellformed = True
+    scraper._merge_results()
     assert scraper.well_formed == wellformed
     if wellformed is False:
         assert list(filter((lambda s: "Conflict with values" in s),

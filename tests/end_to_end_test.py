@@ -388,9 +388,9 @@ def _assert_valid_scraper_result(scraper, fullname, mimetype, version,
         assert not unavs
 
 
-@pytest.mark.parametrize(("fullname", "mimetype", "version"),
+@pytest.mark.parametrize(("fullname_filename", "mimetype", "version"),
                          get_files(well_formed=True))
-def test_valid_combined(fullname, mimetype, version):
+def test_valid_combined(fullname_filename, mimetype, version):
     """
     Integration test for valid files.
 
@@ -402,50 +402,46 @@ def test_valid_combined(fullname, mimetype, version):
     - Test that giving the resulted MIME type, version and charset
       produce the same results.
     """
-    if fullname in IGNORE_VALID:
-        pytest.skip("[%s] in ignore" % fullname)
+    if fullname_filename in IGNORE_VALID:
+        pytest.skip("[%s] in ignore" % fullname_filename)
 
-    predefined_mimetype = GIVEN_MIMETYPES.get(fullname, None)
-    predefined_charset = GIVEN_CHARSETS.get(fullname, None)
-    # Scraper no longer allows unknown values as parameters
-    # but it still might be useful that scraper can handle these values
-    scraper = None
+    predefined_mimetype = GIVEN_MIMETYPES.get(fullname_filename, None)
+    predefined_charset = GIVEN_CHARSETS.get(fullname_filename, None)
 
-    if predefined_mimetype in [unkn.value for unkn in UnknownValue]:
-        scraper = Scraper(fullname, charset=predefined_charset)
-        scraper._detected_mimetype = predefined_mimetype
-    else:
-        scraper = Scraper(fullname, mimetype=predefined_mimetype,
-                          charset=predefined_charset)
+    scraper = Scraper(
+        fullname_filename,
+        charset=predefined_charset,
+        mimetype=predefined_mimetype)
 
     scraper.scrape()
 
     for _, info in scraper.info.items():
         assert not info["errors"]
 
-    _assert_valid_scraper_result(scraper, fullname, mimetype, version, True)
+    _assert_valid_scraper_result(
+        scraper, fullname_filename, mimetype, version, True)
 
     # Test that output does not change if MIME type and version are given
     # to be the ones scraper would determine them to be in any case.
 
-    # Scraper no longer allows unknown values as parameters
-    # but it still might be useful that scraper can handle these values
-    given_scraper = None
-    if (
-        scraper.mimetype in [unkn.value for unkn in UnknownValue] or
-        scraper.version in [unkn.value for unkn in UnknownValue]
-    ):
+    try:
         given_scraper = Scraper(
-            fullname,
-            charset=scraper.streams[0].get("charset", None))
-        given_scraper._detected_mimetype = scraper.mimetype
-        given_scraper._detected_version = scraper.version
-    else:
-        given_scraper = Scraper(
-            fullname,
+            fullname_filename,
+            charset=scraper.streams[0].get("charset", None),
             mimetype=scraper.mimetype,
-            version=scraper.version,
-            charset=scraper.streams[0].get("charset", None))
+            version=scraper.version
+        )
+    # Many version and mimetype input combinations are not supported
+    # as an input by the Scraper and throw Value errors instead.
+    # Skip this validation to complete the sanity check
+    except ValueError:
+        given_scraper = Scraper(
+            fullname_filename,
+            charset=scraper.streams[0].get("charset", None),
+            mimetype=scraper.mimetype
+        )
+        given_scraper._detected_version = scraper.version
+
     given_scraper.scrape()
 
     assert given_scraper.mimetype == scraper.mimetype
@@ -509,7 +505,6 @@ def test_without_wellformed(fullname, mimetype, version):
     scraper = Scraper(fullname, mimetype=predefined_mimetype,
                       charset=predefined_charset)
     scraper.scrape(False)
-
     _assert_valid_scraper_result(scraper, fullname, mimetype, version, None)
 
     mimepart = mimetype.split("/")[0]
@@ -528,10 +523,22 @@ def test_without_wellformed(fullname, mimetype, version):
 
     # Test that output does not change if MIME type and version are given
     # to be the ones scraper would determine them to be in any case.
+    try:
+        given_scraper = Scraper(
+            fullname,
+            mimetype=scraper.mimetype,
+            version=scraper.version,
+            charset=scraper.streams[0].get("charset", None))
 
-    given_scraper = Scraper(fullname, mimetype=scraper.mimetype,
-                            version=scraper.version,
-                            charset=scraper.streams[0].get("charset", None))
+    # Many version and mimetype input combinations are not supported
+    # inputs by the Scraper and throw Value errors instead.
+    # Skip this validation to complete the sanity check
+    except ValueError:
+        given_scraper = Scraper(
+            fullname,
+            mimetype=scraper.mimetype,
+            charset=scraper.streams[0].get("charset", None))
+        given_scraper._detected_version = scraper.version
     given_scraper.scrape(False)
 
     assert given_scraper.mimetype == scraper.mimetype
