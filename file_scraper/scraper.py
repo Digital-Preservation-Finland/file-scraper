@@ -157,7 +157,8 @@ class Scraper:
                 self._predefined_version
                 )
             self._use_detector(detector)
-            self._update_filetype(detector)
+            if not self._predefined_mimetype:
+                self._update_filetype(detector)
 
         if (
             MagicCharset.is_supported(self._detected_mimetype)
@@ -174,7 +175,8 @@ class Scraper:
         if self._detected_mimetype in {"image/tiff", "application/pdf"}:
             exiftool_detector = ExifToolDetector(self.path)
             self._use_detector(exiftool_detector)
-            self._update_filetype(exiftool_detector)
+            if not self._predefined_mimetype:
+                self._update_filetype(exiftool_detector)
 
     def _use_detector(self, detector: BaseDetector) -> None:
         detector.detect()
@@ -196,7 +198,7 @@ class Scraper:
             * The results must exist
             * Predefined (user given) mimetype/version doesn't exist
         """
-        if results.mimetype not in LOSE and not self._predefined_mimetype:
+        if results.mimetype not in LOSE:
             LOGGER.info(
                 "Detected MIME type changed:"
                 "MIME type: %s -> %s",
@@ -206,7 +208,7 @@ class Scraper:
             self._detected_mimetype = results.mimetype
             self._kwargs["detected_mimetype"] = results.mimetype
 
-        if results.version not in LOSE and not self._predefined_version:
+        if results.version not in LOSE:
             LOGGER.info(
                 "Detected version changed:"
                 "version: %s -> %s",
@@ -231,13 +233,12 @@ class Scraper:
                 "the detected_mimetype or detected_version should occur")
             return
 
-        if self._detected_mimetype in LOSE and not self._predefined_mimetype:
+        if self._detected_mimetype in LOSE:
             self._detected_mimetype = detector.mimetype
 
         if (
                 self._detected_mimetype == detector.mimetype and
-                self._detected_version in LOSE and
-                not self._predefined_version
+                self._detected_version in LOSE
         ):
             self._detected_version = detector.version
         self._assign_important_results(detector.important)
