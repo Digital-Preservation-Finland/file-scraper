@@ -24,15 +24,15 @@ def get_cli_runner(*args, **kwargs):
 def test_group_command_lists_commands():
     runner = get_cli_runner()
     result = runner.invoke(cli, [])
-    assert result.exit_code == 0
     assert "scrape-file" in result.stdout
+    assert result.exit_code == 0
 
 
 def test_scraper_without_arguments():
     runner = get_cli_runner()
     result = runner.invoke(cli, ["scrape-file"])
-    assert result.exit_code == 2
     assert "Error: Missing argument 'FILENAME'" in result.stderr
+    assert result.exit_code == 2
 
 
 def test_scrape_valid_file():
@@ -40,10 +40,10 @@ def test_scrape_valid_file():
 
     runner = get_cli_runner()
     result = runner.invoke(cli, ["scrape-file", str(file_path)])
-    assert result.exit_code == 0
     data = json.loads(result.stdout)
     assert data["well-formed"] is True
     assert data["path"] == str(file_path)
+    assert result.exit_code == 0
 
 
 def test_scrape_invalid_file():
@@ -51,8 +51,8 @@ def test_scrape_invalid_file():
 
     runner = get_cli_runner()
     result = runner.invoke(cli, ["scrape-file", str(file_path)])
-    assert result.exit_code == 0
     assert json.loads(result.stdout)["well-formed"] is False
+    assert result.exit_code == 0
 
 
 @pytest.mark.parametrize(
@@ -73,8 +73,8 @@ def test_scraper_invalid_paths(tmp_path_factory, message: str, input: str):
         input = str(tmp_path_factory.mktemp("test"))
     runner = get_cli_runner()
     result = runner.invoke(cli, ["scrape-file", input])
-    assert result.exit_code > 0
     assert message in result.stderr
+    assert result.exit_code in [1, 2]
 
 
 # Much slower than testing using only the scraper class, but also tests the
@@ -82,13 +82,17 @@ def test_scraper_invalid_paths(tmp_path_factory, message: str, input: str):
 @pytest.mark.parametrize(
     "flags, error_message",
     [(["--version=1.5"],
-      "Missing a mimetype parameter for the provided version"),
+      "Missing a mimetype parameter for the provided version 1.5"),
      (["--mimetype=application/pdf", "--version=(:unav)"],
       "Scraper doesn't support the use of other unknown values than (:unap) "
       "for the version parameter."),
-     (["--mimetype=(:unap)"],
+     (["--mimetype=(:unav)"],
       "Scraper doesn't support the use of unknown values for the mimetype "
-      "parameter")
+      "parameter"),
+     (["--mimetype=application/not_supported"],
+      "Given mimetype application/not_supported is not supported"),
+     (["--mimetype=application/pdf", "--version=9.99"],
+      "Given version 9.99 for the mimetype application/pdf is not supported"),
      ]
 )
 def test_incorrect_flags(flags: list[str], error_message: str):
@@ -99,8 +103,9 @@ def test_incorrect_flags(flags: list[str], error_message: str):
     file_path = DATA_PATH / "application_pdf/valid_A-1a.pdf"
     runner = get_cli_runner()
     result = runner.invoke(cli, ["scrape-file", str(file_path), *flags])
-    assert result.exit_code == 2
     assert error_message in result.stderr
+    assert "Unknown error" not in result.stderr
+    assert result.exit_code == 2
 
 
 # TODO add mimetype and version combination flags when handled.
@@ -123,21 +128,11 @@ def test_flags(flag, output_contains):
     result = runner.invoke(cli, ["scrape-file", str(file_path), *flag])
     result_noflag = runner.invoke(cli, ["scrape-file", str(file_path)])
     assert result != result_noflag
-    assert result.exit_code == 0
     assert output_contains in result.stdout
+    assert result.exit_code == 0
 
     # Check that the output is JSON
     json.loads(result.stdout)
-
-
-def test_non_existent_file_type():
-    file_path = DATA_PATH / "application_pdf/valid_A-1a.pdf"
-    runner = get_cli_runner()
-    result = runner.invoke(cli, ["scrape-file", str(file_path),
-                                 "--mimetype=non/existent"])
-    assert result.exit_code == 1
-    assert result.stderr == ("Error: Proper extractor was not found. The file "
-                             "was not analyzed.\n")
 
 
 def test_extra_arguments():
@@ -145,9 +140,9 @@ def test_extra_arguments():
     runner = get_cli_runner()
     result = runner.invoke(cli, ["scrape-file", str(file_path),
                                  '--fields=["a","b","c"]'])
-    assert result.exit_code == 0
     assert ("CSV not well-formed: field counts in the given header "
             "parameter and the CSV header don't match.") in result.stdout
+    assert result.exit_code == 0
 
 
 def test_extra_arguments_with_space():
@@ -155,17 +150,17 @@ def test_extra_arguments_with_space():
     runner = get_cli_runner()
     result = runner.invoke(cli, ["scrape-file", str(file_path), '--fields',
                                  '["a","b","c"]'])
-    assert result.exit_code == 0
     assert ("CSV not well-formed: field counts in the given header parameter "
             "and the CSV header don't match.") in result.stdout
+    assert result.exit_code == 0
 
 
 def test_missing_value_in_extra_argument():
     file_path = DATA_PATH / "text_csv/valid__ascii.csv"
     runner = get_cli_runner()
     result = runner.invoke(cli, ["scrape-file", "--fields", str(file_path)])
-    assert result.exit_code == 2
     assert "Error: Missing argument 'FILENAME'." in result.stderr
+    assert result.exit_code == 2
 
 
 def test_argument_after_argument():
@@ -177,17 +172,17 @@ def test_argument_after_argument():
     runner = get_cli_runner()
     result = runner.invoke(
         cli, ["scrape-file", '--fields', '--quotechar', '"', str(file_path)])
-    assert result.exit_code == 2
     # the command parser affects the accuracy of the error message.
     assert "Error: Got unexpected extra argument" in result.stderr
+    assert result.exit_code == 2
 
 
 def test_incorrect_extra_argument():
     file_path = DATA_PATH / "application_pdf/valid_A-1a.pdf"
     runner = get_cli_runner()
     result = runner.invoke(cli, ["scrape-file", "--abc", str(file_path)])
-    assert result.exit_code == 2
     assert "Error: No such option: --abc" in result.stderr
+    assert result.exit_code == 2
 
 
 def test_mime_type_cases():
@@ -196,8 +191,8 @@ def test_mime_type_cases():
     runner = get_cli_runner()
     result = runner.invoke(
         cli, ["scrape-file", "--mimetype", "Application/pdf", str(file_path)])
-    assert result.exit_code == 0
     assert json.loads(result.stdout)["well-formed"] is True
+    assert result.exit_code == 0
 
 
 @pytest.mark.parametrize(
@@ -258,12 +253,12 @@ def test_sgml_catalog_files_env_var_gets_overridden():
         env={"SGML_CATALOG_FILES": "/some/invalid/catalog"})
     result = runner.invoke(cli, ["scrape-file",
                                  "tests/data/text_xml/valid_1.0_gpx_1.0.xml"])
-    assert result.exit_code == 0
     assert json.loads(result.stdout)["well-formed"] is True
+    assert result.exit_code == 0
 
     runner = get_cli_runner()
     result = runner.invoke(cli, ["scrape-file",
                                  "--catalog-path", "/some/invalid/catalog",
                                  "tests/data/text_xml/valid_1.0_gpx_1.0.xml"])
-    assert result.exit_code == 0
     assert json.loads(result.stdout)["well-formed"] is False
+    assert result.exit_code == 0
