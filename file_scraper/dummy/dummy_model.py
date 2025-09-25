@@ -98,6 +98,12 @@ class DetectedMimeVersionMeta(BaseMeta):
     @metadata()
     def stream_type(self):
         """Return stream type."""
+
+        # AC-3 is an audio stream, the other supported formats are
+        # binary formats
+        if self.mimetype() == "audio/ac3":
+            return "audio"
+
         return "binary" if self.mimetype() != UNAV else UNAV
 
 
