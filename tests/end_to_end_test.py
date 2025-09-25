@@ -10,12 +10,12 @@ Integration test for scraper:
     - Scraping with predefined character encoding.
 """
 
+from __future__ import annotations
 import os
 import shutil
 
 import pytest
 
-from dpres_file_formats.defaults import (UnknownValue)
 from file_scraper.defaults import (UNAP,
                                    UNAV,
                                    UNACCEPTABLE,
@@ -643,8 +643,8 @@ def test_coded_filename(tmpdir, fullname, mimetype, version):
          False),
 
         # Scrape a file with MIME type that can produce "well-formed" result
-        # from some extractors, but combining the results should reveal the file
-        # as not well-formed
+        # from some extractors, but combining the results should reveal the
+        # file as not well-formed
         ("tests/data/image_gif/valid_1987a.gif", {"mimetype": "image/png"},
          False, "image/gif", UNAV, None, False),
 
@@ -659,8 +659,15 @@ def test_coded_filename(tmpdir, fullname, mimetype, version):
     ]
 )
 # pylint: disable=too-many-arguments
-def test_given_filetype(filepath, params, well_formed, expected_mimetype,
-                        expected_version, expected_charset, meta_well_formed):
+def test_given_filetype(
+    filepath: str,
+    params: dict[str, str],
+    well_formed: bool,
+    expected_mimetype: str,
+    expected_version: str,
+    expected_charset: str | None,
+    meta_well_formed: bool | None
+):
     """
     Test the scraping to be done as user given file type.
 
