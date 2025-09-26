@@ -166,7 +166,6 @@ def test_iter_detectors():
     assert {x.__name__ for x in detectors} == {"EpubDetector",
                                                "FidoDetector",
                                                "MagicDetector",
-                                               "PredefinedDetector",
                                                "SegYDetector",
                                                "AtlasTiDetector",
                                                "SiardDetector",

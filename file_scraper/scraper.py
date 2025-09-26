@@ -11,7 +11,6 @@ from dpres_file_formats.graders import (grade as file_formats_grade,
 
 from file_scraper.base import BaseDetector, BaseExtractor
 from file_scraper.defaults import UNAV
-from file_scraper.state import MimetypeResultState
 from file_scraper.detectors import ExifToolDetector, MagicCharset
 from file_scraper.dummy.dummy_extractor import MimeMatchExtractor
 from file_scraper.exceptions import FileIsNotScrapable
@@ -201,21 +200,8 @@ class Scraper:
             self.well_formed = False
         self.info[len(self.info)] = detector.info()
 
-    def _assign_important_results(self, results: MimetypeResultState):
-        """
-        Assigns the important results deemed by the detector
-        if the following conditions are met:
-            * The results must exist
-            * Predefined (user given) mimetype/version doesn't exist
-        """
-
     def _update_mimetype(self, detector: type[BaseDetector]) -> None:
 
-        if detector.info()["class"] == "PredefinedDetector":
-            LOGGER.debug(
-                "detector used was PredefinedDetector so no changes to"
-                "the detected_mimetype or detected_version should occur")
-            return
         if self._detected_mimetype in LOSE:
             self._detected_mimetype = detector.mimetype
             self._kwargs["detected_mimetype"] = detector.mimetype
@@ -233,11 +219,6 @@ class Scraper:
 
     def _update_version(self, detector: type[BaseDetector]) -> None:
 
-        if detector.info()["class"] == "PredefinedDetector":
-            LOGGER.debug(
-                "detector used was PredefinedDetector so no changes to"
-                "the detected_mimetype or detected_version should occur")
-            return
         if (
                 self._detected_mimetype == detector.mimetype and
                 self._detected_version in LOSE):

@@ -292,49 +292,6 @@ class MagicDetector(BaseDetector):
         return {"magiclib": {"version": magiclib_version()}}
 
 
-class PredefinedDetector(BaseDetector):
-    """A detector for handling user-supplied MIME types and versions."""
-
-    def detect(self) -> None:
-        """
-        No actual detection needed, just use the given values and log messages.
-
-        If the user supplied a MIME type and/or version, it has already been
-        recorded during initialization. Giving only the version is not
-        possible: if the initilizer is not given a MIME type, the possible
-        version information is ignored.
-        """
-        self.mimetype = self._predefined_mimetype
-        if self._predefined_mimetype:
-            self.version = self._predefined_version
-
-        if self._predefined_mimetype:
-            self._messages.append("User-supplied file format used")
-
-    @property
-    def important(self) -> MimetypeResultState:
-        """
-        The results from this detector are always important.
-
-        If the scraper does not know MIME type or version, the values will be
-        None and thus ignored by the scraper.
-        """
-        self._important.mimetype = self.mimetype
-        self._important.version = self.version
-        return self._important.to_result(self)
-
-    def tools(self) -> dict:
-        """Return information about the software used by the extractor or
-        detector.
-
-        :returns: Dictionary where each key is the name of the software tool,
-            and each value is another dictionary containing details about the
-            tool (e.g. version). If no tools are available, an empty
-            dictionary is returned instead.
-        """
-        return {}
-
-
 class MagicCharset(BaseDetector):
     """Charset detector."""
 

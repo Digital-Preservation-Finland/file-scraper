@@ -97,7 +97,7 @@ Scraping without checking well-formedness
       The ``is_supported()`` method in the tools solves whether a tool shoud be run or not, but otherwise the tools do not know which method is used in the main Scraper.
     * Scraping without checking well-formedness must still somehow detect the mimetype and version, and it must give error in ``info()``
       if the detection does not comply with the given file type. Mainly for this reason, some file format versions detected by the detectors
-      (not ``PredefinedDetector``) are provided to a dummy extractor, which result this value for the main Scraper.
+      are provided to a dummy extractor, which result this value for the main Scraper.
 
           * Example: If ``text/plain`` is given, but ``text/html`` is resolved, then well_formed must be ``True`` (in the end ``None``).
           * Example: If ``image/jpeg`` is given, but ``text/plain`` is resolved, then well_formed must be ``False`` (in the end ``False``).
