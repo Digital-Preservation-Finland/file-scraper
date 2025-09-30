@@ -10,18 +10,18 @@ This module tests that:
           header".
         - For truncated files, extractor errors contains "Unknown data block
           type".
-        - For empty files, extractor errors contains "Wrong Application Extension
-          block size".
+        - For empty files, extractor errors contains "Wrong Application
+          Extension block size".
     - The extractor can handle output from old versions of JHove. JHove's
       namespaces were updated between versions 1.20 and 1.24, from the old
-      Harvard namespace to the new OPF namespace. Extractor should function with
-      both versions.
+      Harvard namespace to the new OPF namespace. Extractor should function
+      with both versions.
     - MIME type, version, streams and well-formedness of tiff files is tested
       correctly.
         - For well-formed files, extractor messages contains "Well-Formed and
           valid".
-        - For files with altered payload, extractor messages contains "IDF offset
-          not word-aligned".
+        - For files with altered payload, extractor messages contains "IDF
+          offset not word-aligned".
         - For files with wrong byte order reported, extractor messages contains
           "No TIFF magic number".
         - For empty files, extractor errors contains "File is too short".
@@ -81,8 +81,8 @@ This module tests that:
     - MIME type, version, streams and well-formedness of bwf and wav files is
       tested correctly
         - For valid files, extractor messages contains "Well-formed and valid".
-        - For bwf files with missing bytes, extractor messages contains "Chunk ID
-          character outside printable ASCII range".
+        - For bwf files with missing bytes, extractor messages contains "Chunk
+          ID character outside printable ASCII range".
         - For bwf and wav files with bytes removed from the RIFF tag, extractor
           errors contains "Invalid chunk size".
         - For empty files, extractor errors contains "Unexpected end of file".
@@ -118,49 +118,71 @@ This module tests that:
           extractor errors contains "The 'head' element should have a 'title'
           child element".
         - For EPUB 2 files created with LibreOffice's built-in export function,
-          extractor errors contains "element \"title\" not allowed here".
+          extractor errors contains "element "title" not allowed here".
 """
 from pathlib import Path
 
 import pytest
-
-from file_scraper.shell import Shell
 from file_scraper.defaults import UNAV
+from file_scraper.jhove.jhove_extractor import (
+    JHoveAiffExtractor,
+    JHoveDngExtractor,
+    JHoveEpubExtractor,
+    JHoveGifExtractor,
+    JHoveHtmlExtractor,
+    JHoveJpegExtractor,
+    JHovePdfExtractor,
+    JHoveTiffExtractor,
+    JHoveUtf8Extractor,
+    JHoveWavExtractor,
+)
 from file_scraper.paths import resolve_command
-from file_scraper.jhove.jhove_extractor import (JHoveAiffExtractor,
-                                                JHoveDngExtractor,
-                                                JHoveEpubExtractor,
-                                                JHoveGifExtractor,
-                                                JHoveHtmlExtractor,
-                                                JHoveJpegExtractor,
-                                                JHovePdfExtractor,
-                                                JHoveTiffExtractor,
-                                                JHoveUtf8Extractor,
-                                                JHoveWavExtractor)
-from tests.common import (parse_results, partial_message_included)
+from file_scraper.shell import Shell
 
+from tests.common import parse_results, partial_message_included
 
-@pytest.mark.parametrize(
-    ["filename", "result_dict"],
-    [
-        ("valid_XXXXa.gif", {
-            "purpose": "Test valid file.",
-            "stdout_part": "Well-Formed and valid",
-            "stderr_part": ""}),
-        ("invalid_XXXXa_broken_header.gif", {
-            "purpose": "Test invalid header.",
-            "stdout_part": "",
-            "stderr_part": "Invalid GIF header"}),
-        ("invalid_XXXXa_truncated.gif", {
-            "purpose": "Test truncated file.",
-            "stdout_part": "",
-            "stderr_part": "Unknown data block type"}),
-        ("invalid__empty.gif", {
+gif_test_cases = [
+    (
+        "invalid__empty.gif",
+        {
             "purpose": "Test empty file.",
             "stdout_part": "",
-            "stderr_part": "Wrong Application Extension block size"})
-    ]
-)
+            "stderr_part": "Wrong Application Extension block size",
+        },
+    )
+]
+for ver in ["1987", "1989"]:
+    gif_test_cases.extend(
+        [
+            (
+                f"valid_{ver}a.gif",
+                {
+                    "purpose": "Test valid file.",
+                    "stdout_part": "Well-Formed and valid",
+                    "stderr_part": "",
+                },
+            ),
+            (
+                f"invalid_{ver}a_broken_header.gif",
+                {
+                    "purpose": "Test invalid header.",
+                    "stdout_part": "",
+                    "stderr_part": "Invalid GIF header",
+                },
+            ),
+            (
+                f"invalid_{ver}a_truncated.gif",
+                {
+                    "purpose": "Test truncated file.",
+                    "stdout_part": "",
+                    "stderr_part": "Unknown data block type",
+                },
+            ),
+        ]
+    )
+
+
+@pytest.mark.parametrize(["filename", "result_dict"], gif_test_cases)
 def test_extractor_gif(filename, result_dict, evaluate_extractor):
     """
     Test gif scraping.
@@ -169,39 +191,19 @@ def test_extractor_gif(filename, result_dict, evaluate_extractor):
     :result_dict: Result dict containing test purpose, and parts of
                   expected results of stdout and stderr
     """
-    for version in ["1987", "1989"]:
-        current_filename = filename.replace("XXXX", version)
-        correct = parse_results(current_filename, "image/gif",
-                                result_dict, True)
-        correct.update_mimetype("image/gif")
-        extractor = JHoveGifExtractor(filename=correct.filename,
-                                    mimetype="image/gif")
-        extractor.extract()
+    correct = parse_results(
+        filename, "image/gif", result_dict, True
+    )
+    correct.update_mimetype("image/gif")
+    extractor = JHoveGifExtractor(
+        filename=correct.filename, mimetype="image/gif"
+    )
+    extractor.extract()
 
-        evaluate_extractor(extractor, correct)
+    evaluate_extractor(extractor, correct)
 
 
-@pytest.mark.parametrize(
-    ["filename", "result_dict"],
-    [
-        ("valid_XXXXa.gif", {
-            "purpose": "Test valid file.",
-            "stdout_part": "Well-Formed and valid",
-            "stderr_part": ""}),
-        ("invalid_XXXXa_broken_header.gif", {
-            "purpose": "Test invalid header.",
-            "stdout_part": "",
-            "stderr_part": "Invalid GIF header"}),
-        ("invalid_XXXXa_truncated.gif", {
-            "purpose": "Test truncated file.",
-            "stdout_part": "",
-            "stderr_part": "Unknown data block type"}),
-        ("invalid__empty.gif", {
-            "purpose": "Test empty file.",
-            "stdout_part": "",
-            "stderr_part": "Wrong Application Extension block size"})
-    ]
-)
+@pytest.mark.parametrize(["filename", "result_dict"], gif_test_cases)
 def test_old_namespace(filename, result_dict, evaluate_extractor, monkeypatch):
     """
     Test that extractor works as expected even if it were to be run with old
@@ -220,29 +222,32 @@ def test_old_namespace(filename, result_dict, evaluate_extractor, monkeypatch):
         # Shell uses resolve_command so to mock Shell output realistically
         # Need to use the resolve_command function here.
         if self.command[0:4] == [resolve_command("jhove"), "-h", "XML", "-m"]:
-            assert (b"http://schema.openpreservation.org/ois/xml/ns/jhove" in
-                    mock_output)
+            assert (
+                b"http://schema.openpreservation.org/ois/xml/ns/jhove"
+                in mock_output
+            )
             mock_output = mock_output.replace(
-                    b"http://schema.openpreservation.org/ois/xml/ns/jhove",
-                    b"http://hul.harvard.edu/ois/xml/ns/jhove")
+                b"http://schema.openpreservation.org/ois/xml/ns/jhove",
+                b"http://hul.harvard.edu/ois/xml/ns/jhove",
+            )
             mock_output = mock_output.replace(
-                    b"https://schema.openpreservation.org/ois/xml/xsd/jhove/"
-                    b"1.8/jhove.xsd",
-                    b"http://hul.harvard.edu/ois/xml/xsd/jhove/1.6/jhove.xsd")
+                b"https://schema.openpreservation.org/ois/xml/xsd/jhove/"
+                b"1.8/jhove.xsd",
+                b"http://hul.harvard.edu/ois/xml/xsd/jhove/1.6/jhove.xsd",
+            )
         return mock_output
 
     monkeypatch.setattr(Shell, "stdout_raw", _mock_stdout_raw)
-    for version in ["1987", "1989"]:
-        current_filename = filename.replace("XXXX", version)
-        correct = parse_results(current_filename, "image/gif",
-                                result_dict, True)
-        correct.update_mimetype("image/gif")
-        extractor = JHoveGifExtractor(filename=correct.filename,
-                                    mimetype="image/gif")
-        extractor.extract()
-        assert "hul.harvard.edu" in extractor._report.values()[0]
 
-        evaluate_extractor(extractor, correct)
+    correct = parse_results(filename, "image/gif", result_dict, True)
+    correct.update_mimetype("image/gif")
+    extractor = JHoveGifExtractor(
+        filename=correct.filename, mimetype="image/gif"
+    )
+    extractor.extract()
+    assert "hul.harvard.edu" in extractor._report.values()[0]
+
+    evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize(
@@ -312,8 +317,9 @@ def test_extractor_dng(filename, result_dict, evaluate_extractor):
     correct = parse_results(filename, "image/x-adobe-dng", result_dict, True)
     correct.update_mimetype("image/x-adobe-dng")
     correct.update_version(UNAV)
-    extractor = JHoveDngExtractor(filename=correct.filename,
-                                mimetype="image/x-adobe-dng")
+    extractor = JHoveDngExtractor(
+        filename=correct.filename, mimetype="image/x-adobe-dng"
+    )
     extractor.extract()
 
     evaluate_extractor(extractor, correct)
@@ -348,9 +354,9 @@ def test_extractor_utf8(filename, result_dict, evaluate_extractor):
     """
     correct = parse_results(filename, "text/plain", result_dict, True,
                             {"charset": "UTF-8"})
-    extractor = JHoveUtf8Extractor(filename=correct.filename,
-                                 mimetype="text/plain",
-                                 params=correct.params)
+    extractor = JHoveUtf8Extractor(
+        filename=correct.filename, mimetype="text/plain", params=correct.params
+    )
     extractor.extract()
     correct.streams[0]["mimetype"] = UNAV
     correct.streams[0]["version"] = UNAV
@@ -358,15 +364,23 @@ def test_extractor_utf8(filename, result_dict, evaluate_extractor):
     evaluate_extractor(extractor, correct)
 
 
-@pytest.mark.parametrize(
-    ["filename", "result_dict"],
-    [
-        ("valid_X.pdf", {
-            "purpose": "Test valid file.",
-            "stdout_part": "Well-Formed and valid",
-            "stderr_part": ""}),
-    ]
-)
+pdf_test_valid_cases = []
+for ver in ["1.2", "1.3", "1.4", "1.5", "1.6", "A-1a"]:
+    pdf_test_valid_cases.extend(
+        [
+            (
+                f"valid_{ver}.pdf",
+                {
+                    "purpose": "Test valid file.",
+                    "stdout_part": "Well-Formed and valid",
+                    "stderr_part": "",
+                },
+            ),
+        ]
+    )
+
+
+@pytest.mark.parametrize(["filename", "result_dict"], pdf_test_valid_cases)
 def test_extractor_pdf_valid(filename, result_dict, evaluate_extractor):
     """
     Test pdf scraping for valid files.
@@ -380,33 +394,46 @@ def test_extractor_pdf_valid(filename, result_dict, evaluate_extractor):
     :result_dict: Result dict containing test purpose, and parts of
                   expected results of stdout and stderr
     """
-    for ver in ["1.2", "1.3", "1.4", "1.5", "1.6", "A-1a"]:
-        current_filename = filename.replace("X", ver)
-        correct = parse_results(current_filename, "application/pdf",
-                                result_dict, True)
-        correct.update_mimetype("application/pdf")
-        if ver == "A-1a":
-            correct.update_version("1.4")
-        extractor = JHovePdfExtractor(filename=correct.filename,
-                                    mimetype="application/pdf")
-        extractor.extract()
+    correct = parse_results(
+        filename, "application/pdf", result_dict, True
+    )
+    correct.update_mimetype("application/pdf")
+    ver = filename.split("_")[1].split(".pdf")[0]
+    if ver == "A-1a":
+        correct.update_version("1.4")
+    extractor = JHovePdfExtractor(
+        filename=correct.filename, mimetype="application/pdf"
+    )
+    extractor.extract()
 
-        evaluate_extractor(extractor, correct)
+    evaluate_extractor(extractor, correct)
 
 
-@pytest.mark.parametrize(
-    ["filename", "result_dict"],
-    [
-        ("invalid_X_payload_altered.pdf", {
-            "purpose": "Test payload altered file.",
-            "stdout_part": "",
-            "stderr_part": "catalog dictionary"}),
-        ("invalid_X_removed_xref.pdf", {
-            "purpose": "Test xref change.",
-            "stdout_part": "",
-            "stderr_part": "Improperly nested dictionary delimiters"}),
-    ]
-)
+pdf_invalid_test_cases = []
+for ver in ["1.2", "1.3", "1.4", "1.5", "1.6", "A-1a"]:
+    pdf_invalid_test_cases.extend(
+        [
+            (
+                f"invalid_{ver}_payload_altered.pdf",
+                {
+                    "purpose": "Test payload altered file.",
+                    "stdout_part": "",
+                    "stderr_part": "catalog dictionary",
+                },
+            ),
+            (
+                f"invalid_{ver}_removed_xref.pdf",
+                {
+                    "purpose": "Test xref change.",
+                    "stdout_part": "",
+                    "stderr_part": "Improperly nested dictionary delimiters",
+                },
+            ),
+        ]
+    )
+
+
+@pytest.mark.parametrize(["filename", "result_dict"], pdf_invalid_test_cases)
 def test_extractor_pdf_invalid(filename, result_dict, evaluate_extractor):
     """
     Test pdf scraping for invalid files.
@@ -415,16 +442,17 @@ def test_extractor_pdf_invalid(filename, result_dict, evaluate_extractor):
     :result_dict: Result dict containing test purpose, and parts of
                   expected results of stdout and stderr
     """
-    for ver in ["1.2", "1.3", "1.4", "1.5", "1.6", "A-1a"]:
-        current_filename = filename.replace("X", ver)
-        correct = parse_results(current_filename, "application/pdf",
-                                result_dict, True)
-        correct.update_mimetype("application/pdf")
-        extractor = JHovePdfExtractor(filename=correct.filename,
-                                    mimetype="application/pdf")
-        extractor.extract()
+    current_filename = filename.replace("X", ver)
+    correct = parse_results(
+        current_filename, "application/pdf", result_dict, True
+    )
+    correct.update_mimetype("application/pdf")
+    extractor = JHovePdfExtractor(
+        filename=correct.filename, mimetype="application/pdf"
+    )
+    extractor.extract()
 
-        evaluate_extractor(extractor, correct)
+    evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize(
@@ -438,9 +466,7 @@ def test_extractor_pdf_invalid(filename, result_dict, evaluate_extractor):
     ]
 )
 def test_pdf_root_version_in_results(filename, version):
-    """
-    Test that the root version of a PDF is reported in messages.
-    """
+    """Test that the root version of a PDF is reported in messages."""
     extractor = JHovePdfExtractor(
         filename=filename,
         mimetype="application/pdf")
@@ -452,11 +478,11 @@ def test_pdf_17_scraping_result_ignored():
     """
     Test that JHovePdfExtractor ignores pdf 1.7 scraping results.
 
-    JHove does not support PDF version 1.7, but before running the extractors, we
-    don't know what the exact version is. Thus, in case we encounter a PDF 1.7,
-    we must ignore the error messages normally produced by JHove and instead
-    log a message letting the user know that the scraping result from JHove was
-    ignored.
+    JHove does not support PDF version 1.7, but before running the extractors,
+    we don't know what the exact version is. Thus, in case we encounter a PDF
+    1.7, we must ignore the error messages normally produced by JHove and
+    instead log a message letting the user know that the scraping result from
+    JHove was ignored.
     """
     extractor = JHovePdfExtractor(
         filename=Path("tests/data/application_pdf/valid_1.7.pdf"),
@@ -477,17 +503,15 @@ def test_pdf_17_scraping_result_ignored():
         ["A-1a", "1.0"],
     ])
 def test_extractor_invalid_pdfversion(version_in_filename, found_version):
-    """
-    Test that unsupported version is detected.
-    """
+    """Test that unsupported version is detected."""
     extractor = JHovePdfExtractor(
         filename=Path("tests/data/application_pdf/invalid_X_wrong_version"
                       ".pdf".replace("X", version_in_filename)),
         mimetype="application/pdf")
     extractor.extract()
     assert partial_message_included(
-        "MIME type application/pdf with version {} is not "
-        "supported.".format(found_version), extractor.errors())
+        f"MIME type application/pdf with version {found_version} is not "
+        "supported.", extractor.errors())
     assert not extractor.well_formed
 
 
@@ -520,11 +544,11 @@ def test_extractor_jpeg(filename, result_dict, evaluate_extractor):
     :result_dict: Result dict containing test purpose, and parts of
                   expected results of stdout and stderr
     """
-    correct = parse_results(filename, "image/jpeg",
-                            result_dict, True)
+    correct = parse_results(filename, "image/jpeg", result_dict, True)
     correct.update_mimetype("image/jpeg")
-    extractor = JHoveJpegExtractor(filename=correct.filename,
-                                 mimetype="image/jpeg")
+    extractor = JHoveJpegExtractor(
+        filename=correct.filename, mimetype="image/jpeg"
+    )
     extractor.extract()
     correct.streams[0]["version"] = UNAV
 
@@ -619,9 +643,9 @@ def test_extractor_html(filename, result_dict, mimetype, charset,
         correct.streams[0]["charset"] = "UTF-8"
         correct.streams[0]["stream_type"] = "text"
 
-    extractor = JHoveHtmlExtractor(filename=correct.filename,
-                                 mimetype=mimetype,
-                                 params=correct.params)
+    extractor = JHoveHtmlExtractor(
+        filename=correct.filename, mimetype=mimetype, params=correct.params
+    )
     extractor.extract()
 
     evaluate_extractor(extractor, correct)
@@ -665,11 +689,11 @@ def test_extractor_wav(filename, result_dict, evaluate_extractor):
     :result_dict: Result dict containing test purpose, and parts of
                   expected results of stdout and stderr
     """
-    correct = parse_results(filename, "audio/x-wav",
-                            result_dict, True)
+    correct = parse_results(filename, "audio/x-wav", result_dict, True)
     correct.update_mimetype("audio/x-wav")
-    extractor = JHoveWavExtractor(filename=correct.filename,
-                                mimetype="audio/x-wav")
+    extractor = JHoveWavExtractor(
+        filename=correct.filename, mimetype="audio/x-wav"
+    )
     extractor.extract()
 
     evaluate_extractor(extractor, correct)
@@ -696,13 +720,13 @@ def test_extractor_aiff(filename, result_dict, evaluate_extractor):
     :result_dict: Result dict containing test purpose, and parts of
                   expected results of stdout and stderr
     """
-    correct = parse_results(filename, "audio/x-aiff",
-                            result_dict, True)
+    correct = parse_results(filename, "audio/x-aiff", result_dict, True)
     correct.update_mimetype("audio/x-aiff")
     if "1.3" in filename:
         correct.update_version("1.3")
-    extractor = JHoveAiffExtractor(filename=correct.filename,
-                                 mimetype="audio/x-aiff")
+    extractor = JHoveAiffExtractor(
+        filename=correct.filename, mimetype="audio/x-aiff"
+    )
     extractor.extract()
 
     evaluate_extractor(extractor, correct)
@@ -799,8 +823,9 @@ def test_charset(filename, mimetype, charset, well_formed):
     :well_formed: Expected well-formed result
     """
     params = {"charset": charset}
-    extractor = JHoveHtmlExtractor(filename=Path(filename), mimetype=mimetype,
-                                 params=params)
+    extractor = JHoveHtmlExtractor(
+        filename=Path(filename), mimetype=mimetype, params=params
+    )
     extractor.extract()
     assert extractor.well_formed == well_formed
     if charset:
@@ -808,10 +833,12 @@ def test_charset(filename, mimetype, charset, well_formed):
             assert not extractor.errors()
         else:
             assert partial_message_included(
-                "Found encoding declaration", extractor.errors())
+                "Found encoding declaration", extractor.errors()
+            )
     else:
-        assert partial_message_included("encoding not defined",
-                                        extractor.errors())
+        assert partial_message_included(
+            "encoding not defined", extractor.errors()
+        )
 
 
 @pytest.mark.parametrize(
@@ -856,11 +883,13 @@ def test_extractor_epub(filename, result_dict, evaluate_extractor):
     :result_dict: Result dict containing test purpose, and parts of
                   expected results of stdout and stderr
     """
-    correct = parse_results(filename, "application/epub+zip",
-                            result_dict, True)
+    correct = parse_results(
+        filename, "application/epub+zip", result_dict, True
+    )
     correct.update_mimetype("application/epub+zip")
-    extractor = JHoveEpubExtractor(filename=correct.filename,
-                                 mimetype="application/epub+zip")
+    extractor = JHoveEpubExtractor(
+        filename=correct.filename, mimetype="application/epub+zip"
+    )
     extractor.extract()
 
     evaluate_extractor(extractor, correct)
@@ -869,13 +898,13 @@ def test_extractor_epub(filename, result_dict, evaluate_extractor):
 @pytest.mark.usefixtures("patch_shell_attributes_fx")
 def test_jhove_returns_invalid_return_code():
     """Test that a correct error message is given
-    when the tool gives an invalid return code"""
+    when the tool gives an invalid return code
+    """
     mimetype = "application/pdf"
     path = Path("tests/data", mimetype.replace("/", "_"))
     testfile = path / "valid_1.2.pdf"
 
-    extractor = JHovePdfExtractor(filename=testfile,
-                                mimetype=mimetype)
+    extractor = JHovePdfExtractor(filename=testfile, mimetype=mimetype)
 
     extractor.extract()
 
@@ -884,6 +913,5 @@ def test_jhove_returns_invalid_return_code():
 
 def test_jhove_tools():
     """Test extractor tools return correctly something non nullable"""
-    extractor = JHovePdfExtractor(filename=Path(""),
-                                mimetype="")
+    extractor = JHovePdfExtractor(filename=Path(""), mimetype="")
     assert extractor.tools()["JHOVE"]["version"][0].isdigit()
