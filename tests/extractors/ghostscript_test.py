@@ -33,7 +33,17 @@ payload_altered_stdout = {
     "A-3b": "Can't repair xref",
 }
 
-test_cases = []
+test_cases = [
+    (
+        "valid_A-1a_invalid_resource_name.pdf",
+        {
+            "purpose": "Valid test file with warnings",
+            "stdout_part": "Well-Formed and valid",
+            "stderr_part": "",
+            "tool_stdout": "Couldn't find a named resource"
+        },
+    )
+]
 for ver in versions:
     test_cases.extend([
         (
@@ -98,6 +108,8 @@ def test_extractor_pdf(filename, result_dict, evaluate_extractor):
     if extractor.well_formed:
         assert not partial_message_included("Error", extractor.messages())
         assert not extractor.errors()
+        if tool_stdout := result_dict.get("tool_stdout"):
+            assert partial_message_included(tool_stdout, extractor.messages())
     else:
         assert partial_message_included(
             correct.stderr_part, extractor.errors()
@@ -117,12 +129,16 @@ def test_jpeg2000_inside_pdf(evaluate_extractor):
     """
     filename = "valid_1.7_jpeg2000.pdf"
     mimetype = "application/pdf"
-    result_dict = {"purpose": "Test pdf with JPEG2000 inside it.",
-                   "stdout_part": "Well-formed and valid",
-                   "stderr_part": ""}
+    result_dict = {
+        "purpose": "Test pdf with JPEG2000 inside it.",
+        "stdout_part": "Well-formed and valid",
+        "stderr_part": "",
+    }
     correct = parse_results(filename, mimetype, result_dict, True)
 
-    extractor = GhostscriptExtractor(filename=correct.filename, mimetype=mimetype)
+    extractor = GhostscriptExtractor(
+        filename=correct.filename, mimetype=mimetype
+    )
     extractor.extract()
 
     # Ghostscript cannot handle version or MIME type
@@ -140,12 +156,15 @@ def test_ghostscript_returns_invalid_return_code():
     path = os.path.join("tests/data", mimetype.replace("/", "_"))
     testfile = os.path.join(path, "valid_X.pdf")
 
-    extractor = GhostscriptExtractor(filename=Path(testfile),
-                                   mimetype=mimetype)
+    extractor = GhostscriptExtractor(
+        filename=Path(testfile), mimetype=mimetype
+    )
 
     extractor.extract()
 
-    assert "Ghostscript returned invalid return code: -1\n" in extractor.errors()
+    assert (
+        "Ghostscript returned invalid return code: -1\n" in extractor.errors()
+    )
 
 
 def test_is_supported():
