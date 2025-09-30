@@ -24,31 +24,45 @@ This module tests that:
 from pathlib import Path
 
 import pytest
-
 from file_scraper.verapdf.verapdf_extractor import VerapdfExtractor
-from tests.common import (parse_results, partial_message_included)
+
+from tests.common import parse_results, partial_message_included
 
 MIMETYPE = "application/pdf"
 
 
-@pytest.mark.parametrize(
-    ["filename", "result_dict"],
-    [
-        ("valid_X.pdf", {
-            "purpose": "Test valid file.",
-            "stdout_part": "PDF file is compliant with Validation Profile "
-                           "requirements.",
-            "stderr_part": ""}),
-        ("invalid_X_payload_altered.pdf", {
-            "purpose": "Test payload altered file.",
-            "stdout_part": "",
-            "stderr_part": "can not locate xref table"}),
-        ("invalid_X_removed_xref.pdf", {
-            "purpose": "Test xref change.",
-            "stdout_part": "",
-            "stderr_part": "End of file is reached"}),
-    ]
-)
+test_cases = []
+for ver in ["A-1a", "A-2b", "A-3b"]:
+    test_cases.extend([
+        (
+            f"valid_{ver}.pdf",
+            {
+                "purpose": "Test valid file.",
+                "stdout_part": "PDF file is compliant with Validation Profile "
+                "requirements.",
+                "stderr_part": "",
+            },
+        ),
+        (
+            f"invalid_{ver}_payload_altered.pdf",
+            {
+                "purpose": "Test payload altered file.",
+                "stdout_part": "",
+                "stderr_part": "can not locate xref table",
+            },
+        ),
+        (
+            f"invalid_{ver}_removed_xref.pdf",
+            {
+                "purpose": "Test xref change.",
+                "stdout_part": "",
+                "stderr_part": "End of file is reached",
+            },
+        ),
+    ])
+
+
+@pytest.mark.parametrize(["filename", "result_dict"], test_cases)
 def test_extractor(filename, result_dict, evaluate_extractor):
     """
     Test extractor with PDF/A.
@@ -57,22 +71,22 @@ def test_extractor(filename, result_dict, evaluate_extractor):
     :result_dict: Result dict containing test purpose, and parts of
                   expected results of stdout and stderr
     """
-    for ver in ["A-1a", "A-2b", "A-3b"]:
-        filename = filename.replace("X", ver)
-        correct = parse_results(filename, MIMETYPE,
-                                result_dict, True)
-        extractor = VerapdfExtractor(filename=correct.filename,
-                                   mimetype=MIMETYPE)
-        extractor.extract()
+    correct = parse_results(filename, MIMETYPE, result_dict, True)
+    extractor = VerapdfExtractor(
+        filename=correct.filename, mimetype=MIMETYPE
+    )
+    extractor.extract()
 
-        if not correct.well_formed:
-            assert not extractor.well_formed
-            assert partial_message_included(correct.stdout_part,
-                                            extractor.messages())
-            assert partial_message_included(correct.stderr_part,
-                                            extractor.errors())
-        else:
-            evaluate_extractor(extractor, correct)
+    if not correct.well_formed:
+        assert not extractor.well_formed
+        assert partial_message_included(
+            correct.stdout_part, extractor.messages()
+        )
+        assert partial_message_included(
+            correct.stderr_part, extractor.errors()
+        )
+    else:
+        evaluate_extractor(extractor, correct)
 
 
 @pytest.mark.parametrize(
