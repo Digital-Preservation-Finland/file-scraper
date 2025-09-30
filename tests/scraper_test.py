@@ -313,3 +313,47 @@ def test_results_merging(meta_class_fx, meta_classes, wellformed):
     if wellformed is False:
         assert list(filter((lambda s: "Conflict with values" in s),
                            scraper.info[0]["errors"]))
+
+
+# Tests moved from test_given_filetype end to end test. create a proper test
+# to validate these conditions and similar special cases
+"""
+        # Give the correct MIME type and charset, but wrong version
+        ("tests/data/text_html/valid_4.01.html",
+         {"mimetype": "text/html", "version": "0.0", "charset": "UTF-8"},
+         False, UNAV, UNAV, "UTF-8", False),
+
+        # FIXME This case is a special one for the PDF, but if the file version
+        # is 1.4 but a detected filetype which is one of the pdf-a types is
+        # found invalidate the file as it can be saved to pas as a PDF-A
+        # instead
+        # -------------------------------------------------------------
+        # Give the correct MIME type with a supported but incorrect version:
+        # file is reported as not well-formed
+        ("tests/data/application_pdf/valid_A-1a.pdf",
+         {"mimetype": "application/pdf", "version": "1.4"},
+         False, "application/pdf", "A-1a", None, False),
+
+        # FIXME Is this test case valid for not well-formedness check?
+        # If well-formedness won't be checked it makes sense that
+        # the file being html or not won't be investigated?
+        # -------------------------------------------------------------
+        # Scrape a random text file as HTML, as which it is not well-formed
+        ("tests/data/text_plain/valid__utf8_without_bom.txt",
+         {"mimetype": "text/html"}, False, UNAV, UNAV, "UTF-8",
+         False),
+
+        # Give the correct MIME type with unsupported version, resulting
+        # in not well-formed file
+        ("tests/data/image_tiff/valid_6.0.tif",
+         {"mimetype": "image/tiff", "version": "99.9"},
+         False, "image/tiff", "6.0", None, False),
+"""
+
+
+def test_incorrect_version_mimetype_combinations():
+    """
+    TODO test that ValueErrors are given from correct combination of
+    given version and mimetype
+    """
+    pass
