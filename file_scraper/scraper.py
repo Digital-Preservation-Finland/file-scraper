@@ -154,10 +154,6 @@ class Scraper:
 
     def _identify(self) -> None:
         """Identify file format and version."""
-        self._detected_mimetype = self._predefined_mimetype
-        self._detected_version = self._predefined_version
-        self._kwargs["detected_mimetype"] = self._predefined_mimetype
-        self._kwargs["detected_version"] = self._predefined_version
 
         for detector_class in iter_detectors():
             LOGGER.info(
@@ -169,6 +165,16 @@ class Scraper:
                 )
             self._use_detector(detector)
             self._update_filetype(detector)
+        if self._detected_mimetype != self._predefined_mimetype:
+            # Give user warning that you might not want to give the mimetype
+            # given
+            pass
+        if self._predefined_mimetype not in LOSE:
+            self._detected_mimetype = self._predefined_mimetype
+            self._kwargs["detected_mimetype"] = self._predefined_mimetype
+        if self._predefined_version not in LOSE:
+            self._detected_version = self._predefined_version
+            self._kwargs["detected_version"] = self._predefined_version
 
         if (
             MagicCharset.is_supported(self._detected_mimetype)
@@ -187,6 +193,44 @@ class Scraper:
             self._use_detector(exiftool_detector)
             self._update_filetype(exiftool_detector)
 
+        detector_result_mimetype = self._detected_mimetype
+        # Changing to predefined values when ever possible
+        self._update_attributes(
+            "_detected_mimetype",
+            self._predefined_mimetype,
+            to_empty=None,
+            prevent_update_to_values=LOSE
+        )
+        self._update_attributes(
+            "_detected_version",
+            self._predefined_version,
+            to_empty=None,
+            prevent_update_to_values=LOSE
+        )
+        if detector_result_mimetype == "application/octet-stream":
+            LOGGER.info(
+                "Detectors didn't find a mimetype. Trust to the user input")
+            return
+
+        # If detector disagrees with the user evaluate the mimetypes to
+        # disallow nonsense user input and guide user to more accurate
+        # decisions
+        if (
+            detector_result_mimetype != self._predefined_mimetype
+            and self._predefined_mimetype not in LOSE
+        ):
+            mismatch = (
+                "User defined mimetype: '%s' not detected by detectors. "
+                "Detectors detected a different mimetype: '%s'" %
+                (self._predefined_mimetype, detector_result_mimetype)
+            )
+            LOGGER.info(mismatch)
+            self.info[len(self.info)] = {
+                "class": "Scraper _identify",
+                "messages": [mismatch],
+                "errors": []
+            }
+
     def _use_detector(self, detector: BaseDetector) -> None:
         detector.detect()
         LOGGER.debug(
@@ -200,41 +244,59 @@ class Scraper:
             self.well_formed = False
         self.info[len(self.info)] = detector.info()
 
-    def _update_mimetype(self, detector: type[BaseDetector]) -> None:
+    def _update_attributes(
+            self,
+            attribute_name: str,
+            new_value: str,
+            to_empty: bool | None = True,
+            prevent_update_to_values: list = [None]) -> None:
+        """
+        Updates an attribute and the kwarg argument associated with the
+        attribute.
 
-        if self._detected_mimetype in LOSE:
-            self._detected_mimetype = detector.mimetype
-            self._kwargs["detected_mimetype"] = detector.mimetype
+        :param attribute_name: the name of the updated attribute.
+        :param new_value: the value the attribute will be update as.
+        :param to_empty: If the value is updated on top of an empty value,
+        defaults to True.
+        :param prevent_update_to_values: A list of values which cannot be
+        updated to for the attribute, defaults to [None].
+        :returns: None, attributes and keywordarguments will be update
+        in_place.
+        """
 
-        # Assign important mimetype information
-        if detector.important.mimetype not in LOSE:
+        if new_value in prevent_update_to_values:
+            return
+
+        if to_empty and self.__getattribute__(attribute_name) in LOSE:
             LOGGER.info(
-                "Detected MIME type changed:"
-                "MIME type: %s -> %s",
-                self._kwargs["detected_mimetype"],
-                detector.important.mimetype,
+                "Detected %s change: %s -> %s",
+                attribute_name,
+                self.__getattribute__(attribute_name),
+                new_value,
             )
-            self._detected_mimetype = detector.important.mimetype
-            self._kwargs["detected_mimetype"] = detector.important.mimetype
-
-    def _update_version(self, detector: type[BaseDetector]) -> None:
-
-        if (
-                self._detected_mimetype == detector.mimetype and
-                self._detected_version in LOSE):
-            self._detected_version = detector.version
-            self._kwargs["detected_version"] = detector.version
-
-        # Assign important version information
-        if detector.important.version not in LOSE:
+            self.__setattr__(attribute_name, new_value)
+            self._kwargs[attribute_name[1:]] = new_value
+        elif (
+            not to_empty
+            and self.__getattribute__(attribute_name) not in LOSE
+        ):
             LOGGER.info(
-                "Detected version changed:"
-                "version: %s -> %s",
-                self._kwargs["detected_version"],
-                detector.important.version
+                "Detected %s overwrite: %s -> %s",
+                attribute_name,
+                self.__getattribute__(attribute_name),
+                new_value,
             )
-            self._detected_version = detector.important.version
-            self._kwargs["detected_version"] = detector.important.version
+            self.__setattr__(attribute_name, new_value)
+            self._kwargs[attribute_name[1:]] = new_value
+        elif to_empty is None:
+            LOGGER.info(
+                "Detected %s overwrite/change: %s -> %s",
+                attribute_name,
+                self.__getattribute__(attribute_name),
+                new_value,
+            )
+            self.__setattr__(attribute_name, new_value)
+            self._kwargs[attribute_name[1:]] = new_value
 
     def _update_filetype(self, detector: BaseDetector) -> None:
         """Run the detector and updates the file type based on its results.
@@ -245,10 +307,25 @@ class Scraper:
 
         :param detector: Detector tool which updates
         """
-        if not self._predefined_mimetype:
-            self._update_mimetype(detector)
-        if not self._predefined_version:
-            self._update_version(detector)
+        # Update mimetype
+        self._update_attributes(
+            "_detected_mimetype",
+            detector.mimetype,)
+        if detector.important:
+            self._update_attributes(
+                "_detected_mimetype",
+                detector.important.mimetype,
+                to_empty=False)
+        # If mimetype matches the detected one, update the version.
+        if self._detected_mimetype == detector.mimetype:
+            self._update_attributes(
+                "_detected_version",
+                detector.version,)
+            if detector.important:
+                self._update_attributes(
+                    "_detected_version",
+                    detector.important.version,
+                    to_empty=False)
 
     def _use_extractor(self, extractor: BaseExtractor) -> None:
         """
