@@ -22,37 +22,58 @@ import os
 from pathlib import Path
 
 import pytest
-
 from file_scraper.defaults import UNAV
 from file_scraper.ghostscript.ghostscript_extractor import GhostscriptExtractor
-from tests.common import (parse_results, partial_message_included)
+
+from tests.common import parse_results, partial_message_included
+
+versions = ["1.7", "A-1a", "A-2b", "A-3b"]
+payload_altered_stdout = {
+    "A-1a": "xref table was repaired",
+    "A-3b": "Can't repair xref",
+}
+
+test_cases = []
+for ver in versions:
+    test_cases.extend([
+        (
+            f"valid_{ver}.pdf",
+            {
+                "purpose": "Test valid file.",
+                "stdout_part": "Well-Formed and valid",
+                "stderr_part": "",
+            },
+        ),
+        (
+            f"invalid_{ver}_payload_altered.pdf",
+            {
+                "purpose": "Test payload altered file.",
+                "stdout_part": payload_altered_stdout.get(
+                    ver, "startxref offset invalid"
+                ),
+                "stderr_part": "",
+            },
+        ),
+        *([] if ver == "A-1a" else [(
+            f"invalid_{ver}_invalid_resource_name.pdf",
+            {
+                "purpose": "Test file has reference to unknown resource name.",
+                "stdout_part": "error executing PDF token",
+                "stderr_part": "",
+            },
+        )]),
+        (
+            f"invalid_{ver}_removed_xref.pdf",
+            {
+                "purpose": "Test xref change.",
+                "stdout_part": "xref entry not valid format",
+                "stderr_part": "",
+            },
+        ),
+    ])
 
 
-@pytest.mark.parametrize(
-    ["filename", "result_dict"],
-    [
-        ("valid_X.pdf", {
-            "purpose": "Test valid file.",
-            "stdout_part": "Well-Formed and valid",
-            "stderr_part": ""}),
-        ("invalid_X_payload_altered.pdf", {
-            "purpose": "Test payload altered file.",
-            # 9.54.0: "Error: Tf refers to an unknown resource name"
-            # 10.03.1: "startxref offset invalid"
-            "stdout_part": "startxref offset invalid",
-            "stderr_part": ""}),
-        ("invalid_X_invalid_resource_name.pdf", {
-            "purpose": "Test file has reference to unknown resource name.",
-            "stdout_part": "error executing PDF token",
-            "stderr_part": ""}),
-        ("invalid_X_removed_xref.pdf", {
-            "purpose": "Test xref change.",
-            # 9.54.0: "Error:  An error occurred while reading an XREF"
-            # 10.03.1: "xref entry not valid format"
-            "stdout_part": "xref entry not valid format",
-            "stderr_part": ""}),
-    ]
-)
+@pytest.mark.parametrize(["filename", "result_dict"], test_cases)
 def test_extractor_pdf(filename, result_dict, evaluate_extractor):
     """
     Test Ghostscript extractor.
@@ -62,28 +83,28 @@ def test_extractor_pdf(filename, result_dict, evaluate_extractor):
     :result_dict: Result dict containing the test purpose, and parts of
                   expected results of stdout and stderr
     """
-    for ver in ["1.7", "A-1a", "A-2b", "A-3b"]:
-        filename = filename.replace("X", ver)
-        correct = parse_results(filename, "application/pdf",
-                                result_dict, True)
-        extractor = GhostscriptExtractor(filename=correct.filename,
-                                       mimetype="application/pdf")
-        extractor.extract()
+    correct = parse_results(filename, "application/pdf", result_dict, True)
+    extractor = GhostscriptExtractor(
+        filename=correct.filename, mimetype="application/pdf"
+    )
+    extractor.extract()
 
-        # Ghostscript cannot handle version or MIME type
-        correct.streams[0]["version"] = UNAV
-        correct.streams[0]["mimetype"] = UNAV
+    # Ghostscript cannot handle version or MIME type
+    correct.streams[0]["version"] = UNAV
+    correct.streams[0]["mimetype"] = UNAV
 
-        evaluate_extractor(extractor, correct, eval_output=False)
+    evaluate_extractor(extractor, correct, eval_output=False)
 
-        if extractor.well_formed:
-            assert not partial_message_included("Error", extractor.messages())
-            assert not extractor.errors()
-        else:
-            assert partial_message_included(correct.stderr_part,
-                                            extractor.errors())
-            assert partial_message_included(correct.stdout_part,
-                                            extractor.errors())
+    if extractor.well_formed:
+        assert not partial_message_included("Error", extractor.messages())
+        assert not extractor.errors()
+    else:
+        assert partial_message_included(
+            correct.stderr_part, extractor.errors()
+        )
+        assert partial_message_included(
+            correct.stdout_part, extractor.errors()
+        )
 
 
 def test_jpeg2000_inside_pdf(evaluate_extractor):
