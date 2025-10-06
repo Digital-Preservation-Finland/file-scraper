@@ -68,10 +68,6 @@ def test_checksum():
         ("tests/data/image_png/invalid_1.2_wrong_CRC.png", {},
          {"_detected_mimetype": "image/png", "_detected_version": "1.0",
           "well_formed": None}),
-        ("tests/data/video_mp4/valid__h264_aac.mp4",
-         {"mimetype": "video/mpeg"},
-         {"_detected_mimetype": "video/mpeg", "_detected_version": None,
-          "well_formed": None}),
         ("tests/data/application_pdf/valid_A-1a.pdf",
          {"mimetype": "application/pdf"},
          {"_detected_mimetype": "application/pdf",
@@ -315,45 +311,62 @@ def test_results_merging(meta_class_fx, meta_classes, wellformed):
                            scraper.info[0]["errors"]))
 
 
-# Tests moved from test_given_filetype end to end test. create a proper test
-# to validate these conditions and similar special cases
-"""
-        # Give the correct MIME type and charset, but wrong version
-        ("tests/data/text_html/valid_4.01.html",
-         {"mimetype": "text/html", "version": "0.0", "charset": "UTF-8"},
-         False, UNAV, UNAV, "UTF-8", False),
+@pytest.mark.parametrize(
+    ["filepath", "mimetype_parameter", "detected_mimetype"],
+    [("tests/data/image_tiff/valid_6.0.tif",
+      "application/pdf",
+      "image/tiff"),
+     ("tests/data/image_tiff/valid_6.0.tif",
+      "audio/mpeg",
+      "image/tiff"),
+     ("tests/data/video_mp4/valid__h264_aac.mp4",
+      "video/mpeg",
+      "video/mp4"),]
+)
+def test_invalid_mimetype_input(
+        filepath, mimetype_parameter, detected_mimetype):
+    """
+    A mimetype can be valid and the file can be valid, but the version input
+    can be invalid.
+    This causes a value error with the correct type included in the error.
+    """
+    with pytest.raises(ValueError) as val_err:
+        scraper = Scraper(filepath,
+                          mimetype=mimetype_parameter)
+        scraper.scrape()
+    assert ("User defined mimetype: '%s' not detected by "
+            "detectors. Detectors detected a different mimetype: '%s'" % (
+                mimetype_parameter, detected_mimetype) in str(val_err))
 
-        # FIXME This case is a special one for the PDF, but if the file version
-        # is 1.4 but a detected filetype which is one of the pdf-a types is
-        # found invalidate the file as it can be saved to pas as a PDF-A
-        # instead
-        # -------------------------------------------------------------
-        # Give the correct MIME type with a supported but incorrect version:
-        # file is reported as not well-formed
-        ("tests/data/application_pdf/valid_A-1a.pdf",
-         {"mimetype": "application/pdf", "version": "1.4"},
-         False, "application/pdf", "A-1a", None, False),
 
-        # FIXME Is this test case valid for not well-formedness check?
-        # If well-formedness won't be checked it makes sense that
-        # the file being html or not won't be investigated?
-        # -------------------------------------------------------------
-        # Scrape a random text file as HTML, as which it is not well-formed
-        ("tests/data/text_plain/valid__utf8_without_bom.txt",
-         {"mimetype": "text/html"}, False, UNAV, UNAV, "UTF-8",
-         False),
-
+@pytest.mark.parametrize(
+    "filepath, mimetype_parameter, version_parameter, error",
+    [
         # Give the correct MIME type with unsupported version, resulting
-        # in not well-formed file
+        # user input error
         ("tests/data/image_tiff/valid_6.0.tif",
-         {"mimetype": "image/tiff", "version": "99.9"},
-         False, "image/tiff", "6.0", None, False),
-"""
+         "image/tiff", "99.9",
+         "Given version 99.9 for the mimetype image/tiff is not supported"),
 
-
-def test_incorrect_version_mimetype_combinations():
+        # Give the correct MIME type, but wrong version
+        ("tests/data/text_html/valid_4.01.html",
+         "text/html", "0.0",
+         "Given version 0.0 for the mimetype text/html is not supported"),
+    ]
+)
+def test_invalid_version_mimetype_combinations(
+        filepath, mimetype_parameter, version_parameter, error):
     """
-    TODO test that ValueErrors are given from correct combination of
-    given version and mimetype
+    A mimetype can be valid and the file can be valid, but the version input
+    can be invalid.
+    This causes a value error with the correct type included in the error.
     """
-    pass
+    # Both Scraper and scrape function raise the ValueError
+    with pytest.raises(ValueError) as val_err:
+        scraper = Scraper(
+            filepath,
+            mimetype=mimetype_parameter,
+            version=version_parameter
+        )
+        scraper.scrape()
+    assert error in str(val_err)
