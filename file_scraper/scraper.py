@@ -18,7 +18,8 @@ from file_scraper.iterator import iter_detectors, iter_extractors
 from file_scraper.jhove.jhove_extractor import JHoveUtf8Extractor
 from file_scraper.logger import LOGGER
 from file_scraper.textfile.textfile_extractor import TextfileExtractor
-from file_scraper.utils import generate_metadata_dict, hexdigest
+from file_scraper.utils import (generate_metadata_dict,
+                                hexdigest,)
 
 LOSE = (None, UNAV, "")
 
@@ -165,16 +166,6 @@ class Scraper:
                 )
             self._use_detector(detector)
             self._update_filetype(detector)
-        if self._detected_mimetype != self._predefined_mimetype:
-            # Give user warning that you might not want to give the mimetype
-            # given
-            pass
-        if self._predefined_mimetype not in LOSE:
-            self._detected_mimetype = self._predefined_mimetype
-            self._kwargs["detected_mimetype"] = self._predefined_mimetype
-        if self._predefined_version not in LOSE:
-            self._detected_version = self._predefined_version
-            self._kwargs["detected_version"] = self._predefined_version
 
         if (
             MagicCharset.is_supported(self._detected_mimetype)
@@ -257,7 +248,8 @@ class Scraper:
         :param attribute_name: the name of the updated attribute.
         :param new_value: the value the attribute will be update as.
         :param to_empty: If the value is updated on top of an empty value,
-        defaults to True.
+        defaults to True. None means that it doesn't matter what the previous
+        value was.
         :param prevent_update_to_values: A list of values which cannot be
         updated to for the attribute, defaults to [None].
         :returns: None, attributes and keywordarguments will be update
