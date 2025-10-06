@@ -3,11 +3,5 @@ WARC-Type: response
 WARC-Date: 2025-10-06T10:01:00Z
 WARC-Record-ID: <urn:uuid:abcdef12-3456-7890-abcd-ef1234567890>
 Content-Type: application/http; msgtype=response
-Content-Length: 83
-
-HTTP/1.1 200 OK
-Content-Type: text/html
-
-<html><body>Hello World</body></html>
-
+Content-Length: 0
 

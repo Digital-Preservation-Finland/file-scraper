@@ -1,10 +1,13 @@
 WARC/-1.0
 WARC-Type: response
-Content-Length: 11
-WARC-Payload-Digest: sha1:2aae6c35c94fcfb415dbe95f408b9ce91ee846ed
-WARC-Date: 2019-03-06T23:32:18Z
+WARC-Date: 2025-10-06T10:01:00Z
+WARC-Record-ID: <urn:uuid:abcdef12-3456-7890-abcd-ef1234567890>
 Content-Type: application/http; msgtype=response
-WARC-Record-ID: <urn:uuid:152a2684-4068-11e9-8166-52540075dc3d>
+Content-Length: 83
 
-hello world
+HTTP/1.1 200 OK
+Content-Type: text/html
+
+<html><body>Hello World</body></html>
+
 

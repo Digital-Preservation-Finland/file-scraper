@@ -70,6 +70,7 @@ Requires:       xhtml1-dtds
 Requires:       iso-schematron-xslt1
 Requires:       libreoffice24.8-full
 Conflicts:      ffmpeg-free
+Requires:       warchaeology
 
 # Manually packaged Ghostscript and file with fixes not found in stock RHEL9
 Requires:       ghostscript-10.06

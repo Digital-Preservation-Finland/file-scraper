@@ -44,6 +44,7 @@ from file_scraper.textfile.textfile_extractor import (TextEncodingMetaExtractor,
 from file_scraper.verapdf.verapdf_extractor import VerapdfExtractor
 from file_scraper.vnu.vnu_extractor import VnuExtractor
 from file_scraper.wand.wand_extractor import WandExtractor
+from file_scraper.warchaeology.warchaeology_extractor import WarchaeologyExtractor
 from file_scraper.warctools.warctools_extractor import (WarctoolsFullExtractor,
                                                         WarctoolsExtractor)
 from file_scraper.xmllint.xmllint_extractor import XmllintExtractor
@@ -122,6 +123,7 @@ def iter_extractors(
         VerapdfExtractor,
         VnuExtractor,
         WandExtractor,
+        WarchaeologyExtractor,
         WarctoolsFullExtractor,
         WarctoolsExtractor,
         XmllintExtractor,

@@ -1,12 +1,15 @@
 """Configure py.test default values and functionality."""
+from __future__ import annotations
 
 import os
+from typing import Callable
 
-import pytest
-from tests.common import partial_message_included
 import file_scraper.shell
-from file_scraper.base import BaseMeta, BaseApparatus
+import pytest
+from file_scraper.base import BaseExtractor, BaseMeta
 from file_scraper.utils import metadata
+
+from tests.common import Correct, partial_message_included
 
 # Pylint does not understand pytest fixtures
 # pylint: disable=redefined-outer-name
@@ -38,17 +41,19 @@ def fido_cache_halting_file(tmpdir):
 
 
 @pytest.fixture(scope="function")
-def evaluate_extractor():
+def evaluate_extractor() -> Callable[
+    [BaseExtractor, Correct, bool, str | None], None
+]:
     """Provide a function to evaluate between extractor- and correct-instance's
     values.
     """
 
     def _func(
-            extractor: BaseApparatus,
-            correct,
-            eval_output=True,
-            exp_extractor_cls=None
-    ):
+        extractor: BaseExtractor,
+        correct: Correct,
+        eval_output: bool = True,
+        exp_extractor_cls: str | None = None,
+    ) -> None:
         """Make common asserts between initialized extractor and correct
             instance.
 
@@ -67,25 +72,27 @@ def evaluate_extractor():
                 assert extractor.streams, (
                     "Empty stream list resulted, possibly unexpected"
                     "predefined mimetype: "
-                    + str(extractor._predefined_mimetype))
+                    + str(extractor._predefined_mimetype)
+                )
             else:
-                assert extractor.streams, ("Streams list can't be empty")
+                assert extractor.streams, "Streams list can't be empty"
             extracted_metadata = extractor.streams[stream_index]
             for key, value in stream_metadata.items():
                 assert getattr(extracted_metadata, key)() == value, (
-                    "Expected {} to have value '{}', got '{}' instead".format(
-                        key, value, getattr(extracted_metadata, key)()
-                    )
+                    f"Expected {key} to have value '{value}', got "
+                    f"'{getattr(extracted_metadata, key)()}' instead"
                 )
 
         assert extractor.info()["class"] == exp_extractor_cls
         assert extractor.well_formed == correct.well_formed
 
         if eval_output:
-            assert partial_message_included(correct.stdout_part,
-                                            extractor.messages())
-            assert partial_message_included(correct.stderr_part,
-                                            extractor.errors())
+            assert partial_message_included(
+                correct.stdout_part, extractor.messages()
+            )
+            assert partial_message_included(
+                correct.stderr_part, extractor.errors()
+            )
 
     return _func
 

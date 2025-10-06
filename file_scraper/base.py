@@ -29,8 +29,8 @@ class BaseApparatus(metaclass=abc.ABCMeta):
         :param filename: Path to the file that is to be scraped
         """
         self.filename = filename
-        self._messages = []
-        self._errors = []
+        self._messages: list[str] = []
+        self._errors: list[str] = []
 
     def errors(self) -> list[str]:
         """Return the logged errors in a list.
@@ -232,11 +232,11 @@ class BaseExtractor(BaseApparatus, Generic[AnyMeta]):
         used to check the well-formedness of the file and well-formedness
         check is not wanted, False is returned.
 
-        :mimetype: MIME type of a file
-        :version: Version of a file. Defaults to None.
-        :check_wellformed: True for scraping with well-formedness check, False
-            for skipping the check. Defaults to True.
-        :params: dict of other parameters that can be used by overriding
+        :param mimetype: MIME type of a file
+        :param version: Version of a file. Defaults to None.
+        :param check_wellformed: True for scraping with well-formedness check,
+            False for skipping the check. Defaults to True.
+        :param params: dict of other parameters that can be used by overriding
             methods
         :returns: True if the MIME type and version are supported, False if not
         """

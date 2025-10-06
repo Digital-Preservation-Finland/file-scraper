@@ -68,7 +68,8 @@ class _FidoCachedFormats(Fido):
 
     def setup_format_cache(self) -> None:
         """Function to explicitly cache the current formats. If cache has
-        already been set, this function will not do anything."""
+        already been set, this function will not do anything.
+        """
         if not _FidoCachedFormats._use_cached:
             _FidoCachedFormats._cached_formats = self.formats
             _FidoCachedFormats._cached_puid_format_map = self.puid_format_map
