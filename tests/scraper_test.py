@@ -328,15 +328,14 @@ def test_invalid_mimetype_input(
     """
     A mimetype can be valid and the file can be valid, but the version input
     can be invalid.
-    This causes a value error with the correct type included in the error.
+    This can be found from the messages of the scraper output.
     """
-    with pytest.raises(ValueError) as val_err:
-        scraper = Scraper(filepath,
-                          mimetype=mimetype_parameter)
-        scraper.scrape()
+
+    scraper = Scraper(filepath, mimetype=mimetype_parameter)
+    scraper.scrape()
     assert ("User defined mimetype: '%s' not detected by "
             "detectors. Detectors detected a different mimetype: '%s'" % (
-                mimetype_parameter, detected_mimetype) in str(val_err))
+                mimetype_parameter, detected_mimetype) in str(scraper.info))
 
 
 @pytest.mark.parametrize(

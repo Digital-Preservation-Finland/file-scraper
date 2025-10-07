@@ -689,7 +689,6 @@ def test_given_filetype(
 
     scraper = Scraper(filename=filepath, **params)
     scraper.scrape(False)
-
     assert scraper.mimetype == expected_mimetype
     assert scraper.version == expected_version
     if expected_charset:
@@ -776,7 +775,8 @@ def test_grading(fullname, mimetype, version):
     charset = GIVEN_CHARSETS.get(fullname, None)
     if mimetype == "application/warc":
         scraper = Scraper(
-            fullname, mimetype=mimetype, charset=charset)
+            fullname, charset=charset)
+        scraper._detected_mimetype = mimetype
         scraper._detected_version = version
     else:
         scraper = Scraper(
