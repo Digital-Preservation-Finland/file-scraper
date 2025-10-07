@@ -311,6 +311,18 @@ def test_results_merging(meta_class_fx, meta_classes, wellformed):
                            scraper.info[0]["errors"]))
 
 
+def test_only_version_input():
+    """
+    Version input without mimetype doesn't make sense, since version
+    information can't be used without knowing the mimetype of the file.
+    """
+    with pytest.raises(ValueError) as err:
+        Scraper("tests/data/text_plain/valid__ascii.txt", version="10")
+    assert "Missing a mimetype parameter for the provided version 10" in str(
+        err
+    )
+
+
 @pytest.mark.parametrize(
     ["filepath", "mimetype_parameter", "detected_mimetype"],
     [("tests/data/image_tiff/valid_6.0.tif",
@@ -323,7 +335,7 @@ def test_results_merging(meta_class_fx, meta_classes, wellformed):
       "video/mpeg",
       "video/mp4"),]
 )
-def test_invalid_mimetype_input(
+def test_valid_but_invalid_combined_mimetype_input(
         filepath, mimetype_parameter, detected_mimetype):
     """
     A mimetype can be valid and the file can be valid, but the version input
