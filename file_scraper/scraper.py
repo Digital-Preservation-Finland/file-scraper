@@ -259,35 +259,35 @@ class Scraper:
         if new_value in prevent_update_to_values:
             return
 
-        if to_empty and self.__getattribute__(attribute_name) in LOSE:
+        if to_empty and getattr(self, attribute_name) in LOSE:
             LOGGER.info(
                 "Detected %s change: %s -> %s",
                 attribute_name,
-                self.__getattribute__(attribute_name),
+                getattr(self, attribute_name),
                 new_value,
             )
-            self.__setattr__(attribute_name, new_value)
+            setattr(self, attribute_name, new_value)
             self._kwargs[attribute_name[1:]] = new_value
         elif (
             not to_empty
-            and self.__getattribute__(attribute_name) not in LOSE
+            and getattr(self, attribute_name) not in LOSE
         ):
             LOGGER.info(
                 "Detected %s overwrite: %s -> %s",
                 attribute_name,
-                self.__getattribute__(attribute_name),
+                getattr(self, attribute_name),
                 new_value,
             )
-            self.__setattr__(attribute_name, new_value)
+            setattr(self, attribute_name, new_value)
             self._kwargs[attribute_name[1:]] = new_value
         elif to_empty is None:
             LOGGER.info(
                 "Detected %s overwrite/change: %s -> %s",
                 attribute_name,
-                self.__getattribute__(attribute_name),
+                getattr(self, attribute_name),
                 new_value,
             )
-            self.__setattr__(attribute_name, new_value)
+            setattr(self, attribute_name, new_value)
             self._kwargs[attribute_name[1:]] = new_value
 
     def _update_filetype(self, detector: BaseDetector) -> None:
