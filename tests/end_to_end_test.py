@@ -24,7 +24,7 @@ from file_scraper.defaults import (UNAP,
                                    ACCEPTABLE,
                                    RECOMMENDED)
 from file_scraper.scraper import Scraper
-from tests.common import get_files
+from tests.common import get_files, filter_unap
 
 # These files will result (:unav) for some elements
 # For GIFs and TIFFs with 3 images inside, the version is missing from
@@ -429,7 +429,7 @@ def test_valid_combined(fullname_filename, mimetype, version):
             fullname_filename,
             charset=scraper.streams[0].get("charset", None),
             mimetype=scraper.mimetype,
-            version=scraper.version
+            version=filter_unap(scraper.version)
         )
     # Many version and mimetype input combinations are not supported
     # as an input by the Scraper and throw Value errors instead.
@@ -440,7 +440,7 @@ def test_valid_combined(fullname_filename, mimetype, version):
             charset=scraper.streams[0].get("charset", None),
             mimetype=scraper.mimetype
         )
-        given_scraper._detected_version = scraper.version
+        given_scraper._detected_version = filter_unap(scraper.version)
 
     given_scraper.scrape()
 
@@ -527,7 +527,7 @@ def test_without_wellformed(fullname, mimetype, version):
         given_scraper = Scraper(
             fullname,
             mimetype=scraper.mimetype,
-            version=scraper.version,
+            version=filter_unap(scraper.version),
             charset=scraper.streams[0].get("charset", None))
 
     # Many version and mimetype input combinations are not supported
@@ -538,7 +538,7 @@ def test_without_wellformed(fullname, mimetype, version):
             fullname,
             mimetype=scraper.mimetype,
             charset=scraper.streams[0].get("charset", None))
-        given_scraper._detected_version = scraper.version
+        given_scraper._detected_version = filter_unap(scraper.version)
     given_scraper.scrape(False)
 
     assert given_scraper.mimetype == scraper.mimetype
@@ -777,10 +777,13 @@ def test_grading(fullname, mimetype, version):
         scraper = Scraper(
             fullname, charset=charset)
         scraper._detected_mimetype = mimetype
-        scraper._detected_version = version
+        scraper._detected_version = filter_unap(version)
     else:
         scraper = Scraper(
-            fullname, mimetype=mimetype, version=version, charset=charset)
+            fullname,
+            mimetype=mimetype,
+            version=filter_unap(version),
+            charset=charset)
 
     scraper.scrape()
 

@@ -162,3 +162,7 @@ def partial_message_included(part, messages):
     :returns: True if partial message found, False otherwise
     """
     return part == "" or any(part in message for message in messages)
+
+
+def filter_unap(val):
+    return val if val != UNAP else None

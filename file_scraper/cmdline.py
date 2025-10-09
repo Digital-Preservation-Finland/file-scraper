@@ -98,8 +98,8 @@ def scrape_file(
         ):
             raise click.BadOptionUsage("--mimetype", error)
         if (
-                "Scraper doesn't support the use of other unknown values than "
-                "(:unap) for the version parameter." in str(error)
+                "Scraper doesn't support the use of unknown values for the "
+                "version parameter." in str(error)
         ):
             raise click.BadOptionUsage("--version", error)
 

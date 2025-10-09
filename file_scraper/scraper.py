@@ -116,13 +116,10 @@ class Scraper:
                 "Scraper doesn't support the use of unknown values for "
                 "the mimetype parameter."
             )
-        if (
-            self._predefined_version in [unkn.value for unkn in UnknownValue]
-            and self._predefined_version != UnknownValue.UNAP
-        ):
+        if self._predefined_version in [unkn.value for unkn in UnknownValue]:
             raise ValueError(
-                "Scraper doesn't support the use of other unknown values than "
-                "(:unap) for the version parameter."
+                "Scraper doesn't support the use of unknown values for "
+                "the version parameter."
             )
         if not self._predefined_mimetype and self._predefined_version:
             raise ValueError(

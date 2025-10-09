@@ -84,11 +84,11 @@ def test_scraper_invalid_paths(tmp_path_factory, message: str, input: str):
     [(["--version=1.5"],
       "Missing a mimetype parameter for the provided version 1.5"),
      (["--mimetype=application/pdf", "--version=(:unav)"],
-      "Scraper doesn't support the use of other unknown values than (:unap) "
-      "for the version parameter."),
+      "Scraper doesn't support the use of unknown values for the version "
+      "parameter."),
      (["--mimetype=(:unav)"],
       "Scraper doesn't support the use of unknown values for the mimetype "
-      "parameter"),
+      "parameter."),
      (["--mimetype=application/not_supported"],
       "Given mimetype application/not_supported is not supported"),
      (["--mimetype=application/pdf", "--version=9.99"],
@@ -112,8 +112,8 @@ def test_incorrect_flags(flags: list[str], error_message: str):
 @pytest.mark.parametrize(
     "flag, output_contains",
     [
-        (["--mimetype=application/pdf", "--version=(:unap)"],
-            "Predefined version \'(:unap)\' and resulted version \'A-1a\' "
+        (["--mimetype=application/pdf", "--version=A-2u"],
+            "Predefined version \'A-2u\' and resulted version \'A-1a\' "
             "mismatch."),
         (["--tool-info"], "tool_info")
     ]
