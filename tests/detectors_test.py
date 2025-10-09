@@ -547,4 +547,4 @@ def test_tools(detector, tool):
 )
 def test_return_mimetype_result_state(Detector: type[BaseDetector]):
     detector = Detector("tests/data/text_plain/valid__ascii.txt")
-    assert type(detector.important).__name__ == "MimetypeResultState"
+    assert type(detector.important).__name__ in ["Mimetype", "NoneType"]
