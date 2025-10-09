@@ -68,12 +68,17 @@ class BaseExtractorWellFormed(BaseExtractorBasic):
     _only_wellformed = True  # Use only when checking well-formedness
 
 
-class BaseDetectorBasic(BaseDetector):
+class BaseDetectorTest(BaseDetector):
     """Basic detector."""
 
     # pylint: disable=too-few-public-methods
     def detect(self):
-        """Do not detect anything"""
+        """
+        Test detection which simply equates to assigning predefined values as
+        results.
+        """
+        self.mimetype = self._predefined_mimetype
+        self.version = self._predefined_version
 
     def tools(self):
         pass
@@ -217,14 +222,15 @@ def test_check_supported(extractor_class, mimetype, version, errors):
 
 
 def test_base_detector():
-    """Test base detector initialization."""
-    detector = BaseDetectorBasic(
-        filename=Path("testfilename"), mimetype="test/mime", version="0.0")
+    """Test base detector initialization and mimetype normalization."""
+    detector = BaseDetectorTest(
+        filename=Path("testfilename"), mimetype="TEST/MIME", version="0.0")
     assert detector.filename == Path("testfilename")
-    # pylint: disable=protected-access
-    assert detector._predefined_mimetype == "test/mime"
-
-    assert detector._predefined_version == "0.0"
+    assert detector.mimetype is None
+    assert detector.version is None
+    detector.detect()
+    assert detector.mimetype == "test/mime"
+    assert detector.version == "0.0"
 
 
 def test_tools():
