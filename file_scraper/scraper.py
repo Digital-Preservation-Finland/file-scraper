@@ -127,13 +127,8 @@ class Scraper:
                 self._predefined_version
             )
 
-        self._mimetype_and_version_validation()
+        # Validate that the mimetype and version combination
 
-    def _mimetype_and_version_validation(self):
-        """
-        Validate that the mimetype and version combination
-        """
-        # Check if mimetype is supported (and an argument):
         if self._predefined_mimetype is None:
             return  # Both checks require _predefined_mimetype to exist
 
