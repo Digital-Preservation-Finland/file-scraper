@@ -83,7 +83,7 @@ class Scraper:
         self.version = None
         self.streams = None
         self._well_formed = None
-        self.check_wellformed = True
+        self._check_wellformed = True
         self.info = {}
         self._extractor_results = []
 
@@ -327,7 +327,7 @@ class Scraper:
             self._extractor_results.append(extractor.streams)
         self.info[len(self.info)] = extractor.info()
         if (
-                (self.well_formed is None and self.check_wellformed)
+                (self.well_formed is None and self._check_wellformed)
                 or extractor.well_formed is False
         ):
             self.well_formed = extractor.well_formed
@@ -337,7 +337,7 @@ class Scraper:
         UTF-8 check only for UTF-8.
         We know the charset after actual scraping.
         """
-        if not self.check_wellformed:
+        if not self._check_wellformed:
             return
         if "charset" in self.streams[0] and \
                 self.streams[0]["charset"] == "UTF-8":
@@ -390,7 +390,7 @@ class Scraper:
             self._extractor_results.append(streams)
         self.info[len(self.info)] = info
         if (
-                (self.well_formed is None and self.check_wellformed)
+                (self.well_formed is None and self._check_wellformed)
                 or merge_well_formed is False
         ):
             self.well_formed = merge_well_formed
@@ -403,14 +403,14 @@ class Scraper:
             check.
         """
         LOGGER.info("Scraping %s", self.path)
-        self.check_wellformed = check_wellformed
+        self._check_wellformed = check_wellformed
         self._identify()
         LOGGER.debug("Mimetype after detectors: %s and version: %s",
                      self._detected_mimetype, self._detected_version)
         for extractor_class in iter_extractors(
                 mimetype=self._detected_mimetype,
                 version=self._detected_version,
-                check_wellformed=self.check_wellformed,
+                check_wellformed=self._check_wellformed,
                 params=self._kwargs):
             LOGGER.info("Scraping with %s", extractor_class.__name__)
 
