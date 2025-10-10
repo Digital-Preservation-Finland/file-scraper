@@ -151,11 +151,7 @@ class Scraper:
         for detector_class in iter_detectors():
             LOGGER.info(
                 "Detecting file type using %s", detector_class.__name__)
-            detector = detector_class(
-                self.path,
-                self._predefined_mimetype,
-                self._predefined_version
-                )
+            detector = detector_class(self.path)
             self._use_detector(detector)
             self._update_filetype(detector)
 

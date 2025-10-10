@@ -77,8 +77,9 @@ class BaseDetectorTest(BaseDetector):
         Test detection which simply equates to assigning predefined values as
         results.
         """
-        self.mimetype = self._predefined_mimetype
-        self.version = self._predefined_version
+        # Capital letters for normalization test
+        self.mimetype = "tEST/bASIC_mIMetYPE"
+        self.version = "1.0"
 
     def tools(self):
         pass
@@ -223,14 +224,11 @@ def test_check_supported(extractor_class, mimetype, version, errors):
 
 def test_base_detector():
     """Test base detector initialization and mimetype normalization."""
-    detector = BaseDetectorTest(
-        filename=Path("testfilename"), mimetype="TEST/MIME", version="0.0")
+    detector = BaseDetectorTest(filename=Path("testfilename"))
     assert detector.filename == Path("testfilename")
-    assert detector.mimetype is None
-    assert detector.version is None
     detector.detect()
-    assert detector.mimetype == "test/mime"
-    assert detector.version == "0.0"
+    assert detector.mimetype == "test/basic_mimetype"
+    assert detector.version == "1.0"
 
 
 def test_tools():

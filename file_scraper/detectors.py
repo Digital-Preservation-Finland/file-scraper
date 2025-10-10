@@ -169,17 +169,13 @@ class FidoDetector(BaseDetector):
     def __init__(
         self,
         filename: Path,
-        mimetype: str | None = None,
-        version: str | None = None,
     ) -> None:
         """
         Initialize detector.
 
         :param filename: File name of file to detect
-        :param mimetype: Mimetype from another source, e.g. METS
-        :param version: File format version from another source, e.g. METS
         """
-        super().__init__(filename, mimetype=mimetype, version=version)
+        super().__init__(filename)
         self._puid = None
 
     def detect(self) -> None:
@@ -299,13 +295,10 @@ class MagicCharset(BaseDetector):
     def __init__(
         self,
         filename: Path,
-        mimetype: str | None = None,
-        version: str | None = None,
     ) -> None:
         """Initialize detector."""
         self.charset = None
-        super().__init__(filename, mimetype=mimetype,
-                         version=version)
+        super().__init__(filename)
 
     @classmethod
     def is_supported(cls, mimetype: str | None) -> bool:

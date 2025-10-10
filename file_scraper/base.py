@@ -23,18 +23,12 @@ class BaseApparatus(metaclass=abc.ABCMeta):
     def __init__(
         self,
         filename: Path,
-        mimetype: str | None = None,
-        version: str | None = None,
     ) -> None:
         """Initialize extractor/detector.
 
         :param filename: Path to the file that is to be scraped
-        :param mimetype: Predefined mimetype
-        :param version: Predefined file format version
         """
         self.filename = filename
-        self._predefined_mimetype = mimetype
-        self._predefined_version = version
         self._messages = []
         self._errors = []
 
@@ -204,7 +198,10 @@ class BaseExtractor(BaseApparatus, Generic[AnyMeta]):
         :param version: Predefined file format version
         :param params: Extra parameters that some extractors can use.
         """
-        super().__init__(filename, mimetype, version)
+        super().__init__(filename)
+
+        self._predefined_mimetype = mimetype
+        self._predefined_version = version
         self.streams: list[AnyMeta] = []
         self._params = params if params is not None else {}
 
@@ -319,25 +316,19 @@ class BaseExtractor(BaseApparatus, Generic[AnyMeta]):
 
 
 class BaseDetector(BaseApparatus):
-    """Class to identify file format."""
+    """
+    Class to identify the mimetype and version of the file.
+    """
 
     def __init__(
         self,
         filename: Path,
-        mimetype: str | None = None,
-        version: str | None = None,
     ) -> None:
         """Initialize detector.
 
-        Detectors can use the user-supplied MIME types and versions to
-        refine or even fully determine the file format.
-
         :param filename: Path to the identified file
-        :param mimetype: The MIME type of the file from another source, e.g.
-            METS.
-        :version: Version of the file from another source, e.g. METS.
         """
-        super().__init__(filename, mimetype, version)
+        super().__init__(filename)
 
         self._mimetype = None  # Identified mimetype
         self.version = None  # Identified file version
