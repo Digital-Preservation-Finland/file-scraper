@@ -423,24 +423,12 @@ def test_valid_combined(fullname_filename, mimetype, version):
 
     # Test that output does not change if MIME type and version are given
     # to be the ones scraper would determine them to be in any case.
-
-    try:
-        given_scraper = Scraper(
-            fullname_filename,
-            charset=scraper.streams[0].get("charset", None),
-            mimetype=scraper.mimetype,
-            version=filter_unap(scraper.version)
-        )
-    # Many version and mimetype input combinations are not supported
-    # as an input by the Scraper and throw Value errors instead.
-    # Skip this validation to complete the sanity check
-    except ValueError:
-        given_scraper = Scraper(
-            fullname_filename,
-            charset=scraper.streams[0].get("charset", None),
-            mimetype=scraper.mimetype
-        )
-        given_scraper._detected_version = filter_unap(scraper.version)
+    given_scraper = Scraper(
+        fullname_filename,
+        charset=scraper.streams[0].get("charset", None),
+        mimetype=scraper.mimetype,
+        version=filter_unap(scraper.version)
+    )
 
     given_scraper.scrape()
 
@@ -523,22 +511,12 @@ def test_without_wellformed(fullname, mimetype, version):
 
     # Test that output does not change if MIME type and version are given
     # to be the ones scraper would determine them to be in any case.
-    try:
-        given_scraper = Scraper(
-            fullname,
-            mimetype=scraper.mimetype,
-            version=filter_unap(scraper.version),
-            charset=scraper.streams[0].get("charset", None))
+    given_scraper = Scraper(
+        fullname,
+        mimetype=scraper.mimetype,
+        version=filter_unap(scraper.version),
+        charset=scraper.streams[0].get("charset", None))
 
-    # Many version and mimetype input combinations are not supported
-    # inputs by the Scraper and throw Value errors instead.
-    # Skip this validation to complete the sanity check
-    except ValueError:
-        given_scraper = Scraper(
-            fullname,
-            mimetype=scraper.mimetype,
-            charset=scraper.streams[0].get("charset", None))
-        given_scraper._detected_version = filter_unap(scraper.version)
     given_scraper.scrape(False)
 
     assert given_scraper.mimetype == scraper.mimetype
@@ -773,17 +751,11 @@ def test_grading(fullname, mimetype, version):
     is explicitly listed as acceptable or unacceptable.
     """
     charset = GIVEN_CHARSETS.get(fullname, None)
-    if mimetype == "application/warc":
-        scraper = Scraper(
-            fullname, charset=charset)
-        scraper._detected_mimetype = mimetype
-        scraper._detected_version = filter_unap(version)
-    else:
-        scraper = Scraper(
-            fullname,
-            mimetype=mimetype,
-            version=filter_unap(version),
-            charset=charset)
+    scraper = Scraper(
+        fullname,
+        mimetype=mimetype,
+        version=filter_unap(version),
+        charset=charset)
 
     scraper.scrape()
 
