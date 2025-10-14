@@ -5,9 +5,9 @@ import os
 from pathlib import Path
 from typing import Any
 
-from dpres_file_formats.defaults import (UnknownValue, Grades)
+from dpres_file_formats.defaults import UnknownValue
 from dpres_file_formats.graders import (grade as file_formats_grade,
-                                        MIMEGrader)
+                                        file_formats)
 
 from file_scraper.base import BaseDetector, BaseExtractor
 from file_scraper.defaults import UNAV
@@ -127,20 +127,31 @@ class Scraper:
                 self._predefined_version
             )
 
-        # Validate that the mimetype and version combination
+        # Validate that the mimetype and version combination is allowed
 
         if self._predefined_mimetype is None:
             return  # Both checks require _predefined_mimetype to exist
 
-        if not MIMEGrader.is_supported(self._predefined_mimetype):
+        formats = file_formats(True, True)
+
+        allowed_mimetypes = map(
+            lambda f: f["mimetype"].lower(), formats
+        )
+        if self._predefined_mimetype not in allowed_mimetypes:
             raise ValueError("Given mimetype %s is not supported" %
                              self._predefined_mimetype)
 
-        if self._predefined_version is not None:
-            grader = MIMEGrader(
-                self._predefined_mimetype, self._predefined_version, {})
-            if grader.grade() is Grades.UNACCEPTABLE:
-                raise ValueError(
+        found_mimetype_version_combinations = list(filter(
+            lambda f:
+            f["mimetype"].lower() == self._predefined_mimetype.lower() and
+            f["version"] == self._predefined_version,
+            formats
+        ))
+        if (
+            len(found_mimetype_version_combinations) == 0
+            and self._predefined_version is not None
+        ):
+            raise ValueError(
                     "Given version %s for the mimetype %s is not supported" %
                     (self._predefined_version, self._predefined_mimetype)
                 )
