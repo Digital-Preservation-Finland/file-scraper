@@ -35,3 +35,30 @@ class FileIsNotScrapable(Exception):
     Exception to tell the user of the scraper that the filepath given
     is not scrapable
     """
+
+
+class DirectoryIsNotScrapable(IsADirectoryError):
+    """
+    Exception to tell the user that the given filepath leads to a directory
+    instead of a file.
+    """
+
+
+class FileNotFoundIsNotScrapable(FileNotFoundError):
+    """
+    Exception to tell the user that the file couldn't be found and that is
+    why the file cannot be scraped.
+    """
+
+
+class InvalidMimetype(ValueError):
+    """
+    Exception when mimetype is not accepted as a parameter
+    """
+
+
+class InvalidVersionForMimetype(ValueError):
+    """
+    Exception when the version is not accepted as a parameter
+    in the context of the mimetype parameter
+    """

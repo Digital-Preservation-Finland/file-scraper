@@ -13,7 +13,11 @@ from file_scraper.base import BaseDetector, BaseExtractor
 from file_scraper.defaults import UNAV
 from file_scraper.detectors import ExifToolDetector, MagicCharset
 from file_scraper.dummy.dummy_extractor import MimeMatchExtractor
-from file_scraper.exceptions import FileIsNotScrapable
+from file_scraper.exceptions import (FileIsNotScrapable,
+                                     FileNotFoundIsNotScrapable,
+                                     DirectoryIsNotScrapable,
+                                     InvalidMimetype,
+                                     InvalidVersionForMimetype,)
 from file_scraper.iterator import iter_detectors, iter_extractors
 from file_scraper.jhove.jhove_extractor import JHoveUtf8Extractor
 from file_scraper.logger import LOGGER
@@ -111,18 +115,26 @@ class Scraper:
         Validate parameters given to the scraper and
         raise proper error messages if wrong parameters
         """
-        if self._predefined_mimetype in [unkn.value for unkn in UnknownValue]:
-            raise ValueError(
+        try:
+            UnknownValue(self._predefined_mimetype)
+        except ValueError:
+            pass
+        else:
+            raise InvalidMimetype(
                 "Scraper doesn't support the use of unknown values for "
                 "the mimetype parameter."
             )
-        if self._predefined_version in [unkn.value for unkn in UnknownValue]:
-            raise ValueError(
+        try:
+            UnknownValue(self._predefined_version)
+        except ValueError:
+            pass
+        else:
+            raise InvalidVersionForMimetype(
                 "Scraper doesn't support the use of unknown values for "
                 "the version parameter."
             )
         if not self._predefined_mimetype and self._predefined_version:
-            raise ValueError(
+            raise InvalidMimetype(
                 "Missing a mimetype parameter for the provided version %s" %
                 self._predefined_version
             )
@@ -138,8 +150,8 @@ class Scraper:
             lambda f: f["mimetype"].lower(), formats
         )
         if self._predefined_mimetype not in allowed_mimetypes:
-            raise ValueError("Given mimetype %s is not supported" %
-                             self._predefined_mimetype)
+            raise InvalidMimetype("Given mimetype %s is not supported" %
+                                  self._predefined_mimetype)
 
         found_mimetype_version_combinations = list(filter(
             lambda f:
@@ -151,7 +163,7 @@ class Scraper:
             len(found_mimetype_version_combinations) == 0
             and self._predefined_version is not None
         ):
-            raise ValueError(
+            raise InvalidVersionForMimetype(
                     "Given version %s for the mimetype %s is not supported" %
                     (self._predefined_version, self._predefined_mimetype)
                 )
@@ -499,10 +511,10 @@ def _validate_path(supposed_filepath: str | bytes | os.PathLike) -> Path:
     """
     path = Path(os.fsdecode(supposed_filepath))
     if not path.exists():
-        raise FileNotFoundError(
+        raise FileNotFoundIsNotScrapable(
             "A file couldn't be found from the path: " + str(path))
     if path.is_dir():
-        raise IsADirectoryError(
+        raise DirectoryIsNotScrapable(
             "Instead of a file, a directory was found from the path: " +
             str(path)
         )

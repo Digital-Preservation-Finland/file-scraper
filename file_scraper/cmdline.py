@@ -9,7 +9,13 @@ import click
 from file_scraper.logger import LOGGER, enable_logging
 from file_scraper.schematron.schematron_scraper import SchematronScraper
 from file_scraper.scraper import Scraper
-from file_scraper.exceptions import FileIsNotScrapable
+from file_scraper.exceptions import (
+    FileIsNotScrapable,
+    DirectoryIsNotScrapable,
+    FileNotFoundIsNotScrapable,
+    InvalidMimetype,
+    InvalidVersionForMimetype,
+)
 from file_scraper.utils import ensure_text
 
 
@@ -89,39 +95,16 @@ def scrape_file(
         scraper = Scraper(filename, mimetype=mimetype, version=version,
                           **option_args)
 
-    except (FileIsNotScrapable, IsADirectoryError, FileNotFoundError) as error:
+    except (FileIsNotScrapable,
+            DirectoryIsNotScrapable,
+            FileNotFoundIsNotScrapable) as error:
         raise click.BadParameter(error, param_hint="FILENAME")
-    except ValueError as error:
-        if (
-                "Scraper doesn't support the use of unknown values for "
-                "the mimetype parameter." in str(error)
-        ):
-            raise click.BadOptionUsage("--mimetype", error)
-        if (
-                "Scraper doesn't support the use of unknown values for the "
-                "version parameter." in str(error)
-        ):
-            raise click.BadOptionUsage("--version", error)
-
-        if (
-                "Missing a mimetype parameter for the provided version"
-                in str(error)
-        ):
-            raise click.BadOptionUsage("--mimetype", error)
-        if "Given mimetype %s is not supported" % mimetype in str(error):
-            raise click.BadOptionUsage("--mimetype", error)
-        if (
-                "Given version %s for the mimetype %s is not supported" %
-                (version, mimetype) in str(error)
-        ):
-            raise click.BadOptionUsage("--version", error)
-        if (
-            "Missing a mimetype parameter for the provided version"
-            in str(error)
-        ):
-            raise click.BadOptionUsage("--mimetype", error)
-
-        LOGGER.error("Unhandled error for ValueError encountered")
+    except InvalidMimetype as error:
+        raise click.BadOptionUsage("--mimetype", error)
+    except InvalidVersionForMimetype as error:
+        raise click.BadOptionUsage("--version", error)
+    except ValueError:
+        LOGGER.error("Unhandled ValueError encountered")
         raise
 
     scraper.scrape(check_wellformed=check_wellformed)

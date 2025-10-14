@@ -27,10 +27,15 @@ from pathlib import Path
 
 import pytest
 from dpres_file_formats.defaults import Grades
+from dpres_file_formats.defaults import UnknownValue
 
 from file_scraper.scraper import Scraper
 from file_scraper.textfile.textfile_extractor import TextfileExtractor
-from file_scraper.exceptions import FileIsNotScrapable
+from file_scraper.exceptions import (FileIsNotScrapable,
+                                     FileNotFoundIsNotScrapable,
+                                     DirectoryIsNotScrapable,
+                                     InvalidMimetype,
+                                     InvalidVersionForMimetype,)
 
 
 def test_is_textfile():
@@ -267,13 +272,18 @@ class TestPathValidation:
             (
                 "missing_file",
                 "A file couldn't be found from the path: missing_file",
-                FileNotFoundError
+                FileNotFoundIsNotScrapable
             ),
             (
                 "/dev/null",
                 "The file is not a regular file and can't be scraped from"
                 + " the path: /dev/null",
                 FileIsNotScrapable
+            ),
+            (
+                "/",
+                "Instead of a file, a directory was found from the path: /",
+                DirectoryIsNotScrapable
             )
         ]
     )
@@ -311,12 +321,27 @@ def test_results_merging(meta_class_fx, meta_classes, wellformed):
                            scraper.info[0]["errors"]))
 
 
+@pytest.mark.parametrize(
+    ["parameters", "error"],
+    [
+        ({"mimetype": UnknownValue.UNAL}, InvalidMimetype),
+        (
+            {"mimetype": "text/plain", "version": UnknownValue.UNAV},
+            InvalidVersionForMimetype,
+        ),
+    ],
+)
+def test_invalid_unknown_parameters(parameters, error):
+    with pytest.raises(error):
+        Scraper("tests/data/text_plain/valid__ascii.txt", **parameters)
+
+
 def test_only_version_input():
     """
     Version input without mimetype doesn't make sense, since version
     information can't be used without knowing the mimetype of the file.
     """
-    with pytest.raises(ValueError) as err:
+    with pytest.raises(InvalidMimetype) as err:
         Scraper("tests/data/text_plain/valid__ascii.txt", version="10")
     assert "Missing a mimetype parameter for the provided version 10" in str(
         err
@@ -373,7 +398,7 @@ def test_invalid_version_mimetype_combinations(
     This causes a value error with the correct type included in the error.
     """
     # Both Scraper and scrape function raise the ValueError
-    with pytest.raises(ValueError) as val_err:
+    with pytest.raises(InvalidVersionForMimetype) as val_err:
         scraper = Scraper(
             filepath,
             mimetype=mimetype_parameter,
