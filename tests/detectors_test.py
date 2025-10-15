@@ -257,9 +257,9 @@ def test_important_pdf_dng(filepath, important):
     detector.detect()
     if important:
         if detector.mimetype == "application/pdf":
-            assert detector.important.version is not None
+            assert detector.determine_important().version is not None
     else:
-        assert not detector.important
+        assert not detector.determine_important()
 
 
 @pytest.mark.parametrize(
@@ -280,10 +280,10 @@ def test_important_other(detector_class: type[BaseDetector], mimetype):
     detector = detector_class(Path("testfilename"))
     detector.mimetype = mimetype
     if detector_class == FidoDetector:
-        assert not detector.important
+        assert not detector.determine_important()
     else:
-        assert detector.important.mimetype == mimetype
-        assert detector.important.version is None
+        assert detector.determine_important().mimetype == mimetype
+        assert detector.determine_important().version is None
 
 
 @pytest.mark.parametrize(
@@ -547,4 +547,4 @@ def test_tools(detector, tool):
 )
 def test_return_mimetype_result_state(Detector: type[BaseDetector]):
     detector = Detector("tests/data/text_plain/valid__ascii.txt")
-    assert type(detector.important).__name__ in ["Mimetype", "NoneType"]
+    assert type(detector.determine_important()).__name__ in ["Mimetype", "NoneType"]

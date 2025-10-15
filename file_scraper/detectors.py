@@ -186,8 +186,7 @@ class FidoDetector(BaseDetector):
         self.version = fido.version
         self._puid = fido.puid
 
-    @property
-    def important(self) -> Mimetype | None:
+    def determine_important(self) -> Mimetype | None:
         """
         Return important mime types.
 
@@ -257,8 +256,7 @@ class MagicDetector(BaseDetector):
                 )
                 self.mimetype = "video/dv"
 
-    @property
-    def important(self) -> Mimetype | None:
+    def determine_important(self) -> Mimetype | None:
         """
         Important mime types.
 
@@ -402,8 +400,7 @@ class ExifToolDetector(BaseDetector):
             "detection could not be performed by this tool"
         )
 
-    @property
-    def important(self) -> Mimetype | None:
+    def determine_important(self) -> Mimetype | None:
         """
         If ExifTool detector determines the mimetype as dng, it is marked as
         important. This is to make sure that this result overrides other
@@ -548,8 +545,7 @@ class SegYDetector(BaseDetector):
                 "not be detected."
             )
 
-    @property
-    def important(self) -> Mimetype | None:
+    def determine_important(self) -> Mimetype | None:
         """
         If SegYDetector determines the mimetype as SEG-Y, the mimetype
         and version are marked as important. This is to make sure that
@@ -590,8 +586,7 @@ class AtlasTiDetector(BaseDetector):
             self.mimetype = "application/x.fi-dpres.atlproj"
             self.version = UNAP
 
-    @property
-    def important(self) -> Mimetype | None:
+    def determine_important(self) -> Mimetype | None:
         """
         If AtlasTiDetector determines the mimetype as x.fi-dpres.atlproj,
         the mimetype and version are marked as important. This is to make
@@ -650,8 +645,7 @@ class SiardDetector(BaseDetector):
                     self.version = version
                     break
 
-    @property
-    def important(self) -> Mimetype | None:
+    def determine_important(self) -> Mimetype | None:
         """
         If SiardDetector determines the mimetype as SIARD, the mimetype
         and version are marked as important. This is to make sure that
@@ -746,8 +740,7 @@ class ODFDetector(BaseDetector):
         self.mimetype = detected_mimetype
         self.version = detected_version
 
-    @property
-    def important(self) -> Mimetype | None:
+    def determine_important(self) -> Mimetype | None:
         """Return dict of important values determined by the detector.
 
         Mimetype and format version are important because other
@@ -821,8 +814,7 @@ class EpubDetector(BaseDetector):
             self.mimetype = "application/epub+zip"
             self.version = "3"
 
-    @property
-    def important(self) -> Mimetype | None:
+    def determine_important(self) -> Mimetype | None:
         """
         If EpubDetector determines the mimetype as EPUB, the mimetype
         and version are marked as important.

@@ -239,7 +239,7 @@ class Scraper:
             "%s detected MIME type: %s, version: %s, important: %s, "
             "well-formed: %s",
             detector.__class__.__name__, detector.mimetype, detector.version,
-            detector.important, detector.well_formed
+            detector.determine_important(), detector.well_formed
         )
 
         if detector.well_formed is False:
@@ -314,20 +314,20 @@ class Scraper:
         self._update_attributes(
             "_detected_mimetype",
             detector.mimetype,)
-        if detector.important:
+        if detector.determine_important():
             self._update_attributes(
                 "_detected_mimetype",
-                detector.important.mimetype,
+                detector.determine_important().mimetype,
                 to_empty=False)
         # If mimetype matches the detected one, update the version.
         if self._detected_mimetype == detector.mimetype:
             self._update_attributes(
                 "_detected_version",
                 detector.version,)
-            if detector.important:
+            if detector.determine_important():
                 self._update_attributes(
                     "_detected_version",
-                    detector.important.version,
+                    detector.determine_important().version,
                     to_empty=False)
 
     def _use_extractor(self, extractor: BaseExtractor) -> None:

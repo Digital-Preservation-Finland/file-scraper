@@ -332,7 +332,6 @@ class BaseDetector(BaseApparatus):
 
         self._mimetype = None  # Identified mimetype
         self.version = None  # Identified file version
-        self._important = Mimetype(None, None)
 
     @property
     def well_formed(self) -> Literal[False] | None:
@@ -348,10 +347,10 @@ class BaseDetector(BaseApparatus):
     def detect(self) -> None:
         """Detect file. Must be implemented in detectors."""
 
-    @property
-    def important(self) -> Mimetype | None:
+    def determine_important(self) -> Mimetype | None:
         """
-        Return important mimetype and version in a Mimetype.
+        Used to replace existing mimetype with a more important result.
+        :returns: an important Mimetype or None.
         """
         return None
 
