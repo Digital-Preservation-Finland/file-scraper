@@ -5,7 +5,6 @@ import os
 from pathlib import Path
 from typing import Any
 
-from dpres_file_formats.defaults import UnknownValue
 from dpres_file_formats.graders import (grade as file_formats_grade,
                                         file_formats)
 
@@ -115,24 +114,7 @@ class Scraper:
         Validate parameters given to the scraper and
         raise proper error messages if wrong parameters
         """
-        try:
-            UnknownValue(self._predefined_mimetype)
-        except ValueError:
-            pass
-        else:
-            raise InvalidMimetype(
-                "Scraper doesn't support the use of unknown values for "
-                "the mimetype parameter."
-            )
-        try:
-            UnknownValue(self._predefined_version)
-        except ValueError:
-            pass
-        else:
-            raise InvalidVersionForMimetype(
-                "Scraper doesn't support the use of unknown values for "
-                "the version parameter."
-            )
+
         if not self._predefined_mimetype and self._predefined_version:
             raise InvalidMimetype(
                 "Missing a mimetype parameter for the provided version %s" %

@@ -84,11 +84,10 @@ def test_scraper_invalid_paths(tmp_path_factory, message: str, input: str):
     [(["--version=1.5"],
       "Missing a mimetype parameter for the provided version 1.5"),
      (["--mimetype=application/pdf", "--version=(:unav)"],
-      "Scraper doesn't support the use of unknown values for the version "
-      "parameter."),
+      "Given version (:unav) for the mimetype application/pdf"
+      " is not supported"),
      (["--mimetype=(:unav)"],
-      "Scraper doesn't support the use of unknown values for the mimetype "
-      "parameter."),
+      "Given mimetype (:unav) is not supported"),
      (["--mimetype=application/not_supported"],
       "Given mimetype application/not_supported is not supported"),
      (["--mimetype=application/pdf", "--version=9.99"],

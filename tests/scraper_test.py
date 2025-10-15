@@ -332,8 +332,9 @@ def test_results_merging(meta_class_fx, meta_classes, wellformed):
     ],
 )
 def test_invalid_unknown_parameters(parameters, error):
-    with pytest.raises(error):
+    with pytest.raises(error) as err:
         Scraper("tests/data/text_plain/valid__ascii.txt", **parameters)
+    assert err.type is error
 
 
 def test_only_version_input():
