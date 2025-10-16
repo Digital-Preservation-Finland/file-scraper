@@ -23,9 +23,9 @@ from file_scraper.defaults import (
     UNKN,
     VERSION_DICT,
 )
-from file_scraper.state import Mimetype
 from file_scraper.logger import LOGGER
 from file_scraper.magiclib import magic_analyze, magiclib, magiclib_version
+from file_scraper.state import Mimetype
 from file_scraper.utils import is_zipfile, normalize_charset
 
 
@@ -214,7 +214,6 @@ class FidoDetector(BaseDetector):
 
         :returns: A dict possibly containing key "mimetype"
         """
-
         arc_or_formula = self._puid in ["fmt/471", "fmt/100"]
         nonstandard_mimetype = self.mimetype not in {
             None,
@@ -224,6 +223,7 @@ class FidoDetector(BaseDetector):
 
         if arc_or_formula or nonstandard_mimetype:
             return Mimetype(self.mimetype, None)
+        return None
 
     def tools(self) -> dict:
         """Return information about the software used by the extractor or
@@ -294,6 +294,7 @@ class MagicDetector(BaseDetector):
         """
         if self.mimetype in ["application/vnd.oasis.opendocument.formula"]:
             return Mimetype(self.mimetype, None)
+        return None
 
     def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
@@ -435,8 +436,9 @@ class ExifToolDetector(BaseDetector):
         """
         if self.mimetype in ["image/x-adobe-dng"]:
             return Mimetype(self.mimetype, None)
-        elif self.mimetype and self.version:
+        if self.mimetype and self.version:
             return Mimetype(self.mimetype, self.version)
+        return None
 
     def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
@@ -581,6 +583,7 @@ class SegYDetector(BaseDetector):
         """
         if self.mimetype in ["application/x.fi-dpres.segy"]:
             return Mimetype(self.mimetype, self.version)
+        return None
 
     def tools(self) -> dict:
         """Return information about the software used by the extractor or
@@ -622,6 +625,7 @@ class AtlasTiDetector(BaseDetector):
         """
         if self.mimetype in ["application/x.fi-dpres.atlproj"]:
             return Mimetype(self.mimetype, self.version)
+        return None
 
     def tools(self) -> dict:
         """Return information about the software used by the extractor or
@@ -681,6 +685,7 @@ class SiardDetector(BaseDetector):
         """
         if self.mimetype in ["application/x-siard"]:
             return Mimetype(self.mimetype, self.version)
+        return None
 
     def tools(self) -> dict:
         """Return information about the software used by the extractor or
@@ -848,6 +853,7 @@ class EpubDetector(BaseDetector):
         """
         if self.mimetype in ["application/epub+zip"]:
             return Mimetype(self.mimetype, self.version)
+        return None
 
     def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
