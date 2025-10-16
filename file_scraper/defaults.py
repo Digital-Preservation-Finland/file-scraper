@@ -1,5 +1,24 @@
 """Common constants and dictionaries."""
 
+from dpres_file_formats.defaults import Grades, UnknownValue
+
+UNAC = UnknownValue.UNAC.value
+UNAL = UnknownValue.UNAL.value
+UNAP = UnknownValue.UNAP.value
+UNAS = UnknownValue.UNAS.value
+UNAV = UnknownValue.UNAV.value
+UNKN = UnknownValue.UNKN.value
+UVNONE = UnknownValue.UVNONE.value
+UVNULL = UnknownValue.UVNULL.value
+TBA = UnknownValue.TBA.value
+ETAL = UnknownValue.ETAL.value
+
+RECOMMENDED = Grades.RECOMMENDED.value
+ACCEPTABLE = Grades.ACCEPTABLE.value
+BIT_LEVEL_WITH_RECOMMENDED = Grades.WITH_RECOMMENDED.value
+BIT_LEVEL = Grades.BIT_LEVEL.value
+UNACCEPTABLE = Grades.UNACCEPTABLE.value
+
 # Prioritize these pronom codes in identification.
 # fmt/289 could possibly be removed when fmt/1355 is known by FIDO.
 PRIORITY_PRONOM = [
@@ -40,7 +59,7 @@ VERSION_DICT = {
                         "2a": "A-2a", "2b": "A-2b", "2u": "A-2u",
                         "3a": "A-3a", "3b": "A-3b", "3u": "A-3u"},
     "audio/x-wav": {"2 Generic": "2"},
-    "audio/ac3": {None: "(:unap)"}
+    "audio/ac3": {None: UNAP},
 }
 
 # Dict between detectors' pronom results and known mimetypes and versions.
@@ -60,20 +79,3 @@ PRONOM_DICT = {
     "x-fmt/385": ("video/mp1s", ""),
     "x-fmt/386": ("video/mp2p", ""),
 }
-
-# (:unap) = Not applicable, makes no sense
-# (:unav) = Value unavailable, possibly unknown
-# (:unac) = Temporarily inaccessible
-# See: https://digitalpreservation.fi/support/vocabularies#Tuntemattomatarvot
-UNAP = "(:unap)"
-UNAV = "(:unav)"
-UNKN = "(:unkn)"
-UNAC = "(:unac)"
-
-# Digital preservation grading
-RECOMMENDED = "fi-dpres-recommended-file-format"
-ACCEPTABLE = "fi-dpres-acceptable-file-format"
-BIT_LEVEL_WITH_RECOMMENDED \
-    = "fi-dpres-bit-level-file-format-with-recommended"
-BIT_LEVEL = "fi-dpres-bit-level-file-format"
-UNACCEPTABLE = "fi-dpres-unacceptable-file-format"
