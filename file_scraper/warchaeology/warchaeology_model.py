@@ -41,27 +41,3 @@ class WarchaeologyMeta(BaseMeta):
         if lines and lines[0].startswith("WARC/"):
             return lines[0].split("/")[1].strip()
         return UNAV
-
-    @classmethod
-    def is_supported(
-        cls,
-        mimetype: str | None,
-        version: str | None = None,
-        params: dict | None = None,
-    ) -> bool:
-        """
-        Report whether this model supports the given MIME type and version.
-
-        :param mimetype: MIME type to be checked
-        :param version: Version to be checked, defaults to None
-        :param params: Parameter dict that can be used by some metadata models.
-        :returns: True if MIME type is supported and all versions are allowed
-            or the version is supported too.
-        """
-        if mimetype not in cls._supported:
-            return False
-        # Warchaeology cannot read WARC files without version information,
-        # so None is not considered a valid version
-        return (
-            version in cls._supported[mimetype] or cls._allow_versions
-        )
