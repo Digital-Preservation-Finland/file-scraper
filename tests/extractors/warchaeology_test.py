@@ -34,7 +34,15 @@ from tests.common import parse_results, partial_message_included
         (
             "valid_1.0_.warc.gz",
             {
-                "purpose": "Test valid compressed file.",
+                "purpose": "Test valid compressed 1.0 file.",
+                "stdout_part": "",
+                "stderr_part": ""
+            }
+        ),
+        (
+            "valid_1.1_.warc.gz",
+            {
+                "purpose": "Test valid compressed 1.1 file.",
                 "stdout_part": "",
                 "stderr_part": ""
             }
@@ -85,6 +93,14 @@ from tests.common import parse_results, partial_message_included
                 "purpose": "Test non-WARC file.",
                 "stdout_part": "",
                 "stderr_part": "Not a WARC file"
+            }
+        ),
+                (
+            "invalid_1.0_too_short_content_length.warc",
+            {
+                "purpose": "Test file with too short content-length field.",
+                "stdout_part": "",
+                "stderr_part": "missing line separator at end of http headers"
             }
         )
     ],
