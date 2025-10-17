@@ -5,24 +5,28 @@ import os
 from pathlib import Path
 from typing import Any
 
-from dpres_file_formats.graders import (grade as file_formats_grade,
-                                        file_formats)
+from dpres_file_formats.graders import file_formats
+from dpres_file_formats.graders import grade as file_formats_grade
 
 from file_scraper.base import BaseDetector, BaseExtractor
 from file_scraper.defaults import UNAV
 from file_scraper.detectors import ExifToolDetector, MagicCharset
 from file_scraper.dummy.dummy_extractor import MimeMatchExtractor
-from file_scraper.exceptions import (FileIsNotScrapable,
-                                     FileNotFoundIsNotScrapable,
-                                     DirectoryIsNotScrapable,
-                                     InvalidMimetype,
-                                     InvalidVersionForMimetype,)
+from file_scraper.exceptions import (
+    DirectoryIsNotScrapable,
+    FileIsNotScrapable,
+    FileNotFoundIsNotScrapable,
+    InvalidMimetype,
+    InvalidVersionForMimetype,
+)
 from file_scraper.iterator import iter_detectors, iter_extractors
 from file_scraper.jhove.jhove_extractor import JHoveUtf8Extractor
 from file_scraper.logger import LOGGER
 from file_scraper.textfile.textfile_extractor import TextfileExtractor
-from file_scraper.utils import (generate_metadata_dict,
-                                hexdigest,)
+from file_scraper.utils import (
+    generate_metadata_dict,
+    hexdigest,
+)
 
 LOSE = (None, UNAV, "")
 
@@ -66,15 +70,16 @@ class Scraper:
         return os.fsencode(self.path)
 
     @property
-    def well_formed(self) -> bool:
+    def well_formed(self) -> bool | None:
         return self._well_formed
 
     @well_formed.setter
-    def well_formed(self, value: bool) -> None:
+    def well_formed(self, value: bool | None) -> None:
         if self._well_formed is False and value is not False:
             raise ValueError(
                 "Well_formedness cannot be changed to any other value after "
-                "getting set as False.")
+                "getting set as False."
+            )
         self._well_formed = value
 
     # TODO move initialization to init if detect_filetype no longer needs to
@@ -114,11 +119,10 @@ class Scraper:
         Validate parameters given to the scraper and
         raise proper error messages if wrong parameters
         """
-
         if not self._predefined_mimetype and self._predefined_version:
             raise InvalidMimetype(
-                "Missing a mimetype parameter for the provided version %s" %
-                self._predefined_version
+                "Missing a mimetype parameter for the provided version "
+                + self._predefined_version
             )
 
         # Validate that the mimetype and version combination is allowed
@@ -128,12 +132,11 @@ class Scraper:
 
         formats = file_formats(True, True)
 
-        allowed_mimetypes = map(
-            lambda f: f["mimetype"].lower(), formats
-        )
+        allowed_mimetypes = (f["mimetype"].lower() for f in formats)
         if self._predefined_mimetype not in allowed_mimetypes:
-            raise InvalidMimetype("Given mimetype %s is not supported" %
-                                  self._predefined_mimetype)
+            raise InvalidMimetype(
+                f"Given mimetype {self._predefined_mimetype} is not supported"
+            )
 
         found_mimetype_version_combinations = list(filter(
             lambda f:
@@ -146,16 +149,16 @@ class Scraper:
             and self._predefined_version is not None
         ):
             raise InvalidVersionForMimetype(
-                    "Given version %s for the mimetype %s is not supported" %
-                    (self._predefined_version, self._predefined_mimetype)
-                )
+                f"Given version {self._predefined_version} for the mimetype "
+                f"{self._predefined_mimetype} is not supported"
+            )
 
     def _identify(self) -> None:
         """Identify file format and version."""
-
         for detector_class in iter_detectors():
             LOGGER.info(
-                "Detecting file type using %s", detector_class.__name__)
+                "Detecting file type using %s", detector_class.__name__
+            )
             detector = detector_class(self.path)
             self._use_detector(detector)
             self._update_filetype(detector)
@@ -229,25 +232,26 @@ class Scraper:
         self.info[len(self.info)] = detector.info()
 
     def _update_attributes(
-            self,
-            attribute_name: str,
-            new_value: str,
-            to_empty: bool | None = True,
-            prevent_update_to_values: list = [None]) -> None:
+        self,
+        attribute_name: str,
+        new_value: Any,
+        to_empty: bool | None = True,
+        prevent_update_to_values: list | tuple | None = None,
+    ) -> None:
         """
         Updates an attribute and the kwarg argument associated with the
         attribute.
 
-        :param attribute_name: the name of the updated attribute.
-        :param new_value: the value the attribute will be update as.
-        :param to_empty: If the value is updated on top of an empty value,
-        defaults to True. None means that it doesn't matter what the previous
-        value was.
-        :param prevent_update_to_values: A list of values which cannot be
-        updated to for the attribute, defaults to [None].
-        :returns: None, attributes and keywordarguments will be update
-        in_place.
+        :param attribute_name: The name of the updated attribute.
+        :param new_value: The value the attribute will be update as.
+        :param to_empty: Update only if the current value is considered empty,
+            defaults to True. If None, always update regardless of the current
+            value.
+        :param prevent_update_to_values: A list or tuple of values which cannot
+            be updated to for the attribute, defaults to None.
         """
+        if prevent_update_to_values is None:
+            prevent_update_to_values = [None]
 
         if new_value in prevent_update_to_values:
             return
@@ -261,10 +265,7 @@ class Scraper:
             )
             setattr(self, attribute_name, new_value)
             self._kwargs[attribute_name[1:]] = new_value
-        elif (
-            not to_empty
-            and getattr(self, attribute_name) not in LOSE
-        ):
+        elif not to_empty and getattr(self, attribute_name) not in LOSE:
             LOGGER.info(
                 "Detected %s overwrite: %s -> %s",
                 attribute_name,
@@ -295,22 +296,27 @@ class Scraper:
         # Update mimetype
         self._update_attributes(
             "_detected_mimetype",
-            detector.mimetype,)
-        if detector.determine_important():
+            detector.mimetype,
+        )
+        important = detector.determine_important()
+        if important:
             self._update_attributes(
                 "_detected_mimetype",
-                detector.determine_important().mimetype,
-                to_empty=False)
+                important.mimetype,
+                to_empty=False,
+            )
         # If mimetype matches the detected one, update the version.
         if self._detected_mimetype == detector.mimetype:
             self._update_attributes(
                 "_detected_version",
-                detector.version,)
-            if detector.determine_important():
+                detector.version,
+            )
+            if important:
                 self._update_attributes(
                     "_detected_version",
-                    detector.determine_important().version,
-                    to_empty=False)
+                    important.version,
+                    to_empty=False,
+                )
 
     def _use_extractor(self, extractor: BaseExtractor) -> None:
         """
@@ -333,18 +339,17 @@ class Scraper:
         UTF-8 check only for UTF-8.
         We know the charset after actual scraping.
         """
-        if not self._check_wellformed:
+        if not self._check_wellformed or self.streams is None:
             return
-        if "charset" in self.streams[0] and \
-                self.streams[0]["charset"] == "UTF-8":
-            scraper = JHoveUtf8Extractor(filename=self.path,
-                                         mimetype=UNAV)
+        if (
+            "charset" in self.streams[0]
+            and self.streams[0]["charset"] == "UTF-8"
+        ):
+            scraper = JHoveUtf8Extractor(filename=self.path, mimetype=UNAV)
             self._use_extractor(scraper)
 
     def _check_mime(self) -> None:
-        """
-        Check that predefined mimetype and resulted mimetype match.
-        """
+        """Check that predefined mimetype and resulted mimetype match."""
         version = None
         if (ver := self._kwargs.get("version")) not in LOSE:
             version = ver
@@ -352,9 +357,12 @@ class Scraper:
             filename=self.path,
             mimetype=self._detected_mimetype,
             version=version,
-            params={"mimetype": self.mimetype,
-                    "version": self.version,
-                    "well_formed": self.well_formed})
+            params={
+                "mimetype": self.mimetype,
+                "version": self.version,
+                "well_formed": self.well_formed,
+            },
+        )
         self._use_extractor(scraper)
 
     def _merge_results(self) -> None:
@@ -386,9 +394,8 @@ class Scraper:
             self._extractor_results.append(streams)
         self.info[len(self.info)] = info
         if (
-                (self.well_formed is None and self._check_wellformed)
-                or merge_well_formed is False
-        ):
+            self.well_formed is None and self._check_wellformed
+        ) or merge_well_formed is False:
             self.well_formed = merge_well_formed
         self.streams = streams
 
@@ -401,27 +408,33 @@ class Scraper:
         LOGGER.info("Scraping %s", self.path)
         self._check_wellformed = check_wellformed
         self._identify()
-        LOGGER.debug("Mimetype after detectors: %s and version: %s",
-                     self._detected_mimetype, self._detected_version)
+        LOGGER.debug(
+            "Mimetype after detectors: %s and version: %s",
+            self._detected_mimetype,
+            self._detected_version,
+        )
         for extractor_class in iter_extractors(
-                mimetype=self._detected_mimetype,
-                version=self._detected_version,
-                check_wellformed=self._check_wellformed,
-                params=self._kwargs):
+            mimetype=self._detected_mimetype,
+            version=self._detected_version,
+            check_wellformed=self._check_wellformed,
+            params=self._kwargs,
+        ):
             LOGGER.info("Scraping with %s", extractor_class.__name__)
 
             extractor = extractor_class(
                 filename=self.path,
                 mimetype=self._detected_mimetype,
                 version=self._detected_version,
-                params=self._kwargs)
+                params=self._kwargs,
+            )
             self._use_extractor(extractor)
             if extractor.streams:
                 LOGGER.debug(
                     "Extractor produced a stream with mimetype: %s and "
                     "version: %s",
                     extractor.streams[0].mimetype(),
-                    extractor.streams[0].version())
+                    extractor.streams[0].version(),
+                )
 
         self._kwargs["extractor_results"] = self._extractor_results
         self._merge_results()
@@ -494,11 +507,12 @@ def _validate_path(supposed_filepath: str | bytes | os.PathLike) -> Path:
     path = Path(os.fsdecode(supposed_filepath))
     if not path.exists():
         raise FileNotFoundIsNotScrapable(
-            "A file couldn't be found from the path: " + str(path))
+            "A file couldn't be found from the path: " + str(path)
+        )
     if path.is_dir():
         raise DirectoryIsNotScrapable(
-            "Instead of a file, a directory was found from the path: " +
-            str(path)
+            "Instead of a file, a directory was found from the path: "
+            + str(path)
         )
     if not path.is_file():
         raise FileIsNotScrapable(

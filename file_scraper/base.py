@@ -83,7 +83,7 @@ class BaseApparatus(metaclass=abc.ABCMeta):
         }
 
 
-class BaseMeta():
+class BaseMeta:
     """
     All metadata is formalized in common data model.
 
@@ -316,9 +316,7 @@ class BaseExtractor(BaseApparatus, Generic[AnyMeta]):
 
 
 class BaseDetector(BaseApparatus):
-    """
-    Class to identify the mimetype and version of the file.
-    """
+    """Class to identify the mimetype and version of the file."""
 
     def __init__(
         self,
