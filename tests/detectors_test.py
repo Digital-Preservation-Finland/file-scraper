@@ -64,8 +64,11 @@ CHANGE_FIDO = {
     "application_mxf/valid__jpeg2000.mxf": None,
     "application_mxf/valid__jpeg2000_grayscale.mxf": None,
     "application_mxf/valid__jpeg2000_lossless.mxf": None,
+    "application_json/valid__.json": None,
+    "application_json/valid__ugly.json": None,
+    "application_json/valid__empty_object.json": None,
     "application_mxf/valid__jpeg2000_lossless-wavelet_lossy-"
-    "subsampling.mxf": None,
+        "subsampling.mxf": None,
     "text_csv/valid__ascii.csv": None,
     "text_csv/valid__quotechar.csv": None,
     "text_csv/valid__ascii_header.csv": None,
@@ -82,7 +85,6 @@ CHANGE_FIDO = {
     "video_x-ms-asf/valid__vc1.wmv": None,
     "video_x-ms-asf/valid__vc1_wma9.wmv": None,
     "image_x-dpx/valid_1.0_just_version_change_from_2.0.dpx": None,
-    "text_plain/valid__should_scrape_as_plain_text.json": None,
     "audio_mp4/valid__aac.m4a": None,
     "image_webp/valid__lossless.webp": None,
     "image_webp/valid__lossy.webp": None

@@ -265,8 +265,6 @@ class MagicDetector(BaseDetector):
             self.mimetype = MIMETYPE_DICT[mimetype]
         else:
             self.mimetype = str(mimetype)
-        if mimetype == "application/json":
-            self.mimetype = "text/plain"
 
         # DV detection with unpatched file library
         mime_check = mimetype == "application/octet-stream"
@@ -315,6 +313,7 @@ class MagicCharset(BaseDetector):
                   "text/csv",
                   "text/html",
                   "text/xml",
+                  "application/json",
                   "application/xhtml+xml"]
 
     def __init__(
