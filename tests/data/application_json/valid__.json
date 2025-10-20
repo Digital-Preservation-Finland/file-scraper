@@ -1,0 +1,28 @@
+{
+    "key": "value",
+    "test123": "is a valid key",
+    "the_greek_alphabet": "Α α, Β β, Γ γ, Δ δ, Ε ε, Ζ ζ, Η η, Θ θ, Ι ι, Κ κ, Λ λ, Μ μ, Ν ν, Ξ ξ, Ο ο, Π π, Ρ ρ, Σ σ ς, Τ τ, Υ υ, Φ φ, Χ χ, Ψ ψ, Ω ω",
+    "list": [
+        {
+            "member": "first"
+        },
+        {
+            "member": "second",
+            "age": 20,
+            "nested_listing_works": [
+                {
+                    "opinion": "Cakes are awesome"
+                },
+                {
+                    "opinion": "Ice cream is almost as good"
+                }
+            ]
+        },
+        {
+            "comment": "empty objects are also valid list items",
+            "comment2": "objects don't have to share any keys with other list objects"
+        },
+        {}
+    ],
+    "empty_list_is_allowed": []
+}

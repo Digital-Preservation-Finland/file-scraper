@@ -1,0 +1,22 @@
+{
+                "key": "value", "test123": "is a valid key",
+    "list": [{
+            "member": "first"
+        },
+        {
+"member": "second", "age": 20,                  "nested_listing_works": [
+        {
+                "opinion": "Cakes are awesome"
+                        },
+                    {
+                    "opinion": "Ice cream is almost as good"
+                }
+               ]
+        }    ,
+    {
+                            "comment": "empty objects are also valid list items",
+    "comment2": "objects don't have to share any keys with other list objects"
+        }              ,
+        {            }
+    ],
+            "empty_list_is_allowed": []        }
