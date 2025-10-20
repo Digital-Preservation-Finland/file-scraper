@@ -93,6 +93,15 @@ class TextFileMagicMeta(TextMagicBaseMeta):
         return UNAV
 
 
+class JsonMagicMeta(TextMagicBaseMeta):
+    _supported = {"application/json": []}
+
+    @metadata()
+    def version(self):
+        """Return version."""
+        return UNAP
+
+
 class XmlFileMagicMeta(TextMagicBaseMeta):
     """Metadata model for xml files."""
 
