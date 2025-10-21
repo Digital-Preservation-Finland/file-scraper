@@ -1,6 +1,5 @@
 """Extractor for various binary and text file formats."""
 
-import os
 from typing import TypeVar
 
 from file_scraper.magiclib import magiclib, magic_analyze, magiclib_version
@@ -67,9 +66,6 @@ class MagicBaseExtractor(BaseExtractor[MagicMetaT]):
 
     def extract(self) -> None:
         """Populate streams with supported metadata objects."""
-        if not os.path.exists(self.filename):
-            self._errors.append("File not found.")
-            return
 
         magic_result = self._magic_call()
 
