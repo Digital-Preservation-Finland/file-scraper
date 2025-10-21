@@ -580,8 +580,5 @@ def test_compressed_pdf():
     detector = ExifToolDetector(path)
     detector.detect()
     assert detector.mimetype == "application/pdf"
-    # FIXME: The file should be detected as PDF-A
-    assert detector.version is None
-    assert detector.messages()[0] == ("INFO: File is not PDF/A, so PDF/A"
-                                      " validation will not be performed"
-                                      " when validating the file")
+    assert detector.version == "A-1b"
+    assert detector.messages()[0] == "PDF/A version detected by Exiftool."
