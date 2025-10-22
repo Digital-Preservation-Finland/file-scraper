@@ -8,8 +8,7 @@ from file_scraper.base import BaseExtractor
 from file_scraper.defaults import UNAC, UNAV
 from file_scraper.logger import LOGGER
 from file_scraper.shell import Shell
-from file_scraper.warctools.warctools_model import (GzipWarctoolsMeta,
-                                                    WarctoolsMeta)
+from file_scraper.warctools.warctools_model import WarctoolsMeta
 
 
 class WarctoolsExtractor(BaseExtractor[WarctoolsMeta]):
@@ -138,7 +137,7 @@ class WarctoolsFullExtractor(WarctoolsExtractor):
 class GzipWarctoolsExtractor(WarctoolsFullExtractor):
     """Extractor for compressed Warcs."""
 
-    _supported_metadata = [GzipWarctoolsMeta]
+    _supported_metadata = [WarctoolsMeta]
     _only_wellformed = True  # Only well-formed check
 
     def info(self):

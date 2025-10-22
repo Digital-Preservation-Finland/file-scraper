@@ -64,11 +64,11 @@ def test_gzip_extractor(filename, result_dict, evaluate_extractor):
     correct = parse_results(filename, mime,
                             result_dict, True)
     extractor = GzipWarctoolsExtractor(filename=correct.filename,
-                                     mimetype="application/gzip")
+                                     mimetype="application/warc")
     extractor.extract()
 
     if not correct.well_formed and correct.streams[0]["version"] == UNAV:
-        correct.update_mimetype("application/gzip")
+        correct.update_mimetype("application/warc")
         classname = "GzipWarctoolsExtractor"
 
     if not correct.well_formed:
@@ -156,7 +156,7 @@ def test_warctools_returns_invalid_return_code():
 
 @pytest.mark.parametrize(
     ["extractor_class", "mimetype", "version", "only_wellformed"],
-    [(GzipWarctoolsExtractor, "application/gzip", "", True),
+    [(GzipWarctoolsExtractor, "application/warc", "1.0", True),
      (WarctoolsFullExtractor, "application/warc", "1.0", True),
      (WarctoolsExtractor, "application/warc", "1.0", False)]
 )
@@ -164,7 +164,7 @@ def test_is_supported(extractor_class, mimetype, version, only_wellformed):
     """Test is_supported method."""
     assert extractor_class.is_supported(mimetype, version, only_wellformed)
     assert extractor_class.is_supported(mimetype, None, only_wellformed)
-    assert not extractor_class.is_supported(mimetype, version,
-                                          not only_wellformed)
-    assert extractor_class.is_supported(mimetype, "foo", only_wellformed)
+    assert not extractor_class.is_supported(
+        mimetype, version, not only_wellformed
+    )
     assert not extractor_class.is_supported("foo", version, only_wellformed)

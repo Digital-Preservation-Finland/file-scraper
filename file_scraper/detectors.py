@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import errno
+import gzip
 import os
 import zipfile
 from pathlib import Path
@@ -186,6 +187,17 @@ class FidoDetector(BaseDetector):
         self.version = fido.version
         self._puid = fido.puid
 
+        # FIDO does not detect version for WARCs
+        if self.version is None and self.mimetype in {
+            "application/gzip",
+            "application/warc",
+        }:
+            self.version = self.read_warc_version(
+                self.filename, self.mimetype == "application/gzip"
+            )
+            if self.version is not None:
+                self.mimetype = "application/warc"
+
     def determine_important(self) -> Mimetype | None:
         """
         Return important mime types.
@@ -224,6 +236,21 @@ class FidoDetector(BaseDetector):
         return {
             "fido": {"version": fido_version}
         }
+
+    @staticmethod
+    def read_warc_version(file_path: str | Path, gz: bool) -> str | None:
+        """Read the version of a WARC file.
+
+        :param file_path: Path to WARC file.
+        :param gz: Is the WARC gzipped.
+        :returns: WARC version or `None` if version could not be read.
+        """
+        func = gzip.open if gz else open
+        with func(file_path, "rt", encoding="utf-8") as file:
+            line = file.readline().strip()
+            if not line.startswith("WARC/"):
+                return None
+            return line.split("/")[1]
 
 
 class MagicDetector(BaseDetector):
