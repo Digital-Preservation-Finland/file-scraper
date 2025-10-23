@@ -1,21 +1,11 @@
 """Metadata model for Warcs."""
 
-from file_scraper.defaults import UNAV
-from file_scraper.utils import metadata, ensure_text
 from file_scraper.base import BaseMeta
+from file_scraper.defaults import UNAV
+from file_scraper.utils import ensure_text, metadata
 
 
-# pylint: disable=too-few-public-methods
-class BaseWarctoolsMeta(BaseMeta):
-    """Base metadata class for Warcs."""
-
-    @metadata()
-    def stream_type(self):
-        """Return file type."""
-        return "binary"
-
-
-class WarctoolsMeta(BaseWarctoolsMeta):
+class WarctoolsMeta(BaseMeta):
     """Metadata models for Warcs"""
 
     # Supported mimetype and versions
@@ -30,6 +20,11 @@ class WarctoolsMeta(BaseWarctoolsMeta):
         """
         self._well_formed = well_formed
         self._line = line
+
+    @metadata()
+    def stream_type(self):
+        """Return file type."""
+        return "binary"
 
     @metadata()
     def mimetype(self):
@@ -48,5 +43,6 @@ class WarctoolsMeta(BaseWarctoolsMeta):
             return UNAV
         if len(self._line.split(b"WARC/", 1)) > 1:
             return ensure_text(
-                self._line.split(b"WARC/", 1)[1].split(b" ")[0].strip())
+                self._line.split(b"WARC/", 1)[1].split(b" ")[0].strip()
+            )
         return UNAV

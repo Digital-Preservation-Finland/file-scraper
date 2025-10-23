@@ -18,7 +18,7 @@ WELLFORMED_EXTRACTORS = [
     "JHoveWavExtractor", "JHoveUtf8Extractor", "LxmlExtractor", "OfficeExtractor",
     "PngcheckExtractor", "PsppExtractor", "SchematronExtractor",
     "TextEncodingExtractor", "VerapdfExtractor", "VnuExtractor",
-    "WarctoolsFullExtractor", "GzipWarctoolsExtractor", "XmllintExtractor"
+    "WarctoolsFullExtractor", "XmllintExtractor"
 ]
 
 
@@ -83,7 +83,7 @@ WELLFORMED_EXTRACTORS = [
                             "TextEncodingExtractor"]),
         ("image/png", None, ["PngcheckExtractor", "MagicBinaryExtractor",
                              "PilExtractor", "MediainfoExtractor", "WandExtractor"]),
-        ("application/warc", "1.0", ["GzipWarctoolsExtractor", "WarctoolsFullExtractor"]),
+        ("application/warc", "1.0", ["WarctoolsFullExtractor"]),
         ("text/xml", "1.0", ["XmllintExtractor",
                              "LxmlExtractor", "MagicTextExtractor",
                              "TextEncodingExtractor"]),

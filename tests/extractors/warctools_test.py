@@ -5,20 +5,17 @@ This module tests that:
     - MIME type, version, streams and well-formedneess are scraped correctly
       using all extractors.
         - For all well-formed files, extractor messages contain "successfully".
-    - When using GzipWarctoolsExtractor:
+    - When using WarctoolsFullExtractor:
         - For empty files, extractor errors contains "Empty file."
         - For files with missing data, extractor errors contains "unpack
           requires a string argument of length 4".
-    - When using WarctoolsFullExtractor:
         - For whiles where the reported content length is shorter than the
           actual content, extractor errors contains "warc errors at".
 
     - With well-formedness check, the following MIME types and versions are
       supported:
-        - GzipWarctoolsExtractor supports application/gzip with "", None or a
-          made up string as a version.
         - WarctoolsExtractor and WarctoolsFullExtractor support
-          application/warc with "", None or a made up string as a version.
+          application/warc with "0.17", "0.18", "1.0" versions.
     - Without well-formedness check, these MIME types are supported only in
       WarctoolsExtractor.
     - None of these extractors supports a made up MIME type.
@@ -26,59 +23,13 @@ This module tests that:
 from pathlib import Path
 
 import pytest
-
 from file_scraper.defaults import UNAV
 from file_scraper.warctools.warctools_extractor import (
-    GzipWarctoolsExtractor, WarctoolsFullExtractor, WarctoolsExtractor)
-from tests.common import (parse_results, partial_message_included)
-
-
-@pytest.mark.parametrize(
-    ["filename", "result_dict"],
-    [
-        ("valid_1.0_.warc.gz", {
-            "purpose": "Test valid warc file.",
-            "stdout_part": "successfully",
-            "stderr_part": ""}),
-        ("invalid__empty.warc.gz", {
-            "purpose": "Test empty warc file.",
-            "stdout_part": "",
-            "stderr_part": "Empty file."}),
-        ("invalid__missing_data.warc.gz", {
-            "purpose": "Test invalid warc gzip.",
-            "stdout_part": "",
-            "stderr_part": "Compressed file ended before the end-of-stream"
-                           " marker was reached"}),
-    ]
+    WarctoolsExtractor,
+    WarctoolsFullExtractor,
 )
-def test_gzip_extractor(filename, result_dict, evaluate_extractor):
-    """
-    Test extractor for gzip files.
 
-    :filename: Test file name
-    :result_dict: Result dict containing test purpose, and parts of
-                  expected results of stdout and stderr
-    """
-    mime = "application/warc"
-    classname = "WarctoolsFullExtractor"
-    correct = parse_results(filename, mime,
-                            result_dict, True)
-    extractor = GzipWarctoolsExtractor(filename=correct.filename,
-                                     mimetype="application/warc")
-    extractor.extract()
-
-    if not correct.well_formed and correct.streams[0]["version"] == UNAV:
-        correct.update_mimetype("application/warc")
-        classname = "GzipWarctoolsExtractor"
-
-    if not correct.well_formed:
-        assert not extractor.well_formed
-        assert not extractor.streams
-        assert partial_message_included(correct.stdout_part,
-                                        extractor.messages())
-        assert partial_message_included(correct.stderr_part, extractor.errors())
-    else:
-        evaluate_extractor(extractor, correct, exp_extractor_cls=classname)
+from tests.common import parse_results, partial_message_included
 
 
 @pytest.mark.parametrize(
@@ -111,7 +62,20 @@ def test_gzip_extractor(filename, result_dict, evaluate_extractor):
         ("invalid__empty.warc.gz", {
             "purpose": "Test empty gz file.",
             "stdout_part": "",
-            "stderr_part": "Empty file."})
+            "stderr_part": "Empty file."}),
+                ("valid_1.0_.warc.gz", {
+            "purpose": "Test valid warc file.",
+            "stdout_part": "successfully",
+            "stderr_part": ""}),
+        ("invalid__empty.warc.gz", {
+            "purpose": "Test empty warc file.",
+            "stdout_part": "",
+            "stderr_part": "Empty file."}),
+        ("invalid__missing_data.warc.gz", {
+            "purpose": "Test invalid warc gzip.",
+            "stdout_part": "",
+            "stderr_part": "Compressed file ended before the end-of-stream"
+                           " marker was reached"}),
     ]
 )
 def test_warc_extractor(filename, result_dict, evaluate_extractor):
@@ -122,18 +86,21 @@ def test_warc_extractor(filename, result_dict, evaluate_extractor):
     :result_dict: Result dict containing test purpose, and parts of
                   expected results of stdout and stderr
     """
-    correct = parse_results(filename, "application/warc",
-                            result_dict, True)
-    extractor = WarctoolsFullExtractor(filename=correct.filename,
-                                     mimetype="application/warc")
+    correct = parse_results(filename, "application/warc", result_dict, True)
+    extractor = WarctoolsFullExtractor(
+        filename=correct.filename, mimetype="application/warc"
+    )
     extractor.extract()
 
     if not correct.well_formed:
         assert not extractor.well_formed
         assert not extractor.streams
-        assert partial_message_included(correct.stdout_part,
-                                        extractor.messages())
-        assert partial_message_included(correct.stderr_part, extractor.errors())
+        assert partial_message_included(
+            correct.stdout_part, extractor.messages()
+        )
+        assert partial_message_included(
+            correct.stderr_part, extractor.errors()
+        )
     else:
         evaluate_extractor(extractor, correct)
 
@@ -146,8 +113,7 @@ def test_warctools_returns_invalid_return_code():
     path = Path("tests/data", mimetype.replace("/", "_"))
     testfile = path / "valid_0.17.warc"
 
-    extractor = WarctoolsFullExtractor(filename=testfile,
-                                     mimetype=mimetype)
+    extractor = WarctoolsFullExtractor(filename=testfile, mimetype=mimetype)
 
     extractor.extract()
 
@@ -156,9 +122,10 @@ def test_warctools_returns_invalid_return_code():
 
 @pytest.mark.parametrize(
     ["extractor_class", "mimetype", "version", "only_wellformed"],
-    [(GzipWarctoolsExtractor, "application/warc", "1.0", True),
-     (WarctoolsFullExtractor, "application/warc", "1.0", True),
-     (WarctoolsExtractor, "application/warc", "1.0", False)]
+    [
+        (WarctoolsFullExtractor, "application/warc", "1.0", True),
+        (WarctoolsExtractor, "application/warc", "1.0", False),
+    ],
 )
 def test_is_supported(extractor_class, mimetype, version, only_wellformed):
     """Test is_supported method."""
