@@ -5,11 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.1.0/>`__,
 and this project adheres to `Semantic Versioning <(https://semver.org/spec/v2.0.0.html>`__.
 
-Unrealeased - 2025-10-07
+2.4.0 - 2025-10-23
 ------------------
 
 Changed
 ^^^^^^^
+- Added file format and version detection of gzipped WARC files without performing well-formedness check
 - ``Scraper`` raises ``InvalidMimetype`` exception for invalid mimetype input.
 - ``Scraper`` no longer accepts version as a parameter without the mimetype parameter and raises an InvalidMimetype error
 - The ``mimetype`` and ``version`` parameters are now persistent and ``Scraper`` will attempt to scraper the file for the given ``mimetype`` and ``version`` parameter instead of changing it.

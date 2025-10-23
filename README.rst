@@ -266,7 +266,6 @@ All contribution is welcome. Please see `Technical Notes <./doc/contribute.rst>`
 Misc notes
 ----------
 
-    * Gzipped WARC files are scraped correctly only when ``check_wellformed`` parameter is ``True``.
     * Metadata is not collected for DPX images, only well-formedness is checked.
     * Retrieving version number can not be done for ODF Formula formats.
     * Scraping XML files without XML header works correctly only when ``check_wellformed`` parameter is ``True``.
