@@ -126,3 +126,19 @@ def test_warchaeology_extractor(
         )
     else:
         evaluate_extractor(extractor, correct)
+
+
+def test_is_supported() -> None:
+    """Test is_supported method."""
+    mime = "application/warc"
+    is_supported = WarchaeologyExtractor.is_supported
+    assert is_supported(mime, "1.0")
+    assert is_supported(mime, "1.1")
+    assert is_supported(mime, "1.0", False)
+    assert is_supported(mime, "1.1", False)
+
+    assert not is_supported(mime, "0.17")
+    assert not is_supported(mime, "0.18")
+    assert not is_supported("foo", "1.1")
+    assert not is_supported(mime, "foo", False)
+    assert not is_supported("foo", "1.0", False)
