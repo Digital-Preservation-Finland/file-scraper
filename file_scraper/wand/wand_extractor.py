@@ -12,18 +12,75 @@ tool.
 
 """
 import re
+from concurrent.futures import ProcessPoolExecutor
 
 from file_scraper.base import BaseExtractor
-from file_scraper.wand.wand_model import (WandImageMeta, WandTiffMeta,
-                                          WandExifMeta, WandWebPMeta)
 from file_scraper.defaults import UNAV
 from file_scraper.logger import LOGGER
+from file_scraper.wand.wand_model import (WandExifMeta, WandImageMeta,
+                                          WandTiffMeta, WandWebPMeta)
+
+from collections import namedtuple
 
 try:
     import wand.image
     import wand.version
 except ImportError:
     pass
+
+
+WandSingleImageContainerResult = namedtuple(
+    "WandSingleImageContainerResult", ["mimetype", "metadata"]
+)
+WandSingleImageResult = namedtuple(
+    "WandSingleImageResult",
+    [
+        "index", "container", "colorspace", "width", "height", "depth",
+        "compression", "compression_quality"
+    ]
+)
+WandImageResult = namedtuple("WandImageResult", ["sequence"])
+
+
+def _get_wand_result(filename):
+    with wand.image.Image(filename=filename) as image:
+        # Convert the result into namedtuple instances that we can marshal
+        # back over into the main process.
+        #
+        # The `wand.image.Image` instance uses a C library behind
+        # the scenes, meaning it is not safe to marshal as-is.
+        return WandImageResult(
+            sequence=[
+                WandSingleImageResult(
+                    index=seq.index,
+                    container=WandSingleImageContainerResult(
+                        mimetype=seq.container.mimetype,
+                        metadata={
+                            key: seq.container.metadata[key]
+                            for key in seq.container.metadata
+                            # Do not read all metadata fields; some of them
+                            # might contain values in Latin-1 charset that
+                            # cannot be parsed by Wand.
+                            # In practice we only need certain known fields,
+                            # meaning we can ignore the problematic fields
+                            # entirely.
+                            # Also see KDKPAS-2801.
+                            if key in (
+                                "tiff:endian", "exif:ExifVersion",
+                                "icc:description"
+                            )
+                        }
+                    ) if seq.container else None,
+                    colorspace=seq.colorspace,
+                    width=seq.width,
+                    height=seq.height,
+                    depth=seq.depth,
+                    compression=seq.compression,
+                    compression_quality=seq.compression_quality
+                )
+                for seq in image.sequence
+            ]
+        )
 
 
 class WandExtractor(BaseExtractor[WandImageMeta]):
@@ -63,7 +120,11 @@ class WandExtractor(BaseExtractor[WandImageMeta]):
         Populate streams with supported metadata objects.
         """
         try:
-            self._wandresults = wand.image.Image(filename=self.filename)
+            # Perform Wand scraping in a separate process. Wand library
+            # currently suffers from memory leaks.
+            with ProcessPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(_get_wand_result, self.filename)
+                self._wandresults = future.result()
         except Exception as e:  # pylint: disable=broad-except, invalid-name
             self._errors.append("Error in analyzing file")
             self._errors.append(str(e))
@@ -74,17 +135,6 @@ class WandExtractor(BaseExtractor[WandImageMeta]):
                         self.streams.append(md_class(image=image))
             self._check_supported(allow_unav_version=True)
             self._messages.append("The file was analyzed successfully.")
-
-    def __del__(self):
-        """
-        Close potential open image files using Python's File
-        close() method.
-        """
-
-        if self._wandresults:
-            for frame in self._wandresults.sequence:
-                frame.destroy()
-            self._wandresults.close()
 
     def tools(self):
         """Return information about the software used by the extractor or

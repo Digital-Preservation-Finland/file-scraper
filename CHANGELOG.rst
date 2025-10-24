@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.1.0/>`__,
 and this project adheres to `Semantic Versioning <(https://semver.org/spec/v2.0.0.html>`__.
 
+Unreleased
+----------
+
+Fixed
+^^^^^
+- Fix memory leak caused by Wand when scraping multiple image files in single Python process. Wand scraping is now performed in a separate process to prevent this leak.
+
 2.4.0 - 2025-10-23
 ------------------
 
@@ -16,6 +23,7 @@ Changed
 - The ``mimetype`` and ``version`` parameters are now persistent and ``Scraper`` will attempt to scraper the file for the given ``mimetype`` and ``version`` parameter instead of changing it.
 - Removed ``PredefinedDetector``. Replaced by function logic in the main class.
 - ``Scraper`` now raises more specific ``FileNotFoundIsNotScrapable`` and ``DirectoryIsNotScrapable`` exceptions when file path is either missing, or a directory which is unsupported.
+
 
 2.3.0 - 2025-10-02
 ------------------
