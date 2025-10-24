@@ -15,6 +15,10 @@ Added
 2.4.1 - 2025-10-28
 ------------------
 
+Added
+^^^^^
+- `Warcheology <https://nlnwa.github.io/warchaeology/>`_ to validate WARC 1.0 and 1.1 files.
+
 Fixed
 ^^^^^
 - Fix memory leak caused by Wand when scraping multiple image files in single Python process. Wand scraping is now performed in a separate process to prevent this leak.
