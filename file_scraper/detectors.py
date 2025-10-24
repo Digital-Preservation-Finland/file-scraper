@@ -188,7 +188,7 @@ class FidoDetector(BaseDetector):
         self.version = fido.version
         self._puid = fido.puid
 
-        # FIDO does not detect version for WARCs
+        # FIDO 1.4.0 does not detect version for WARCs.
         if self.version is None and self.mimetype in {
             "application/gzip",
             "application/warc",

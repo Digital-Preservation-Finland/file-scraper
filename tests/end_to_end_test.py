@@ -11,20 +11,24 @@ Integration test for scraper:
 """
 
 from __future__ import annotations
+
 import os
 import shutil
+from pathlib import Path
 
 import pytest
-
-from file_scraper.defaults import (UNAP,
-                                   UNAV,
-                                   UNACCEPTABLE,
-                                   BIT_LEVEL,
-                                   BIT_LEVEL_WITH_RECOMMENDED,
-                                   ACCEPTABLE,
-                                   RECOMMENDED)
+from file_scraper.defaults import (
+    ACCEPTABLE,
+    BIT_LEVEL,
+    BIT_LEVEL_WITH_RECOMMENDED,
+    RECOMMENDED,
+    UNACCEPTABLE,
+    UNAP,
+    UNAV,
+)
 from file_scraper.scraper import Scraper
-from tests.common import get_files, filter_unap
+
+from tests.common import filter_unap, get_files
 
 # These files will result (:unav) for some elements
 # For GIFs and TIFFs with 3 images inside, the version is missing from
@@ -272,6 +276,10 @@ GIVEN_MIMETYPES = {
     + "invalid__single_quotes_are_not_allowed.json": "application/json",
     "tests/data/application_json/"
     + "invalid__utf16le_bom.json": "application/json",
+    "tests/data/video_dv/valid__pal_lossy.dv": "video/dv",
+    # FIDO v1.4.0 detects these WARCs as text/html. This is fixed in v1.6.1.
+    "tests/data/application_warc/invalid_1.0_missing_required_field.warc": "application/warc",
+    "tests/data/application_warc/invalid_1.0_no_carriage_return.warc": "application/warc",
 }
 
 # To get some files validated against the strictest applicable criteria the
@@ -412,8 +420,8 @@ def test_valid_combined(fullname_filename, mimetype, version):
     if fullname_filename in IGNORE_VALID:
         pytest.skip("[%s] in ignore" % fullname_filename)
 
-    predefined_mimetype = GIVEN_MIMETYPES.get(fullname_filename, None)
-    predefined_charset = GIVEN_CHARSETS.get(fullname_filename, None)
+    predefined_mimetype = GIVEN_MIMETYPES.get(fullname_filename)
+    predefined_charset = GIVEN_CHARSETS.get(fullname_filename)
 
     scraper = Scraper(
         fullname_filename,
@@ -544,9 +552,9 @@ def test_coded_filename(tmpdir, fullname, mimetype, version):
     if fullname in IGNORE_VALID + ["tests/data/text_xml/valid_1.0_dtd.xml"]:
         pytest.skip("[%s] in ignore" % fullname)
 
-    predefined_mimetype = GIVEN_MIMETYPES.get(fullname, None)
-    predefined_charset = GIVEN_CHARSETS.get(fullname, None)
-    ext = os.path.splitext(fullname)[1]
+    predefined_mimetype = GIVEN_MIMETYPES.get(fullname)
+    predefined_charset = GIVEN_CHARSETS.get(fullname)
+    ext = "".join(Path(fullname).suffixes)
     unicode_name = os.path.join(tmpdir, "äöå" + ext)
     shutil.copy(fullname, unicode_name)
     scraper = Scraper(unicode_name, mimetype=predefined_mimetype,
