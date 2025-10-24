@@ -29,6 +29,7 @@ from file_scraper.detectors import (_FidoReader,
                                     AtlasTiDetector,
                                     ODFDetector)
 from file_scraper.defaults import UNKN, UNAP
+from file_scraper.state import Mimetype
 from tests.common import get_files, partial_message_included
 
 CHANGE_FIDO = {
@@ -60,7 +61,6 @@ CHANGE_FIDO = {
         "application/zip",
     "application_vnd.oasis.opendocument.formula/valid_1.3.odf":
         "application/zip",
-    "application_warc/valid_1.0_.warc.gz": "application/warc",
     "application_mxf/valid__jpeg2000.mxf": None,
     "application_mxf/valid__jpeg2000_grayscale.mxf": None,
     "application_mxf/valid__jpeg2000_lossless.mxf": None,
@@ -109,6 +109,7 @@ CHANGE_MAGIC = {
     "video_MP2T/valid__h265_aac.ts": "application/octet-stream",
     "application_xhtml+xml/valid_1.0.xhtml": "text/xml",
     "application_warc/valid_1.0_.warc.gz": "application/gzip",
+    "application_warc/valid_1.1_.warc.gz": "application/gzip",
     "application_x-spss-por/valid__spss24-dot.por": "text/plain",
     "application_x-spss-por/valid__spss24-dates.por": "text/plain",
     "text_csv/valid__quotechar.csv": "text/plain",
@@ -203,38 +204,46 @@ def test_pdf_dng_detector(filepath, mimetype, version, message):
 
 
 @pytest.mark.parametrize(
-    ["detector_class", "change_dict"],
+    ["detector_class", "change_dict", "filename", "expected_mimetype"],
     [
-        (FidoDetector, CHANGE_FIDO),
-        (MagicDetector, CHANGE_MAGIC)
-    ]
+        (detector_class, change_dict, filename, expected_mimetype)
+        for detector_class, change_dict in [
+            (FidoDetector, CHANGE_FIDO),
+            (MagicDetector, CHANGE_MAGIC),
+        ]
+        for filename, expected_mimetype, _ in get_files(well_formed=True)
+    ],
 )
-def test_detectors(detector_class, change_dict):
+def test_detectors(
+    detector_class: type[BaseDetector],
+    change_dict: dict[str, str],
+    filename: str,
+    expected_mimetype: str,
+) -> None:
     """Test Fido and Magic detectors.
 
     The test compares detected mimetype to expected mimetype.
     Runs all well-formed files in the test data set.
 
-    :detector_class: Detector class to test
-    :change_dict: Known exceptions to expected mimetypes
+    :param detector_class: Detector class to test
+    :param change_dict: Known exceptions to expected mimetypes
+    :param filename: Path to test file
+    :param expected_mimetype: Expected mimetype of the test file
     """
-    for filename, expected_mimetype, _ in get_files(well_formed=True):
+    detector = detector_class(Path(filename))
+    detector.detect()
 
-        detector = detector_class(Path(filename))
-        detector.detect()
+    format_name = filename.replace("tests/data/", "")
+    if format_name in change_dict:
+        expected_mimetype = change_dict[format_name]
 
-        format_name = filename.replace('tests/data/', '')
-        if format_name in change_dict:
-            expected_mimetype = change_dict[format_name]
+    if expected_mimetype is not None:
+        expected_mimetype = expected_mimetype.lower()
 
-        if expected_mimetype is not None:
-            expected_mimetype = expected_mimetype.lower()
+    assertion_message = "Detected mimetype did not match expected: "
+    f"{detector_class.__name__}: {format_name}"
 
-        assertion_message = ("Detected mimetype did not match expected: "
-                             "{}: {}".format(
-                                 detector_class.__name__, format_name))
-
-        assert detector.mimetype == expected_mimetype, assertion_message
+    assert detector.mimetype == expected_mimetype, assertion_message
 
 
 @pytest.mark.parametrize(
@@ -540,13 +549,21 @@ def test_tools(detector, tool):
 
 
 @pytest.mark.parametrize(
-    "Detector",
+    "detector_class",
     [
-        (FidoDetector), (MagicCharset), (MagicDetector), (SegYDetector),
-        (EpubDetector), (ExifToolDetector), (SiardDetector), (AtlasTiDetector),
-        (ODFDetector)
-    ]
+        FidoDetector,
+        MagicCharset,
+        MagicDetector,
+        SegYDetector,
+        EpubDetector,
+        ExifToolDetector,
+        SiardDetector,
+        AtlasTiDetector,
+        ODFDetector,
+    ],
 )
-def test_return_mimetype_result_state(Detector: type[BaseDetector]):
-    detector = Detector("tests/data/text_plain/valid__ascii.txt")
-    assert type(detector.determine_important()).__name__ in ["Mimetype", "NoneType"]
+def test_return_mimetype_result_state(
+    detector_class: type[BaseDetector],
+) -> None:
+    detector = detector_class(Path("tests/data/text_plain/valid__ascii.txt"))
+    assert type(detector.determine_important()) in [Mimetype, type(None)]
