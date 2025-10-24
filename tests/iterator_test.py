@@ -83,7 +83,7 @@ WELLFORMED_EXTRACTORS = [
                             "TextEncodingExtractor"]),
         ("image/png", None, ["PngcheckExtractor", "MagicBinaryExtractor",
                              "PilExtractor", "MediainfoExtractor", "WandExtractor"]),
-        ("application/warc", "1.0", ["WarctoolsFullExtractor"]),
+        ("application/warc", "1.0", ["WarctoolsFullExtractor", "WarchaeologyExtractor"]),
         ("text/xml", "1.0", ["XmllintExtractor",
                              "LxmlExtractor", "MagicTextExtractor",
                              "TextEncodingExtractor"]),
