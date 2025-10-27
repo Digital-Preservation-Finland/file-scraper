@@ -9,7 +9,6 @@ from file_scraper.magic_extractor.magic_model import (
     BinaryMagicBaseMeta,
     TextFileMagicMeta,
     TextMagicBaseMeta,
-    JsonMagicMeta,
     XmlFileMagicMeta,
     XhtmlFileMagicMeta,
     HtmlFileMagicMeta,
@@ -100,7 +99,6 @@ class MagicTextExtractor(MagicBaseExtractor[TextMagicBaseMeta]):
     _allow_unav_mime = True
     _supported_metadata: list[type[TextMagicBaseMeta]] = [
         TextFileMagicMeta,
-        JsonMagicMeta,
         XmlFileMagicMeta,
         XhtmlFileMagicMeta,
         HtmlFileMagicMeta,

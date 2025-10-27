@@ -82,7 +82,7 @@ class TextMagicBaseMeta(BaseMagicMeta):
 class TextFileMagicMeta(TextMagicBaseMeta):
     """Metadata models for plain text and csv files."""
 
-    _supported = {"text/plain": [], "text/csv": []}
+    _supported = {"text/plain": [], "text/csv": [], "application/json": []}
     _allow_versions = True  # Allow any version
 
     @metadata()
@@ -91,15 +91,6 @@ class TextFileMagicMeta(TextMagicBaseMeta):
         if self.mimetype() in self._supported:
             return UNAP
         return UNAV
-
-
-class JsonMagicMeta(TextMagicBaseMeta):
-    _supported = {"application/json": []}
-
-    @metadata()
-    def version(self):
-        """Return version."""
-        return UNAP
 
 
 class XmlFileMagicMeta(TextMagicBaseMeta):

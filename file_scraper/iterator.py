@@ -28,6 +28,7 @@ from file_scraper.jhove.jhove_extractor import (JHoveAiffExtractor,
                                                 JHovePdfExtractor,
                                                 JHoveTiffExtractor,
                                                 JHoveWavExtractor)
+from file_scraper.json.json_extractor import JsonExtractor
 from file_scraper.logger import LOGGER
 from file_scraper.lxml_extractor.lxml_extractor import LxmlExtractor
 from file_scraper.magic_extractor.magic_extractor import (MagicBinaryExtractor,
@@ -105,6 +106,7 @@ def iter_extractors(
         JHovePdfExtractor,
         JHoveTiffExtractor,
         JHoveWavExtractor,
+        JsonExtractor,
         JpylyzerExtractor,
         LxmlExtractor,
         MagicBinaryExtractor,

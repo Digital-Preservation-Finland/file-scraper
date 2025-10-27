@@ -149,7 +149,8 @@ EXPECTED_UNAV_FIELDS_FOR_FILE = {
     "tests/data/application_mxf/valid__jpeg2000.mxf": ["dar", "par"],
     "tests/data/application_mxf/valid__jpeg2000_grayscale.mxf": ["dar", "par"],
     "tests/data/application_mxf/valid__jpeg2000_lossless.mxf": ["dar", "par"],
-    "tests/data/application_mxf/valid__jpeg2000_lossless-wavelet_lossy-subsampling.mxf":
+    "tests/data/application_mxf/"
+    + "valid__jpeg2000_lossless-wavelet_lossy-subsampling.mxf":
         ["dar", "par"],
     "tests/data/audio_mp4/valid__aac.m4a": [
         "bits_per_sample",
@@ -264,7 +265,11 @@ GIVEN_MIMETYPES = {
     "tests/data/text_plain/valid__utf32be_bom.txt": "text/plain",
     "tests/data/text_plain/valid__utf32le_bom.txt": "text/plain",
     "tests/data/text_plain/invalid__utf8_just_c3.txt": "text/plain",
-    "tests/data/video_dv/valid__pal_lossy.dv": "video/dv"
+    "tests/data/video_dv/valid__pal_lossy.dv": "video/dv",
+    "tests/data/application_json/"
+    + "invalid__property_needs_doublequotes.json": "application/json",
+    "tests/data/application_json/"
+    + "invalid__single_quotes_are_not_allowed.json": "application/json"
 }
 
 # To get some files validated against the strictest applicable criteria the
