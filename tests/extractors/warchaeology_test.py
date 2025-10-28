@@ -48,6 +48,14 @@ from tests.common import parse_results, partial_message_included
             }
         ),
         (
+            "valid_1.0_wrong_suffix.txt",
+            {
+                "purpose": "Test valid 1.0 file with no suffix.",
+                "stdout_part": "",
+                "stderr_part": "",
+            },
+        ),
+        (
             "invalid__empty.warc",
             {
                 "purpose": "Test empty warc file.",
@@ -88,14 +96,6 @@ from tests.common import parse_results, partial_message_included
             }
         ),
         (
-            "invalid_1.0_not_a_warc.txt",
-            {
-                "purpose": "Test non-WARC file.",
-                "stdout_part": "",
-                "stderr_part": "Not a WARC file"
-            }
-        ),
-                (
             "invalid_1.0_too_short_content_length.warc",
             {
                 "purpose": "Test file with too short content-length field.",

@@ -20,7 +20,14 @@ class WarchaeologyExtractor(BaseExtractor[WarchaeologyMeta]):
     def extract(self) -> None:
         """Extract WARC file."""
         shell = Shell(
-            ["warc", "validate", self.filename, "--log-format=json", "--force"]
+            [
+                "warc",
+                "validate",
+                self.filename,
+                "--log-format=json",
+                "--force",
+                "--suffixes=",
+            ]
         )
         errors, messages, files, records = self.parse_output(shell.stderr)
         self._messages.extend(messages)
@@ -46,7 +53,9 @@ class WarchaeologyExtractor(BaseExtractor[WarchaeologyMeta]):
         self._check_supported()
 
     def _get_header(self) -> bytes:
-        shell = Shell(["warc", "cat", self.filename, "--header"])
+        shell = Shell(
+            ["warc", "cat", self.filename, "--header", "--suffixes="]
+        )
         return shell.stdout_raw
 
     @staticmethod
