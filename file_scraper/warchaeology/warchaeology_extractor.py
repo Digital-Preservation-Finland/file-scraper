@@ -32,12 +32,12 @@ class WarchaeologyExtractor(BaseExtractor[WarchaeologyMeta]):
         errors, messages, files, records = self.parse_output(shell.stderr)
         self._messages.extend(messages)
 
-        if files == 0:
-            self._errors.append("Not a WARC file.")
+        if files != 1:
+            self._errors.append(f"Invalid number of input files: {files}")
             return
 
         if records == 0:
-            self._errors.append("No records found in WARC.")
+            self._errors.append("No WARC records found in file")
 
         self._errors.extend(errors)
 

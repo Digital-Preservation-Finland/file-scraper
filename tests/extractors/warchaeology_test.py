@@ -60,7 +60,7 @@ from tests.common import parse_results, partial_message_included
             {
                 "purpose": "Test empty warc file.",
                 "stdout_part": "",
-                "stderr_part": "No records found in WARC",
+                "stderr_part": "No WARC records found in file",
             },
         ),
         (
@@ -84,7 +84,7 @@ from tests.common import parse_results, partial_message_included
             {
                 "purpose": "Test file with header but no content.",
                 "stdout_part": "not a http block: EOF",
-                "stderr_part": "No records found in WARC"
+                "stderr_part": "No WARC records found in file"
             }
         ),
         (
