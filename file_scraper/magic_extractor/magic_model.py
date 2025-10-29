@@ -88,9 +88,7 @@ class TextFileMagicMeta(TextMagicBaseMeta):
     @metadata()
     def version(self):
         """Return version."""
-        if self.mimetype() in self._supported:
-            return UNAP
-        return UNAV
+        return UNAP
 
 
 class XmlFileMagicMeta(TextMagicBaseMeta):
