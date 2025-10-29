@@ -269,7 +269,9 @@ GIVEN_MIMETYPES = {
     "tests/data/application_json/"
     + "invalid__property_needs_doublequotes.json": "application/json",
     "tests/data/application_json/"
-    + "invalid__single_quotes_are_not_allowed.json": "application/json"
+    + "invalid__single_quotes_are_not_allowed.json": "application/json",
+    "tests/data/application_json/"
+    + "invalid__utf16le_bom.json": "application/json",
 }
 
 # To get some files validated against the strictest applicable criteria the

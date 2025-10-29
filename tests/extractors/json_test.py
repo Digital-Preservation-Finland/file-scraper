@@ -14,6 +14,7 @@ from dpres_file_formats.defaults import UnknownValue as Unk
         "invalid__only_one_root_element.json",
         "invalid__property_needs_doublequotes.json",
         "invalid__single_quotes_are_not_allowed.json",
+        "invalid__utf16le_bom.json",
         "valid__.json",
         "valid__empty_object.json",
         "valid__ugly.json",

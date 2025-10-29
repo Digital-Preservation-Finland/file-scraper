@@ -13,12 +13,11 @@ class JsonExtractor(BaseExtractor):
         with open(self.filename, "rt") as file:
             try:
                 json.loads(file.read())
-            except json.JSONDecodeError as e:
-                self._errors.append(
+                self._messages.extend("The file is a valid JSON document")
+            except (json.JSONDecodeError, UnicodeDecodeError) as e:
+                self._errors.extend(
                     f"{self.__class__.__name__} produced an error: {e}"
                 )
-            else:
-                self._messages.append("The file is a valid JSON document")
 
         self.streams = list(self.iterate_models())
         self._check_supported(allow_unap_version=True)
