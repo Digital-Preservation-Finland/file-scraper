@@ -56,6 +56,14 @@ from tests.common import parse_results, partial_message_included
             },
         ),
         (
+            "valid_1.0_nonsense_field.warc",
+            {
+                "purpose": "Test valid file with an unrecogized header field.",
+                "stdout_part": "",
+                "stderr_part": "",
+            },
+        ),
+        (
             "invalid__empty.warc",
             {
                 "purpose": "Test empty warc file.",
