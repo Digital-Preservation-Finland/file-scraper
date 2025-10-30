@@ -29,7 +29,7 @@ class WarchaeologyExtractor(BaseExtractor[WarchaeologyMeta]):
                 "--suffixes=",
             ]
         )
-        errors, messages, files, records = self.parse_output(shell.stderr)
+        errors, messages, files, records = self._parse_output(shell.stderr)
         self._messages.extend(messages)
 
         if files != 1:
@@ -59,10 +59,11 @@ class WarchaeologyExtractor(BaseExtractor[WarchaeologyMeta]):
         return shell.stdout_raw
 
     @staticmethod
-    def parse_output(output: str) -> tuple[list[str], list[str], int, int]:
+    def _parse_output(output: str) -> tuple[list[str], list[str], int, int]:
         """Parse Warcheology output.
 
-        Warchaeology prints everything to stderr.
+        Warchaeology prints all logs to stderr. Filter and return error and
+        warning messages, and number of files and WARC records processed.
 
         :param output: stderr output from Warchaology.
         :returns: (error list, message list, file count, record count) tuple.
