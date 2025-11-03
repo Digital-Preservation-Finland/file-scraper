@@ -1,5 +1,12 @@
-"""Test the Warchaeology extractor module."""
-# TODO: Add test detail to docstring
+"""Test the Warchaeology extractor module.
+
+Test that:
+    - MIME type, version, streams and well-formedness are scraped correctly.
+    - Valid files should output "Well-Formed and valid" in messages with no
+        errors.
+    - Invalid files have a specific error.
+    - Warchaeology supports "application/warc" with versions "1.0" and "1.1".
+"""
 
 from pathlib import Path
 from typing import Callable
@@ -19,7 +26,7 @@ from tests.common import parse_results, partial_message_included
             "valid_1.0.warc",
             {
                 "purpose": "Test valid 1.0 file.",
-                "stdout_part": "",
+                "stdout_part": "Well-Formed and valid",
                 "stderr_part": "",
             },
         ),
@@ -27,7 +34,7 @@ from tests.common import parse_results, partial_message_included
             "valid_1.1.warc",
             {
                 "purpose": "Test valid 1.1 file.",
-                "stdout_part": "",
+                "stdout_part": "Well-Formed and valid",
                 "stderr_part": "",
             },
         ),
@@ -35,7 +42,7 @@ from tests.common import parse_results, partial_message_included
             "valid_1.0_.warc.gz",
             {
                 "purpose": "Test valid compressed 1.0 file.",
-                "stdout_part": "",
+                "stdout_part": "Well-Formed and valid",
                 "stderr_part": ""
             }
         ),
@@ -43,7 +50,7 @@ from tests.common import parse_results, partial_message_included
             "valid_1.1_.warc.gz",
             {
                 "purpose": "Test valid compressed 1.1 file.",
-                "stdout_part": "",
+                "stdout_part": "Well-Formed and valid",
                 "stderr_part": ""
             }
         ),
@@ -51,7 +58,7 @@ from tests.common import parse_results, partial_message_included
             "valid_1.0_wrong_suffix.txt",
             {
                 "purpose": "Test valid 1.0 file with no suffix.",
-                "stdout_part": "",
+                "stdout_part": "Well-Formed and valid",
                 "stderr_part": "",
             },
         ),
@@ -59,7 +66,7 @@ from tests.common import parse_results, partial_message_included
             "valid_1.0_nonsense_field.warc",
             {
                 "purpose": "Test valid file with an unrecogized header field.",
-                "stdout_part": "",
+                "stdout_part": "Well-Formed and valid",
                 "stderr_part": "",
             },
         ),
@@ -133,6 +140,7 @@ def test_warchaeology_extractor(
             correct.stderr_part, extractor.errors()
         )
     else:
+        assert not extractor.errors()
         evaluate_extractor(extractor, correct)
 
 
