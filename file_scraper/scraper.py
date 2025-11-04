@@ -339,8 +339,6 @@ class Scraper:
         UTF-8 check only for UTF-8.
         We know the charset after actual scraping.
         """
-        if not self._check_wellformed or self.streams is None:
-            return
         if (
             "charset" in self.streams[0]
             and self.streams[0]["charset"] == "UTF-8"
@@ -408,6 +406,8 @@ class Scraper:
         LOGGER.info("Scraping %s", self.path)
         self._check_wellformed = check_wellformed
         self._identify()
+        self.mimetype = self._predefined_mimetype
+        self.version = self._predefined_version
         LOGGER.debug(
             "Mimetype after detectors: %s and version: %s",
             self._detected_mimetype,
@@ -430,8 +430,9 @@ class Scraper:
             self._use_extractor(extractor)
             if extractor.streams:
                 LOGGER.debug(
-                    "Extractor produced a stream with mimetype: %s and "
+                    "Extractor %s produced a stream with mimetype: %s and "
                     "version: %s",
+                    extractor.__class__.__name__,
                     extractor.streams[0].mimetype(),
                     extractor.streams[0].version(),
                 )
@@ -440,14 +441,16 @@ class Scraper:
         self._merge_results()
         # If no streams exist the mimetype and version are unavailable
         if not self.streams:
-            LOGGER.info("No streams encountered!")
-            self.mimetype = UNAV
-            self.version = UNAV
+            LOGGER.error("No streams found by the extractors!")
             return
 
         self._check_utf8()
-        self.mimetype = self.streams[0]["mimetype"]
-        self.version = self.streams[0]["version"]
+        self.mimetype = self._predefined_mimetype
+        self.version = self._predefined_version
+        if self._predefined_mimetype is None:
+            self.mimetype = self.streams[0]["mimetype"]
+        if self._predefined_version is None:
+            self.version = self.streams[0]["version"]
 
         self._check_mime()
 

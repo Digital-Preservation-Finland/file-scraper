@@ -199,7 +199,7 @@ class BaseExtractorSupported(BaseExtractor):
         (BaseExtractorBasic, "test/falsemime", "0.1",
          "type test/falsemime with version 0.1 is not supported"),
         (BaseExtractorBasic, None, "0.1",
-         "None is not a supported MIME type")
+         "None is not a supported MIME type"),
     ]
 )
 def test_check_supported(extractor_class, mimetype, version, errors):

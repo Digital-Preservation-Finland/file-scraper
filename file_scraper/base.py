@@ -269,6 +269,8 @@ class BaseExtractor(BaseApparatus, Generic[AnyMeta]):
             x.is_supported(mimetype, version) for x in cls._supported_metadata
         )
 
+    # TODO Rename this function to validate_extractor_results and automatically
+    # call this function after the extract function.
     def _check_supported(
         self,
         allow_unav_mime: bool = False,
@@ -276,18 +278,16 @@ class BaseExtractor(BaseApparatus, Generic[AnyMeta]):
         allow_unap_version: bool = False,
     ) -> None:
         """
-        Check that the determined MIME type and version are supported.
+        Validate that the results extracted by the extractor are reasonable.
+        This includes the MIME type and the version found.
 
         :param allow_unav_mime: True if (:unav) is an acceptable MIME type
         :param allow_unav_version: True if (:unav) is an acceptable version
         :param allow_unap_version: True if (:unap) is an acceptable version
         """
-        # If there are no streams, the extractor does not support the
-        # determined MIME type and version combination at all (i.e. the
-        # initial MIME type guess used to choose extractors has been
-        # inaccurate).
+        # If there are no streams, then the extractor output is not valid
         if not self.streams:
-            self._errors.append("MIME type not supported by this extractor.")
+            self._errors.append("Extractor didn't produce any output streams.")
             return
 
         mimetype = self.streams[0].mimetype()
