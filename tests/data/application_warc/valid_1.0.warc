@@ -2,6 +2,7 @@ WARC/1.0
 WARC-Type: response
 WARC-Date: 2025-10-06T10:01:00Z
 WARC-Record-ID: <urn:uuid:abcdef12-3456-7890-abcd-ef1234567890>
+WARC-Payload-Digest: sha1:167f4441dcfe297e2d8f641af29246f7ae8382a5
 Content-Type: application/http; msgtype=response
 Content-Length: 83
 

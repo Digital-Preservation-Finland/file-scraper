@@ -89,7 +89,7 @@ from tests.common import parse_results, partial_message_included
         (
             "invalid_1.0_no_carriage_return.warc",
             {
-                "purpose": "Test file saved with LF instead of CRLF",
+                "purpose": "Test file saved with LF instead of CRLF.",
                 "stdout_part": "",
                 "stderr_part": "missing carriage return"
             }
@@ -116,6 +116,16 @@ from tests.common import parse_results, partial_message_included
                 "purpose": "Test file with too short content-length field.",
                 "stdout_part": "",
                 "stderr_part": "missing line separator at end of http headers"
+            }
+        ),
+        (
+            "invalid_1.1_wrong_digest.warc",
+            {
+                "purpose": "Test file with wrong payload digest.",
+                "stdout_part": "",
+                "stderr_part": "payload: wrong digest: expected sha1:2aae6c35c"
+                "94fcfb415dbe95f408b9ce91ee846ed, computed: sha1:167f4441dcfe2"
+                "97e2d8f641af29246f7ae8382a5"
             }
         )
     ],
