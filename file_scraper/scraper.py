@@ -436,6 +436,11 @@ class Scraper:
                     extractor.streams[0].mimetype(),
                     extractor.streams[0].version(),
                 )
+            else:
+                LOGGER.debug(
+                    "Extractor %s didn't produce a stream",
+                    extractor.__class__.__name__,
+                )
 
         self._kwargs["extractor_results"] = self._extractor_results
         self._merge_results()

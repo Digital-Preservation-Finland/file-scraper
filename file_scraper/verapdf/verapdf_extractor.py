@@ -1,9 +1,6 @@
 """PDF/A extractor."""
 
-try:
-    import lxml.etree as ET
-except ImportError:
-    pass
+import lxml.etree as ET
 
 import re
 

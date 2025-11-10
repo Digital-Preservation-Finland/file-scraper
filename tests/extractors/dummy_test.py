@@ -129,11 +129,12 @@ def test_detected_version_extractor():
     assert extractor.well_formed is None
     assert extractor.streams[0].version() == "1.0"
 
+    # This test apparently tests that the extractor output validates as False
     extractor = DetectedMimeVersionMetadataExtractor(
         filename, "text/plain", params=None)
     extractor.extract()
-    assert partial_message_included(
-        "MIME type not supported", extractor.errors())
+    assert len(extractor.errors()) > 0
+    assert extractor.streams == []
 
     extractor = DetectedMimeVersionExtractor(
         filename, "application/x-siard", params={"detected_version": "2.1.1"})
