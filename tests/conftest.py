@@ -7,7 +7,7 @@ from typing import Callable
 import file_scraper.shell
 import pytest
 from file_scraper.base import BaseExtractor, BaseMeta
-from file_scraper.utils import metadata
+from file_scraper.metadata import metadata
 
 from tests.common import Correct, partial_message_included
 

@@ -6,7 +6,8 @@ from fractions import Fraction
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAP, UNAV
 from file_scraper.exceptions import SkipElementException
-from file_scraper.utils import metadata, strip_zeros, iso8601_duration
+from file_scraper.metadata import metadata
+from file_scraper.utils import strip_zeros, iso8601_duration
 
 
 class FFMpegSimpleMeta(BaseMeta):

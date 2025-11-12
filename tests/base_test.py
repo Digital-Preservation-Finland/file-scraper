@@ -16,7 +16,7 @@ from pathlib import Path
 import pytest
 
 from file_scraper.base import BaseExtractor, BaseMeta, BaseDetector
-from file_scraper.utils import metadata
+from file_scraper.metadata import metadata
 from tests.common import partial_message_included
 
 

@@ -2,7 +2,7 @@
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAP, UNAV
-from file_scraper.utils import metadata
+from file_scraper.metadata import metadata
 
 
 class PsppMeta(BaseMeta):

@@ -2,7 +2,8 @@
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAV
-from file_scraper.utils import ensure_text, metadata
+from file_scraper.utils import ensure_text
+from file_scraper.metadata import metadata
 
 
 class WarctoolsMeta(BaseMeta):

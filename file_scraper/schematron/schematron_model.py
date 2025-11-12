@@ -1,7 +1,7 @@
 """Schematron metadata model."""
 
 from file_scraper.defaults import UNAV
-from file_scraper.utils import metadata
+from file_scraper.metadata import metadata
 from file_scraper.base import BaseMeta
 
 

@@ -7,7 +7,7 @@ except ImportError:
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAP, UNAV
-from file_scraper.utils import metadata
+from file_scraper.metadata import metadata
 
 NAMESPACES = {"j_harvard": "http://hul.harvard.edu/ois/xml/ns/jhove",
               "j_opf": "http://schema.openpreservation.org/ois/xml/ns/jhove",

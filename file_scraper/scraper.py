@@ -24,9 +24,9 @@ from file_scraper.jhove.jhove_extractor import JHoveUtf8Extractor
 from file_scraper.logger import LOGGER
 from file_scraper.textfile.textfile_extractor import TextfileExtractor
 from file_scraper.utils import (
-    generate_metadata_dict,
     hexdigest,
 )
+from file_scraper.metadata import generate_metadata_dict
 
 LOSE = (None, UNAV, "")
 

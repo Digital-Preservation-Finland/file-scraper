@@ -1,7 +1,7 @@
 """Metadata model for office file extractor."""
 
 from file_scraper.base import BaseMeta
-from file_scraper.utils import metadata
+from file_scraper.metadata import metadata
 
 
 class OfficeMeta(BaseMeta):

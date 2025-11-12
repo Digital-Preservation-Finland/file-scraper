@@ -1,5 +1,5 @@
 from file_scraper.base import BaseMeta
-from file_scraper.utils import metadata
+from file_scraper.metadata import metadata
 from dpres_file_formats.defaults import UnknownValue as Unkn
 
 

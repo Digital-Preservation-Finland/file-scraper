@@ -6,7 +6,8 @@ from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAP, UNAV
 from file_scraper.exceptions import SkipElementException
 import file_scraper.mediainfo
-from file_scraper.utils import iso8601_duration, strip_zeros, metadata
+from file_scraper.utils import iso8601_duration, strip_zeros
+from file_scraper.metadata import metadata
 
 
 class BaseMediainfoMeta(BaseMeta):

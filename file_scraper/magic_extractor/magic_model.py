@@ -3,7 +3,8 @@ import re
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import MIMETYPE_DICT, UNAP, UNAV
-from file_scraper.utils import metadata, normalize_charset
+from file_scraper.metadata import metadata
+from file_scraper.utils import normalize_charset
 
 
 class BaseMagicMeta(BaseMeta):
