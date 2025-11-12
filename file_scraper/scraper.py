@@ -373,10 +373,19 @@ class Scraper:
             self._extractor_results,
             LOSE
         )
-
         if not streams:
             errors.append("No streams found by the extractors!")
         else:
+            if (
+                self._predefined_version not in LOSE
+                and streams[0]["version"]
+                and streams[0]["version"] != self._predefined_version
+            ):
+                errors.append(
+                    f"The Extractors produced a different version: "
+                    f"{streams[0]['version']} compared to the version given "
+                    f"by the user: {self._predefined_version}"
+                )
             self._extractor_results.append(streams)
 
         self.info[len(self.info)] = {
