@@ -368,32 +368,32 @@ class Scraper:
         Merge scraper results into streams and handle possible
         conflicts.
         """
-        extractor_results = self._kwargs.get("extractor_results", [])
-        errors = []
-        messages = []
 
-        streams, conflicts = generate_metadata_dict(extractor_results, LOSE)
-        errors += conflicts
-        messages.append("Extractor results merged into streams")
+        streams, errors = generate_metadata_dict(
+            self._extractor_results,
+            LOSE
+        )
 
-        info = {
+        if not streams:
+            errors.append("No streams found by the extractors!")
+        else:
+            self._extractor_results.append(streams)
+
+        self.info[len(self.info)] = {
             "class": "Scraper (_merge_results)",
-            "messages": messages,
+            "messages": ["Extractor results merged into streams"],
             "errors": errors,
             "tools": {},
         }
 
-        if len(messages) > 0 and len(errors) == 0:
-            merge_well_formed = None
-        else:
+        merge_well_formed = None
+        if len(errors) > 0:
             merge_well_formed = False
 
-        if streams:
-            self._extractor_results.append(streams)
-        self.info[len(self.info)] = info
         if (
-            self.well_formed is None and self._check_wellformed
-        ) or merge_well_formed is False:
+            (self.well_formed is None and self._check_wellformed)
+            or merge_well_formed is False
+        ):
             self.well_formed = merge_well_formed
         self.streams = streams
 
