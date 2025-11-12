@@ -570,3 +570,18 @@ def test_return_mimetype_result_state(
 ) -> None:
     detector = detector_class(Path("tests/data/text_plain/valid__ascii.txt"))
     assert type(detector.determine_important()) in [Mimetype, type(None)]
+
+
+def test_compressed_pdf():
+    """Test that PDF with compressed metadata is detected correctly."""
+    path = Path(
+        "tests/data/application_pdf/invalid_A-1b_compressed_metadata.pdf"
+    )
+    detector = ExifToolDetector(path)
+    detector.detect()
+    assert detector.mimetype == "application/pdf"
+    # FIXME: The file should be detected as PDF-A
+    assert detector.version is None
+    assert detector.messages()[0] == ("INFO: File is not PDF/A, so PDF/A"
+                                      " validation will not be performed"
+                                      " when validating the file")
