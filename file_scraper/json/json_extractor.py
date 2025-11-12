@@ -13,9 +13,9 @@ class JsonExtractor(BaseExtractor):
         with open(self.filename, "rt") as file:
             try:
                 json.loads(file.read())
-                self._messages.extend("The file is a valid JSON document")
+                self._messages.append("The file is a valid JSON document")
             except (json.JSONDecodeError, UnicodeDecodeError) as e:
-                self._errors.extend(
+                self._errors.append(
                     f"{self.__class__.__name__} produced an error: {e}"
                 )
 
