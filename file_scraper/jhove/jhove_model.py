@@ -7,7 +7,7 @@ except ImportError:
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAP, UNAV
-from file_scraper.metadata import metadata
+
 
 NAMESPACES = {"j_harvard": "http://hul.harvard.edu/ois/xml/ns/jhove",
               "j_opf": "http://schema.openpreservation.org/ois/xml/ns/jhove",
@@ -45,7 +45,7 @@ class JHoveBaseMeta(BaseMeta):
         self._well_formed = well_formed
         self._report = report
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """Return mimetype given by JHove."""
         return get_field(self._report, "mimeType")
@@ -57,7 +57,7 @@ class JHoveGifMeta(JHoveBaseMeta):
     _supported = {"image/gif": ["1987a", "1989a"]}
     _allow_versions = True
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """
         Return version.
@@ -75,7 +75,7 @@ class JHoveGifMeta(JHoveBaseMeta):
             return "19" + get_field(self._report, "version")
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """
         Return file type.
@@ -92,7 +92,7 @@ class JHoveHtmlMeta(JHoveBaseMeta):
     _supported = {"text/html": ["4.01"],
                   "application/xhtml+xml": ["1.0", "1.1"]}
 
-    @metadata(important=True)
+    @BaseMeta.metadata(important=True)
     def version(self):
         """
         Return version.
@@ -134,7 +134,7 @@ class JHoveHtmlMeta(JHoveBaseMeta):
         except IndexError:
             return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """
         Return MIME type.
@@ -150,7 +150,7 @@ class JHoveHtmlMeta(JHoveBaseMeta):
             return "application/xhtml+xml"
         return mime
 
-    @metadata()
+    @BaseMeta.metadata()
     def charset(self):
         """Get the charset from HTML/XML files."""
         if self._report is None:
@@ -159,7 +159,7 @@ class JHoveHtmlMeta(JHoveBaseMeta):
             return self._get_charset_xml()
         return self._get_charset_html()
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """
         Return file type.
@@ -177,7 +177,7 @@ class JHoveJpegMeta(JHoveBaseMeta):
                                  "2.1", "2.2", "2.2.1"]}
     _allow_versions = True
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """
         Return file type.
@@ -194,7 +194,7 @@ class JHoveTiffMeta(JHoveBaseMeta):
     _supported = {"image/tiff": ["6.0"]}
     _allow_versions = True
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """
         Return version.
@@ -204,7 +204,7 @@ class JHoveTiffMeta(JHoveBaseMeta):
         """
         return "6.0" if self._well_formed else UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """
         Return file type.
@@ -222,7 +222,7 @@ class JHovePdfMeta(JHoveBaseMeta):
                                       "1.7", "A-1a", "A-1b", "A-2a", "A-2b",
                                       "A-2u", "A-3a", "A-3b", "A-3u"]}
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """
         Return version.
@@ -235,7 +235,7 @@ class JHovePdfMeta(JHoveBaseMeta):
         """
         return get_field(self._report, "version")
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return file type."""
         return "binary"
@@ -247,7 +247,7 @@ class JHoveWavMeta(JHoveBaseMeta):
     _supported = {"audio/x-wav": ["", "2"]}
     _allow_versions = True
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """
         Return mimetype.
@@ -270,7 +270,7 @@ class JHoveWavMeta(JHoveBaseMeta):
 
         return super().mimetype()
 
-    @metadata(important=True)
+    @BaseMeta.metadata(important=True)
     def version(self):
         """
         Return version.
@@ -296,7 +296,7 @@ class JHoveWavMeta(JHoveBaseMeta):
 
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """
         Return file type.
@@ -320,14 +320,14 @@ class JHoveUtf8Meta(JHoveBaseMeta):
     _only_wellformed = True  # Only well-formed check
     _jhove_module = "UTF8-hul"  # JHove module
 
-    @metadata()
+    @BaseMeta.metadata()
     def charset(self):
         """Return charset from JHOVE."""
         if "Well-formed and valid" in get_field(self._report, "status"):
             return "UTF-8"
         return get_field(self._report, "format")
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """
         Return file type.
@@ -337,12 +337,12 @@ class JHoveUtf8Meta(JHoveBaseMeta):
         """
         return "text" if self._well_formed else UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """We don't know the mimetype."""
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """We don't know the version."""
         return UNAV
@@ -353,7 +353,7 @@ class JHoveEpubMeta(JHoveBaseMeta):
 
     _supported = {"application/epub+zip": ["2.0.1", "3"]}
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """
         Return version.
@@ -369,7 +369,7 @@ class JHoveEpubMeta(JHoveBaseMeta):
             return jhove_version
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return file type."""
         return "binary"
@@ -381,7 +381,7 @@ class JHoveDngMeta(JHoveBaseMeta):
     _supported = {"image/x-adobe-dng": []}
     _allow_versions = True
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """Return mimetype."""
         mime = super().mimetype()
@@ -389,7 +389,7 @@ class JHoveDngMeta(JHoveBaseMeta):
             return "image/x-adobe-dng"
         return mime
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return stream type."""
         return "image" if self._well_formed else UNAV
@@ -401,7 +401,7 @@ class JHoveAiffMeta(JHoveBaseMeta):
     _supported = {"audio/x-aiff": ["", "1.3"]}
     _allow_versions = True
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """
         Return file type.
@@ -411,7 +411,7 @@ class JHoveAiffMeta(JHoveBaseMeta):
         """
         return "audio" if self._well_formed else UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """
         Set version as "1.3" or "(:unap)" if profile is AIFF or AIFF-C

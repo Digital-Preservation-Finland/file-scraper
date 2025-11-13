@@ -1,7 +1,6 @@
 """Metadata model for office file extractor."""
 
 from file_scraper.base import BaseMeta
-from file_scraper.metadata import metadata
 
 
 class OfficeMeta(BaseMeta):
@@ -30,7 +29,7 @@ class OfficeMeta(BaseMeta):
     _allow_versions = True  # Allow any version
     _only_wellformed = True  # Only well-formed check
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return file type."""
         return "binary"

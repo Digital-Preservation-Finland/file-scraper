@@ -7,7 +7,7 @@ from typing import Callable
 import file_scraper.shell
 import pytest
 from file_scraper.base import BaseExtractor, BaseMeta
-from file_scraper.metadata import metadata
+
 
 from tests.common import Correct, partial_message_included
 
@@ -115,27 +115,27 @@ class Meta1(BaseMeta):
     and LOSE dict.
     """
 
-    @metadata()
+    @BaseMeta.metadata()
     def index(self):
         """Return 0: this metadata class will be merged with Meta2."""
         return 0
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """Same MIME type as Meta2 has."""
         return "mime"
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Same version as Meta2 has."""
         return 1.0
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Same stream type as Meta2 has."""
         return "binary"
 
-    @metadata()
+    @BaseMeta.metadata()
     def key1(self):
         """
         This value conflicts with Meta2 and neither is important.
@@ -144,17 +144,17 @@ class Meta1(BaseMeta):
         """
         return "value1-1"
 
-    @metadata()
+    @BaseMeta.metadata()
     def key2(self):
         """This value is compatible with Meta2."""
         return "value2"
 
-    @metadata()
+    @BaseMeta.metadata()
     def key3(self):
         """This value conflicts with Meta2 and the Meta2 value is important."""
         return "key1-3"
 
-    @metadata(important=True)
+    @BaseMeta.metadata(important=True)
     def key4(self):
         """This value conflicts with Meta2 and this value is important."""
         return "importantvalue"
@@ -170,27 +170,27 @@ class Meta2(BaseMeta):
     and LOSE dict.
     """
 
-    @metadata()
+    @BaseMeta.metadata()
     def index(self):
         """Return 0: this metadata class will be merged with Meta1."""
         return 0
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """Same MIME type as Meta1 has."""
         return "mime"
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Same version as Meta1 has."""
         return 1.0
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Same stream type as Meta1 has."""
         return "binary"
 
-    @metadata()
+    @BaseMeta.metadata()
     def key1(self):
         """
         This value conflicts with Meta1 and neither is important.
@@ -199,17 +199,17 @@ class Meta2(BaseMeta):
         """
         return "value2-1"
 
-    @metadata()
+    @BaseMeta.metadata()
     def key2(self):
         """This value is compatible with Meta1."""
         return "value2"
 
-    @metadata(important=True)
+    @BaseMeta.metadata(important=True)
     def key3(self):
         """This value conflicts with Meta1 and this value is important."""
         return "key2-3"
 
-    @metadata()
+    @BaseMeta.metadata()
     def key4(self):
         """This value conflicts with Meta1 and the Meta1 value is important."""
         return "unimportant value"
@@ -225,32 +225,32 @@ class Meta3(BaseMeta):
     other streams.
     """
 
-    @metadata()
+    @BaseMeta.metadata()
     def index(self):
         """Return stream index"""
         return 1
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """Return MIME type"""
         return "anothermime"
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return version"""
         return 2
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return stream type"""
         return "audio"
 
-    @metadata()
+    @BaseMeta.metadata()
     def key1(self):
         """Return metadata"""
         return "value1"
 
-    @metadata()
+    @BaseMeta.metadata()
     def key2(self):
         """Return metadata"""
         return "value2"
@@ -261,22 +261,22 @@ class Meta4(BaseMeta):
     Conflicting important value with Meta1(), where key4() is also important.
     """
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """Same MIME type as Meta1 has."""
         return "mime"
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Same version as Meta1 has."""
         return 1.0
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Same stream type as Meta1 has."""
         return "binary"
 
-    @metadata(important=True)
+    @BaseMeta.metadata(important=True)
     def key4(self):
         """Return metadata, which will conflict with Meta1()"""
         return "conflictingvalue"
@@ -287,22 +287,22 @@ class Meta5(BaseMeta):
     Identical metadata with Meta1. Used for testing that results
     can be merged to scraper.stream without conflicts.
     """
-    @metadata()
+    @BaseMeta.metadata()
     def index(self):
         """Return 0: this metadata class will be merged with Meta1."""
         return 0
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """Same MIME type as Meta1 has."""
         return "mime"
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Same version as Meta1 has."""
         return 1.0
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Same stream type as Meta1 has."""
         return "binary"

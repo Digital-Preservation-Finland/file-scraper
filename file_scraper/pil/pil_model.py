@@ -4,7 +4,7 @@ from copy import copy, deepcopy
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAP, UNAV
-from file_scraper.metadata import metadata
+
 
 try:
     import PIL.Image
@@ -46,46 +46,46 @@ class BasePilMeta(BaseMeta):
         if hasattr(pil, "_getexif"):
             self._pil_getexif = deepcopy(pil._getexif())
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         return self._pil_mimetype
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """PIL does not know the version, return (:unav)."""
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return stream type."""
         return "image"
 
-    @metadata()
+    @BaseMeta.metadata()
     def index(self):
         """Return stream index."""
         return self._pil_index
 
-    @metadata()
+    @BaseMeta.metadata()
     def colorspace(self):
         """Return colorspace."""
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def width(self):
         """Return image width."""
         return str(self._pil_width)
 
-    @metadata()
+    @BaseMeta.metadata()
     def height(self):
         """Return image height."""
         return str(self._pil_height)
 
-    @metadata()
+    @BaseMeta.metadata()
     def bps_value(self):
         """Return bits per sample."""
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def bps_unit(self):
         """Return sample unit."""
 
@@ -94,12 +94,12 @@ class BasePilMeta(BaseMeta):
 
         return "integer"
 
-    @metadata()
+    @BaseMeta.metadata()
     def compression(self):
         """Return compression scheme."""
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def samples_per_pixel(self):
         """Return samples per pixel."""
         return SAMPLES_PER_PIXEL[self._pil_mode]
@@ -111,22 +111,22 @@ class TiffPilMeta(BasePilMeta):
     _supported = {"image/tiff": []}  # Supported mimetype
     _allow_versions = True                # Allow any version
 
-    @metadata()
+    @BaseMeta.metadata()
     def width(self):
         """We will get width from another extractor."""
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def height(self):
         """We will get height from another extractor."""
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def colorspace(self):
         """We will get colorspace from another extractor."""
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def samples_per_pixel(self):
         """Return samples per pixel."""
         tag_info = self._pil_tag_v2
@@ -140,7 +140,7 @@ class DngPilMeta(TiffPilMeta):
     _supported = {"image/x-adobe-dng": []}
     _allow_versions = True
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """Return mimetype."""
         return "image/x-adobe-dng"
@@ -153,17 +153,17 @@ class PngPilMeta(BasePilMeta):
     _supported = {"image/png": []}
     _allow_versions = True  # Allow any version
 
-    @metadata()
+    @BaseMeta.metadata()
     def width(self):
         """Return (:unav): we will get width from another extractor."""
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def height(self):
         """Return (:unav): we will get height from another extractor."""
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def colorspace(self):
         """Return (:unav): we will get colorspace from another extractor."""
         return UNAV
@@ -174,7 +174,7 @@ class GifPilMeta(PngPilMeta):
     # Supported mimetypes
     _supported = {"image/gif": []}
 
-    @metadata()
+    @BaseMeta.metadata()
     def samples_per_pixel(self):
         """GIF is always a palette index image"""
         return "1" if self._pil_mode in SAMPLES_PER_PIXEL else UNAV
@@ -187,30 +187,30 @@ class Jp2PilMeta(BasePilMeta):
     _supported = {"image/jp2": []}
     _allow_versions = True  # Allow any version
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         mime = super().mimetype()
         if mime == "image/jpx":
             return UNAV
         return mime
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         if self.mimetype() == "image/jp2":
             return UNAP
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def width(self):
         """Return (:unav): we will get width from another extractor."""
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def height(self):
         """Return (:unav): we will get height from another extractor."""
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def colorspace(self):
         """Return (:unav): we will get colorspace from another extractor."""
         return UNAV
@@ -222,22 +222,22 @@ class JpegPilMeta(BasePilMeta):
     _supported = {"image/jpeg": []}  # Supported mimetypes
     _allow_versions = True  # Allow any version
 
-    @metadata()
+    @BaseMeta.metadata()
     def width(self):
         """Return (:unav): we will get width from another extractor."""
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def height(self):
         """Return (:unav): We will get height from another extractor."""
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def colorspace(self):
         """Return (:unav): We will get colorspace from another extractor."""
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def samples_per_pixel(self):
         """Return samples per pixel."""
         exif_info = self._pil_getexif
@@ -252,22 +252,22 @@ class WebPPilMeta(BasePilMeta):
     _supported = {"image/webp": []}
     _allow_versions = True
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """Return mimetype."""
         return "image/webp"
 
-    @metadata()
+    @BaseMeta.metadata()
     def height(self):
         """Return (:unav): we will get height from another extractor."""
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def width(self):
         """Return (:unav): we will get width from another extractor."""
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return (:unap): no version for WebP files."""
         return UNAP

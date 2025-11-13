@@ -53,7 +53,7 @@ The metadata is represented by metadata model objects, e.g. ``GhostscriptMeta`` 
         * Metadata method MAY raise ``SkipElement`` from ``file_scraper.base``, if the methods needs to be omitted in collection phase. This may become handy with files containing different kinds of streams. Value ``(:unav)`` is returned when a extractor cannot determine the value of a metadata element and ``(:unap)`` when the metadata element is not applicable to the stream type.
         * Example of a metadata method::
 
-            @metadata
+            @BaseMeta.metadata
             def width(self):
                 return self._width
 

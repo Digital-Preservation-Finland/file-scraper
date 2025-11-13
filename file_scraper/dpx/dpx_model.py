@@ -2,7 +2,6 @@
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAV
-from file_scraper.metadata import metadata
 
 
 class DpxMeta(BaseMeta):
@@ -23,7 +22,7 @@ class DpxMeta(BaseMeta):
         self._output = output
         self._filename = filename
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """
         Return mimetype.
@@ -33,7 +32,7 @@ class DpxMeta(BaseMeta):
         """
         return "image/x-dpx" if self._well_formed else UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """
         Return file format version.
@@ -53,7 +52,7 @@ class DpxMeta(BaseMeta):
 
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """
         Return file type.

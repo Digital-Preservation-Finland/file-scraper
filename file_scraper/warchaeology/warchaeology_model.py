@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAV
-from file_scraper.metadata import metadata
 
 
 class WarchaeologyMeta(BaseMeta):
@@ -21,17 +20,17 @@ class WarchaeologyMeta(BaseMeta):
         self._well_formed = well_formed
         self._header = header
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return file type."""
         return "binary"
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self) -> str:
         """Return the mimetype."""
         return "application/warc"
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self) -> str:
         """Return the version."""
         if self._header is None:

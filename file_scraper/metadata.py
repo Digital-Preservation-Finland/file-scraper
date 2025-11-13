@@ -6,9 +6,9 @@ Metadata collection.
 """
 from __future__ import annotations
 
-from collections.abc import Callable, Iterable
+from collections.abc import Iterable
 from itertools import chain
-from typing import Any, Protocol, TYPE_CHECKING, cast
+from typing import Any, Protocol, TYPE_CHECKING
 
 from dpres_file_formats.defaults import UnknownValue as Unk
 
@@ -27,32 +27,6 @@ class MetadataMethod(Protocol):
     __name__: str
 
     def __call__(self) -> Any: ...
-
-
-def metadata(important: bool = False) -> Callable[[Callable], MetadataMethod]:
-    """
-    Decorator for functions extracting metadata.
-
-    :param important: True if metadata is important, False otherwise
-    :returns: Decorator for function
-    """
-
-    def _wrap(func: Callable) -> MetadataMethod:
-        setattr(func, "is_metadata", True)
-        setattr(func, "is_important", important)
-        return cast("MetadataMethod", func)
-
-    return _wrap
-
-
-def is_metadata(func: Callable) -> bool:
-    """
-    Return True if given a function with metadata flag, otherwise False.
-
-    :param func: Function to check
-    :returns: True if function has metadata flag, False otherwise
-    """
-    return callable(func) and getattr(func, "is_metadata", False)
 
 
 def _merge_to_stream(

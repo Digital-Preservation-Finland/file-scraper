@@ -2,7 +2,6 @@
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAV
-from file_scraper.metadata import metadata
 
 
 class VnuMeta(BaseMeta):
@@ -18,7 +17,7 @@ class VnuMeta(BaseMeta):
         """
         self._well_formed = well_formed
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """
         Return mimetype.
@@ -28,7 +27,7 @@ class VnuMeta(BaseMeta):
         """
         return "text/html" if self._well_formed else UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """
         Return version.
@@ -38,7 +37,7 @@ class VnuMeta(BaseMeta):
         """
         return "5" if self._well_formed else UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """
         Return file type.

@@ -1,7 +1,7 @@
 """Schematron metadata model."""
 
 from file_scraper.defaults import UNAV
-from file_scraper.metadata import metadata
+
 from file_scraper.base import BaseMeta
 
 
@@ -19,17 +19,17 @@ class SchematronMeta(BaseMeta):
         """
         self._well_formed = well_formed
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """Return MIME type."""
         return "text/xml" if self._well_formed else UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return file format version."""
         return "1.0" if self._well_formed else UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return stream type."""
         return "text" if self._well_formed else UNAV

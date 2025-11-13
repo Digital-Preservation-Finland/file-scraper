@@ -16,7 +16,7 @@ from pathlib import Path
 import pytest
 
 from file_scraper.base import BaseExtractor, BaseMeta, BaseDetector
-from file_scraper.metadata import metadata
+
 from tests.common import partial_message_included
 
 
@@ -165,12 +165,12 @@ class BaseMetaCustom(BaseMeta):
         self._mimetype = mimetype
         self._version = version
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """Return MIME type"""
         return self._mimetype
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return file format version"""
         return self._version

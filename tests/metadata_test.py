@@ -61,13 +61,13 @@ import pytest
 
 from itertools import chain
 
+from file_scraper.base import BaseMeta
 from file_scraper.scraper import LOSE
 from file_scraper.metadata import (
     _fill_importants,
     _merge_to_stream,
     generate_metadata_dict,
-    metadata,
-    )
+)
 
 
 class MetaTest:
@@ -81,12 +81,12 @@ class MetaTest:
         """
         self.value = value
 
-    @metadata()
+    @BaseMeta.metadata()
     def key_notimportant(self):
         """Not important metadata"""
         return self.value
 
-    @metadata(important=True)
+    @BaseMeta.metadata(important=True)
     def key_important(self):
         """Important metadata"""
         return self.value

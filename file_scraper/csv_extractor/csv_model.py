@@ -3,7 +3,6 @@
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAP, UNAV
-from file_scraper.metadata import metadata
 
 
 class CsvMeta(BaseMeta):
@@ -37,7 +36,7 @@ class CsvMeta(BaseMeta):
         self._csv_fields = params["fields"]
         self._csv_first_line = params["first_line"]
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """
         Return mimetype.
@@ -47,7 +46,7 @@ class CsvMeta(BaseMeta):
         """
         return "text/csv" if self._well_formed else UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """
         Return version.
@@ -57,27 +56,27 @@ class CsvMeta(BaseMeta):
         """
         return UNAP if self._well_formed else UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def delimiter(self):
         """Return delimiter."""
         return self._csv_delimiter
 
-    @metadata()
+    @BaseMeta.metadata()
     def separator(self):
         """Return separator."""
         return self._csv_separator
 
-    @metadata()
+    @BaseMeta.metadata()
     def quotechar(self):
         """Return quotechar"""
         return self._csv_quotechar
 
-    @metadata()
+    @BaseMeta.metadata()
     def first_line(self):
         """Return first line."""
         return self._csv_first_line
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """
         Return file type.

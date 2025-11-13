@@ -3,7 +3,6 @@
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAV
 from file_scraper.utils import ensure_text
-from file_scraper.metadata import metadata
 
 
 class WarctoolsMeta(BaseMeta):
@@ -22,12 +21,12 @@ class WarctoolsMeta(BaseMeta):
         self._well_formed = well_formed
         self._line = line
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return file type."""
         return "binary"
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """
         Return mimetype.
@@ -37,7 +36,7 @@ class WarctoolsMeta(BaseMeta):
         """
         return "application/warc" if self._well_formed else UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return the version."""
         if self._line is None:

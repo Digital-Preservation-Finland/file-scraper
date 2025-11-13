@@ -2,7 +2,6 @@
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAV
-from file_scraper.metadata import metadata
 
 
 class XmllintMeta(BaseMeta):
@@ -23,7 +22,7 @@ class XmllintMeta(BaseMeta):
         self._well_formed = well_formed
         self._tree = tree
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """
         Return mimetype.
@@ -33,7 +32,7 @@ class XmllintMeta(BaseMeta):
         """
         return "text/xml" if self._well_formed else UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return version."""
         if self.mimetype() in self._supported and \
@@ -41,7 +40,7 @@ class XmllintMeta(BaseMeta):
             return self._tree.docinfo.xml_version
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """
         Return file type.

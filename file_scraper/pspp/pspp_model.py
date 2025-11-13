@@ -2,7 +2,6 @@
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAP, UNAV
-from file_scraper.metadata import metadata
 
 
 class PsppMeta(BaseMeta):
@@ -18,7 +17,7 @@ class PsppMeta(BaseMeta):
         """
         self._well_formed = well_formed
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """
         Return MIME type.
@@ -28,7 +27,7 @@ class PsppMeta(BaseMeta):
         """
         return "application/x-spss-por" if self._well_formed else UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return version.
 
@@ -37,7 +36,7 @@ class PsppMeta(BaseMeta):
         """
         return UNAP if self._well_formed else UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return file type."""
         return "binary"

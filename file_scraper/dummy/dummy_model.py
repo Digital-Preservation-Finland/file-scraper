@@ -2,13 +2,12 @@
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAP, UNAV
-from file_scraper.metadata import metadata
 
 
 class DummyMeta(BaseMeta):
     """Minimal metadata model for dummy extractors."""
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Stream type is not known so return (:unav)."""
         return UNAV
@@ -30,14 +29,14 @@ class ExtractorNotFoundMeta(BaseMeta):
         self._mimetype = mimetype
         self._version = version
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """Return MIME type"""
         if self._mimetype:
             return self._mimetype
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return the file format version"""
         if self._version:
@@ -83,19 +82,19 @@ class DetectedMimeVersionMeta(BaseMeta):
         self._mimetype = mimetype
         self._version = version
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """Return MIME type"""
         if self._mimetype:
             return self._mimetype
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return the file format version"""
         return self._version if self._version is not None else UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return stream type."""
 
@@ -122,7 +121,7 @@ class DetectedSpssVersionMeta(DetectedMimeVersionMeta):
     }
     _allow_versions = True
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return the file format version"""
         return UNAP
@@ -157,7 +156,7 @@ class DetectedTextVersionMeta(DetectedMimeVersionMeta):
         "text/xml": ["1.0"],
     }
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return version."""
         version = super().version()
@@ -165,7 +164,7 @@ class DetectedTextVersionMeta(DetectedMimeVersionMeta):
             return "1.0"
         return version
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return stream type."""
         return "text" if self.mimetype() != UNAV else UNAV
@@ -184,7 +183,7 @@ class DetectedPdfaVersionMeta(DetectedMimeVersionMeta):
     _supported = {"application/pdf": ["A-1a", "A-1b", "A-2a", "A-2b", "A-2u",
                                       "A-3a", "A-3b", "A-3u"]}
 
-    @metadata(important=True)
+    @BaseMeta.metadata(important=True)
     def version(self):
         """Return the file format version"""
         return self._version if self._version is not None else UNAV

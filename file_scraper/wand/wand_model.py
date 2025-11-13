@@ -2,7 +2,6 @@
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAV, UNAP
-from file_scraper.metadata import metadata
 
 
 class WandImageMeta(BaseMeta):
@@ -24,22 +23,22 @@ class WandImageMeta(BaseMeta):
         """
         self._image = image
 
-    @metadata()
+    @BaseMeta.metadata()
     def index(self):
         """Return the index of the SingleImage in its container."""
         return self._image.index
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """Return the MIME type of the image."""
         return self._image.container.mimetype
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Wand is only used for images, so return "image"."""
         return "image"
 
-    @metadata()
+    @BaseMeta.metadata()
     def colorspace(self):
         """
         If image exists, return its colorspace, otherwise return (:unav).
@@ -58,7 +57,7 @@ class WandImageMeta(BaseMeta):
         # RGB.
         return "rgb"
 
-    @metadata()
+    @BaseMeta.metadata()
     def icc_profile_name(self):
         """Return ICC profile name if one is available.
 
@@ -67,21 +66,21 @@ class WandImageMeta(BaseMeta):
             return UNAV
         return self._image.container.metadata.get("icc:description", UNAV)
 
-    @metadata()
+    @BaseMeta.metadata()
     def width(self):
         """If image exists, return its width, otherwise return (:unav)."""
         if not self._image:
             return UNAV
         return str(self._image.width)
 
-    @metadata()
+    @BaseMeta.metadata()
     def height(self):
         """If image exists, return its height, otherwise return (:unav)."""
         if not self._image:
             return UNAV
         return str(self._image.height)
 
-    @metadata()
+    @BaseMeta.metadata()
     def bps_value(self):
         """
         If image exists, return its colour depth, otherwise return (:unav).
@@ -90,19 +89,19 @@ class WandImageMeta(BaseMeta):
             return UNAV
         return str(self._image.depth)
 
-    @metadata()
+    @BaseMeta.metadata()
     def bps_unit(self):
         """Unit is always same, return (:unav)."""
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def compression(self):
         """Return the compression type if image exists, otherwise (:unav)."""
         if not self._image:
             return UNAV
         return self._image.compression
 
-    @metadata()
+    @BaseMeta.metadata()
     def samples_per_pixel(self):
         """
         Samples per pixel not available from this extractor, return (:unav).
@@ -116,7 +115,7 @@ class WandTiffMeta(WandImageMeta):
     _supported = {"image/tiff": []}
     _allow_versions = True
 
-    @metadata()
+    @BaseMeta.metadata()
     def byte_order(self):
         """
         If image exists, return the byte order of the image, otherwise (:unav).
@@ -144,7 +143,7 @@ class WandExifMeta(WandImageMeta):
     _supported = {"image/jpeg": []}
     _allow_versions = True
 
-    @metadata(important=True)
+    @BaseMeta.metadata(important=True)
     def version(self):
         """Exif version in PRONOM registry form."""
 
@@ -161,7 +160,7 @@ class WandWebPMeta(WandImageMeta):
     _supported = {"image/webp": []}
     _allow_versions = True
 
-    @metadata(important=True)
+    @BaseMeta.metadata(important=True)
     def compression(self):
         """Return compression quality if exists, otherwise (:unav)"""
         if self._image.compression_quality < 100:
@@ -170,7 +169,7 @@ class WandWebPMeta(WandImageMeta):
             return "VP8 Lossless"
         return UNAV
 
-    @metadata(important=True)
+    @BaseMeta.metadata(important=True)
     def version(self):
         """No version for WebP files, return (:unap)."""
         return UNAP

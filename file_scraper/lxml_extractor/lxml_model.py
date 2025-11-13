@@ -2,7 +2,6 @@
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAV
-from file_scraper.metadata import metadata
 
 
 class LxmlMeta(BaseMeta):
@@ -19,7 +18,7 @@ class LxmlMeta(BaseMeta):
         """
         self._tree = tree
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return version."""
         if "<!DOCTYPE html>" in self._tree.docinfo.doctype:
@@ -28,12 +27,12 @@ class LxmlMeta(BaseMeta):
             return "4.01"
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def charset(self):
         """Return charset."""
         return self._tree.docinfo.encoding
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return file type."""
         return "text"

@@ -1,5 +1,5 @@
 from file_scraper.base import BaseMeta
-from file_scraper.metadata import metadata
+
 from dpres_file_formats.defaults import UnknownValue as Unkn
 
 
@@ -16,18 +16,18 @@ class JsonMeta(BaseMeta):
     _supported: dict[str, list[str]] = {"application/json": [Unkn.UNAP]}
     _allow_versions = False
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """
         Return file type.
         """
         return "text"
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self) -> str:
         return "application/json"
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self) -> str:
         """
         Json format doesn't have a version so the version doesn't make sense

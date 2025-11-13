@@ -1,7 +1,6 @@
 """Metadata model for Ghostscript."""
 
 from file_scraper.base import BaseMeta
-from file_scraper.metadata import metadata
 
 
 class GhostscriptMeta(BaseMeta):
@@ -12,7 +11,7 @@ class GhostscriptMeta(BaseMeta):
                                       "1.7", "A-1a", "A-1b", "A-2a", "A-2b",
                                       "A-2u", "A-3a", "A-3b", "A-3u"]}
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return file type."""
         return "binary"

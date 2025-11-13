@@ -3,14 +3,14 @@
 from __future__ import annotations
 
 import abc
-from collections.abc import Iterator
+from collections.abc import Iterator, Callable
 from pathlib import Path
-from typing import Any, Generic, Literal, TypeVar, final
+from typing import Any, Generic, Literal, TypeVar, final, cast
 
 from file_scraper.defaults import UNAP, UNAV
 from file_scraper.state import Mimetype
 from file_scraper.utils import filter_unwanted_chars
-from file_scraper.metadata import (MetadataMethod, is_metadata, metadata)
+from file_scraper.metadata import (MetadataMethod)
 
 
 class BaseApparatus(metaclass=abc.ABCMeta):
@@ -92,7 +92,27 @@ class BaseMeta:
     _supported: dict[str, list[str]] = {}
     _allow_versions = False
 
-    @metadata()
+    @final
+    @staticmethod
+    def metadata(
+        important: bool = False
+    ) -> Callable[[Callable], MetadataMethod]:
+        """
+        Decorator for functions extracting metadata.
+
+        :param important: True if metadata is important, False otherwise
+        :returns: Decorator for function
+        """
+
+        def _wrap(func: Callable) -> MetadataMethod:
+            setattr(func, "is_metadata", True)
+            setattr(func, "is_important", important)
+            return cast("MetadataMethod", func)
+
+        return _wrap
+
+    # TODO Remove after python 3.10, __func__ hack is for python 3.9
+    @metadata.__func__()
     def mimetype(self) -> str:
         """
         BaseMeta does no real scraping. Should be implemented in subclasses.
@@ -102,7 +122,8 @@ class BaseMeta:
         """
         return UNAV
 
-    @metadata()
+    # TODO Remove after python 3.10, __func__ hack is for python 3.9
+    @metadata.__func__()
     def version(self) -> str:
         """
         BaseMeta does no real scraping. Should be implemented in subclasses.
@@ -112,7 +133,8 @@ class BaseMeta:
         """
         return UNAV
 
-    @metadata()
+    # TODO Remove after python 3.10, __func__ hack is for python 3.9
+    @metadata.__func__()
     def index(self) -> int:
         """
         BaseMeta does no real scraping. Should be implemented in subclasses.
@@ -121,7 +143,8 @@ class BaseMeta:
         """
         return 0
 
-    @metadata()
+    # TODO Remove after python 3.10, __func__ hack is for python 3.9
+    @metadata.__func__()
     def stream_type(self) -> str:
         """
         BaseMeta does no real scraping. Should be implemented in subclasses.
@@ -158,9 +181,11 @@ class BaseMeta:
     @final
     def iterate_metadata_methods(self) -> Iterator[MetadataMethod]:
         """Iterate through all metadata methods."""
-        for method in dir(self):
-            if is_metadata(getattr(self, method)):
-                yield getattr(self, method)
+        for method_name in dir(self):
+            method = getattr(self, method_name)
+            # Metadata methods have the is_metadata attribute
+            if callable(method) and getattr(method, "is_metadata", False):
+                yield method
 
     @classmethod
     def supported_mimetypes(cls) -> dict[str, list[str]]:

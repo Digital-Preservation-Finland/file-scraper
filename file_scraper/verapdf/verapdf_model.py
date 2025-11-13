@@ -2,7 +2,6 @@
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAV
-from file_scraper.metadata import metadata
 
 
 class VerapdfMeta(BaseMeta):
@@ -22,7 +21,7 @@ class VerapdfMeta(BaseMeta):
         self._well_formed = well_formed
         self._profile = profile
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """
         Return mime type.
@@ -32,7 +31,7 @@ class VerapdfMeta(BaseMeta):
         """
         return "application/pdf" if self._well_formed else UNAV
 
-    @metadata(important=True)
+    @BaseMeta.metadata(important=True)
     def version(self):
         """
         Return the version based on the profile given to the constructor.
@@ -48,7 +47,7 @@ class VerapdfMeta(BaseMeta):
                 " validation profile")[0].lower()
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return file type."""
         return "binary"

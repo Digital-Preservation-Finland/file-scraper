@@ -3,7 +3,7 @@ import re
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import MIMETYPE_DICT, UNAP, UNAV
-from file_scraper.metadata import metadata
+
 from file_scraper.utils import normalize_charset
 
 
@@ -21,7 +21,7 @@ class BaseMagicMeta(BaseMeta):
         self._magic_result = magic_result
         self._predefined_mimetype = pre_mimetype
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """
         Return MIME type.
@@ -43,7 +43,7 @@ class BaseMagicMeta(BaseMeta):
             return mimetype
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return file format version."""
         magic_version = self._magic_result['magic_none']
@@ -59,7 +59,7 @@ class BaseMagicMeta(BaseMeta):
 class BinaryMagicBaseMeta(BaseMagicMeta):
     """Base class for metadata models of binary files."""
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return file type."""
         return "binary"
@@ -68,13 +68,13 @@ class BinaryMagicBaseMeta(BaseMagicMeta):
 class TextMagicBaseMeta(BaseMagicMeta):
     """Base class for metadata models of text files."""
 
-    @metadata()
+    @BaseMeta.metadata()
     def charset(self):
         """Return charset."""
         magic_charset = self._magic_result['magic_mime_encoding']
         return normalize_charset(magic_charset)
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return file type."""
         return "text"
@@ -86,7 +86,7 @@ class TextFileMagicMeta(TextMagicBaseMeta):
     _supported = {"text/plain": [], "text/csv": [], "application/json": []}
     _allow_versions = True  # Allow any version
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return version."""
         return UNAP
@@ -100,7 +100,7 @@ class XmlFileMagicMeta(TextMagicBaseMeta):
     _endtag = " "                  # Text after version in magic output
     _allow_versions = True         # Allow any version
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """
         Return the XML version.
@@ -132,7 +132,7 @@ class XhtmlFileMagicMeta(TextMagicBaseMeta):
     _endtag = " "           # Text after version in magic output
     _allow_versions = True  # Allow any version
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """Return MIME type."""
         mime = self._magic_result['magic_mime_type']
@@ -148,7 +148,7 @@ class HtmlFileMagicMeta(TextMagicBaseMeta):
     # Supported mimetypes
     _supported = {"text/html": ["4.01", "5"]}
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return version."""
         return UNAV
@@ -163,7 +163,7 @@ class PdfFileMagicMeta(BinaryMagicBaseMeta):
                                       "A-2u", "A-3a", "A-3b", "A-3u"]}
     _allow_versions = True  # Allow any version
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return PDF file format version."""
         # In EL9 "file" can return (password protected) for a valid A-1a even
@@ -214,7 +214,7 @@ class OfficeFileMagicMeta(BinaryMagicBaseMeta):
         "application/vnd.oasis.opendocument.formula",
     ]
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return version."""
         if self.mimetype() in self._supported:
@@ -230,14 +230,14 @@ class PngFileMagicMeta(BinaryMagicBaseMeta):
     _supported = {"image/png": ["1.2"]}  # Supported mimetype
     _allow_versions = True  # Allow any version
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return version."""
         if self.mimetype() in self._supported:
             return "1.2"
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return stream type."""
         return "image"
@@ -249,12 +249,12 @@ class AiffFileMagicMeta(BinaryMagicBaseMeta):
     _supported = {"audio/x-aiff": ["", "1.3"]}  # Supported mimetype
     _allow_versions = True   # Allow any version
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return stream type."""
         return "audio"
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return version based on if the data is an AIFF audio type
         or an AIFF-C compressed audio type.
@@ -283,12 +283,12 @@ class JpegFileMagicMeta(BinaryMagicBaseMeta):
     _endtag = ","            # Text after version in magic output
     _allow_versions = True   # Allow any version
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return stream type."""
         return "image"
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return JFIF version when available. Version is determined as in
         BaseMagicMeta version() unless the file has been identified as
@@ -310,14 +310,14 @@ class Jp2FileMagicMeta(BinaryMagicBaseMeta):
     _supported = {"image/jp2": [""]}  # Supported mimetype
     _allow_versions = True  # Allow any version
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return version."""
         if self.mimetype() in self._supported:
             return UNAP
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return stream type."""
         return "image"
@@ -329,14 +329,14 @@ class TiffFileMagicMeta(BinaryMagicBaseMeta):
     _supported = {"image/tiff": ["6.0"]}  # Supported mimetype
     _allow_versions = True  # Allow any version
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return version."""
         if self.mimetype() in self._supported:
             return "6.0"
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return stream type."""
         return "image"
@@ -349,7 +349,7 @@ class GifFileMagicMeta(BinaryMagicBaseMeta):
     _allow_versions = True
     _endtag = ","
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return version."""
         version = super().version()
@@ -357,7 +357,7 @@ class GifFileMagicMeta(BinaryMagicBaseMeta):
             return "19" + version
         return version
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return stream type."""
         return "image"

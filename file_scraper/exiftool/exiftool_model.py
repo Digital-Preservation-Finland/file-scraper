@@ -3,7 +3,6 @@
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAV
-from file_scraper.metadata import metadata
 
 
 class ExifToolBaseMeta(BaseMeta):
@@ -13,7 +12,7 @@ class ExifToolBaseMeta(BaseMeta):
     def __init__(self, metadata):
         self._metadata = metadata
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         return self._metadata.get("File:MIMEType", UNAV)
 
@@ -26,7 +25,7 @@ class ExifToolDngMeta(ExifToolBaseMeta):
     _supported = {"image/x-adobe-dng": ["1.1", "1.2", "1.3", "1.4", "1.5"]}
     _allow_versions = True
 
-    @metadata(important=True)
+    @BaseMeta.metadata(important=True)
     def mimetype(self):
         """
         Return mimetype.
@@ -38,7 +37,7 @@ class ExifToolDngMeta(ExifToolBaseMeta):
         """
         return super().mimetype()
 
-    @metadata(important=True)
+    @BaseMeta.metadata(important=True)
     def version(self):
         """
         Return version with one decimal digit, eg. "1.3".
@@ -51,12 +50,12 @@ class ExifToolDngMeta(ExifToolBaseMeta):
             return version[:3]
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return file type."""
         return "image"
 
-    @metadata()
+    @BaseMeta.metadata()
     def byte_order(self):
         """
         Return the byte order of the image.

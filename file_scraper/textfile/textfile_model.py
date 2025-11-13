@@ -2,7 +2,6 @@
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAP, UNAV
-from file_scraper.metadata import metadata
 
 
 class TextFileMeta(BaseMeta):
@@ -19,7 +18,7 @@ class TextFileMeta(BaseMeta):
         """
         self._well_formed = well_formed
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """
         Return mimetype.
@@ -29,7 +28,7 @@ class TextFileMeta(BaseMeta):
         """
         return "text/plain" if self._well_formed is not False else UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return version.
 
@@ -38,7 +37,7 @@ class TextFileMeta(BaseMeta):
         """
         return UNAP if self._well_formed is not False else UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """
         Return stream type.
@@ -71,7 +70,7 @@ class TextEncodingMeta(BaseMeta):
         self._charset = charset
         self._predefined_mimetype = predefined_mimetype
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """
         Return mimetype only if text/plain expected and no errors occured.
@@ -85,7 +84,7 @@ class TextEncodingMeta(BaseMeta):
 
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """
         Return version only if text/plain expected and no errors occured.
@@ -98,12 +97,12 @@ class TextEncodingMeta(BaseMeta):
             return UNAP
         return UNAV
 
-    @metadata(important=True)
+    @BaseMeta.metadata(important=True)
     def charset(self):
         """Return charset."""
         return self._charset
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return stream type."""
         return "text"

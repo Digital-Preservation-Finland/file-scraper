@@ -7,7 +7,6 @@ from file_scraper.defaults import UNAP, UNAV
 from file_scraper.exceptions import SkipElementException
 import file_scraper.mediainfo
 from file_scraper.utils import iso8601_duration, strip_zeros
-from file_scraper.metadata import metadata
 
 
 class BaseMediainfoMeta(BaseMeta):
@@ -31,19 +30,19 @@ class BaseMediainfoMeta(BaseMeta):
         else:
             self._container = None
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """Return mimetype for stream."""
         return file_scraper.mediainfo.track_mimetype(self._stream) or UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return version of stream."""
         if self._stream.format_version is not None:
             return self._stream.format_version.replace("Version ", "")
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return stream type."""
         if self._container and self._stream == self._container:
@@ -62,7 +61,7 @@ class BaseMediainfoMeta(BaseMeta):
         # videocontainers
         return None
 
-    @metadata()
+    @BaseMeta.metadata()
     def index(self):
         """Return stream index."""
         if self._container:
@@ -72,7 +71,7 @@ class BaseMediainfoMeta(BaseMeta):
         # stream. It is just general information that is skipped.
         return self._track_index - 1
 
-    @metadata()
+    @BaseMeta.metadata()
     def color(self):
         """
         Return color information.
@@ -91,7 +90,7 @@ class BaseMediainfoMeta(BaseMeta):
             return "Color"
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def signal_format(self):
         """Return signal format."""
         if self.stream_type() not in ["video"]:
@@ -101,7 +100,7 @@ class BaseMediainfoMeta(BaseMeta):
 
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def width(self):
         """Return frame width."""
         if self.stream_type() not in ["video"]:
@@ -110,7 +109,7 @@ class BaseMediainfoMeta(BaseMeta):
             return str(self._stream.width)
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def height(self):
         """Return frame height."""
         if self.stream_type() not in ["video"]:
@@ -119,7 +118,7 @@ class BaseMediainfoMeta(BaseMeta):
             return str(self._stream.height)
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def par(self):
         """Return pixel aspect ratio."""
         if self.stream_type() not in ["video"]:
@@ -128,7 +127,7 @@ class BaseMediainfoMeta(BaseMeta):
             return strip_zeros(str(self._stream.pixel_aspect_ratio))
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def dar(self):
         """Return display aspect ratio."""
         if self.stream_type() not in ["video"]:
@@ -138,7 +137,7 @@ class BaseMediainfoMeta(BaseMeta):
                 self._stream.display_aspect_ratio))
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def data_rate(self):
         """Return data rate (bit rate)."""
         if self.stream_type() not in ["video", "audio"]:
@@ -151,7 +150,7 @@ class BaseMediainfoMeta(BaseMeta):
                 self._stream.bit_rate)/1000))
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def frame_rate(self):
         """Return frame rate."""
         if self.stream_type() not in ["video"]:
@@ -160,7 +159,7 @@ class BaseMediainfoMeta(BaseMeta):
             return strip_zeros(str(self._stream.frame_rate))
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def sampling(self):
         """Return chroma subsampling method."""
         if self.stream_type() not in ["video"]:
@@ -169,7 +168,7 @@ class BaseMediainfoMeta(BaseMeta):
             return self._stream.chroma_subsampling
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def sound(self):
         """Return "Yes" if sound channels are present, otherwise "No"."""
         if self.stream_type() not in ["video"]:
@@ -182,7 +181,7 @@ class BaseMediainfoMeta(BaseMeta):
             return "Yes"
         return "No"
 
-    @metadata()
+    @BaseMeta.metadata()
     def codec_quality(self):
         """
         Return codec quality.
@@ -196,7 +195,7 @@ class BaseMediainfoMeta(BaseMeta):
             return self._stream.compression_mode.lower()
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def data_rate_mode(self):
         """
         Return data rate mode.
@@ -212,7 +211,7 @@ class BaseMediainfoMeta(BaseMeta):
             return "Variable"
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def audio_data_encoding(self):
         """Return audio data encoding."""
         if self.stream_type() not in ["audio"]:
@@ -221,7 +220,7 @@ class BaseMediainfoMeta(BaseMeta):
             return str(self._stream.format)
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def sampling_frequency(self):
         """Return sampling frequency."""
         if self.stream_type() not in ["audio"]:
@@ -231,7 +230,7 @@ class BaseMediainfoMeta(BaseMeta):
                 self._stream.sampling_rate)/1000))
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def num_channels(self):
         """Return number of channels."""
         if self.stream_type() not in ["audio"]:
@@ -240,7 +239,7 @@ class BaseMediainfoMeta(BaseMeta):
             return str(self._stream.channel_s)
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def codec_creator_app(self):
         """Return creator application."""
         if self.stream_type() not in ["video", "audio", "videocontainer"]:
@@ -249,7 +248,7 @@ class BaseMediainfoMeta(BaseMeta):
             return self._tracks[0].writing_application
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def codec_creator_app_version(self):
         """Return creator application version."""
         if self.stream_type() not in ["video", "audio", "videocontainer"]:
@@ -261,7 +260,7 @@ class BaseMediainfoMeta(BaseMeta):
                 return reg.group(1)
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def codec_name(self):
         """Return codec name."""
         if self.stream_type() not in ["video", "audio", "videocontainer"]:
@@ -270,7 +269,7 @@ class BaseMediainfoMeta(BaseMeta):
             return self._stream.format
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def duration(self):
         """Return duration."""
         if self.stream_type() not in ["video", "audio"]:
@@ -280,7 +279,7 @@ class BaseMediainfoMeta(BaseMeta):
                 self._stream.duration) / 1000)
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def bits_per_sample(self):
         """Return bits per sample."""
         if self.stream_type() not in ["video", "audio"]:
@@ -303,7 +302,7 @@ class ContainerMediainfoMeta(BaseMediainfoMeta):
                   "video/x-ms-asf": [""]}
     _allow_versions = True  # Allow any version
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return version of stream.
 
@@ -319,7 +318,7 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
     _supported = {"video/x-matroska": ["4"]}
     _allow_versions = True  # Allow any version
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return version of stream."""
         version = super().version()
@@ -334,12 +333,12 @@ class FfvMediainfoMeta(BaseMediainfoMeta):
     _supported = {"video/x-ffv": [""]}
     _allow_versions = True  # Allow any version
 
-    @metadata()
+    @BaseMeta.metadata()
     def signal_format(self):
         """Return signal format."""
         return UNAP
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return version of stream."""
         version = super().version()
@@ -354,7 +353,7 @@ class DvMediainfoMeta(BaseMediainfoMeta):
     _supported = {"video/dv": [""]}
     _allow_versions = True  # Allow any version
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return version of stream.
 
@@ -373,7 +372,7 @@ class LpcmMediainfoMeta(BaseMediainfoMeta):
                   "audio/l24": [""]}
     _allow_versions = True  # Allow any version
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return version of stream.
 
@@ -382,7 +381,7 @@ class LpcmMediainfoMeta(BaseMediainfoMeta):
         """
         return UNAP
 
-    @metadata()
+    @BaseMeta.metadata()
     def codec_quality(self):
         """Return codec quality."""
         if self._stream.compression_mode is not None:
@@ -407,12 +406,12 @@ class AiffMediainfoMeta(BaseMediainfoMeta):
         super().__init__(tracks, index)
         self._container = None
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """Return mimetype."""
         return 'audio/x-aiff'
 
-    @metadata()
+    @BaseMeta.metadata()
     def codec_name(self):
         """Return codec name.
 
@@ -427,7 +426,7 @@ class AiffMediainfoMeta(BaseMediainfoMeta):
 
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def codec_quality(self):
         """Return codec quality.
 
@@ -451,12 +450,12 @@ class WmaMediainfoMeta(BaseMediainfoMeta):
     _supported = {"audio/x-ms-wma": ["9"]}
     _allow_versions = True  # Allow any version
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """Return mimetype."""
         return 'audio/x-ms-wma'
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return version of stream."""
         if any((self._stream.description_of_the_codec is not None and
@@ -476,7 +475,7 @@ class WmaMediainfoMeta(BaseMediainfoMeta):
             return "9"
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def codec_quality(self):
         """Return codec quality.
 
@@ -490,7 +489,7 @@ class WmaMediainfoMeta(BaseMediainfoMeta):
             return "lossless"
         return "lossy"
 
-    @metadata()
+    @BaseMeta.metadata()
     def data_rate_mode(self):
         """Return data rate mode.
 
@@ -518,12 +517,12 @@ class WmvMediainfoMeta(BaseMediainfoMeta):
     _supported = {"video/x-ms-wmv": ["9"]}
     _allow_versions = True  # Allow any version
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """Return mimetype."""
         return 'video/x-ms-wmv'
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return version of stream."""
         if self._stream.codec_id is not None and \
@@ -537,7 +536,7 @@ class WmvMediainfoMeta(BaseMediainfoMeta):
             return "9"
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def codec_quality(self):
         """Return codec quality.
 
@@ -545,12 +544,12 @@ class WmvMediainfoMeta(BaseMediainfoMeta):
         """
         return "lossy"
 
-    @metadata()
+    @BaseMeta.metadata()
     def signal_format(self):
         """Return signal format."""
         return UNAP
 
-    @metadata()
+    @BaseMeta.metadata()
     def data_rate_mode(self):
         """Return data rate mode.
 
@@ -570,7 +569,7 @@ class WmvMediainfoMeta(BaseMediainfoMeta):
                 return "Variable"
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def color(self):
         """Return color information.
 
@@ -609,7 +608,7 @@ class FlacMediainfoMeta(BaseMediainfoMeta):
         if self._tracks[0].format == 'FLAC':
             self._container = None
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return version of stream.
 
@@ -641,12 +640,12 @@ class WavMediainfoMeta(BaseMediainfoMeta):
         super().__init__(tracks, index)
         self._container = None
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """Return mimetype."""
         return 'audio/x-wav'
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return version."""
         if self._tracks[0].bext_present is not None \
@@ -654,7 +653,7 @@ class WavMediainfoMeta(BaseMediainfoMeta):
             return "2"
         return UNAP
 
-    @metadata()
+    @BaseMeta.metadata()
     def codec_quality(self):
         """Return codec quality."""
         return "lossless"
@@ -671,7 +670,7 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
                   "video/h265": [""]}
     _allow_versions = True  # Allow any version
 
-    @metadata()
+    @BaseMeta.metadata()
     def signal_format(self):
         """Return signal format."""
         if self.stream_type() not in ["video"]:
@@ -680,14 +679,14 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
             return self._stream.standard
         return UNAP
 
-    @metadata()
+    @BaseMeta.metadata()
     def codec_quality(self):
         """Return codec quality."""
         if self._stream.compression_mode is not None:
             return self._stream.compression_mode.lower()
         return "lossy"
 
-    @metadata()
+    @BaseMeta.metadata()
     def data_rate_mode(self):
         """Return data rate mode.
 
@@ -704,7 +703,7 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
             return "Fixed"
         return "Variable"
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return version of stream.
 
@@ -735,7 +734,7 @@ class VersionlessFormatMeta(BaseMediainfoMeta):
                   "audio/ac3": [""]}
     _allow_versions = True  # Allow any version
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return version of stream.
 

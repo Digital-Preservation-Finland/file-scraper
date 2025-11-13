@@ -6,7 +6,7 @@ from fractions import Fraction
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAP, UNAV
 from file_scraper.exceptions import SkipElementException
-from file_scraper.metadata import metadata
+
 from file_scraper.utils import strip_zeros, iso8601_duration
 
 
@@ -295,7 +295,7 @@ class FFMpegSimpleMeta(BaseMeta):
 
         return is_container
 
-    @metadata()
+    @BaseMeta.metadata()
     def index(self):
         """Return stream index."""
         if "index" not in self._ffmpeg_stream:
@@ -365,7 +365,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
         "JPEG 2000": "video/jpeg2000",
         }
 
-    @metadata()
+    @BaseMeta.metadata()
     def mimetype(self):
         """Return MIME type."""
         mime = UNAV
@@ -381,7 +381,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             mime = self._codec_mimetype_dict[mime]
         return mime
 
-    @metadata()
+    @BaseMeta.metadata()
     def version(self):
         """Return supported format versions.
 
@@ -390,7 +390,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
         """
         return UNAP if self.mimetype() != UNAV else UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def codec_quality(self):
         """
         Return codec quality.
@@ -408,7 +408,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             return "lossy"
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def data_rate_mode(self):
         """
         Return data rate mode.
@@ -422,7 +422,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             return "Variable"
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def signal_format(self):
         """Return signal format."""
         if self.stream_type() not in ["video"]:
@@ -432,7 +432,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             return UNAP
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def stream_type(self):
         """Return stream type."""
         if "codec_type" not in self._ffmpeg_stream and \
@@ -444,7 +444,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             return UNAV
         return self._ffmpeg_stream["codec_type"]
 
-    @metadata()
+    @BaseMeta.metadata()
     def color(self):
         """
         Return color information.
@@ -462,7 +462,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             return "Color"
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def width(self):
         """Return frame width."""
         if self.stream_type() not in ["video"]:
@@ -471,7 +471,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             return str(self._ffmpeg_stream["width"])
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def height(self):
         """Return frame height."""
         if self.stream_type() not in ["video"]:
@@ -480,7 +480,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             return str(self._ffmpeg_stream["height"])
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def par(self):
         """Return pixel aspect ratio."""
         if self.stream_type() not in ["video"]:
@@ -496,7 +496,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
 
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def dar(self):
         """Return display aspect ratio."""
         if self.stream_type() not in ["video"]:
@@ -511,7 +511,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
                 f"{value :.3f}")
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def data_rate(self):
         """
         Return data rate (bit rate) in mbps.
@@ -534,14 +534,14 @@ class FFMpegMeta(FFMpegSimpleMeta):
 
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def duration(self):
         """Return duration."""
         if self.stream_type() not in ["video", "audio", "videocontainer"]:
             raise SkipElementException()
         return iso8601_duration(float(self._ffmpeg_stream["duration"]))
 
-    @metadata()
+    @BaseMeta.metadata()
     def frame_rate(self):
         """Return frame rate."""
         if self.stream_type() not in ["video"]:
@@ -552,7 +552,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
                 f"{value :.2f}")
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def sampling(self):
         """Return chroma subsampling method."""
         if self.stream_type() not in ["video"]:
@@ -569,7 +569,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
 
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def sound(self):
         """Return "Yes" if sound channels are present, otherwise "No"."""
         if self.stream_type() not in ["video"]:
@@ -579,7 +579,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
                 return "Yes"
         return "No"
 
-    @metadata()
+    @BaseMeta.metadata()
     def audio_data_encoding(self):
         """Return audio data encoding."""
         if self.stream_type() not in ["audio"]:
@@ -590,7 +590,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             return "MPEG Audio"  # as other extractors
         return self._ffmpeg_stream["codec_long_name"].split(" ")[0]
 
-    @metadata()
+    @BaseMeta.metadata()
     def sampling_frequency(self):
         """Return sampling frequency."""
         if self.stream_type() not in ["audio"]:
@@ -600,7 +600,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
                 self._ffmpeg_stream["sample_rate"])/1000))
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def num_channels(self):
         """Return number of channels."""
         if self.stream_type() not in ["audio"]:
@@ -609,7 +609,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             return str(self._ffmpeg_stream["channels"])
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def codec_creator_app(self):
         """Return creator application."""
         format_info = self._probe_results["format"]["tags"]
@@ -625,7 +625,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             return " ".join(filter(None, parts))
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def codec_creator_app_version(self):
         """Return creator application version."""
         if self.stream_type() not in ["audio", "video", "videocontainer"]:
@@ -639,7 +639,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
             return self._probe_results["format"]["tags"]["product_version"]
         return UNAV
 
-    @metadata()
+    @BaseMeta.metadata()
     def codec_name(self):
         """Return codec name."""
         if self.stream_type() not in ["audio", "video", "videocontainer"]:
@@ -653,7 +653,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
 
         return codec
 
-    @metadata()
+    @BaseMeta.metadata()
     def bits_per_sample(self):
         """Return bits per sample."""
         if self.stream_type() not in ["audio", "video"]:
