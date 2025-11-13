@@ -55,7 +55,7 @@ class JHoveGifMeta(JHoveBaseMeta):
     """Metadata model for gif files scraped with JHove"""
 
     _supported = {"image/gif": ["1987a", "1989a"]}
-    _allow_versions = True
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def version(self):
@@ -175,7 +175,7 @@ class JHoveJpegMeta(JHoveBaseMeta):
 
     _supported = {"image/jpeg": ["1.00", "1.01", "1.02", "2.0",
                                  "2.1", "2.2", "2.2.1"]}
-    _allow_versions = True
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def stream_type(self):
@@ -192,7 +192,7 @@ class JHoveTiffMeta(JHoveBaseMeta):
     """Metadata model for tiff files scraped with JHove"""
 
     _supported = {"image/tiff": ["6.0"]}
-    _allow_versions = True
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def version(self):
@@ -245,7 +245,7 @@ class JHoveWavMeta(JHoveBaseMeta):
     """Metadata model for wav files scraped with JHove"""
 
     _supported = {"audio/x-wav": ["", "2"]}
-    _allow_versions = True
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def mimetype(self):
@@ -379,7 +379,7 @@ class JHoveDngMeta(JHoveBaseMeta):
     """Metadata model for dng files scraped with JHove"""
 
     _supported = {"image/x-adobe-dng": []}
-    _allow_versions = True
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def mimetype(self):
@@ -399,7 +399,7 @@ class JHoveAiffMeta(JHoveBaseMeta):
     """Metadata model for AIFF files scraped with JHove"""
 
     _supported = {"audio/x-aiff": ["", "1.3"]}
-    _allow_versions = True
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def stream_type(self):

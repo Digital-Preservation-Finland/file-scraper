@@ -12,7 +12,7 @@ class PngcheckMeta(BaseMeta):
     """
 
     _supported = {"image/png": []}  # Supported mimetype
-    _allow_versions = True  # Allow any version
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def stream_type(self):

@@ -119,7 +119,7 @@ class DetectedSpssVersionMeta(DetectedMimeVersionMeta):
     _supported = {
         "application/x-spss-por": []
     }
-    _allow_versions = True
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def version(self):
@@ -141,7 +141,7 @@ class DetectedSiardVersionMeta(DetectedMimeVersionMeta):
     _supported = {
         "application/x-siard": []
     }
-    _allow_versions = True
+    _allow_any_version = True
 
 
 class DetectedTextVersionMeta(DetectedMimeVersionMeta):

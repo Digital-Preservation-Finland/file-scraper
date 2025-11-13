@@ -8,7 +8,7 @@ class PsppMeta(BaseMeta):
     """Metadata model for pspp scraping."""
 
     _supported = {"application/x-spss-por": []}  # Supported mimetype
-    _allow_versions = True                       # Allow any version
+    _allow_any_version = True
 
     def __init__(self, well_formed):
         """Initialize model.

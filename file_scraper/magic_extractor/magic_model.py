@@ -84,7 +84,7 @@ class TextFileMagicMeta(TextMagicBaseMeta):
     """Metadata models for plain text and csv files."""
 
     _supported = {"text/plain": [], "text/csv": [], "application/json": []}
-    _allow_versions = True  # Allow any version
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def version(self):
@@ -98,7 +98,7 @@ class XmlFileMagicMeta(TextMagicBaseMeta):
     _supported = {"text/xml": ["1.0"]}  # Supported mimetypes
     _starttag = "XML "             # Text before version in magic output
     _endtag = " "                  # Text after version in magic output
-    _allow_versions = True         # Allow any version
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def version(self):
@@ -130,7 +130,7 @@ class XhtmlFileMagicMeta(TextMagicBaseMeta):
     _supported = {"application/xhtml+xml": ["1.0", "1.1"]}
     _starttag = "XML "      # Text before version in magic output
     _endtag = " "           # Text after version in magic output
-    _allow_versions = True  # Allow any version
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def mimetype(self):
@@ -161,7 +161,7 @@ class PdfFileMagicMeta(BinaryMagicBaseMeta):
     _supported = {"application/pdf": ["1.2", "1.3", "1.4", "1.5", "1.6",
                                       "1.7", "A-1a", "A-1b", "A-2a", "A-2b",
                                       "A-2u", "A-3a", "A-3b", "A-3u"]}
-    _allow_versions = True  # Allow any version
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def version(self):
@@ -204,7 +204,7 @@ class OfficeFileMagicMeta(BinaryMagicBaseMeta):
         "spreadsheetml.sheet": ["2007 onwards"],
         "application/vnd.openxmlformats-officedocument.presentationml."
         "presentation": ["2007 onwards"]}
-    _allow_versions = True  # Allow any version
+    _allow_any_version = True
 
     _mimes_unav_versions = [
         "application/vnd.oasis.opendocument.text",
@@ -228,7 +228,7 @@ class PngFileMagicMeta(BinaryMagicBaseMeta):
     """Metadata model for PNG files."""
 
     _supported = {"image/png": ["1.2"]}  # Supported mimetype
-    _allow_versions = True  # Allow any version
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def version(self):
@@ -247,7 +247,7 @@ class AiffFileMagicMeta(BinaryMagicBaseMeta):
     """Metadata model for AIFF files."""
 
     _supported = {"audio/x-aiff": ["", "1.3"]}  # Supported mimetype
-    _allow_versions = True   # Allow any version
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def stream_type(self):
@@ -281,7 +281,7 @@ class JpegFileMagicMeta(BinaryMagicBaseMeta):
                                  "2.2", "2.2.1"]}  # Supported mimetype
     _starttag = "standard "  # Text before version in magic output
     _endtag = ","            # Text after version in magic output
-    _allow_versions = True   # Allow any version
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def stream_type(self):
@@ -308,7 +308,7 @@ class Jp2FileMagicMeta(BinaryMagicBaseMeta):
     """Metadata model for JP2 files."""
 
     _supported = {"image/jp2": [""]}  # Supported mimetype
-    _allow_versions = True  # Allow any version
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def version(self):
@@ -327,7 +327,7 @@ class TiffFileMagicMeta(BinaryMagicBaseMeta):
     """Metadata model for TIFF files."""
 
     _supported = {"image/tiff": ["6.0"]}  # Supported mimetype
-    _allow_versions = True  # Allow any version
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def version(self):
@@ -346,7 +346,7 @@ class GifFileMagicMeta(BinaryMagicBaseMeta):
     """Metadata model for GIF files."""
 
     _supported = {"image/gif": ["1987a", "1989a"]}
-    _allow_versions = True
+    _allow_any_version = True
     _endtag = ","
 
     @BaseMeta.metadata()

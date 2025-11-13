@@ -10,7 +10,7 @@ class XmllintMeta(BaseMeta):
     """
 
     _supported = {"text/xml": ["1.0"]}  # Supported mimetype
-    _allow_versions = True
+    _allow_any_version = True
 
     def __init__(self, well_formed, tree):
         """

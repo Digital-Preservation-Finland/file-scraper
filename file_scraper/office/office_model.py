@@ -26,7 +26,7 @@ class OfficeMeta(BaseMeta):
         "spreadsheetml.sheet": ["2007 onwards"],
         "application/vnd.openxmlformats-officedocument.presentationml."
         "presentation": ["2007 onwards"]}
-    _allow_versions = True  # Allow any version
+    _allow_any_version = True
     _only_wellformed = True  # Only well-formed check
 
     @BaseMeta.metadata()

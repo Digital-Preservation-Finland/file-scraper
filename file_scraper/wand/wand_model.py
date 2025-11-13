@@ -13,7 +13,7 @@ class WandImageMeta(BaseMeta):
         "image/png": [],
         "image/x-adobe-dng": [],
     }
-    _allow_versions = True
+    _allow_any_version = True
 
     def __init__(self, image):
         """
@@ -113,7 +113,7 @@ class WandTiffMeta(WandImageMeta):
     """Metadata models for tiff files scraped with Wand"""
 
     _supported = {"image/tiff": []}
-    _allow_versions = True
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def byte_order(self):
@@ -141,7 +141,7 @@ class WandExifMeta(WandImageMeta):
     """Metadata models for JPEG files with EXIF metadata scraped with Wand"""
 
     _supported = {"image/jpeg": []}
-    _allow_versions = True
+    _allow_any_version = True
 
     @BaseMeta.metadata(important=True)
     def version(self):
@@ -158,7 +158,7 @@ class WandWebPMeta(WandImageMeta):
     """Metadata models for WebP files scraped with wand"""
 
     _supported = {"image/webp": []}
-    _allow_versions = True
+    _allow_any_version = True
 
     @BaseMeta.metadata(important=True)
     def compression(self):

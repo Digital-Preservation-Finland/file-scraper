@@ -90,7 +90,7 @@ class BaseMeta:
     """
 
     _supported: dict[str, list[str]] = {}
-    _allow_versions = False
+    _allow_any_version = False
 
     @final
     @staticmethod
@@ -175,7 +175,8 @@ class BaseMeta:
         if mimetype not in cls._supported:
             return False
         return (
-            version in cls._supported[mimetype] + [None] or cls._allow_versions
+            version in cls._supported[mimetype] + [None]
+            or cls._allow_any_version
         )
 
     @final

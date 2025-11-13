@@ -368,7 +368,7 @@ def test_msoffice_word_detected():
     ]
 )
 # pylint: disable=invalid-name
-def test_is_supported_allow_versions(mime, ver, extractor_class):
+def test_is_supported_allow_any_version(mime, ver, extractor_class):
     """
     Test is_supported method.
     Any version is supported.

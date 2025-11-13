@@ -9,7 +9,7 @@ class CsvMeta(BaseMeta):
     """Metadata model for CSV files."""
 
     _supported = {"text/csv": []}  # Supported mimetype
-    _allow_versions = True           # Allow any version
+    _allow_any_version = True
 
     def __init__(self, well_formed, params):
         """

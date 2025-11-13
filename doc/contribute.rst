@@ -45,7 +45,7 @@ A usable extractor tool class:
 The metadata is represented by metadata model objects, e.g. ``GhostscriptMeta`` used by ``GhostscriptExtractor``, and ``JHoveGifMeta``, ``JHoveHtmlMeta`` and others used by ``JHoveExtractor``. These metadata model classes:
 
     * MUST have _supported class variable as a dict, the keys of which are supported mimetypes and values are lists of supported file format versions.
-    * Using the metadata model without prior knowledge of the version or with an unlisted version MAY be allowed by setting class variable ``_allow_versions = True``.
+    * Using the metadata model without prior knowledge of the version or with an unlisted version MAY be allowed by setting class variable ``_allow_any_version = True``.
     * MUST have a method for each metadata element that is scraped, if not implemented in the already existing base class.
         * These methods MUST be decorated with ``metadata``-function, and MUST normally return string, with exception of ``index()`` which returns stream index as integer.
         * The metadata methods MUST normalize the value to a normalized format. The formats described e.g. in AudioMD [1]_, VideoMD [1]_, and MIX [2]_ are used in normalization.

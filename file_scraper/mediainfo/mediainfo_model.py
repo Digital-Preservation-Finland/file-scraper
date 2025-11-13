@@ -300,7 +300,7 @@ class ContainerMediainfoMeta(BaseMediainfoMeta):
                   "video/mp4": [""],
                   "video/quicktime": [""],
                   "video/x-ms-asf": [""]}
-    _allow_versions = True  # Allow any version
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def version(self):
@@ -316,7 +316,7 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
     """Metadata model for Matroska AV container."""
 
     _supported = {"video/x-matroska": ["4"]}
-    _allow_versions = True  # Allow any version
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def version(self):
@@ -331,7 +331,7 @@ class FfvMediainfoMeta(BaseMediainfoMeta):
     """Metadata model for FF Video Codec 1."""
 
     _supported = {"video/x-ffv": [""]}
-    _allow_versions = True  # Allow any version
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def signal_format(self):
@@ -351,7 +351,7 @@ class DvMediainfoMeta(BaseMediainfoMeta):
     """Metadata model for Digital Video."""
 
     _supported = {"video/dv": [""]}
-    _allow_versions = True  # Allow any version
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def version(self):
@@ -370,7 +370,7 @@ class LpcmMediainfoMeta(BaseMediainfoMeta):
                   "audio/l16": [""],
                   "audio/l20": [""],
                   "audio/l24": [""]}
-    _allow_versions = True  # Allow any version
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def version(self):
@@ -394,7 +394,7 @@ class AiffMediainfoMeta(BaseMediainfoMeta):
     """Metadata model for AIFF audio."""
 
     _supported = {"audio/x-aiff": ["", "1.3"]}
-    _allow_versions = True  # Allow any version
+    _allow_any_version = True
 
     def __init__(self, tracks, index):
         """Initialize the metadata model.
@@ -448,7 +448,7 @@ class WmaMediainfoMeta(BaseMediainfoMeta):
     """Metadata model for WMA audio."""
 
     _supported = {"audio/x-ms-wma": ["9"]}
-    _allow_versions = True  # Allow any version
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def mimetype(self):
@@ -515,7 +515,7 @@ class WmvMediainfoMeta(BaseMediainfoMeta):
     """Metadata model for WMV video."""
 
     _supported = {"video/x-ms-wmv": ["9"]}
-    _allow_versions = True  # Allow any version
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def mimetype(self):
@@ -592,7 +592,7 @@ class FlacMediainfoMeta(BaseMediainfoMeta):
     """Metadata model for FLAC audio."""
 
     _supported = {"audio/flac": [""]}
-    _allow_versions = True  # Allow any version
+    _allow_any_version = True
 
     def __init__(self, tracks, index):
         """Initialize the metadata model.
@@ -628,7 +628,7 @@ class WavMediainfoMeta(BaseMediainfoMeta):
     """Metadata model for WAV audio."""
 
     _supported = {"audio/x-wav": ["2", ""]}
-    _allow_versions = True  # Allow any version
+    _allow_any_version = True
 
     def __init__(self, tracks, index):
         """Initialize the metadata model.
@@ -668,7 +668,7 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
                   "video/mpeg": ["1", "2"],
                   "video/h264": [""],
                   "video/h265": [""]}
-    _allow_versions = True  # Allow any version
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def signal_format(self):
@@ -732,7 +732,7 @@ class VersionlessFormatMeta(BaseMediainfoMeta):
 
     _supported = {"video/x.fi-dpres.prores": [""],
                   "audio/ac3": [""]}
-    _allow_versions = True  # Allow any version
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def version(self):
@@ -751,11 +751,11 @@ class ImageMediaInfoMeta(BaseMediainfoMeta):
     with other extractors
     """
     _supported = {"image/jpeg": [""], "image/png": [""]}
-    _allow_versions = True
+    _allow_any_version = True
 
 
 class UnknownStreamFormatMeta(BaseMediainfoMeta):
     """Metadata model for streams that were not detected."""
 
     _supported = {None: [""]}
-    _allow_versions = True  # Allow any version
+    _allow_any_version = True

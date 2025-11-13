@@ -109,7 +109,7 @@ class TiffPilMeta(BasePilMeta):
     """Metadata model for TIFF images."""
 
     _supported = {"image/tiff": []}  # Supported mimetype
-    _allow_versions = True                # Allow any version
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def width(self):
@@ -138,7 +138,7 @@ class TiffPilMeta(BasePilMeta):
 class DngPilMeta(TiffPilMeta):
     """Metadata model for Dng images."""
     _supported = {"image/x-adobe-dng": []}
-    _allow_versions = True
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def mimetype(self):
@@ -151,7 +151,7 @@ class PngPilMeta(BasePilMeta):
 
     # Supported mimetypes
     _supported = {"image/png": []}
-    _allow_versions = True  # Allow any version
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def width(self):
@@ -185,7 +185,7 @@ class Jp2PilMeta(BasePilMeta):
 
     # Supported mimetypes
     _supported = {"image/jp2": []}
-    _allow_versions = True  # Allow any version
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def mimetype(self):
@@ -220,7 +220,7 @@ class JpegPilMeta(BasePilMeta):
     """Collect JPEG image metadata."""
 
     _supported = {"image/jpeg": []}  # Supported mimetypes
-    _allow_versions = True  # Allow any version
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def width(self):
@@ -250,7 +250,7 @@ class WebPPilMeta(BasePilMeta):
     """Metadata model for WebP images."""
 
     _supported = {"image/webp": []}
-    _allow_versions = True
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def mimetype(self):

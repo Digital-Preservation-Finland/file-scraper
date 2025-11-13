@@ -8,7 +8,7 @@ class TextFileMeta(BaseMeta):
     """Text file metadata model."""
 
     _supported = {"text/plain": []}
-    _allow_versions = True
+    _allow_any_version = True
 
     def __init__(self, well_formed):
         """
@@ -56,7 +56,7 @@ class TextEncodingMeta(BaseMeta):
                   "text/html": ["4.01", "5"],
                   "text/xml": ["1.0"],
                   "application/xhtml+xml": ["1.0", "1.1"]}
-    _allow_versions = True
+    _allow_any_version = True
 
     def __init__(self, well_formed, charset, predefined_mimetype):
         """

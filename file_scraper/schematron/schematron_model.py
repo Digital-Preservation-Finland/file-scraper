@@ -9,7 +9,7 @@ class SchematronMeta(BaseMeta):
     """Metadata model for SchematronExtractor."""
 
     _supported = {"text/xml": []}  # Supported mimetypes
-    _allow_versions = True
+    _allow_any_version = True
 
     def __init__(self, well_formed):
         """

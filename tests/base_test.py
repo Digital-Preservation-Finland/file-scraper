@@ -47,7 +47,7 @@ class BaseExtractorBasic(BaseExtractor):
 class BaseMetaVersion(BaseMeta):
     """Basic metadata model supporting all versions of a single MIME type."""
 
-    _allow_versions = True  # Allow all versions
+    _allow_any_version = True
     _supported = {"test/mimetype": []}  # Supported file formats
 
 

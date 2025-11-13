@@ -14,7 +14,7 @@ class JsonMeta(BaseMeta):
     """
 
     _supported: dict[str, list[str]] = {"application/json": [Unkn.UNAP]}
-    _allow_versions = False
+    _allow_any_version = False
 
     @BaseMeta.metadata()
     def stream_type(self):

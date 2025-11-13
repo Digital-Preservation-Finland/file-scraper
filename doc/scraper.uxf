@@ -40,7 +40,7 @@ _+is_supported()_
 --
 +container_stream
 -_supported
--_allow_versions
+-_allow_any_version
 --
 +&lt;&lt;metadata&gt;&gt;mimetype()
 +&lt;&lt;metadata&gt;&gt;version()

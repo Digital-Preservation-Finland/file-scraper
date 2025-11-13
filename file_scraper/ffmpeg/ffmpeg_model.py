@@ -44,7 +44,7 @@ class FFMpegSimpleMeta(BaseMeta):
         "video/x-ms-asf": [],
         "video/x-ms-wmv": [],
     }
-    _allow_versions = True   # Allow any version
+    _allow_any_version = True
 
     _supported_formats = {
         "Audio IFF": [
@@ -357,7 +357,7 @@ class FFMpegMeta(FFMpegSimpleMeta):
         "application/mxf": [],
         "video/jpeg2000": []
         }
-    _allow_versions = True   # Allow any version
+    _allow_any_version = True
 
     # Some MIME types need to be decided based on codec name
     _codec_mimetype_dict = {

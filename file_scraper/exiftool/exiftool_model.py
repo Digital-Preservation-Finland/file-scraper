@@ -23,7 +23,7 @@ class ExifToolDngMeta(ExifToolBaseMeta):
     """
 
     _supported = {"image/x-adobe-dng": ["1.1", "1.2", "1.3", "1.4", "1.5"]}
-    _allow_versions = True
+    _allow_any_version = True
 
     @BaseMeta.metadata(important=True)
     def mimetype(self):
