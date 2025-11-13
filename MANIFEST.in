@@ -1,2 +1,2 @@
-include version.py
 include file_scraper/vnu/vnu_filters.txt
+include file_scraper/_version.py

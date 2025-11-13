@@ -1,12 +1,10 @@
 """Installation script for the `file-scraper` package."""
 from setuptools import setup, find_packages
-from file_scraper import __version__
 
 setup(
     name='file_scraper',
     packages=find_packages(exclude=['tests', 'tests.*']),
     include_package_data=True,
-    version=__version__,
     install_requires=[
         "click",
         "python-mimeparse",
@@ -23,6 +21,10 @@ setup(
         "pyexiftool",
         "jpylyzer >= 2.2.0"
     ],
+    setup_requires=["setuptools_scm"],
+    use_scm_version={
+        "write_to": "file_scraper/_version.py"
+    },
     entry_points={'console_scripts': [
         'scraper=file_scraper.cmdline:cli']},
     zip_safe=False,
