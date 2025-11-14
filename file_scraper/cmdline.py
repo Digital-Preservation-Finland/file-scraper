@@ -20,6 +20,7 @@ from file_scraper.utils import ensure_text
 
 
 @click.group()
+@click.version_option(prog_name="file-scraper")
 def cli():
     """Scrape files"""
 

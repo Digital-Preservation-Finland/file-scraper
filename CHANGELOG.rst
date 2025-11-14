@@ -8,6 +8,10 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 Unreleased
 ----------
 
+Added
+^^^^^
+- ``--version`` flag to print the current version
+
 Fixed
 ^^^^^
 - JsonExtractor messages and errors not displayed correctly
