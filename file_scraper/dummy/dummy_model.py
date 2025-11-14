@@ -2,6 +2,35 @@
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAP, UNAV
+from dpres_file_formats.defaults import UnknownValue as Unk
+from file_scraper.state import Mimetype
+
+
+class UserDefinedMeta(BaseMeta):
+    """
+    User defined metadata model. Supports only user supplied metadata.
+    This metadata won't require any extractor since user defined metadata
+    is instantly available.
+    """
+
+    _allow_any_version = True
+
+    def __init__(self, mimetype: Mimetype):
+        super().__init__()
+        self._supported = {mimetype.mimetype: [mimetype.version]}
+        self._mimetype = mimetype
+
+    @BaseMeta.metadata(important=True)
+    def mimetype(self) -> str:
+        if self._mimetype.mimetype is None:
+            return Unk.UNAV
+        return self._mimetype.mimetype
+
+    @BaseMeta.metadata(important=True)
+    def version(self) -> str:
+        if self._mimetype.version is None:
+            return Unk.UNAV
+        return self._mimetype.version
 
 
 class DummyMeta(BaseMeta):

@@ -10,8 +10,10 @@ from dpres_file_formats.graders import grade as file_formats_grade
 
 from file_scraper.base import BaseDetector, BaseExtractor
 from file_scraper.defaults import UNAV
+from file_scraper.state import Mimetype
 from file_scraper.detectors import ExifToolDetector, MagicCharset
 from file_scraper.dummy.dummy_extractor import MimeMatchExtractor
+from file_scraper.dummy.dummy_model import UserDefinedMeta
 from file_scraper.exceptions import (
     DirectoryIsNotScrapable,
     FileIsNotScrapable,
@@ -93,7 +95,6 @@ class Scraper:
         self._well_formed = None
         self._check_wellformed = True
         self.info = {}
-        self._extractor_results = []
 
         if (mime := self._kwargs.get("mimetype", None)) not in [None, ""]:
             self._predefined_mimetype = mime.lower()
@@ -105,6 +106,17 @@ class Scraper:
             self._predefined_version = version
         else:
             self._predefined_version = None
+
+        self._results = [
+            [
+                UserDefinedMeta(
+                    Mimetype(
+                        mimetype=self._predefined_mimetype,
+                        version=self._predefined_version
+                    )
+                )
+            ]
+        ]
         # self._detected_mimetype and self._detected_version exist so
         # the predefined values above wouldn't get changed during the running
         # of the scraper.
@@ -326,7 +338,7 @@ class Scraper:
         """
         extractor.extract()
         if extractor.streams:
-            self._extractor_results.append(extractor.streams)
+            self._results.append(extractor.streams)
         self.info[len(self.info)] = extractor.info()
         if (
                 (self.well_formed is None and self._check_wellformed)
@@ -368,14 +380,11 @@ class Scraper:
         Merge scraper results into streams and handle possible
         conflicts.
         """
-
-        streams, errors = generate_metadata_dict(
-            self._extractor_results,
-            LOSE
-        )
-        if not streams:
-            errors.append("No streams found by the extractors!")
-        else:
+        if len(self._results) > 1:
+            streams, errors = generate_metadata_dict(
+                self._results[1:],
+                LOSE
+            )
             if (
                 self._predefined_version not in LOSE
                 and streams[0]["version"]
@@ -386,7 +395,14 @@ class Scraper:
                     f"{streams[0]['version']} compared to the version given "
                     f"by the user: {self._predefined_version}"
                 )
-            self._extractor_results.append(streams)
+        else:
+            errors = []
+
+        streams, more_errors = generate_metadata_dict(
+            self._results,
+            LOSE
+        )
+        errors.extend(more_errors)
 
         self.info[len(self.info)] = {
             "class": "Scraper (_merge_results)",
@@ -415,8 +431,6 @@ class Scraper:
         LOGGER.info("Scraping %s", self.path)
         self._check_wellformed = check_wellformed
         self._identify()
-        self.mimetype = self._predefined_mimetype
-        self.version = self._predefined_version
         LOGGER.debug(
             "Mimetype after detectors: %s and version: %s",
             self._detected_mimetype,
@@ -450,8 +464,6 @@ class Scraper:
                     "Extractor %s didn't produce a stream",
                     extractor.__class__.__name__,
                 )
-
-        self._kwargs["extractor_results"] = self._extractor_results
         self._merge_results()
         # If no streams exist the mimetype and version are unavailable
         if not self.streams:
