@@ -107,13 +107,13 @@ def test_incorrect_flags(flags: list[str], error_message: str):
     assert result.exit_code == 2
 
 
-# TODO add mimetype and version combination flags when handled.
 @pytest.mark.parametrize(
     "flag, output_contains",
     [
         (["--mimetype=application/pdf", "--version=A-2u"],
-            "Predefined version \'A-2u\' and resulted version \'A-1a\' "
-            "mismatch."),
+            "The Extractors produced a different version: A-1a compared to the"
+            " version given by the user: A-2u"
+         ),
         (["--tool-info"], "tool_info")
     ]
     )

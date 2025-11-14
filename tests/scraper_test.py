@@ -311,14 +311,14 @@ def test_results_merging(meta_class_fx, meta_classes, wellformed):
         results.append([meta_class_fx(meta_class)])
 
     scraper = Scraper(filename)
-    scraper._kwargs["extractor_results"] = results
+    scraper._results = results
     scraper.info = {}
     scraper._check_wellformed = True
     scraper._merge_results()
-    assert scraper.well_formed == wellformed
     if wellformed is False:
         assert list(filter((lambda s: "Conflict with values" in s),
                            scraper.info[0]["errors"]))
+    assert scraper.well_formed == wellformed
 
 
 @pytest.mark.parametrize(

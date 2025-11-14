@@ -581,7 +581,7 @@ def test_coded_filename(tmpdir, fullname, mimetype, version):
         # file is reported as not well-formed.
         ("tests/data/image_gif/valid_1987a.gif",
          {"mimetype": "image/gif", "version": "1989a"},
-         False, "image/gif", "1987a", None, False),
+         False, "image/gif", "1989a", None, False),
 
         # Give the correct MIME type but wrong charset
         ("tests/data/text_plain/valid__utf8_bom.txt",
@@ -606,14 +606,15 @@ def test_coded_filename(tmpdir, fullname, mimetype, version):
 
         # The file is PDF A-1a, but it is also a valid PDF 1.4. File-scraper
         # will correctly detect it as a A-1a by default, but it allows the user
-        # also to choose an alternative version, which is now also valid.
+        # to choose an alternative version, which is now also valid.
+        # TODO should not be well-formed because the file is really a PDF-A
         ("tests/data/application_pdf/valid_A-1a.pdf",
          {"mimetype": "application/pdf", "version": "1.4"},
          True, "application/pdf", "1.4", None, None),
 
         # Give unsupported MIME type, resulting in not well-formed
         ("tests/data/image_tiff/valid_6.0.tif", {"mimetype": "audio/mpeg"},
-         False, UNAV, UNAV, None, False),
+         False, "audio/mpeg", UNAV, None, False),
 
         # Scrape invalid HTML as plaintext and give incorrect charset, as
         # which it is not well-formed
@@ -625,18 +626,18 @@ def test_coded_filename(tmpdir, fullname, mimetype, version):
         # from some extractors, but combining the results should reveal the
         # file as not well-formed
         ("tests/data/image_gif/valid_1987a.gif", {"mimetype": "image/png"},
-         False, "image/gif", UNAV, None, False),
+         False, "image/png", UNAV, None, False),
 
         # Bit-level preservation file format
         ("tests/data/application_x.fi-dpres.segy/invalid__ascii_header.sgy",
          {},
          None, "application/x.fi-dpres.segy", "(:unkn)", None, None),
 
-        # TODO resolve this test case in TPASPKT-1539
-        # Give the correct MIME type and charset, but wrong version
-        # ("tests/data/text_html/valid_4.01.html",
-        #  {"mimetype": "text/html", "version": "5.0", "charset": "UTF-8"},
-        #  False, "text/html", 5.0, "UTF-8", False),
+        # Give the correct MIME type and charset, but wrong version the file
+        # will be detected as not well-formed.
+        ("tests/data/text_html/valid_4.01.html",
+         {"mimetype": "text/html", "version": "5.0", "charset": "UTF-8"},
+         False, "text/html", "5.0", "UTF-8", False),
 
     ]
 )
