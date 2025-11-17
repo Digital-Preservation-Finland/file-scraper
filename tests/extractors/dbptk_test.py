@@ -31,7 +31,16 @@ MIMETYPE = "application/x-siard"
             "purpose": "Test valid file.",
             "stdout_part": "Validation process finished the SIARD is valid.",
             "stderr_part": ""}),
+        ("valid_2.2.siard", {
+            "purpose": "Test valid file.",
+            "stdout_part": "Validation process finished the SIARD is valid.",
+            "stderr_part": ""}),
         ("invalid_2.1.1_schema_errors.siard", {
+            "purpose": "Test invalid file with invalid internal structure.",
+            "stdout_part": "",
+            "stderr_part": (
+                "Validation process finished the SIARD is not valid.")}),
+        ("invalid_2.2_schema_errors.siard", {
             "purpose": "Test invalid file with invalid internal structure.",
             "stdout_part": "",
             "stderr_part": (
