@@ -11,6 +11,7 @@ Unreleased
 Added
 ^^^^^
 - ``--version`` flag to print the current version
+- SIARD 2.2 support
 
 Fixed
 ^^^^^
