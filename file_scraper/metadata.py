@@ -10,10 +10,9 @@ from collections.abc import Iterable
 from itertools import chain
 from typing import Any, Protocol, TYPE_CHECKING
 
-from dpres_file_formats.defaults import UnknownValue as Unk
-
 from file_scraper.exceptions import SkipElementException
 from file_scraper.logger import LOGGER
+from file_scraper.defaults import UNAV
 
 if TYPE_CHECKING:
     from file_scraper.base import BaseMeta
@@ -36,7 +35,7 @@ def _merge_to_stream(
     importants: dict[str, str],
 ) -> None:
     """
-    Merges the results of the method into the stream dict.
+    Merges the results of the method in-place into the stream dict.
 
     Adds item 'method.__name__: method()' into the stream dict.
 
@@ -47,10 +46,20 @@ def _merge_to_stream(
         - If neither entry is important or disposable, a ValueError is raised.
 
     :param stream: A dict representing the metadata of a single stream. E.g.
-        {"index": 0, "mimetype": "image/png", "width": "500"}
+        {"index": 0, "mimetype": "image/png", "width": "500"}. The 'index' key
+        is required for the dict!
     :param method: A metadata method.
     :param lose: A list of values that can be overwritten.
-    :param importants: A dict of keys and values that must not be overwritten.
+    :param importants: A dict which includes the metadata for each stream
+        that will be overwritten. The streams are marked with numbers as
+        the top level keys. The data to be overwritten is located in a nested
+        dictionary.
+        So the format of the dict can follow this form:
+        {1: {mimetype: "text/xml"}}
+        The key `1` is the stream number which requires changing.
+        The `mimetype` key is the important change and `"text/xml"` is the
+        value which will overwrite the previous value.
+
     :raises: ValueError if the old entry in the stream and the value returned
         by the given method conflict but neither is disposable.
     """
@@ -65,36 +74,40 @@ def _merge_to_stream(
     if stream[method_name] == method_value:
         return
 
-    if method.is_important:
+    changes_for_the_current_index = importants.get(stream["index"], {})
+    if method.is_important and changes_for_the_current_index:
         LOGGER.debug(
             "Stream metadata field '%s' overwritten with important value: "
             "%s -> %s",
             method_name, stream[method_name], method_value
         )
         stream[method_name] = method_value
-    elif method_name in importants:
+    elif method_name in changes_for_the_current_index:
         return
     elif stream[method_name] in lose:
         stream[method_name] = method_value
     else:
         # Set the value as UNAV and raise ValueError
         existing_value = stream[method_name]
-        stream[method_name] = Unk.UNAV
+        stream[method_name] = UNAV
         raise ValueError(
             f"Conflict with values '{existing_value}' and '{method_value}' "
             f"for '{method_name}'.")
 
 
 def _fill_importants(
-    method: MetadataMethod,
     importants: dict[str, str],
+    index: int,
+    method: MetadataMethod,
     lose: Iterable[str | None],
 ) -> None:
     """
-    Find the important metadata values for a method.
+    Finds the important metadata values and adds them in-place to the
+    important dictionary.
 
-    :param method: A metadata method
     :param importants: A dictionary of important metadata values
+    :param index: the index of the important metadata values
+    :param method: A metadata method
     :param lose: List of values which can not be important
     :raises: ValueError if two different important values collide in a
         method.
@@ -103,13 +116,17 @@ def _fill_importants(
         method_name = method.__name__
         method_value = method()
         if method.is_important and method_value not in lose:
-            if method_name in importants and \
-                    importants[method_name] != method_value:
+            if index not in importants:
+                importants[index] = {}
+            if (
+                method_name in importants[index]
+                and importants[index][method_name] != method_value
+            ):
                 raise ValueError(
-                    f"Conflict with values '{importants[method_name]}' and "
-                    f"'{method_value}' for '{method_name}': both "
+                    f"Conflict with values '{importants[index][method_name]}' "
+                    f"and '{method_value}' for '{method_name}': both "
                     f"are marked important.")
-            importants[method_name] = method_value
+            importants[index][method_name] = method_value
     except SkipElementException:
         pass
 
@@ -153,10 +170,9 @@ def generate_metadata_dict(
     for model in chain.from_iterable(extraction_results):
         for method in model.iterate_metadata_methods():
             try:
-                _fill_importants(method, importants, lose)
+                _fill_importants(importants, model.index(), method, lose)
             except ValueError as err:
                 conflicts.append(str(err))
-
     # Iterate methods to generate metadata dict
     for model in chain.from_iterable(extraction_results):
         stream_index = model.index()
@@ -165,10 +181,10 @@ def generate_metadata_dict(
         for method in model.iterate_metadata_methods():
             try:
                 _merge_to_stream(current_stream, method, lose, importants)
+            # In case of conflicting values, append the error message
             except SkipElementException:
                 # happens when the method is not to be indexed
                 continue
-            # In case of conflicting values, append the error message
             except ValueError as err:
                 conflicts.append(str(err))
         LOGGER.debug(

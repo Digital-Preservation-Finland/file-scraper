@@ -37,6 +37,8 @@ from file_scraper.exceptions import (FileIsNotScrapable,
                                      InvalidMimetype,
                                      InvalidVersionForMimetype,)
 
+from tests.conftest import Meta1, Meta2, Meta5
+
 
 def test_is_textfile():
     """Test that text files (and only text files) are identified as such."""
@@ -295,10 +297,10 @@ class TestPathValidation:
 
 
 @pytest.mark.parametrize(('meta_classes', 'wellformed'), [
-    (['meta1', 'meta5'], None),
-    (['meta1', 'meta2'], False)
+    ([Meta1, Meta5], None),
+    ([Meta1, Meta2], False)
 ])
-def test_results_merging(meta_class_fx, meta_classes, wellformed):
+def test_results_merging(meta_classes, wellformed):
     """Test that scraper merges extractor results properly. The test tests
     both a successful case where metadata could be merged and a case with
     conflicts in metadata resulting in the well-formedness being false. Also
@@ -308,7 +310,7 @@ def test_results_merging(meta_class_fx, meta_classes, wellformed):
     filename = Path("tests/data/text_plain/valid__ascii.txt")
     results = []
     for meta_class in meta_classes:
-        results.append([meta_class_fx(meta_class)])
+        results.append([meta_class()])
 
     scraper = Scraper(filename)
     scraper._results = results

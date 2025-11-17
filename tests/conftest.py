@@ -3,11 +3,9 @@ from __future__ import annotations
 
 import os
 from typing import Callable
-
 import file_scraper.shell
 import pytest
 from file_scraper.base import BaseExtractor, BaseMeta
-
 
 from tests.common import Correct, partial_message_included
 
@@ -306,21 +304,3 @@ class Meta5(BaseMeta):
     def stream_type(self):
         """Same stream type as Meta1 has."""
         return "binary"
-
-
-@pytest.fixture(scope="function")
-def meta_class_fx():
-    """Fixture to return Metadata classes for tests."""
-    def _meta_class(class_name):
-        """Returns a Metadata class based on the class_name."""
-        if class_name == 'meta2':
-            return Meta2()
-        if class_name == 'meta3':
-            return Meta3()
-        if class_name == 'meta4':
-            return Meta4()
-        if class_name == 'meta5':
-            return Meta5()
-        return Meta1()
-
-    return _meta_class

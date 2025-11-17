@@ -69,6 +69,8 @@ from file_scraper.metadata import (
     generate_metadata_dict,
 )
 
+from tests.conftest import Meta1, Meta2, Meta3, Meta4
+
 
 class MetaTest:
     """A collection of metadata methods for testing purposes."""
@@ -80,6 +82,10 @@ class MetaTest:
         :value: Attribute value to return in metadata methods
         """
         self.value = value
+
+    @BaseMeta.metadata()
+    def index(self):
+        return 0
 
     @BaseMeta.metadata()
     def key_notimportant(self):
@@ -94,7 +100,7 @@ class MetaTest:
 
 @pytest.mark.parametrize(
     ["meta_dict", "method", "value", "lose", "result_dict",
-     "final_importants"],
+     "internal_importants"],
     [
         # add new key, nothing originally in importants or in lose
         ({"key1": "value1"}, "key_notimportant", "value2", [],
@@ -172,7 +178,7 @@ class MetaTest:
     ]
 )
 def test_merge_to_stream(meta_dict, method, value, lose, result_dict,
-                         final_importants):
+                         internal_importants):
     """
     Test combining stream and metadata dicts.
 
@@ -184,8 +190,9 @@ def test_merge_to_stream(meta_dict, method, value, lose, result_dict,
     """
     # pylint: disable=too-many-arguments
     testclass = MetaTest(value)
+    meta_dict["index"], result_dict["index"] = 0, 0
     _merge_to_stream(meta_dict, getattr(testclass, method), lose,
-                     final_importants)
+                     {0: internal_importants})
     assert meta_dict == result_dict
 
 
@@ -193,64 +200,88 @@ def test_merge_normal_conflict():
     """Test adding metadata to stream with conflicting unimportant values."""
     testclass = MetaTest("newvalue")
     with pytest.raises(ValueError) as error:
-        _merge_to_stream({"key_notimportant": "oldvalue"},
+        _merge_to_stream({"index": 0, "key_notimportant": "oldvalue"},
                          getattr(testclass, "key_notimportant"),
                          [], {})
     assert ("Conflict with values 'oldvalue' and 'newvalue'"
             in str(error.value))
 
 
-def test_merge_important_conflict(meta_class_fx):
-    """Test adding metadata to stream with conflicting important
-    value."""
-    model = meta_class_fx('meta4')
+def test_merge_important_conflict():
+    """
+    Test adding metadata to stream with conflicting important
+    value.
+    """
+    model = Meta4()
     importants = {
-        'key4': 'importantvalue'
+        0: {
+            'key4': 'importantvalue'
+        }
     }
     with pytest.raises(ValueError) as error:
-        _fill_importants(model.key4, importants, [])
+        _fill_importants(importants, model.index(), model.key4, [])
     assert (
         "Conflict with values 'importantvalue' and 'conflictingvalue'"
         in str(error.value)
     )
 
 
-def test_fill_importants(meta_class_fx):
+def test_fill_importants():
     """Test filling the importants list"""
-    results = [[meta_class_fx('meta1')],
-               [meta_class_fx('meta2')],
-               [meta_class_fx('meta3')]]
+    results = [[Meta1()], [Meta2()], [Meta3()]]
     lose = []
     importants = {}
     for model in chain.from_iterable(results):
         for method in model.iterate_metadata_methods():
-            _fill_importants(method, importants, lose)
-    assert importants == {"key4": "importantvalue", "key3": "key2-3"}
+            _fill_importants(importants, 0, method, lose)
+    assert importants == {
+        0: {
+            "key4": "importantvalue",
+            "key3": "key2-3"
+        }
+    }
 
     lose = ["key2-3"]
     importants = {}
     for model in chain.from_iterable(results):
         for method in model.iterate_metadata_methods():
-            _fill_importants(method, importants, lose)
-    assert importants == {"key4": "importantvalue"}
+            _fill_importants(importants, 0, method, lose)
+    assert importants == {
+        0: {
+            "key4": "importantvalue"
+        }
+    }
 
 
 @pytest.mark.parametrize(
-    ('meta_classes', 'lose', 'valid_dict', 'expected_conflicts'),
+    ("meta_classes", "lose", "valid_dict", "expected_conflicts"),
     [
-        (['meta1', 'meta2', 'meta3'], ["value2-1"], True, []),
-        (['meta1', 'meta2', 'meta3'], [None], False,
-         ["Conflict with values 'value1-1' and 'value2-1' for 'key1'."]),
-        (['meta1', 'meta2', 'meta4'], ["value2-1"], False,
-         ["Conflict with values 'importantvalue' and 'conflictingvalue' for "
-          "'key4': both are marked important."])
+        ([Meta1, Meta2, Meta3], ["value2-1"], True, []),
+        (
+            [Meta1, Meta2, Meta3],
+            [None],
+            False,
+            ["Conflict with values 'value1-1' and 'value2-1' for 'key1'."],
+        ),
+        (
+            [Meta1, Meta2, Meta4],
+            ["value2-1"],
+            False,
+            [
+                "Conflict with values 'importantvalue' and 'conflictingvalue' "
+                "for 'key4': both are marked important."
+            ],
+        ),
     ],
-    ids=('Successful merge, only conflicting value is in lose',
-         'Unsuccessful merge, conflicting value is not in lose',
-         'Unsuccessful merge, conflicts in important values')
+    ids=(
+        "Successful merge, only conflicting value is in lose",
+        "Unsuccessful merge, conflicting value is not in lose",
+        "Unsuccessful merge, conflicts in important values",
+    ),
 )
 def test_generate_metadata_dict(
-        meta_class_fx, meta_classes, lose, valid_dict, expected_conflicts):
+        meta_classes, lose, valid_dict, expected_conflicts
+):
     """Test generating metadata dict using the metadata objects.
     Tests both a successful case and a case with conflicts in
     metadata, both while filling import values and while merging the
@@ -258,16 +289,27 @@ def test_generate_metadata_dict(
     """
     results = []
     for meta_class in meta_classes:
-        results.append([meta_class_fx(meta_class)])
+        results.append([meta_class()])
     (metadata_dict, conflicts) = generate_metadata_dict(results, lose)
     if valid_dict:
-        assert metadata_dict == {0: {"index": 0, "key1": "value1-1",
-                                     "key2": "value2", "key3": "key2-3",
-                                     "key4": "importantvalue",
-                                     "mimetype": "mime", "version": 1.0,
-                                     "stream_type": "binary"},
-                                 1: {"index": 1, "key1": "value1",
-                                     "key2": "value2",
-                                     "mimetype": "anothermime",
-                                     "version": 2, "stream_type": "audio"}}
+        assert metadata_dict == {
+            0: {
+                "index": 0,
+                "key1": "value1-1",
+                "key2": "value2",
+                "key3": "key2-3",
+                "key4": "importantvalue",
+                "mimetype": "mime",
+                "version": 1.0,
+                "stream_type": "binary",
+            },
+            1: {
+                "index": 1,
+                "key1": "value1",
+                "key2": "value2",
+                "mimetype": "anothermime",
+                "version": 2,
+                "stream_type": "audio",
+            },
+        }
     assert conflicts == expected_conflicts
