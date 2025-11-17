@@ -15,7 +15,7 @@ Installation using RPM packages (preferred)
 Installation on Linux distributions is done by using the RPM Package Manager.
 See how to `configure the PAS-jakelu RPM repositories`_ to setup necessary software sources.
 
-.. _configure the PAS-jakelu RPM repositories: https://www.digitalpreservation.fi/user_guide/installation_of_tools 
+.. _configure the PAS-jakelu RPM repositories: https://www.digitalpreservation.fi/user_guide/installation_of_tools
 
 After the repository has been added, the package can be installed by running one of the following commands.
 
@@ -62,7 +62,7 @@ Additionally, the following software is required for complete well-formed check.
     * For text and xml files: python-lxml, python-mimeparse, **JHove 1.30.0**, **v.Nu 17.7**, **iso-schematron-xslt1**
     * For image files: **JHove 1.30.0**, **dpx-validator**, **pngcheck 2.3**
     * For audio/video files: **JHove 1.30.0** (for WAVE audio files)
-    * For other files: **JHove 1.30.0**, **LibreOffice 24.8**,  **Ghostscript 10.03.1**, **warc-tools >= 4.8.3**, **pspp 1.2.0-2** (patched by dpres), **dbptk-developer >= 2.10.3**
+    * For other files: **JHove 1.30.0**, **LibreOffice 24.8**,  **Ghostscript 10.03.1**, **warc-tools >= 4.8.3**, **pspp 1.2.0-2** (patched by dpres), **dbptk-developer >= 4.0.0**
 
 See also:
 
@@ -93,12 +93,12 @@ requires download from https://github.com/keeps/dbptk-developer/releases and
 setting up the correct executable file.
 
 * Download JAR file from https://github.com/keeps/dbptk-developer/releases
-* Place downloaded JAR file to desired ``$PATH`` (ie */home/username/dbptk/dbptk-app-2.10.3.jar*)
+* Place downloaded JAR file to desired ``$PATH`` (ie */home/username/dbptk/dbptk-app-4.0.0.jar*)
 * Create an executable **dbptk** (ie */home/username/dbptk/dbptk*) with following content::
 
-    #!/bin/sh
-    DBPTK_JAR_PATH="/home/username/dbptk/dbptk-app-2.10.3.jar"
-    exec java -jar "$DBPTK_JAR_PATH" "$@"
+    #!/usr/bin/env bash
+    DBPTK_JAR_PATH="/home/username/dbptk/dbptk-app-4.0.0.jar"
+    exec /usr/lib/jvm/jre-21-openjdk/bin/java -jar "$DBPTK_JAR_PATH" "$@"
 
 * Create a symbolic link for the executable ``ln -s /home/username/dbptk/dbptk /usr/bin/dbptk``
 

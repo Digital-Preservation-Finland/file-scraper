@@ -31,15 +31,15 @@ class DbptkExtractor(BaseExtractor[DbptkMeta]):
         params: dict | None = None,
     ) -> None:
         super().__init__(filename, mimetype, version, params)
-        self._path = f"/usr/lib/jvm/jre-1.8.0/bin{os.pathsep} \
-        {os.environ['PATH']}"
+        # Set $PATH so that Java 21 is favored if it's installed
+        self._path = f"/usr/lib/jvm/jre-21/bin{os.pathsep}{os.environ['PATH']}"
 
     def extract(self) -> None:
         """Scrape file using dbptk."""
-        # Set $PATH so that Java 8 is favored if it's installed
-
-        shell = Shell(["dbptk", "validate", "-if",
-                       self.filename], env={"PATH": self._path})
+        shell = Shell(
+            ["dbptk", "validate", "-if", self.filename],
+            env={"PATH": self._path}
+        )
 
         report = shell.stdout
 
