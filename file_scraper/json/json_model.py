@@ -1,6 +1,6 @@
 from file_scraper.base import BaseMeta
 
-from dpres_file_formats.defaults import UnknownValue as Unkn
+from dpres_file_formats.defaults import UnknownValue
 
 
 class JsonMeta(BaseMeta):
@@ -13,7 +13,11 @@ class JsonMeta(BaseMeta):
     Additional metadata and processing is implemented in subclasses.
     """
 
-    _supported: dict[str, list[str]] = {"application/json": [Unkn.UNAP]}
+    _supported: dict[str, list[str]] = {
+        "application/json": [
+            UnknownValue.UNAP
+        ]
+    }
     _allow_any_version = False
 
     @BaseMeta.metadata()
@@ -34,4 +38,4 @@ class JsonMeta(BaseMeta):
 
         :returns: "(:unap)"
         """
-        return Unkn.UNAP
+        return UnknownValue.UNAP

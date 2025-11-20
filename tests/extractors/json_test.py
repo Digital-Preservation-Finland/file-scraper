@@ -4,7 +4,7 @@ import pytest
 
 from tests.common import parse_results
 from file_scraper.json.json_extractor import JsonExtractor
-from dpres_file_formats.defaults import UnknownValue as Unk
+from dpres_file_formats.defaults import UnknownValue
 
 
 @pytest.mark.parametrize(
@@ -38,4 +38,4 @@ def test_json_extractor(filename):
     extractor.well_formed is expect_valid
     correct.streams[0]["stream_type"] = "text"
     correct.update_mimetype("application/json")
-    correct.streams[0]["version"] = Unk.UNAP
+    correct.streams[0]["version"] = UnknownValue.UNAP

@@ -2,7 +2,6 @@
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAP, UNAV
-from dpres_file_formats.defaults import UnknownValue as Unk
 from file_scraper.state import Mimetype
 
 
@@ -23,13 +22,13 @@ class UserDefinedMeta(BaseMeta):
     @BaseMeta.metadata(important=True)
     def mimetype(self) -> str:
         if self._mimetype.mimetype is None:
-            return Unk.UNAV
+            return UNAV
         return self._mimetype.mimetype
 
     @BaseMeta.metadata(important=True)
     def version(self) -> str:
         if self._mimetype.version is None:
-            return Unk.UNAV
+            return UNAV
         return self._mimetype.version
 
 
