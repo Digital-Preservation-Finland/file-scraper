@@ -7,11 +7,6 @@ This module tests the following extractor classes:
         - MIME type and version are what is given to the extractor.
         - Streams contain only one dict with stream_type as None
           and MIME type and version as what was given to the extractor.
-    - MimeMatchExtractor
-        - well_formed is None if predefined file type (mimetype and version)
-          and given file type match
-        - well_formed is False if predefined filetype and given file type
-          conflicts
     - DetectedMimeVersionExtractor, DetectedMimeVersionMetadataExtractor
         - Results given file format version as a extractor result
         - Results error in MIME type is not supported
@@ -22,9 +17,8 @@ import pytest
 
 from file_scraper.defaults import UNAV
 from file_scraper.dummy.dummy_extractor import (
-    ExtractorNotFound, MimeMatchExtractor,
-    DetectedMimeVersionExtractor, DetectedMimeVersionMetadataExtractor)
-from tests.common import partial_message_included
+    ExtractorNotFound, DetectedMimeVersionExtractor,
+    DetectedMimeVersionMetadataExtractor)
 
 DEFAULTSTREAMS = {0: {"index": 0, "version": UNAV,
                       "stream_type": UNAV, "mimetype": UNAV}}
@@ -72,46 +66,6 @@ def test_extractor_not_found_with_given_mimetype_and_version():
 
     assert stream.mimetype() == expected_mimetype
     assert stream.version() == expected_version
-
-
-def test_mime_match_extractor():
-    """Test extractor for MIME type and version match check."""
-    filename = Path("tests/data/text_plain/valid__ascii.txt")
-    extractor = MimeMatchExtractor(
-        filename, mimetype="expected_mime", version="expected_version",
-        params={"mimetype": "expected_mime", "version": "expected_version"})
-    extractor.extract()
-    assert extractor.well_formed is None
-
-    extractor = MimeMatchExtractor(
-        filename, mimetype="mismatch", version="expected_version",
-        params={"mimetype": "expected_mime", "version": "expected_version"})
-    extractor.extract()
-    assert extractor.well_formed is False
-
-    extractor = MimeMatchExtractor(
-        filename, mimetype="expected_mime", version="mismatch",
-        params={"mimetype": "expected_mime", "version": "expected_version"})
-    extractor.extract()
-    assert extractor.well_formed is False
-
-    extractor = MimeMatchExtractor(
-        filename, mimetype="expected_mime", version="some_version",
-        params={"mimetype": "expected_mime", "version": UNAV})
-    extractor.extract()
-    assert partial_message_included(
-        "File format version is not supported", extractor.errors())
-    assert extractor.well_formed is False
-
-    extractor = MimeMatchExtractor(
-        filename, mimetype="application/vnd.oasis.opendocument.text",
-        version="some_version",
-        params={"mimetype": "application/vnd.oasis.opendocument.text",
-                "version": UNAV})
-    extractor.extract()
-    assert partial_message_included(
-        "File format version can not be resolved", extractor.messages())
-    assert extractor.well_formed is None
 
 
 def test_detected_version_extractor():

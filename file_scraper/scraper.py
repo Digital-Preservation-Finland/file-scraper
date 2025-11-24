@@ -12,7 +12,6 @@ from file_scraper.base import BaseDetector, BaseExtractor
 from file_scraper.defaults import UNAV
 from file_scraper.state import Mimetype
 from file_scraper.detectors import ExifToolDetector, MagicCharset
-from file_scraper.dummy.dummy_extractor import MimeMatchExtractor
 from file_scraper.dummy.dummy_model import UserDefinedMeta
 from file_scraper.exceptions import (
     DirectoryIsNotScrapable,
@@ -358,23 +357,6 @@ class Scraper:
             scraper = JHoveUtf8Extractor(filename=self.path, mimetype=UNAV)
             self._use_extractor(scraper)
 
-    def _check_mime(self) -> None:
-        """Check that predefined mimetype and resulted mimetype match."""
-        version = None
-        if (ver := self._kwargs.get("version")) not in LOSE:
-            version = ver
-        scraper = MimeMatchExtractor(
-            filename=self.path,
-            mimetype=self._detected_mimetype,
-            version=version,
-            params={
-                "mimetype": self.mimetype,
-                "version": self.version,
-                "well_formed": self.well_formed,
-            },
-        )
-        self._use_extractor(scraper)
-
     def _merge_results(self) -> None:
         """
         Merge scraper results into streams and handle possible
@@ -385,6 +367,8 @@ class Scraper:
                 self._results[1:],
                 LOSE
             )
+            if streams[0]["mimetype"] == UNAV:
+                errors.append("File format is not supported.")
             if (
                 self._predefined_version not in LOSE
                 and streams[0]["version"]
@@ -404,13 +388,6 @@ class Scraper:
         )
         errors.extend(more_errors)
 
-        self.info[len(self.info)] = {
-            "class": "Scraper (_merge_results)",
-            "messages": ["Extractor results merged into streams"],
-            "errors": errors,
-            "tools": {},
-        }
-
         merge_well_formed = None
         if len(errors) > 0:
             merge_well_formed = False
@@ -421,6 +398,13 @@ class Scraper:
         ):
             self.well_formed = merge_well_formed
         self.streams = streams
+
+        self.info[len(self.info)] = {
+            "class": "Scraper (_merge_results)",
+            "messages": ["Extractor results merged into streams"],
+            "errors": errors,
+            "tools": {},
+        }
 
     def scrape(self, check_wellformed: bool = True) -> None:
         """Scrape file and collect metadata.
@@ -477,8 +461,6 @@ class Scraper:
             self.mimetype = self.streams[0]["mimetype"]
         if self._predefined_version is None:
             self.version = self.streams[0]["version"]
-
-        self._check_mime()
 
     def detect_filetype(self) -> tuple[str | None, str | None]:
         """

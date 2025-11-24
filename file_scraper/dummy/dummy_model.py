@@ -32,15 +32,6 @@ class UserDefinedMeta(BaseMeta):
         return self._mimetype.version
 
 
-class DummyMeta(BaseMeta):
-    """Minimal metadata model for dummy extractors."""
-
-    @BaseMeta.metadata()
-    def stream_type(self):
-        """Stream type is not known so return (:unav)."""
-        return UNAV
-
-
 class ExtractorNotFoundMeta(BaseMeta):
     """
     Metadata model for ExtractorNotFound extractor. Otherwise minimal model,

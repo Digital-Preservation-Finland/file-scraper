@@ -7,7 +7,6 @@ from file_scraper.dummy.dummy_model import (
     DetectedSiardVersionMeta,
     DetectedSpssVersionMeta,
     DetectedTextVersionMeta,
-    DummyMeta,
     ExtractorNotFoundMeta
 )
 
@@ -63,59 +62,6 @@ class NoWellformednessBaseExtractor(BaseExtractor):
 
     def tools(self):
         return {}
-
-
-class MimeMatchExtractor(NoWellformednessBaseExtractor):
-    """
-    Extractor to check if the predefined mimetype and version match with the
-    resulted ones.
-    """
-
-    _ALTERNATIVE_MIMETYPES = {
-        "application/gzip": ["application/warc"]}
-    _MIMES_UNAV_VERSIONS = [
-        "application/vnd.oasis.opendocument.text",
-        "application/vnd.oasis.opendocument.spreadsheet",
-        "application/vnd.oasis.opendocument.presentation",
-        "application/vnd.oasis.opendocument.graphics",
-        "application/vnd.oasis.opendocument.formula",
-    ]
-    _supported_metadata = [DummyMeta]
-
-    def extract(self):
-        """
-        No need to extract anything, just compare already collected metadata.
-        """
-        mime = self._params.get("mimetype", UNAV)
-        ver = self._params.get("version", UNAV)
-        pre_list = self._ALTERNATIVE_MIMETYPES.get(
-            self._predefined_mimetype, [])
-
-        if mime == UNAV:
-            self._errors.append("File format is not supported.")
-        elif mime != self._predefined_mimetype and mime not in pre_list:
-            self._errors.append(
-                f"Predefined mimetype '{self._predefined_mimetype}' and "
-                f"resulted mimetype '{mime}' mismatch.")
-
-        if ver in [UNAV, None]:
-            if mime in self._MIMES_UNAV_VERSIONS:
-                self._messages.append(
-                    "File format version can not be resolved for this file "
-                    "format.")
-            else:
-                self._errors.append("File format version is not supported.")
-        elif self._predefined_version not in [ver, None]:
-            self._errors.append(
-                f"Predefined version '{self._predefined_version}' and "
-                f"resulted version '{ver}' mismatch.")
-
-        self._messages.append("MIME type and file format version checked.")
-
-        self.streams.append(DummyMeta())
-        self._check_supported(allow_unav_mime=True,
-                              allow_unav_version=True,
-                              allow_unap_version=True)
 
 
 class DetectedMimeVersionExtractor(NoWellformednessBaseExtractor):
