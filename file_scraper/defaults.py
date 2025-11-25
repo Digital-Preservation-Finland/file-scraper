@@ -45,6 +45,7 @@ MIMETYPE_DICT = {
     "application/mp4": None,
     "application/vnd.ms-asf": "video/x-ms-asf",
     "application/x-wine-extension-ini": "text/plain",
+    "application/x-subrip": "text/plain",
     "application/xml": "text/xml",
     "audio/x-m4a": "audio/mp4",
     "audio/x-ms-wma": "video/x-ms-asf",
