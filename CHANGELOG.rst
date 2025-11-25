@@ -12,6 +12,7 @@ Added
 ^^^^^
 - ``--version`` flag to print the current version
 - SIARD 2.2 support
+- Add detection for subrip (.srt) files as text files.
 
 Fixed
 ^^^^^
