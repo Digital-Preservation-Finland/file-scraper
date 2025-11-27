@@ -5,14 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.1.0/>`__,
 and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`__.
 
-Unreleased
-----------
+2.6.0 - 2025-11-27
+------------------
 
 Added
 ^^^^^
 - ``--version`` flag to print the current version
 - SIARD 2.2 support
-- Add detection for subrip (.srt) files as text files.
+- Detection for subrip (.srt) files as text files
+- The version number is now collected from the git-tag of the repository
+- WARC 1.1 support with a new Warcheology Extractor
 
 Fixed
 ^^^^^
