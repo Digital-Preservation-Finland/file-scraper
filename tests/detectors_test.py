@@ -531,6 +531,22 @@ def test_epub_detector(filepath, mimetype, version):
 
 
 @pytest.mark.parametrize(
+    ["filepath", "mimetype", "version"],
+    [
+        ("image_jpeg/valid_2.2.1_exif_metadata.jpg", "image/jpeg", "2.2.1"),
+        ("application_pdf/valid_A-1a.pdf", "application/pdf", "A-1a"),
+        ("application_pdf/valid_A-2b.pdf", "application/pdf", "A-2b"),
+    ]
+)
+def test_exiftool_detector(filepath, mimetype, version):
+    """Test that ExifTool detector detects various files correctly"""
+    detector = ExifToolDetector(Path("tests/data") / filepath)
+    detector.detect()
+    assert detector.mimetype == mimetype
+    assert detector.version == version
+
+
+@pytest.mark.parametrize(
     ["detector", "tool"],
     [
         (FidoDetector, "fido"),
