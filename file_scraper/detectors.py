@@ -188,6 +188,12 @@ class FidoDetector(BaseDetector):
         self.version = fido.version
         self._puid = fido.puid
 
+        # FIDO detects at least some video/mp4 audio/mp4 files as
+        # application/mp4 which is not currently supported
+        if self.mimetype == "application/mp4":
+            self.mimetype = None
+            self.version = None
+
         # FIDO 1.4.0 does not detect version for WARCs.
         if self.version is None and self.mimetype in {
             "application/gzip",

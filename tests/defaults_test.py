@@ -27,7 +27,6 @@ def test_mimetype_dict(monkeypatch):
     """
     TEST_MIMETYPE_DICT = {
         "application/csv": "text/csv",
-        "application/mp4": None,
         "application/vnd.ms-asf": "video/x-ms-asf",
         "application/x-wine-extension-ini": "text/plain",
         "application/xml": "text/xml",

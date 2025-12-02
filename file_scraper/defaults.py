@@ -42,7 +42,6 @@ PRIORITY_PRONOM = [
 # Dict between detectors' results and known mimetypes.
 MIMETYPE_DICT = {
     "application/csv": "text/csv",
-    "application/mp4": None,
     "application/vnd.ms-asf": "video/x-ms-asf",
     "application/x-wine-extension-ini": "text/plain",
     "application/x-subrip": "text/plain",
