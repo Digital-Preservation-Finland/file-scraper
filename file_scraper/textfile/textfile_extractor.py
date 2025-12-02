@@ -183,6 +183,9 @@ class TextEncodingExtractor(BaseExtractor[TextEncodingMeta]):
 
     Tries to use decode() and checks some of illegal character values.
 
+    If the incoming character set is None it will be invalid and cause
+    an error
+
     The rules for decoding validation are following:
 
     - For UTF-32 we try pre-decoding first 1024 bytes with UTF-32BE first and
@@ -218,20 +221,25 @@ class TextEncodingExtractor(BaseExtractor[TextEncodingMeta]):
         :param mimetype: File MIME type
         :param version: File format version
         :param params: Extra parameters as dict, the following is required:
-            charset: File character encoding
+            charset: File character encoding which cannot have a None value
+
+        :raises ValueError: When the character encoding (charset) parameter
+            is None
         """
         super().__init__(
             filename=filename, mimetype=mimetype, version=version,
             params=params)
-        self._charset = self._params.get("charset", UNAV)
+        self._charset = self._params.get("charset", None)
+        if self._charset is None:
+            raise ValueError(
+                self.__class__.__name__ + " requires the 'charset' "
+                "as an argument."
+            )
 
     def extract(self) -> None:
         """
         Validate the file with decoding it with given character encoding.
         """
-        if self._charset in [None, UNAV]:
-            self._errors.append("Character encoding not defined.")
-            return
         try:
             with open(self.filename, "rb") as infile:
                 position = 0

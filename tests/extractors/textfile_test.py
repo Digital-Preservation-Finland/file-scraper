@@ -196,23 +196,25 @@ def test_encoding_check(filename, charset, is_wellformed, evaluate_extractor):
 
 
 @pytest.mark.parametrize(
-    "charset",
+    ["mimetype", "charset"],
     [
-        (UNAV), (None)
-    ]
+        (None, None),
+        ("nonsense", None),
+        ("text/plain", None),
+    ],
 )
-def test_encoding_not_defined(charset):
+def test_encoding_not_defined(mimetype, charset):
     """
     Test the case where encoding is not defined.
 
     :charset: Character encoding
     """
-    extractor = TextEncodingExtractor(
-        filename=Path("tests/data/text_plain/valid__utf8_without_bom.txt"),
-        mimetype="text/plain", params={"charset": charset})
-    extractor.extract()
-    assert partial_message_included(
-        "Character encoding not defined.", extractor.errors())
+    with pytest.raises(ValueError):
+        TextEncodingExtractor(
+            filename=Path("tests/data/text_plain/valid__utf8_without_bom.txt"),
+            mimetype=mimetype,
+            params={"charset": charset},
+        )
 
 
 def test_decoding_limit(monkeypatch):
@@ -251,8 +253,10 @@ def test_tools():
     Test that tools return correct software
     """
     text_extractor = TextfileExtractor(filename=Path(""), mimetype="")
-    text_encoding_extractor = TextEncodingExtractor(filename=Path(""), mimetype="")
-    text_meta_extractor = TextEncodingMetaExtractor(filename=Path(""), mimetype="")
+    text_encoding_extractor = TextEncodingExtractor(
+        filename=Path(""), mimetype="", params={"charset": "UTF-8"})
+    text_meta_extractor = TextEncodingMetaExtractor(
+        filename=Path(""), mimetype="")
     assert text_extractor.tools()["file"]["version"][0].isdigit()
     assert text_encoding_extractor.tools() == {}
     assert text_meta_extractor.tools() == {}
