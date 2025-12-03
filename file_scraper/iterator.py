@@ -48,7 +48,8 @@ from file_scraper.warchaeology.warchaeology_extractor import WarchaeologyExtract
 from file_scraper.warctools.warctools_extractor import (WarctoolsFullExtractor,
                                                         WarctoolsExtractor)
 from file_scraper.xmllint.xmllint_extractor import XmllintExtractor
-from file_scraper.exiftool.exiftool_extractor import ExifToolDngExtractor
+from file_scraper.exiftool.exiftool_extractor import (ExifToolDngExtractor,
+                                                      ExifToolExifExtractor)
 from file_scraper.jpylyzer.jpylyzer_extractor import JpylyzerExtractor
 
 
@@ -95,6 +96,7 @@ def iter_extractors(
         DetectedMimeVersionExtractor,
         DpxExtractor,
         ExifToolDngExtractor,
+        ExifToolExifExtractor,
         FFMpegMetaExtractor,
         FFMpegExtractor,
         GhostscriptExtractor,

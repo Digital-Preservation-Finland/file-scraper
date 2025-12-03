@@ -11,6 +11,7 @@ from file_scraper.base import BaseExtractor
 from file_scraper.exiftool.exiftool_model import (
     ExifToolBaseMeta,
     ExifToolDngMeta,
+    ExifToolExifMeta,
 )
 
 EXIF_ERROR = "ExifTool:Error"
@@ -116,3 +117,9 @@ class ExifToolDngExtractor(ExifToolExtractorBase[ExifToolDngMeta]):
     """Variables for scraping dng files."""
 
     _supported_metadata = [ExifToolDngMeta]
+
+
+class ExifToolExifExtractor(ExifToolExtractorBase[ExifToolExifMeta]):
+    """Extractor for scraping Exif image files (i.e. JPEG/Exif)"""
+
+    _supported_metadata = [ExifToolExifMeta]

@@ -3,6 +3,7 @@
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAV
+from file_scraper.utils import parse_exif_version
 
 
 class ExifToolBaseMeta(BaseMeta):
@@ -15,6 +16,35 @@ class ExifToolBaseMeta(BaseMeta):
     @BaseMeta.metadata()
     def mimetype(self):
         return self._metadata.get("File:MIMEType", UNAV)
+
+
+class ExifToolExifMeta(ExifToolBaseMeta):
+    """
+    Metadata models for Exif image files (i.e. JPEG/Exif)
+    """
+
+    _supported = {
+        "image/jpeg": ["2.0", "2.1", "2.2", "2.2.1", "2.3", "2.3.1", "2.3.2"]
+    }
+
+    # JPEG file can have both JFIF and Exif app segments.
+    # If both exist, Exif takes precedence.
+    @BaseMeta.metadata(important=True)
+    def version(self):
+        """
+        Return version.
+
+        Version is converted to X.Y.Z format
+        (eg. "0230" -> "2.3.0" and "0231" -> "2.3.1").
+        This differs from Exif spec which combines major and minor parts from
+        both (eg. "0230" -> "2.3" and "0231" -> "2.31").
+        """
+        if "EXIF:ExifVersion" in self._metadata:
+            raw_version = self._metadata["EXIF:ExifVersion"]
+
+            return parse_exif_version(raw_version)
+
+        return UNAV
 
 
 class ExifToolDngMeta(ExifToolBaseMeta):
