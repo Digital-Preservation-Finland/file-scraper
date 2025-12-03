@@ -138,8 +138,11 @@ def _collect_scraper_results(
 
     for item in scraper.info.values():
         if "ExtractorNotFound" in item["class"]:
-            raise click.ClickException("Proper extractor was not found. The "
-                                       "file was not analyzed.")
+            raise click.ClickException(
+                f"None of the extractors supported the detected (or inputted) "
+                f"mimetype: {scraper.mimetype}. "
+                f"The file was not analyzed."
+            )
         if item["errors"]:
             errors[item["class"]] = item["errors"]
     if errors:
