@@ -11,6 +11,7 @@ Unreleased
 Added
 ^^^^^
 - Added a detect-file command to the scraper cli.
+- Validate EXIF version format in JPEG/Exif files
 
 Fixed
 ^^^^^

@@ -82,8 +82,22 @@ class ExifToolExtractorBase(BaseExtractor[ExifToolMetaT]):
                     self._messages.append(
                         "The file was analyzed successfully.")
 
+        if exif_version := metadata.get("EXIF:ExifVersion"):
+            # Check ExifVersion
+            self._parse_exif_version(exif_version)
+
         self.streams = list(self.iterate_models(metadata=metadata))
         self._check_supported(allow_unav_version=True)
+
+    def _parse_exif_version(self, exif_version):
+        """Check that the Exif version is syntactically valid"""
+        if len(exif_version) != 4:
+            self._errors.append(
+                f"ExifVersion '{exif_version}' is not 4 characters long"
+            )
+
+        if not exif_version.isdigit():
+            self._errors.append(f"ExifVersion '{exif_version}' is not numeric")
 
     def tools(self) -> dict:
         """Return information about the software used by the extractor or
