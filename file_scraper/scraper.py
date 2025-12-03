@@ -174,14 +174,6 @@ class Scraper:
             self._use_detector(detector)
             self._update_filetype(detector)
 
-        if (
-            MagicCharset.is_supported(self._detected_mimetype)
-            and self._kwargs.get("charset", None) is None
-        ):
-            charset_detector = MagicCharset(self.path)
-            charset_detector.detect()
-            self._kwargs["charset"] = charset_detector.charset
-
         # PDF files should always be scrutinized further to determine if
         # they are PDF/A
         # Files predefined as tiff will be scrutinized further to check if they
@@ -205,6 +197,15 @@ class Scraper:
             to_empty=None,
             prevent_update_to_values=LOSE
         )
+
+        if (
+            MagicCharset.is_supported(self._detected_mimetype)
+            and self._kwargs.get("charset", None) is None
+        ):
+            charset_detector = MagicCharset(self.path)
+            charset_detector.detect()
+            self._kwargs["charset"] = charset_detector.charset
+
         if detector_result_mimetype == "application/octet-stream":
             LOGGER.info(
                 "Detectors didn't find a mimetype. Trust to the user input")
