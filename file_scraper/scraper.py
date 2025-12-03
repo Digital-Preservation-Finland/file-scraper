@@ -178,7 +178,11 @@ class Scraper:
         # they are PDF/A
         # Files predefined as tiff will be scrutinized further to check if they
         # are dng files in order to return the correct mimetype and version
-        if self._detected_mimetype in {"image/tiff", "application/pdf"}:
+        if self._detected_mimetype in {
+                "image/tiff",
+                "application/pdf",
+                "image/jpeg"
+        }:
             exiftool_detector = ExifToolDetector(self.path)
             self._use_detector(exiftool_detector)
             self._update_filetype(exiftool_detector)

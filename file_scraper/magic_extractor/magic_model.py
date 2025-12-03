@@ -277,11 +277,18 @@ class AiffFileMagicMeta(BinaryMagicBaseMeta):
 class JpegFileMagicMeta(BinaryMagicBaseMeta):
     """Metadata model for JPEG files."""
 
-    _supported = {"image/jpeg": ["1.00", "1.01", "1.02", "2.0", "2.1",
-                                 "2.2", "2.2.1"]}  # Supported mimetype
+    # Magic can only parse JFIF APP0 segment, not Exif APP1 segment. Exif
+    # version is parsed and provided by different extractors.
+    _supported = {
+        "image/jpeg": [
+            # JFIF: format and version detection
+            "1.00", "1.01", "1.02",
+            # Exif: only format detection, no version
+            "2.0", "2.1", "2.2", "2.2.1", "2.3", "2.3.1", "2.3.2"
+        ]
+    }
     _starttag = "standard "  # Text before version in magic output
     _endtag = ","            # Text after version in magic output
-    _allow_any_version = True
 
     @BaseMeta.metadata()
     def stream_type(self):

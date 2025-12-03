@@ -12,6 +12,10 @@ Added
 ^^^^^
 - Added a detect-file command to the scraper cli.
 
+Fixed
+^^^^^
+- Fix version detection for JPEG/Exif files when using ``Scraper.detect``
+
 Improved
 ^^^^^^^^
 - Error message given when usable extractors can't be found for a file.

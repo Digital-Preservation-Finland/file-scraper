@@ -26,7 +26,8 @@ from file_scraper.defaults import (
 from file_scraper.logger import LOGGER
 from file_scraper.magiclib import magic_analyze, magiclib, magiclib_version
 from file_scraper.state import Mimetype
-from file_scraper.utils import is_zipfile, normalize_charset
+from file_scraper.utils import (is_zipfile, normalize_charset,
+                                parse_exif_version)
 
 
 class _FidoCachedFormats(Fido):
@@ -373,11 +374,12 @@ class MagicCharset(BaseDetector):
 
 class ExifToolDetector(BaseDetector):
     """
-    Detector used with tiff and pdf files.
+    Detector used with TIFF, JPEG and PDF files.
 
-    - tell dng files apart from ordinary tiff files
+    - tell DNG files apart from ordinary TIFF files
     - detect PDF/A conformance for PDF files
     - detect PDF/A version
+    - detect JPEG/Exif version
     """
 
     def detect(self) -> None:
@@ -398,6 +400,7 @@ class ExifToolDetector(BaseDetector):
                 metadata = et.get_metadata(self.filename)
                 self.mimetype = metadata[0].get("File:MIMEType", None)
                 self._detect_pdf_a(metadata[0])
+                self._detect_exif_version(metadata[0])
         except exiftool.exceptions.ExifToolExecuteError:
             LOGGER.info("ExifTool could not process file", exc_info=True)
             self._set_info_exiftool_not_supported()
@@ -413,6 +416,14 @@ class ExifToolDetector(BaseDetector):
             self._messages.append("PDF/A version detected by Exiftool.")
         elif self.mimetype == "application/pdf":
             self._set_info_not_pdf_a()
+
+    def _detect_exif_version(self, metadata: dict) -> None:
+        """Detect EXIF version of JPEG."""
+        raw_version = metadata.get("EXIF:ExifVersion")  # For example '0221'
+        is_jpeg_exif = raw_version and self.mimetype == "image/jpeg"
+
+        if is_jpeg_exif:
+            self.version = parse_exif_version(raw_version)
 
     def _set_info_not_pdf_a(self) -> None:
         """

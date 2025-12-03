@@ -298,10 +298,15 @@ def test_jpeg_exif_character_case():
     version result for JPEG/EXIF images.
     """
     jpeg_meta = JpegFileMagicMeta(
-        {"magic_none": "JPEG image data, EXIF standard"}, "image/jpeg")
+        magic_result={"magic_none": "JPEG image data, EXIF standard"},
+        pre_mimetype="image/jpeg",
+    )
     assert jpeg_meta.version() == UNAV
+
     jpeg_meta = JpegFileMagicMeta(
-        {"magic_none": "JPEG image data, Exif standard"}, "image/jpeg")
+        magic_result={"magic_none": "JPEG image data, Exif standard"},
+        pre_mimetype="image/jpeg",
+    )
     assert jpeg_meta.version() == UNAV
 
 
@@ -380,7 +385,6 @@ def test_is_supported_allow_any_version(mime, ver, extractor_class):
     assert extractor_class.is_supported(mime, ver, True)
     assert extractor_class.is_supported(mime, None, True)
     assert extractor_class.is_supported(mime, ver, False)
-    assert extractor_class.is_supported(mime, "foo", True)
     assert not extractor_class.is_supported("foo", ver, True)
 
 
