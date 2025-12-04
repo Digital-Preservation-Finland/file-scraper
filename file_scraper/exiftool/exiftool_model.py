@@ -17,6 +17,11 @@ class ExifToolBaseMeta(BaseMeta):
     def mimetype(self):
         return self._metadata.get("File:MIMEType", UNAV)
 
+    @BaseMeta.metadata()
+    def stream_type(self):
+        """Return file type."""
+        return "image"
+
 
 class ExifToolExifMeta(ExifToolBaseMeta):
     """
@@ -67,24 +72,6 @@ class ExifToolDngMeta(ExifToolBaseMeta):
         """
         return super().mimetype()
 
-    @BaseMeta.metadata(important=True)
-    def version(self):
-        """
-        Return version with one decimal digit, eg. "1.3".
-
-        Decorator is marked as important because other extractors may not
-        recognize the version of a dng file correctly.
-        """
-        if "EXIF:DNGVersion" in self._metadata:
-            version = self._metadata["EXIF:DNGVersion"].replace(" ", ".")
-            return version[:3]
-        return UNAV
-
-    @BaseMeta.metadata()
-    def stream_type(self):
-        """Return file type."""
-        return "image"
-
     @BaseMeta.metadata()
     def byte_order(self):
         """
@@ -98,4 +85,17 @@ class ExifToolDngMeta(ExifToolBaseMeta):
             return "little endian"
         if value == "MM":
             return "big endian"
+        return UNAV
+
+    @BaseMeta.metadata(important=True)
+    def version(self):
+        """
+        Return version with one decimal digit, eg. "1.3".
+
+        Decorator is marked as important because other extractors may not
+        recognize the version of a dng file correctly.
+        """
+        if "EXIF:DNGVersion" in self._metadata:
+            version = self._metadata["EXIF:DNGVersion"].replace(" ", ".")
+            return version[:3]
         return UNAV
