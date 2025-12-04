@@ -220,5 +220,40 @@ def check_xml_schematron_features(filename, schema, schematron,
     click.echo(json.dumps(results, indent=4))
 
 
+@cli.command("detect-file")
+@click.argument("filename", type=click.Path())
+@click.option(
+    "--verbose",
+    "-v",
+    count=True,
+    help=(
+        "Print detailed information about execution. "
+        "Can be provided twice for additional verbosity."
+    ),
+)
+def detect_file(filename, verbose):
+
+    level = {
+        0: logging.WARNING,
+        1: logging.INFO,
+        2: logging.DEBUG
+    }
+
+    # Enable logging. If flag is provided an additional number of times,
+    # default to the highest possible verbosity.
+    enable_logging(level.get(verbose, logging.DEBUG))
+
+    detect_scraper = Scraper(filename=filename)
+    mimetype, version = detect_scraper.detect_filetype()
+
+    results = {
+        "path": str(detect_scraper.input_path),
+        "MIME type": str(mimetype),
+        "version": str(version)
+    }
+
+    click.echo(json.dumps(results, indent=4))
+
+
 if __name__ == "__main__":
     cli()

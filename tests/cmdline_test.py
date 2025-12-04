@@ -195,13 +195,13 @@ def test_mime_type_cases():
 
 
 @pytest.mark.parametrize(
-    "flag,expected_output",
+    "command, flag, expected_output",
     [
-        ("-v", "INFO"),
-        ("-vv", "DEBUG")
+        ("scrape-file", "-v", "INFO"),
+        ("detect-file", "-vv", "DEBUG")
     ]
 )
-def test_verbose_flag(flag, expected_output, caplog):
+def test_verbose_flag(command, flag, expected_output):
     """
     Test that `-v` and `-vv` cause INFO and DEBUG log messages to be printed
     respectively
@@ -210,7 +210,7 @@ def test_verbose_flag(flag, expected_output, caplog):
 
     runner = get_cli_runner()
 
-    result = runner.invoke(cli, ["scrape-file", flag, str(file_path)])
+    result = runner.invoke(cli, [command, flag, str(file_path)])
 
     assert expected_output in result.stderr
 
@@ -261,3 +261,31 @@ def test_sgml_catalog_files_env_var_gets_overridden():
                                  "tests/data/text_xml/valid_1.0_gpx_1.0.xml"])
     assert json.loads(result.stdout)["well-formed"] is False
     assert result.exit_code == 0
+
+
+@pytest.mark.parametrize(
+    "path, expected_mimetype, expected_version",
+    [
+        (
+            "tests/data/text_plain/valid__ascii.txt",
+            "text/plain",
+            "None"
+         ),
+        (
+            "tests/data/application_pdf/valid_A-2b.pdf",
+            "application/pdf",
+            "A-2b"
+        ),
+    ]
+)
+def test_detect_file(path, expected_mimetype, expected_version):
+    result = get_cli_runner().invoke(
+        cli,
+        [
+            "detect-file", path
+        ]
+    )
+    assert not result.exception
+    result_json = json.loads(result.stdout)
+    assert result_json["MIME type"] == expected_mimetype
+    assert result_json["version"] == expected_version
