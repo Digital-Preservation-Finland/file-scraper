@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Any
+from typing import Any, NamedTuple
 
 from dpres_file_formats.graders import file_formats
 from dpres_file_formats.graders import grade as file_formats_grade
@@ -30,6 +30,17 @@ from file_scraper.utils import (
 from file_scraper.metadata import generate_metadata_dict
 
 LOSE = (None, UNAV, "")
+
+
+class ScraperResults(NamedTuple):
+    path: str
+    mimetype: str
+    version: str
+    well_formed: str
+    streams: dict[int, Any]
+    grade: str
+    info: dict[str, Any]
+    errors: list[str]
 
 
 class Scraper:
@@ -231,7 +242,8 @@ class Scraper:
             self.info[len(self.info)] = {
                 "class": "Scraper _identify",
                 "messages": [mismatch],
-                "errors": []
+                "errors": [],
+                "tools": {},
             }
 
     def _use_detector(self, detector: BaseDetector) -> None:
@@ -411,11 +423,28 @@ class Scraper:
             "tools": {},
         }
 
-    def scrape(self, check_wellformed: bool = True) -> None:
+    def scrape(self, check_wellformed: bool = True) -> ScraperResults:
         """Scrape file and collect metadata.
 
         :param check_wellformed: True, full scraping; False, skip well-formed
             check.
+        :returns:
+            A NamedTuple which contains the following members
+            - path::string the input path given to the Scraper
+            - mimetype::string the detected or inputted MIME type for scraper
+            - version::string the MIME type version
+            - streams::dict the collected streams. Inside the list the
+              streams are stored with numbers starting from the number 0.
+            - well_formed::boolean the well-formedness will always be included
+              regardless of the check_wellformed parameter. The file just can't
+              be well-formed if the check_wellformed parameter has been set to
+              False.
+            - grade::string produces the grade for file-scraper
+            - info::dict the collected information about each used tool,
+              the tools are stored with numbers starting from the number 0.
+              Each tool info contains at least the class, messages, errors and
+              tools
+            - errors::list collects errors from extractors to a list.
         """
         LOGGER.info("Scraping %s", self.path)
         self._check_wellformed = check_wellformed
@@ -454,10 +483,9 @@ class Scraper:
                     extractor.__class__.__name__,
                 )
         self._merge_results()
-        # If no streams exist the mimetype and version are unavailable
-        if not self.streams:
-            LOGGER.error("No streams found by the extractors!")
-            return
+
+        # At least one stream should always exist after merging results
+        assert self.streams
 
         self._check_utf8()
         self.mimetype = self._predefined_mimetype
@@ -466,6 +494,21 @@ class Scraper:
             self.mimetype = self.streams[0]["mimetype"]
         if self._predefined_version is None:
             self.version = self.streams[0]["version"]
+        # Return scraper results:
+        errors = []
+        for item in self.info.values():
+            for error in item["errors"]:
+                errors.append(item["class"] + " :: " + error)
+        return ScraperResults(
+            path=str(self.input_path),
+            mimetype=self.mimetype,
+            version=self.version,
+            well_formed=self.well_formed,
+            streams=self.streams,
+            grade=self.grade(),
+            info=self.info,
+            errors=errors
+        )
 
     def detect_filetype(self) -> tuple[str | None, str | None]:
         """
