@@ -55,7 +55,8 @@ from file_scraper.utils import (
     iso8601_duration,
     iter_utf_bytes,
     normalize_charset,
-    strip_zeros
+    strip_zeros,
+    parse_exif_version
 )
 
 
@@ -252,3 +253,23 @@ def test_zipfile(monkeypatch):
             'tests/data/application_vnd.oasis.opendocument.text/valid_1.2.odt'
         )
     )
+
+
+@pytest.mark.parametrize(
+    "version,expected",
+    (
+        ("0230", "2.3"),
+        ("0231", "2.3.1"),
+        ("0200", "2.0"),
+
+        # Technically against the Exif spec, but these are tolerated.
+        ("02", "2.0"),
+        ("023", "2.3"),
+    )
+)
+def test_parse_exif_version(version, expected):
+    """
+    Test parsing EXIF version from the original Exif value
+    into a human-readable string
+    """
+    assert parse_exif_version(version) == expected

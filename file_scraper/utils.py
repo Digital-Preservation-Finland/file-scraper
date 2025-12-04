@@ -292,3 +292,44 @@ def filter_unwanted_chars(info_string: str) -> str:
         unwanted_chars_regex_string)
 
     return unwanted_chars_re_pattern.sub('', info_string)
+
+
+def parse_exif_version(version: str) -> str:
+    """
+    Parse Exif version from its 4-char format into a dot-separated
+    version string.
+
+    Any strings shorter than 4 characters are right-padded with zeroes first,
+    though this is against the spec and done to ensure even spec non-compliant
+    values can be parsed.
+
+    For example,
+
+    >>> parse_exif_version("0230")
+    "2.3"
+    >>> parse_exif_version("0231")
+    "2.3.1"
+    >>> parse_exif_version("023")  # Non-compliant values are tolerated
+    "2.3"
+    """
+    # The assumption here is that incorrect software adds
+    # null-terminator when it is disallowed as noted by ExifTool
+    # developers; pad zeroes as necessary.
+    version = version.ljust(4, "0")
+
+    # Per Exif spec, the two parts for major and minor version parts
+    # are concatenated with any zeroes stripped beforehand
+    # to produce a human-readable version number.
+    # (eg. "0231" -> "2.31" and "0230" -> "2.3")
+    #
+    # We use "X.Y.Z" or "X.Y" pattern instead ("2.3.1" and "2.3").
+    ver_a, ver_b1, ver_b2 = (
+        version[0:2].strip("0"),
+        version[2],
+        version[3]
+    )
+    version_parts = [ver_a, ver_b1]
+    if ver_b2 != "0":
+        version_parts += [ver_b2]
+
+    return ".".join(version_parts)
