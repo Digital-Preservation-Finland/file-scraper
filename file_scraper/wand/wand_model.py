@@ -2,6 +2,7 @@
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAV, UNAP
+from file_scraper.utils import parse_exif_version
 
 
 class WandImageMeta(BaseMeta):
@@ -191,15 +192,9 @@ def format_exif_version(wand_exif_version):
     :return: Formatted version string
 
     """
-    if len(wand_exif_version.split(", ")) == 4:
-        version_bytes = [chr(int(byte)) for byte in
-                         wand_exif_version.split(', ')]
-    else:
-        version_bytes = list(wand_exif_version)
+    if len(wand_exif_version.split(", ")) == 4:  # Older ImageMagick
+        wand_exif_version = "".join(
+            [chr(int(byte)) for byte in wand_exif_version.split(', ')]
+        )
 
-    version_bytes[0] += version_bytes.pop(1)
-
-    if version_bytes[-1] == '0':
-        version_bytes.pop(-1)
-
-    return '.'.join([str(int(version)) for version in version_bytes])
+    return parse_exif_version(wand_exif_version)
