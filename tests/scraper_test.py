@@ -409,3 +409,32 @@ def test_invalid_version_mimetype_combinations(
         )
         scraper.scrape()
     assert error in str(val_err)
+
+
+def test_text_file_predefined_mimetype_correction():
+    """Test detecting charset of special text files.
+
+    Some text files are not automatically detected as text/plain by
+    detectors. The mimetype must be predefined for these files, but
+    charset should be detected correctly once the mimetype has been
+    predefined. A webvtt file is used as an example in this test.
+    """
+    # Scraping without predefined mimetype does not produce valid result
+    scraper = Scraper(
+        "tests/data/text_plain/valid__webvtt.vtt",
+    )
+    scraper.scrape()
+    assert scraper.mimetype == "text/vtt"
+    assert scraper.streams[0].get("charset") is None
+    assert scraper.well_formed is False
+
+    # When mimetype is predefined, charset is detected and the file
+    # well formed
+    scraper = Scraper(
+        "tests/data/text_plain/valid__webvtt.vtt",
+        mimetype="text/plain"
+    )
+    scraper.scrape()
+    assert scraper.mimetype == "text/plain"
+    assert scraper.streams[0].get("charset") == "UTF-8"
+    assert scraper.well_formed is True

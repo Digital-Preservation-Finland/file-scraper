@@ -1,0 +1,18 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:02.500
+This is the first caption.
+
+00:00:02.500 --> 00:00:05.000
+This is the second caption.
+
+00:00:05.000 --> 00:00:08.000
+Subtitle with
+a line break.
+
+00:00:08.000 --> 00:00:12.000 align:center line:90%
+Caption with custom settings.
+
+00:00:12.000 --> 00:00:15.000
+And a final caption to end the example.
+
