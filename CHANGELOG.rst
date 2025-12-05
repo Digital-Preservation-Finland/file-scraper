@@ -13,13 +13,13 @@ Added
 - Added a detect-file command to the scraper cli.
 - Validate EXIF version format in JPEG/Exif files
 
+Changed
+^^^^^^^
+- Error message given when usable extractors can't be found for a file.
+
 Fixed
 ^^^^^
 - Fix version detection for JPEG/Exif files when using ``Scraper.detect``
-
-Improved
-^^^^^^^^
-- Error message given when usable extractors can't be found for a file.
 
 2.6.0 - 2025-11-27
 ------------------
