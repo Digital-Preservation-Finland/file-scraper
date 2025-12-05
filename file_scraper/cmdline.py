@@ -18,6 +18,22 @@ from file_scraper.exceptions import (
 )
 from file_scraper.utils import ensure_text
 
+NUM_TO_LOG_LEVEL = {
+    0: logging.WARNING,
+    1: logging.INFO,
+    2: logging.DEBUG
+}
+
+_verbose_option = click.option(
+    "--verbose",
+    "-v",
+    count=True,
+    help=(
+            "Print detailed information about execution. "
+            "Can be provided twice for additional verbosity."
+    )
+)
+
 
 @click.group()
 @click.version_option(prog_name="file-scraper")
@@ -42,13 +58,6 @@ def cli():
               help="Specify the mimetype of the file")
 @click.option("--version", default=None,
               help="Specify version for the filetype")
-@click.option(
-    "--verbose", "-v", count=True,
-    help=(
-            "Print detailed information about execution. "
-            "Can be provided twice for additional verbosity."
-    )
-)
 @click.option("--charset", help="Specify the encoding used in text files.")
 @click.option("--delimiter",
               help="Specify the delimiter in CSV files.")
@@ -59,6 +68,7 @@ def cli():
 @click.option("--schema", help="Specify the schema file for XML files.")
 @click.option("--catalog-path",
               help="Specify the catalog environment for XML files.")
+@_verbose_option
 def scrape_file(
         filename, check_wellformed, tool_info, mimetype, version,
         verbose, charset, delimiter, fields, separator, quotechar, schema,
@@ -74,15 +84,10 @@ def scrape_file(
     :mimetype: Specified mimetype for the scraped file
     :version: Specified version for the scraped file
     """
-    level = {
-        0: logging.WARNING,
-        1: logging.INFO,
-        2: logging.DEBUG
-    }
 
     # Enable logging. If flag is provided an additional number of times,
     # default to the highest possible verbosity.
-    enable_logging(level.get(verbose, logging.DEBUG))
+    enable_logging(NUM_TO_LOG_LEVEL.get(verbose, logging.DEBUG))
 
     option_args = {"charset": charset, "delimiter": delimiter,
                    "fields": fields,
@@ -164,30 +169,23 @@ def _collect_scraper_results(
 @click.option("--extra-hash",
               help="Hash of related abstract patterns for XML schematron "
                    "checks.")
-@click.option(
-    "--verbose", "-v", count=True,
-    help=(
-            "Print detailed information about execution. "
-            "Can be provided twice for additional verbosity."
-    )
-)
+@_verbose_option
 def check_xml_schematron_features(filename, schema, schematron,
                                   schematron_verbose, cache, catalog_path,
                                   extra_hash, verbose):
-    option_args = {"schema": schema, "schematron": schematron,
-                   "verbose": schematron_verbose,
-                   "cache": cache, "catalog_path": catalog_path,
-                   "extra_hash": extra_hash}
-
-    level = {
-        0: logging.WARNING,
-        1: logging.INFO,
-        2: logging.DEBUG
-    }
 
     # Enable logging. If flag is provided an additional number of times,
     # default to the highest possible verbosity.
-    enable_logging(level.get(verbose, logging.DEBUG))
+    enable_logging(NUM_TO_LOG_LEVEL.get(verbose, logging.DEBUG))
+
+    option_args = {
+        "schema": schema,
+        "schematron": schematron,
+        "verbose": schematron_verbose,
+        "cache": cache,
+        "catalog_path": catalog_path,
+        "extra_hash": extra_hash,
+    }
 
     LOGGER.info("Additional scraper args provided: %s", option_args)
 
@@ -222,26 +220,12 @@ def check_xml_schematron_features(filename, schema, schematron,
 
 @cli.command("detect-file")
 @click.argument("filename", type=click.Path())
-@click.option(
-    "--verbose",
-    "-v",
-    count=True,
-    help=(
-        "Print detailed information about execution. "
-        "Can be provided twice for additional verbosity."
-    ),
-)
+@_verbose_option
 def detect_file(filename, verbose):
-
-    level = {
-        0: logging.WARNING,
-        1: logging.INFO,
-        2: logging.DEBUG
-    }
 
     # Enable logging. If flag is provided an additional number of times,
     # default to the highest possible verbosity.
-    enable_logging(level.get(verbose, logging.DEBUG))
+    enable_logging(NUM_TO_LOG_LEVEL.get(verbose, logging.DEBUG))
 
     detect_scraper = Scraper(filename=filename)
     mimetype, version = detect_scraper.detect_filetype()
