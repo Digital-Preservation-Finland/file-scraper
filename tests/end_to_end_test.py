@@ -268,6 +268,8 @@ GIVEN_MIMETYPES = {
     "tests/data/text_plain/valid__utf32le_without_bom.txt": "text/plain",
     "tests/data/text_plain/valid__utf32be_bom.txt": "text/plain",
     "tests/data/text_plain/valid__utf32le_bom.txt": "text/plain",
+    # text/vtt is unsupported file type which was added for tests TPASPKT-1617
+    "tests/data/text_plain/valid__webvtt.vtt": "text/plain",
     "tests/data/text_plain/invalid__utf8_just_c3.txt": "text/plain",
     "tests/data/video_dv/valid__pal_lossy.dv": "video/dv",
     "tests/data/application_json/"

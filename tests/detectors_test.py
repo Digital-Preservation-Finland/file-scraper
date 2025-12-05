@@ -53,6 +53,8 @@ CHANGE_FIDO = {
     "video_mp4/valid__h265_aac.mp4": None,
     "video_mp4/valid__too_many_packets_buffered.mp4": None,
     "application_msword/valid_97-2003.doc": None,
+    # text/vtt is unsupported file type which was added for tests TPASPKT-1617
+    "text_plain/valid__webvtt.vtt": None,
     "application_vnd.openxmlformats-officedocument.spreadsheetml"
     ".sheet/valid_2007 onwards.xlsx": None,
     "application_vnd.openxmlformats-officedocument.presentationml"
@@ -105,6 +107,8 @@ CHANGE_MAGIC = {
         "application/octet-stream",
     "text_plain/valid__utf32be_without_bom.txt":
         "application/octet-stream",
+    # text/vtt is unsupported file type which was added for tests TPASPKT-1617
+    "text_plain/valid__webvtt.vtt": "text/vtt",
     "video_MP1S/valid__mpeg1_mp3.mpg": "video/mpeg",
     "video_MP2P/valid__mpeg2_mp3.mpg": "video/mpeg",
     "video_MP2T/valid__mpeg2_mp3.ts": "application/octet-stream",
