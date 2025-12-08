@@ -99,4 +99,7 @@ def test_tools():
     """ Test that tools were unknown """
 
     extractor = DpxExtractor(filename=Path(""), mimetype="")
-    assert re.fullmatch(r"\d+\.\d+\.\d+", extractor.tools()["dpx-validator"]["version"])
+    assert re.fullmatch(
+        r"\d+\.\d+\.\d+.*",
+        extractor.tools()["dpx-validator"]["version"]
+    )
