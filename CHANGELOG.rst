@@ -8,6 +8,10 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 Unreleased
 ----------
 
+Added
+^^^^^
+- Added a detect-file command to the scraper cli.
+
 Improved
 ^^^^^^^^
 - Error message given when usable extractors can't be found for a file.
