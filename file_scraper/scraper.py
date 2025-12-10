@@ -101,7 +101,7 @@ class Scraper:
         """Clear the Scraper to an initial state."""
         self.mimetype = None
         self.version = None
-        self.streams = None
+        self.streams = {}
         self._well_formed = None
         self._check_wellformed = True
         self.info = {}

@@ -104,7 +104,7 @@ def test_detect_filetype(filename, params, expected_results):
     scraper.detect_filetype()
     for field, value in expected_results.items():
         assert getattr(scraper, field) == value
-    assert scraper.streams is None
+    assert scraper.streams == {}
     assert scraper.info
 
     # Even if scraping has been done previously, detection should erase all
@@ -113,7 +113,7 @@ def test_detect_filetype(filename, params, expected_results):
     scraper.detect_filetype()
     for field, value in expected_results.items():
         assert getattr(scraper, field) == value
-    assert scraper.streams is None
+    assert scraper.streams == {}
     assert scraper.info
 
 
