@@ -38,6 +38,7 @@ from file_scraper.exceptions import (FileIsNotScrapable,
                                      InvalidVersionForMimetype,)
 
 from tests.conftest import Meta1, Meta2, Meta5
+from tests.common import compare_results
 
 
 def test_is_textfile():
@@ -438,3 +439,28 @@ def test_text_file_predefined_mimetype_correction():
     assert scraper.mimetype == "text/plain"
     assert scraper.streams[0].get("charset") == "UTF-8"
     assert scraper.well_formed is True
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "text_plain/valid__ascii.txt",
+        "video_mp4/invalid__h264_aac_missing_data.mp4",
+        "audio_mpeg/invalid_contains_jpeg.mp3",
+        "application_pdf/valid_1.3.pdf",
+    ]
+)
+def test_scraper_returns_correct_values(path):
+    """
+    The scraper returns the same values which can be collected from
+    the scraper object.
+    """
+    path = "tests/data/" + path
+
+    scraper = Scraper(path)
+    results = scraper.scrape()
+    compare_results(scraper, results)
+
+    scraper = Scraper(path)
+    results = scraper.scrape(check_wellformed=False)
+    compare_results(scraper, results)

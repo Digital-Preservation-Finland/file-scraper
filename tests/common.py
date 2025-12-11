@@ -166,3 +166,16 @@ def partial_message_included(part, messages):
 
 def filter_unap(val):
     return val if val != UNAP else None
+
+
+def compare_results(scraper, results):
+    """
+    Compare scraper internal state with the return values.
+    """
+    assert str(scraper.input_path) == results.path
+    assert scraper.mimetype == results.mimetype
+    assert scraper.version == results.version
+    assert scraper.well_formed == results.well_formed
+    assert scraper.grade() == results.grade
+    assert scraper.info == results.info
+    assert scraper.streams == results.streams
