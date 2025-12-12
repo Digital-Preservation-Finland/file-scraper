@@ -10,12 +10,14 @@ Unreleased
 
 Added
 ^^^^^
-- Added a detect-file command to the scraper cli.
+- A detect-file command to the scraper cli.
 - Validate EXIF version format in JPEG/Exif files
+- Return values to the Scrapers scrape function.
 
 Changed
 ^^^^^^^
 - Error message given when usable extractors can't be found for a file.
+- Default state for streams changed from None to an empty dictionary
 
 Fixed
 ^^^^^
