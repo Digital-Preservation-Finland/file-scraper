@@ -20,7 +20,7 @@ class JsonExtractor(BaseExtractor):
                 )
 
         self.streams = list(self.iterate_models())
-        self._check_supported(allow_unap_version=True)
+        self._validate(allow_unap_version=True)
 
     def tools(self) -> dict:
         return {}

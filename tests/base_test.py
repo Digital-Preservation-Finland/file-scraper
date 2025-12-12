@@ -8,7 +8,7 @@ This module tests:
     - That messages and errors are returned properly.
     - That extractor attributes and well_formed property are set and retrieved
       correctly
-    - That _check_supported() method gives error messages properly
+    - That _validate() method gives error messages properly
     - That initialization of detector works properly
 """
 from pathlib import Path
@@ -223,9 +223,9 @@ class BaseExtractorSupported(BaseExtractor):
          "None is not a supported MIME type"),
     ]
 )
-def test_check_supported(extractor_class, mimetype, version, errors):
+def test_validate(extractor_class, mimetype, version, errors):
     """
-    Test extractor's _check_supported() method.
+    Test extractor's _validate() method.
 
     :extractor_class: Test extractor class
     :mimetype: File MIME type
@@ -236,7 +236,7 @@ def test_check_supported(extractor_class, mimetype, version, errors):
     extractor = extractor_class(Path("testfilename"), mimetype)
     extractor.streams.append(BaseMetaCustom(mimetype=mimetype,
                                             version=version))
-    extractor._check_supported()
+    extractor._validate()
     if not errors:
         assert not extractor.errors()
     else:

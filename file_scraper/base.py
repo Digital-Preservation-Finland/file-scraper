@@ -281,7 +281,7 @@ class BaseExtractor(BaseApparatus, Generic[AnyMeta]):
 
     # TODO Rename this function to validate_extractor_results and automatically
     # call this function after the extract function.
-    def _check_supported(
+    def _validate(
         self,
         allow_unav_mime: bool = False,
         allow_unav_version: bool = False,

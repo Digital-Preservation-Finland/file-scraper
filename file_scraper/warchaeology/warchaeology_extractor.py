@@ -50,7 +50,7 @@ class WarchaeologyExtractor(BaseExtractor[WarchaeologyMeta]):
                 header=self._get_header(),
             )
         )
-        self._check_supported()
+        self._validate()
 
     def _get_header(self) -> bytes:
         shell = Shell(

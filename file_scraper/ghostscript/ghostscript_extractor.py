@@ -48,7 +48,7 @@ class GhostscriptExtractor(BaseExtractor[GhostscriptMeta]):
             self._messages.append("Well-Formed and valid")
 
         self.streams = list(self.iterate_models())
-        self._check_supported(allow_unav_mime=True, allow_unav_version=True)
+        self._validate(allow_unav_mime=True, allow_unav_version=True)
 
     @property
     def well_formed(self):

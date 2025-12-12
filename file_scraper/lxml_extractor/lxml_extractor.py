@@ -88,7 +88,7 @@ class LxmlExtractor(BaseExtractor[LxmlMeta]):
                     f"{self.filename}, but {self._params['charset']} was "
                     f"expected.")
 
-        self._check_supported(allow_unav_mime=True, allow_unav_version=True)
+        self._validate(allow_unav_mime=True, allow_unav_version=True)
 
     def iterate_models(self, **kwargs):
         """

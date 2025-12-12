@@ -46,7 +46,7 @@ class DpxExtractor(BaseExtractor[DpxMeta]):
         self.streams = list(self.iterate_models(
             well_formed=valid, output=output, filename=self.filename))
 
-        self._check_supported()
+        self._validate()
 
     def tools(self):
         """Return information about the software used by the extractor or

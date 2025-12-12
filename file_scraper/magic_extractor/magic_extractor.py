@@ -72,9 +72,11 @@ class MagicBaseExtractor(BaseExtractor[MagicMetaT]):
             magic_result=magic_result,
             pre_mimetype=self._predefined_mimetype))
 
-        self._check_supported(allow_unav_mime=self._allow_unav_mime,
-                              allow_unav_version=True,
-                              allow_unap_version=True)
+        self._validate(
+            allow_unav_mime=self._allow_unav_mime,
+            allow_unav_version=True,
+            allow_unap_version=True,
+        )
         self._messages.append("The file was analyzed successfully.")
 
     def tools(self) -> dict[str, dict[str, str]]:

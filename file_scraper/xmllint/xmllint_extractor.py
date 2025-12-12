@@ -149,7 +149,7 @@ class XmllintExtractor(BaseExtractor[XmllintMeta]):
                                           "but does not contain schema.")
                     self.streams = list(self.iterate_models(
                         well_formed=self.well_formed, tree=tree))
-                    self._check_supported()
+                    self._validate()
                     return
 
             (exitcode, stdout, stderr) = self.exec_xmllint(schema=self._schema)
@@ -168,7 +168,7 @@ class XmllintExtractor(BaseExtractor[XmllintMeta]):
 
         self.streams = list(self.iterate_models(
             well_formed=self.well_formed, tree=tree))
-        self._check_supported()
+        self._validate()
 
     def construct_xsd(self) -> str | None:
         """

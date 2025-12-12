@@ -80,8 +80,7 @@ class JHoveExtractorBase(BaseExtractor[JHoveMetaT]):
         self.streams = list(self.iterate_models(
             well_formed=self.well_formed, report=self._report))
 
-        self._check_supported(allow_unav_version=True,
-                              allow_unap_version=True)
+        self._validate(allow_unav_version=True, allow_unap_version=True)
 
     def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
@@ -137,7 +136,7 @@ class JHoveHtmlExtractor(JHoveExtractorBase[JHoveHtmlMeta]):
         super().extract()
 
         # self.streams is empty if MIME type is not supported.
-        # We run _check_supported() in super() where this case
+        # We run _validate() in super() where this case
         # is handled by giving an error message.
         if not self.streams:
             return
@@ -225,7 +224,7 @@ class JHoveUtf8Extractor(JHoveExtractorBase[JHoveUtf8Meta]):
     _jhove_module = "UTF8-hul"
     _supported_metadata = [JHoveUtf8Meta]
 
-    def _check_supported(
+    def _validate(
         self,
         allow_unav_mime: bool = False,
         allow_unav_version: bool = False,

@@ -78,7 +78,7 @@ class MediainfoExtractor(BaseExtractor[BaseMediainfoMeta]):
             )
             self._errors.append("Error in analyzing file.")
             self._errors.append(str(e))
-            self._check_supported()
+            self._validate()
             return
 
         if not self._tracks_ok(mediainfo):
@@ -118,7 +118,7 @@ class MediainfoExtractor(BaseExtractor[BaseMediainfoMeta]):
                 )
             )
 
-        self._check_supported(allow_unav_version=True, allow_unap_version=True)
+        self._validate(allow_unav_version=True, allow_unap_version=True)
 
     def iterate_models(self, **kwargs):
         """Iterate metadata models.

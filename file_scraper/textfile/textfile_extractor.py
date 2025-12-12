@@ -76,8 +76,7 @@ class TextfileExtractor(BaseExtractor[TextFileMeta]):
                     "BOM or a UTF-32 file.")
         self.streams = list(self.iterate_models(
             well_formed=self.well_formed))
-        self._check_supported(allow_unav_mime=True,
-                              allow_unav_version=True)
+        self._validate(allow_unav_mime=True, allow_unav_version=True)
 
     def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
@@ -170,8 +169,7 @@ class TextEncodingMetaExtractor(BaseExtractor[TextEncodingMeta]):
         self.streams = list(self.iterate_models(
             well_formed=self.well_formed, charset=self._charset,
             predefined_mimetype=self._predefined_mimetype))
-        self._check_supported(allow_unav_mime=True,
-                              allow_unav_version=True)
+        self._validate(allow_unav_mime=True, allow_unav_version=True)
 
     def tools(self) -> dict:
         return {}
@@ -286,7 +284,7 @@ class TextEncodingExtractor(BaseExtractor[TextEncodingMeta]):
         self.streams = list(self.iterate_models(
             well_formed=self.well_formed, charset=self._charset,
             predefined_mimetype=self._predefined_mimetype))
-        self._check_supported(allow_unav_mime=True, allow_unav_version=True)
+        self._validate(allow_unav_mime=True, allow_unav_version=True)
 
     def _predetect_charset(self, infile: BufferedReader) -> str:
         """

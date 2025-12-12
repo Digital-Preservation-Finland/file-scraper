@@ -88,7 +88,7 @@ class ExifToolExtractorBase(BaseExtractor[ExifToolMetaT]):
             self._parse_exif_version(exif_version)
 
         self.streams = list(self.iterate_models(metadata=metadata))
-        self._check_supported(allow_unav_version=True)
+        self._validate(allow_unav_version=True)
 
     def _parse_exif_version(self, exif_version):
         """Check that the Exif version is syntactically valid"""

@@ -71,8 +71,7 @@ class FFMpegMetaExtractor(BaseExtractor[FFMpegMeta]):
     def extract(self) -> None:
         """Scrape A/V files."""
         self._gather_metadata()
-        self._check_supported(allow_unav_mime=True,
-                              allow_unav_version=True)
+        self._validate(allow_unav_mime=True, allow_unav_version=True)
 
     def _gather_metadata(self) -> None:
         """Gather video and audio stream metadata with FFProbe.

@@ -88,7 +88,7 @@ class CsvExtractor(BaseExtractor[CsvMeta]):
                                                   "quotechar": quotechar,
                                                   "fields": fields,
                                                   "first_line": first_line}))
-        self._check_supported(allow_unap_version=True)
+        self._validate(allow_unap_version=True)
 
     def _resolve_csv_format(
         self, csvfile: TextIOWrapper

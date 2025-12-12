@@ -33,7 +33,7 @@ class PngcheckExtractor(BaseExtractor[PngcheckMeta]):
         # so checking is not useful. Just add metadata models.
         self.streams = list(self.iterate_models())
 
-        self._check_supported(allow_unav_mime=True, allow_unav_version=True)
+        self._validate(allow_unav_mime=True, allow_unav_version=True)
 
     def tools(self):
         """Return information about the software used by the extractor or

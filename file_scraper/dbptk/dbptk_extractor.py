@@ -53,7 +53,7 @@ class DbptkExtractor(BaseExtractor[DbptkMeta]):
             self._errors.append(shell.stderr)
 
         self.streams = list(self.iterate_models())
-        self._check_supported(allow_unav_version=True)
+        self._validate(allow_unav_version=True)
 
     def tools(self) -> dict:
         """Return information about the software used by the extractor or

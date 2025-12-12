@@ -121,7 +121,7 @@ class PilExtractor(BaseExtractor[BasePilMeta]):
                         self.iterate_models(pil=pil, index=pil_index)
                     )
 
-        self._check_supported(allow_unav_version=True)
+        self._validate(allow_unav_version=True)
 
         self._messages.append("The file was analyzed successfully.")
 

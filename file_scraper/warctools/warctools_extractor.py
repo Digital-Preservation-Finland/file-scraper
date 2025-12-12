@@ -62,7 +62,7 @@ class WarctoolsExtractor(BaseExtractor[WarctoolsMeta]):
         self._messages.append("File was analyzed successfully.")
         self.streams = list(self.iterate_models(
             well_formed=self.well_formed, line=line))
-        self._check_supported()
+        self._validate()
 
     def tools(self):
         return {}

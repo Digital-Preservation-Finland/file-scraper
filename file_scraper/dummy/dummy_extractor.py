@@ -84,8 +84,11 @@ class DetectedMimeVersionExtractor(NoWellformednessBaseExtractor):
         self._messages.append("Using detected file format version.")
         self.streams = list(self.iterate_models(mimetype=mimetype,
                                                 version=version))
-        self._check_supported(allow_unav_mime=False, allow_unav_version=True,
-                              allow_unap_version=True)
+        self._validate(
+            allow_unav_mime=False,
+            allow_unav_version=True,
+            allow_unap_version=True,
+        )
 
 
 class DetectedMimeVersionMetadataExtractor(DetectedMimeVersionExtractor):

@@ -133,7 +133,7 @@ class WandExtractor(BaseExtractor[WandImageMeta]):
                 for image in self._wandresults.sequence:
                     if md_class.is_supported(image.container.mimetype):
                         self.streams.append(md_class(image=image))
-            self._check_supported(allow_unav_version=True)
+            self._validate(allow_unav_version=True)
             self._messages.append("The file was analyzed successfully.")
 
     def tools(self):
