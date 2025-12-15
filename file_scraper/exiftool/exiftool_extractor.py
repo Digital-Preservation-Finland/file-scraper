@@ -24,6 +24,7 @@ class ExifToolExtractorBase(BaseExtractor[ExifToolMetaT]):
     """
     Scraping methods for the ExifTool extractor
     """
+    _allow_unav_version = True
 
     def __init__(
         self,
@@ -88,7 +89,7 @@ class ExifToolExtractorBase(BaseExtractor[ExifToolMetaT]):
             self._parse_exif_version(exif_version)
 
         self.streams = list(self.iterate_models(metadata=metadata))
-        self._validate(allow_unav_version=True)
+        self._validate()
 
     def _parse_exif_version(self, exif_version):
         """Check that the Exif version is syntactically valid"""

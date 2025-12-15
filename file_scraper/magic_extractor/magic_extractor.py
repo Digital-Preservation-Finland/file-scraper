@@ -30,6 +30,8 @@ class MagicBaseExtractor(BaseExtractor[MagicMetaT]):
     """Extractor for scraping files using magic."""
 
     _allow_unav_mime = False
+    _allow_unav_version = True,
+    _allow_unap_version = True,
 
     @property
     def well_formed(self):
@@ -72,11 +74,7 @@ class MagicBaseExtractor(BaseExtractor[MagicMetaT]):
             magic_result=magic_result,
             pre_mimetype=self._predefined_mimetype))
 
-        self._validate(
-            allow_unav_mime=self._allow_unav_mime,
-            allow_unav_version=True,
-            allow_unap_version=True,
-        )
+        self._validate()
         self._messages.append("The file was analyzed successfully.")
 
     def tools(self) -> dict[str, dict[str, str]]:

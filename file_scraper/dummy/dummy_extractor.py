@@ -73,6 +73,10 @@ class DetectedMimeVersionExtractor(NoWellformednessBaseExtractor):
     _supported_metadata = [DetectedMimeVersionMeta,
                            DetectedSiardVersionMeta]
 
+    _allow_unav_mime = False,
+    _allow_unav_version = True,
+    _allow_unap_version = True,
+
     def extract(self):
         """
         Enrich the metadata with the detected file format version for some
@@ -84,11 +88,7 @@ class DetectedMimeVersionExtractor(NoWellformednessBaseExtractor):
         self._messages.append("Using detected file format version.")
         self.streams = list(self.iterate_models(mimetype=mimetype,
                                                 version=version))
-        self._validate(
-            allow_unav_mime=False,
-            allow_unav_version=True,
-            allow_unap_version=True,
-        )
+        self._validate()
 
 
 class DetectedMimeVersionMetadataExtractor(DetectedMimeVersionExtractor):

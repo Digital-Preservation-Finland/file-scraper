@@ -15,6 +15,10 @@ class JpylyzerExtractor(BaseExtractor[JpylyzerMeta]):
     _supported_metadata = [JpylyzerMeta]
     _only_wellformed = True   # Only well-formed check
 
+    _allow_unav_mime = True,
+    _allow_unav_version = True,
+    _allow_unap_version = True,
+
     def extract(self):
         """Scrape data from file."""
         try:
@@ -30,11 +34,7 @@ class JpylyzerExtractor(BaseExtractor[JpylyzerMeta]):
             self._errors.append(str(exception))
 
         self.streams = list(self.iterate_models())
-        self._validate(
-            allow_unav_mime=True,
-            allow_unav_version=True,
-            allow_unap_version=True,
-        )
+        self._validate()
 
     def tools(self):
         """Return information about the software used by the extractor or

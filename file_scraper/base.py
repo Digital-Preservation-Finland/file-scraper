@@ -203,6 +203,10 @@ class BaseExtractor(BaseApparatus, Generic[AnyMeta]):
     _supported_metadata: list[type[AnyMeta]] = []
     _only_wellformed = False
 
+    _allow_unav_mime: bool = False,
+    _allow_unav_version: bool = False,
+    _allow_unap_version: bool = False,
+
     def __init__(
         self,
         filename: Path,
@@ -279,14 +283,7 @@ class BaseExtractor(BaseApparatus, Generic[AnyMeta]):
             x.is_supported(mimetype, version) for x in cls._supported_metadata
         )
 
-    # TODO Rename this function to validate_extractor_results and automatically
-    # call this function after the extract function.
-    def _validate(
-        self,
-        allow_unav_mime: bool = False,
-        allow_unav_version: bool = False,
-        allow_unap_version: bool = False,
-    ) -> None:
+    def _validate(self) -> None:
         """
         Validate that the results extracted by the extractor are reasonable.
         This includes the MIME type and the version found.
@@ -306,7 +303,7 @@ class BaseExtractor(BaseApparatus, Generic[AnyMeta]):
         if mimetype is None:
             self._errors.append("None is not a supported MIME type.")
 
-        if mimetype == UNAV and allow_unav_mime:
+        if mimetype == UNAV and self._allow_unav_mime:
             return
 
         for md_class in self._supported_metadata:
@@ -318,8 +315,8 @@ class BaseExtractor(BaseApparatus, Generic[AnyMeta]):
             if version in supported or not supported:
                 return
             # version is (:unav) or (:unap) but that is allowed
-            if (allow_unav_version and version == UNAV) or (
-                allow_unap_version and version == UNAP
+            if (self._allow_unav_version and version == UNAV) or (
+                self._allow_unap_version and version == UNAP
             ):
                 return
 

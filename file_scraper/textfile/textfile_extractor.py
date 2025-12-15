@@ -27,6 +27,9 @@ class TextfileExtractor(BaseExtractor[TextFileMeta]):
 
     _supported_metadata = [TextFileMeta]
 
+    _allow_unav_mime = True
+    _allow_unav_version = True
+
     @property
     def well_formed(self) -> Literal[False] | None:
         """TextfileExtractor is not able to check well-formedness.
@@ -76,7 +79,7 @@ class TextfileExtractor(BaseExtractor[TextFileMeta]):
                     "BOM or a UTF-32 file.")
         self.streams = list(self.iterate_models(
             well_formed=self.well_formed))
-        self._validate(allow_unav_mime=True, allow_unav_version=True)
+        self._validate()
 
     def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
@@ -104,6 +107,9 @@ class TextEncodingMetaExtractor(BaseExtractor[TextEncodingMeta]):
     such as UTF-16 without BOM and UTF-32.
     """
     _supported_metadata = [TextEncodingMeta]
+
+    _allow_unav_mime = True
+    _allow_unav_version = True
 
     def __init__(
         self,
@@ -169,7 +175,7 @@ class TextEncodingMetaExtractor(BaseExtractor[TextEncodingMeta]):
         self.streams = list(self.iterate_models(
             well_formed=self.well_formed, charset=self._charset,
             predefined_mimetype=self._predefined_mimetype))
-        self._validate(allow_unav_mime=True, allow_unav_version=True)
+        self._validate()
 
     def tools(self) -> dict:
         return {}
@@ -204,6 +210,9 @@ class TextEncodingExtractor(BaseExtractor[TextEncodingMeta]):
     _chunksize = 20*1024**2
     # Limit file read in MB, 0 = unlimited. Must be divisible by _chunksize
     _limit = 5*_chunksize
+
+    _allow_unav_mime = True
+    _allow_unav_version = True
 
     def __init__(
         self,
@@ -284,7 +293,7 @@ class TextEncodingExtractor(BaseExtractor[TextEncodingMeta]):
         self.streams = list(self.iterate_models(
             well_formed=self.well_formed, charset=self._charset,
             predefined_mimetype=self._predefined_mimetype))
-        self._validate(allow_unav_mime=True, allow_unav_version=True)
+        self._validate()
 
     def _predetect_charset(self, infile: BufferedReader) -> str:
         """

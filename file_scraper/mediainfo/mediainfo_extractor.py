@@ -49,6 +49,9 @@ class MediainfoExtractor(BaseExtractor[BaseMediainfoMeta]):
         UnknownStreamFormatMeta
     ]
 
+    _allow_unav_version = True
+    _allow_unap_version = True
+
     @property
     def well_formed(self):
         """
@@ -118,7 +121,7 @@ class MediainfoExtractor(BaseExtractor[BaseMediainfoMeta]):
                 )
             )
 
-        self._validate(allow_unav_version=True, allow_unap_version=True)
+        self._validate()
 
     def iterate_models(self, **kwargs):
         """Iterate metadata models.

@@ -14,6 +14,8 @@ class CsvExtractor(BaseExtractor[CsvMeta]):
 
     _supported_metadata = [CsvMeta]
 
+    _allow_unap_version = True
+
     # Raise csv field size limit to 1 MB
     csv.field_size_limit(1048576)
     # pylint: disable=too-many-branches
@@ -88,7 +90,7 @@ class CsvExtractor(BaseExtractor[CsvMeta]):
                                                   "quotechar": quotechar,
                                                   "fields": fields,
                                                   "first_line": first_line}))
-        self._validate(allow_unap_version=True)
+        self._validate()
 
     def _resolve_csv_format(
         self, csvfile: TextIOWrapper

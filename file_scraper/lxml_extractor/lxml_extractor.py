@@ -17,6 +17,8 @@ class LxmlExtractor(BaseExtractor[LxmlMeta]):
     # We use JHOVE for HTML4 and XHTML files.
     _supported_metadata = [LxmlMeta]
     _only_wellformed = True  # Only well-formed check
+    _allow_unav_mime = True
+    _allow_unav_version = True
 
     @classmethod
     def is_supported(cls, mimetype, version=None,
@@ -88,7 +90,7 @@ class LxmlExtractor(BaseExtractor[LxmlMeta]):
                     f"{self.filename}, but {self._params['charset']} was "
                     f"expected.")
 
-        self._validate(allow_unav_mime=True, allow_unav_version=True)
+        self._validate()
 
     def iterate_models(self, **kwargs):
         """

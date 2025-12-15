@@ -37,6 +37,8 @@ class PilExtractor(BaseExtractor[BasePilMeta]):
         WebPPilMeta,
     ]
 
+    _allow_unav_version = True
+
     # We need to remove 'FLI' from the formats detected by PIL, because the
     # PIL FLI code erroneously detects TIFF images as FLI or FLIC.
     # PIL does file detection in two phases. First, a few basic formats and
@@ -121,7 +123,7 @@ class PilExtractor(BaseExtractor[BasePilMeta]):
                         self.iterate_models(pil=pil, index=pil_index)
                     )
 
-        self._validate(allow_unav_version=True)
+        self._validate()
 
         self._messages.append("The file was analyzed successfully.")
 

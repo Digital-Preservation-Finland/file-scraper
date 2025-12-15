@@ -18,6 +18,9 @@ class PngcheckExtractor(BaseExtractor[PngcheckMeta]):
     _supported_metadata = [PngcheckMeta]
     _only_wellformed = True              # Only well-formed check
 
+    _allow_unav_mime = True
+    _allow_unav_version = True
+
     def extract(self):
         """Scrape file."""
         shell = Shell(["pngcheck", self.filename])
@@ -33,7 +36,7 @@ class PngcheckExtractor(BaseExtractor[PngcheckMeta]):
         # so checking is not useful. Just add metadata models.
         self.streams = list(self.iterate_models())
 
-        self._validate(allow_unav_mime=True, allow_unav_version=True)
+        self._validate()
 
     def tools(self):
         """Return information about the software used by the extractor or

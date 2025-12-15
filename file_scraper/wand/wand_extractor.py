@@ -86,8 +86,14 @@ def _get_wand_result(filename):
 class WandExtractor(BaseExtractor[WandImageMeta]):
     """Extractor for the Wand/ImageMagick library."""
 
-    _supported_metadata = [WandExifMeta, WandTiffMeta, WandImageMeta,
-                           WandWebPMeta]
+    _supported_metadata = [
+        WandExifMeta,
+        WandTiffMeta,
+        WandImageMeta,
+        WandWebPMeta
+    ]
+
+    _allow_unav_version = True
 
     def __init__(self, *args, **kwargs):
         """
@@ -133,7 +139,7 @@ class WandExtractor(BaseExtractor[WandImageMeta]):
                 for image in self._wandresults.sequence:
                     if md_class.is_supported(image.container.mimetype):
                         self.streams.append(md_class(image=image))
-            self._validate(allow_unav_version=True)
+            self._validate()
             self._messages.append("The file was analyzed successfully.")
 
     def tools(self):

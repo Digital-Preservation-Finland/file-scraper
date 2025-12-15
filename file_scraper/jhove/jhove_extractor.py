@@ -38,6 +38,9 @@ class JHoveExtractorBase(BaseExtractor[JHoveMetaT]):
     _jhove_module = None
     _only_wellformed = True
 
+    _allow_unav_version = True
+    _allow_unap_version = True
+
     def __init__(
         self,
         filename: Path,
@@ -80,7 +83,7 @@ class JHoveExtractorBase(BaseExtractor[JHoveMetaT]):
         self.streams = list(self.iterate_models(
             well_formed=self.well_formed, report=self._report))
 
-        self._validate(allow_unav_version=True, allow_unap_version=True)
+        self._validate()
 
     def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
@@ -224,12 +227,7 @@ class JHoveUtf8Extractor(JHoveExtractorBase[JHoveUtf8Meta]):
     _jhove_module = "UTF8-hul"
     _supported_metadata = [JHoveUtf8Meta]
 
-    def _validate(
-        self,
-        allow_unav_mime: bool = False,
-        allow_unav_version: bool = False,
-        allow_unap_version: bool = False,
-    ):
+    def _validate(self):
         """Do nothing: we dont care about the mimetype or version."""
 
     def iterate_models(self, **kwargs):

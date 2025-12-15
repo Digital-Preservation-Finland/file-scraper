@@ -23,6 +23,8 @@ class DbptkExtractor(BaseExtractor[DbptkMeta]):
     _supported_metadata = [DbptkMeta]
     _only_wellformed = True  # Only well-formed check
 
+    _allow_unav_version = True
+
     def __init__(
         self,
         filename: Path,
@@ -53,7 +55,7 @@ class DbptkExtractor(BaseExtractor[DbptkMeta]):
             self._errors.append(shell.stderr)
 
         self.streams = list(self.iterate_models())
-        self._validate(allow_unav_version=True)
+        self._validate()
 
     def tools(self) -> dict:
         """Return information about the software used by the extractor or

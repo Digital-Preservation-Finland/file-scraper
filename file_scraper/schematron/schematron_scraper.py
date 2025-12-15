@@ -24,6 +24,9 @@ class SchematronScraper(BaseExtractor[SchematronMeta]):
     _supported_metadata = [SchematronMeta]
     _only_wellformed = True
 
+    _allow_unav_mime = True,
+    _allow_unav_version = True
+
     def __init__(
         self,
         filename: Path,
@@ -125,7 +128,7 @@ class SchematronScraper(BaseExtractor[SchematronMeta]):
 
         self.streams = list(self.iterate_models(well_formed=self.well_formed))
 
-        self._validate(allow_unav_mime=True, allow_unav_version=True)
+        self._validate()
 
     def _filter_duplicate_elements(self, result: str | bytes) -> bytes:
         """

@@ -9,6 +9,8 @@ class JsonExtractor(BaseExtractor):
     _supported_metadata: list[type[JsonMeta]] = [JsonMeta]
     _only_wellformed = False
 
+    _allow_unap_version = True
+
     def extract(self):
         with open(self.filename, "rt") as file:
             try:
@@ -20,7 +22,7 @@ class JsonExtractor(BaseExtractor):
                 )
 
         self.streams = list(self.iterate_models())
-        self._validate(allow_unap_version=True)
+        self._validate()
 
     def tools(self) -> dict:
         return {}

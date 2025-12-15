@@ -15,6 +15,9 @@ class OfficeExtractor(BaseExtractor[OfficeMeta]):
     _supported_metadata = [OfficeMeta]
     _only_wellformed = True  # Only well-formed check
 
+    _allow_unav_mime = True
+    _allow_unav_version = True
+
     def extract(self):
         """Scrape file."""
         temp_dir = tempfile.mkdtemp()
@@ -41,7 +44,7 @@ class OfficeExtractor(BaseExtractor[OfficeMeta]):
         finally:
             shutil.rmtree(temp_dir)
             self.streams = list(self.iterate_models())
-            self._validate(allow_unav_mime=True, allow_unav_version=True)
+            self._validate()
 
     def tools(self):
         """Return information about the software used by the extractor or
