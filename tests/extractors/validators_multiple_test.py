@@ -66,6 +66,7 @@ def test_scrape_invalid_file(filename, mimetype):
             filename=os.path.join(
                 BASEPATH, "application_vnd.oasis.opendocument.text", filename),
             mimetype=mimetype)
+        extractor.extract()
         extractor_results.append(extractor.well_formed)
 
     assert not all(extractor_results)

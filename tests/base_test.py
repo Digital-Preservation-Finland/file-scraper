@@ -38,7 +38,8 @@ class BaseExtractorBasic(BaseExtractor):
 
     def extract(self):
         """Do nothing, scraping not needed here."""
-        self.streams.append(BaseMetaBasic([]))
+        self.streams.append(BaseMetaBasic())
+        self._messages.append("Extraction ok")
 
     def tools(self):
         pass
@@ -139,15 +140,35 @@ def test_extractor_properties():
     extractor = BaseExtractorBasic(
         filename=Path("testfilename"), mimetype="test/mime",
         params={"test": "value"})
-    # pylint: disable=protected-access
-    extractor._messages.append("success")
-    assert extractor.well_formed
-    extractor._errors.append("error")
-    assert not extractor.well_formed
 
-    assert extractor.filename == Path("testfilename")
+    # extract must be run before well_formed
+    with pytest.raises(RuntimeError, match="must be extracted"):
+        assert extractor.well_formed
+
+    extractor.extract()
+    assert extractor.well_formed is True
+
+    # TODO: The _params attibute could be removed: TPASPKT-1540
     # pylint: disable=protected-access
     assert extractor._params == {"test": "value"}
+
+
+def test_not_well_formed():
+    """Test that well_formed is False, if errors are found from file."""
+    class ErrorExtractor(BaseExtractorBasic):
+        """Extractor that always finds error from any file."""
+
+        def extract(self):
+            """Only adds new error to self._errors."""
+            self._errors.append("Fake error")
+
+    extractor = ErrorExtractor(
+        filename=Path("testfilename"),
+        mimetype="test/mime",
+    )
+
+    extractor.extract()
+    assert extractor.well_formed is False
 
 
 class BaseMetaCustom(BaseMeta):

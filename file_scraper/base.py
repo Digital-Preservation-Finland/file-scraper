@@ -236,7 +236,17 @@ class BaseExtractor(BaseApparatus, Generic[AnyMeta]):
         :returns: None if extractor does not check well-formedness, True if the
             file has been scraped without errors and otherwise False
         """
-        return len(self._messages) > 0 and len(self._errors) == 0
+        if len(self._errors) > 0:
+            return False
+
+        if not self._messages:
+            # self.extract has not been run. Returning `None` could be
+            # OK in this case, but `None` could also mean the the
+            # extractor does not check well-formedness. Therefore,
+            # RuntimeError is raised to avoid confusion and bugs.
+            raise RuntimeError("Metadata must be extracted first.")
+
+        return True
 
     @classmethod
     def is_supported(
