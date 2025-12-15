@@ -16,7 +16,7 @@ LOSE = (None, UNAV, "")
 class ExtractorNotFound(BaseExtractor):
     """Extractor for the case where extractor was not found."""
 
-    def extract(self):
+    def _extract(self):
         """No need to extract anything, just collect."""
         self._errors.append("Proper extractor was not found. "
                             "The file was not analyzed.")
@@ -77,7 +77,7 @@ class DetectedMimeVersionExtractor(NoWellformednessBaseExtractor):
     _allow_unav_version = True,
     _allow_unap_version = True,
 
-    def extract(self):
+    def _extract(self):
         """
         Enrich the metadata with the detected file format version for some
         file formats.
@@ -88,7 +88,6 @@ class DetectedMimeVersionExtractor(NoWellformednessBaseExtractor):
         self._messages.append("Using detected file format version.")
         self.streams = list(self.iterate_models(mimetype=mimetype,
                                                 version=version))
-        self._validate()
 
 
 class DetectedMimeVersionMetadataExtractor(DetectedMimeVersionExtractor):

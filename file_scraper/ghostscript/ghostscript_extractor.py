@@ -23,7 +23,7 @@ class GhostscriptExtractor(BaseExtractor[GhostscriptMeta]):
     _allow_unav_mime = True
     _allow_unav_version = True
 
-    def extract(self):
+    def _extract(self):
         """Scrape file."""
         shell = Shell(["gs", "-o", "/dev/null", "-sDEVICE=nullpage",
                        self.filename])
@@ -51,7 +51,6 @@ class GhostscriptExtractor(BaseExtractor[GhostscriptMeta]):
             self._messages.append("Well-Formed and valid")
 
         self.streams = list(self.iterate_models())
-        self._validate()
 
     @property
     def well_formed(self):

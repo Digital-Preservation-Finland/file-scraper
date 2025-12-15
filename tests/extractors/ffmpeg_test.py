@@ -81,7 +81,7 @@ UNAV_MIME = []
             "valid__mpeg2_mp3.avi",
             {
                 "purpose": "Test valid AVI.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": "",
             },
             "video/avi"
@@ -90,7 +90,7 @@ UNAV_MIME = []
             "valid__dv_lpcm8.mov",
             {
                 "purpose": "Test valid MOV with DV and LPCM8.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": ""
             },
             "video/quicktime"
@@ -99,7 +99,7 @@ UNAV_MIME = []
             "valid__h265_aac.mov",
             {
                 "purpose": "Test valid MOV with h265 and AAC.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": ""
             },
             "video/quicktime"
@@ -108,7 +108,7 @@ UNAV_MIME = []
             "valid__pal_lossy.dv",
             {
                 "purpose": "Test valid DV.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": ""
             },
             "video/dv"
@@ -117,7 +117,7 @@ UNAV_MIME = []
             "valid_4_ffv1.mkv",
             {
                 "purpose": "Test valid MKV.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": ""
             },
             "video/x-matroska"
@@ -126,7 +126,7 @@ UNAV_MIME = []
             "valid_4_h265.mkv",
             {
                 "purpose": "Test valid MKV.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": ""
             },
             "video/x-matroska"
@@ -135,7 +135,7 @@ UNAV_MIME = []
             "valid_1.m1v",
             {
                 "purpose": "Test valid MPEG-1.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": ""
             },
             "video/mpeg"
@@ -144,7 +144,7 @@ UNAV_MIME = []
             "valid_2.m2v",
             {
                 "purpose": "Test valid MPEG-2.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": ""
             },
             "video/mpeg"
@@ -153,7 +153,7 @@ UNAV_MIME = []
             "valid__h264_aac.mp4",
             {
                 "purpose": "Test valid mp4.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": ""
             },
             "video/mp4"
@@ -162,7 +162,7 @@ UNAV_MIME = []
             "valid__h264_aac_mp42.mp4",
             {
                 "purpose": "Test valid mp4.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": ""
             },
             "video/mp4"
@@ -171,7 +171,7 @@ UNAV_MIME = []
             "valid__h265_aac.mp4",
             {
                 "purpose": "Test valid mp4.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": ""
             },
             "video/mp4"
@@ -181,7 +181,7 @@ UNAV_MIME = []
             "valid__too_many_packets_buffered.mp4",
             {
                 "purpose": "Test valid mp4.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": ""
             },
             "video/mp4"
@@ -190,7 +190,7 @@ UNAV_MIME = []
             "valid_1.mp3",
             {
                 "purpose": "Test valid mp3.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": ""
             },
             "audio/mpeg"
@@ -199,7 +199,7 @@ UNAV_MIME = []
             "valid__mpeg2_mp3.ts",
             {
                 "purpose": "Test valid MPEG-TS.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": ""
             },
             "video/MP2T"
@@ -208,7 +208,7 @@ UNAV_MIME = []
             "valid__h265_aac.ts",
             {
                 "purpose": "Test valid MPEG-TS.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": ""
             },
             "video/MP2T"
@@ -217,7 +217,7 @@ UNAV_MIME = []
             "valid__wav.wav",
             {
                 "purpose": "Test valid WAV.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": ""
             },
             "audio/x-wav"
@@ -226,7 +226,7 @@ UNAV_MIME = []
             "valid_1.3.aiff",
             {
                 "purpose": "Test valid AIFF.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": ""
             },
             "audio/x-aiff"
@@ -235,7 +235,7 @@ UNAV_MIME = []
             "valid__wma9.wma",
             {
                 "purpose": "Test valid WMA.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": ""
             },
             "video/x-ms-asf"
@@ -244,7 +244,7 @@ UNAV_MIME = []
             "valid__vc1.wmv",
             {
                 "purpose": "Test valid WMV.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": ""
             },
             "video/x-ms-asf"
@@ -253,7 +253,7 @@ UNAV_MIME = []
             "valid__vc1_wma9.wmv",
             {
                 "purpose": "Test valid WMV and WMA.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": ""
             },
             "video/x-ms-asf"
@@ -262,7 +262,7 @@ UNAV_MIME = []
             "valid__aac.m4a",
             {
                 "purpose": "test valid m4a.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": ""
             },
             "audio/mp4"
@@ -271,7 +271,7 @@ UNAV_MIME = []
             "valid__flac.flac",
             {
                 "purpose": "Test valid FLAC audio file",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": ""
             },
             "audio/flac"
@@ -306,7 +306,7 @@ def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
             {
                 "purpose": ("Test valid MXF/JPEG2000 with lossless wavelet "
                             "transform and chroma subsampling."),
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": "",
                 "streams": {0: MXF_CONTAINER.copy(),
                             1: dict(MXF_JPEG2000_VIDEO.copy(),
@@ -320,7 +320,7 @@ def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
             {
                 "purpose": ("Test valid MXF/JPEG2000 with lossless wavelet "
                             "transform and no chroma subsampling."),
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": "",
                 "streams": {0: MXF_CONTAINER.copy(),
                             1: dict(MXF_JPEG2000_VIDEO.copy(),
@@ -334,7 +334,7 @@ def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
             "valid__jpeg2000.mxf",
             {
                 "purpose": "Test valid MXF.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": "",
                 "streams": {0: MXF_CONTAINER.copy(),
                             1: MXF_JPEG2000_VIDEO.copy()}
@@ -345,7 +345,7 @@ def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
             "valid__jpeg2000_grayscale.mxf",
             {
                 "purpose": "Test valid MXF.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": "",
                 "streams": {0: MXF_CONTAINER.copy(),
                             1: dict(MXF_JPEG2000_VIDEO.copy(),
@@ -668,8 +668,10 @@ def test_ffmpeg_extractor_wellformed_none(filepath, mimetype):
     extractor.extract()
 
     # Ensure that file was validated to avoid false positive
-    assert 'The file was analyzed successfully with FFMpeg.' \
+    assert (
+        'The file was analyzed with FFMpegExtractor.'
         in extractor.messages()
+    )
 
     assert extractor.well_formed is None
 
@@ -739,8 +741,10 @@ def test_unsupported_format(filename):
     extractor.extract()
 
     # Ensure that file was validated to avoid false positive
-    assert 'The file was analyzed successfully with FFMpeg.' \
+    assert (
+        'The file was analyzed with FFMpegExtractor.'
         in extractor.messages()
+    )
 
     assert not extractor.well_formed
 

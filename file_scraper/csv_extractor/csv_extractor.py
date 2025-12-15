@@ -20,7 +20,7 @@ class CsvExtractor(BaseExtractor[CsvMeta]):
     csv.field_size_limit(1048576)
     # pylint: disable=too-many-branches
 
-    def extract(self) -> None:
+    def _extract(self) -> None:
         """Scrape CSV file."""
 
         fields = self._params.get("fields", [])
@@ -90,7 +90,6 @@ class CsvExtractor(BaseExtractor[CsvMeta]):
                                                   "quotechar": quotechar,
                                                   "fields": fields,
                                                   "first_line": first_line}))
-        self._validate()
 
     def _resolve_csv_format(
         self, csvfile: TextIOWrapper

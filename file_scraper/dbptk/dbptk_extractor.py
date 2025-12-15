@@ -36,7 +36,7 @@ class DbptkExtractor(BaseExtractor[DbptkMeta]):
         # Set $PATH so that Java 21 is favored if it's installed
         self._path = f"/usr/lib/jvm/jre-21/bin{os.pathsep}{os.environ['PATH']}"
 
-    def extract(self) -> None:
+    def _extract(self) -> None:
         """Scrape file using dbptk."""
         shell = Shell(
             ["dbptk", "validate", "-if", self.filename],
@@ -55,7 +55,6 @@ class DbptkExtractor(BaseExtractor[DbptkMeta]):
             self._errors.append(shell.stderr)
 
         self.streams = list(self.iterate_models())
-        self._validate()
 
     def tools(self) -> dict:
         """Return information about the software used by the extractor or

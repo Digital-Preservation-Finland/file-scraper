@@ -15,7 +15,7 @@ class DpxExtractor(BaseExtractor[DpxMeta]):
     _supported_metadata = [DpxMeta]
     _only_wellformed = True
 
-    def extract(self):
+    def _extract(self):
         """Scrape DPX."""
 
         valid, output, logs = validate_file(self.filename)
@@ -45,8 +45,6 @@ class DpxExtractor(BaseExtractor[DpxMeta]):
 
         self.streams = list(self.iterate_models(
             well_formed=valid, output=output, filename=self.filename))
-
-        self._validate()
 
     def tools(self):
         """Return information about the software used by the extractor or

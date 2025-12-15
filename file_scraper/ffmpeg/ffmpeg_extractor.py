@@ -71,13 +71,10 @@ class FFMpegMetaExtractor(BaseExtractor[FFMpegMeta]):
             params=params,
         )
 
-    def extract(self) -> None:
-        """Scrape A/V files."""
-        self._gather_metadata()
-        self._validate()
-
-    def _gather_metadata(self) -> None:
-        """Gather video and audio stream metadata with FFProbe.
+    def _extract(self) -> None:
+        """
+        Scrape A/V files.
+        Gather video and audio stream metadata with FFProbe.
         """
         try:
             probe_results = ffmpeg.probe(self.filename)
@@ -87,8 +84,6 @@ class FFMpegMetaExtractor(BaseExtractor[FFMpegMeta]):
                     stream["index"] = 0
                 else:
                     stream["index"] = stream["index"] + 1
-            self._messages.append(
-                "The file was analyzed successfully with FFProbe.")
 
             if probe_results["format"].get("format_name", UNAV) != "aiff":
                 self._verify_pcm_format(probe_results)
@@ -239,7 +234,7 @@ class FFMpegExtractor(FFMpegMetaExtractor):
 
         return valid
 
-    def extract(self) -> None:
+    def _extract(self) -> None:
         """Scrape A/V files.
 
         We need to probe streams also for checking well-formedness, because
@@ -247,18 +242,18 @@ class FFMpegExtractor(FFMpegMetaExtractor):
         by Extractor or not. If the a stream can not be identified by
         Extractor, then well-formedness can not be True.
         """
-        super().extract()
-        self._validate_file()
+        super()._extract()
 
-    def _validate_file(self) -> None:
+    def _validate(self) -> None:
+        self._pre_validate_file()
+        super()._validate()
+
+    def _pre_validate_file(self) -> None:
         """Validate A/V file"""
         shell = Shell(["ffmpeg", "-v", "error", "-max_muxing_queue_size",
                        "1024", "-f", "null", "-", "-i", self.filename])
 
-        if shell.returncode == 0:
-            self._messages.append(
-                "The file was analyzed successfully with FFMpeg.")
-        else:
+        if shell.returncode != 0:
             self._errors.append(
                 f"FFMpeg returned invalid return code: {shell.returncode}\n"
                 f"{shell.stderr}")

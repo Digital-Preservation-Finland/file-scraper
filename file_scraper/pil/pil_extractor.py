@@ -72,7 +72,7 @@ class PilExtractor(BaseExtractor[BasePilMeta]):
 
         return None
 
-    def extract(self) -> None:
+    def _extract(self) -> None:
         """Scrape data from file."""
         # Raise the size limit to around a gigabyte for a 3 bpp image
         PIL.Image.MAX_IMAGE_PIXELS = 1024 * 1024 * 1024 // 3
@@ -122,10 +122,6 @@ class PilExtractor(BaseExtractor[BasePilMeta]):
                     self.streams += list(
                         self.iterate_models(pil=pil, index=pil_index)
                     )
-
-        self._validate()
-
-        self._messages.append("The file was analyzed successfully.")
 
     def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or

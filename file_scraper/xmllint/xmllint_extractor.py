@@ -97,7 +97,7 @@ class XmllintExtractor(BaseExtractor[XmllintMeta]):
             return str(local_location.absolute())
         return location
 
-    def extract(self) -> None:
+    def _extract(self) -> None:
         """
         Check XML file with Xmllint and return a tuple of results.
 
@@ -149,7 +149,6 @@ class XmllintExtractor(BaseExtractor[XmllintMeta]):
                                           "but does not contain schema.")
                     self.streams = list(self.iterate_models(
                         well_formed=self.well_formed, tree=tree))
-                    self._validate()
                     return
 
             (exitcode, stdout, stderr) = self.exec_xmllint(schema=self._schema)
@@ -168,7 +167,6 @@ class XmllintExtractor(BaseExtractor[XmllintMeta]):
 
         self.streams = list(self.iterate_models(
             well_formed=self.well_formed, tree=tree))
-        self._validate()
 
     def construct_xsd(self) -> str | None:
         """

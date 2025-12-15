@@ -102,9 +102,9 @@ class SchematronScraper(BaseExtractor[SchematronMeta]):
     # Keep the SchematronScraper interface intact
     def scrape_file(self) -> None:
         """Do the Schematron check."""
-        self.extract()
+        self._extract()
 
-    def extract(self) -> None:
+    def _extract(self) -> None:
         """Do the Schematron check."""
         if self._schematron_file is None:
             self._errors.append("Schematron file missing from parameters.")
@@ -127,8 +127,6 @@ class SchematronScraper(BaseExtractor[SchematronMeta]):
             self._messages.append(shell.stdout)
 
         self.streams = list(self.iterate_models(well_formed=self.well_formed))
-
-        self._validate()
 
     def _filter_duplicate_elements(self, result: str | bytes) -> bytes:
         """

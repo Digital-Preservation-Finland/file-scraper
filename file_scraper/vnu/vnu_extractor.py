@@ -16,7 +16,7 @@ class VnuExtractor(BaseExtractor[VnuMeta]):
     _supported_metadata = [VnuMeta]
     _only_wellformed = True              # Only well-formed check
 
-    def extract(self):
+    def _extract(self):
         """Scrape file using vnu.jar."""
         filterfile = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                   'vnu_filters.txt')
@@ -35,7 +35,6 @@ class VnuExtractor(BaseExtractor[VnuMeta]):
         if self.well_formed:
             self.streams = list(self.iterate_models(
                 well_formed=self.well_formed))
-            self._validate()
 
     def tools(self):
         """Return information about the software used by the extractor or

@@ -17,7 +17,7 @@ class WarchaeologyExtractor(BaseExtractor[WarchaeologyMeta]):
 
     _supported_metadata = [WarchaeologyMeta]
 
-    def extract(self) -> None:
+    def _extract(self) -> None:
         """Extract WARC file."""
         shell = Shell(
             [
@@ -50,7 +50,6 @@ class WarchaeologyExtractor(BaseExtractor[WarchaeologyMeta]):
                 header=self._get_header(),
             )
         )
-        self._validate()
 
     def _get_header(self) -> bytes:
         shell = Shell(

@@ -3,7 +3,7 @@ Tests for ExifTool extractor.
 
 This module tests that:
     - MIME type and version of dng files is scraped correctly.
-    - For valid files extractor messages contain "successfully".
+    - For valid files extractor messages contain "The file was analyzed".
     - For an empty file, extractor errors contain "File is empty".
 
 """
@@ -21,7 +21,7 @@ from tests.common import parse_results, partial_message_included
     [
         ("valid_1.4.dng", {
             "purpose": "Test valid file",
-            "stdout_part": "successfully",
+            "stdout_part": "The file was analyzed",
             "stderr_part": ""
             }),
         ("invalid__empty.dng", {
@@ -61,7 +61,7 @@ def test_extractor_dng(filename, result_dict, evaluate_extractor):
         (
             "valid_2.2.1_exif_metadata.jpg", {
                 "purpose": "Test valid file",
-                "stdout_part": "successfully",
+                "stdout_part": "The file was analyzed",
                 "stderr_part": ""
             }
         ),

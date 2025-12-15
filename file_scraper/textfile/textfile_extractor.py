@@ -55,7 +55,7 @@ class TextfileExtractor(BaseExtractor[TextFileMeta]):
 
         return shell.stdout.strip()
 
-    def extract(self) -> None:
+    def _extract(self) -> None:
         """Check MIME type determined by libmagic."""
 
         if self._file_mimetype() == "text/plain" and self._predefined_version:
@@ -79,7 +79,6 @@ class TextfileExtractor(BaseExtractor[TextFileMeta]):
                     "BOM or a UTF-32 file.")
         self.streams = list(self.iterate_models(
             well_formed=self.well_formed))
-        self._validate()
 
     def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
@@ -169,13 +168,12 @@ class TextEncodingMetaExtractor(BaseExtractor[TextEncodingMeta]):
         return super().is_supported(
             mimetype, version, check_wellformed, params)
 
-    def extract(self) -> None:
+    def _extract(self) -> None:
         """No actual scraping. Set the predefined character encoding value."""
         self._messages.append("Setting character encoding.")
         self.streams = list(self.iterate_models(
             well_formed=self.well_formed, charset=self._charset,
             predefined_mimetype=self._predefined_mimetype))
-        self._validate()
 
     def tools(self) -> dict:
         return {}
@@ -243,7 +241,7 @@ class TextEncodingExtractor(BaseExtractor[TextEncodingMeta]):
                 "as an argument."
             )
 
-    def extract(self) -> None:
+    def _extract(self) -> None:
         """
         Validate the file with decoding it with given character encoding.
         """
@@ -293,7 +291,6 @@ class TextEncodingExtractor(BaseExtractor[TextEncodingMeta]):
         self.streams = list(self.iterate_models(
             well_formed=self.well_formed, charset=self._charset,
             predefined_mimetype=self._predefined_mimetype))
-        self._validate()
 
     def _predetect_charset(self, infile: BufferedReader) -> str:
         """

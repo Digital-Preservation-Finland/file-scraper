@@ -66,7 +66,7 @@ class MediainfoExtractor(BaseExtractor[BaseMediainfoMeta]):
 
         return None
 
-    def extract(self):
+    def _extract(self):
         """Populate streams with supported metadata objects."""
         try:
             mediainfo = pymediainfo.MediaInfo.parse(
@@ -81,13 +81,10 @@ class MediainfoExtractor(BaseExtractor[BaseMediainfoMeta]):
             )
             self._errors.append("Error in analyzing file.")
             self._errors.append(str(e))
-            self._validate()
             return
 
         if not self._tracks_ok(mediainfo):
             return
-
-        self._messages.append("The file was analyzed successfully.")
 
         for index, track in enumerate(mediainfo.tracks):
 
@@ -120,8 +117,6 @@ class MediainfoExtractor(BaseExtractor[BaseMediainfoMeta]):
                     index=index
                 )
             )
-
-        self._validate()
 
     def iterate_models(self, **kwargs):
         """Iterate metadata models.

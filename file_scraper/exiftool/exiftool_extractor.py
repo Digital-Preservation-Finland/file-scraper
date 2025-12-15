@@ -61,7 +61,7 @@ class ExifToolExtractorBase(BaseExtractor[ExifToolMetaT]):
 
         return None
 
-    def extract(self) -> None:
+    def _extract(self) -> None:
         """
         Scrape data from file.
         """
@@ -71,8 +71,6 @@ class ExifToolExtractorBase(BaseExtractor[ExifToolMetaT]):
                 metadata = et.get_metadata(self.filename)
             if EXIF_ERROR in metadata:
                 self._errors.append(metadata[EXIF_ERROR])
-            else:
-                self._messages.append("The file was analyzed successfully.")
         except AttributeError:
             with exiftool.ExifToolHelper() as et:
                 try:
@@ -80,16 +78,12 @@ class ExifToolExtractorBase(BaseExtractor[ExifToolMetaT]):
                 except ExifToolExecuteError as eee:
                     metadata = json.loads(eee.stdout)[0]
                     self._errors.append(metadata[EXIF_ERROR])
-                else:
-                    self._messages.append(
-                        "The file was analyzed successfully.")
 
         if exif_version := metadata.get("EXIF:ExifVersion"):
             # Check ExifVersion
             self._parse_exif_version(exif_version)
 
         self.streams = list(self.iterate_models(metadata=metadata))
-        self._validate()
 
     def _parse_exif_version(self, exif_version):
         """Check that the Exif version is syntactically valid"""

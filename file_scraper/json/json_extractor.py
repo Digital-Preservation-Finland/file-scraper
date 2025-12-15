@@ -11,7 +11,7 @@ class JsonExtractor(BaseExtractor):
 
     _allow_unap_version = True
 
-    def extract(self):
+    def _extract(self):
         with open(self.filename, "rt") as file:
             try:
                 json.loads(file.read())
@@ -22,7 +22,6 @@ class JsonExtractor(BaseExtractor):
                 )
 
         self.streams = list(self.iterate_models())
-        self._validate()
 
     def tools(self) -> dict:
         return {}

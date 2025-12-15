@@ -121,7 +121,7 @@ class WandExtractor(BaseExtractor[WandImageMeta]):
 
         return None
 
-    def extract(self):
+    def _extract(self):
         """
         Populate streams with supported metadata objects.
         """
@@ -139,8 +139,6 @@ class WandExtractor(BaseExtractor[WandImageMeta]):
                 for image in self._wandresults.sequence:
                     if md_class.is_supported(image.container.mimetype):
                         self.streams.append(md_class(image=image))
-            self._validate()
-            self._messages.append("The file was analyzed successfully.")
 
     def tools(self):
         """Return information about the software used by the extractor or

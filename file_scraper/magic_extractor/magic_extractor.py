@@ -65,7 +65,7 @@ class MagicBaseExtractor(BaseExtractor[MagicMetaT]):
                                               self.filename)
         return magic_result
 
-    def extract(self) -> None:
+    def _extract(self) -> None:
         """Populate streams with supported metadata objects."""
 
         magic_result = self._magic_call()
@@ -73,9 +73,6 @@ class MagicBaseExtractor(BaseExtractor[MagicMetaT]):
         self.streams = list(self.iterate_models(
             magic_result=magic_result,
             pre_mimetype=self._predefined_mimetype))
-
-        self._validate()
-        self._messages.append("The file was analyzed successfully.")
 
     def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or

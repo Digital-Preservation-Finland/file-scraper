@@ -28,7 +28,7 @@ from file_scraper.defaults import UNAV, UNAP
 from file_scraper.pil.pil_extractor import PilExtractor
 from tests.common import (parse_results, partial_message_included)
 
-VALID_MSG = "successfully"
+VALID_MSG = "The file was analyzed"
 INVALID_MSG = "Error in analyzing file."
 
 STREAM_VALID_L = {

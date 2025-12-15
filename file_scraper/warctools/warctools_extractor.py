@@ -40,7 +40,7 @@ class WarctoolsExtractor(BaseExtractor[WarctoolsMeta]):
         return super().is_supported(
             mimetype, version, check_wellformed, params)
 
-    def extract(self):
+    def _extract(self):
         """Scrape WARC file."""
         try:
             # First assume archive is compressed
@@ -59,10 +59,9 @@ class WarctoolsExtractor(BaseExtractor[WarctoolsMeta]):
             self._errors.append(str(exception))
             return
 
-        self._messages.append("File was analyzed successfully.")
+        self._messages.append("File was analyzed.")
         self.streams = list(self.iterate_models(
             well_formed=self.well_formed, line=line))
-        self._validate()
 
     def tools(self):
         return {}
@@ -99,7 +98,7 @@ class WarctoolsFullExtractor(WarctoolsExtractor):
         return any(x.is_supported(mimetype, version) for x in
                    cls._supported_metadata)
 
-    def extract(self):
+    def _extract(self):
         """Scrape WARC file."""
         size = os.path.getsize(self.filename)
         if size == 0:
@@ -119,7 +118,7 @@ class WarctoolsFullExtractor(WarctoolsExtractor):
 
         self._messages.append(shell.stdout)
 
-        super().extract()
+        super()._extract()
 
     def tools(self):
         """Return information about the software used by the extractor or

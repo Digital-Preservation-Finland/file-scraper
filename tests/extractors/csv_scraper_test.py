@@ -50,7 +50,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
     [
         ("valid__ascii.csv", {
             "purpose": "Test valid file.",
-            "stdout_part": "successfully",
+            "stdout_part": "The file was analyzed",
             "stderr_part": "",
             "streams": {0: {"stream_type": "text",
                             "index": 0,
@@ -65,7 +65,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
          None, {}),
         ("valid__quotechar.csv", {
             "purpose": "Test different quote character.",
-            "stdout_part": "successfully",
+            "stdout_part": "The file was analyzed",
             "stderr_part": "",
             "streams": {0: {"stream_type": "text",
                             "index": 0,
@@ -80,7 +80,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
          None, {"quotechar": "|"}),
         ("valid__ascii_header.csv", {
             "purpose": "Test valid file with header.",
-            "stdout_part": "successfully",
+            "stdout_part": "The file was analyzed",
             "stderr_part": "",
             "streams": {0: {"stream_type": "text",
                             "index": 0,
@@ -109,7 +109,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
          None, {}),
         ("valid__header_only.csv", {
             "purpose": "Test file containing only the header without any data",
-            "stdout_part": "successfully",
+            "stdout_part": "The file was analyzed",
             "stderr_part": "",
             "streams": {0: {"stream_type": "text",
                             "index": 0,
@@ -136,7 +136,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
          ["year", "brand", "model", "detail", "other"], {}),
         ("valid__iso8859-15.csv", {
             "purpose": "Non-ASCII characters",
-            "stdout_part": "successfully",
+            "stdout_part": "The file was analyzed",
             "stderr_part": "",
             "streams": {0: {"stream_type": "text",
                             "index": 0,
@@ -149,7 +149,7 @@ TEST_DATA_PATH = "tests/data/text_csv"
          ["year,brand,model,detail,other"], {"charset": "iso8859-15"}),
         ("valid__utf8.csv", {
             "purpose": "Non-ASCII characters",
-            "stdout_part": "successfully",
+            "stdout_part": "The file was analyzed",
             "stderr_part": "",
             "streams": {0: {"stream_type": "text",
                             "index": 0,
@@ -193,7 +193,7 @@ def test_extractor(filename, result_dict, header,
     [
         ("valid__large_field.csv", {
             "purpose": "Test valid file with a large field.",
-            "stdout_part": "successfully",
+            "stdout_part": "The file was analyzed",
             "stderr_part": "",
             "streams": {0: {"stream_type": "text",
                             "index": 0,
@@ -282,7 +282,6 @@ def test_pdf_as_csv():
     extractor.extract()
 
     assert not extractor.well_formed, extractor.messages() + extractor.errors()
-    assert not partial_message_included("successfully", extractor.messages())
     assert extractor.errors()
 
 
@@ -301,7 +300,7 @@ def test_no_parameters(filename, evaluate_extractor):
     """
     correct = parse_results(filename, MIMETYPE,
                             {"purpose": "Test valid file on default settings.",
-                             "stdout_part": "successfully",
+                             "stdout_part": "The file was analyzed",
                              "stderr_part": "",
                              "streams":
                              {0: {"stream_type": "text",

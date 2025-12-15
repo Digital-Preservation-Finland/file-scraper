@@ -45,7 +45,7 @@ class LxmlExtractor(BaseExtractor[LxmlMeta]):
         return super().is_supported(mimetype, version,
                                     check_wellformed, params)
 
-    def extract(self):
+    def _extract(self):
         """Scrape file."""
         parser = etree.XMLParser(dtd_validation=False, no_network=True,
                                  recover=True, resolve_entities=False)
@@ -89,8 +89,6 @@ class LxmlExtractor(BaseExtractor[LxmlMeta]):
                     f"Found encoding declaration {encoding} from the file "
                     f"{self.filename}, but {self._params['charset']} was "
                     f"expected.")
-
-        self._validate()
 
     def iterate_models(self, **kwargs):
         """

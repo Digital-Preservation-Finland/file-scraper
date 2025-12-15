@@ -9,7 +9,7 @@ This module tests that:
         - version
         - streams
         - well-formedness
-    - In addition to this, the extractor messages contain "successfully" and no
+    - In addition to this, the extractor messages contain "The file was analyzed" and no
       errors are recorded.
 
     - For office files (odt, doc, docx, odp, ppt, pptx, ods, xls, xlsx, odg and
@@ -22,7 +22,7 @@ This module tests that:
     - For XHTML files with missing closing tag:
         - MIME type, version and streams are scraped correctly
         - there are no extractor errors
-        - extractor messages contain "successfully"
+        - extractor messages contain "The file was analyzed"
         - file is well-formed
     - For HTML files without doctype the same things are checked as with XHTML
       files but version must be None
@@ -160,7 +160,7 @@ def test_extractor_valid(filename, mimetype, charset, extractor_class,
     """Test extractor."""
     result_dict = {
         "purpose": "Test valid file.",
-        "stdout_part": "successfully",
+        "stdout_part": "The file was analyzed",
         "stderr_part": ""}
     correct = parse_results(filename, mimetype, result_dict, False,
                             {"charset": charset})
@@ -247,7 +247,7 @@ def test_invalid_markup_pdf(filename, mimetype, extractor_class,
     """Test extractors for invalid XML, XHTML, HTML, and pdf files."""
     result_dict = {
         "purpose": "Test invalid file.",
-        "stdout_part": "successfully",
+        "stdout_part": "The file was analyzed",
         "stderr_part": ""}
     correct = parse_results(filename, mimetype, result_dict, False)
     correct.update_mimetype(mimetype)

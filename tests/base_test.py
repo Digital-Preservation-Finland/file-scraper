@@ -36,7 +36,7 @@ class BaseExtractorBasic(BaseExtractor):
 
     _supported_metadata = [BaseMetaBasic]  # Supported metadata models
 
-    def extract(self):
+    def _extract(self):
         """Do nothing, scraping not needed here."""
         self.streams.append(BaseMetaBasic())
         self._messages.append("Extraction ok")
@@ -200,7 +200,7 @@ class BaseMetaCustom(BaseMeta):
 class BaseExtractorSupported(BaseExtractor):
     """Basic extractor using BaseMetaCustom metadata model."""
 
-    def extract(self):
+    def _extract(self):
         pass
 
     _supported_metadata = [BaseMetaCustom]

@@ -61,7 +61,7 @@ class JHoveExtractorBase(BaseExtractor[JHoveMetaT]):
             filename=filename, mimetype=mimetype, version=version,
             params=params)
 
-    def extract(self) -> None:
+    def _extract(self) -> None:
         """Run JHove command and store XML output to self.report."""
 
         shell = Shell(["jhove", "-h",
@@ -82,8 +82,6 @@ class JHoveExtractorBase(BaseExtractor[JHoveMetaT]):
 
         self.streams = list(self.iterate_models(
             well_formed=self.well_formed, report=self._report))
-
-        self._validate()
 
     def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
@@ -127,7 +125,7 @@ class JHoveHtmlExtractor(JHoveExtractorBase[JHoveHtmlMeta]):
     _jhove_module = "HTML-hul"
     _supported_metadata = [JHoveHtmlMeta]
 
-    def extract(self) -> None:
+    def _extract(self) -> None:
         """
         Scrape the file.
 
@@ -136,7 +134,7 @@ class JHoveHtmlExtractor(JHoveExtractorBase[JHoveHtmlMeta]):
         the (X)HTML file, and these are optional in practice. If these are
         missing, then we just need to rely on other extractor tools.
         """
-        super().extract()
+        super()._extract()
 
         # self.streams is empty if MIME type is not supported.
         # We run _validate() in super() where this case
@@ -175,7 +173,7 @@ class JHovePdfExtractor(JHoveExtractorBase[JHovePdfMeta]):
     _jhove_module = "PDF-hul"
     _supported_metadata = [JHovePdfMeta]
 
-    def extract(self) -> None:
+    def _extract(self) -> None:
         """
         Scrape the file, and check and log PDF root version.
 
@@ -185,7 +183,7 @@ class JHovePdfExtractor(JHoveExtractorBase[JHovePdfMeta]):
         version is logged in messages, which is useful for PDF-A file scraping.
         """
 
-        super().extract()
+        super()._extract()
 
         if self.streams:
             mimetype = self.streams[0].mimetype()
@@ -206,12 +204,12 @@ class JHoveWavExtractor(JHoveExtractorBase[JHoveWavMeta]):
     _jhove_module = "WAVE-hul"
     _supported_metadata = [JHoveWavMeta]
 
-    def extract(self) -> None:
+    def _extract(self) -> None:
         """
         Scrape file.
         Add extra error message, if RF64 profile used.
         """
-        super().extract()
+        super()._extract()
         if "RF64" in get_field(self._report, "profile"):
             self._errors.append("RF64 is not a supported format")
 

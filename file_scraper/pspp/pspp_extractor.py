@@ -24,7 +24,7 @@ class PsppExtractor(BaseExtractor[PsppMeta]):
     _allow_unav_mime = True
     _allow_unav_version = True
 
-    def extract(self):
+    def _extract(self):
         """Scrape file."""
         # Check file header
         with io_open(self.filename, "rb") as input_file:
@@ -58,7 +58,6 @@ class PsppExtractor(BaseExtractor[PsppMeta]):
             shutil.rmtree(temp_dir)
             self.streams = list(self.iterate_models(
                 well_formed=self.well_formed))
-            self._validate()
 
     def tools(self):
         """Return information about the software used by the extractor or

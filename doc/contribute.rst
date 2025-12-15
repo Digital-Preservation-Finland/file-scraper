@@ -39,7 +39,7 @@ A usable extractor tool class:
 
         * MUST add metadata objects of all metadata models to ``streams`` list for each stream in the file. The MIME type and version given in params MUST be passed to the metadata object.
         * SHOULD call ``_validate()`` when the metadata has been collected. This checks that the final mimetype and version are supported ones, in case those have changed.
-        * MUST log all errors (e.g. ""The file is truncated" or ""File not found.") to ``_errors`` list and messages (e.g. "File was analyzed successfully") to ``_messages`` list.
+        * MUST log all errors (e.g. ""The file is truncated" or ""File not found.") to ``_errors`` list and messages (e.g. "File was analyzed with ``ExtractorName``") to ``_messages`` list.
     * The ``info()`` method of a extractor MUST return a dict of class name and used 3rd party software, and messages and errors occured during scraping. See ``<extractor info X>`` from `README.rst <../README.rst>`_ for the content of the info attribute.
 
 The metadata is represented by metadata model objects, e.g. ``GhostscriptMeta`` used by ``GhostscriptExtractor``, and ``JHoveGifMeta``, ``JHoveHtmlMeta`` and others used by ``JHoveExtractor``. These metadata model classes:

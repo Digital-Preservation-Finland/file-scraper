@@ -341,8 +341,17 @@ class BaseExtractor(BaseApparatus, Generic[AnyMeta]):
                 yield md_class(**kwargs)
 
     @abc.abstractmethod
-    def extract(self):
+    def _extract(self):
         """Implemented in subclasses."""
+
+    @final
+    def extract(self):
+        """Extract and validate the results found"""
+        self._extract()
+        self._validate()
+        self._messages.append(
+            f"The file was analyzed with {self.__class__.__name__}."
+        )
 
 
 class BaseDetector(BaseApparatus):

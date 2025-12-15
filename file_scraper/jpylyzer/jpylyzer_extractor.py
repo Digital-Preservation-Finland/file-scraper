@@ -19,7 +19,7 @@ class JpylyzerExtractor(BaseExtractor[JpylyzerMeta]):
     _allow_unav_version = True,
     _allow_unap_version = True,
 
-    def extract(self):
+    def _extract(self):
         """Scrape data from file."""
         try:
             result = jpylyzer.checkOneFile(self.filename)
@@ -34,7 +34,6 @@ class JpylyzerExtractor(BaseExtractor[JpylyzerMeta]):
             self._errors.append(str(exception))
 
         self.streams = list(self.iterate_models())
-        self._validate()
 
     def tools(self):
         """Return information about the software used by the extractor or

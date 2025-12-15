@@ -87,7 +87,7 @@ from tests.extractors.stream_dicts import (AIFF_AUDIO,
     [
         ("valid__dv_lpcm8.mov", {
             "purpose": "Test valid MOV with DV and LPCM8.",
-            "stdout_part": "file was analyzed successfully",
+            "stdout_part": "file was analyzed",
             "stderr_part": "",
             "streams": {0: MOV_CONTAINER.copy(),
                         1: MOV_DV_VIDEO.copy(),
@@ -95,7 +95,7 @@ from tests.extractors.stream_dicts import (AIFF_AUDIO,
          "video/quicktime"),
         ("valid__h264_aac.mov", {
             "purpose": "Test valid MOV with AVC and AAC.",
-            "stdout_part": "file was analyzed successfully",
+            "stdout_part": "file was analyzed",
             "stderr_part": "",
             "streams": {0: MOV_CONTAINER.copy(),
                         1: MOV_MPEG4_VIDEO.copy(),
@@ -103,7 +103,7 @@ from tests.extractors.stream_dicts import (AIFF_AUDIO,
          "video/quicktime"),
         ("valid__h265_aac.mov", {
             "purpose": "Test valid MOV with HEVC and AAC.",
-            "stdout_part": "file was analyzed successfully",
+            "stdout_part": "file was analyzed",
             "stderr_part": "",
             "streams": {0: dict(MOV_CONTAINER.copy(),
                                 **{"codec_creator_app": "Lavf57.71.100",
@@ -114,7 +114,7 @@ from tests.extractors.stream_dicts import (AIFF_AUDIO,
          "video/quicktime"),
         ("valid__h264_aac_no_ftyp_atom.mov", {
             "purpose": "Test valid MOV which does not have ftyp atom.",
-            "stdout_part": "file was analyzed successfully",
+            "stdout_part": "file was analyzed",
             "stderr_part": "",
             "streams": {0: MOV_CONTAINER.copy(),
                         1: MOV_MPEG4_VIDEO.copy(),
@@ -122,7 +122,7 @@ from tests.extractors.stream_dicts import (AIFF_AUDIO,
          "video/quicktime"),
         ("valid__pal_lossy.dv", {
             "purpose": "Test valid DV.",
-            "stdout_part": "file was analyzed successfully",
+            "stdout_part": "file was analyzed",
             "stderr_part": "",
             "streams": {0: DV_VIDEO.copy()}},
          "video/dv"),
@@ -166,27 +166,27 @@ def test_mediainfo_extractor_mov(filename, result_dict, mimetype,
     [
         ("valid_4_ffv1.mkv", {
             "purpose": "Test valid MKV.",
-            "stdout_part": "file was analyzed successfully",
+            "stdout_part": "file was analyzed",
             "stderr_part": "",
             "streams": {0: MKV_CONTAINER.copy(),
                         1: FFV_VIDEO.copy()}}),
         ("valid_4_ffv1_flac.mkv", {
             "purpose": "Test valid MKV wit FFV1 and FLAC stream",
-            "stdout_part": "file was analyzed successfully",
+            "stdout_part": "file was analyzed",
             "stderr_part": "",
             "streams": {0: MKV_CONTAINER.copy(),
                         1: FFV_VIDEO_SOUND.copy(),
                         2: FLAC_AUDIO.copy()}}),
         ("valid_4_ffv1_lpcm8.mkv", {
             "purpose": "Test valid MKV with FFV1 and LPCM8.",
-            "stdout_part": "file was analyzed successfully",
+            "stdout_part": "file was analyzed",
             "stderr_part": "",
             "streams": {0: MKV_CONTAINER.copy(),
                         1: FFV_VIDEO_SOUND_DATARATE.copy(),
                         2: LPCM8_AUDIO.copy()}}),
         ("valid_4_h265.mkv", {
             "purpose": "Test valid MKV with HEVC video.",
-            "stdout_part": "file was analyzed successfully",
+            "stdout_part": "file was analyzed",
             "stderr_part": "",
             "streams": {0: dict(MKV_CONTAINER.copy(),
                                 **{"codec_creator_app": "Lavf57.71.100",
@@ -237,12 +237,12 @@ def test_mediainfo_extractor_mkv(filename, result_dict, evaluate_extractor):
     [
         ("valid__wav.wav", {
             "purpose": "Test valid WAV.",
-            "stdout_part": "file was analyzed successfully",
+            "stdout_part": "file was analyzed",
             "stderr_part": "",
             "streams": {0: WAV_AUDIO.copy()}}),
         ("valid_2_bwf.wav", {
             "purpose": "Test valid BWF.",
-            "stdout_part": "file was analyzed successfully",
+            "stdout_part": "file was analyzed",
             "stderr_part": "",
             "streams": {0: WAV_AUDIO.copy()}}),
         ("invalid__empty.wav", {
@@ -283,7 +283,7 @@ def test_mediainfo_extractor_wav(filename, result_dict, evaluate_extractor):
     [
         ("valid__flac.flac", {
             "purpose": "Test valid FLAC audio file.",
-            "stdout_part": "file was analyzed successfully",
+            "stdout_part": "file was analyzed",
             "stderr_part": "",
             "streams": {0: FLAC_AUDIO_FILE.copy()}}),
         ("invalid__header_edited.flac", {
@@ -320,12 +320,12 @@ def test_mediainfo_extractor_flac(filename, result_dict, evaluate_extractor):
     [
         ("valid_1.3.aiff", {
             "purpose": "Test valid AIFF.",
-            "stdout_part": "file was analyzed successfully",
+            "stdout_part": "file was analyzed",
             "stderr_part": "",
             "streams": {0: AIFF_AUDIO.copy()}}),
         ("valid__aiff-c.aiff", {
             "purpose": "Test valid AIFF-C.",
-            "stdout_part": "file was analyzed successfully",
+            "stdout_part": "file was analyzed",
             "stderr_part": "",
             "streams": {0: AIFF_C_AUDIO.copy()}}),
         ("invalid_1.3_data_bytes_missing.aiff", {
@@ -367,13 +367,13 @@ def test_mediainfo_extractor_aiff(filename, result_dict, evaluate_extractor):
     [
         ("valid__wma9.wma", {
             "purpose": "Test valid WMA.",
-            "stdout_part": "file was analyzed successfully",
+            "stdout_part": "file was analyzed",
             "stderr_part": "",
             "streams": {0: ASF_CONTAINER.copy(),
                         1: WMA_AUDIO.copy()}}),
         ("invalid__wma7.wma", {
             "purpose": "Test invalid WMA.",
-            "stdout_part": "file was analyzed successfully",
+            "stdout_part": "file was analyzed",
             "stderr_part": "",
             "streams": {0: ASF_CONTAINER.copy(),
                         1: WMA_7_AUDIO.copy()}}),
@@ -408,13 +408,13 @@ def test_mediainfo_extractor_wma(filename, result_dict, evaluate_extractor):
     [
         ("valid__vc1.wmv", {
             "purpose": "Test valid WMV.",
-            "stdout_part": "file was analyzed successfully",
+            "stdout_part": "file was analyzed",
             "stderr_part": "",
             "streams": {0: ASF_CONTAINER.copy(),
                         1: WMV_VIDEO_NO_SOUND.copy()}}),
         ("valid__vc1_wma9.wmv", {
             "purpose": "Test valid WMV with WMA audio.",
-            "stdout_part": "file was analyzed successfully",
+            "stdout_part": "file was analyzed",
             "stderr_part": "",
             "streams": {0: ASF_CONTAINER.copy(),
                         1: WMV_VIDEO.copy(),
@@ -443,12 +443,12 @@ def test_mediainfo_extractor_wmv(filename, result_dict, evaluate_extractor):
     [
         ("valid_1.m1v", {
             "purpose": "Test valid MPEG-1.",
-            "stdout_part": "file was analyzed successfully",
+            "stdout_part": "file was analyzed",
             "stderr_part": "",
             "streams": {0: MPEG1_VIDEO.copy()}}),
         ("valid_2.m2v", {
             "purpose": "Test valid MPEG-2.",
-            "stdout_part": "file was analyzed successfully",
+            "stdout_part": "file was analyzed",
             "stderr_part": "",
             "streams": {0: MPEG2_VIDEO.copy()}}),
         ("invalid_1_empty.m1v", {
@@ -489,7 +489,7 @@ def test_mediainfo_extractor_mpeg(filename, result_dict, evaluate_extractor):
             "valid__h264_aac.mp4",
             {
                 "purpose": "Test valid mp4.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": "",
                 "streams": {0: MPEG4_CONTAINER.copy(),
                             1: MPEG4_VIDEO.copy(),
@@ -500,7 +500,7 @@ def test_mediainfo_extractor_mpeg(filename, result_dict, evaluate_extractor):
             "valid__h265_aac.mp4",
             {
                 "purpose": "Test valid mp4.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": "",
                 "streams": {0: MPEG4_CONTAINER2.copy(),
                             1: HEVC_VIDEO.copy(),
@@ -555,7 +555,7 @@ def test_mediainfo_extractor_mp4(filename, result_dict, evaluate_extractor):
             "valid__aac.m4a",
             {
                 "purpose": "Test valid m4a.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": "",
                 "streams": {0: M4A_MPEG4_CONTAINER.copy(),
                             1: M4A_MPEG4_AUDIO.copy()}
@@ -599,7 +599,7 @@ def test_mediainfo_extractor_m4a(filename, result_dict, evaluate_extractor):
     [
         ("valid_1.mp3", {
             "purpose": "Test valid mp3.",
-            "stdout_part": "file was analyzed successfully",
+            "stdout_part": "file was analyzed",
             "stderr_part": "",
             "streams": {0: MPEG1_AUDIO.copy()}}),
         ("invalid__empty.mp3", {
@@ -638,7 +638,7 @@ def test_mediainfo_extractor_mp3(filename, result_dict, evaluate_extractor):
             "valid__mpeg2_mp3.ts",
             {
                 "purpose": "Test valid MPEG-TS.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": "",
                 "streams": {0: MPEGTS_CONTAINER.copy(),
                             1: MPEGTS_VIDEO.copy(),
@@ -649,7 +649,7 @@ def test_mediainfo_extractor_mp3(filename, result_dict, evaluate_extractor):
             "valid__h265_aac.ts",
             {
                 "purpose": "Test valid MPEG-TS.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": "",
                 "streams": {0: MPEGTS_CONTAINER.copy(),
                             1: dict(HEVC_VIDEO.copy(),
@@ -703,7 +703,7 @@ def test_mediainfo_extractor_mpegts(filename, result_dict, evaluate_extractor):
         [
             ("valid__mpeg1_mp3.mpg", {
                 "purpose": "Test valid MPEG1-PS.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": "",
                 "streams": {0: MPEG1PS_CONTAINER.copy(),
                             1: MPEG1PS_VIDEO.copy(),
@@ -711,7 +711,7 @@ def test_mediainfo_extractor_mpegts(filename, result_dict, evaluate_extractor):
              "video/MP1S"),
             ("valid__mpeg2_mp3.mpg", {
                 "purpose": "Test valid MPEG2-PS.",
-                "stdout_part": "file was analyzed successfully",
+                "stdout_part": "file was analyzed",
                 "stderr_part": "",
                 "streams": {0: MPEG2PS_CONTAINER.copy(),
                             1: MPEG2PS_VIDEO.copy(),
@@ -752,7 +752,7 @@ def test_mediainfo_extractor_avi(evaluate_extractor):
     mimetype = "video/avi"
     result_dict = {
         "purpose": "Test valid AVI.",
-        "stdout_part": "file was analyzed successfully",
+        "stdout_part": "file was analyzed",
         "stderr_part": "",
         "streams": {0: AVI_CONTAINER.copy(),
                     1: AVI_VIDEO.copy(),

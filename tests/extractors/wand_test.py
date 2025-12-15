@@ -4,7 +4,7 @@ Tests for ImageMagick extractor.
 This module tests that:
     - streams and well-formedness are scraped correctly for tiff files.
         - For valid files containing one or more images, extractor messages
-          contain "successfully".
+          contain "The file was analyzed".
         - For file where payload has been altered, extractor errors contain
           "Failed to allocate memory for to read TIFF directory (0 elements of
           12 bytes each)."
@@ -12,12 +12,12 @@ This module tests that:
           contain "Not a TIFF file, bad version number 10752".
         - For an empty file, extractor errors contain "Cannot read TIFF header."
     - streams and well-formedness are scraped correctly for dng files.
-        - For valid files, extractor messages contain "successfully".
+        - For valid files, extractor messages contain "The file was analyzed".
         - For invalid file with edited header, extractor errors contain "unable
           to open image".
         - For empty file, extractor errors contain "unable to open image".
     - streams and well-formedness are scraped correctly for jpeg files.
-        - For well-formed files, extractor messages contain "successfully".
+        - For well-formed files, extractor messages contain "The file was analyzed".
         - For file with altered payload, extractor errors contain "Bogus marker
           length".
         - For file without start marker, extractor errors contain "starts with
@@ -27,13 +27,13 @@ This module tests that:
         - For Exif JPEGs, version is interpreted and set
         - For JFIFs, version is unavailable
     - streams and well-formedness are scraped correctly for jp2 files.
-        - For well-formed files, extractor messages contain "successfully".
+        - For well-formed files, extractor messages contain "The file was analyzed".
         - For an empty file, extractor errors contain "MagickReadImage returns
           false, but did not raise ImageMagick exception.".
         - For a file with missing data, extractor errors contain "Malformed JP2
           file format: second box must be file type box"
     - streams and well-formedness are scraped correctly for png files.
-        - For well-formed files, extractor messages contain "successfully".
+        - For well-formed files, extractor messages contain "The file was analyzed".
         - For file with missing IEND or IHDR chunk extractor errors contain
           "MagickReadImage returns false, but did not raise ImageMagick
           exception.".
@@ -42,7 +42,7 @@ This module tests that:
         - For empty file, extractor errors contain "improper image header".
     - streams and well-formedness are scraped correctly for gif files.
         - For well-formed files with one or more images, extractor messages
-          contain "successfully".
+          contain "The file was analyzed".
         - For images with broken header, extractor errors contains "improper
           image header".
         - For truncated version 1987a file, extractor errors contains "corrupt
@@ -51,7 +51,7 @@ This module tests that:
           or zero image size".
         - For empty file, extractor errors contains "improper image header".
     - streams and well-formedness are scraped correctly for WebP files.
-        - For well-formed files, extractor messages contain "successfully".
+        - For well-formed files, extractor messages contain "The file was analyzed".
         - For images with missing headers or image data, extractor errors contain
           "insufficient image data in file".
         - For mismatched headers and data, extractor errors contain "corrupt
@@ -130,14 +130,14 @@ GIF_APPEND = {
         ("valid_6.0.tif", {
             "purpose": "Test valid file.",
             "streams": {0: STREAM_VALID.copy()},
-            "stdout_part": "successfully",
+            "stdout_part": "The file was analyzed",
             "stderr_part": ""}),
         ("valid_6.0_multiple_tiffs.tif", {
             "purpose": "Test valid multiple tiff file.",
             "streams": {0: STREAM_VALID.copy(),
                         1: STREAM_VALID.copy(),
                         2: STREAM_VALID.copy()},
-            "stdout_part": "successfully",
+            "stdout_part": "The file was analyzed",
             "stderr_part": ""})
     ]
 )
@@ -178,7 +178,7 @@ def test_extractor_tif(filename, result_dict, evaluate_extractor):
                              "height": "866" if RHEL9 else "1154",
                              "width": "1154" if RHEL9 else "866",
                              "samples_per_pixel": UNAV}},
-                "stdout_part": "successfully",
+                "stdout_part": "The file was analyzed",
                 "stderr_part": ""
                 })
         ]
@@ -204,22 +204,22 @@ def test_extractor_dng(filename, result_dict, evaluate_extractor):
         ("valid_1.01.jpg", {
             "purpose": "Test valid file.",
             "streams": {0: STREAM_VALID.copy()},
-            "stdout_part": "successfully",
+            "stdout_part": "The file was analyzed",
             "stderr_part": ""}),
         ("valid_1.01_icc_sRGB_profile.jpg", {
             "purpose": "Test valid file.",
             "streams": {0: STREAM_VALID_WITH_SRGB.copy()},
-            "stdout_part": "successfully",
+            "stdout_part": "The file was analyzed",
             "stderr_part": ""}),
         ("valid_2.2.1_exif_metadata.jpg", {
             "purpose": "Test valid file.",
             "streams": {0: EXIF_VALID.copy()},
-            "stdout_part": "successfully",
+            "stdout_part": "The file was analyzed",
             "stderr_part": ""}),
         ("valid_2.2.1_exif_no_jfif.jpg", {
             "purpose": "Test valid file.",
             "streams": {0: EXIF_VALID.copy()},
-            "stdout_part": "successfully",
+            "stdout_part": "The file was analyzed",
             "stderr_part": ""}),
     ]
 )
@@ -254,7 +254,7 @@ def test_extractor_jpg(filename, result_dict, evaluate_extractor):
                 "height": "8",
                 "width": "6",
                 "samples_per_pixel": UNAV}},
-            "stdout_part": "successfully",
+            "stdout_part": "The file was analyzed",
             "stderr_part": ""}),
     ]
 )
@@ -284,7 +284,7 @@ def test_extractor_jp2(filename, result_dict, evaluate_extractor):
         ("valid_1.2.png", {
             "purpose": "Test valid file.",
             "streams": {0: STREAM_VALID.copy()},
-            "stdout_part": "successfully",
+            "stdout_part": "The file was analyzed",
             "stderr_part": ""}),
     ]
 )
@@ -313,14 +313,14 @@ def test_extractor_png(filename, result_dict, evaluate_extractor):
         ("valid_1987a.gif", {
             "purpose": "Test valid file.",
             "streams": {0: STREAM_VALID.copy()},
-            "stdout_part": "successfully",
+            "stdout_part": "The file was analyzed",
             "stderr_part": ""}),
         ("valid_1989a.gif", {
             "purpose": "Test valid file.",
             "streams": {0: STREAM_VALID.copy(),
                         1: GIF_APPEND.copy(),
                         2: GIF_APPEND.copy()},
-            "stdout_part": "successfully",
+            "stdout_part": "The file was analyzed",
             "stderr_part": ""}),
     ]
 )
@@ -350,12 +350,12 @@ def test_extractor_gif(filename, result_dict, evaluate_extractor):
         ("valid__lossless.webp", {
             "purpose": "Test valid lossless file",
             "streams": {0: STREAM_VALID_WITH_SRGB.copy()},
-            "stdout_part": "successfully",
+            "stdout_part": "The file was analyzed",
             "stderr_part": ""}),
         ("valid__lossy.webp", {
             "purpose": "Test valid lossy file.",
             "streams": {0: STREAM_VALID_WITH_SRGB.copy()},
-            "stdout_part": "successfully",
+            "stdout_part": "The file was analyzed",
             "stderr_part": ""}),
     ]
 )

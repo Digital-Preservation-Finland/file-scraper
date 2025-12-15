@@ -27,7 +27,7 @@ class VerapdfExtractor(BaseExtractor[VerapdfMeta]):
     _supported_metadata = [VerapdfMeta]
     _only_wellformed = True  # Only well-formed check
 
-    def extract(self):
+    def _extract(self):
         """
         Scrape file.
 
@@ -41,7 +41,6 @@ class VerapdfExtractor(BaseExtractor[VerapdfMeta]):
             self._errors.append(
                 f"VeraPDF returned invalid return code: {shell.returncode}")
             self._errors.append(shell.stderr)
-            self._validate()
             return
 
         profile = None
@@ -77,8 +76,6 @@ class VerapdfExtractor(BaseExtractor[VerapdfMeta]):
 
         self.streams = list(self.iterate_models(
             well_formed=self.well_formed, profile=profile))
-
-        self._validate()
 
     def tools(self):
         """Return information about the software used by the extractor or

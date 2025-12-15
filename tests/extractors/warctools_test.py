@@ -4,7 +4,7 @@ Test the file_scraper.warctools.warctools_extractor module
 This module tests that:
     - MIME type, version, streams and well-formedneess are scraped correctly
       using all extractors.
-        - For all well-formed files, extractor messages contain "successfully".
+        - For all well-formed files, extractor messages contain "The file was analyzed".
     - When using WarctoolsFullExtractor:
         - For empty files, extractor errors contains "Empty file."
         - For files with missing data, extractor errors contains "unpack
@@ -37,15 +37,15 @@ from tests.common import parse_results, partial_message_included
     [
         ("valid_0.17.warc", {
             "purpose": "Test valid file.",
-            "stdout_part": "successfully",
+            "stdout_part": "The file was analyzed",
             "stderr_part": ""}),
         ("valid_0.18.warc", {
             "purpose": "Test valid file.",
-            "stdout_part": "successfully",
+            "stdout_part": "The file was analyzed",
             "stderr_part": ""}),
         ("valid_1.0.warc", {
             "purpose": "Test valid file.",
-            "stdout_part": "successfully",
+            "stdout_part": "The file was analyzed",
             "stderr_part": ""}),
         ("invalid_0.17_too_short_content_length.warc", {
             "purpose": "Test short content length.",
@@ -65,7 +65,7 @@ from tests.common import parse_results, partial_message_included
             "stderr_part": "Empty file."}),
                 ("valid_1.0_.warc.gz", {
             "purpose": "Test valid warc file.",
-            "stdout_part": "successfully",
+            "stdout_part": "The file was analyzed",
             "stderr_part": ""}),
         ("invalid__empty.warc.gz", {
             "purpose": "Test empty warc file.",
