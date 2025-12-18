@@ -403,7 +403,9 @@ class Scraper:
             self._results,
             LOSE
         )
-        errors.extend(more_errors)
+        for error in more_errors:
+            if error not in errors:
+                errors.append(error)
 
         merge_well_formed = None
         if len(errors) > 0:
