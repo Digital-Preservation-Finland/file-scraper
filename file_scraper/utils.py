@@ -53,11 +53,7 @@ def normalize_charset(charset: str | None) -> str:
         return "UTF-8"
     if charset.upper() == "ISO-8859-1":
         return "ISO-8859-15"
-    if charset.upper() == "UTF-16LE" \
-            or charset.upper() == "UTF-16BE":
-        return "UTF-16"
-
-    return charset.upper()
+    return charset.upper().removesuffix("LE").removesuffix("BE")
 
 
 def iso8601_duration(time: float | int) -> str:
