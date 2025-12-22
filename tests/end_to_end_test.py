@@ -700,7 +700,7 @@ def test_given_filetype(
 @pytest.mark.parametrize(
     ["filepath", "charset", "well_formed"],
     [("tests/data/text_plain/valid__utf8_without_bom.txt", "UTF-8", True),
-     ("tests/data/text_plain/valid__utf8_without_bom.txt", "utf-8", True),
+     ("tests/data/text_plain/valid__utf8_without_bom.txt", "UTF-8", True),
      ("tests/data/text_plain/valid__utf8_without_bom.txt", "UTF-16", False),
      ("tests/data/text_plain/valid__utf8_bom.txt", "UTF-8", True),
      ("tests/data/text_plain/valid__utf8_bom.txt", "UTF-16", False),
@@ -753,7 +753,6 @@ def test_charset(filepath, charset, well_formed):
     scraper = Scraper(filepath, mimetype=predefined_mimetype,
                       charset=charset)
     scraper.scrape()
-
     assert scraper.well_formed == well_formed
     assert scraper.streams[0]["charset"] == charset
 

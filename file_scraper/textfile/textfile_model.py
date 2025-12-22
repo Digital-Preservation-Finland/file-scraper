@@ -101,7 +101,7 @@ class TextEncodingMeta(BaseMeta):
     @BaseMeta.metadata()
     def charset(self):
         """Return charset."""
-        return self._charset
+        return self._charset.upper()
 
     @BaseMeta.metadata()
     def stream_type(self):
