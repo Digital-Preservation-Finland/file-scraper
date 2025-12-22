@@ -399,13 +399,17 @@ def test_jpeg_exif_character_case():
     """
     jpeg_meta = JpegFileMagicMeta(
         magic_result={"magic_none": "JPEG image data, EXIF standard"},
-        pre_mimetype="image/jpeg",
+        predefined_mimetype="image/jpeg",
+        predefined_version=None,
+        predefined_charset="UTF-8",
     )
     assert jpeg_meta.version() == UNAV
 
     jpeg_meta = JpegFileMagicMeta(
         magic_result={"magic_none": "JPEG image data, Exif standard"},
-        pre_mimetype="image/jpeg",
+        predefined_mimetype="image/jpeg",
+        predefined_version=None,
+        predefined_charset="UTF-8",
     )
     assert jpeg_meta.version() == UNAV
 

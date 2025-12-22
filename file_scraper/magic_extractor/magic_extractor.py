@@ -72,7 +72,11 @@ class MagicBaseExtractor(BaseExtractor[MagicMetaT]):
 
         self.streams = list(self.iterate_models(
             magic_result=magic_result,
-            pre_mimetype=self._predefined_mimetype))
+            predefined_mimetype=self._predefined_mimetype,
+            predefined_version=self._predefined_version,
+            predefined_charset=self._params.get("charset"),
+            )
+        )
 
     def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or

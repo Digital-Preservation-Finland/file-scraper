@@ -11,14 +11,22 @@ class BaseMagicMeta(BaseMeta):
     _starttag = "version "  # Text before file format version in magic result.
     _endtag = None  # Text after file format version in magic result.
 
-    def __init__(self, magic_result, pre_mimetype):
+    def __init__(
+        self,
+        magic_result,
+        predefined_mimetype,
+        predefined_version,
+        predefined_charset,
+    ):
         """Initialize the metadata model.
 
         :magic_result: Values resulted from magic module as Python dict
-        :pre_mimetype: Predefined mimetype
+        :predefined_mimetype: Predefined mimetype
         """
         self._magic_result = magic_result
-        self._predefined_mimetype = pre_mimetype
+        self._predefined_mimetype = predefined_mimetype
+        self._predefined_version = predefined_version
+        self._predefined_charset = predefined_charset
 
     @BaseMeta.metadata()
     def mimetype(self):
@@ -71,7 +79,12 @@ class TextMagicBaseMeta(BaseMagicMeta):
     def charset(self):
         """Return charset."""
         magic_charset = self._magic_result['magic_mime_encoding']
-        return normalize_charset(magic_charset)
+        normalized_charset = normalize_charset(magic_charset)
+        if normalized_charset != self._predefined_charset:
+            # TODO: The extractor should really produce error, because
+            # it detects different charset as the predefined charset
+            return self._predefined_charset
+        return normalized_charset
 
     @BaseMeta.metadata()
     def stream_type(self):
