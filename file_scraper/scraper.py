@@ -12,7 +12,10 @@ from file_scraper.base import BaseDetector, BaseExtractor
 from file_scraper.defaults import UNAV
 from file_scraper.state import Mimetype
 from file_scraper.detectors import ExifToolDetector, MagicCharset
-from file_scraper.dummy.dummy_model import UserDefinedMeta
+from file_scraper.dummy.dummy_model import (
+    UserDefinedMeta,
+    UserDefinedCharsetMeta,
+)
 from file_scraper.exceptions import (
     DirectoryIsNotScrapable,
     FileIsNotScrapable,
@@ -116,17 +119,28 @@ class Scraper:
             self._predefined_version = version
         else:
             self._predefined_version = None
+        # Charset shouldn't be added to the results if the user hasn't
+        # explicitly added the charset parameter. Otherwise the output will
+        # have the charset
+        self._results = []
+        if self._kwargs.get("charset", None):
+            self._charset = self._kwargs["charset"].upper()
+            self._results.append(
+                [UserDefinedCharsetMeta(charset=self._charset)]
+            )
+        else:
+            self._charset = None
 
-        self._results = [
+        self._results.append(
             [
                 UserDefinedMeta(
-                    Mimetype(
+                    mimetype=Mimetype(
                         mimetype=self._predefined_mimetype,
                         version=self._predefined_version
-                    )
+                    ),
                 )
             ]
-        ]
+        )
         # self._detected_mimetype and self._detected_version exist so
         # the predefined values above wouldn't get changed during the running
         # of the scraper.
@@ -212,10 +226,9 @@ class Scraper:
             to_empty=None,
             prevent_update_to_values=LOSE
         )
-
         if (
             MagicCharset.is_supported(self._detected_mimetype)
-            and self._kwargs.get("charset", None) is None
+            and self._charset is None
         ):
             charset_detector = MagicCharset(self.path)
             charset_detector.detect()

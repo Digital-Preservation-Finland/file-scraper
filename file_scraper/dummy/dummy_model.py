@@ -34,6 +34,23 @@ class UserDefinedMeta(BaseMeta):
         return self._mimetype.version
 
 
+class UserDefinedCharsetMeta(BaseMeta):
+    """
+    User defined metadata model.
+    Alternative to the original UserDefinedMeta, includes also the charset.
+    """
+
+    def __init__(self, charset: str):
+        super().__init__()
+        self._charset = charset
+
+    @BaseMeta.metadata()
+    def charset(self) -> str:
+        if self._charset is None:
+            return UNAV
+        return self._charset
+
+
 class ExtractorNotFoundMeta(BaseMeta):
     """
     Metadata model for ExtractorNotFound extractor. Otherwise minimal model,
