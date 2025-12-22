@@ -92,7 +92,7 @@ class JHoveHtmlMeta(JHoveBaseMeta):
     _supported = {"text/html": ["4.01"],
                   "application/xhtml+xml": ["1.0", "1.1"]}
 
-    @BaseMeta.metadata(important=True)
+    @BaseMeta.metadata()
     def version(self):
         """
         Return version.
@@ -270,7 +270,7 @@ class JHoveWavMeta(JHoveBaseMeta):
 
         return super().mimetype()
 
-    @BaseMeta.metadata(important=True)
+    @BaseMeta.metadata()
     def version(self):
         """
         Return version.

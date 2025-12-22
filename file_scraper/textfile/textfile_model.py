@@ -66,6 +66,7 @@ class TextEncodingMeta(BaseMeta):
         :charset: Encoding from extractor
         :predefined_mimetype: Predefined mimetype
         """
+
         self._well_formed = well_formed
         self._charset = charset
         self._predefined_mimetype = predefined_mimetype
@@ -97,7 +98,7 @@ class TextEncodingMeta(BaseMeta):
             return UNAP
         return UNAV
 
-    @BaseMeta.metadata(important=True)
+    @BaseMeta.metadata()
     def charset(self):
         """Return charset."""
         return self._charset

@@ -94,9 +94,7 @@ class BaseMeta:
 
     @final
     @staticmethod
-    def metadata(
-        important: bool = False
-    ) -> Callable[[Callable], MetadataMethod]:
+    def metadata() -> Callable[[Callable], MetadataMethod]:
         """
         Decorator for functions extracting metadata.
 
@@ -106,7 +104,6 @@ class BaseMeta:
 
         def _wrap(func: Callable) -> MetadataMethod:
             setattr(func, "is_metadata", True)
-            setattr(func, "is_important", important)
             return cast("MetadataMethod", func)
 
         return _wrap

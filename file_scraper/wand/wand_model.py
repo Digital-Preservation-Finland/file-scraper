@@ -144,7 +144,7 @@ class WandExifMeta(WandImageMeta):
     _supported = {"image/jpeg": []}
     _allow_any_version = True
 
-    @BaseMeta.metadata(important=True)
+    @BaseMeta.metadata()
     def version(self):
         """Exif version in PRONOM registry form."""
 
@@ -161,7 +161,7 @@ class WandWebPMeta(WandImageMeta):
     _supported = {"image/webp": []}
     _allow_any_version = True
 
-    @BaseMeta.metadata(important=True)
+    @BaseMeta.metadata()
     def compression(self):
         """Return compression quality if exists, otherwise (:unav)"""
         if self._image.compression_quality < 100:
@@ -170,7 +170,7 @@ class WandWebPMeta(WandImageMeta):
             return "VP8 Lossless"
         return UNAV
 
-    @BaseMeta.metadata(important=True)
+    @BaseMeta.metadata()
     def version(self):
         """No version for WebP files, return (:unap)."""
         return UNAP

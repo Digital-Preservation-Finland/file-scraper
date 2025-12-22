@@ -34,7 +34,7 @@ class ExifToolExifMeta(ExifToolBaseMeta):
 
     # JPEG file can have both JFIF and Exif app segments.
     # If both exist, Exif takes precedence.
-    @BaseMeta.metadata(important=True)
+    @BaseMeta.metadata()
     def version(self):
         """
         Return version.
@@ -60,7 +60,7 @@ class ExifToolDngMeta(ExifToolBaseMeta):
     _supported = {"image/x-adobe-dng": ["1.1", "1.2", "1.3", "1.4", "1.5"]}
     _allow_any_version = True
 
-    @BaseMeta.metadata(important=True)
+    @BaseMeta.metadata()
     def mimetype(self):
         """
         Return mimetype.
@@ -87,7 +87,7 @@ class ExifToolDngMeta(ExifToolBaseMeta):
             return "big endian"
         return UNAV
 
-    @BaseMeta.metadata(important=True)
+    @BaseMeta.metadata()
     def version(self):
         """
         Return version with one decimal digit, eg. "1.3".

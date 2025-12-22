@@ -31,7 +31,7 @@ class VerapdfMeta(BaseMeta):
         """
         return "application/pdf" if self._well_formed else UNAV
 
-    @BaseMeta.metadata(important=True)
+    @BaseMeta.metadata()
     def version(self):
         """
         Return the version based on the profile given to the constructor.

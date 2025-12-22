@@ -21,13 +21,13 @@ class UserDefinedMeta(BaseMeta):
         self._supported = {mimetype.mimetype: [mimetype.version]}
         self._mimetype = mimetype
 
-    @BaseMeta.metadata(important=True)
+    @BaseMeta.metadata()
     def mimetype(self) -> str:
         if self._mimetype.mimetype is None:
             return UNAV
         return self._mimetype.mimetype
 
-    @BaseMeta.metadata(important=True)
+    @BaseMeta.metadata()
     def version(self) -> str:
         if self._mimetype.version is None:
             return UNAV
@@ -228,7 +228,7 @@ class DetectedPdfaVersionMeta(DetectedMimeVersionMeta):
     _supported = {"application/pdf": ["A-1a", "A-1b", "A-2a", "A-2b", "A-2u",
                                       "A-3a", "A-3b", "A-3u"]}
 
-    @BaseMeta.metadata(important=True)
+    @BaseMeta.metadata()
     def version(self):
         """Return the file format version"""
         return self._version if self._version is not None else UNAV
