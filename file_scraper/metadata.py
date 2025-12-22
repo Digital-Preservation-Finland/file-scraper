@@ -29,7 +29,7 @@ class MetadataMethod(Protocol):
 def _merge_functions_to_stream(
     stream: dict[str, str],
     method: MetadataMethod,
-    lose: Iterable[str | None],
+    overwrite: Iterable[str | None],
 ) -> None:
     """
     Merges the methods in-place into the stream dictionary.
@@ -37,21 +37,31 @@ def _merge_functions_to_stream(
     Adds item 'method.__name__: method' into the stream dict.
 
     If the stream dict already contains an entry with method.__name__ as the
-    key, the given lose and importants are examined:
-        - Important values are used unless those are lose values.
-        - Values within the lose list are overwritten.
-        - If neither entry is important or disposable, a ValueError is raised.
+    key, the value for the key is checked against the overwrite list and will
+    be replaced if it exists in it. Otherwise the value writing has failed and
+    a ValueError will be raised.
 
-    :param stream: A dict representing the metadata of a single stream. E.g.
-        {"index": 0, "mimetype": "image/png", "width": "500"}. The 'index' key
+    :param stream: A dict representing the metadata of a single stream.
+        The content of each key must be a function to determine the origin
+        of the data. The origin will be used to give good ValueError messages.
+        An example of the dict:
+        `
+        {
+            "index": <function which returns index>,
+            "mimetype": <function which returns mimetype>,
+            "width": <function which returns width>
+        }
+        `
+        The 'index' key
         is required for the dict!
-    :param method: A metadata method.
-    :param lose: A list of values that can be overwritten.
+    :param method: A metadata method which returns the right value for
+        the metadata.
+    :param overwrite: A list of values that can be overwritten and prevent
+        writing the these values to the stream.
 
-    :raises: ValueError if the value failed merging, most common reason is that
-        the file
+    :raises: ValueError if the value failed merging, the most common reason is
+        that the value was already written to the stream by another function.
     """
-
     method_name = method.__name__
     model_name = method.__self__.__class__.__name__
     method_value = method()
@@ -60,11 +70,11 @@ def _merge_functions_to_stream(
         stream[method_name] = method
         return
     stream_method_value = stream[method_name]()
-    if method_value in lose:
+    if method_value in overwrite:
         return
     if stream_method_value == method_value:
         return
-    if stream_method_value in lose:
+    if stream_method_value in overwrite:
         stream[method_name] = method
         return
 
@@ -78,7 +88,7 @@ def _merge_functions_to_stream(
 
 
 def generate_metadata_dict(
-    extraction_results: list[list[BaseMeta]], lose: Iterable[str | None]
+    extraction_results: list[list[BaseMeta]], overwrite: Iterable[str | None]
 ) -> tuple[dict, list[str]]:
     """
     Generate a metadata dict from the given extraction results.
@@ -92,7 +102,7 @@ def generate_metadata_dict(
         methods of a single extractor in a single list. E.g.
         [[extractor1_stream1, extractor1_stream2],
         [extractor2_stream1, extractor2_stream2]]
-    :param lose: A list of values that can be overwritten.
+    :param overwrite: A list of values that can be overwritten.
     :returns: A tuple of (a dict containing the metadata of the file,
         metadata of each stream in its own dict. E.g.
         {
@@ -117,7 +127,7 @@ def generate_metadata_dict(
 
         for method in model.iterate_metadata_methods():
             try:
-                _merge_functions_to_stream(current_stream, method, lose)
+                _merge_functions_to_stream(current_stream, method, overwrite)
             # In case of conflicting values, append the error message
             except SkipElementException:
                 # happens when the method is not to be indexed
@@ -127,7 +137,7 @@ def generate_metadata_dict(
         LOGGER.debug(
             "Scraper result %s merged to stream: %s", model, current_stream
         )
-    # Change the function reference into a result in each stream
+    # Change the function reference into a result for each stream
     for index, stream in streams.items():
         for key, method in stream.items():
             streams[index][key] = method()
