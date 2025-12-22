@@ -37,7 +37,7 @@ from file_scraper.exceptions import (FileIsNotScrapable,
                                      InvalidMimetype,
                                      InvalidVersionForMimetype,)
 
-from tests.conftest import Meta1, Meta2, Meta5
+from tests.metadata_test import Meta1, Meta2, Meta3
 from tests.common import compare_results
 
 
@@ -298,11 +298,12 @@ class TestPathValidation:
 
 
 @pytest.mark.parametrize(('meta_classes', 'wellformed'), [
-    ([Meta1, Meta5], None),
+    ([Meta1, Meta3], None),
     ([Meta1, Meta2], False)
 ])
 def test_results_merging(meta_classes, wellformed):
-    """Test that scraper merges extractor results properly. The test tests
+    """
+    Test that scraper merges extractor results properly. The test tests
     both a successful case where metadata could be merged and a case with
     conflicts in metadata resulting in the well-formedness being false. Also
     in the conflicting case, tool errors are checked to contain a
@@ -319,7 +320,7 @@ def test_results_merging(meta_classes, wellformed):
     scraper._check_wellformed = True
     scraper._merge_results()
     if wellformed is False:
-        assert list(filter((lambda s: "Conflict with values" in s),
+        assert list(filter((lambda s: "Failed to merge the metadata " in s),
                            scraper.info[0]["errors"]))
     assert scraper.well_formed == wellformed
 
