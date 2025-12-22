@@ -80,8 +80,13 @@ class JHoveExtractorBase(BaseExtractor[JHoveMetaT]):
             self._errors.append(shell.stdout)
             self._errors.append(shell.stderr)
 
-        self.streams = list(self.iterate_models(
-            well_formed=self.well_formed, report=self._report))
+        self.streams = list(
+            self.iterate_models(
+                well_formed=self.well_formed,
+                report=self._report,
+                predefined_version=self._predefined_version,
+            )
+        )
 
     def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
