@@ -12,9 +12,41 @@ from typing import Any, Protocol, TYPE_CHECKING
 
 from file_scraper.exceptions import SkipElementException
 from file_scraper.logger import LOGGER
+from file_scraper.jhove.jhove_model import JHovePdfMeta
+from file_scraper.verapdf.verapdf_model import VerapdfMeta
 
 if TYPE_CHECKING:
     from file_scraper.base import BaseMeta
+
+
+# A list of special cases where a specific Meta class can overwrite some other
+# Meta class method output
+# Each privilege must contain "overwriter", "overwritten", "method" and
+# "values". The values key is a list containing tuples with each tuples first
+# value representing the incoming new value and the second should match the
+# current value.
+#
+# To avoid confusion when changes occur the "overwriter" and "overwritten"
+# should have class reference if the original Meta class gets renamed or
+# removed.
+
+MERGE_OVERWRITE_PRIVILEGES = [
+    # VerapdfMeta is correct about the version if the Meta exists in the
+    # results
+    {
+        "overwriter": VerapdfMeta.__name__,
+        "overwritten": JHovePdfMeta.__name__,
+        "method": "version",
+        "values": [
+            # The file is PDF/A-1, so it's also PDF 1.4.
+            ("A-1a", "1.4"), ("A-1b", "1.4"),
+            # The file is PDF/A-2, so it's also PDF 1.7.
+            ("A-2a", "1.7"), ("A-2b", "1.7"), ("A-2u", "1.7"),
+            # The file is PDF/A-3, so it's also PDF 1.7.
+            ("A-3a", "1.7"), ("A-3b", "1.7"), ("A-3u", "1.7"),
+        ],
+    }
+]
 
 
 class MetadataMethod(Protocol):
@@ -40,6 +72,11 @@ def _merge_functions_to_stream(
     key, the value for the key is checked against the overwrite list and will
     be replaced if it exists in it. Otherwise the value writing has failed and
     a ValueError will be raised.
+
+    For limited special cases where some method requires overwriting based
+    on another Meta methods result there is the MERGE_OVERWRITE_PRIVILEGES list
+    which includes the specific class names of the overwriter and overwritten
+    Meta classes and the method which will be overwritten
 
     :param stream: A dict representing the metadata of a single stream.
         The content of each key must be a function to determine the origin
@@ -69,6 +106,7 @@ def _merge_functions_to_stream(
     if method_name not in stream:
         stream[method_name] = method
         return
+
     stream_method_value = stream[method_name]()
     if method_value in overwrite:
         return
@@ -79,6 +117,24 @@ def _merge_functions_to_stream(
         return
 
     stream_model_name = stream[method_name].__self__.__class__.__name__
+
+    # Check for exact match from the privileges for overwriting in cases where
+    # we (Digital Preservation) want to choose the result based on our
+    # preferences.
+    # Most common use case is a situation with multiple correct answers
+    for privilege in MERGE_OVERWRITE_PRIVILEGES:
+        if (
+            method_name == privilege["method"]
+            and model_name == privilege["overwriter"]
+            and stream_model_name == privilege["overwritten"]
+            and (
+                privilege["values"] == []
+                or (method_value, stream_method_value) in privilege["values"]
+            )
+        ):
+            stream[method_name] = method
+            return
+
     raise ValueError(
         f"Failed to merge the metadata '{method_name}' from the model "
         f"'{model_name}' with a value of '{method_value}' to the stream. "

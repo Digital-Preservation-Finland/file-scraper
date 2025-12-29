@@ -5,12 +5,13 @@ from __future__ import annotations
 import abc
 from collections.abc import Iterator, Callable
 from pathlib import Path
-from typing import Any, Generic, Literal, TypeVar, final, cast
+from typing import Any, Generic, Literal, TypeVar, final, cast, TYPE_CHECKING
 
 from file_scraper.defaults import UNAP, UNAV
 from file_scraper.state import Mimetype
 from file_scraper.utils import filter_unwanted_chars
-from file_scraper.metadata import (MetadataMethod)
+if TYPE_CHECKING:
+    from file_scraper.metadata import (MetadataMethod)
 
 
 class BaseApparatus(metaclass=abc.ABCMeta):
