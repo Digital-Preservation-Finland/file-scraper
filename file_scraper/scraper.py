@@ -75,6 +75,55 @@ class Scraper:
         self.clear()
         self._parameter_validation()
 
+    # pylint: disable=attribute-defined-outside-init
+    def clear(self):
+        """Clear the Scraper to an initial state."""
+        self.mimetype = None
+        self.version = None
+        self._detected_mimetype = None
+        self._detected_version = None
+        self.streams = {}
+        self._well_formed = None
+        self._check_wellformed = True
+        self.info = {}
+
+        if (mime := self._kwargs.get("mimetype", None)) not in [None, ""]:
+            self._predefined_mimetype = mime.lower()
+            self._kwargs["mimetype"] = mime.lower()
+        else:
+            self._predefined_mimetype = None
+
+        if (version := self._kwargs.get("version", None)) not in [None, ""]:
+            self._predefined_version = version
+        else:
+            self._predefined_version = None
+
+        # Each Metadata function from the chosen Meta class will be added to
+        # the final scraper output, so we need a Meta class for the case where
+        # user input includes character set and for the case where it doesn't.
+        self._results = []
+        if self._kwargs.get("charset", None):
+            self._charset = self._kwargs["charset"].upper()
+            self._results.append(
+                [UserDefinedCharsetMeta(charset=self._charset)]
+            )
+        else:
+            self._charset = None
+
+        self._results.append(
+            [
+                UserDefinedMeta(
+                    mimetype=Mimetype(
+                        mimetype=self._predefined_mimetype,
+                        version=self._predefined_version
+                    ),
+                )
+            ]
+        )
+        # REFACTOR: The results get gathered back to the _kwargs
+        self._kwargs["detected_mimetype"] = UNAV
+        self._kwargs["detected_version"] = UNAV
+
     @property
     def filename(self) -> bytes:
         """Return file path as byte string.
@@ -96,59 +145,6 @@ class Scraper:
                 "getting set as False."
             )
         self._well_formed = value
-
-    # TODO move initialization to init if detect_filetype no longer needs to
-    # reset the scraper class.
-    # pylint: disable=attribute-defined-outside-init
-    def clear(self):
-        """Clear the Scraper to an initial state."""
-        self.mimetype = None
-        self.version = None
-        self.streams = {}
-        self._well_formed = None
-        self._check_wellformed = True
-        self.info = {}
-
-        if (mime := self._kwargs.get("mimetype", None)) not in [None, ""]:
-            self._predefined_mimetype = mime.lower()
-            self._kwargs["mimetype"] = mime.lower()
-        else:
-            self._predefined_mimetype = None
-
-        if (version := self._kwargs.get("version", None)) not in [None, ""]:
-            self._predefined_version = version
-        else:
-            self._predefined_version = None
-        # Charset shouldn't be added to the results if the user hasn't
-        # explicitly added the charset parameter. Otherwise the output will
-        # have the charset
-        self._results = []
-        if self._kwargs.get("charset", None):
-            self._charset = self._kwargs["charset"].upper()
-            self._results.append(
-                [UserDefinedCharsetMeta(charset=self._charset)]
-            )
-        else:
-            self._charset = None
-
-        self._results.append(
-            [
-                UserDefinedMeta(
-                    mimetype=Mimetype(
-                        mimetype=self._predefined_mimetype,
-                        version=self._predefined_version
-                    ),
-                )
-            ]
-        )
-        # self._detected_mimetype and self._detected_version exist so
-        # the predefined values above wouldn't get changed during the running
-        # of the scraper.
-        self._detected_mimetype = None
-        self._detected_version = None
-        # REFACTOR: The results get gathered back to the _kwargs
-        self._kwargs["detected_mimetype"] = UNAV
-        self._kwargs["detected_version"] = UNAV
 
     def _parameter_validation(self):
         """
