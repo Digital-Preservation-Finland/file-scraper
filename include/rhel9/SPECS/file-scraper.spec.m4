@@ -43,7 +43,8 @@ Summary:        File scraper analysis tool
 Requires:       %{py3_dist ffmpeg-python}
 Requires:       %{py3_dist opf-fido}
 Requires:       %{py3_dist xml-helpers}
-Requires:       %{py3_dist dpres-file-formats}
+# Specific minimum version needed for the class UnknownValue
+Requires:       %{py3_dist dpres-file-formats} >= 1.1.0
 Requires:       %{py3_dist dpx-validator}
 Requires:       /usr/bin/ffmpeg
 Requires:       perl-Image-ExifTool
