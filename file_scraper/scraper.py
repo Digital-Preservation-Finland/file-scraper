@@ -86,6 +86,7 @@ class Scraper:
         self._well_formed = None
         self._check_wellformed = True
         self.info = {}
+        self._results = []
 
         if (mime := self._kwargs.get("mimetype", None)) not in [None, ""]:
             self._predefined_mimetype = mime.lower()
@@ -101,25 +102,23 @@ class Scraper:
         # Each Metadata function from the chosen Meta class will be added to
         # the final scraper output, so we need a Meta class for the case where
         # user input includes character set and for the case where it doesn't.
-        self._results = []
         if self._kwargs.get("charset", None):
             self._charset = self._kwargs["charset"].upper()
-            self._results.append(
-                [UserDefinedCharsetMeta(charset=self._charset)]
+            self._user_input = UserDefinedCharsetMeta(
+                mimetype=Mimetype(
+                    mimetype=self._predefined_mimetype,
+                    version=self._predefined_version,
+                ),
+                charset=self._charset,
             )
         else:
             self._charset = None
-
-        self._results.append(
-            [
-                UserDefinedMeta(
-                    mimetype=Mimetype(
-                        mimetype=self._predefined_mimetype,
-                        version=self._predefined_version
-                    ),
-                )
-            ]
-        )
+            self._user_input = UserDefinedMeta(
+                mimetype=Mimetype(
+                    mimetype=self._predefined_mimetype,
+                    version=self._predefined_version
+                ),
+            )
         # REFACTOR: The results get gathered back to the _kwargs
         self._kwargs["detected_mimetype"] = UNAV
         self._kwargs["detected_version"] = UNAV
@@ -390,7 +389,7 @@ class Scraper:
         """
         if len(self._results) > 1:
             streams, errors = generate_metadata_dict(
-                self._results[1:],
+                self._results,
                 LOSE
             )
             if streams[0]["mimetype"] == UNAV:
@@ -409,7 +408,7 @@ class Scraper:
             errors = []
 
         streams, more_errors = generate_metadata_dict(
-            self._results,
+            self._user_input + self._results,
             LOSE
         )
         for error in more_errors:

@@ -34,14 +34,14 @@ class UserDefinedMeta(BaseMeta):
         return self._mimetype.version
 
 
-class UserDefinedCharsetMeta(BaseMeta):
+class UserDefinedCharsetMeta(UserDefinedMeta):
     """
     User defined metadata model.
     Alternative to the original UserDefinedMeta, includes also the charset.
     """
 
-    def __init__(self, charset: str):
-        super().__init__()
+    def __init__(self, mimetype: Mimetype, charset: str):
+        super().__init__(mimetype)
         self._charset = charset
 
     @BaseMeta.metadata()
