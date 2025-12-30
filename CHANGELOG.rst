@@ -22,6 +22,7 @@ Changed
 Fixed
 ^^^^^
 - Fix version detection for JPEG/Exif files when using ``Scraper.detect``
+- Add perl-IO-Compress to RPM dependencies, Exiftool can process deflate-compressed PDFs better with this package installed.
 
 2.6.0 - 2025-11-27
 ------------------
