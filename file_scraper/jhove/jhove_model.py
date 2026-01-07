@@ -264,17 +264,17 @@ class JHovePdfMeta(JHoveBaseMeta):
         # done when streams are merged?
         if self._predefined_version:
             if self._predefined_version.startswith("A-1") \
-                    and version == 1.4:
+                    and version == "1.4":
                 # The file is PDF/A-1, so it's also PDF 1.4.
                 return UNAV
 
             if self._predefined_version.startswith("A-2") \
-                    and version == 1.7:
+                    and version == "1.7":
                 # The file is PDF/A-2, so it's also PDF 1.7.
                 return UNAV
 
             if self._predefined_version.startswith("A-3") \
-                    and version == 1.7:
+                    and version == "1.7":
                 # The file is PDF/A-3, so it's also PDF 1.7.
                 return UNAV
 
