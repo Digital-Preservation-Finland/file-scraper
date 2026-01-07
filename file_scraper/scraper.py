@@ -408,7 +408,7 @@ class Scraper:
             errors = []
 
         streams, more_errors = generate_metadata_dict(
-            self._user_input + self._results,
+            [[self._user_input], *self._results],
             LOSE
         )
         for error in more_errors:
