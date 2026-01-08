@@ -1,8 +1,8 @@
-"""
-Metadata collection.
- - provide metadata decorator which should be used in each MetaModel which
-   will be included in the file-scraper output.
- - merge streams from multiple MetaModels into one list of streams.
+"""Metadata collection.
+
+- provide metadata decorator which should be used in each MetaModel which
+  will be included in the file-scraper output.
+- merge streams from multiple MetaModels into one list of streams.
 """
 from __future__ import annotations
 
@@ -12,41 +12,9 @@ from typing import Any, Protocol, TYPE_CHECKING
 
 from file_scraper.exceptions import SkipElementException
 from file_scraper.logger import LOGGER
-from file_scraper.jhove.jhove_model import JHovePdfMeta
-from file_scraper.verapdf.verapdf_model import VerapdfMeta
 
 if TYPE_CHECKING:
     from file_scraper.base import BaseMeta
-
-
-# A list of special cases where a specific Meta class can overwrite some other
-# Meta class method output
-# Each privilege must contain "overwriter", "overwritten", "method" and
-# "values". The values key is a list containing tuples with each tuples first
-# value representing the incoming new value and the second should match the
-# current value.
-#
-# To avoid confusion when changes occur the "overwriter" and "overwritten"
-# should have class reference if the original Meta class gets renamed or
-# removed.
-
-MERGE_OVERWRITE_PRIVILEGES = [
-    # VerapdfMeta is correct about the version if the Meta exists in the
-    # results
-    {
-        "overwriter": VerapdfMeta.__name__,
-        "overwritten": JHovePdfMeta.__name__,
-        "method": "version",
-        "values": [
-            # The file is PDF/A-1, so it's also PDF 1.4.
-            ("A-1a", "1.4"), ("A-1b", "1.4"),
-            # The file is PDF/A-2, so it's also PDF 1.7.
-            ("A-2a", "1.7"), ("A-2b", "1.7"), ("A-2u", "1.7"),
-            # The file is PDF/A-3, so it's also PDF 1.7.
-            ("A-3a", "1.7"), ("A-3b", "1.7"), ("A-3u", "1.7"),
-        ],
-    }
-]
 
 
 class MetadataMethod(Protocol):
@@ -58,93 +26,51 @@ class MetadataMethod(Protocol):
     def __call__(self) -> Any: ...
 
 
-def _merge_functions_to_stream(
-    stream: dict[str, str],
-    method: MetadataMethod,
-    overwrite: Iterable[str | None],
-) -> None:
-    """
-    Merges the methods in-place into the stream dictionary.
-
-    Adds item 'method.__name__: method' into the stream dict.
-
-    If the stream dict already contains an entry with method.__name__ as the
-    key, the value for the key is checked against the overwrite list and will
-    be replaced if it exists in it. Otherwise the value writing has failed and
-    a ValueError will be raised.
-
-    For limited special cases where some method requires overwriting based
-    on another Meta methods result there is the MERGE_OVERWRITE_PRIVILEGES list
-    which includes the specific class names of the overwriter and overwritten
-    Meta classes and the method which will be overwritten
-
-    :param stream: A dict representing the metadata of a single stream.
-        The content of each key must be a function to determine the origin
-        of the data. The origin will be used to give good ValueError messages.
-        An example of the dict:
-        `
-        {
-            "index": <function which returns index>,
-            "mimetype": <function which returns mimetype>,
-            "width": <function which returns width>
-        }
-        `
-        The 'index' key
-        is required for the dict!
-    :param method: A metadata method which returns the right value for
-        the metadata.
-    :param overwrite: A list of values that can be overwritten and prevent
-        writing the these values to the stream.
-
-    :raises: ValueError if the value failed merging, the most common reason is
-        that the value was already written to the stream by another function.
-    """
-    method_name = method.__name__
-    model_name = method.__self__.__class__.__name__
-    method_value = method()
-
-    if method_name not in stream:
-        stream[method_name] = method
-        return
-
-    stream_method_value = stream[method_name]()
-    if method_value in overwrite:
-        return
-    if stream_method_value == method_value:
-        return
-    if stream_method_value in overwrite:
-        stream[method_name] = method
-        return
-
-    stream_model_name = stream[method_name].__self__.__class__.__name__
-
-    # Check for exact match from the privileges for overwriting in cases where
-    # we (Digital Preservation) want to choose the result based on our
-    # preferences.
-    # Most common use case is a situation with multiple correct answers
-    for privilege in MERGE_OVERWRITE_PRIVILEGES:
-        if (
-            method_name == privilege["method"]
-            and model_name == privilege["overwriter"]
-            and stream_model_name == privilege["overwritten"]
-            and (
-                privilege["values"] == []
-                or (method_value, stream_method_value) in privilege["values"]
-            )
-        ):
-            stream[method_name] = method
-            return
-
-    raise ValueError(
-        f"Failed to merge the metadata '{method_name}' from the model "
-        f"'{model_name}' with a value of '{method_value}' to the stream. "
-        f"The existing stream metadata was produced by the model "
-        f"'{stream_model_name}' with a value '{stream_method_value}'."
-    )
+COMPATIBLE_VERSIONS = {
+    # JPEG JFIF versions are compatible with EXIF versions
+    # TODO: Add all versions here.
+    "2.2.1": ["1.01"],
+    "2.2": ["1.01"],
+    # Some PDF versions are compatible with PDF-A versions
+    # TODO: The PDF version compatibility lists have been generated
+    # based on out test files. Check that these versions actually should
+    # be compatible, and add missing versions!
+    "A-1a": [
+        # valid_A-1a.pdf
+        # valid_A-1a_invalid_resource_name.pdf
+        "1.4",
+        # valid_A-1a_root_1.6.pdf
+        "1.6",
+        # valid_A-1a_root_1.7.pdf
+        "1.7"
+    ],
+    "A-1b": [
+        # valid_A-1b_root_1.7.pdf
+        "1.7"
+    ],
+    "A-2b": [
+        # valid_A-2b.pdf
+        "1.7",
+    ],
+    "A-2u": [
+        # valid_A-2u_root_1.5.pdf
+        "1.5"
+    ],
+    "A-3b": [
+        # valid_A-3b_no_file_extension
+        # valid_A-3b.pdf
+        "1.7",
+    ],
+}
 
 
 def generate_metadata_dict(
-    extraction_results: list[list[BaseMeta]], overwrite: Iterable[str | None]
+    extraction_results: list[list[BaseMeta]],
+    # TODO: Why overwrite is a parameter? Shouldn't it be always have
+    # the same value?
+    overwrite: Iterable[str | None],
+    mimetype: str,
+    version: str,
 ) -> tuple[dict, list[str]]:
     """
     Generate a metadata dict from the given extraction results.
@@ -159,6 +85,8 @@ def generate_metadata_dict(
         [[extractor1_stream1, extractor1_stream2],
         [extractor2_stream1, extractor2_stream2]]
     :param overwrite: A list of values that can be overwritten.
+    :param mimetype: mimetype of the file
+    :param version: format version of the file
     :returns: A tuple of (a dict containing the metadata of the file,
         metadata of each stream in its own dict. E.g.
         {
@@ -173,7 +101,15 @@ def generate_metadata_dict(
         no extration results, the dict and list are empty.
 
     """
-    streams = {}
+    streams = {
+        # TODO: The detected version could always be used, if detectors
+        # would always produce good result. Currently it is used only
+        # when it is needed to resolve conflicts between extractors.
+        0: {
+            "mimetype": mimetype,
+            "version": version if version in COMPATIBLE_VERSIONS else None,
+        }
+    }
     conflicts = []
 
     # Iterate methods to generate metadata dict
@@ -181,21 +117,85 @@ def generate_metadata_dict(
         stream_index = model.index()
         current_stream = streams.setdefault(stream_index, {})
 
+        # Check that type of the stream matches
+        old_mimetype = current_stream.get("mimetype")
+        if old_mimetype not in overwrite \
+                and model.mimetype() not in overwrite \
+                and old_mimetype != model.mimetype():
+            conflicts.append(
+                f"The stream has conflicting mimetype {model.mimetype()}, "
+                "so it is omitted."
+            )
+            continue
+        if model.mimetype() not in overwrite \
+                or old_mimetype in overwrite:
+            current_stream["mimetype"] = model.mimetype()
+
+        # Check that the version stream matches or is compatible
+        old_version = current_stream.get("version")
+        if old_version in overwrite:
+            current_stream["version"] = model.version()
+        elif old_version == model.version() or model.version() in overwrite:
+            # No need to update
+            pass
+        elif model.version() in COMPATIBLE_VERSIONS.get(old_version, []):
+            # No need to update, but log a debug message
+            LOGGER.debug(
+                "Detected version %s which is compatible with %s",
+                model.version(), old_version
+            )
+        else:
+            conflicts.append(
+                f"The stream has conflicting version {model.version()}, "
+                "so it is omitted."
+            )
+            continue
+
+        # The mimetype and version match to previous models, so we can
+        # merge rest of the metadata
         for method in model.iterate_metadata_methods():
+            name = method.__name__
+            if name in ["mimetype", "version"]:
+                continue
             try:
-                _merge_functions_to_stream(current_stream, method, overwrite)
-            # In case of conflicting values, append the error message
+                new_value = method()
             except SkipElementException:
                 # happens when the method is not to be indexed
+                # TODO: Why does the method then exist? See TPASPKT-1577
                 continue
-            except ValueError as err:
-                conflicts.append(str(err))
+
+            if name not in current_stream:
+                # Previous models did not define this key
+                current_stream[name] = new_value
+                continue
+            old_value = current_stream[name]
+            if old_value == new_value:
+                # This model agrees with previous models
+                continue
+            if old_value in overwrite:
+                # The previous models found overwritable value
+                current_stream[name] = new_value
+                continue
+            if new_value in overwrite:
+                # The current model found overwritebale value which
+                # conflicts with the value from previous models.
+                continue
+
+            # The values are incompatible, so either there is something
+            # wrong in the file, or there is bug in file-scraper.
+            conflicts.append(
+                # TODO: The value could be produced also by detector, or
+                # it could be defined by user, so this error message
+                # could be misleading in some cases.
+                f"The Extractors produced conflicting values for {name}:"
+                f" {old_value} and {new_value}"
+            )
+
+        # TODO: Instead of logging the result after merging streams
+        # (current_stream), it would be more useful to log the stream
+        # that was merged (model). See TPASPKT-1570.
         LOGGER.debug(
             "Scraper result %s merged to stream: %s", model, current_stream
         )
-    # Change the function reference into a result for each stream
-    for index, stream in streams.items():
-        for key, method in stream.items():
-            streams[index][key] = method()
 
     return streams, conflicts

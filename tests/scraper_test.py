@@ -297,17 +297,32 @@ class TestPathValidation:
         assert str(err.value) == error_message
 
 
-@pytest.mark.parametrize(('meta_classes', 'wellformed'), [
-    ([Meta1, Meta3], None),
-    ([Meta1, Meta2], False)
-])
+@pytest.mark.parametrize(
+    (
+        "meta_classes",
+        "wellformed",
+    ),
+    [
+        (
+            # Meta classes contain identical metadata
+            # TODO why not meta1 + meta1?
+            [Meta1, Meta3],
+            None,
+        ),
+        (
+            # Meta classes contain conflicting metadata
+            [Meta1, Meta2],
+            False,
+        )
+    ]
+)
 def test_results_merging(meta_classes, wellformed):
-    """
-    Test that scraper merges extractor results properly. The test tests
-    both a successful case where metadata could be merged and a case with
-    conflicts in metadata resulting in the well-formedness being false. Also
-    in the conflicting case, tool errors are checked to contain a
-    descriptive error.
+    """Test that scraper merges extractor results properly.
+
+    The test tests both a successful case where metadata could be merged
+    and a case with conflicts in metadata resulting in the
+    well-formedness being false. Also in the conflicting case, tool
+    errors are checked to contain a descriptive error.
     """
     filename = Path("tests/data/text_plain/valid__ascii.txt")
     results = []
@@ -320,8 +335,14 @@ def test_results_merging(meta_classes, wellformed):
     scraper._check_wellformed = True
     scraper._merge_results()
     if wellformed is False:
-        assert list(filter((lambda s: "Failed to merge the metadata " in s),
-                           scraper.info[0]["errors"]))
+        assert scraper.info[0]["errors"] == [
+            "The Extractors produced conflicting values for key1: value1-1 "
+            "and value2-1",
+            "The Extractors produced conflicting values for key3: value1-3 "
+            "and value2-3",
+            "The Extractors produced conflicting values for key4: value4 "
+            "and conflicting value",
+        ]
     assert scraper.well_formed == wellformed
 
 

@@ -705,6 +705,7 @@ def test_given_filetype(
 @pytest.mark.parametrize(
     ["filepath", "charset", "well_formed"],
     [("tests/data/text_plain/valid__utf8_without_bom.txt", "UTF-8", True),
+     # TODO: Duplicate test case?
      ("tests/data/text_plain/valid__utf8_without_bom.txt", "UTF-8", True),
      ("tests/data/text_plain/valid__utf8_without_bom.txt", "UTF-16", False),
      ("tests/data/text_plain/valid__utf8_bom.txt", "UTF-8", True),

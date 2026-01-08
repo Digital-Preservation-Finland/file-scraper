@@ -356,7 +356,7 @@ class Scraper:
 
     def _use_extractor(self, extractor: BaseExtractor) -> None:
         """
-        Use the given extractor, collect metadata and update well-formadness.
+        Use the given extractor, collect metadata and update well-formedness.
 
         :param extractor: Extractor instance
         """
@@ -364,6 +364,7 @@ class Scraper:
         if extractor.streams:
             self._results.append(extractor.streams)
         self.info[len(self.info)] = extractor.info()
+        # TODO: Could well_formed be set when results are merged?
         if (
                 (self.well_formed is None and self._check_wellformed)
                 or extractor.well_formed is False
@@ -387,43 +388,15 @@ class Scraper:
         Merge scraper results into streams and handle possible
         conflicts.
         """
-        if len(self._results) > 1:
-            streams, errors = generate_metadata_dict(
-                self._results,
-                LOSE
-            )
-            if streams[0]["mimetype"] == UNAV:
-                errors.append("File format is not supported.")
-            if (
-                self._predefined_version not in LOSE
-                and streams[0]["version"]
-                and streams[0]["version"] != self._predefined_version
-            ):
-                errors.append(
-                    f"The Extractors produced a different version: "
-                    f"{streams[0]['version']} compared to the version given "
-                    f"by the user: {self._predefined_version}"
-                )
-        else:
-            errors = []
-
-        streams, more_errors = generate_metadata_dict(
-            [[self._user_input], *self._results],
-            LOSE
+        streams, errors = generate_metadata_dict(
+            extraction_results=[[self._user_input], *self._results],
+            overwrite=LOSE,
+            mimetype=self._detected_mimetype,
+            version=self._detected_version,
         )
-        for error in more_errors:
-            if error not in errors:
-                errors.append(error)
 
-        merge_well_formed = None
-        if len(errors) > 0:
-            merge_well_formed = False
-
-        if (
-            (self.well_formed is None and self._check_wellformed)
-            or merge_well_formed is False
-        ):
-            self.well_formed = merge_well_formed
+        if errors:
+            self.well_formed = False
         self.streams = streams
 
         self.info[len(self.info)] = {
@@ -486,6 +459,8 @@ class Scraper:
                     extractor.__class__.__name__,
                     extractor.streams[0].mimetype(),
                     extractor.streams[0].version(),
+                    # TODO: Could we log all metadata here? See
+                    # TPASPKT-1570
                 )
             else:
                 LOGGER.debug(
@@ -535,6 +510,11 @@ class Scraper:
 
         :returns: Detected mimetype and version
         """
+        # TODO: What is the point of clear method? "Cleared" object can
+        # be achieved by initializing new object. Using detect_filetype
+        # once the file has already been detected or scraped does not
+        # make sense, so we could simply raise exception if user does
+        # it.
         self.clear()
         self._identify()
         return (self._detected_mimetype, self._detected_version)

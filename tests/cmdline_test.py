@@ -108,13 +108,19 @@ def test_incorrect_flags(flags: list[str], error_message: str):
 
 
 @pytest.mark.parametrize(
-    "flag, output_contains",
+    (
+        "flag",
+        "output_contains",
+    ),
     [
-        (["--mimetype=application/pdf", "--version=A-2u"],
-            "The Extractors produced a different version: A-1a compared to the"
-            " version given by the user: A-2u"
-         ),
-        (["--tool-info"], "tool_info")
+        (
+            ["--mimetype=application/pdf", "--version=A-2u"],
+            "The stream has conflicting version A-1a, so it is omitted."
+        ),
+        (
+            ["--tool-info"],
+            "tool_info",
+        )
     ]
     )
 def test_flags(flag, output_contains):

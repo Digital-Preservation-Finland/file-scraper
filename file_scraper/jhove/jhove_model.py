@@ -35,7 +35,7 @@ def get_field(report, field):
 class JHoveBaseMeta(BaseMeta):
     """Metadata that is common for all files scraped using JHove"""
 
-    def __init__(self, well_formed, report, predefined_version):
+    def __init__(self, well_formed, report):
         """
         Initialize the metadata model.
 
@@ -44,7 +44,6 @@ class JHoveBaseMeta(BaseMeta):
         """
         self._well_formed = well_formed
         self._report = report
-        self._predefined_version = predefined_version
 
     @BaseMeta.metadata()
     def mimetype(self):
@@ -249,36 +248,7 @@ class JHovePdfMeta(JHoveBaseMeta):
         their version marked as UNAV since the field is missing from the JHove
         report.
         """
-        version = get_field(self._report, "version")
-
-        # JHove does not detect PDF/A versions, but if know that the
-        # file is a PDF/A, we have to check that JHOVE, detects a version
-        # which is compatible with the known PDF/A version.
-        # For example this file is detected as PDF/A by exiftool and
-        # it is valid according to verapdf, but it is actually PDF 1.0,
-        # so it can not be valid PDF/A:
-        #
-        #   detetests/data/application_pdf/invalid_A-1a_wrong_version.pdf
-        #
-        # TODO: Maybe this "version compatibility checking should be
-        # done when streams are merged?
-        if self._predefined_version:
-            if self._predefined_version.startswith("A-1") \
-                    and version == "1.4":
-                # The file is PDF/A-1, so it's also PDF 1.4.
-                return UNAV
-
-            if self._predefined_version.startswith("A-2") \
-                    and version == "1.7":
-                # The file is PDF/A-2, so it's also PDF 1.7.
-                return UNAV
-
-            if self._predefined_version.startswith("A-3") \
-                    and version == "1.7":
-                # The file is PDF/A-3, so it's also PDF 1.7.
-                return UNAV
-
-        return version
+        return get_field(self._report, "version")
 
     @BaseMeta.metadata()
     def stream_type(self):

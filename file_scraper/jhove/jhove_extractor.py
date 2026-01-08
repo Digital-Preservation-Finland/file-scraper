@@ -84,7 +84,6 @@ class JHoveExtractorBase(BaseExtractor[JHoveMetaT]):
             self.iterate_models(
                 well_formed=self.well_formed,
                 report=self._report,
-                predefined_version=self._predefined_version,
             )
         )
 

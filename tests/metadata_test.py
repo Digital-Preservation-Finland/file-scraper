@@ -60,11 +60,7 @@ requirements:
 import pytest
 
 from file_scraper.base import BaseMeta
-from file_scraper.scraper import LOSE
-from file_scraper.metadata import (
-    _merge_functions_to_stream,
-    generate_metadata_dict,
-)
+from file_scraper.metadata import generate_metadata_dict
 
 
 class Meta1(BaseMeta):
@@ -91,7 +87,7 @@ class Meta1(BaseMeta):
     @BaseMeta.metadata()
     def version(self):
         """Same version as Meta2 has."""
-        return 1.0
+        return "1.0"
 
     @BaseMeta.metadata()
     def stream_type(self):
@@ -147,7 +143,7 @@ class Meta2(BaseMeta):
     @BaseMeta.metadata()
     def version(self):
         """Same version as Meta1 has."""
-        return 1.0
+        return "1.0"
 
     @BaseMeta.metadata()
     def stream_type(self):
@@ -197,7 +193,7 @@ class Meta3(BaseMeta):
     @BaseMeta.metadata()
     def version(self):
         """Same version as Meta1 has."""
-        return 1.0
+        return "1.0"
 
     @BaseMeta.metadata()
     def stream_type(self):
@@ -246,230 +242,149 @@ class Meta4(BaseMeta):
         return "value2"
 
 
-class MetaTest:
-    """A collection of metadata methods for testing purposes."""
+def test_generate_metadata_dict():
+    """Test generating metadata dict using the metadata objects.
 
-    def __init__(self, value):
-        """
-        Initialize test metadata model
-
-        :value: Attribute value to return in metadata methods
-        """
-        self.value = value
-
-    @BaseMeta.metadata()
-    def index(self):
-        return 0
-
-    @BaseMeta.metadata()
-    def a_function(self):
-        """Not important metadata"""
-        return self.value
-
-    @BaseMeta.metadata()
-    def another_function(self):
-        """Important metadata"""
-        return self.value
-
-
-@pytest.mark.parametrize(
-    ["meta_dict", "method", "value", "lose"],
-    [
-        # add new key to an empty dict
-        (
-            {},
-            "a_function",
-            "value",
-            [],
-        ),
-        # add new key, value of which is in lose
-        (
-            {"key1": "value1"},
-            "a_function",
-            "value2",
-            ["value2"],
-        ),
-        # add new key, value of which is None
-        (
-            {"key1": "value1"},
-            "a_function",
-            None,
-            [],
-        ),
-        # key already present but new value in lose
-        (
-            {},
-            "a_function",
-            "newvalue",
-            ["newvalue"],
-        ),
-        # key already present, both old and new value in lose (old one is kept)
-        (
-            {},
-            "a_function",
-            "newvalue",
-            ["oldvalue", "newvalue"],
-        ),
-        # Add key with None value
-        ({}, "a_function", None, LOSE),
-        # Add key with empty value
-        (
-            {},
-            "a_function",
-            "",
-            LOSE,
-        ),
-        # Try to replace value with None when using LOSE list from scraper.
-        (
-            {},
-            "a_function",
-            None,
-            LOSE,
-        ),
-        # Try to replace value with empty string when using LOSE list from
-        # scraper.
-        (
-            {},
-            "a_function",
-            "",
-            LOSE,
-        ),
-    ],
-)
-def test_merge_functions_to_stream(
-    meta_dict,
-    method,
-    value,
-    lose,
-):
+    Check that result contains expected metata, and that conflicts were
+    not found.
     """
-    Test combining stream and metadata dicts.
-
-    :meta_dict: Stream metadata dict
-    :method: Method name which result will be merged
-    :lose: Lose values
-    :result_dict: Resulted stream metadata after merge
-    :final_importants: Resulted important metadata
-    """
-    # pylint: disable=too-many-arguments
-    testclass = MetaTest(value)
-    result_dict = meta_dict
-    result_dict["a_function"] = getattr(MetaTest(value), method, None)
-    meta_dict["index"], result_dict["index"] = 0, 0
-    _merge_functions_to_stream(meta_dict, getattr(testclass, method), lose)
-    assert len(meta_dict) == len(result_dict)
-    assert meta_dict == result_dict
-
-
-def test_merge_normal_conflict():
-    """Test adding metadata to stream with conflicting unimportant values."""
-    prev_test_class = MetaTest("oldvalue")
-    new_class = MetaTest("newvalue")
-    with pytest.raises(ValueError) as error:
-        _merge_functions_to_stream(
-            {"index": 0, "a_function": prev_test_class.a_function},
-            getattr(new_class, "a_function"),
-            [],
+    results = [[Meta1()], [Meta1()]]
+    (metadata_dict, conflicts) \
+        = generate_metadata_dict(
+            extraction_results=results,
+            overwrite=[None],
+            mimetype="mime",
+            version="1.0",
         )
-    assert "Failed to merge the metadata" in str(error.value)
+
+    # Check that result contains expected metadata
+    assert metadata_dict == {
+        0: {
+            "index": 0,
+            "key1": "value1-1",
+            "key2": "value2",
+            "key3": "value1-3",
+            "key4": "value4",
+            "mimetype": "mime",
+            "version": "1.0",
+            "stream_type": "binary",
+        },
+    }
+
+    # There should not be conflicts
+    assert conflicts == []
 
 
 @pytest.mark.parametrize(
-    ("meta_classes", "lose", "valid_dict", "expected_conflict_values"),
+    ("meta_classes", "lose", "expected_conflicts"),
     [
-        (
-            [Meta1, Meta4], ["value2-1"], True, []),
+        # Only None should be overwritten
         (
             [Meta1, Meta2, Meta4],
             [None],
-            False,
             [
-                {
-                    "metadata": "key1",
-                    "overwriting_model": "Meta2",
-                    "overwriting_value": "value2-1",
-                    "current_model": "Meta1",
-                    "current_value": "value1-1",
-                },
-                {
-                    "metadata": "key3",
-                    "overwriting_model": "Meta2",
-                    "overwriting_value": "value2-3",
-                    "current_model": "Meta1",
-                    "current_value": "value1-3",
-                },
-                {
-                    "metadata": "key4",
-                    "overwriting_model": "Meta2",
-                    "overwriting_value": "conflicting value",
-                    "current_model": "Meta1",
-                    "current_value": "value4",
-                },
+                "The Extractors produced conflicting values for key1: "
+                "value1-1 and value2-1",
+                "The Extractors produced conflicting values for key3: "
+                "value1-3 and value2-3",
+                "The Extractors produced conflicting values for key4: "
+                "value4 and conflicting value",
             ],
         ),
+        # Overwriting "value2-1" is allowed, so it should not cause
+        # conflict
         (
             [Meta1, Meta2, Meta4],
-            ["value2-1"],
-            False,
+            [None, "value2-1"],
             [
-                {
-                    "metadata": "key3",
-                    "overwriting_model": "Meta2",
-                    "overwriting_value": "value2-3",
-                    "current_model": "Meta1",
-                    "current_value": "value1-3",
-                },
-                {
-                    "metadata": "key4",
-                    "overwriting_model": "Meta2",
-                    "overwriting_value": "conflicting value",
-                    "current_model": "Meta1",
-                    "current_value": "value4",
-                },
+                "The Extractors produced conflicting values for key3: "
+                "value1-3 and value2-3",
+                "The Extractors produced conflicting values for key4: "
+                "value4 and conflicting value",
             ],
         ),
     ],
 )
-def test_generate_metadata_dict(
-        meta_classes, lose, valid_dict, expected_conflict_values
+def test_generate_metadata_dict_conflicts(
+    meta_classes, lose, expected_conflicts
 ):
-    """Test generating metadata dict using the metadata objects.
-    Tests both a successful case and a case with conflicts in
-    metadata. The case
+    """Test merging conflicting metadata models.
+
+    Check that expected error messages are produced.
     """
-    results = []
-    expected_conflicts = []
-    for dictionary in expected_conflict_values:
-        expected_conflicts.append(
-            f"Failed to merge the metadata '{dictionary['metadata']}' from "
-            f"the model '{dictionary['overwriting_model']}' "
-            f"with a value of '{dictionary['overwriting_value']}' to the "
-            f"stream. The existing stream metadata was produced by "
-            f"the model '{dictionary['current_model']}' with a value "
-            f"'{dictionary['current_value']}'."
+    results = [[meta_class()] for meta_class in meta_classes]
+    (_metadata_dict, conflicts) \
+        = generate_metadata_dict(
+            extraction_results=results,
+            overwrite=lose,
+            mimetype="mime",
+            version="1.0",
         )
-    for meta_class in meta_classes:
-        results.append([meta_class()])
-    (metadata_dict, conflicts) = generate_metadata_dict(results, lose)
-    if valid_dict:
-        assert metadata_dict == {
-            0: {
-                "index": 0,
-                "key1": "value1-1",
-                "key2": "value2",
-                "key3": "value1-3",
-                "key4": "value4",
-                "mimetype": "mime",
-                "version": 1.0,
-                "stream_type": "binary",
-            },
-            1: {
-                "index": 1,
-                "key1": "value1",
-                "key2": "value2",
-                "mimetype": "anothermime",
-                "version": 2,
-                "stream_type": "audio",
-            },
-        }
+
     assert conflicts == expected_conflicts
+
+
+def test_generate_metadata_mimetype_conflict():
+    """Test merging streams with conflicting mimetype or version.
+
+    If a stream has conflicting mimetype or version, none of the
+    metadata should be merged to the result.
+    """
+
+    class ConflictingMimetypeMeta(Meta1):
+
+        @BaseMeta.metadata()
+        def mimetype(self):
+            return "wrong-mime"
+
+        @BaseMeta.metadata()
+        def extrakey(self):
+            return "value-of-extrakey"
+
+    results = [[Meta1()], [ConflictingMimetypeMeta()]]
+    (metadata_dict, conflicts) \
+        = generate_metadata_dict(
+            extraction_results=results,
+            overwrite=[None],
+            mimetype="mime",
+            version="1.0",
+        )
+
+    assert conflicts == ["The stream has conflicting mimetype "
+                         "wrong-mime, so it is omitted."]
+    assert "extrakey" not in metadata_dict[0]
+    assert "extrakey" not in metadata_dict[0]
+
+
+def test_generate_metadata_version_conflict():
+    """Test merging streams with conflicting mimetype or version.
+
+    If a stream has conflicting mimetype or version, none of the
+    metadata should be merged to the result.
+    """
+
+    class ConflictingMimetypeMeta(Meta1):
+
+        @BaseMeta.metadata()
+        def version(self):
+            return "wrong-version"
+
+        @BaseMeta.metadata()
+        def extrakey(self):
+            return "value-of-extrakey"
+
+    results = [[Meta1()], [ConflictingMimetypeMeta()]]
+    (metadata_dict, conflicts) \
+        = generate_metadata_dict(
+            extraction_results=results,
+            overwrite=[None],
+            mimetype="mime",
+            version="1.0",
+        )
+
+    assert conflicts == ["The stream has conflicting version "
+                         "wrong-version, so it is omitted."]
+
+    # The extrakey should not be added to metadata_dict, because the
+    # conflicting stream is omitted
+    assert "extrakey" not in metadata_dict[0]
