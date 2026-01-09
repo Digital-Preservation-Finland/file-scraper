@@ -15,9 +15,9 @@ class JpylyzerExtractor(BaseExtractor[JpylyzerMeta]):
     _supported_metadata = [JpylyzerMeta]
     _only_wellformed = True   # Only well-formed check
 
-    _allow_unav_mime = True,
-    _allow_unav_version = True,
-    _allow_unap_version = True,
+    _allow_unav_mime = True
+    _allow_unav_version = True
+    _allow_unap_version = True
 
     def _extract(self):
         """Scrape data from file."""

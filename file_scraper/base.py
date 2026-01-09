@@ -201,9 +201,9 @@ class BaseExtractor(BaseApparatus, Generic[AnyMeta]):
     _supported_metadata: list[type[AnyMeta]] = []
     _only_wellformed = False
 
-    _allow_unav_mime: bool = False,
-    _allow_unav_version: bool = False,
-    _allow_unap_version: bool = False,
+    _allow_unav_mime: bool = False
+    _allow_unav_version: bool = False
+    _allow_unap_version: bool = False
 
     def __init__(
         self,

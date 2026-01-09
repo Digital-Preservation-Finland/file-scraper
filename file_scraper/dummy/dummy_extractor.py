@@ -73,9 +73,9 @@ class DetectedMimeVersionExtractor(NoWellformednessBaseExtractor):
     _supported_metadata = [DetectedMimeVersionMeta,
                            DetectedSiardVersionMeta]
 
-    _allow_unav_mime = False,
-    _allow_unav_version = True,
-    _allow_unap_version = True,
+    _allow_unav_mime = False
+    _allow_unav_version = True
+    _allow_unap_version = True
 
     def _extract(self):
         """

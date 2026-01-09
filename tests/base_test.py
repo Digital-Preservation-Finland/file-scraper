@@ -21,9 +21,22 @@ from tests.common import partial_message_included
 
 
 class BaseMetaBasic(BaseMeta):
-    """Metadata model supporting specific versions of one MIME type"""
+    """Metadata model supporting specific versions of one MIME type.
+
+    Always returns hardcoded values for mimetype and version.
+    """
 
     _supported = {"test/mimetype": ["0.1", "0.2"]}  # Supported file formats
+
+    @BaseMeta.metadata()
+    def mimetype(self):
+        """Return a hardcoded supported mimetype."""
+        return "test/mimetype"
+
+    @BaseMeta.metadata()
+    def version(self):
+        """Return a hardcoded supported version."""
+        return "0.1"
 
 
 class BaseExtractorBasic(BaseExtractor):
@@ -138,8 +151,11 @@ def test_messages_errors():
 def test_extractor_properties():
     """Test extractors's attributes and well_formed property."""
     extractor = BaseExtractorBasic(
-        filename=Path("testfilename"), mimetype="test/mime",
-        params={"test": "value"})
+        filename=Path("testfilename"),
+        mimetype="test/mimetype",
+        version="0.1",
+        params={"test": "value"}
+    )
 
     # extract must be run before well_formed
     with pytest.raises(RuntimeError, match="must be extracted"):
@@ -210,7 +226,7 @@ class BaseExtractorSupported(BaseExtractor):
 
 
 @pytest.mark.parametrize(
-    ["extractor_class", "mimetype", "version", "errors"],
+    ("extractor_class", "mimetype", "version", "errors"),
     [
         (BaseExtractorSupported, "test/mimetype", "0.1", None),
         (BaseExtractorBasic, "test/mimetype", None,
@@ -221,6 +237,12 @@ class BaseExtractorSupported(BaseExtractor):
          "type test/falsemime with version 0.1 is not supported"),
         (BaseExtractorBasic, None, "0.1",
          "None is not a supported MIME type"),
+        (BaseExtractorBasic, "(:unav)", None,
+         "type (:unav) with version None is not supported"),
+        (BaseExtractorBasic, "test/mimetype", "(:unav)",
+         "type test/mimetype with version (:unav) is not supported"),
+        (BaseExtractorBasic, "test/mimetype", "(:unap)",
+         "type test/mimetype with version (:unap) is not supported"),
     ]
 )
 def test_validate(extractor_class, mimetype, version, errors):

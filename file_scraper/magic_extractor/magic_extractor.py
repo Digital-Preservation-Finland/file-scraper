@@ -30,8 +30,8 @@ class MagicBaseExtractor(BaseExtractor[MagicMetaT]):
     """Extractor for scraping files using magic."""
 
     _allow_unav_mime = False
-    _allow_unav_version = True,
-    _allow_unap_version = True,
+    _allow_unav_version = True
+    _allow_unap_version = True
 
     @property
     def well_formed(self):

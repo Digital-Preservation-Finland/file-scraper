@@ -24,7 +24,7 @@ class SchematronScraper(BaseExtractor[SchematronMeta]):
     _supported_metadata = [SchematronMeta]
     _only_wellformed = True
 
-    _allow_unav_mime = True,
+    _allow_unav_mime = True
     _allow_unav_version = True
 
     def __init__(
