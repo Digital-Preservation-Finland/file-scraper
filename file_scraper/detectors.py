@@ -254,8 +254,11 @@ class FidoDetector(BaseDetector):
         :returns: WARC version or `None` if version could not be read.
         """
         func = gzip.open if gz else open
-        with func(file_path, "rt", encoding="utf-8") as file:
-            line = file.readline().strip()
+        with func(file_path, "rb") as file:
+            # WARC file could contain almost anything, therefore the
+            # file is read as bytes. But the first line should be ASCII
+            # text.
+            line = file.readline().decode("ascii").strip()
             if not line.startswith("WARC/"):
                 return None
             return line.split("/")[1]

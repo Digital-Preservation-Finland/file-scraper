@@ -602,3 +602,15 @@ def test_compressed_pdf():
     assert detector.mimetype == "application/pdf"
     assert detector.version == "A-1b"
     assert detector.messages()[0] == "PDF/A version detected by Exiftool."
+
+
+def test_non_utf8_warc():
+    """Test detecting version of WARC file with non-UTF8 characters."""
+    path = Path(
+        "tests/data/application_warc/valid_1.0_non_utf8.warc"
+    )
+    detector = FidoDetector(path)
+    detector.detect()
+    assert detector.mimetype == "application/warc"
+    assert detector.version == "1.0"
+    assert not detector.messages()
