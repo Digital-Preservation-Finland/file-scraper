@@ -1,6 +1,5 @@
 """Extractor for gif, html, jpeg, tif, pdf and wav files using JHove."""
 from __future__ import annotations
-from pathlib import Path
 from typing import TypeVar
 
 try:
@@ -41,29 +40,8 @@ class JHoveExtractorBase(BaseExtractor[JHoveMetaT]):
     _allow_unav_version = True
     _allow_unap_version = True
 
-    def __init__(
-        self,
-        filename: Path,
-        mimetype: str,
-        version: str | None = None,
-        params: dict | None = None,
-    ) -> None:
-        """
-        Initialize JHove base scarper.
-
-        :param filename: File path
-        :param mimetype: Predefined mimetype
-        :param version: Predefined file format version
-        :param params: Extra parameters needed for the extractor
-        """
-        self._report = None  # JHove report
-        super().__init__(
-            filename=filename, mimetype=mimetype, version=version,
-            params=params)
-
-    def _extract(self) -> None:
-        """Run JHove command and store XML output to self.report."""
-
+    def _base_extract(self) -> lxml.etree._Element:
+        """Run JHove command and return XML output."""
         shell = Shell(["jhove", "-h",
                        "XML", "-m", self._jhove_module, self.filename])
 
@@ -71,9 +49,9 @@ class JHoveExtractorBase(BaseExtractor[JHoveMetaT]):
             self._errors.append(
                 f"JHove returned invalid return code: {shell.returncode}\n"
                 f"{shell.stderr}")
-        self._report = lxml.etree.fromstring(shell.stdout_raw)
+        report = lxml.etree.fromstring(shell.stdout_raw)
 
-        status = get_field(self._report, "status")
+        status = get_field(report, "status")
         self._messages.append(status)
         if "Well-Formed and valid" not in status:
             self._errors.append("Validator returned error.")
@@ -83,9 +61,13 @@ class JHoveExtractorBase(BaseExtractor[JHoveMetaT]):
         self.streams = list(
             self.iterate_models(
                 well_formed=self.well_formed,
-                report=self._report,
+                report=report,
             )
         )
+        return report
+
+    def _extract(self) -> None:
+        self._base_extract()
 
     def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
@@ -145,15 +127,15 @@ class JHoveHtmlExtractor(JHoveExtractorBase[JHoveHtmlMeta]):
         # is handled by giving an error message.
         if not self.streams:
             return
-        if not self._params.get("charset", None):
+        if not self._predefined_charset:
             self._errors.append("Character encoding not defined.")
             return
         encoding = self.streams[0].charset()
-        if encoding is not None and \
-                encoding.upper() != self._params["charset"]:
+        if encoding is not None \
+                and encoding != self._predefined_charset:
             self._errors.append(
                 f"Found encoding declaration {encoding} from the file "
-                f"{self.filename}, but {self._params['charset']} was "
+                f"{self.filename}, but {self._predefined_charset} was "
                 f"expected.")
 
 
@@ -213,8 +195,8 @@ class JHoveWavExtractor(JHoveExtractorBase[JHoveWavMeta]):
         Scrape file.
         Add extra error message, if RF64 profile used.
         """
-        super()._extract()
-        if "RF64" in get_field(self._report, "profile"):
+        report = self._base_extract()
+        if "RF64" in get_field(report, "profile"):
             self._errors.append("RF64 is not a supported format")
 
 

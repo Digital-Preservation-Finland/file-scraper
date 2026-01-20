@@ -22,9 +22,7 @@ class CsvExtractor(BaseExtractor[CsvMeta]):
 
     def _extract(self) -> None:
         """Scrape CSV file."""
-
         fields = self._params.get("fields", [])
-        charset = self._params.get("charset", None)
 
         # These are read later if the scraping process is successful
         csvfile = None
@@ -35,7 +33,7 @@ class CsvExtractor(BaseExtractor[CsvMeta]):
         reader = None
 
         try:
-            csvfile = self._open_csv_file(charset)
+            csvfile = self._open_csv_file(self._predefined_charset)
 
             delimiter, separator, quotechar = self._resolve_csv_format(csvfile)
 

@@ -273,8 +273,11 @@ def test_extractor_valid(filename, mimetype, charset, extractor_class,
         "application/vnd.oasis.opendocument.formula",
     ]
 
-    extractor = extractor_class(filename=correct.filename, mimetype=mimetype,
-                            params={"charset": charset})
+    extractor = extractor_class(
+        filename=correct.filename,
+        mimetype=mimetype,
+        charset=charset,
+    )
     extractor.extract()
     if correct.streams[0]["mimetype"] == "application/xhtml+xml":
         correct.streams[0]["stream_type"] = "text"
@@ -400,16 +403,12 @@ def test_jpeg_exif_character_case():
     jpeg_meta = JpegFileMagicMeta(
         magic_result={"magic_none": "JPEG image data, EXIF standard"},
         predefined_mimetype="image/jpeg",
-        predefined_version=None,
-        predefined_charset="UTF-8",
     )
     assert jpeg_meta.version() == UNAV
 
     jpeg_meta = JpegFileMagicMeta(
         magic_result={"magic_none": "JPEG image data, Exif standard"},
         predefined_mimetype="image/jpeg",
-        predefined_version=None,
-        predefined_charset="UTF-8",
     )
     assert jpeg_meta.version() == UNAV
 

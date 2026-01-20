@@ -26,8 +26,7 @@ from file_scraper.defaults import (
 from file_scraper.logger import LOGGER
 from file_scraper.magiclib import magic_analyze, magiclib, magiclib_version
 from file_scraper.state import Mimetype
-from file_scraper.utils import (is_zipfile, normalize_charset,
-                                parse_exif_version)
+from file_scraper.utils import is_zipfile, parse_exif_version
 
 
 class _FidoCachedFormats(Fido):
@@ -347,17 +346,32 @@ class MagicCharset(BaseDetector):
         return mimetype in cls._supported
 
     def detect(self) -> None:
-        """Detect charset with MagicLib. A charset is detected from up to
-        1 megabytes of data from the beginning of file.
-        """
-        charset = magic_analyze(magiclib(),
-                                magiclib().MAGIC_MIME_ENCODING,
-                                self.filename)
+        """Detect charset with MagicLib.
 
-        if charset is None or charset.upper() == "BINARY":
+        A charset is detected from up to 1 megabytes of data from the
+        beginning of file.
+        """
+        raw_charset = magic_analyze(
+            magiclib(),
+            magiclib().MAGIC_MIME_ENCODING,
+            self.filename
+        )
+
+        # Normalize charset to one the charsets that supported by DPS.
+        supported_charset = {
+            "us-ascii": "UTF-8",
+            "utf-8": "UTF-8",
+            "utf-16be": "UTF-16",
+            "utf-16le": "UTF-16",
+            "utf-32le": "UTF-32",
+            "utf-32be": "UTF-32",
+            "iso-8859-1": "ISO-8859-15",
+            "binary": None,
+        }
+        self.charset = supported_charset.get(raw_charset, raw_charset.upper())
+
+        if self.charset is None:
             self._errors.append("Unable to detect character encoding.")
-        else:
-            self.charset = normalize_charset(charset)
         if not self._errors:
             self._messages.append(
                 f"Character encoding detected as {self.charset}"

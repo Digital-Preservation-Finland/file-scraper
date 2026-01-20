@@ -11,6 +11,7 @@ from itertools import chain
 from typing import Any, Protocol, TYPE_CHECKING
 
 from file_scraper.exceptions import SkipElementException
+from file_scraper.defaults import COMPATIBLE_ENCODINGS
 from file_scraper.logger import LOGGER
 
 if TYPE_CHECKING:
@@ -71,6 +72,7 @@ def generate_metadata_dict(
     overwrite: Iterable[str | None],
     mimetype: str,
     version: str,
+    charset: str | None,
 ) -> tuple[dict, list[str]]:
     """
     Generate a metadata dict from the given extraction results.
@@ -101,6 +103,8 @@ def generate_metadata_dict(
         no extration results, the dict and list are empty.
 
     """
+    # TODO: Some kind of predefined streams object parameter could be
+    # used instead of separate, mimetype, version and charset.
     streams = {
         # TODO: The detected version could always be used, if detectors
         # would always produce good result. Currently it is used only
@@ -110,6 +114,8 @@ def generate_metadata_dict(
             "version": version if version in COMPATIBLE_VERSIONS else None,
         }
     }
+    if charset:
+        streams[0]["charset"] = charset
     conflicts = []
 
     # Iterate methods to generate metadata dict
@@ -117,7 +123,7 @@ def generate_metadata_dict(
         stream_index = model.index()
         current_stream = streams.setdefault(stream_index, {})
 
-        # Check that type of the stream matches
+        # Check that mimetype of the stream matches
         old_mimetype = current_stream.get("mimetype")
         if old_mimetype not in overwrite \
                 and model.mimetype() not in overwrite \
@@ -131,7 +137,7 @@ def generate_metadata_dict(
                 or old_mimetype in overwrite:
             current_stream["mimetype"] = model.mimetype()
 
-        # Check that the version stream matches or is compatible
+        # Check that the version of the stream matches or is compatible
         old_version = current_stream.get("version")
         if old_version in overwrite:
             current_stream["version"] = model.version()
@@ -151,11 +157,38 @@ def generate_metadata_dict(
             )
             continue
 
+        # Check that the charset matches predefined charset
+        if hasattr(model, "charset"):
+            # TODO: Only the first stream should have charset, and it
+            # should have been detected by detectors. However, if user
+            # has predefined the file as text file, and the file is
+            # something else, the charset might not be "(:unav)". We
+            # should at least add such test case, if we don't already
+            # have it.
+            old_charset = current_stream["charset"]
+            if model.charset() == old_charset\
+                    or model.charset() in overwrite:
+                # No need to update charset
+                pass
+            elif model.charset() in COMPATIBLE_ENCODINGS.get(old_charset, []):
+                LOGGER.debug(
+                    "Extractor detected charset %s, which is "
+                    "compatible with %s",
+                    model.charset(), old_charset
+                )
+            else:
+                LOGGER.debug(
+                    "The stream has conflicting charset %s", model.charset()
+                )
+                conflicts.append(
+                    f"The stream has conflicting charset {model.charset()}"
+                )
+
         # The mimetype and version match to previous models, so we can
         # merge rest of the metadata
         for method in model.iterate_metadata_methods():
             name = method.__name__
-            if name in ["mimetype", "version"]:
+            if name in ["mimetype", "version", "charset"]:
                 continue
             try:
                 new_value = method()

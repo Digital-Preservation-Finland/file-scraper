@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import os
 import re
-from pathlib import Path
 
 from file_scraper.base import BaseExtractor
 from file_scraper.shell import Shell
@@ -25,16 +24,8 @@ class DbptkExtractor(BaseExtractor[DbptkMeta]):
 
     _allow_unav_version = True
 
-    def __init__(
-        self,
-        filename: Path,
-        mimetype: str,
-        version: str | None = None,
-        params: dict | None = None,
-    ) -> None:
-        super().__init__(filename, mimetype, version, params)
-        # Set $PATH so that Java 21 is favored if it's installed
-        self._path = f"/usr/lib/jvm/jre-21/bin{os.pathsep}{os.environ['PATH']}"
+    # Set $PATH so that Java 21 is favored if it's installed
+    _path = f"/usr/lib/jvm/jre-21/bin{os.pathsep}{os.environ['PATH']}"
 
     def _extract(self) -> None:
         """Scrape file using dbptk."""

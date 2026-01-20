@@ -61,8 +61,8 @@ def _new_file_version(version):
 )
 def test_existing_files(filename, mimetype, is_textfile, special_handling,
                         evaluate_extractor):
-    """
-    Test detecting whether file is a textfile.
+    """Test detecting whether file is a textfile.
+
     The extractor tool is not able to detect UTF-16 files without BOM or
     UTF-32 files.
 
@@ -76,8 +76,10 @@ def test_existing_files(filename, mimetype, is_textfile, special_handling,
     # therefore valid__utf32le_bom.txt needs special handling.
     special_handling = special_handling and not _new_file_version(5.36)
     correct = parse_results(filename, mimetype, {}, False)
-    extractor = TextfileExtractor(filename=correct.filename,
-                                mimetype="text/plain")
+    extractor = TextfileExtractor(
+        filename=correct.filename,
+        mimetype="text/plain",
+    )
     extractor.extract()
 
     if is_textfile:
@@ -170,10 +172,12 @@ def test_encoding_check(filename, charset, is_wellformed, evaluate_extractor):
     :charset: Character encoding
     :is_wellformed: Expected result of well-formedness
     """
-    params = {"charset": charset}
-    correct = parse_results(filename, "text/plain", {}, True, params)
-    extractor = TextEncodingExtractor(filename=correct.filename,
-                                    mimetype="text/plain", params=params)
+    correct = parse_results(filename, "text/plain", {}, True)
+    extractor = TextEncodingExtractor(
+        filename=correct.filename,
+        mimetype="text/plain",
+        charset=charset,
+    )
     extractor.extract()
     if not is_wellformed:
         correct.update_mimetype(UNAV)
@@ -195,28 +199,6 @@ def test_encoding_check(filename, charset, is_wellformed, evaluate_extractor):
         assert not extractor.well_formed
 
 
-@pytest.mark.parametrize(
-    ["mimetype", "charset"],
-    [
-        (None, None),
-        ("nonsense", None),
-        ("text/plain", None),
-    ],
-)
-def test_encoding_not_defined(mimetype, charset):
-    """
-    Test the case where encoding is not defined.
-
-    :charset: Character encoding
-    """
-    with pytest.raises(ValueError):
-        TextEncodingExtractor(
-            filename=Path("tests/data/text_plain/valid__utf8_without_bom.txt"),
-            mimetype=mimetype,
-            params={"charset": charset},
-        )
-
-
 def test_decoding_limit(monkeypatch):
     """
     Test limiting the decoding.
@@ -225,7 +207,9 @@ def test_decoding_limit(monkeypatch):
     monkeypatch.setattr(TextEncodingExtractor, "_limit", 8)
     extractor = TextEncodingExtractor(
         filename=Path("tests/data/text_plain/valid__utf8_bom.txt"),
-        mimetype="text/plain", params={"charset": "UTF-8"})
+        mimetype="text/plain",
+        charset="UTF-8",
+    )
     extractor.extract()
     assert partial_message_included(
         "First 8 bytes read, we skip the remainder", extractor.messages())
@@ -240,7 +224,9 @@ def test_error_message_control_character():
     """
     extractor = TextEncodingExtractor(
         filename=Path("tests/data/text_plain/invalid__control_character.txt"),
-        mimetype="text/plain", params={"charset": "UTF-8"})
+        mimetype="text/plain",
+        charset="UTF-8",
+    )
     extractor.extract()
     assert not partial_message_included("\x1f", extractor.errors())
     character = "'\\x1f'"
@@ -252,11 +238,19 @@ def test_tools():
     """
     Test that tools return correct software
     """
-    text_extractor = TextfileExtractor(filename=Path(""), mimetype="")
+    text_extractor = TextfileExtractor(
+        filename=Path(""),
+        mimetype="",
+    )
     text_encoding_extractor = TextEncodingExtractor(
-        filename=Path(""), mimetype="", params={"charset": "UTF-8"})
+        filename=Path(""),
+        mimetype="",
+        charset="UTF-8",
+    )
     text_meta_extractor = TextEncodingMetaExtractor(
-        filename=Path(""), mimetype="")
+        filename=Path(""),
+        mimetype="",
+    )
     assert text_extractor.tools()["file"]["version"][0].isdigit()
     assert text_encoding_extractor.tools() == {}
     assert text_meta_extractor.tools() == {}

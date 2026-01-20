@@ -1,14 +1,15 @@
-"""Class for XML and HTML5 header encoding check with lxml. """
+"""Class for XML and HTML5 header encoding check with lxml."""
 
 try:
     from lxml import etree
 except ImportError:
+    # TODO: Why ImportError might be raised, and why it is ok?
     pass
 
 from file_scraper.base import BaseExtractor
+from file_scraper.defaults import COMPATIBLE_ENCODINGS
 from file_scraper.logger import LOGGER
 from file_scraper.lxml_extractor.lxml_model import LxmlMeta
-from file_scraper.utils import normalize_charset
 
 
 class LxmlExtractor(BaseExtractor[LxmlMeta]):
@@ -57,6 +58,8 @@ class LxmlExtractor(BaseExtractor[LxmlMeta]):
                 self._errors.append(str(exception))
                 return
             except OSError as exception:
+                # TODO: Scraper checks that file exists before scraping
+                # is started. So OSError should not be possible here.
                 self._errors.append("Failed: missing file.")
                 self._errors.append(str(exception))
                 return
@@ -67,28 +70,25 @@ class LxmlExtractor(BaseExtractor[LxmlMeta]):
         # streams. Check that it corresponds to given charset.
         if self.streams:
             self._messages.append("Encoding metadata found.")
-            if not self._params.get("charset", None):
+            if not self._predefined_charset:
                 self._errors.append("Character encoding not defined.")
                 return
 
-            provided_encoding = self._params["charset"].upper()
-            encoding = self.streams[0].charset()
-            if encoding:
-                encoding = encoding.upper()
-            norm_encoding = normalize_charset(encoding)
+            # Note that if header does not contain encoding, lxml will
+            # assume it is UTF-8!
+            encoding_from_header = self.streams[0].charset()
 
             # If encoding was provided in the XML header, ensure
-            # that it matches the encoding provided to the extractor beforehand
-            # in either the original or normalized form
-            encoding_matches = (
-                    encoding is None
-                    or provided_encoding in (encoding, norm_encoding)
-            )
-            if not encoding_matches:
+            # that it is compatible with the detected/predefined
+            # encoding
+            if encoding_from_header != self._predefined_charset \
+                    and encoding_from_header \
+                    not in COMPATIBLE_ENCODINGS[self._predefined_charset]:
                 self._errors.append(
-                    f"Found encoding declaration {encoding} from the file "
-                    f"{self.filename}, but {self._params['charset']} was "
-                    f"expected.")
+                    f"Found encoding declaration {encoding_from_header} from "
+                    f"the file {self.filename}, which is not compatible with "
+                    f"{self._predefined_charset}"
+                )
 
     def iterate_models(self, **kwargs):
         """

@@ -203,6 +203,8 @@ class Scraper:
                 "application/pdf",
                 "image/jpeg"
         }:
+            # TODO: Duplicate code could be avoided if detectors would
+            # be more consistent: TPASPKT-1578
             exiftool_detector = ExifToolDetector(self.path)
             self._use_detector(exiftool_detector)
             self._update_filetype(exiftool_detector)
@@ -227,7 +229,7 @@ class Scraper:
         ):
             charset_detector = MagicCharset(self.path)
             charset_detector.detect()
-            self._kwargs["charset"] = charset_detector.charset
+            self._charset = charset_detector.charset
 
         if detector_result_mimetype == "application/octet-stream":
             LOGGER.info(
@@ -372,14 +374,11 @@ class Scraper:
             self.well_formed = extractor.well_formed
 
     def _check_utf8(self) -> None:
-        """
-        UTF-8 check only for UTF-8.
+        """UTF-8 check only for UTF-8.
+
         We know the charset after actual scraping.
         """
-        if (
-            "charset" in self.streams[0]
-            and self.streams[0]["charset"] == "UTF-8"
-        ):
+        if self._charset == "UTF-8":
             scraper = JHoveUtf8Extractor(filename=self.path, mimetype=UNAV)
             self._use_extractor(scraper)
 
@@ -393,6 +392,7 @@ class Scraper:
             overwrite=LOSE,
             mimetype=self._detected_mimetype,
             version=self._detected_version,
+            charset=self._charset
         )
 
         if errors:
@@ -449,6 +449,7 @@ class Scraper:
                 filename=self.path,
                 mimetype=self._detected_mimetype,
                 version=self._detected_version,
+                charset=self._charset,
                 params=self._kwargs,
             )
             self._use_extractor(extractor)
@@ -525,9 +526,13 @@ class Scraper:
 
         :returns: True, if file is a text file, false otherwise
         """
-        scraper = TextfileExtractor(self.path, "text/plain")
-        scraper.extract()
-        return scraper.well_formed is not False
+        extractor = TextfileExtractor(
+            filename=self.path,
+            mimetype="text/plain",
+            charset=None,
+        )
+        extractor.extract()
+        return extractor.well_formed is not False
 
     def checksum(self, algorithm: str = "MD5") -> str:
         """

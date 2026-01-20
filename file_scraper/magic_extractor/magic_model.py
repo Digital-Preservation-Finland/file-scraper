@@ -3,11 +3,11 @@ import re
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import MIMETYPE_DICT, UNAP, UNAV
-from file_scraper.utils import normalize_charset
 
 
 class BaseMagicMeta(BaseMeta):
     """The base class for all metadata models using magic."""
+
     _starttag = "version "  # Text before file format version in magic result.
     _endtag = None  # Text after file format version in magic result.
 
@@ -15,8 +15,6 @@ class BaseMagicMeta(BaseMeta):
         self,
         magic_result,
         predefined_mimetype,
-        predefined_version,
-        predefined_charset,
     ):
         """Initialize the metadata model.
 
@@ -25,8 +23,6 @@ class BaseMagicMeta(BaseMeta):
         """
         self._magic_result = magic_result
         self._predefined_mimetype = predefined_mimetype
-        self._predefined_version = predefined_version
-        self._predefined_charset = predefined_charset
 
     @BaseMeta.metadata()
     def mimetype(self):
@@ -48,6 +44,10 @@ class BaseMagicMeta(BaseMeta):
         mimetype = MIMETYPE_DICT.get(mimetype, mimetype)
         if mimetype == self._predefined_mimetype:
             return mimetype
+        # TODO: What is the point of checking the mimetype with magic,
+        # if it is simply ignored when does not match
+        # self._predefined_mimetype? Effectively the same result would
+        # be achieved if this method would always return UNAV.
         return UNAV
 
     @BaseMeta.metadata()
@@ -79,12 +79,12 @@ class TextMagicBaseMeta(BaseMagicMeta):
     def charset(self):
         """Return charset."""
         magic_charset = self._magic_result['magic_mime_encoding']
-        normalized_charset = normalize_charset(magic_charset)
-        if normalized_charset != self._predefined_charset:
-            # TODO: The extractor should really produce error, because
-            # it detects different charset as the predefined charset
-            return self._predefined_charset
-        return normalized_charset
+        if magic_charset == "binary":
+            charset = UNAV
+        else:
+            charset = magic_charset.upper()
+
+        return charset
 
     @BaseMeta.metadata()
     def stream_type(self):

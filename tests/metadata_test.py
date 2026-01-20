@@ -255,6 +255,7 @@ def test_generate_metadata_dict():
             overwrite=[None],
             mimetype="mime",
             version="1.0",
+            charset=None,
         )
 
     # Check that result contains expected metadata
@@ -319,6 +320,7 @@ def test_generate_metadata_dict_conflicts(
             overwrite=lose,
             mimetype="mime",
             version="1.0",
+            charset=None,
         )
 
     assert conflicts == expected_conflicts
@@ -348,6 +350,7 @@ def test_generate_metadata_mimetype_conflict():
             overwrite=[None],
             mimetype="mime",
             version="1.0",
+            charset=None,
         )
 
     assert conflicts == ["The stream has conflicting mimetype "
@@ -380,6 +383,7 @@ def test_generate_metadata_version_conflict():
             overwrite=[None],
             mimetype="mime",
             version="1.0",
+            charset=None,
         )
 
     assert conflicts == ["The stream has conflicting version "

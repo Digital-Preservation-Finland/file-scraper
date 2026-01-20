@@ -17,6 +17,7 @@ from file_scraper.xmllint.xmllint_model import XmllintMeta
 try:
     from lxml import etree
 except ImportError:
+    # TODO: When ImportError might be raised, and why it is ok?
     pass
 
 XSI = "http://www.w3.org/2001/XMLSchema-instance"
@@ -53,6 +54,7 @@ class XmllintExtractor(BaseExtractor[XmllintMeta]):
         filename: Path,
         mimetype: str,
         version: str | None = None,
+        charset: str | None = None,
         params: dict | None = None,
     ) -> None:
         """
@@ -67,8 +69,12 @@ class XmllintExtractor(BaseExtractor[XmllintMeta]):
                  catalog_path: Path to XMLcatalog
         """
         super().__init__(
-            filename=filename, mimetype=mimetype, version=version,
-            params=params)
+            filename=filename,
+            mimetype=mimetype,
+            version=version,
+            charset=charset,
+            params=params
+        )
         if params is None:
             params = {}
         self._schema = params.get("schema", None)
@@ -130,6 +136,11 @@ class XmllintExtractor(BaseExtractor[XmllintMeta]):
             self._errors.append(str(exception))
             return
         except OSError as exception:
+            # TODO: OSError can be raised also when when file has
+            # invalid character encoding, for example:
+            #     OSError: Error reading file 'my.xml':
+            #     Invalid bytes in character encoding
+            # So OSError does not always mean that file is missing.
             self._errors.append("Failed: missing file.")
             self._errors.append(str(exception))
             return

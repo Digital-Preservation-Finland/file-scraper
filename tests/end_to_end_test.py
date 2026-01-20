@@ -588,7 +588,7 @@ def test_coded_filename(tmpdir, fullname, mimetype, version):
         # Give the correct MIME type but wrong charset
         ("tests/data/text_plain/valid__utf8_bom.txt",
          {"mimetype": "text/plain", "charset": "UTF-16"},
-         False, "text/plain", UNAP, "UTF-16", None),
+         False, "text/plain", UNAP, "UTF-16", False),
 
         # Scrape invalid XML as plaintext, as which it is well-formed
         ("tests/data/text_xml/invalid_1.0_no_closing_tag.xml",
@@ -622,7 +622,7 @@ def test_coded_filename(tmpdir, fullname, mimetype, version):
         # which it is not well-formed
         ("tests/data/text_html/invalid_5_illegal_tags.html",
          {"mimetype": "text/plain", "charset": "UTF-16"},
-         False, "text/plain", UNAP, "UTF-16", None),
+         False, "text/plain", UNAP, "UTF-16", False),
 
         # Scrape a file with MIME type that can produce "well-formed" result
         # from some extractors, but combining the results should reveal the
@@ -705,8 +705,7 @@ def test_given_filetype(
 @pytest.mark.parametrize(
     ["filepath", "charset", "well_formed"],
     [("tests/data/text_plain/valid__utf8_without_bom.txt", "UTF-8", True),
-     # TODO: Duplicate test case?
-     ("tests/data/text_plain/valid__utf8_without_bom.txt", "UTF-8", True),
+     ("tests/data/text_plain/valid__utf8_without_bom.txt", "utf-8", True),
      ("tests/data/text_plain/valid__utf8_without_bom.txt", "UTF-16", False),
      ("tests/data/text_plain/valid__utf8_bom.txt", "UTF-8", True),
      ("tests/data/text_plain/valid__utf8_bom.txt", "UTF-16", False),
@@ -760,7 +759,7 @@ def test_charset(filepath, charset, well_formed):
                       charset=charset)
     scraper.scrape()
     assert scraper.well_formed == well_formed
-    assert scraper.streams[0]["charset"] == charset
+    assert scraper.streams[0]["charset"] == charset.upper()
 
 
 @pytest.mark.parametrize(

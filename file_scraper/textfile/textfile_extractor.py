@@ -1,11 +1,9 @@
 """Module for checking if the file is suitable as text file or not."""
 from __future__ import annotations
 from io import BufferedReader
-from pathlib import Path
 from typing import Literal
 
 from file_scraper.base import BaseExtractor
-from file_scraper.defaults import UNAV
 from file_scraper.exceptions import (ForbiddenCharacterError,
                                      UnknownEncodingError)
 from file_scraper.shell import Shell
@@ -77,16 +75,16 @@ class TextfileExtractor(BaseExtractor[TextFileMeta]):
 
     def _extract(self) -> None:
         """Check MIME type determined by libmagic."""
-
         if self._file_mimetype() == "text/plain" and self._predefined_version:
             self._messages.append("Format text/plain should be "
                                   "scraped without predefined version.")
 
-        charset = self._params.get("charset", None)
-        if charset is not None and charset.upper() in ["UTF-32", "UTF-16"]:
+        if self._predefined_charset in ["UTF-32", "UTF-16"]:
             self._messages.append(
-                f"Extractor not supported with charset {charset}. Predefined "
-                f"metadata is collected.")
+                "Extractor not supported with charset"
+                f"{self._predefined_charset}. Predefined metadata is "
+                "collected."
+            )
         else:
             self._messages.append("Trying text detection...")
 
@@ -130,27 +128,6 @@ class TextEncodingMetaExtractor(BaseExtractor[TextEncodingMeta]):
     _allow_unav_mime = True
     _allow_unav_version = True
 
-    def __init__(
-        self,
-        filename: Path,
-        mimetype: str,
-        version: str | None = None,
-        params: dict | None = None,
-    ) -> None:
-        """
-        Initialize extractor. Add given charset.
-
-        :param filename: File name
-        :param mimetype: File MIME type
-        :param version: File format version
-        :param params: Extra parameters as dict, the following is required:
-            charset: File character encoding
-        """
-        super().__init__(
-            filename=filename, mimetype=mimetype, version=version,
-            params=params)
-        self._charset = self._params.get("charset", UNAV)
-
     @property
     def well_formed(self) -> Literal[False] | None:
         """TextEncodingMetaExtractor is not able to check well-formedness.
@@ -192,8 +169,10 @@ class TextEncodingMetaExtractor(BaseExtractor[TextEncodingMeta]):
         """No actual scraping. Set the predefined character encoding value."""
         self._messages.append("Setting character encoding.")
         self.streams = list(self.iterate_models(
-            well_formed=self.well_formed, charset=self._charset,
-            predefined_mimetype=self._predefined_mimetype))
+            well_formed=self.well_formed,
+            predefined_charset=self._predefined_charset,
+            predefined_mimetype=self._predefined_mimetype,
+        ))
 
     def tools(self) -> dict:
         return {}
@@ -204,9 +183,6 @@ class TextEncodingExtractor(BaseExtractor[TextEncodingMeta]):
     Text encoding extractor.
 
     Tries to use decode() and checks some of illegal character values.
-
-    If the incoming character set is None it will be invalid and cause
-    an error
 
     The rules for decoding validation are following:
 
@@ -232,39 +208,18 @@ class TextEncodingExtractor(BaseExtractor[TextEncodingMeta]):
     _allow_unav_mime = True
     _allow_unav_version = True
 
-    def __init__(
-        self,
-        filename: Path,
-        mimetype: str,
-        version: str | None = None,
-        params: dict | None = None,
-    ) -> None:
-        """
-        Initialize extractor. Add given charset.
-
-        :param filename: File name
-        :param mimetype: File MIME type
-        :param version: File format version
-        :param params: Extra parameters as dict, the following is required:
-            charset: File character encoding which cannot have a None value
-
-        :raises ValueError: When the character encoding (charset) parameter
-            is None
-        """
-        super().__init__(
-            filename=filename, mimetype=mimetype, version=version,
-            params=params)
-        self._charset = self._params.get("charset", None)
-        if self._charset is None:
-            raise ValueError(
-                self.__class__.__name__ + " requires the 'charset' "
-                "as an argument."
-            )
-
     def _extract(self) -> None:
         """
         Validate the file with decoding it with given character encoding.
         """
+        if not self._predefined_charset:
+            # TODO: this same pattern is repeated in all extractors that
+            # use self._predefined_charset. Could we avoid duplicate
+            # code? Maybe these extractors should support only files
+            # with known charset? The BaseExtractor.is_supported method
+            # could be refactored in TPASPKT-1540.
+            self._errors.append("Character encoding not defined.")
+            return
         try:
             with open(self.filename, "rb") as infile:
                 position = 0
@@ -272,7 +227,7 @@ class TextEncodingExtractor(BaseExtractor[TextEncodingMeta]):
 
                 charset = self._predetect_charset(infile)
                 for chunk in iter_utf_bytes(infile, self._chunksize,
-                                            self._charset):
+                                            self._predefined_charset):
 
                     self._decode_chunk(chunk, charset, position)
 
@@ -296,7 +251,7 @@ class TextEncodingExtractor(BaseExtractor[TextEncodingMeta]):
                         f"Character decoding error: The character "
                         f"encoding passed with UTF-8 and it contains "
                         f"characters colliding with the given encoding "
-                        f"{self._charset.upper()}. Most likely "
+                        f"{self._predefined_charset}. Most likely "
                         f"the file is UTF-8 file.")
                 else:
                     self._messages.append(
@@ -309,8 +264,10 @@ class TextEncodingExtractor(BaseExtractor[TextEncodingMeta]):
             self._errors.append(f"Character decoding error: {exception}")
 
         self.streams = list(self.iterate_models(
-            well_formed=self.well_formed, charset=self._charset,
-            predefined_mimetype=self._predefined_mimetype))
+            well_formed=self.well_formed,
+            predefined_charset=self._predefined_charset,
+            predefined_mimetype=self._predefined_mimetype
+        ))
 
     def _predetect_charset(self, infile: BufferedReader) -> str:
         """
@@ -322,13 +279,13 @@ class TextEncodingExtractor(BaseExtractor[TextEncodingMeta]):
         """
         chunk = infile.read(1024)
         infile.seek(0)
-        if self._charset == "UTF-32":
+        if self._predefined_charset == "UTF-32":
             try:
                 self._decode_chunk(chunk, "UTF-32BE", 0)
                 return "UTF-32BE"
             except (ForbiddenCharacterError, UnknownEncodingError):
                 pass
-        return self._charset
+        return self._predefined_charset
 
     def _utf8_contradiction(self, chunk: bytes, position: int) -> bool:
         """
@@ -348,10 +305,10 @@ class TextEncodingExtractor(BaseExtractor[TextEncodingMeta]):
         :param position: Chunk position in file
         :returns: True if there is UTF-8 contradiction, otherwise False
         """
-        if self._charset.upper() in ["UTF-8", "UTF-32"]:
+        if self._predefined_charset in ["UTF-8", "UTF-32"]:
             return False
 
-        if self._charset.upper() == "ISO-8859-15":
+        if self._predefined_charset == "ISO-8859-15":
             try:
                 # If ASCII works, then also ISO-8859-15 is OK
                 self._decode_chunk(chunk, "ASCII", position)
@@ -400,7 +357,7 @@ class TextEncodingExtractor(BaseExtractor[TextEncodingMeta]):
                      "\x18", "\x19", "\x1A", "\x1B", "\x1C", "\x1D", "\x1E",
                      "\x1F", "\x7F"]
 
-        if charset.upper() == 'ISO-8859-15':
+        if charset == 'ISO-8859-15':
             # Add ISO-8859-15 control characters to the list of forbidden
             # characters
             forbidden += ["\x80", "\x81", "\x82", "\x83", "\x84", "\x85",

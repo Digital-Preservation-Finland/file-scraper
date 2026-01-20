@@ -10,8 +10,6 @@ import re
 import zipfile
 from io import BufferedReader
 
-from file_scraper.defaults import UNAV
-
 
 def hexdigest(
     filename: str | Path,
@@ -36,24 +34,6 @@ def hexdigest(
                 extra_hash = extra_hash.encode("utf-8")
             checksum.update(extra_hash)
     return checksum.hexdigest()
-
-
-def normalize_charset(charset: str | None) -> str:
-    """
-    Normalize charset to its most common and supported form.
-
-    For example, 'US-ASCII' is converted to 'UTF-8' as it is backwards
-    compatible and 'UTF-8' is more commonly recognized than 'US-ASCII'.
-    :param charset: Charset
-    :returns: Normalized charset in upper-case
-    """
-    if charset is None or charset.upper() == "BINARY":
-        return UNAV
-    if charset.upper() == "US-ASCII":
-        return "UTF-8"
-    if charset.upper() == "ISO-8859-1":
-        return "ISO-8859-15"
-    return charset.upper().removesuffix("LE").removesuffix("BE")
 
 
 def iso8601_duration(time: float | int) -> str:
@@ -180,12 +160,12 @@ def iter_utf_bytes(
         if not chunk:
             return
 
-        if charset.upper() == "UTF-8":
+        if charset == "UTF-8":
             chunk, utf_buffer = utf_sequence(chunk, [
                 {"smallest": 0xc0, "largest": 0xdf, "indexes": [1]},
                 {"smallest": 0xe0, "largest": 0xef, "indexes": [1, 2]},
                 {"smallest": 0xf0, "largest": 0xf7, "indexes": [1, 2, 3]}])
-        elif charset.upper() == "UTF-16":
+        elif charset == "UTF-16":
             chunk, utf_buffer = utf_sequence(
                 chunk, [{"smallest": 0xd8, "largest": 0xdb,
                          "indexes": [1, 2]}], True)

@@ -210,6 +210,7 @@ class BaseExtractor(BaseApparatus, Generic[AnyMeta]):
         filename: Path,
         mimetype: str | None,
         version: str | None = None,
+        charset: str | None = None,
         params: dict | None = None,
     ) -> None:
         """
@@ -221,12 +222,14 @@ class BaseExtractor(BaseApparatus, Generic[AnyMeta]):
         :param filename: Path to the file that is to be scraped
         :param mimetype: Predefined mimetype
         :param version: Predefined file format version
+        :param charset: Predefined charset
         :param params: Extra parameters that some extractors can use.
         """
         super().__init__(filename)
 
         self._predefined_mimetype = mimetype
         self._predefined_version = version
+        self._predefined_charset = charset
         self.streams: list[AnyMeta] = []
         self._params = params if params is not None else {}
 

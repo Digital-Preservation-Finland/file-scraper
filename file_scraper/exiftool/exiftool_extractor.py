@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from typing import Literal, TypeVar
 import exiftool
 from exiftool.exceptions import ExifToolExecuteError
@@ -25,28 +24,6 @@ class ExifToolExtractorBase(BaseExtractor[ExifToolMetaT]):
     Scraping methods for the ExifTool extractor
     """
     _allow_unav_version = True
-
-    def __init__(
-        self,
-        filename: Path,
-        mimetype: str,
-        version: str | None = None,
-        params: dict | None = None,
-    ) -> None:
-        """
-        Initialize ExifTool base extractor.
-
-        :param filename: File path
-        :param mimetype: Predefined mimetype
-        :param version: Predefined file format version
-        :param params: Extra parameters needed for the extractor
-        """
-        super().__init__(
-            filename=filename,
-            mimetype=mimetype,
-            version=version,
-            params=params,
-        )
 
     @property
     def well_formed(self) -> Literal[False] | None:

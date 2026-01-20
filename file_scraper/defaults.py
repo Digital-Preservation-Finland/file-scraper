@@ -79,3 +79,10 @@ PRONOM_DICT = {
     "x-fmt/385": ("video/mp1s", ""),
     "x-fmt/386": ("video/mp2p", ""),
 }
+
+COMPATIBLE_ENCODINGS = {
+    "UTF-8": ["US-ASCII"],
+    "UTF-16": ["UTF-16BE", "UTF-16LE"],
+    "UTF-32": ["UTF-32BE", "UTF-32LE"],
+    "ISO-8859-15": ["US-ASCII", "ISO-8859-1"],
+}

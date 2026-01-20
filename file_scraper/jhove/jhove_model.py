@@ -121,7 +121,7 @@ class JHoveHtmlMeta(JHoveBaseMeta):
             params = result_mimetype[2]
             return params.get("charset")
         except (mimeparse.MimeTypeParseException, IndexError):
-            return UNAV
+            return None
 
     def _get_charset_xml(self):
         """Get the charset from the JHove report for XHTML files."""
@@ -132,7 +132,7 @@ class JHoveHtmlMeta(JHoveBaseMeta):
         try:
             return results[0]
         except IndexError:
-            return UNAV
+            return None
 
     @BaseMeta.metadata()
     def mimetype(self):
@@ -155,9 +155,15 @@ class JHoveHtmlMeta(JHoveBaseMeta):
         """Get the charset from HTML/XML files."""
         if self._report is None:
             return UNAV
+
         if "xml" in self.mimetype():
-            return self._get_charset_xml()
-        return self._get_charset_html()
+            charset = self._get_charset_xml()
+        else:
+            charset = self._get_charset_html()
+
+        if charset:
+            return charset.upper()
+        return UNAV
 
     @BaseMeta.metadata()
     def stream_type(self):

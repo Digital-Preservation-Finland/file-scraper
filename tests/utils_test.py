@@ -54,7 +54,6 @@ from file_scraper.utils import (
     is_zipfile,
     iso8601_duration,
     iter_utf_bytes,
-    normalize_charset,
     strip_zeros,
     parse_exif_version
 )
@@ -87,25 +86,6 @@ def test_hexdigest(filepath, extra_hash, algorithm, expected_hash):
     else:
         assert hexdigest(filepath, algorithm=algorithm,
                          extra_hash=extra_hash) == expected_hash
-
-
-@pytest.mark.parametrize(
-    ["charset", "norm_charset"],
-    [
-        ("utf-8", "UTF-8"),         # Converted to upper-case
-        ("US-ASCII", "UTF-8"),      # UTF-8 backwards compatible w/ ASCII
-        ("ISO-8859-1", "ISO-8859-15"),  # Identical except for 8 characters
-
-        ("UTF-16LE", "UTF-16"),  # Endianness is ignored
-        ("UTF-16BE", "UTF-16")
-    ]
-)
-def test_normalize_charset(charset, norm_charset):
-    """
-    Test that 'normalize_charset' converts a charset name to its most common
-    and supported form
-    """
-    assert normalize_charset(charset) == norm_charset
 
 
 @pytest.mark.parametrize(

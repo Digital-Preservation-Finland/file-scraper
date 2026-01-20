@@ -245,7 +245,7 @@ def test_old_namespace(filename, result_dict, evaluate_extractor, monkeypatch):
         filename=correct.filename, mimetype="image/gif"
     )
     extractor.extract()
-    assert "hul.harvard.edu" in extractor._report.values()[0]
+    assert "hul.harvard.edu" in extractor._base_extract().values()[0]
 
     evaluate_extractor(extractor, correct)
 
@@ -644,7 +644,9 @@ def test_extractor_html(filename, result_dict, mimetype, charset,
         correct.streams[0]["stream_type"] = "text"
 
     extractor = JHoveHtmlExtractor(
-        filename=correct.filename, mimetype=mimetype, params=correct.params
+        filename=correct.filename,
+        mimetype=mimetype,
+        charset=charset
     )
     extractor.extract()
 
@@ -822,9 +824,10 @@ def test_charset(filename, mimetype, charset, well_formed):
     :chraset: File character encoding
     :well_formed: Expected well-formed result
     """
-    params = {"charset": charset}
     extractor = JHoveHtmlExtractor(
-        filename=Path(filename), mimetype=mimetype, params=params
+        filename=Path(filename),
+        mimetype=mimetype,
+        charset=charset,
     )
     extractor.extract()
     assert extractor.well_formed == well_formed

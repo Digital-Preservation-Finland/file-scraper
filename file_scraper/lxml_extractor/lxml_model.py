@@ -1,11 +1,14 @@
-"""Metadata model for XML and HTML5 header encoding check with lxml. """
+"""Metadata model for reading XML files with lxml."""
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAV
 
 
 class LxmlMeta(BaseMeta):
-    """Metadata model for character encoding from XML/HTML header."""
+    """Metadata model for reading XML files with lxml.
+
+    Reads version and character encoding from XML/HTML header.
+    """
 
     # We use JHOVE for XHTML files.
     _supported = {"text/xml": ["1.0"], "text/html": ["4.01", "5"]}
@@ -29,8 +32,8 @@ class LxmlMeta(BaseMeta):
 
     @BaseMeta.metadata()
     def charset(self):
-        """Return charset."""
-        return self._tree.docinfo.encoding
+        """Return charset declared in XML header."""
+        return self._tree.docinfo.encoding.upper()
 
     @BaseMeta.metadata()
     def stream_type(self):

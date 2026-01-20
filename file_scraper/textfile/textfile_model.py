@@ -58,17 +58,15 @@ class TextEncodingMeta(BaseMeta):
                   "application/xhtml+xml": ["1.0", "1.1"]}
     _allow_any_version = True
 
-    def __init__(self, well_formed, charset, predefined_mimetype):
-        """
-        Initialize metadata model.
+    def __init__(self, well_formed, predefined_charset, predefined_mimetype):
+        """Initialize metadata model.
 
         :well_formed: Well-formed status from extractor
-        :charset: Encoding from extractor
+        :predefined_charset: Predefined charset
         :predefined_mimetype: Predefined mimetype
         """
-
         self._well_formed = well_formed
-        self._charset = charset
+        self._predefined_charset = predefined_charset
         self._predefined_mimetype = predefined_mimetype
 
     @BaseMeta.metadata()
@@ -101,7 +99,9 @@ class TextEncodingMeta(BaseMeta):
     @BaseMeta.metadata()
     def charset(self):
         """Return charset."""
-        return self._charset.upper()
+        # The extractor does detect the charset, so this the charset
+        # that was passed to extractor
+        return self._predefined_charset
 
     @BaseMeta.metadata()
     def stream_type(self):

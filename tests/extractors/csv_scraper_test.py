@@ -1,3 +1,4 @@
+# TODO: rename this file
 """
 Tests for Csv extractor
 
@@ -179,10 +180,14 @@ def test_extractor(filename, result_dict, header,
         "separator": correct.streams[0]["separator"],
         "delimiter": correct.streams[0]["delimiter"],
         "fields": header,
-        "mimetype": MIMETYPE}
+        "mimetype": MIMETYPE,
+    }
     params.update(extra_params)
-    extractor = CsvExtractor(filename=correct.filename, mimetype=MIMETYPE,
-                           params=params)
+    extractor = CsvExtractor(
+        filename=correct.filename, mimetype=MIMETYPE,
+        charset=params.get("charset"),
+        params=params,
+    )
     extractor.extract()
 
     evaluate_extractor(extractor, correct)
@@ -246,7 +251,8 @@ def test_large_field(filename, result_dict, header,
         "separator": correct.streams[0]["separator"],
         "delimiter": correct.streams[0]["delimiter"],
         "fields": header,
-        "mimetype": "text/csv"}
+        "mimetype": "text/csv",
+    }
     params.update(extra_params)
     extractor = CsvExtractor(filename=correct.filename, mimetype=MIMETYPE,
                            params=params)
@@ -266,10 +272,18 @@ def test_first_line_charset(filename, charset):
     :filename: Test file name
     :charset: Character encoding
     """
-    params = {"delimiter": ",", "separator": "CR+LF",
-              "mimetype": "text/csv", "charset": charset}
+    params = {
+        "delimiter": ",",
+        "separator": "CR+LF",
+        "mimetype": "text/csv",
+    }
 
-    extractor = CsvExtractor(Path(filename), mimetype="text/csv", params=params)
+    extractor = CsvExtractor(
+        Path(filename),
+        mimetype="text/csv",
+        charset=charset,
+        params=params,
+    )
     extractor.extract()
     assert extractor.well_formed
     assert extractor.streams[0].first_line() == \
@@ -278,7 +292,10 @@ def test_first_line_charset(filename, charset):
 
 def test_pdf_as_csv():
     """Test CSV extractor with PDF files."""
-    extractor = CsvExtractor(filename=PDF_PATH, mimetype="text/csv")
+    extractor = CsvExtractor(
+        filename=PDF_PATH,
+        mimetype="text/csv",
+    )
     extractor.extract()
 
     assert not extractor.well_formed, extractor.messages() + extractor.errors()
@@ -294,7 +311,7 @@ def test_pdf_as_csv():
 )
 def test_no_parameters(filename, evaluate_extractor):
     """
-    Test extractor without separate parameters.
+    Test extractor without CSV specific parameters.
 
     :filename: Test file name
     """
@@ -339,16 +356,20 @@ def test_empty_file():
     parameters are not given. Secondly, sniffer is skipped when parameters
     are given, but the then extractor raises exception elsewhere.
     """
-    extractor = CsvExtractor(Path("tests/data/text_csv/invalid__empty.csv"),
-                           mimetype=MIMETYPE)
+    extractor = CsvExtractor(
+        Path("tests/data/text_csv/invalid__empty.csv"),
+        mimetype=MIMETYPE,
+    )
     extractor.extract()
     assert partial_message_included("Could not determine delimiter",
                                     extractor.errors())
     assert not extractor.well_formed
 
-    extractor = CsvExtractor(Path("tests/data/text_csv/invalid__empty.csv"),
-                           mimetype=MIMETYPE,
-                           params={"delimiter": ";", "separator": "CRLF"})
+    extractor = CsvExtractor(
+        Path("tests/data/text_csv/invalid__empty.csv"),
+        mimetype=MIMETYPE,
+        params={"delimiter": ";", "separator": "CRLF"}
+    )
     extractor.extract()
     assert partial_message_included("Error reading file as CSV",
                                     extractor.errors())
@@ -359,7 +380,10 @@ def test_nonexistent_file():
     """
     Test that CsvExtractor logs an error when file is not found.
     """
-    extractor = CsvExtractor(filename=Path("nonexistent/file.csv"), mimetype="text/csv")
+    extractor = CsvExtractor(
+        filename=Path("nonexistent/file.csv"),
+        mimetype="text/csv",
+    )
     extractor.extract()
     assert partial_message_included("Error when reading the file: ",
                                     extractor.errors())
