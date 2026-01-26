@@ -117,3 +117,41 @@ COMPATIBLE_ENCODINGS = {
     "UTF-32": ["UTF-32BE", "UTF-32LE"],
     "ISO-8859-15": ["US-ASCII", "ISO-8859-1"],
 }
+
+# TODO: Version compatibility should be specific to mimetype!
+COMPATIBLE_VERSIONS = {
+    # JPEG JFIF versions are compatible with EXIF versions
+    # TODO: Add all versions here.
+    "2.2.1": ["1.01"],
+    "2.2": ["1.01"],
+    # Some PDF versions are compatible with PDF-A versions
+    # TODO: The PDF version compatibility lists have been generated
+    # based on out test files. Check that these versions actually should
+    # be compatible, and add missing versions!
+    "A-1a": [
+        # valid_A-1a.pdf
+        # valid_A-1a_invalid_resource_name.pdf
+        "1.4",
+        # valid_A-1a_root_1.6.pdf
+        "1.6",
+        # valid_A-1a_root_1.7.pdf
+        "1.7"
+    ],
+    "A-1b": [
+        # valid_A-1b_root_1.7.pdf
+        "1.7"
+    ],
+    "A-2b": [
+        # valid_A-2b.pdf
+        "1.7",
+    ],
+    "A-2u": [
+        # valid_A-2u_root_1.5.pdf
+        "1.5"
+    ],
+    "A-3b": [
+        # valid_A-3b_no_file_extension
+        # valid_A-3b.pdf
+        "1.7",
+    ],
+}

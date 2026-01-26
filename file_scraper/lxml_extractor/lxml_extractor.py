@@ -113,14 +113,10 @@ class LxmlExtractor(BaseExtractor[LxmlMeta]):
 
                 md_model = md_class(**kwargs)
                 try:
-                    for method in md_model.iterate_metadata_methods():
-                        LOGGER.debug(
-                            "Testing that method '%s' returns a valid "
-                            "value...",
-                            method.__name__
-                        )
-                        method()
+                    md_model.to_dict()
                 except Exception:  # pylint: disable=broad-except
+                    # TODO: Which error in file could cause this
+                    # exception? Is there a test?
                     LOGGER.info(
                         "Field did not return a valid value", exc_info=True
                     )

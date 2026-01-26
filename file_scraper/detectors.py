@@ -204,7 +204,7 @@ class FidoDetector(BaseDetector):
             if self.version is not None:
                 self.mimetype = "application/warc"
 
-    def determine_important(self) -> Mimetype | None:
+    def determine_important(self) -> Mimetype:
         """
         Return important mime types.
 
@@ -228,7 +228,7 @@ class FidoDetector(BaseDetector):
 
         if arc_or_formula or nonstandard_mimetype:
             return Mimetype(self.mimetype, None)
-        return None
+        return Mimetype(None, None)
 
     def tools(self) -> dict:
         """Return information about the software used by the extractor or
@@ -290,7 +290,7 @@ class MagicDetector(BaseDetector):
                 )
                 self.mimetype = "video/dv"
 
-    def determine_important(self) -> Mimetype | None:
+    def determine_important(self) -> Mimetype:
         """
         Important mime types.
 
@@ -302,7 +302,7 @@ class MagicDetector(BaseDetector):
         """
         if self.mimetype in ["application/vnd.oasis.opendocument.formula"]:
             return Mimetype(self.mimetype, None)
-        return None
+        return Mimetype(None, None)
 
     def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
@@ -461,7 +461,7 @@ class ExifToolDetector(BaseDetector):
             "detection could not be performed by this tool"
         )
 
-    def determine_important(self) -> Mimetype | None:
+    def determine_important(self) -> Mimetype:
         """
         If ExifTool detector determines the mimetype as dng, it is marked as
         important. This is to make sure that this result overrides other
@@ -471,7 +471,7 @@ class ExifToolDetector(BaseDetector):
             return Mimetype(self.mimetype, None)
         if self.mimetype and self.version:
             return Mimetype(self.mimetype, self.version)
-        return None
+        return Mimetype(None, None)
 
     def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
@@ -607,7 +607,7 @@ class SegYDetector(BaseDetector):
                 "not be detected."
             )
 
-    def determine_important(self) -> Mimetype | None:
+    def determine_important(self) -> Mimetype:
         """
         If SegYDetector determines the mimetype as SEG-Y, the mimetype
         and version are marked as important. This is to make sure that
@@ -616,7 +616,7 @@ class SegYDetector(BaseDetector):
         """
         if self.mimetype in ["application/x.fi-dpres.segy"]:
             return Mimetype(self.mimetype, self.version)
-        return None
+        return Mimetype(None, None)
 
     def tools(self) -> dict:
         """Return information about the software used by the extractor or
@@ -649,7 +649,7 @@ class AtlasTiDetector(BaseDetector):
             self.mimetype = "application/x.fi-dpres.atlproj"
             self.version = UNAP
 
-    def determine_important(self) -> Mimetype | None:
+    def determine_important(self) -> Mimetype:
         """
         If AtlasTiDetector determines the mimetype as x.fi-dpres.atlproj,
         the mimetype and version are marked as important. This is to make
@@ -658,7 +658,7 @@ class AtlasTiDetector(BaseDetector):
         """
         if self.mimetype in ["application/x.fi-dpres.atlproj"]:
             return Mimetype(self.mimetype, self.version)
-        return None
+        return Mimetype(None, None)
 
     def tools(self) -> dict:
         """Return information about the software used by the extractor or
@@ -709,7 +709,7 @@ class SiardDetector(BaseDetector):
                     self.version = version
                     break
 
-    def determine_important(self) -> Mimetype | None:
+    def determine_important(self) -> Mimetype:
         """
         If SiardDetector determines the mimetype as SIARD, the mimetype
         and version are marked as important. This is to make sure that
@@ -718,7 +718,7 @@ class SiardDetector(BaseDetector):
         """
         if self.mimetype in ["application/x-siard"]:
             return Mimetype(self.mimetype, self.version)
-        return None
+        return Mimetype(None, None)
 
     def tools(self) -> dict:
         """Return information about the software used by the extractor or
@@ -805,7 +805,7 @@ class ODFDetector(BaseDetector):
         self.mimetype = detected_mimetype
         self.version = detected_version
 
-    def determine_important(self) -> Mimetype | None:
+    def determine_important(self) -> Mimetype:
         """Return dict of important values determined by the detector.
 
         Mimetype and format version are important because other
@@ -879,14 +879,14 @@ class EpubDetector(BaseDetector):
             self.mimetype = "application/epub+zip"
             self.version = "3"
 
-    def determine_important(self) -> Mimetype | None:
+    def determine_important(self) -> Mimetype:
         """
         If EpubDetector determines the mimetype as EPUB, the mimetype
         and version are marked as important.
         """
         if self.mimetype in ["application/epub+zip"]:
             return Mimetype(self.mimetype, self.version)
-        return None
+        return Mimetype(None, None)
 
     def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or

@@ -29,15 +29,17 @@ import pytest
 from dpres_file_formats.defaults import Grades
 from dpres_file_formats.defaults import UnknownValue
 
+from file_scraper.base import BaseMeta
 from file_scraper.scraper import Scraper
 from file_scraper.textfile.textfile_extractor import TextfileExtractor
-from file_scraper.exceptions import (FileIsNotScrapable,
-                                     FileNotFoundIsNotScrapable,
-                                     DirectoryIsNotScrapable,
-                                     InvalidMimetype,
-                                     InvalidVersionForMimetype,)
+from file_scraper.exceptions import (
+    FileIsNotScrapable,
+    FileNotFoundIsNotScrapable,
+    DirectoryIsNotScrapable,
+    InvalidMimetype,
+    InvalidVersionForMimetype,
+)
 
-from tests.metadata_test import Meta1, Meta2, Meta3
 from tests.common import compare_results
 
 
@@ -128,7 +130,8 @@ def test_detect_filetype(filename, params, expected_mimetype,
     assert mimetype == expected_mimetype
     assert version == expected_version
     assert not scraper.well_formed
-    assert scraper.streams == {}
+    assert scraper.streams[0]["mimetype"] == expected_mimetype
+    assert scraper.streams[0]["version"] == expected_version
     assert scraper.info
 
     # Detecting twice is not allowed
@@ -316,55 +319,6 @@ class TestPathValidation:
 
 
 @pytest.mark.parametrize(
-    (
-        "meta_classes",
-        "wellformed",
-    ),
-    [
-        (
-            # Meta classes contain identical metadata
-            # TODO why not meta1 + meta1?
-            [Meta1, Meta3],
-            None,
-        ),
-        (
-            # Meta classes contain conflicting metadata
-            [Meta1, Meta2],
-            False,
-        )
-    ]
-)
-def test_results_merging(meta_classes, wellformed):
-    """Test that scraper merges extractor results properly.
-
-    The test tests both a successful case where metadata could be merged
-    and a case with conflicts in metadata resulting in the
-    well-formedness being false. Also in the conflicting case, tool
-    errors are checked to contain a descriptive error.
-    """
-    filename = Path("tests/data/text_plain/valid__ascii.txt")
-    results = []
-    for meta_class in meta_classes:
-        results.append([meta_class()])
-
-    scraper = Scraper(filename)
-    scraper._results = results
-    scraper.info = {}
-    scraper._check_wellformed = True
-    scraper._merge_results()
-    if wellformed is False:
-        assert scraper.info[0]["errors"] == [
-            "The Extractors produced conflicting values for key1: value1-1 "
-            "and value2-1",
-            "The Extractors produced conflicting values for key3: value1-3 "
-            "and value2-3",
-            "The Extractors produced conflicting values for key4: value4 "
-            "and conflicting value",
-        ]
-    assert scraper.well_formed == wellformed
-
-
-@pytest.mark.parametrize(
     ["parameters", "error"],
     [
         ({"mimetype": UnknownValue.UNAL}, InvalidMimetype),
@@ -504,3 +458,13 @@ def test_scraper_returns_correct_values(path):
     scraper = Scraper(path)
     results = scraper.scrape(check_wellformed=False)
     compare_results(scraper, results)
+
+
+def test_scraper_metadata_conflict():
+    """Test handling conflicting metadata."""
+    path = "tests/data/image_jpeg/valid_1.01.jpg"
+    scraper = Scraper(path, mimetype="image/png")
+    result = scraper.scrape()
+    assert scraper.well_formed is False
+    assert "The stream has conflicting mimetype image/jpeg" \
+        in str(result.errors)

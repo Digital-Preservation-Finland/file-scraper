@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, Generic, Literal, TypeVar, final, cast, TYPE_CHECKING
 
 from file_scraper.defaults import UNAP, UNAV
+from file_scraper.exceptions import SkipElementException
 from file_scraper.state import Mimetype
 from file_scraper.utils import filter_unwanted_chars
 if TYPE_CHECKING:
@@ -177,14 +178,25 @@ class BaseMeta:
             or cls._allow_any_version
         )
 
-    @final
-    def iterate_metadata_methods(self) -> Iterator[MetadataMethod]:
-        """Iterate through all metadata methods."""
+    def to_dict(self) -> dict:
+        """Transform metadata into dictionary."""
+        metadata = {}
         for method_name in dir(self):
             method = getattr(self, method_name)
-            # Metadata methods have the is_metadata attribute
-            if callable(method) and getattr(method, "is_metadata", False):
-                yield method
+            if not getattr(method, "is_metadata", False):
+                # This method is not metada, skipping...
+                continue
+            try:
+                value = method()
+            except SkipElementException:
+                # This method must be skipped because it wants to be
+                # skipped
+                # TODO: Why does the method then exist? See TPASPKT-1577
+                continue
+            # TODO: replace UNAV with None here as a temporary hack
+            metadata[method.__name__] = value
+
+        return metadata
 
     @classmethod
     def supported_mimetypes(cls) -> dict[str, list[str]]:
@@ -385,12 +397,12 @@ class BaseDetector(BaseApparatus):
     def detect(self) -> None:
         """Detect file. Must be implemented in detectors."""
 
-    def determine_important(self) -> Mimetype | None:
+    def determine_important(self) -> Mimetype:
         """
         Used to replace existing mimetype with a more important result.
-        :returns: an important Mimetype or None.
+        :returns: an important Mimetype.
         """
-        return None
+        return Mimetype(None, None)
 
     @property
     def mimetype(self) -> str | None:

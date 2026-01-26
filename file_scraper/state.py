@@ -17,5 +17,5 @@ class Mimetype(NamedTuple):
     Mimetype represents a media type which consists of
     the mimetype and version of the mimetype
     """
-    mimetype: str
+    mimetype: str | None
     version: str | None

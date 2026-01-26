@@ -194,9 +194,7 @@ def check_xml_schematron_features(filename, schema, schematron,
     schematron_scraper.scrape_file()
 
     schematron_meta = schematron_scraper.streams[0]
-    metadata = {}
-    for method in schematron_meta.iterate_metadata_methods():
-        metadata[method.__name__] = method()
+    metadata = schematron_meta.to_dict()
 
     results = {
         "path": str(schematron_scraper.filename),
