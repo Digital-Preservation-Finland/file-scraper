@@ -108,14 +108,9 @@ def test_detect_filetype(filename, params, expected_results):
     assert scraper.streams == {}
     assert scraper.info
 
-    # Even if scraping has been done previously, detection should erase all
-    # streams and other information, except arguments given to scraper
-    scraper.scrape()
-    scraper.detect_filetype()
-    for field, value in expected_results.items():
-        assert getattr(scraper, field) == value
-    assert scraper.streams == {}
-    assert scraper.info
+    # Detecting twice is not allowed
+    with pytest.raises(RuntimeError, match="already detected"):
+        scraper.detect_filetype()
 
 
 @pytest.mark.parametrize(

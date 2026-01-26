@@ -72,12 +72,8 @@ class Scraper:
         # file-scraper. Part of the ticket TPASPKT-1540 to clean file-scraper
         # parameters.
         self._kwargs = kwargs
-        self.clear()
         self._parameter_validation()
 
-    # pylint: disable=attribute-defined-outside-init
-    def clear(self):
-        """Clear the Scraper to an initial state."""
         self.mimetype = None
         self.version = None
         self._detected_mimetype = None
@@ -501,22 +497,14 @@ class Scraper:
         Find out the MIME type and version of the file without metadata
         extracting.
 
-        All stream and file type information gathered during possible previous
-        scraping or filetype detection calls is erased when this function is
-        called.
-
         Please note that using only detectors can result in a file type result
         that differs from the one obtained by the full extractor due to full
         extractor using a more comprehensive set of tools.
 
         :returns: Detected mimetype and version
         """
-        # TODO: What is the point of clear method? "Cleared" object can
-        # be achieved by initializing new object. Using detect_filetype
-        # once the file has already been detected or scraped does not
-        # make sense, so we could simply raise exception if user does
-        # it.
-        self.clear()
+        if self.info:
+            raise RuntimeError("File is already detected")
         self._identify()
         return (self._detected_mimetype, self._detected_version)
 
