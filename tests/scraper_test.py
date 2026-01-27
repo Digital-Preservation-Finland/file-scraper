@@ -68,43 +68,66 @@ def test_checksum():
 
 
 @pytest.mark.parametrize(
-    ["filename", "params", "expected_results"],
+    (
+        "filename",
+        "params",
+        "expected_mimetype",
+        "expected_version",
+    ),
     [
-        ("tests/data/image_png/valid_1.2.png", {},
-         {"_detected_mimetype": "image/png", "_detected_version": "1.0",
-          "well_formed": None}),
-        ("tests/data/image_png/invalid_1.2_wrong_CRC.png", {},
-         {"_detected_mimetype": "image/png", "_detected_version": "1.0",
-          "well_formed": None}),
-        ("tests/data/application_pdf/valid_A-1a.pdf",
-         {"mimetype": "application/pdf"},
-         {"_detected_mimetype": "application/pdf",
-          "_detected_version": "A-1a", "well_formed": None}),
+        # Valid file
+        (
+            "tests/data/application_pdf/valid_A-1a.pdf",
+            {},
+            "application/pdf",
+            "A-1a",
+        ),
+        # Valid file using predefine mimetype
+        (
+            "tests/data/application_pdf/valid_A-1a.pdf",
+            {"mimetype": "application/pdf"},
+            "application/pdf",
+            "A-1a",
+        ),
+        # Invalid file. Error not detected by detectors.
+        (
+            "tests/data/application_pdf/invalid_A-1a_payload_altered.pdf",
+            {},
+            "application/pdf",
+            "A-1a",
+        ),
+        # File that is not detected correctly automatically. If version
+        # can not be detected, the result should be `None`, not a wrong
+        # version
+        (
+            "tests/data/image_png/valid_1.2.png",
+            {},
+            "image/png",
+            None,
+        ),
     ]
 )
-def test_detect_filetype(filename, params, expected_results):
+def test_detect_filetype(filename, params, expected_mimetype,
+                         expected_version):
+    """Test running only the filetype detection.
+
+    This test ensures that the filetype detection detects correct
+    mimetype and version. Streams should be empty. Detectors do not
+    validate the file, so well_formed should be None or False, newer
+    True. Info should also contain some entries, but their contents are
+    not checked.
+
+    :param filename: Test file name
+    :param params: Parameters for Scarper
+    :param expected_mimetype: Expected mimetype
+    :param expected_version: Expected version
+    :param well_formed: Should the file be well formed after detection
     """
-    Test running only the filetype detection.
-
-    This test ensures that the filetype detection fills in mimetype and version
-    (if available from detectors) for the file, leaving well_formed and
-    streams as None. Info should also contain some entries, but their contents
-    are not checked.
-
-    Then it is tested that the same results are also returned if full scraping
-    is run before filetype detection.
-
-    :filename: Test file name
-    :params: Parameters for Scarper
-    :expected_results: Expected results, containing expected values of Scraper
-                       attributes
-    """
-    # Filetype detection should work without scraping
-    # change it later to skip initial path validation
     scraper = Scraper(filename, **params)
-    scraper.detect_filetype()
-    for field, value in expected_results.items():
-        assert getattr(scraper, field) == value
+    mimetype, version = scraper.detect_filetype()
+    assert mimetype == expected_mimetype
+    assert version == expected_version
+    assert not scraper.well_formed
     assert scraper.streams == {}
     assert scraper.info
 

@@ -53,13 +53,44 @@ MIMETYPE_DICT = {
     "video/x-msvideo": "video/avi",
 }
 
-# Dict between detectors' results and known file format versions.
+# Map FIDO version strings to actual versions
 VERSION_DICT = {
     "application/pdf": {"1a": "A-1a", "1b": "A-1b",
                         "2a": "A-2a", "2b": "A-2b", "2u": "A-2u",
                         "3a": "A-3a", "3b": "A-3b", "3u": "A-3u"},
-    "audio/x-wav": {"2 Generic": "2"},
+    "application/vnd.ms-excel": {
+        "8": "8X",
+    },
+    "audio/x-wav": {
+        "2 Generic": "2",
+        # Try for example tests/data/audio_x-wav/valid_2_bwf.wav
+        "0 PCM Encoding": None,
+    },
     "audio/ac3": {None: UNAP},
+    "audio/flac": {
+        # TODO: Other versions are probably possible, and all of them
+        # should be UNAP?
+        "1.2.1": UNAP,
+    },
+    "image/gif": {
+        "87a": "1987a",
+        "89a": "1989a",
+    },
+    "image/png": {
+        # Fido does not detect PNG version correctly?
+        "1.0": None,
+    },
+    None: {
+        # Fido detects version of video/x-ms-asf, but not the mimetype?
+        "9 Advanced Profile (WVC1)": UNAP,
+        # Fido detects wrong AIFF version, and not the mimetype? Try for
+        # example tests/data/audio_x-aiff/valid_1.3.aiff
+        "1.2": None,
+        # Fido detects version of webp file as "Extended", but it does
+        # not detect the mimetype? Try for example
+        # tests/data/image_webp/valid__lossy.webp
+        "Extended": None,
+    }
 }
 
 # Dict between detectors' pronom results and known mimetypes and versions.

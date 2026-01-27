@@ -793,3 +793,57 @@ def test_grading(fullname, mimetype, version):
         expected_grade = RECOMMENDED
 
     assert scraper.grade() == expected_grade
+
+
+@pytest.mark.parametrize(
+    ("fullname", "expected_mimetype", "expected_version"),
+    get_files(well_formed=True)
+)
+def test_detect_filetype(fullname, expected_mimetype, expected_version):
+    """Test that detect_filetype returns correct result."""
+    # skip files that can not be detected automatically
+    if fullname in GIVEN_MIMETYPES:
+        pytest.skip(f"{fullname} can not be detected automatically")
+
+    # All tiff 6.0 files, for example valid_6.0_latin1_exif_field.tif
+    if expected_mimetype in ("image/tiff", "image/png", "audio/x-aiff"):
+        pytest.skip(
+            f"The version of {expected_mimetype} files is currently not detected"
+            " without extractors"
+        )
+
+    if fullname in (
+        "tests/data/audio_x-wav/valid_2_bwf.wav",
+        "tests/data/audio_mpeg/valid_1.mp3",
+        "tests/data/text_xml/valid_1.0_gpx_1.0.xml",
+        "tests/data/application_vnd.openxmlformats-officedocument"
+        ".presentationml.presentation/valid_2007 onwards.pptx",
+        "tests/data/application_vnd.openxmlformats-officedocument"
+        ".spreadsheetml.sheet/valid_2007 onwards.xlsx",
+        "tests/data/application_msword/valid_97-2003.doc",
+    ):
+        pytest.skip(
+            "The version of {fullname} is currently not detected without"
+            " extractors"
+        )
+
+    # Detect filetype, and check that detected mimetype+version is
+    # expected.
+    scraper = Scraper(fullname)
+    mimetype, version = scraper.detect_filetype()
+
+    # TODO: Detectors handle unkown versions inconsistently, so let's
+    # just map all of them to None until the problem is fixed.
+    if expected_version == "(:unap)":
+        expected_version = None
+    if version == "(:unap)":
+        version = None
+    if version == "":  # What does "" even mean? "(:unap)"? "(:unav)"?
+        version = None
+
+    # TODO: Detectors should produce lower-case mimetyps, like
+    # extractors already do.
+    expected_mimetype = expected_mimetype.lower()
+
+    assert mimetype == expected_mimetype
+    assert version == expected_version
