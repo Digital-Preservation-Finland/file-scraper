@@ -66,11 +66,10 @@ VERSION_DICT = {
         # Try for example tests/data/audio_x-wav/valid_2_bwf.wav
         "0 PCM Encoding": None,
     },
-    "audio/ac3": {None: UNAP},
     "audio/flac": {
         # TODO: Other versions are probably possible, and all of them
-        # should be UNAP?
-        "1.2.1": UNAP,
+        # should be None?
+        "1.2.1": None,
     },
     "image/gif": {
         "87a": "1987a",
@@ -82,7 +81,7 @@ VERSION_DICT = {
     },
     None: {
         # Fido detects version of video/x-ms-asf, but not the mimetype?
-        "9 Advanced Profile (WVC1)": UNAP,
+        "9 Advanced Profile (WVC1)": None,
         # Fido detects wrong AIFF version, and not the mimetype? Try for
         # example tests/data/audio_x-aiff/valid_1.3.aiff
         "1.2": None,

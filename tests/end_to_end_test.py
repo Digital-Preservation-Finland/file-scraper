@@ -810,8 +810,8 @@ def test_detect_filetype(fullname, expected_mimetype, expected_version):
     # All tiff 6.0 files, for example valid_6.0_latin1_exif_field.tif
     if expected_mimetype in ("image/tiff", "image/png", "audio/x-aiff"):
         pytest.skip(
-            f"The version of {expected_mimetype} files is currently not detected"
-            " without extractors"
+            f"The version of {expected_mimetype} files is currently not"
+            " detected without extractors"
         )
 
     if fullname in (
@@ -834,18 +834,9 @@ def test_detect_filetype(fullname, expected_mimetype, expected_version):
     scraper = Scraper(fullname)
     mimetype, version = scraper.detect_filetype()
 
-    # TODO: Detectors handle unkown versions inconsistently, so let's
-    # just map all of them to None until the problem is fixed.
+    # Detectors do not know when version is unavailable
     if expected_version == "(:unap)":
         expected_version = None
-    if version == "(:unap)":
-        version = None
-    if version == "":  # What does "" even mean? "(:unap)"? "(:unav)"?
-        version = None
 
-    # TODO: Detectors should produce lower-case mimetyps, like
-    # extractors already do.
-    expected_mimetype = expected_mimetype.lower()
-
-    assert mimetype == expected_mimetype
+    assert mimetype == expected_mimetype.lower()
     assert version == expected_version

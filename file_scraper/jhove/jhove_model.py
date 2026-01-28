@@ -265,7 +265,7 @@ class JHovePdfMeta(JHoveBaseMeta):
 class JHoveWavMeta(JHoveBaseMeta):
     """Metadata model for wav files scraped with JHove"""
 
-    _supported = {"audio/x-wav": ["", "2"]}
+    _supported = {"audio/x-wav": ["2"]}
     _allow_any_version = True
 
     @BaseMeta.metadata()
@@ -419,7 +419,7 @@ class JHoveDngMeta(JHoveBaseMeta):
 class JHoveAiffMeta(JHoveBaseMeta):
     """Metadata model for AIFF files scraped with JHove"""
 
-    _supported = {"audio/x-aiff": ["", "1.3"]}
+    _supported = {"audio/x-aiff": ["1.3"]}
     _allow_any_version = True
 
     @BaseMeta.metadata()

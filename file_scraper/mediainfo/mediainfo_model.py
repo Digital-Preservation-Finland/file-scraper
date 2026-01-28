@@ -292,14 +292,14 @@ class BaseMediainfoMeta(BaseMeta):
 class ContainerMediainfoMeta(BaseMediainfoMeta):
     """Metadata model for container streams."""
 
-    _supported = {"audio/mp4": [""],
-                  "video/avi": [""],
-                  "video/mp1s": [""],
-                  "video/mp2p": [""],
-                  "video/mp2t": [""],
-                  "video/mp4": [""],
-                  "video/quicktime": [""],
-                  "video/x-ms-asf": [""]}
+    _supported = {"audio/mp4": [],
+                  "video/avi": [],
+                  "video/mp1s": [],
+                  "video/mp2p": [],
+                  "video/mp2t": [],
+                  "video/mp4": [],
+                  "video/quicktime": [],
+                  "video/x-ms-asf": []}
     _allow_any_version = True
 
     @BaseMeta.metadata()
@@ -330,7 +330,7 @@ class MkvMediainfoMeta(BaseMediainfoMeta):
 class FfvMediainfoMeta(BaseMediainfoMeta):
     """Metadata model for FF Video Codec 1."""
 
-    _supported = {"video/x-ffv": [""]}
+    _supported = {"video/x-ffv": []}
     _allow_any_version = True
 
     @BaseMeta.metadata()
@@ -350,7 +350,7 @@ class FfvMediainfoMeta(BaseMediainfoMeta):
 class DvMediainfoMeta(BaseMediainfoMeta):
     """Metadata model for Digital Video."""
 
-    _supported = {"video/dv": [""]}
+    _supported = {"video/dv": []}
     _allow_any_version = True
 
     @BaseMeta.metadata()
@@ -366,10 +366,10 @@ class DvMediainfoMeta(BaseMediainfoMeta):
 class LpcmMediainfoMeta(BaseMediainfoMeta):
     """Metadata model for Linear Pulse-Code Modulation audio."""
 
-    _supported = {"audio/l8": [""],
-                  "audio/l16": [""],
-                  "audio/l20": [""],
-                  "audio/l24": [""]}
+    _supported = {"audio/l8": [],
+                  "audio/l16": [],
+                  "audio/l20": [],
+                  "audio/l24": []}
     _allow_any_version = True
 
     @BaseMeta.metadata()
@@ -393,7 +393,7 @@ class LpcmMediainfoMeta(BaseMediainfoMeta):
 class AiffMediainfoMeta(BaseMediainfoMeta):
     """Metadata model for AIFF audio."""
 
-    _supported = {"audio/x-aiff": ["", "1.3"]}
+    _supported = {"audio/x-aiff": ["1.3"]}
     _allow_any_version = True
 
     def __init__(self, tracks, index):
@@ -591,7 +591,7 @@ class WmvMediainfoMeta(BaseMediainfoMeta):
 class FlacMediainfoMeta(BaseMediainfoMeta):
     """Metadata model for FLAC audio."""
 
-    _supported = {"audio/flac": [""]}
+    _supported = {"audio/flac": []}
     _allow_any_version = True
 
     def __init__(self, tracks, index):
@@ -627,7 +627,7 @@ class FlacMediainfoMeta(BaseMediainfoMeta):
 class WavMediainfoMeta(BaseMediainfoMeta):
     """Metadata model for WAV audio."""
 
-    _supported = {"audio/x-wav": ["2", ""]}
+    _supported = {"audio/x-wav": ["2"]}
     _allow_any_version = True
 
     def __init__(self, tracks, index):
@@ -664,10 +664,10 @@ class MpegMediainfoMeta(BaseMediainfoMeta):
 
     # Supported mimetypes
     _supported = {"audio/mpeg": ["1", "2"],
-                  "audio/aac": [""],
+                  "audio/aac": [],
                   "video/mpeg": ["1", "2"],
-                  "video/h264": [""],
-                  "video/h265": [""]}
+                  "video/h264": [],
+                  "video/h265": []}
     _allow_any_version = True
 
     @BaseMeta.metadata()
@@ -730,8 +730,8 @@ class VersionlessFormatMeta(BaseMediainfoMeta):
     """Generic metadata model for stream formats, which do not have a version.
     """
 
-    _supported = {"video/x.fi-dpres.prores": [""],
-                  "audio/ac3": [""]}
+    _supported = {"video/x.fi-dpres.prores": [],
+                  "audio/ac3": []}
     _allow_any_version = True
 
     @BaseMeta.metadata()
@@ -750,12 +750,12 @@ class ImageMediaInfoMeta(BaseMediainfoMeta):
     images that exist in containers, but more precise metadata can be gathered
     with other extractors
     """
-    _supported = {"image/jpeg": [""], "image/png": [""]}
+    _supported = {"image/jpeg": [], "image/png": []}
     _allow_any_version = True
 
 
 class UnknownStreamFormatMeta(BaseMediainfoMeta):
     """Metadata model for streams that were not detected."""
 
-    _supported = {None: [""]}
+    _supported = {None: []}
     _allow_any_version = True

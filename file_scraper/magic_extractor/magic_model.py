@@ -285,7 +285,7 @@ class PngFileMagicMeta(BinaryMagicBaseMeta):
 class AiffFileMagicMeta(BinaryMagicBaseMeta):
     """Metadata model for AIFF files."""
 
-    _supported = {"audio/x-aiff": ["", "1.3"]}  # Supported mimetype
+    _supported = {"audio/x-aiff": ["1.3"]}  # Supported mimetype
     _allow_any_version = True
 
     @BaseMeta.metadata()
@@ -353,7 +353,7 @@ class JpegFileMagicMeta(BinaryMagicBaseMeta):
 class Jp2FileMagicMeta(BinaryMagicBaseMeta):
     """Metadata model for JP2 files."""
 
-    _supported = {"image/jp2": [""]}  # Supported mimetype
+    _supported = {"image/jp2": []}  # Supported mimetype
     _allow_any_version = True
 
     @BaseMeta.metadata()
