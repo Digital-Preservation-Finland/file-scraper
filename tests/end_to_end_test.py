@@ -661,42 +661,44 @@ def test_given_filetype(
     """
     Test the scraping to be done as user given file type.
 
-    MIME type and version results are checked both directly from the scraper
-    and for well-formed files also from the first stream. In addition to this,
-    well-formedness status of the file should be as expected.
+    MIME type and version results are checked both directly from the
+    scraper and for well-formed files also from the first stream. In
+    addition to this, well-formedness status of the file should be as
+    expected.
 
-    :filepath: Test file path
-    :params: Parameters for Scraper
-    :well_formed: Expected result of well-formedness
-    :expected_mimetype: Expected MIME type result
-    :exprected_version: Expected file format version
+    :param filepath: Test file path
+    :param params: Parameters for Scraper
+    :param well_formed: Expected result of well-formedness when scraping
+        with well-formed check
+    :param expected_mimetype: Expected MIME type result
+    :param expected_version: Expected file format version
+    :param expected_charset: Expected charset
+    :param well_formed: Expected result of well-formedness
+    :param meta_well_formed: Expected result of well-formedness when
+        scraping without well-formed check
     """
+    # Scrape with well-formed check
     scraper = Scraper(filename=filepath, **params)
-
     scraper.scrape()
-
     assert scraper.mimetype == expected_mimetype
     assert scraper.version == expected_version
     if expected_charset:
         assert scraper.streams[0]["charset"] == expected_charset
     else:
         assert "charset" not in scraper.streams[0]
-
     assert scraper.streams[0]["mimetype"] == expected_mimetype
     assert scraper.streams[0]["version"] == expected_version
-
     assert scraper.well_formed == well_formed
-    # Just collect metadata without well-formedness checking
 
+    # Scrape without well-formedness checking
     scraper = Scraper(filename=filepath, **params)
-    scraper.scrape(False)
+    scraper.scrape(check_wellformed=False)
     assert scraper.mimetype == expected_mimetype
     assert scraper.version == expected_version
     if expected_charset:
         assert scraper.streams[0]["charset"] == expected_charset
     else:
         assert "charset" not in scraper.streams[0]
-
     assert scraper.streams[0]["mimetype"] == expected_mimetype
     assert scraper.streams[0]["version"] == expected_version
     assert scraper.well_formed == meta_well_formed
