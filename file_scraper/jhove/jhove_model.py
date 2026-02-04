@@ -356,7 +356,7 @@ class JHoveUtf8Meta(JHoveBaseMeta):
         If the well-formed status from extractor is False,
         then we do not know the actual stream type.
         """
-        return "text" if self._well_formed else UNAV
+        return "text" if self._well_formed is not False else UNAV
 
     @BaseMeta.metadata()
     def mimetype(self):

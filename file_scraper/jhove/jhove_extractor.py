@@ -1,6 +1,6 @@
 """Extractor for gif, html, jpeg, tif, pdf and wav files using JHove."""
 from __future__ import annotations
-from typing import TypeVar
+from typing import TypeVar, Literal
 
 try:
     import lxml.etree
@@ -213,6 +213,22 @@ class JHoveUtf8Extractor(JHoveExtractorBase[JHoveUtf8Meta]):
 
     def _validate(self):
         """Do nothing: we dont care about the mimetype or version."""
+
+    @property
+    def well_formed(self) -> Literal[False] | None:
+        """Return well-formedness status of the scraped file.
+
+        This extractor validates only the file encoding, so some other
+        extractor must validate the syntax. Therefore, this method will
+        never return `True`.
+
+        :returns: False if encoding is OK None otherwise.
+        """
+        valid = super().well_formed
+        if not valid:
+            return valid
+
+        return None
 
     def iterate_models(self, **kwargs):
         """

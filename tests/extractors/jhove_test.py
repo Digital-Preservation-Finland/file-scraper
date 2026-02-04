@@ -360,6 +360,10 @@ def test_extractor_utf8(filename, result_dict, evaluate_extractor):
     extractor.extract()
     correct.streams[0]["mimetype"] = UNAV
     correct.streams[0]["version"] = UNAV
+    # JHoveUtf8Extractor will only validate charset, so it can not
+    # decide that file is well_formed
+    if correct.well_formed is True:
+        correct.well_formed = None
 
     evaluate_extractor(extractor, correct)
 

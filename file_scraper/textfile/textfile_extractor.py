@@ -28,19 +28,6 @@ class TextfileExtractor(BaseExtractor[TextFileMeta]):
     _allow_unav_mime = True
     _allow_unav_version = True
 
-    @property
-    def well_formed(self) -> Literal[False] | None:
-        """TextfileExtractor is not able to check well-formedness.
-
-        :returns: False if TextfileExtractor can not open or handle the file,
-                  None otherwise.
-        """
-        valid = super().well_formed
-        if not valid:
-            return valid
-
-        return None
-
     def _file_mimetype(self) -> str:
         """
         Detect MIME type by only running `soft` check and returning
@@ -207,6 +194,22 @@ class TextEncodingExtractor(BaseExtractor[TextEncodingMeta]):
 
     _allow_unav_mime = True
     _allow_unav_version = True
+
+    @property
+    def well_formed(self) -> Literal[False] | None:
+        """Return well-formedness status of the scraped file.
+
+        This extractor validates only the file encoding, so some other
+        extractor must validate the syntax. Therefore, this method will
+        never return `True`.
+
+        :returns: False if encoding is OK None otherwise.
+        """
+        valid = super().well_formed
+        if not valid:
+            return valid
+
+        return None
 
     def _extract(self) -> None:
         """

@@ -92,7 +92,7 @@ def test_existing_files(filename, mimetype, is_textfile, special_handling,
         correct.streams[0]["version"] = UNAV
 
     correct.well_formed = (False if special_handling or not is_textfile
-                           else None)
+                           else True)
 
     if correct.well_formed is False:
         assert partial_message_included(INVALID_MSG, extractor.errors())
@@ -107,58 +107,58 @@ def test_existing_files(filename, mimetype, is_textfile, special_handling,
 @pytest.mark.parametrize(
     ["filename", "charset", "is_wellformed"],
     [
-        ("valid__ascii.txt", "UTF-8", True),
+        ("valid__ascii.txt", "UTF-8", None),
         ("valid__ascii.txt", "UTF-16", False),
         ("valid__ascii.txt", "UTF-32", False),
-        ("valid__ascii.txt", "ISO-8859-15", True),
-        ("valid__utf8_without_bom.txt", "UTF-8", True),
+        ("valid__ascii.txt", "ISO-8859-15", None),
+        ("valid__utf8_without_bom.txt", "UTF-8", None),
         ("valid__utf8_without_bom.txt", "UTF-16", False),
         ("valid__utf8_without_bom.txt", "UTF-32", False),
         ("valid__utf8_without_bom.txt", "ISO-8859-15", False),
-        ("valid__utf8_bom.txt", "UTF-8", True),
+        ("valid__utf8_bom.txt", "UTF-8", None),
         ("valid__utf8_bom.txt", "UTF-16", False),
         ("valid__utf8_bom.txt", "UTF-32", False),
         ("valid__utf8_bom.txt", "ISO-8859-15", False),
         ("valid__utf16be_without_bom.txt", "UTF-8", False),
-        ("valid__utf16be_without_bom.txt", "UTF-16", True),
+        ("valid__utf16be_without_bom.txt", "UTF-16", None),
         ("valid__utf16be_without_bom.txt", "UTF-32", False),
         ("valid__utf16be_without_bom.txt", "ISO-8859-15", False),
         ("valid__utf16be_bom.txt", "UTF-8", False),
-        ("valid__utf16be_bom.txt", "UTF-16", True),
+        ("valid__utf16be_bom.txt", "UTF-16", None),
         ("valid__utf16be_bom.txt", "UTF-32", False),
         ("valid__utf16be_bom.txt", "ISO-8859-15", False),
         ("valid__utf16le_without_bom.txt", "UTF-8", False),
-        ("valid__utf16le_without_bom.txt", "UTF-16", True),
+        ("valid__utf16le_without_bom.txt", "UTF-16", None),
         ("valid__utf16le_without_bom.txt", "UTF-32", False),
         ("valid__utf16le_without_bom.txt", "ISO-8859-15", False),
         ("valid__utf16le_bom.txt", "UTF-8", False),
-        ("valid__utf16le_bom.txt", "UTF-16", True),
+        ("valid__utf16le_bom.txt", "UTF-16", None),
         ("valid__utf16le_bom.txt", "UTF-32", False),
         ("valid__utf16le_bom.txt", "ISO-8859-15", False),
         ("valid__utf32be_without_bom.txt", "UTF-8", False),
         ("valid__utf32be_without_bom.txt", "UTF-16", False),
-        ("valid__utf32be_without_bom.txt", "UTF-32", True),
+        ("valid__utf32be_without_bom.txt", "UTF-32", None),
         ("valid__utf32be_without_bom.txt", "ISO-8859-15", False),
         ("valid__utf32be_bom.txt", "UTF-8", False),
         ("valid__utf32be_bom.txt", "UTF-16", False),
-        ("valid__utf32be_bom.txt", "UTF-32", True),
+        ("valid__utf32be_bom.txt", "UTF-32", None),
         ("valid__utf32be_bom.txt", "ISO-8859-15", False),
         ("valid__utf32le_without_bom.txt", "UTF-8", False),
         ("valid__utf32le_without_bom.txt", "UTF-16", False),
-        ("valid__utf32le_without_bom.txt", "UTF-32", True),
+        ("valid__utf32le_without_bom.txt", "UTF-32", None),
         ("valid__utf32le_without_bom.txt", "ISO-8859-15", False),
         ("valid__utf32le_bom.txt", "UTF-8", False),
         ("valid__utf32le_bom.txt", "UTF-16", False),
-        ("valid__utf32le_bom.txt", "UTF-32", True),
+        ("valid__utf32le_bom.txt", "UTF-32", None),
         ("valid__utf32le_bom.txt", "ISO-8859-15", False),
         ("valid__iso8859.txt", "UTF-8", False),
         ("valid__iso8859.txt", "UTF-16", False),
         ("valid__iso8859.txt", "UTF-32", False),
-        ("valid__iso8859.txt", "ISO-8859-15", True),
-        ("invalid__empty.txt", "ISO-8859-15", True),
-        ("valid__utf16le_multibyte.txt", "UTF-16", True),
-        ("valid__utf16be_multibyte.txt", "UTF-16", True),
-        ("valid__utf8_multibyte.txt", "UTF-8", True),
+        ("valid__iso8859.txt", "ISO-8859-15", None),
+        ("invalid__empty.txt", "ISO-8859-15", None),
+        ("valid__utf16le_multibyte.txt", "UTF-16", None),
+        ("valid__utf16be_multibyte.txt", "UTF-16", None),
+        ("valid__utf8_multibyte.txt", "UTF-8", None),
         ("invalid__utf8_just_c3.txt", "UTF-8", False),
         ("invalid__unknown_encoding_cp437.txt", "UNKNOWN-8BIT", False),
         ("invalid__unknown_encoding_cp437.txt", "ISO-8859-15", False),
@@ -173,30 +173,23 @@ def test_encoding_check(filename, charset, is_wellformed, evaluate_extractor):
     :is_wellformed: Expected result of well-formedness
     """
     correct = parse_results(filename, "text/plain", {}, True)
+    correct.well_formed = is_wellformed
     extractor = TextEncodingExtractor(
         filename=correct.filename,
         mimetype="text/plain",
         charset=charset,
     )
     extractor.extract()
-    if not is_wellformed:
-        correct.update_mimetype(UNAV)
-        correct.update_version(UNAV)
-        correct.streams[0]["stream_type"] = UNAV
+    if is_wellformed is False:
+        assert partial_message_included("decoding error", extractor.errors())
+        assert extractor.well_formed is False
     else:
         correct.update_mimetype("text/plain")
         correct.update_version(UNAP)
         correct.streams[0]["stream_type"] = "text"
-
-    correct.well_formed = is_wellformed
-    if correct.well_formed:
         correct.stdout_part = "encoding validated successfully"
         correct.stderr_part = ""
         evaluate_extractor(extractor, correct)
-    else:
-        assert partial_message_included("decoding error", extractor.errors())
-        assert extractor.errors()
-        assert not extractor.well_formed
 
 
 def test_decoding_limit(monkeypatch):
