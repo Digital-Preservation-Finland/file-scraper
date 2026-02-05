@@ -17,8 +17,10 @@ import pytest
 
 from file_scraper.defaults import UNAV
 from file_scraper.dummy.dummy_extractor import (
-    ExtractorNotFound, DetectedMimeVersionExtractor,
-    DetectedMimeVersionMetadataExtractor)
+    ExtractorNotFound,
+    DetectedMimeVersionExtractor,
+    DetectedMimeVersionMetadataExtractor,
+)
 
 DEFAULTSTREAMS = {0: {"index": 0, "version": UNAV,
                       "stream_type": UNAV, "mimetype": UNAV}}
@@ -71,17 +73,6 @@ def test_extractor_not_found_with_given_mimetype_and_version():
 def test_detected_version_extractor():
     """Test detected version extractor"""
     filename = Path("tests/data/text_plain/valid__ascii.txt")
-    extractor = DetectedMimeVersionMetadataExtractor(
-        filename, "text/xml", params={"detected_version": "123"})
-    extractor.extract()
-    assert extractor.well_formed is False
-    assert extractor.streams[0].version() == "123"
-
-    extractor = DetectedMimeVersionMetadataExtractor(
-        filename, "text/xml", params=None)
-    extractor.extract()
-    assert extractor.well_formed is None
-    assert extractor.streams[0].version() == "1.0"
 
     # This test apparently tests that the extractor output validates as False
     extractor = DetectedMimeVersionMetadataExtractor(
@@ -90,21 +81,14 @@ def test_detected_version_extractor():
     assert len(extractor.errors()) > 0
     assert extractor.streams == []
 
-    extractor = DetectedMimeVersionExtractor(
+    extractor = DetectedMimeVersionMetadataExtractor(
         filename, "application/x-siard", params={"detected_version": "2.1.1"})
     extractor.extract()
     assert extractor.well_formed is None
     assert extractor.streams[0].version() == "2.1.1"
     assert extractor.streams[0].stream_type() == "binary"
 
-    extractor = DetectedMimeVersionExtractor(
-        filename, "application/vnd.oasis.opendocument.text",
-        params={"detected_version": "123"})
-    extractor.extract()
-    assert extractor.well_formed is False
-    assert extractor.streams[0].version() == "123"
-
-    extractor = DetectedMimeVersionExtractor(
+    extractor = DetectedMimeVersionMetadataExtractor(
         filename, "application/epub+zip",
         params={"detected_version": "3"})
     extractor.extract()

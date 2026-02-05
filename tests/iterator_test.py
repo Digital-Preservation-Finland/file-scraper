@@ -37,8 +37,7 @@ WELLFORMED_EXTRACTORS = [
         ("video/x-matroska", None, ["MediainfoExtractor", "FFMpegExtractor"]),
         ("video/dv", None, ["MediainfoExtractor", "FFMpegExtractor"]),
         ("video/quicktime", None, ["MediainfoExtractor", "FFMpegExtractor"]),
-        ("application/epub+zip", "3", ["JHoveEpubExtractor",
-                                       "DetectedMimeVersionExtractor"]),
+        ("application/epub+zip", "3", ["JHoveEpubExtractor"]),
         ("application/mxf", None, ["FFMpegExtractor"]),
         ("application/pdf", "1.2", ["MagicBinaryExtractor", "JHovePdfExtractor",
                                     "GhostscriptExtractor"]),
@@ -93,20 +92,15 @@ WELLFORMED_EXTRACTORS = [
         ("audio/x-wav", None, ["FFMpegExtractor", "JHoveWavExtractor",
                                "MediainfoExtractor"]),
         ("application/vnd.oasis.opendocument.text", None,
-         ["DetectedMimeVersionExtractor", "OfficeExtractor",
-          "MagicBinaryExtractor"]),
+         ["OfficeExtractor", "MagicBinaryExtractor"]),
         ("application/vnd.oasis.opendocument.spreadsheet", None,
-         ["DetectedMimeVersionExtractor", "OfficeExtractor",
-          "MagicBinaryExtractor"]),
+         ["OfficeExtractor", "MagicBinaryExtractor"]),
         ("application/vnd.oasis.opendocument.presentation", None,
-         ["DetectedMimeVersionExtractor", "OfficeExtractor",
-          "MagicBinaryExtractor"]),
+         ["OfficeExtractor", "MagicBinaryExtractor"]),
         ("application/vnd.oasis.opendocument.graphics", None,
-         ["DetectedMimeVersionExtractor", "OfficeExtractor",
-          "MagicBinaryExtractor"]),
+         ["OfficeExtractor", "MagicBinaryExtractor"]),
         ("application/vnd.oasis.opendocument.formula", None,
-         ["DetectedMimeVersionExtractor", "OfficeExtractor",
-          "MagicBinaryExtractor"]),
+         ["OfficeExtractor", "MagicBinaryExtractor"]),
         ("application/msword", "97-2003", ["OfficeExtractor",
                                            "MagicBinaryExtractor"]),
         ("application/vnd.ms-excel", "8X", ["OfficeExtractor",
@@ -147,9 +141,7 @@ def test_iter_extractors(mimetype, version, extractor_classes):
     ]
     if mimetype == "application/mxf":
         extractor_classes = ["FFMpegMetaExtractor"]
-    if mimetype in ["application/x-spss-por", "text/html", "text/xml"] or \
-            mimetype == "application/pdf" and version in \
-            ["A-1a", "A-1b", "A-2a", "A-2b", "A-2u", "A-3a", "A-3b", "A-3u"]:
+    if mimetype in ["application/x-spss-por", "application/epub+zip"]:
         extractor_classes.append("DetectedMimeVersionMetadataExtractor")
 
     extractors = iter_extractors(mimetype, version, False)

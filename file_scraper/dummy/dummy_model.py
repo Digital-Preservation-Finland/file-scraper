@@ -4,51 +4,6 @@ from __future__ import annotations
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAP, UNAV
-from file_scraper.state import Mimetype
-
-
-class UserDefinedMeta(BaseMeta):
-    """
-    User defined metadata model. Supports only user supplied metadata.
-    This metadata won't require any extractor since user defined metadata
-    is instantly available.
-    """
-
-    _allow_any_version = True
-
-    def __init__(self, mimetype: Mimetype):
-        super().__init__()
-        self._supported = {mimetype.mimetype: [mimetype.version]}
-        self._mimetype = mimetype
-
-    @BaseMeta.metadata()
-    def mimetype(self) -> str:
-        if self._mimetype.mimetype is None:
-            return UNAV
-        return self._mimetype.mimetype
-
-    @BaseMeta.metadata()
-    def version(self) -> str:
-        if self._mimetype.version is None:
-            return UNAV
-        return self._mimetype.version
-
-
-class UserDefinedCharsetMeta(UserDefinedMeta):
-    """
-    User defined metadata model.
-    Alternative to the original UserDefinedMeta, includes also the charset.
-    """
-
-    def __init__(self, mimetype: Mimetype, charset: str):
-        super().__init__(mimetype)
-        self._charset = charset
-
-    @BaseMeta.metadata()
-    def charset(self) -> str:
-        if self._charset is None:
-            return UNAV
-        return self._charset
 
 
 class ExtractorNotFoundMeta(BaseMeta):
@@ -56,6 +11,9 @@ class ExtractorNotFoundMeta(BaseMeta):
     Metadata model for ExtractorNotFound extractor. Otherwise minimal model,
     but allows setting mimetype and version, if detected.
     """
+
+    # TODO: What is the point of this metadata model? Could Scraper
+    # simply raise exception when extractor is not found? TPASPKT-1669
 
     def __init__(self, mimetype=None, version=None):
         """
@@ -83,57 +41,19 @@ class ExtractorNotFoundMeta(BaseMeta):
 
 
 class DetectedMimeVersionMeta(BaseMeta):
-    """
-    This model results the given file format MIME type and version for some
-    file formats. The corresponding extractor gets the version as a parameter
-    originally from a detector and results it as a extractor value.
+    """Metadata model based on detected/predefined metadata.
 
-    We don't currently know any other constructive way to get file format
-    version for a few formats.
+    This model is needed because there is no extractors for file formats
+    that are preserved only bit-level, but file-scraper still has to
+    detect them. The purpose of this model is to:
 
-    We also use this model for file formats for bit-level preservation,
-    to avoid message about missing extractor.
+    1. Avoid ExtractorNotFoundMeta
+    2. Set stream type to "binary"
     """
 
     _supported = {
-        "application/epub+zip": ["2.0.1", "3"],
-        "application/vnd.oasis.opendocument.text": [
-            "1.0",
-            "1.1",
-            "1.2",
-            "1.3",
-            "1.4",
-        ],
-        "application/vnd.oasis.opendocument.spreadsheet": [
-            "1.0",
-            "1.1",
-            "1.2",
-            "1.3",
-            "1.4",
-        ],
-        "application/vnd.oasis.opendocument.presentation": [
-            "1.0",
-            "1.1",
-            "1.2",
-            "1.3",
-            "1.4",
-        ],
-        "application/vnd.oasis.opendocument.graphics": [
-            "1.0",
-            "1.1",
-            "1.2",
-            "1.3",
-            "1.4",
-        ],
-        "application/vnd.oasis.opendocument.formula": [
-            "1.0",
-            "1.2",
-            "1.3",
-            "1.4",
-        ],
         "application/x.fi-dpres.segy": ["(:unkn)", "1.0", "2.0"],
         "application/x.fi-dpres.atlproj": ["(:unap)"],
-        "audio/ac3": ["(:unap)"],
     }
 
     def __init__(self, mimetype: str | None, version: str | None) -> None:
@@ -160,24 +80,40 @@ class DetectedMimeVersionMeta(BaseMeta):
     @BaseMeta.metadata()
     def stream_type(self) -> str:
         """Return stream type."""
-        # AC-3 is an audio stream, the other supported formats are
-        # binary formats
-        if self.mimetype() == "audio/ac3":
-            return "audio"
+        return "binary"
 
-        return "binary" if self.mimetype() != UNAV else UNAV
+
+class DetectedEpubVersionMeta(DetectedMimeVersionMeta):
+    """Identical with DetectedEpubVersionMeta but supports only EPUB.
+
+    This model is needed because only proper epub extractor is
+    JHoveEpubExtractor, which is used only when well-formedness is
+    checked. When well-formedness is not checked, this model is used to:
+
+    1. Avoid ExtractorNotFoundMeta
+    2. Set stream type to "binary"
+    """
+
+    _supported = {
+        "application/epub+zip": ["2.0.1", "3"],
+    }
 
 
 class DetectedSpssVersionMeta(DetectedMimeVersionMeta):
     """
     Variation of DetectedMimeVersionMeta model for SPSS Portable files.
 
+    This model is needed because only proper spss extractor is
+    PsppExtractor, which is used only when well-formedness is checked.
+    When well-formedness is not checked, this model is used to:
+
+    1. Avoid ExtractorNotFoundMeta
+    2. Set version to "(:unap)"
+    3. Set stream type to "binary"
+
     We allow all versions.
-
-    Full scraping actually is able to result the same, but this is needed
-    when extractor is used for metadata collecting.
-
     """
+
     _supported = {
         "application/x-spss-por": []
     }
@@ -186,6 +122,9 @@ class DetectedSpssVersionMeta(DetectedMimeVersionMeta):
     @BaseMeta.metadata()
     def version(self):
         """Return the file format version"""
+        # TODO: Why extractors have to decide whether version is UNAP or
+        # not? The same information could be automatically derived from
+        # data in dpres-file-formats.
         return UNAP
 
 
@@ -193,59 +132,15 @@ class DetectedSiardVersionMeta(DetectedMimeVersionMeta):
     """
     Variation of DetectedMimeVersionMeta model for SIARD files.
 
-    This extractor collects MIME type, file format version and stream type
-    for SIARD files. It is used both when detecting file formats and in
-    full scraping, as the DBPTK-extractor for SIARD files does not provide
-    file format version or stream type.
+    This model is needed because only proper siard extractor is
+    DbptkExtractor, which is used only when well-formedness is checked.
+    When well-formedness is not checked, this model is used to:
 
-    We allow all versions.
+    1. Avoid ExtractorNotFoundMeta
+    3. Set stream type to "binary"
     """
+
     _supported = {
         "application/x-siard": []
     }
     _allow_any_version = True
-
-
-class DetectedTextVersionMeta(DetectedMimeVersionMeta):
-    """
-    Variation of DetectedMimeVersionMeta model for some text files.
-
-    Full scraping actually is able to result the same, but this is needed
-    when Extractor is used for metadata collecting.
-    """
-    _supported = {
-        "text/html": ["4.01", "5"],
-        "text/xml": ["1.0"],
-    }
-
-    @BaseMeta.metadata()
-    def version(self):
-        """Return version."""
-        version = super().version()
-        if version == UNAV and self.mimetype() == "text/xml":
-            return "1.0"
-        return version
-
-    @BaseMeta.metadata()
-    def stream_type(self):
-        """Return stream type."""
-        return "text" if self.mimetype() != UNAV else UNAV
-
-
-class DetectedPdfaVersionMeta(DetectedMimeVersionMeta):
-    """
-    Variation of DetectedMimeVersionMeta model for PDF/A files.
-
-    We keep the version important.
-
-    Full scraping actually is able to result the same, but this is needed
-    when extractor is used for metadata collecting.
-    """
-    # Supported mimetypes and versions
-    _supported = {"application/pdf": ["A-1a", "A-1b", "A-2a", "A-2b", "A-2u",
-                                      "A-3a", "A-3b", "A-3u"]}
-
-    @BaseMeta.metadata()
-    def version(self):
-        """Return the file format version"""
-        return self._version if self._version is not None else UNAV
