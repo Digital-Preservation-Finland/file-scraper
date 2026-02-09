@@ -4,21 +4,20 @@ from __future__ import annotations
 import os
 import tempfile
 from io import open as io_open
-from pathlib import Path
+from typing import TYPE_CHECKING
 
+from lxml import etree
 from xml_helpers.utils import iter_elements
 
 from file_scraper.base import BaseExtractor
-from file_scraper.shell import Shell
 from file_scraper.logger import LOGGER
+from file_scraper.shell import Shell
 from file_scraper.utils import ensure_text
 from file_scraper.xmllint.xmllint_model import XmllintMeta
 
-try:
-    from lxml import etree
-except ImportError:
-    # TODO: When ImportError might be raised, and why it is ok?
-    pass
+if TYPE_CHECKING:
+    from pathlib import Path
+
 
 XSI = "http://www.w3.org/2001/XMLSchema-instance"
 XS = "{http://www.w3.org/2001/XMLSchema}"

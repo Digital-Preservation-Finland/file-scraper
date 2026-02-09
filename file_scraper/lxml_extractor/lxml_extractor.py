@@ -1,10 +1,6 @@
 """Class for XML and HTML5 header encoding check with lxml."""
 
-try:
-    from lxml import etree
-except ImportError:
-    # TODO: Why ImportError might be raised, and why it is ok?
-    pass
+from lxml import etree
 
 from file_scraper.base import BaseExtractor
 from file_scraper.defaults import COMPATIBLE_ENCODINGS
