@@ -140,6 +140,7 @@ class XmllintExtractor(BaseExtractor[XmllintMeta]):
             #     OSError: Error reading file 'my.xml':
             #     Invalid bytes in character encoding
             # So OSError does not always mean that file is missing.
+            # See TPASPKT-1670.
             self._errors.append("Failed: missing file.")
             self._errors.append(str(exception))
             return

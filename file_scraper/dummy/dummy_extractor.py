@@ -54,7 +54,7 @@ class DetectedMimeVersionExtractor(BaseExtractor):
     """
 
     # TODO: This extractor would be unnecessary if detectors would
-    # extractors. See TPASPKT-1579.
+    # be extractors. See TPASPKT-1579.
 
     @property
     def well_formed(self):

@@ -184,7 +184,7 @@ class BaseMeta:
         for method_name in dir(self):
             method = getattr(self, method_name)
             if not getattr(method, "is_metadata", False):
-                # This method is not metada, skipping...
+                # This method is not metadata, skipping...
                 continue
             try:
                 value = method()
@@ -193,7 +193,6 @@ class BaseMeta:
                 # skipped
                 # TODO: Why does the method then exist? See TPASPKT-1577
                 continue
-            # TODO: replace UNAV with None here as a temporary hack
             metadata[method.__name__] = value
 
         return metadata
@@ -319,6 +318,9 @@ class BaseExtractor(BaseApparatus, Generic[AnyMeta]):
         if mimetype == UNAV and self._allow_unav_mime:
             return
 
+        # TODO: Why we check if any md_class supports mimetype and
+        # version? Why don't just check that self.streams[0] supports
+        # mimetype and version? See also TPASPKT-1574.
         for md_class in self._supported_metadata:
             supported = md_class.supported_mimetypes().get(mimetype, None)
             if supported is None:

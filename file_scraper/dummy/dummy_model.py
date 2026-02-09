@@ -124,7 +124,7 @@ class DetectedSpssVersionMeta(DetectedMimeVersionMeta):
         """Return the file format version"""
         # TODO: Why extractors have to decide whether version is UNAP or
         # not? The same information could be automatically derived from
-        # data in dpres-file-formats.
+        # data in dpres-file-formats. See TPASPKT-1671.
         return UNAP
 
 

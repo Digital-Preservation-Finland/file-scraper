@@ -1,4 +1,4 @@
-# TODO: Rename this module
+# TODO: Rename this module (see TPASPKT-1567)
 """
 Tests for lxml extractor.
 
