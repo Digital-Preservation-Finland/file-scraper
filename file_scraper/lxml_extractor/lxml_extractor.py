@@ -43,41 +43,81 @@ class LxmlExtractor(BaseExtractor[LxmlMeta]):
 
     def _extract(self):
         """Scrape file."""
-        parser = etree.XMLParser(dtd_validation=False, no_network=True,
-                                 recover=True, resolve_entities=False)
-        with open(self.filename, "rb") as file_:
+        # Try to parse file without 'recover' option first. This ensures
+        # that SyntaxError is raised for example when unsupported
+        # encoding is used in XML header
+        tree = None
+        parser = etree.XMLParser(
+            dtd_validation=False,
+            no_network=True,
+            resolve_entities=False,
+            recover=False,
+        )
+        with self.filename.open("rb") as file_:
             try:
                 tree = etree.parse(file_, parser)
+            except OSError:
+                # OSError could be caused for example by invalid
+                # bytes in character encoding, in which case parsing the
+                # file with 'recover' option could work.
+                pass
             except etree.XMLSyntaxError as exception:
-                self._errors.append("Failed: document is not well-formed.")
-                self._errors.append(str(exception))
-                return
+                # Parsing without 'recover' option might raise
+                # XMLSyntaxErrors at least for some valid HTML files, so
+                # we have to parse with 'recover' option.
+                if exception.code == 32:
+                    # libxml2 error XML_ERR_UNSUPPORTED_ENCODING
+                    # This error would be omitted, if 'recover' option
+                    # would be used.
+                    self._errors.append(str(exception))
+                    return
+
+        # If parsing without 'recover' option fails, try to parse with
+        # 'recover' option.
+        if not tree:
+            parser = etree.XMLParser(
+                dtd_validation=False,
+                no_network=True,
+                resolve_entities=False,
+                recover=True,
+            )
+            with self.filename.open("rb") as file_:
+                try:
+                    tree = etree.parse(file_, parser)
+                except etree.XMLSyntaxError as exception:
+                    self._errors.append("Failed: document is not well-formed.")
+                    self._errors.append(str(exception))
+                    return
 
         self.streams = list(self.iterate_models(tree=tree))
+        if not self.streams:
+            # Because the default implementation of is_supported method
+            # is overwritten in this extractor class, this extractor
+            # supports file formats that are not supported by any
+            # metadata model (for example text/xml version foo).
+            # For those file formats, the extractor does not produce any
+            # streams, which leads to error, i.e. the files are always
+            # not well-formed.
+            return
 
-        # Only log success message if at least one metadata model was added to
-        # streams. Check that it corresponds to given charset.
-        if self.streams:
-            self._messages.append("Encoding metadata found.")
-            if not self._predefined_charset:
-                self._errors.append("Character encoding not defined.")
-                return
+        self._messages.append("Encoding metadata found.")
+        if not self._predefined_charset:
+            self._errors.append("Character encoding not defined.")
+            return
 
-            # Note that if header does not contain encoding, lxml will
-            # assume it is UTF-8!
-            encoding_from_header = self.streams[0].charset()
+        encoding_from_header = self.streams[0].charset()
 
-            # If encoding was provided in the XML header, ensure
-            # that it is compatible with the detected/predefined
-            # encoding
-            if encoding_from_header != self._predefined_charset \
-                    and encoding_from_header \
-                    not in COMPATIBLE_ENCODINGS[self._predefined_charset]:
-                self._errors.append(
-                    f"Found encoding declaration {encoding_from_header} from "
-                    f"the file {self.filename}, which is not compatible with "
-                    f"{self._predefined_charset}"
-                )
+        # If encoding was provided in the XML header, ensure
+        # that it is compatible with the detected/predefined
+        # encoding
+        if encoding_from_header != self._predefined_charset \
+                and encoding_from_header \
+                not in COMPATIBLE_ENCODINGS[self._predefined_charset]:
+            self._errors.append(
+                f"Found encoding declaration {encoding_from_header} from "
+                f"the file {self.filename}, which is not compatible with "
+                f"{self._predefined_charset}"
+            )
 
     def tools(self):
         """Return information about the software used by the extractor or

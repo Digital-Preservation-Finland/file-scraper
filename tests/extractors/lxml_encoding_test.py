@@ -41,9 +41,6 @@ from tests.common import partial_message_included
         # ISO-8859-1 is not supported, but is compatible with
         # ISO-8859-15
         ("ISO-8859-1", "ISO-8859-15", "ISO-8859-1"),
-        # If lxml does not recognize the encoding, it will use UTF-8 by
-        # default
-        ("lxml-does-not-recognize-this-encoding", "UTF-8", "UTF-8"),
     ]
 )
 def test_xml_header_encoding(tmpdir, header_encoding, predefined_encoding,
@@ -58,7 +55,7 @@ def test_xml_header_encoding(tmpdir, header_encoding, predefined_encoding,
         should produce
     """
     xml = f'<?xml version="1.0" encoding="{header_encoding}" ?><a>test</a>'
-    tmppath = Path(tmpdir, "test.csv")
+    tmppath = Path(tmpdir, "test.xml")
     # The actual content of file will be only ASCII characters anyway,
     # so we do not have to care about encoding when writing the file
     tmppath.write_text(xml, encoding=None)
@@ -74,15 +71,15 @@ def test_xml_header_encoding(tmpdir, header_encoding, predefined_encoding,
     assert extractor.streams[0].charset() == expected_encoding
 
 
-def test_invalid_xml_encoding(tmpdir):
-    """Test extracting files with invalid encoding in XML header.
+def test_wrong_xml_header_encoding(tmpdir):
+    """Test extracting files with wrong encoding in XML header.
 
     Creates a test file with wrong encoding in header. Error should be
     produced, and file should not be well-formed.
     """
     # ISO-8859-15 encoding in header
     xml = '<?xml version="1.0" encoding="ISO-8859-15" ?><a>test</a>'
-    tmppath = Path(tmpdir, "test.csv")
+    tmppath = Path(tmpdir, "test.xml")
     tmppath.write_text(xml)
 
     extractor = LxmlExtractor(
@@ -102,6 +99,112 @@ def test_invalid_xml_encoding(tmpdir):
     assert extractor.errors()[0].endswith(
         "which is not compatible with UTF-8"
     )
+
+
+def test_unsupported_xml_header_encoding(tmpdir):
+    """Test extracting XML file with unsupported encoding in header."""
+    xml = '<?xml version="1.0" encoding="this-is-not-supported" ?><a>test</a>'
+    tmppath = Path(tmpdir, "test.xml")
+    tmppath.write_text(xml)
+
+    extractor = LxmlExtractor(
+        filename=tmppath,
+        mimetype="text/xml",
+        charset="UTF-8",
+    )
+    extractor.extract()
+
+    assert extractor.well_formed is False
+    # This error message is slightly different in depending on lxml
+    # version:
+    # 4.6.5: Unsupported encoding this-is-not-supported
+    # 6.0.2: Unsupported encoding: this-is-not-supported
+    assert "Unsupported encoding" in extractor.errors()[0]
+    assert "this-is-not-supported" in extractor.errors()[0]
+    assert not extractor.streams
+
+
+def test_invalid_bytes(tmpdir):
+    """Test extracting XML file with invalid encoding.
+
+    Creates a test file where the encoding in header does not match the
+    actual encoding of the file. Extractor should not not crash.
+    """
+    # Create a UTF-8 file with ISO-8859-15 encoding declared in XML
+    # header
+    xml = '<?xml version="1.0" encoding="ISO-8859-15" ?><a>ääää</a>'
+    tmppath = Path(tmpdir, "test.xml")
+    tmppath.write_text(xml, encoding="UTF-8")
+
+    extractor = LxmlExtractor(
+        filename=tmppath,
+        mimetype="text/xml",
+        charset="UTF-8",
+    )
+    extractor.extract()
+
+    assert extractor.well_formed is False
+    assert extractor.errors()[0].startswith(
+        "Found encoding declaration ISO-8859-15"
+    )
+    assert extractor.errors()[0].endswith("not compatible with UTF-8")
+
+
+def test_invalid_bytes_ascii(tmpdir):
+    """Test extracting UTF-8 file with ASCII encoding declared in header.
+
+    The file is technically invalid, but LxmlExtractor omits error,
+    because ASCII is compatible with UTF-8. However, XmllintExtractor
+    extractor reports the file as invalid. So maybe the file should not
+    be well-formed.
+    """
+    # Create a UTF-8 file with some other encoding declared in XML
+    # header
+    xml = '<?xml version="1.0" encoding="US-ASCII" ?><a>ääää</a>'
+    tmppath = Path(tmpdir, "test.xml")
+    tmppath.write_text(xml, encoding="UTF-8")
+
+    extractor = LxmlExtractor(
+        filename=tmppath,
+        mimetype="text/xml",
+        charset="UTF-8",
+    )
+    extractor.extract()
+
+    assert extractor.well_formed is True
+    assert extractor.streams[0].charset() == "US-ASCII"
+
+
+def test_file_format_not_supported_by_model(tmpdir):
+    """Test extracting file that is not supported by metadata models.
+
+    Because the default implementation of is_supported method
+    is overwritten in LxmlExtractor, it supports file formats that are
+    not supported by any metadata model (for example text/xml version
+    foo). For those file formats, the extractor does not produce any
+    streams, which leads to error, i.e. the files are always not
+    well-formed.
+
+    This functionality might not be desired, so this test was added to
+    demonstrate how the extractor currently works.
+    """
+    xml = '<?xml version="1.0" encoding="UTF-8" ?><a>test</a>'
+    tmppath = Path(tmpdir, "test.xml")
+    tmppath.write_text(xml, encoding="UTF-8")
+
+    assert LxmlExtractor.is_supported(mimetype="text/xml", version="foo")
+    extractor = LxmlExtractor(
+        filename=tmppath,
+        mimetype="text/xml",
+        version="foo",
+        charset="UTF-8",
+    )
+    extractor.extract()
+
+    assert extractor.well_formed is False
+    assert not extractor.streams
+    assert extractor.errors()[0] \
+        == "Extractor didn't produce any output streams."
 
 
 def test_is_supported_allow():
@@ -169,7 +272,7 @@ def test_charset(filename, mimetype, charset, well_formed):
 def test_predefined_charset_unav():
     """Test scraping when charset has not been predefined."""
     extractor = LxmlExtractor(
-        filename="tests/data/text_xml/valid_1.0_xsd.xml",
+        filename=Path("tests/data/text_xml/valid_1.0_xsd.xml"),
         mimetype="text/xml",
         charset=None,
     )
