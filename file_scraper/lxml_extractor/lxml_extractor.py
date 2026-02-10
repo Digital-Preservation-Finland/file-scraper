@@ -4,7 +4,6 @@ from lxml import etree
 
 from file_scraper.base import BaseExtractor
 from file_scraper.defaults import COMPATIBLE_ENCODINGS
-from file_scraper.logger import LOGGER
 from file_scraper.lxml_extractor.lxml_model import LxmlMeta
 
 
@@ -53,12 +52,6 @@ class LxmlExtractor(BaseExtractor[LxmlMeta]):
                 self._errors.append("Failed: document is not well-formed.")
                 self._errors.append(str(exception))
                 return
-            except OSError as exception:
-                # TODO: Scraper checks that file exists before scraping
-                # is started. So OSError should not be possible here.
-                self._errors.append("Failed: missing file.")
-                self._errors.append(str(exception))
-                return
 
         self.streams = list(self.iterate_models(tree=tree))
 
@@ -85,41 +78,6 @@ class LxmlExtractor(BaseExtractor[LxmlMeta]):
                     f"the file {self.filename}, which is not compatible with "
                     f"{self._predefined_charset}"
                 )
-
-    def iterate_models(self, **kwargs):
-        """
-        Iterate metadata models.
-
-        It is possible that for files that are not well-formed, trying
-        to use tree.docinfo causes an AssertionError. In that case we
-        shouldn't add a stream at all, but instead log an error. Only if
-        all metadata methods work normally, should the stream be added.
-
-        The except catches all exceptions, because AssertionError from
-        the compiled cython module is otherwise not caught by all python
-        versions.
-
-        :kwargs: Model specific parameters
-        """
-        for md_class in self._supported_metadata:
-
-            if md_class.is_supported(self._predefined_mimetype,
-                                     self._predefined_version,
-                                     self._params):
-
-                md_model = md_class(**kwargs)
-                try:
-                    md_model.to_dict()
-                except Exception:  # pylint: disable=broad-except
-                    # TODO: Which error in file could cause this
-                    # exception? Is there a test?
-                    LOGGER.info(
-                        "Field did not return a valid value", exc_info=True
-                    )
-                    self._errors.append("XML parsing failed: document "
-                                        "information could not be gathered.")
-                else:
-                    yield md_model
 
     def tools(self):
         """Return information about the software used by the extractor or
