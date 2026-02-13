@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Any, Protocol
 
 from file_scraper.defaults import (
     COMPATIBLE_ENCODINGS,
+    COMPATIBLE_MIMETYPES,
     COMPATIBLE_VERSIONS,
     UNAV,
 )
@@ -144,6 +145,10 @@ def _check_compatibility(
 
     if property_name == "version" \
             and new_value in COMPATIBLE_VERSIONS.get(old_value, []):
+        return True
+
+    if property_name == "mimetype" \
+            and new_value in COMPATIBLE_MIMETYPES.get(old_value, []):
         return True
 
     return False

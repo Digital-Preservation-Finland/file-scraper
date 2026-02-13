@@ -513,6 +513,25 @@ def test_is_supported_disallow_versions(mime, ver):
     assert not MagicTextExtractor.is_supported("foo", ver, True)
 
 
+def test_unkown_text_format(tmp_path):
+    """Test extracting a text file that is detected as something else.
+
+    If magic detects an unsupported format, the file can still be valid
+    text file. Therefore, MagicTextExtractor will ignore any unknown
+    file formats to avoid conflicts with detected file format.
+
+    :param tmp_path: Temporary path
+    """
+    # Create a very simple XML file which magic detects as COLLADA 3d
+    # model
+    filename = tmp_path / "model.3d"
+    filename.write_text('<?xml version="1.0" ?><COLLADA/>')
+
+    extractor = MagicTextExtractor(filename=filename, mimetype="text/plain")
+    extractor.extract()
+    assert extractor.streams[0].mimetype() == UNAV
+
+
 def test_tools():
     """Test that magic extractor returns software used"""
     tools = MagicTextExtractor(filename=Path(""), mimetype="").tools()

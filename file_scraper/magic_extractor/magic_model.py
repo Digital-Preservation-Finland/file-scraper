@@ -2,7 +2,13 @@
 import re
 
 from file_scraper.base import BaseMeta
-from file_scraper.defaults import MIMETYPE_DICT, UNAP, UNAV
+from file_scraper.defaults import (
+    COMPATIBLE_MIMETYPES,
+    MIMETYPE_DICT,
+    UNAP,
+    UNAV,
+)
+from file_scraper.logger import LOGGER
 
 
 class BaseMagicMeta(BaseMeta):
@@ -44,11 +50,20 @@ class BaseMagicMeta(BaseMeta):
         mimetype = MIMETYPE_DICT.get(mimetype, mimetype)
         if mimetype == self._predefined_mimetype:
             return mimetype
-        # TODO: What is the point of checking the mimetype with magic,
-        # if it is simply ignored when does not match
-        # self._predefined_mimetype? Effectively the same result would
-        # be achieved if this method would always return UNAV.
-        return UNAV
+
+        # Return (:unav) if magic does not really detect the mimetype
+        if mimetype in (
+            # empty files
+            "inode/x-empty",
+            # application/zip could be anything
+            "application/zip",
+            # generic MIME type used to indicate that a file contains
+            # arbitrary binary data.
+            "application/octet-stream",
+        ):
+            mimetype = UNAV
+
+        return mimetype
 
     @BaseMeta.metadata()
     def version(self):
@@ -74,6 +89,25 @@ class BinaryMagicBaseMeta(BaseMagicMeta):
 
 class TextMagicBaseMeta(BaseMagicMeta):
     """Base class for metadata models of text files."""
+
+    @BaseMeta.metadata()
+    def mimetype(self):
+        """Return MIME type."""
+        mimetype = super().mimetype()
+        text_formats_supported_by_dps \
+            = ["text/plain"] + COMPATIBLE_MIMETYPES["text/plain"]
+        if mimetype not in text_formats_supported_by_dps:
+            # magic detects many file formats that are actually just
+            # plain text files, XML files or other text formats
+            # supported by DPS. We can not add all of those formats to
+            # list of compatible mimetypes, so value (:unav) is returned
+            # to avoid conflict with detected mimetype.
+            LOGGER.debug(
+                f"Omitting unknown detected text file format '{mimetype}'"
+            )
+            mimetype = UNAV
+
+        return mimetype
 
     @BaseMeta.metadata()
     def charset(self):

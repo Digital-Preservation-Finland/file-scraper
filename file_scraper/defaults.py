@@ -154,3 +154,11 @@ COMPATIBLE_VERSIONS = {
         "1.7",
     ],
 }
+
+COMPATIBLE_MIMETYPES = {
+    "text/plain": ["text/xml", "text/html", "text/csv", "application/json"],
+    # MagicExtractor can not reliably detect valid XML and CSV files, so
+    # text/plain is accepted
+    "text/xml": ["text/plain"],
+    "text/csv": ["text/plain"],
+}
