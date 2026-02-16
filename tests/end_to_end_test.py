@@ -812,8 +812,7 @@ def test_detect_filetype(fullname, expected_mimetype, expected_version):
     if fullname in GIVEN_MIMETYPES:
         pytest.skip(f"{fullname} can not be detected automatically")
 
-    # All tiff 6.0 files, for example valid_6.0_latin1_exif_field.tif
-    if expected_mimetype in ("image/tiff", "image/png", "audio/x-aiff"):
+    if expected_mimetype in ("image/tiff", "image/png"):
         pytest.skip(
             f"The version of {expected_mimetype} files is currently not"
             " detected without extractors"

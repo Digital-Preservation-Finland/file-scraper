@@ -84,16 +84,10 @@ CHANGE_FIDO = {
     "text_xml/valid_1.0_mets_noheader.xml": None,
     "video_dv/valid__pal_lossy.dv": None,
     "image_x-adobe-dng/valid_1.4.dng": "image/tiff",
-    "audio_x-aiff/valid_1.3.aiff": None,
     "text_plain/valid__subrip_srt_file.srt": None,
     "application_x-siard/valid_2.1.1.siard": "application/zip",
     "application_x-siard/valid_2.2.siard": "application/zip",
-    "video_x-ms-asf/valid__vc1.wmv": None,
-    "video_x-ms-asf/valid__vc1_wma9.wmv": None,
-    "image_x-dpx/valid_1.0_just_version_change_from_2.0.dpx": None,
     "audio_mp4/valid__aac.m4a": None,
-    "image_webp/valid__lossless.webp": None,
-    "image_webp/valid__lossy.webp": None,
 }
 
 CHANGE_MAGIC = {

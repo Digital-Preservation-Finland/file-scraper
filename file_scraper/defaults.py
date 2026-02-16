@@ -63,12 +63,22 @@ VERSION_DICT = {
     },
     "audio/x-wav": {
         "2 Generic": "2",
-        # Try for example tests/data/audio_x-wav/valid_2_bwf.wav
+        # For example tests/data/audio_x-wav/valid_2_bwf.wav is
+        # detected as v0, but the extractors detect it as v2. Version
+        # from FIDO is ignored to avoid conflict.
         "0 PCM Encoding": None,
     },
     "audio/flac": {
-        # TODO: Other versions are probably possible, and all of them
-        # should be None?
+        # The PRONOM registry reports the version number of FLAC as
+        # 1.2.1. This is actually the version number of FLAC tools
+        # containing the FLAC format specification. Although the latest
+        # FLAC tools version is 1.3.3, version 1.2.1 still includes the
+        # latest format change and was released in 2007.
+        #
+        # FLAC is standardized in RFC 9639 without a file format version
+        # information, so the version will be mapped to (:unap) by
+        # MediaInfoExtractor. The version from FIDO is omitted to avoid
+        # conflict. See KDKPAS-3383 for more information.
         "1.2.1": None,
     },
     "image/gif": {
@@ -76,29 +86,22 @@ VERSION_DICT = {
         "89a": "1989a",
     },
     "image/png": {
-        # Fido does not detect PNG version correctly?
+        # Fido does not detect PNG version correctly, so it is ignored.
         "1.0": None,
     },
-    None: {
-        # Fido detects version of video/x-ms-asf, but not the mimetype?
-        "9 Advanced Profile (WVC1)": None,
-        # Fido detects wrong AIFF version, and not the mimetype? Try for
-        # example tests/data/audio_x-aiff/valid_1.3.aiff
-        "1.2": None,
-        # Fido detects version of webp file as "Extended", but it does
-        # not detect the mimetype? Try for example
-        # tests/data/image_webp/valid__lossy.webp
-        "Extended": None,
-    }
 }
 
 # Dict between detectors' pronom results and known mimetypes and versions.
 # fmt/289 might be need to change to fmt/1355 when supported by FIDO.
 PRONOM_DICT = {
     "fmt/5": ("video/avi", ""),
+    "fmt/193": ("image/x-dpx", "1.0"),
     "fmt/244": ("application/vnd.google-earth.kml+xml", "2.3"),
     "fmt/289": ("application/warc", None),  # does not result version
+    "fmt/414": ("audio/x-aiff", "1.3"),
+    "fmt/441": ("video/x-ms-asf", None),
     "fmt/541": ("image/x-dpx", "2.0"),
+    "fmt/568": ("image/webp", None),
     "fmt/569": ("video/x-matroska", "4"),
     "fmt/585": ("video/mp2t", ""),
     "fmt/640": ("video/mpeg", "2"),
