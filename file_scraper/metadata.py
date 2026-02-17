@@ -19,7 +19,7 @@ from file_scraper.logger import LOGGER
 if TYPE_CHECKING:
     from file_scraper.base import BaseMeta
 
-LOSE = (None, UNAV)
+LOSE = [None, UNAV]
 
 
 class MetadataMethod(Protocol):
@@ -58,23 +58,31 @@ def generate_metadata_dict(
     for model in new_streams:
         current_stream = streams.setdefault(model.index(), {})
 
+        compatible_mimetypes \
+            = COMPATIBLE_MIMETYPES.get(current_stream.get("mimetype"), []) \
+            + LOSE \
+            + [current_stream.get("mimetype")]
+
+        compatible_versions \
+            = COMPATIBLE_VERSIONS.get(
+                current_stream.get("mimetype"), {}
+            ).get(
+                current_stream.get("version"), []
+            ) \
+            + LOSE \
+            + [current_stream.get("version")]
+
         # Check that mimetype and version of the model are compatible
         # with the previously merged models.
-        if not _check_compatibility(
-            property_name="mimetype",
-            new_value=model.mimetype(),
-            old_value=current_stream.get("mimetype"),
-        ):
+        if current_stream.get("mimetype") not in LOSE \
+                and model.mimetype() not in compatible_mimetypes:
             conflict = ("The stream has conflicting mimetype "
                         f"{model.mimetype()}, so it is omitted.")
             conflicts.append(conflict)
             LOGGER.debug(conflict)
             continue
-        if not _check_compatibility(
-            property_name="version",
-            new_value=model.version(),
-            old_value=current_stream.get("version"),
-        ):
+        if current_stream.get("version") not in LOSE \
+                and model.version() not in compatible_versions:
             conflict = ("The stream has conflicting version "
                         f"{model.version()}, so it is omitted.")
             conflicts.append(conflict)
@@ -82,6 +90,18 @@ def generate_metadata_dict(
             continue
 
         # Merge stream method by method
+        compatible_encodings \
+            = COMPATIBLE_ENCODINGS.get(
+                current_stream.get("charset"), []
+            ) \
+            + LOSE \
+            + [current_stream.get("version")]
+
+        compatible_values = {
+            "mimetype": compatible_mimetypes,
+            "version": compatible_versions,
+            "charset": compatible_encodings,
+        }
         for name, new_value in model.to_dict().items():
             old_value = current_stream.get(name)
             if old_value in LOSE:
@@ -95,11 +115,7 @@ def generate_metadata_dict(
                 # The current model found overwritable value which
                 # conflicts with the value from previous models.
                 continue
-            if _check_compatibility(
-                property_name=name,
-                new_value=new_value,
-                old_value=old_value,
-            ):
+            if new_value in compatible_values.get(name, []):
                 LOGGER.debug(
                     "Extractor detected %s %s, which is "
                     "compatible with %s", name, new_value, old_value
@@ -120,35 +136,3 @@ def generate_metadata_dict(
         )
 
     return conflicts
-
-
-def _check_compatibility(
-    property_name: str,
-    new_value: str,
-    old_value: str,
-) -> bool:
-    """Check compatibility of two values of a property.
-
-    Returns true, if new value for a property is compatible with
-    original value.
-    """
-    if new_value == old_value:
-        return True
-    if new_value in LOSE:
-        return True
-    if old_value in LOSE:
-        return True
-
-    if property_name == "charset" \
-            and new_value in COMPATIBLE_ENCODINGS.get(old_value, []):
-        return True
-
-    if property_name == "version" \
-            and new_value in COMPATIBLE_VERSIONS.get(old_value, []):
-        return True
-
-    if property_name == "mimetype" \
-            and new_value in COMPATIBLE_MIMETYPES.get(old_value, []):
-        return True
-
-    return False
