@@ -35,12 +35,10 @@ A usable extractor tool class:
     * MUST have ``_supported_metadata`` class variable which is a list of metadata classes supported by the extractor.
     * MUST have ``_only_wellformed = True`` class variable, if the extractor tools does just well-formed check.
     * MUST call ``super()`` during initialization, if separate initialization method is created.
-    * MUST implement ``scrape_file()`` for file scraping, if not implemented in the already existing base class. This method:
+    * MUST implement ``_extract()`` for file scraping, if not implemented in the already existing base class. This method:
 
-        * MUST add metadata objects of all metadata models to ``streams`` list for each stream in the file. The MIME type and version given in params MUST be passed to the metadata object.
-        * SHOULD call ``_validate()`` when the metadata has been collected. This checks that the final mimetype and version are supported ones, in case those have changed.
-        * MUST log all errors (e.g. ""The file is truncated" or ""File not found.") to ``_errors`` list and messages (e.g. "File was analyzed with ``ExtractorName``") to ``_messages`` list.
-    * The ``info()`` method of a extractor MUST return a dict of class name and used 3rd party software, and messages and errors occured during scraping. See ``<extractor info X>`` from `README.rst <../README.rst>`_ for the content of the info attribute.
+        * MUST add metadata objects of all metadata models to ``streams`` list for each stream in the file.
+        * MUST log all errors (e.g. ""The file is truncated" or ""File not found.") to ``_errors`` list and messages (e.g. "Encoding metadata found") to ``_messages`` list.
 
 The metadata is represented by metadata model objects, e.g. ``GhostscriptMeta`` used by ``GhostscriptExtractor``, and ``JHoveGifMeta``, ``JHoveHtmlMeta`` and others used by ``JHoveExtractor``. These metadata model classes:
 
@@ -59,9 +57,6 @@ The metadata is represented by metadata model objects, e.g. ``GhostscriptMeta`` 
 
     * MUST implement metadata method ``stream_type()``, returning e.g. "text", "image", "audio", "video", "videocontainer", "binary", if not implemented in the already existing base class.
     * MUST crash or log an error in unexpected event, such as due to missing 3rd party tool.
-    * Metadata keys that are needed to win in the combination phase are flagged by ``important`` as part of metadata-decorator.
-    * If custom MIME type scraping is implemented, user-supplied MIME type given to the initializer MUST be returned by ``mimetype()`` function if given.
-    * If custom version scraping is implemented, user-supplied version must be returned by ``version()`` if both MIME type and version were given to the initializer. If MIME type or version was not given, the same version MUST be returned as would have been if neither had been given.
 
 Should you create a new extractor tool for some file format, it probably already has a proper base class, for example:
 
@@ -91,7 +86,7 @@ and the utility functions it uses.
 Scraping without checking well-formedness
 -----------------------------------------
 
-    * Individual extractor tools return always ``True`` or ``False`` as ``well_formed``, regardless of the use of ``check_wellformed`` parameter in main Scraper.
+    * Individual extractor tools return always ``True``, ``False`` or ``None`` as ``well_formed``, regardless of the use of ``check_wellformed`` parameter in main Scraper.
       The main Scraper resolves ``well_formed`` as ``None``, if the tool's result was ``True`` and ``check_wellformed`` parameter is ``False``.
       This is because all required extractor tools are not used when ``check_wellformed`` is ``False``.
       The ``is_supported()`` method in the tools solves whether a tool shoud be run or not, but otherwise the tools do not know which method is used in the main Scraper.

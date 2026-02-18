@@ -252,8 +252,6 @@ In some cases the full metadata information may not be of interest, and only a q
 
 after which the type of the file can be addressed via ``scraper.mimetype`` and ``scraper.version``.
 
-If full scraping has been run previously, its results are erased. ``detect_filetype`` always leaves ``scraper.streams`` as ``None`` and ``scraper.well_formed`` either as ``False`` (file could not be found or read) or ``None``. Detector information is logged in ``scraper.info`` as with normal scraping.
-
 It should be noted that results obtained using only detectors are less accurate than ones from the full scraping, as detectors use a narrower selection of tools.
 
 
@@ -267,10 +265,8 @@ Misc notes
 ----------
 
     * Metadata is not collected for DPX images, only well-formedness is checked.
-    * Retrieving version number can not be done for ODF Formula formats.
     * Scraping XML files without XML header works correctly only when ``check_wellformed`` parameter is ``True``.
     * Only audio and video stream metadata is collected for audio and video files. Other streams, such as menus and subtitles, are omitted.
-    * The software may result arbitrary metadata values, if incorrect MIME type or version is given as a parameter. However, the file is also then denoted as invalid.
 
 Copyright
 ---------
