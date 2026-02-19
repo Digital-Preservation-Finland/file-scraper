@@ -55,6 +55,8 @@ class LxmlExtractor(BaseExtractor[LxmlMeta]):
         )
         with self.filename.open("rb") as file_:
             try:
+                # Try to parse with `recover=False` first to catch
+                # errors that prevent reading encoding from the header
                 tree = etree.parse(file_, parser)
             except OSError:
                 # OSError could be caused for example by invalid
@@ -62,18 +64,22 @@ class LxmlExtractor(BaseExtractor[LxmlMeta]):
                 # file with 'recover' option could work.
                 pass
             except etree.XMLSyntaxError as exception:
-                # Parsing without 'recover' option might raise
-                # XMLSyntaxErrors at least for some valid HTML files, so
-                # we have to parse with 'recover' option.
-                if exception.code == 32:
-                    # libxml2 error XML_ERR_UNSUPPORTED_ENCODING
-                    # This error would be omitted, if 'recover' option
-                    # would be used.
+                if exception.code in (4, 32):
+                    # https://gitlab.gnome.org/GNOME/libxml2/-/blob/master/include/libxml/xmlerror.h
+                    # 4: XML_ERR_DOCUMENT_EMPTY
+                    # This error would lead to uninitialized
+                    # ElementTree, so character encoding could not be
+                    # extracted
+                    # 32: XML_ERR_UNSUPPORTED_ENCODING
+                    # This error would be omitted if `recover=true` was
+                    # used, and lxml would report UTF-8 as a fallback
+                    # value
                     self._errors.append(str(exception))
                     return
 
-        # If parsing without 'recover' option fails, try to parse with
-        # 'recover' option.
+        # Parsing with `recover=False` might raise XMLSyntaxErrors at
+        # least for some valid HTML files, so we have to parse with
+        # `recover=True`
         if not tree:
             parser = etree.XMLParser(
                 dtd_validation=False,

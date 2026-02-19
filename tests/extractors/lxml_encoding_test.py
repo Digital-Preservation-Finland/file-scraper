@@ -269,6 +269,17 @@ def test_charset(filename, mimetype, charset, well_formed):
         )
 
 
+def test_plain_text():
+    """Test extracting file which is not XML but plain text."""
+    extractor = LxmlExtractor(
+        filename=Path("tests/data/text_plain/valid__ascii.txt"),
+        mimetype="text/xml",
+    )
+    extractor.extract()
+    assert extractor.well_formed is False
+    assert extractor.errors()[0].startswith("Start tag expected")
+
+
 def test_predefined_charset_unav():
     """Test scraping when charset has not been predefined."""
     extractor = LxmlExtractor(
