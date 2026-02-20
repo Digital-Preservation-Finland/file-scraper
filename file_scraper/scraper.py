@@ -330,7 +330,22 @@ class Scraper:
         # check_wellformed=False. See PAS-1.
         self._check_utf8()
 
-        # If validators were not user, well-formedness can not be True
+        # Add error if detected format is not supported
+        # TODO: Error should be added also when file is supported
+        # according to DPS specification, but it is not yet supported by
+        # file-scraper. See TPASPKT-1677.
+        try:
+            _validate_mimetype_and_version(self.mimetype, self.version)
+        except ValueError as exception:
+            self.info[len(self.info)] = {
+                "class": "Scraper",
+                "messages": [],
+                "errors": [str(exception)],
+                "tools": {},
+            }
+            self.well_formed = False
+
+        # If validators were not used, well-formedness can not be True
         if not check_wellformed and self.well_formed:
             self.well_formed = None
 

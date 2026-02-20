@@ -483,12 +483,12 @@ def test_unsupported_mimetype():
     assert "Proper extractor was not found." in str(result.errors)
 
 
-def test_unsupported_version():
-    """Test scraping file with supported mimetype but unsupported version.
+def test_partially_supported_format():
+    """Test scraping partially supported file.
 
     HTML 3.2 file is used as example. Detectors will detect the format.
     Some extractors will support the file format, because they support
-    any version of HTML. Therefore, well_formed will be set to None.
+    any version of HTML.
 
     Note that if exception would be raised if the same version would be
     given as parameter.
@@ -499,5 +499,6 @@ def test_unsupported_version():
     result = scraper.scrape()
     assert scraper.mimetype == "text/html"
     assert scraper.version == "3.2"
-    assert scraper.well_formed is None
-    assert not result.errors
+    assert scraper.well_formed is False
+    assert "version 3.2 for the mimetype text/html is not supported"\
+        in str(result.errors)
