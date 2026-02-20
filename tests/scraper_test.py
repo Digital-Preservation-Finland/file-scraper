@@ -468,3 +468,36 @@ def test_scraper_metadata_conflict():
     assert scraper.well_formed is False
     assert "The stream has conflicting mimetype image/jpeg" \
         in str(result.errors)
+
+
+def test_unsupported_mimetype():
+    """Test scraping file with unsupported format.
+
+    Detectors will detect the format. Only supported extractor is
+    ExtractorNotFound extractor, which sets well_formed to False.
+    """
+    scraper = Scraper("tests/data/image_bmp/invalid__unsupported_format.bmp")
+    result = scraper.scrape()
+    assert scraper.mimetype == "image/bmp"
+    assert scraper.well_formed is False
+    assert "Proper extractor was not found." in str(result.errors)
+
+
+def test_unsupported_version():
+    """Test scraping file with supported mimetype but unsupported version.
+
+    HTML 3.2 file is used as example. Detectors will detect the format.
+    Some extractors will support the file format, because they support
+    any version of HTML. Therefore, well_formed will be set to None.
+
+    Note that if exception would be raised if the same version would be
+    given as parameter.
+    """
+    scraper = Scraper(
+        "tests/data/text_html/invalid_3.2_unsupported_version.html"
+    )
+    result = scraper.scrape()
+    assert scraper.mimetype == "text/html"
+    assert scraper.version == "3.2"
+    assert scraper.well_formed is None
+    assert not result.errors
