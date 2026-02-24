@@ -73,7 +73,15 @@ class Scraper:
         if mimetype:
             # Normalize mimetype
             mimetype = mimetype.lower()
+
         version = kwargs.get("version")
+        # TODO: SAPA is still using old siptools, although it
+        # is deprecated. The old siptools is sometimes using empty
+        # string as version, so it must be translated to None. Remove
+        # this hack when old siptools is not used anymore.
+        if version == "":
+            version = None
+
         charset = kwargs.get("charset")
         if charset:
             # Normalize charset
