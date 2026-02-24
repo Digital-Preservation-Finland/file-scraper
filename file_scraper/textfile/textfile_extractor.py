@@ -45,15 +45,35 @@ class TextfileExtractor(BaseExtractor[TextFileMeta]):
 
     def _file_mimetype(self) -> str:
         """
-        Detect mimetype with the soft option that excludes libmagick.
+        Detect MIME type by only running `soft` check and returning
+        `text/plain` (if it's one of the results)
+        or the first result (if `text/plain` was not in the results)
 
         :returns: file mimetype
         """
-        shell = Shell(["file", "-be", "soft", "--mime-type", self.filename])
+        shell = Shell([
+            "file", "--keep-going", "-be", "soft", "--mime-type",
+            self.filename
+        ])
         if shell.stderr:
             self._errors.append(shell.stderr)
 
-        return shell.stdout.strip()
+        matches = shell.stdout.strip()
+        # 'file' separates multiple matches with '\012- ' per documentation
+        matches = matches.split("\\012- ")
+
+        try:
+            # Check if 'text/plain' was detected as a secondary file format
+            return next(
+                match for match in matches
+                # Only match against the MIME type and subtype,
+                # not the parameters (eg. `charset=utf-8`)
+                if match.split(";")[0] == "text/plain"
+            )
+        except StopIteration:
+            # None of the found MIME types was recognized,
+            # return the first match
+            return matches[0]
 
     def _extract(self) -> None:
         """Check MIME type determined by libmagic."""
@@ -71,7 +91,7 @@ class TextfileExtractor(BaseExtractor[TextFileMeta]):
             self._messages.append("Trying text detection...")
 
             mimetype = self._file_mimetype()
-            if mimetype in ["text/plain", "application/json"]:
+            if mimetype == "text/plain":
                 self._messages.append("File is a text file.")
             else:
                 self._errors.append(
