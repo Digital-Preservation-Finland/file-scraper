@@ -71,11 +71,24 @@ def test_xml_header_encoding(tmpdir, header_encoding, predefined_encoding,
     assert extractor.streams[0].charset() == expected_encoding
 
 
-def test_wrong_xml_header_encoding(tmpdir):
+@pytest.mark.parametrize(
+    "predefined_charset",
+    [
+        # UTF-8 is supported and listed in COMPATIBLE_ENCODINGS
+        "UTF-8",
+        # unsupported-charset is not supported and not listed in
+        # COMPATIBLE_ENCODINGS
+        "unsupported-charset",
+    ]
+)
+def test_wrong_xml_header_encoding(tmpdir, predefined_charset):
     """Test extracting files with wrong encoding in XML header.
 
     Creates a test file with wrong encoding in header. Error should be
     produced, and file should not be well-formed.
+
+    :param predefined_charset: The predefined charset i.e. the charset
+        that was defined by user, or detected by detectors.
     """
     # ISO-8859-15 encoding in header
     xml = '<?xml version="1.0" encoding="ISO-8859-15" ?><a>test</a>'
@@ -85,9 +98,9 @@ def test_wrong_xml_header_encoding(tmpdir):
     extractor = LxmlExtractor(
         filename=tmppath,
         mimetype="text/xml",
-        # The file has been predefined as UTF-8, which conflicts with
-        # the XML header
-        charset="UTF-8",
+        # The file has been predefined as something else than
+        # ISO-8859-15
+        charset=predefined_charset
     )
     extractor.extract()
 
@@ -97,7 +110,7 @@ def test_wrong_xml_header_encoding(tmpdir):
         "Found encoding declaration ISO-8859-15"
     )
     assert extractor.errors()[0].endswith(
-        "which is not compatible with UTF-8"
+        f"which is not compatible with {predefined_charset}"
     )
 
 

@@ -118,7 +118,7 @@ class LxmlExtractor(BaseExtractor[LxmlMeta]):
         # encoding
         if encoding_from_header != self._predefined_charset \
                 and encoding_from_header \
-                not in COMPATIBLE_ENCODINGS[self._predefined_charset]:
+                not in COMPATIBLE_ENCODINGS.get(self._predefined_charset, []):
             self._errors.append(
                 f"Found encoding declaration {encoding_from_header} from "
                 f"the file {self.filename}, which is not compatible with "
