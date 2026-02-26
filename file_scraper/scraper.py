@@ -152,11 +152,10 @@ class Scraper:
             raise RuntimeError("File is already detected")
         detected_mimetype = None
         detected_version = None
-        for detector_class in iter_detectors():
+        for detector in iter_detectors(path=self.path):
             LOGGER.info(
-                "Detecting file type using %s", detector_class.__name__
+                "Detecting file type using %s", detector.__class__.__name__
             )
-            detector = detector_class(self.path)
             detected_mimetype, detected_version = _update_filetype(
                 detector,
                 detected_mimetype,
@@ -317,21 +316,15 @@ class Scraper:
             self.mimetype,
             self.version,
         )
-        for extractor_class in iter_extractors(
+        for extractor in iter_extractors(
+            path=self.path,
             mimetype=self.mimetype,
             version=self.version,
+            charset=self._charset,
             check_wellformed=check_wellformed,
             params=self._kwargs,
         ):
-            LOGGER.info("Scraping with %s", extractor_class.__name__)
-
-            extractor = extractor_class(
-                filename=self.path,
-                mimetype=self.mimetype,
-                version=self.version,
-                charset=self._charset,
-                params=self._kwargs,
-            )
+            LOGGER.info("Scraping with %s", extractor.__class__.__name__)
             self._use_extractor(extractor)
 
         # TODO: UTF-8 extractor should not be used if

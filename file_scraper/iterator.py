@@ -2,7 +2,7 @@
 # flake8: noqa
 from __future__ import annotations
 
-from typing import Iterator
+from typing import Iterator, TYPE_CHECKING
 from file_scraper.base import BaseDetector, BaseExtractor
 from file_scraper.csv_extractor.csv_extractor import CsvExtractor
 from file_scraper.detectors import (EpubDetector,
@@ -52,15 +52,20 @@ from file_scraper.exiftool.exiftool_extractor import (ExifToolDngExtractor,
                                                       ExifToolExifExtractor)
 from file_scraper.jpylyzer.jpylyzer_extractor import JpylyzerExtractor
 
+if TYPE_CHECKING:
+    from pathlib import Path
 
-def iter_detectors() -> Iterator[type[BaseDetector]]:
+
+def iter_detectors(path) -> Iterator[BaseDetector]:
     """
     Iterate detectors.
 
     We want to keep the detectors in ordered list.
-    :returns: detector class
+
+
+    :param path: Path to file to be detected
     """
-    yield from [
+    for detector in [
         EpubDetector,
         FidoDetector,
         MagicDetector,
@@ -68,24 +73,28 @@ def iter_detectors() -> Iterator[type[BaseDetector]]:
         SiardDetector,
         SegYDetector,
         ODFDetector,
-    ]
+    ]:
+        yield detector(filename=path)
 
 
 def iter_extractors(
+    path: Path,
     mimetype: str | None,
     version: str | None,
+    charset: str | None,
     check_wellformed: bool = True,
     params: dict | None = None,
-) -> Iterator[type[BaseExtractor]]:
+) -> Iterator[BaseExtractor]:
     """
     Iterate extractors.
 
+    :param path: Path to file to be extracted
     :param mimetype: Identified mimetype of the file
     :param version: Identified file format version
+    :param charset: Identifier file charset
     :param check_wellformed: True for the full well-formed check, False for just
         identification and metadata scraping
     :param params: Extra parameters needed for the extractor
-    :returns: extractor class
     """
     extractor_found = False
 
@@ -134,11 +143,23 @@ def iter_extractors(
     for extractor in extractors:
         if extractor.is_supported(mimetype, version, check_wellformed, params):
             extractor_found = True
-            yield extractor
+            yield extractor(
+                filename=path,
+                mimetype=mimetype,
+                version=version,
+                charset=charset,
+                params=params,
+            )
         else:
             LOGGER.debug(
                 "Skipping unsupported extractor %s", extractor.__name__
             )
 
     if not extractor_found:
-        yield ExtractorNotFound
+        yield ExtractorNotFound (
+            filename=path,
+            mimetype=mimetype,
+            version=version,
+            charset=charset,
+            params=params,
+        )

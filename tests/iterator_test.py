@@ -128,8 +128,14 @@ def test_iter_extractors(mimetype, version, extractor_classes):
     :version: Detected file format version
     :extractor_classes: Expected Extractor classes which are run
     """
-    extractors = iter_extractors(mimetype, version)
-    assert {x.__name__ for x in extractors} == set(extractor_classes)
+    extractors = iter_extractors(
+        path="foo/bar",
+        mimetype=mimetype,
+        version=version,
+        charset=None,
+        check_wellformed=True,
+    )
+    assert {x.__class__.__name__ for x in extractors} == set(extractor_classes)
 
     extractor_classes = [
         "TextEncodingMetaExtractor" if x == "TextEncodingExtractor" else x
@@ -144,20 +150,28 @@ def test_iter_extractors(mimetype, version, extractor_classes):
     if mimetype in ["application/x-spss-por", "application/epub+zip"]:
         extractor_classes.append("DetectedMimeVersionMetadataExtractor")
 
-    extractors = iter_extractors(mimetype, version, False)
+    extractors = iter_extractors(
+        path="foo/bar",
+        mimetype=mimetype,
+        version=version,
+        charset=None,
+        check_wellformed=False,
+    )
     extractor_set = set(extractor_classes).difference(set(WELLFORMED_EXTRACTORS))
     if mimetype in ["application/gzip", "image/x-dpx"]:
         extractor_set = {"ExtractorNotFound"}
-    assert {x.__name__ for x in extractors} == extractor_set
+    assert {x.__class__.__name__ for x in extractors} == extractor_set
 
 
 def test_iter_detectors():
     """Test detector discovery."""
-    detectors = iter_detectors()
-    assert {x.__name__ for x in detectors} == {"EpubDetector",
-                                               "FidoDetector",
-                                               "MagicDetector",
-                                               "SegYDetector",
-                                               "AtlasTiDetector",
-                                               "SiardDetector",
-                                               "ODFDetector"}
+    detectors = iter_detectors(path="foo/bar")
+    assert {x.__class__.__name__ for x in detectors} == {
+        "EpubDetector",
+        "FidoDetector",
+        "MagicDetector",
+        "SegYDetector",
+        "AtlasTiDetector",
+        "SiardDetector",
+        "ODFDetector",
+    }
