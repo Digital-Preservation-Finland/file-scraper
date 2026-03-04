@@ -780,7 +780,7 @@ class ODFDetector(BaseDetector):
             return
         office_ns = tree.nsmap["office"]
         version = tree.attrib[f"{{{office_ns}}}version"]
-        if version in ('1.0', '1.1', '1.2', '1.3'):
+        if version in ("1.0", "1.1", "1.2", "1.3", "1.4"):
             detected_version = version
         else:
             # Unknown format version

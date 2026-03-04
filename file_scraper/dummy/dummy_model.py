@@ -1,5 +1,7 @@
 """Metadata model for dummy extractors."""
 
+from __future__ import annotations
+
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAP, UNAV
 from file_scraper.state import Mimetype
@@ -78,21 +80,46 @@ class DetectedMimeVersionMeta(BaseMeta):
 
     _supported = {
         "application/epub+zip": ["2.0.1", "3"],
-        "application/vnd.oasis.opendocument.text": ["1.0", "1.1", "1.2",
-                                                    "1.3"],
+        "application/vnd.oasis.opendocument.text": [
+            "1.0",
+            "1.1",
+            "1.2",
+            "1.3",
+            "1.4",
+        ],
         "application/vnd.oasis.opendocument.spreadsheet": [
-            "1.0", "1.1", "1.2", "1.3"],
+            "1.0",
+            "1.1",
+            "1.2",
+            "1.3",
+            "1.4",
+        ],
         "application/vnd.oasis.opendocument.presentation": [
-            "1.0", "1.1", "1.2", "1.3"],
-        "application/vnd.oasis.opendocument.graphics": ["1.0", "1.1", "1.2",
-                                                        "1.3"],
-        "application/vnd.oasis.opendocument.formula": ["1.0", "1.2", "1.3"],
+            "1.0",
+            "1.1",
+            "1.2",
+            "1.3",
+            "1.4",
+        ],
+        "application/vnd.oasis.opendocument.graphics": [
+            "1.0",
+            "1.1",
+            "1.2",
+            "1.3",
+            "1.4",
+        ],
+        "application/vnd.oasis.opendocument.formula": [
+            "1.0",
+            "1.2",
+            "1.3",
+            "1.4",
+        ],
         "application/x.fi-dpres.segy": ["(:unkn)", "1.0", "2.0"],
         "application/x.fi-dpres.atlproj": ["(:unap)"],
-        "audio/ac3": ["(:unap)"]
+        "audio/ac3": ["(:unap)"],
     }
 
-    def __init__(self, mimetype, version):
+    def __init__(self, mimetype: str | None, version: str | None) -> None:
         """
         Initialize with given mimetype and version.
 
@@ -102,21 +129,20 @@ class DetectedMimeVersionMeta(BaseMeta):
         self._version = version
 
     @BaseMeta.metadata()
-    def mimetype(self):
+    def mimetype(self) -> str:
         """Return MIME type"""
         if self._mimetype:
             return self._mimetype
         return UNAV
 
     @BaseMeta.metadata()
-    def version(self):
+    def version(self) -> str:
         """Return the file format version"""
         return self._version if self._version is not None else UNAV
 
     @BaseMeta.metadata()
-    def stream_type(self):
+    def stream_type(self) -> str:
         """Return stream type."""
-
         # AC-3 is an audio stream, the other supported formats are
         # binary formats
         if self.mimetype() == "audio/ac3":

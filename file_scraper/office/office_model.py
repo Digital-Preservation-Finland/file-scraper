@@ -8,28 +8,55 @@ class OfficeMeta(BaseMeta):
 
     # Supported mimetypes and versions
     _supported = {
-        "application/vnd.oasis.opendocument.text": ["1.0", "1.1", "1.2",
-                                                    "1.3"],
+        "application/vnd.oasis.opendocument.text": [
+            "1.0",
+            "1.1",
+            "1.2",
+            "1.3",
+            "1.4",
+        ],
         "application/vnd.oasis.opendocument.spreadsheet": [
-            "1.0", "1.1", "1.2", "1.3"],
+            "1.0",
+            "1.1",
+            "1.2",
+            "1.3",
+            "1.4",
+        ],
         "application/vnd.oasis.opendocument.presentation": [
-            "1.0", "1.1", "1.2", "1.3"],
-        "application/vnd.oasis.opendocument.graphics": ["1.0", "1.1", "1.2",
-                                                        "1.3"],
-        "application/vnd.oasis.opendocument.formula": ["1.0", "1.2", "1.3"],
+            "1.0",
+            "1.1",
+            "1.2",
+            "1.3",
+            "1.4",
+        ],
+        "application/vnd.oasis.opendocument.graphics": [
+            "1.0",
+            "1.1",
+            "1.2",
+            "1.3",
+            "1.4",
+        ],
+        "application/vnd.oasis.opendocument.formula": [
+            "1.0",
+            "1.2",
+            "1.3",
+            "1.4",
+        ],
         "application/msword": ["97-2003"],
         "application/vnd.ms-excel": ["8X"],
         "application/vnd.ms-powerpoint": ["97-2003"],
         "application/vnd.openxmlformats-officedocument.wordprocessingml."
         "document": ["2007 onwards"],
-        "application/vnd.openxmlformats-officedocument."
-        "spreadsheetml.sheet": ["2007 onwards"],
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+            "2007 onwards"
+        ],
         "application/vnd.openxmlformats-officedocument.presentationml."
-        "presentation": ["2007 onwards"]}
+        "presentation": ["2007 onwards"],
+    }
     _allow_any_version = True
     _only_wellformed = True  # Only well-formed check
 
     @BaseMeta.metadata()
-    def stream_type(self):
+    def stream_type(self) -> str:
         """Return file type."""
         return "binary"

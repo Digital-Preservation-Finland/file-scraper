@@ -63,6 +63,8 @@ CHANGE_FIDO = {
         "application/zip",
     "application_vnd.oasis.opendocument.formula/valid_1.3.odf":
         "application/zip",
+    "application_vnd.oasis.opendocument.formula/valid_1.4.odf":
+        "application/zip",
     "application_mxf/valid__jpeg2000.mxf": None,
     "application_mxf/valid__jpeg2000_grayscale.mxf": None,
     "application_mxf/valid__jpeg2000_lossless.mxf": None,

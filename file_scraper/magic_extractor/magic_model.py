@@ -3,7 +3,6 @@ import re
 
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import MIMETYPE_DICT, UNAP, UNAV
-
 from file_scraper.utils import normalize_charset
 
 
@@ -186,24 +185,51 @@ class OfficeFileMagicMeta(BinaryMagicBaseMeta):
 
     # Supported mimetypes and versions
     _supported = {
-        "application/vnd.oasis.opendocument.text": ["1.0", "1.1", "1.2",
-                                                    "1.3"],
-        "application/vnd.oasis.opendocument.spreadsheet": ["1.0", "1.1",
-                                                           "1.2", "1.3"],
-        "application/vnd.oasis.opendocument.presentation": ["1.0", "1.1",
-                                                            "1.2", "1.3"],
-        "application/vnd.oasis.opendocument.graphics": ["1.0", "1.1", "1.2",
-                                                        "1.3"],
-        "application/vnd.oasis.opendocument.formula": ["1.0", "1.2", "1.3"],
+        "application/vnd.oasis.opendocument.text": [
+            "1.0",
+            "1.1",
+            "1.2",
+            "1.3",
+            "1.4",
+        ],
+        "application/vnd.oasis.opendocument.spreadsheet": [
+            "1.0",
+            "1.1",
+            "1.2",
+            "1.3",
+            "1.4",
+        ],
+        "application/vnd.oasis.opendocument.presentation": [
+            "1.0",
+            "1.1",
+            "1.2",
+            "1.3",
+            "1.4",
+        ],
+        "application/vnd.oasis.opendocument.graphics": [
+            "1.0",
+            "1.1",
+            "1.2",
+            "1.3",
+            "1.4",
+        ],
+        "application/vnd.oasis.opendocument.formula": [
+            "1.0",
+            "1.2",
+            "1.3",
+            "1.4",
+        ],
         "application/msword": ["97-2003"],
         "application/vnd.ms-excel": ["8X"],
         "application/vnd.ms-powerpoint": ["97-2003"],
         "application/vnd.openxmlformats-officedocument.wordprocessingml."
         "document": ["2007 onwards"],
-        "application/vnd.openxmlformats-officedocument."
-        "spreadsheetml.sheet": ["2007 onwards"],
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+            "2007 onwards"
+        ],
         "application/vnd.openxmlformats-officedocument.presentationml."
-        "presentation": ["2007 onwards"]}
+        "presentation": ["2007 onwards"],
+    }
     _allow_any_version = True
 
     _mimes_unav_versions = [
@@ -215,7 +241,7 @@ class OfficeFileMagicMeta(BinaryMagicBaseMeta):
     ]
 
     @BaseMeta.metadata()
-    def version(self):
+    def version(self) -> str:
         """Return version."""
         if self.mimetype() in self._supported:
             if self.mimetype() in self._mimes_unav_versions:
