@@ -197,33 +197,82 @@ def test_extractor_correct_application(filename, mimetype, application):
 @pytest.mark.parametrize(
     ["filename", "mimetype"],
     [
-        ("invalid_1.2_corrupted.odt", "application/vnd.oasis.opendocument"
-         ".text"),
-        ("invalid_1.3_corrupted.odt", "application/vnd.oasis.opendocument"
-         ".text"),
-        ("invalid_2007 onwards_corrupted.docx", "application/"
-         "vnd.openxmlformats-officedocument.wordprocessingml.document"),
-        ("invalid_1.2_corrupted.odp",
-         "application/vnd.oasis.opendocument.presentation"),
-        ("invalid_1.3_corrupted.odp",
-         "application/vnd.oasis.opendocument.presentation"),
-        ("invalid_2007 onwards_corrupted.pptx", "application/vnd.openxml"
-         "formats-officedocument.presentationml.presentation"),
-        ("invalid_1.2_corrupted.ods",
-         "application/vnd.oasis.opendocument.spreadsheet"),
-        ("invalid_1.3_corrupted.ods",
-         "application/vnd.oasis.opendocument.spreadsheet"),
-        ("invalid_2007 onwards_corrupted.xlsx", "application/vnd."
-         "openxmlformats-officedocument.spreadsheetml.sheet"),
-        ("invalid_1.2_corrupted.odg", "application/vnd.oasis.opendocument"
-         ".graphics"),
-        ("invalid_1.3_corrupted.odg", "application/vnd.oasis.opendocument"
-         ".graphics"),
-        ("invalid_1.2_corrupted.odf", "application/vnd.oasis.opendocument"
-         ".formula"),
-        ("invalid_1.3_corrupted.odf", "application/vnd.oasis.opendocument"
-         ".formula"),
-    ]
+        (
+            "invalid_1.2_corrupted.odt",
+            "application/vnd.oasis.opendocument.text",
+        ),
+        (
+            "invalid_1.3_corrupted.odt",
+            "application/vnd.oasis.opendocument.text",
+        ),
+        (
+            "invalid_1.4_corrupted.odt",
+            "application/vnd.oasis.opendocument.text",
+        ),
+        (
+            "invalid_2007 onwards_corrupted.docx",
+            "application/"
+            "vnd.openxmlformats-officedocument.wordprocessingml.document",
+        ),
+        (
+            "invalid_1.2_corrupted.odp",
+            "application/vnd.oasis.opendocument.presentation",
+        ),
+        (
+            "invalid_1.3_corrupted.odp",
+            "application/vnd.oasis.opendocument.presentation",
+        ),
+        (
+            "invalid_1.4_corrupted.odp",
+            "application/vnd.oasis.opendocument.presentation",
+        ),
+        (
+            "invalid_2007 onwards_corrupted.pptx",
+            "application/vnd.openxml"
+            "formats-officedocument.presentationml.presentation",
+        ),
+        (
+            "invalid_1.2_corrupted.ods",
+            "application/vnd.oasis.opendocument.spreadsheet",
+        ),
+        (
+            "invalid_1.3_corrupted.ods",
+            "application/vnd.oasis.opendocument.spreadsheet",
+        ),
+        (
+            "invalid_1.4_corrupted.ods",
+            "application/vnd.oasis.opendocument.spreadsheet",
+        ),
+        (
+            "invalid_2007 onwards_corrupted.xlsx",
+            "application/vnd."
+            "openxmlformats-officedocument.spreadsheetml.sheet",
+        ),
+        (
+            "invalid_1.2_corrupted.odg",
+            "application/vnd.oasis.opendocument.graphics",
+        ),
+        (
+            "invalid_1.3_corrupted.odg",
+            "application/vnd.oasis.opendocument.graphics",
+        ),
+        (
+            "invalid_1.4_corrupted.odg",
+            "application/vnd.oasis.opendocument.graphics",
+        ),
+        (
+            "invalid_1.2_corrupted.odf",
+            "application/vnd.oasis.opendocument.formula",
+        ),
+        (
+            "invalid_1.3_corrupted.odf",
+            "application/vnd.oasis.opendocument.formula",
+        ),
+        (
+            "invalid_1.4_corrupted.odf",
+            "application/vnd.oasis.opendocument.formula",
+        ),
+    ],
 )
 def test_extractor_invalid_file(filename, mimetype, evaluate_extractor):
     """
