@@ -288,16 +288,6 @@ class MagicDetector(BaseDetector):
                 )
                 self.mimetype = "video/dv"
 
-    @property
-    def mimetype_is_important(self) -> bool:
-        """Return True if detector is sure about the mimetype.
-
-        We will prefer file detector with the following mimetypes:
-            - application/vnd.oasis.opendocument.formula
-        """
-        # TODO: Why?
-        return self.mimetype == "application/vnd.oasis.opendocument.formula"
-
     def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
         detector.

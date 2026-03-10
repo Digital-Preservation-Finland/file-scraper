@@ -281,7 +281,7 @@ def test_important_pdf_dng(filepath, important):
     [
         (FidoDetector, "text/html"),
         (FidoDetector, "application/zip"),
-        (MagicDetector, "application/vnd.oasis.opendocument.formula")
+        (ODFDetector, "application/vnd.oasis.opendocument.formula")
     ]
 )
 def test_important_other(detector_class: type[BaseDetector], mimetype):
