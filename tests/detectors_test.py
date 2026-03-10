@@ -29,7 +29,6 @@ from file_scraper.detectors import (_FidoReader,
                                     AtlasTiDetector,
                                     ODFDetector)
 from file_scraper.defaults import UNKN, UNAP
-from file_scraper.state import Mimetype
 from tests.common import get_files, partial_message_included
 
 CHANGE_FIDO = {
@@ -271,10 +270,10 @@ def test_important_pdf_dng(filepath, important):
     detector.detect()
     if important:
         if detector.mimetype == "application/pdf":
-            assert detector.determine_important().version is not None
+            assert detector.version_is_important is True
     else:
-        assert detector.determine_important().version is None
-        assert detector.determine_important().mimetype is None
+        assert detector.version_is_important is False
+        assert detector.mimetype_is_important is False
 
 
 @pytest.mark.parametrize(
@@ -295,11 +294,11 @@ def test_important_other(detector_class: type[BaseDetector], mimetype):
     detector = detector_class(Path("testfilename"))
     detector.mimetype = mimetype
     if detector_class == FidoDetector:
-        assert detector.determine_important().version is None
-        assert detector.determine_important().mimetype is None
+        assert detector.version_is_important is False
+        assert detector.mimetype_is_important is False
     else:
-        assert detector.determine_important().mimetype == mimetype
-        assert detector.determine_important().version is None
+        assert detector.mimetype_is_important is True
+        assert detector.version_is_important is False
 
 
 @pytest.mark.parametrize(
@@ -587,7 +586,8 @@ def test_return_mimetype_result_state(
     detector_class: type[BaseDetector],
 ) -> None:
     detector = detector_class(Path("tests/data/text_plain/valid__ascii.txt"))
-    assert type(detector.determine_important()) in [Mimetype, type(None)]
+    assert type(detector.mimetype_is_important) is bool
+    assert type(detector.version_is_important) is bool
 
 
 def test_compressed_pdf():

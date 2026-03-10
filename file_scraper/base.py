@@ -3,16 +3,17 @@
 from __future__ import annotations
 
 import abc
-from collections.abc import Iterator, Callable
-from pathlib import Path
-from typing import Any, Generic, Literal, TypeVar, final, cast, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar, cast, final
 
 from file_scraper.defaults import UNAP, UNAV
 from file_scraper.exceptions import SkipElementException
-from file_scraper.state import Mimetype
 from file_scraper.utils import filter_unwanted_chars
+
 if TYPE_CHECKING:
-    from file_scraper.metadata import (MetadataMethod)
+    from collections.abc import Callable, Iterator
+    from pathlib import Path
+
+    from file_scraper.metadata import MetadataMethod
 
 
 class BaseApparatus(metaclass=abc.ABCMeta):
@@ -399,12 +400,21 @@ class BaseDetector(BaseApparatus):
     def detect(self) -> None:
         """Detect file. Must be implemented in detectors."""
 
-    def determine_important(self) -> Mimetype:
+    @property
+    def mimetype_is_important(self) -> bool:
+        """Return True if detectors is sure about the mimetype.
+
+        The default implementation of this method always returns False.
         """
-        Used to replace existing mimetype with a more important result.
-        :returns: an important Mimetype.
+        return False
+
+    @property
+    def version_is_important(self) -> bool:
+        """Return True if detectors is sure about the version.
+
+        The default implementation of this method always returns False.
         """
-        return Mimetype(None, None)
+        return False
 
     @property
     def mimetype(self) -> str | None:

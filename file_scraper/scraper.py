@@ -477,20 +477,18 @@ def _update_filetype(
     """
     detector.detect()
     LOGGER.debug(
-        "%s detected MIME type: %s, version: %s, important: %s, "
-        "well-formed: %s",
+        "%s detected MIME type: %s, version: %s, important mimetype: %s, "
+        "important version: %s, well-formed: %s",
         detector.__class__.__name__, detector.mimetype, detector.version,
-        detector.determine_important(), detector.well_formed
+        detector.mimetype_is_important, detector.version_is_important,
+        detector.well_formed
     )
 
     # Update mimetype
     if mimetype is None:
         # No previous value
         mimetype = detector.mimetype
-    # TODO: rewrite determine_important to simplify this statement
-    elif mimetype != detector.mimetype \
-            and detector.mimetype is not None \
-            and detector.mimetype == detector.determine_important().mimetype:
+    elif detector.mimetype_is_important:
         LOGGER.debug(
             "Mimetype %s from %s is important, overriding previous value",
             detector.mimetype, detector.__class__.__name__
@@ -510,9 +508,7 @@ def _update_filetype(
         elif detector.version is None:
             # No need to update
             pass
-        elif version != detector.version \
-                and detector.version \
-                == detector.determine_important().version:
+        elif version != detector.version and detector.version_is_important:
             LOGGER.debug(
                 "Version %s from %s is important, overriding previous"
                 " value",

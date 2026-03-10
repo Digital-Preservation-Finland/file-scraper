@@ -25,7 +25,6 @@ from file_scraper.defaults import (
 )
 from file_scraper.logger import LOGGER
 from file_scraper.magiclib import magic_analyze, magiclib, magiclib_version
-from file_scraper.state import Mimetype
 from file_scraper.utils import is_zipfile, parse_exif_version
 
 
@@ -208,20 +207,17 @@ class FidoDetector(BaseDetector):
             if self.version is not None:
                 self.mimetype = "application/warc"
 
-    def determine_important(self) -> Mimetype:
-        """
-        Return important mime types.
+    @property
+    def mimetype_is_important(self) -> bool:
+        """Return True if detector is sure about the mimetype.
 
         We will always prefer Fido except in the the following cases:
             - text/html when it is not HTML5 or HTML4.01.
               HTML variant is recognized with pronom code.
             - application/zip
-            - user has given a MIME type
 
         Fido recognizes ARC files as text/html and OpenOffice Formula files
         as application/zip, therefore these are given to other detectors.
-
-        :returns: A dict possibly containing key "mimetype"
         """
         arc_or_formula = self._puid in ["fmt/471", "fmt/100"]
         nonstandard_mimetype = self.mimetype not in {
@@ -230,9 +226,7 @@ class FidoDetector(BaseDetector):
             "application/zip",
         }
 
-        if arc_or_formula or nonstandard_mimetype:
-            return Mimetype(self.mimetype, None)
-        return Mimetype(None, None)
+        return arc_or_formula or nonstandard_mimetype
 
     def tools(self) -> dict:
         """Return information about the software used by the extractor or
@@ -294,19 +288,15 @@ class MagicDetector(BaseDetector):
                 )
                 self.mimetype = "video/dv"
 
-    def determine_important(self) -> Mimetype:
-        """
-        Important mime types.
+    @property
+    def mimetype_is_important(self) -> bool:
+        """Return True if detector is sure about the mimetype.
 
-        If user has not given a MIME type, we will prefer file detector with
-        the following mimetypes:
+        We will prefer file detector with the following mimetypes:
             - application/vnd.oasis.opendocument.formula
-
-        :returns: A dict possibly containing key "mimetype"
         """
-        if self.mimetype in ["application/vnd.oasis.opendocument.formula"]:
-            return Mimetype(self.mimetype, None)
-        return Mimetype(None, None)
+        # TODO: Why?
+        return self.mimetype == "application/vnd.oasis.opendocument.formula"
 
     def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
@@ -465,17 +455,29 @@ class ExifToolDetector(BaseDetector):
             "detection could not be performed by this tool"
         )
 
-    def determine_important(self) -> Mimetype:
+    @property
+    def mimetype_is_important(self) -> bool:
+        """Return True if detector is sure about the mimetype.
+
+        If ExifTool detector determines the mimetype as dng, it is
+        marked as important. Other detectors detect dng files as tiff
+        files.
         """
-        If ExifTool detector determines the mimetype as dng, it is marked as
-        important. This is to make sure that this result overrides other
-        detectors, which would detect dng files as tiff files.
-        """
-        if self.mimetype in ["image/x-adobe-dng"]:
-            return Mimetype(self.mimetype, None)
+        result = False
+        if self.mimetype == "image/x-adobe-dng":
+            result = True
         if self.mimetype and self.version:
-            return Mimetype(self.mimetype, self.version)
-        return Mimetype(None, None)
+            # TODO: why?
+            result = True
+        return result
+
+    @property
+    def version_is_important(self) -> bool:
+        """Return True if detector is sure about the version."""
+        if self.mimetype and self.version:
+            # TODO: why?
+            return True
+        return False
 
     def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
@@ -611,16 +613,25 @@ class SegYDetector(BaseDetector):
                 "not be detected."
             )
 
-    def determine_important(self) -> Mimetype:
+    @property
+    def mimetype_is_important(self) -> bool:
+        """Return True if detector is sure about the mimetype.
+
+        SegYDetector detects only SEG-Y files. If SegYDetector
+        determines the mimetype, it is always important. Other detectors
+        detect SEG-Y files as plain text files.
         """
-        If SegYDetector determines the mimetype as SEG-Y, the mimetype
-        and version are marked as important. This is to make sure that
-        this result overrides other detectors, which would detect SEG-Y
-        files as plain text files.
+        return bool(self.mimetype)
+
+    @property
+    def version_is_important(self) -> bool:
+        """Return True if detector is sure about the version.
+
+        SegYDetector detects only SEG-Y files. If SegYDetector
+        determines the version, it is always important. Other detectors
+        detect SEG-Y files as plain text files.
         """
-        if self.mimetype in ["application/x.fi-dpres.segy"]:
-            return Mimetype(self.mimetype, self.version)
-        return Mimetype(None, None)
+        return bool(self.mimetype)
 
     def tools(self) -> dict:
         """Return information about the software used by the extractor or
@@ -653,16 +664,25 @@ class AtlasTiDetector(BaseDetector):
             self.mimetype = "application/x.fi-dpres.atlproj"
             self.version = UNAP
 
-    def determine_important(self) -> Mimetype:
+    @property
+    def mimetype_is_important(self) -> bool:
+        """Return True if detector is sure about the mimetype.
+
+        AtlasTiDetector detects only atlproj files. If AtlasTiDetector
+        determines the mimetype, it is always important. Other detectors
+        detect atlproj files as ZIP archive files.
         """
-        If AtlasTiDetector determines the mimetype as x.fi-dpres.atlproj,
-        the mimetype and version are marked as important. This is to make
-        sure that this result overrides other detectors, which would detect
-        atlproj files as ZIP archive files.
+        return bool(self.mimetype)
+
+    @property
+    def version_is_important(self) -> bool:
+        """Return True if detector is sure about the version.
+
+        AtlasTiDetector detects only atlproj files. If AtlasTiDetector
+        determines the version, it is always important. Other detectors
+        detect atlproj files as ZIP archive files.
         """
-        if self.mimetype in ["application/x.fi-dpres.atlproj"]:
-            return Mimetype(self.mimetype, self.version)
-        return Mimetype(None, None)
+        return bool(self.version)
 
     def tools(self) -> dict:
         """Return information about the software used by the extractor or
@@ -713,16 +733,25 @@ class SiardDetector(BaseDetector):
                     self.version = version
                     break
 
-    def determine_important(self) -> Mimetype:
+    @property
+    def mimetype_is_important(self) -> bool:
+        """Return True if detector is sure about the mimetype.
+
+        SiardDetector detects only SIARD files. If SiardDetector
+        determines the mimetype, it is always important. Other detectors
+        detect SIARD files as ZIP archive files.
         """
-        If SiardDetector determines the mimetype as SIARD, the mimetype
-        and version are marked as important. This is to make sure that
-        this result overrides other detectors, which would detect SIARD
-        files as ZIP archive files.
+        return bool(self.mimetype)
+
+    @property
+    def version_is_important(self) -> bool:
+        """Return True if detector is sure about the version.
+
+        SiardDetector detects only SIARD files. If SiardDetector
+        determines the version, it is always important. Other detectors
+        detect SIARD files as ZIP archive files.
         """
-        if self.mimetype in ["application/x-siard"]:
-            return Mimetype(self.mimetype, self.version)
-        return Mimetype(None, None)
+        return bool(self.version)
 
     def tools(self) -> dict:
         """Return information about the software used by the extractor or
@@ -809,13 +838,25 @@ class ODFDetector(BaseDetector):
         self.mimetype = detected_mimetype
         self.version = detected_version
 
-    def determine_important(self) -> Mimetype:
-        """Return dict of important values determined by the detector.
+    @property
+    def mimetype_is_important(self) -> bool:
+        """Return True if detector is sure about the mimetype.
 
-        Mimetype and format version are important because other
-        detectors do not detect them correctly.
+        ODFDetector detects only ODF files. Mimetype is always important
+        if it is detected, because other detectors do not detect ODF
+        files reliably.
         """
-        return Mimetype(self.mimetype, self.version)
+        return bool(self.mimetype)
+
+    @property
+    def version_is_important(self) -> bool:
+        """Return True if detector is sure about the version.
+
+        ODFDetector detects only ODF files. Version is always important
+        if it is detected, because other detectors do not detect ODF
+        files reliably.
+        """
+        return bool(self.version)
 
     def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
@@ -883,14 +924,25 @@ class EpubDetector(BaseDetector):
             self.mimetype = "application/epub+zip"
             self.version = "3"
 
-    def determine_important(self) -> Mimetype:
+    @property
+    def mimetype_is_important(self) -> bool:
+        """Return True if detector is sure about the mimetype.
+
+        EpubDetector detects only EPUB files. If EpubDetector determines
+        the mimetype, it is marked as important. Other detectors do not
+        disagree, so this is probably unnecessary.
         """
-        If EpubDetector determines the mimetype as EPUB, the mimetype
-        and version are marked as important.
+        return self.mimetype in ["application/epub+zip"]
+
+    @property
+    def version_is_important(self) -> bool:
+        """Return True if detector is sure about the version.
+
+        EpubDetector detects only EPUB files. If EpubDetector determines
+        the version, it is marked as important. Other detectors do not
+        disagree, so this is probably unnecessary.
         """
-        if self.mimetype in ["application/epub+zip"]:
-            return Mimetype(self.mimetype, self.version)
-        return Mimetype(None, None)
+        return self.mimetype in ["application/epub+zip"]
 
     def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
