@@ -373,8 +373,13 @@ class MagicCharset(BaseDetector):
 
 
 class ExifToolDetector(BaseDetector):
-    """
-    Detector used with TIFF, JPEG and PDF files.
+    """Exiftool detector.
+
+    A special detector, which is not used for all files. It is only used
+    when other detectors have already detected a file format which is
+    supported by ExifToolDetector: TIFF, JPEG or PDF.
+
+    The purpose of ExifToolDetectors is to:
 
     - tell DNG files apart from ordinary TIFF files
     - detect PDF/A conformance for PDF files
@@ -453,21 +458,17 @@ class ExifToolDetector(BaseDetector):
         marked as important. Other detectors detect dng files as tiff
         files.
         """
-        result = False
-        if self.mimetype == "image/x-adobe-dng":
-            result = True
-        if self.mimetype and self.version:
-            # TODO: why?
-            result = True
-        return result
+        return self.mimetype == "image/x-adobe-dng"
 
     @property
     def version_is_important(self) -> bool:
-        """Return True if detector is sure about the version."""
-        if self.mimetype and self.version:
-            # TODO: why?
-            return True
-        return False
+        """Return True if detector is sure about the version.
+
+        Other detectors can not reliably detect PDF/A versions and JPEG
+        EXIF versions.
+        """
+        return bool(self.version)  \
+            and self.mimetype in ["application/pdf", "image/jpeg"]
 
     def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
