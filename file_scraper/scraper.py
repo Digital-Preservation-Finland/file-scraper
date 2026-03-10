@@ -439,7 +439,7 @@ def _validate_mimetype_and_version(mimetype, version):
     if mimetype is None:
         return  # Both checks require mimetype to be defined
 
-    formats = file_formats(True, True)
+    formats = file_formats(deprecated=True, unofficial=True)
 
     allowed_mimetypes = (f["mimetype"].lower() for f in formats)
     if mimetype not in allowed_mimetypes:
