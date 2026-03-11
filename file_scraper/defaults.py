@@ -94,7 +94,7 @@ VERSION_DICT = {
 # Dict between detectors' pronom results and known mimetypes and versions.
 # fmt/289 might be need to change to fmt/1355 when supported by FIDO.
 PRONOM_DICT = {
-    "fmt/5": ("video/avi", ""),
+    "fmt/5": ("video/avi", None),
     "fmt/193": ("image/x-dpx", "1.0"),
     "fmt/244": ("application/vnd.google-earth.kml+xml", "2.3"),
     "fmt/289": ("application/warc", None),  # does not result version
@@ -103,14 +103,14 @@ PRONOM_DICT = {
     "fmt/541": ("image/x-dpx", "2.0"),
     "fmt/568": ("image/webp", None),
     "fmt/569": ("video/x-matroska", "4"),
-    "fmt/585": ("video/mp2t", ""),
+    "fmt/585": ("video/mp2t", None),
     "fmt/640": ("video/mpeg", "2"),
     "fmt/649": ("video/mpeg", "1"),
-    "fmt/997": ("application/x-spss-por", ""),
+    "fmt/997": ("application/x-spss-por", None),
     "fmt/1134": ("text/xml", None),  # GPX 1.1 XML schema
     "x-fmt/135": ("audio/x-aiff", "1.3"),
-    "x-fmt/385": ("video/mp1s", ""),
-    "x-fmt/386": ("video/mp2p", ""),
+    "x-fmt/385": ("video/mp1s", None),
+    "x-fmt/386": ("video/mp2p", None),
 }
 
 COMPATIBLE_ENCODINGS = {

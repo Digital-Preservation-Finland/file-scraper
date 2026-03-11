@@ -186,10 +186,6 @@ class FidoDetector(BaseDetector):
         self.mimetype = fido.mimetype
         self.version = fido.version
 
-        # Sometimes FIDO detects version as empty string for some reason
-        if self.version == "":
-            self.version = None
-
         # FIDO detects at least some video/mp4 audio/mp4 files as
         # application/mp4 which is not currently supported
         if self.mimetype == "application/mp4":
