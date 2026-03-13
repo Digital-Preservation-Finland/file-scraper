@@ -56,8 +56,8 @@ class PsppExtractor(BaseExtractor[PsppMeta]):
                 self._errors.append("File conversion failed.")
         finally:
             shutil.rmtree(temp_dir)
-            self.streams = list(self.iterate_models(
-                well_formed=self.well_formed))
+
+        self.streams = list(self.iterate_models(well_formed=self.well_formed))
 
     def tools(self):
         """Return information about the software used by the extractor or
