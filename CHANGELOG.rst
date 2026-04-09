@@ -5,12 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.1.0/>`__,
 and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`__.
 
-Unreleased
-----------
+3.0.0 - 2026-04-09
+------------------
 
 Added
 ^^^^^
 - Support for ODF version 1.4
+
+Changed
+^^^^^^^
+- Revamped how file-scraper collects and combines information from scrapers. This might improve detection and scraping results in some situations.
+
+Fixed
+^^^^^
+- Fix various incorrect file format and version detections by FIDO
+- Fix crash caused by scraping an XML file with an unknown encoding
+
+Removed
+^^^^^^^
+- Remove ``Scraper.clear`` method
 
 2.7.2 - 2026-02-25
 ------------------
