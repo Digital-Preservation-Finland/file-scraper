@@ -31,13 +31,21 @@ class OfficeExtractor(BaseExtractor[OfficeMeta]):
                 "soffice", "--convert-to",
                 "pdf", "--outdir", temp_dir, self.filename
                 ], env=env)
-            if shell.stderr:
-                self._errors.append(shell.stderr)
+            filtered_stderr = _filter_office_stderr(shell.stderr)
+
             if shell.returncode != 0:
-                self._errors.append(
+                error_msg = (
                     f"Office returned invalid return code: "
-                    f"{shell.returncode}\n{shell.stderr}")
+                    f"{shell.returncode}\n"
+                )
+                if filtered_stderr:
+                    error_msg += filtered_stderr
+                self._errors.append(error_msg)
+            elif filtered_stderr:
+                self._errors.append(filtered_stderr)
+
             self._messages.append(shell.stdout)
+
         except OSError as error:
             LOGGER.warning("Error handling file", exc_info=True)
             self._errors.append(f"Error handling file: {error}")
@@ -60,3 +68,33 @@ class OfficeExtractor(BaseExtractor[OfficeMeta]):
                 "version": version_shell.stdout.split(" ")[1]
             }
         }
+
+
+def _filter_office_stderr(errors: str) -> str:
+    """
+    Filter out known-benign LibreOffice errors from stderr.
+
+    Returns a new string containing all lines except the exact ignored lines.
+    Preserves all other stderr lines.
+    """
+
+    # FIXME: Expected error messages can be removed once
+    # libpng in dpres is updated to version >=1.6.47 .
+    _IGNORED_OFFICE_STDERR_LINES = {
+        "libpng warning: iCCP: known incorrect sRGB profile",
+        "libpng warning: iCCP: cHRM chunk does not match sRGB",
+    }
+
+    if not errors:
+        return ""
+
+    constructed_string = ""
+    for line in str(errors).split("\n"):
+        if not line:
+            continue
+        if line.strip() in _IGNORED_OFFICE_STDERR_LINES:
+            LOGGER.debug("Filtering ignored Office/libpng warning: %s", line)
+            continue
+        constructed_string += line + "\n"
+
+    return constructed_string
