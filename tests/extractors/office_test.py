@@ -34,6 +34,7 @@ import pytest
 
 from file_scraper.defaults import UNAV
 from file_scraper.office.office_extractor import OfficeExtractor
+from file_scraper.office import office_extractor as office_extractor_module
 from tests.common import parse_results, partial_message_included
 
 BASEPATH = "tests/data"
@@ -391,3 +392,100 @@ def test_tools():
     """Test that tool versions have at least one digit in the start"""
     extractor = OfficeExtractor(filename=Path(""), mimetype="")
     assert extractor.tools()["libreoffice"]["version"][0].isdigit()
+
+
+# FIXME: Test can be removed once libpng in dpres is updated >=1.6.47 .
+@pytest.mark.parametrize(
+    ["stderr", "expected_error_fragment", "expected_well_formed"],
+    [
+        (
+            "libpng warning: iCCP: known incorrect sRGB profile\n"
+            "libpng warning: iCCP: cHRM chunk does not match sRGB\n",
+            "",
+            True,
+        ),
+        (
+            "libpng warning: iCCP: known incorrect sRGB profile\n"
+            "libpng warning: iCCP: cHRM chunk does not match sRGB\n"
+            "real error line\n",
+            "real error line\n",
+            False,
+        ),
+        (
+            "",
+            "",
+            True,
+        ),
+        (
+            "real error line\n",
+            "real error line\n",
+            False,
+        ),
+    ],
+    ids=[
+        "known_warnings_only",
+        "known_warnings_plus_unknown_error",
+        "no_stderr",
+        "unknown_error_only",
+    ],
+)
+def test_office_stderr_filtering(
+        monkeypatch, stderr, expected_error_fragment, expected_well_formed):
+    """
+    Test that OfficeExtractor executes stderr filtering and handles
+    known libpng warnings correctly.
+    """
+    mimetype = (
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+    )
+
+    # Since this test hard code expected data, the used test file is irrelevant
+    # but needed in order to run OfficeExtract._extract .
+    path = Path("tests/data", mimetype.replace("/", "_"))
+    testfile = path / "valid_2007 onwards.pptx"
+
+    class DummyShell:
+        def __init__(self, *args, **kwargs):
+            self.stdout = ""
+            self.stderr = stderr
+            self.returncode = 0
+
+    original_filter_office_stderr = (
+        office_extractor_module._filter_office_stderr
+    )
+    filter_calls = []
+
+    def filter_spy(errors):
+        filter_calls.append(errors)
+        return original_filter_office_stderr(errors)
+
+    monkeypatch.setattr(office_extractor_module, "Shell", DummyShell)
+    monkeypatch.setattr(
+        office_extractor_module,
+        "_filter_office_stderr",
+        filter_spy
+    )
+
+    extractor = office_extractor_module.OfficeExtractor(
+        filename=testfile,
+        mimetype=mimetype
+    )
+    extractor.extract()
+
+    assert filter_calls == [stderr]
+    assert extractor.well_formed is expected_well_formed
+
+    errors = extractor.errors()
+
+    if expected_error_fragment:
+        assert expected_error_fragment in errors
+        assert (
+            "libpng warning: iCCP: known incorrect sRGB profile\n"
+            not in errors
+        )
+        assert (
+            "libpng warning: iCCP: cHRM chunk does not match sRGB\n"
+            not in errors
+        )
+    else:
+        assert not errors
