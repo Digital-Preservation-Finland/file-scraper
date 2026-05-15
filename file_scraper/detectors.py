@@ -245,6 +245,14 @@ class FidoDetector(BaseDetector):
         :param gz: Is the WARC gzipped.
         :returns: WARC version or `None` if version could not be read.
         """
+
+        # Sometimes WARC file is not detected to be a gzipped.
+        # (and gz is incorrectly set to False)
+        # We compare to known gzip magic bytes to double check if
+        # file is a gzip file. (less overhead than with GzipFile.read() )
+        with open(file_path, "rb") as raw:
+            gz = gz or raw.read(2) == b"\x1f\x8b"
+
         func = gzip.open if gz else open
         with func(file_path, "rb") as file:
             # WARC file could contain almost anything, therefore the

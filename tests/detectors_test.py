@@ -612,3 +612,18 @@ def test_non_utf8_warc():
     assert detector.mimetype == "application/warc"
     assert detector.version == "1.0"
     assert not detector.messages()
+
+
+@pytest.mark.parametrize(
+    ["filename", "expected_version"],
+    [
+        ("valid_1.0_.warc.gz", "1.0"),
+        ("valid_1.1_.warc.gz", "1.1"),
+    ],
+)
+def test_read_warc_version_detects_gzip_from_magic_bytes(
+    filename, expected_version
+):
+    """Detect WARC version from gzip file even when caller says gz=False."""
+    path = Path("tests/data/application_warc") / filename
+    assert FidoDetector.read_warc_version(path, gz=False) == expected_version
