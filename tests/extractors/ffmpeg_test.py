@@ -63,7 +63,8 @@ import pytest
 
 from file_scraper.defaults import UNAP, UNAV
 from file_scraper.ffmpeg.ffmpeg_extractor import (FFMpegExtractor,
-                                                  FFMpegMetaExtractor)
+                                                  FFMpegMetaExtractor,
+                                                  _filter_stderr)
 from tests.common import parse_results
 from tests.extractors.stream_dicts import (
     MXF_CONTAINER,
@@ -291,7 +292,8 @@ def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
     correct = parse_results(filename, mimetype, result_dict, True)
     correct.streams.update(NO_METADATA)
 
-    extractor = FFMpegExtractor(filename=correct.filename, mimetype=mimetype.lower())
+    extractor = FFMpegExtractor(filename=correct.filename,
+                                mimetype=mimetype.lower())
     extractor.extract()
 
     evaluate_extractor(extractor, correct)
@@ -358,7 +360,7 @@ def test_ffmpeg_valid_simple(filename, result_dict, mimetype,
     ]
 )
 def test_ffmpeg_extractor_valid(filename, result_dict, mimetype,
-                              evaluate_extractor):
+                                evaluate_extractor):
     """
     Test FFMpegExtractor and FFMpegMetaExtractor with valid files when metadata
     is scraped.
@@ -370,7 +372,8 @@ def test_ffmpeg_extractor_valid(filename, result_dict, mimetype,
     """
     correct = parse_results(filename, mimetype, result_dict, True)
 
-    extractor = FFMpegExtractor(filename=Path(correct.filename), mimetype=mimetype)
+    extractor = FFMpegExtractor(filename=Path(correct.filename),
+                                mimetype=mimetype)
     extractor.extract()
 
     evaluate_extractor(extractor, correct)
@@ -378,7 +381,7 @@ def test_ffmpeg_extractor_valid(filename, result_dict, mimetype,
     correct_meta = parse_results(filename, mimetype, result_dict, False)
 
     extractor_meta = FFMpegMetaExtractor(filename=correct_meta.filename,
-                                       mimetype=mimetype)
+                                         mimetype=mimetype)
     extractor_meta.extract()
 
     evaluate_extractor(extractor_meta, correct_meta)
@@ -622,7 +625,7 @@ def test_ffmpeg_extractor_valid(filename, result_dict, mimetype,
     ]
 )
 def test_ffmpeg_extractor_invalid(filename, result_dict, mimetype,
-                                evaluate_extractor):
+                                  evaluate_extractor):
     """
     Test FFMpegExtractor with invalid files.
 
@@ -635,7 +638,7 @@ def test_ffmpeg_extractor_invalid(filename, result_dict, mimetype,
     correct.streams = {}
 
     extractor = FFMpegExtractor(filename=correct.filename,
-                              mimetype=mimetype)
+                                mimetype=mimetype)
     extractor.extract()
 
     evaluate_extractor(extractor, correct)
@@ -685,7 +688,7 @@ def test_ffmpeg_returns_invalid_return_code():
     testfile = path / "valid__mpeg2_mp3.avi"
 
     extractor = FFMpegExtractor(filename=testfile,
-                              mimetype=mimetype)
+                                mimetype=mimetype)
 
     extractor.extract()
 
@@ -756,3 +759,41 @@ def test_tools():
     # validity or invalidity of the file doesn't matter for tools
     extractor = FFMpegExtractor(filename=Path(""), mimetype="")
     assert extractor.tools()["ffmpeg"]["version"] not in (UNAV, None)
+
+
+@pytest.mark.parametrize(
+    "stderr",
+    [
+        "[jpeg2000 @ 0x123] bpno became negative\n",
+        "[jpeg2000 @ 0x123] bpno became invalid\n",
+        "[jpeg2000 @ 0x123] bpno (-1) became negative\n",
+        "[jpeg2000 @ 0x123] bpno (-1) became invalid\n",
+    ],
+)
+def test_filter_stderr_filters_known_false_positive_jpeg2000_bpno_messages(
+    stderr,
+):
+    assert _filter_stderr(stderr) == ""
+
+
+def test_filter_stderr_filters_last_message_repeated():
+    stderr = "    Last message repeated 1 times\n"
+
+    assert _filter_stderr(stderr) == ""
+
+
+def test_filter_stderr_preserves_unrelated_errors():
+    stderr = "[jpeg2000 @ 0x123] some real decoding error\n"
+
+    assert _filter_stderr(stderr) == stderr
+
+
+def test_filter_stderr_preserves_unrelated_error_when_bpno_message_filtered():
+    stderr = (
+        "[jpeg2000 @ 0x123] bpno (-1) became invalid\n"
+        "[jpeg2000 @ 0x123] some real decoding error\n"
+    )
+
+    assert _filter_stderr(stderr) == (
+        "[jpeg2000 @ 0x123] some real decoding error\n"
+    )

@@ -266,13 +266,19 @@ class FFMpegExtractor(FFMpegMetaExtractor):
 
 def _filter_stderr(errors: str) -> str:
     """
-    Filter out "bpno became negative" and "Last message repeated".
+    Filter out known false-positive JPEG2000 bpno messages and
+    "Last message repeated" lines.
 
     Message "bpno became negative" is not considered as error, see e.g.:
     http://ffmpeg.org/pipermail/ffmpeg-devel/2020-April/259454.html
 
     Message "bpno became invalid" is not considered as error, see:
     https://trac.ffmpeg.org/ticket/5360
+
+    FFmpeg versions format the bpno message differently. For example:
+        FFmpeg 5.1.8: "bpno became invalid"
+        FFmpeg 5.1.9: "bpno (-1) became invalid"
+        FFmpeg 8.1.1 does not print any error message.
 
     Returns a new string, containing all lines in errors except
     those that contain either "Last message repeated [number] times"
@@ -285,19 +291,37 @@ def _filter_stderr(errors: str) -> str:
     :param errors: Stderr result from Shell in scraping
     :returns: Filtered error message result
     """
+
     constructed_string = ""
     repeat = re.compile(r"Last message repeated \d+ times")
+
+    # FFmpeg versions format the bpno message differently
+    # so multiple messages are defined.
+    # FIXME: Checking for these false positives can be excluded
+    #        once dpres is using newer FFmpeg version which does
+    #        not give these false positives anymore.
+    known_false_positive_jpeg2000_bpno_messages = [
+        "bpno became negative",
+        "bpno became invalid",
+        "bpno (-1) became negative",
+        "bpno (-1) became invalid",
+    ]
+
     for line in str(errors).split("\n"):
         if not line:
             continue
-        if "jpeg2000" in line and "bpno became negative" in line:
-            LOGGER.debug("Filtering 'bpno became negative'")
+
+        if "jpeg2000" in line and any(
+            message in line
+            for message in known_false_positive_jpeg2000_bpno_messages
+        ):
+            LOGGER.debug(f"Filtering JPEG2000 bpno message: {line}")
             continue
-        if "jpeg2000" in line and "bpno became invalid" in line:
-            LOGGER.debug("Filtering 'bpno became invalid'")
-            continue
+
         if repeat.match(line.strip()):
             LOGGER.debug("Filtering 'Last message repeated ... times'")
             continue
+
         constructed_string = constructed_string + line + "\n"
+
     return constructed_string
