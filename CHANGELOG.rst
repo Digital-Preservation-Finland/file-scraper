@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.1.0/>`__,
 and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`__.
 
+3.1.0 - 2026-05-26
+------------------
+
+Added
+^^^^^
+- Error message filtering to office extractor
+
+Changed
+^^^^^^^
+- Improve gzip detection when handling WARC files
+
+Fixed
+^^^^^
+- False-positive error message filtering for FFmpeg 5.1.9
+
 3.0.0 - 2026-04-09
 ------------------
 
