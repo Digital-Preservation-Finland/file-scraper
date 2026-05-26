@@ -3,12 +3,11 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Any, NamedTuple, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 from dpres_file_formats.graders import file_formats
 from dpres_file_formats.graders import grade as file_formats_grade
 
-from file_scraper.metadata import generate_metadata_dict
 from file_scraper.defaults import UNAV
 from file_scraper.detectors import ExifToolDetector, MagicCharset
 from file_scraper.exceptions import (
@@ -21,13 +20,14 @@ from file_scraper.exceptions import (
 from file_scraper.iterator import iter_detectors, iter_extractors
 from file_scraper.jhove.jhove_extractor import JHoveUtf8Extractor
 from file_scraper.logger import LOGGER
+from file_scraper.metadata import generate_metadata_dict
 from file_scraper.textfile.textfile_extractor import TextfileExtractor
 from file_scraper.utils import (
     hexdigest,
 )
 
 if TYPE_CHECKING:
-    from file_scraper.base import BaseDetector, BaseExtractor
+    from file_scraper.base import BaseDetector, BaseExtractor, InfoDict
 
 
 class ScraperResults(NamedTuple):
@@ -37,7 +37,7 @@ class ScraperResults(NamedTuple):
     well_formed: str
     streams: dict[int, Any]
     grade: str
-    info: dict[str, Any]
+    info: dict[int, InfoDict]
     errors: list[str]
 
 
@@ -66,7 +66,7 @@ class Scraper:
         # parameters.
         self._kwargs = kwargs
 
-        self.info = {}
+        self.info: dict[int, InfoDict] = {}
         self._well_formed = None
 
         mimetype = kwargs.get("mimetype")
@@ -270,6 +270,8 @@ class Scraper:
             self.info[len(self.info)] = {
                 "class": self.__class__.__name__,
                 "errors": conflicts,
+                "messages": [],
+                "tools": {},
             }
             self.well_formed = False
 

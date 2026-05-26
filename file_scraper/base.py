@@ -3,7 +3,16 @@
 from __future__ import annotations
 
 import abc
-from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar, cast, final
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Generic,
+    Literal,
+    TypedDict,
+    TypeVar,
+    cast,
+    final,
+)
 
 from file_scraper.defaults import UNAP, UNAV
 from file_scraper.exceptions import SkipElementException
@@ -14,6 +23,17 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from file_scraper.metadata import MetadataMethod
+
+
+InfoDict = TypedDict(
+    "InfoDict",
+    {
+        "class": str,
+        "messages": list[str],
+        "errors": list[str],
+        "tools": dict[str, dict[str, Any]],
+    },
+)
 
 
 class BaseApparatus(metaclass=abc.ABCMeta):
@@ -62,7 +82,7 @@ class BaseApparatus(metaclass=abc.ABCMeta):
             dictionary is returned instead.
         """
 
-    def info(self) -> dict:
+    def info(self) -> InfoDict:
         """Return basic info of detector/extractor.
 
         The returned dict contains keys "class", "messages", "errors"

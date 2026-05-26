@@ -502,3 +502,22 @@ def test_partially_supported_format():
     assert scraper.well_formed is False
     assert "version 3.2 for the mimetype text/html is not supported"\
         in str(result.errors)
+
+
+@pytest.mark.parametrize(
+    "path",
+    (
+        "tests/data/application_pdf/invalid_A-3b_wrong_version.pdf",
+        "tests/data/application_pdf/valid_A-3b.pdf",
+    ),
+)
+def test_scraper_info_dict(path):
+    """Test that the info dict has all required keys after scraping."""
+    scraper = Scraper(path)
+    scraper.scrape()
+
+    for info in scraper.info.values():
+        diff = {"class", "messages", "errors", "tools"}.difference(
+            info
+        )
+        assert not diff, f"Missing keys in info dict: {diff}"
