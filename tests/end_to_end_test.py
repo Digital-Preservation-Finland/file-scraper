@@ -162,6 +162,7 @@ EXPECTED_UNAV_FIELDS_FOR_FILE = {
         "codec_creator_app",
         "codec_creator_app_version",
         "codec_creator_app_version"],
+    "tests/data/image_tiff/valid_1.1_geotiff.tif": ["icc_profile_name"]
 }
 
 # These are actually valid with another mimetype or version

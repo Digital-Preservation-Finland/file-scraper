@@ -128,6 +128,7 @@ from file_scraper.jhove.jhove_extractor import (
     JHoveAiffExtractor,
     JHoveDngExtractor,
     JHoveEpubExtractor,
+    JHoveGeoTiffExtractor,
     JHoveGifExtractor,
     JHoveHtmlExtractor,
     JHoveJpegExtractor,
@@ -742,7 +743,6 @@ def test_extractor_aiff(filename, result_dict, evaluate_extractor):
     ["mime", "ver", "class_"],
     [
         ("image/gif", "1989a", JHoveGifExtractor),
-        ("image/tiff", "6.0", JHoveTiffExtractor),
         ("image/jpeg", "1.01", JHoveJpegExtractor),
         ("audio/x-wav", "2", JHoveWavExtractor)
     ]
@@ -768,6 +768,8 @@ def test_is_supported_allow(mime, ver, class_):
         ("application/pdf", "1.4", JHovePdfExtractor),
         ("text/html", "4.01", JHoveHtmlExtractor),
         ("application/xhtml+xml", "1.0", JHoveHtmlExtractor),
+        ("image/tiff", "6.0", JHoveTiffExtractor),
+        ("image/tiff", "1.1", JHoveGeoTiffExtractor)
     ]
 )
 def test_is_supported_deny(mime, ver, class_):
@@ -922,3 +924,60 @@ def test_jhove_tools():
     """Test extractor tools return correctly something non nullable"""
     extractor = JHovePdfExtractor(filename=Path(""), mimetype="")
     assert extractor.tools()["JHOVE"]["version"][0].isdigit()
+
+
+@pytest.mark.parametrize(
+    ["filename", "result_dict"],
+    (
+        (
+            "valid_1.1_geotiff.tif",
+            {
+                "purpose": "Test valid GeoTIFF file",
+                "stdout_part": "Well-Formed",
+                "stderr_part": "",
+            },
+        ),
+        (
+            "invalid_1.1_geotiff_invalid_epsg.tif",
+            {
+                "purpose": "GeoTIFF file with invalid EPSG",
+                "stdout_part": "Well-Formed, but not valid",
+                "stderr_part": "Invalid EPSG code",
+            },
+        ),
+        (
+            "invalid_1.1_geotiff_wrong_byte_order.tif",
+            {
+                "purpose": "Big endian GeoTIFF file with little endian data",
+                "stdout_part": "Not well-formed",
+                "stderr_part": "No TIFF magic number",
+            },
+        ),
+        (
+            "invalid_1.1_geotiff_zero_pixel_size.tif",
+            {
+                "purpose": "GeoTIFF file with zero pixel size",
+                "stdout_part": "Not well-formed",
+                "stderr_part": "Premature EOF",
+            },
+        ),
+        (
+            "invalid_1.1_geotiff_wrong_tag_order.tif",
+            {
+                "purpose": "GeoTIFF file with tags in wrong order",
+                "stdout_part": "Not well-formed",
+                "stderr_part": "Type mismatch for tag 34735",
+            },
+        ),
+    ),
+)
+def test_extractor_geotiff(filename, result_dict, evaluate_extractor):
+    """Test GeoTFF scraping."""
+    correct = parse_results(filename, "image/tiff", result_dict, True)
+
+    extractor = JHoveGeoTiffExtractor(
+        filename=correct.filename, mimetype="image/tiff"
+    )
+    extractor.extract()
+
+    evaluate_extractor(extractor, correct)

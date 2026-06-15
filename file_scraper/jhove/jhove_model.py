@@ -1,12 +1,18 @@
 """Metadata models for JHove"""
+from __future__ import annotations
 
 try:
     import mimeparse
 except ImportError:
     pass
 
+from typing import TYPE_CHECKING
+
 from file_scraper.base import BaseMeta
 from file_scraper.defaults import UNAP, UNAV
+
+if TYPE_CHECKING:
+    import lxml.etree
 
 
 NAMESPACES = {"j_harvard": "http://hul.harvard.edu/ois/xml/ns/jhove",
@@ -14,7 +20,7 @@ NAMESPACES = {"j_harvard": "http://hul.harvard.edu/ois/xml/ns/jhove",
               "aes": "http://www.aes.org/audioObject"}
 
 
-def get_field(report, field):
+def get_field(report: lxml.etree._Element | None, field: str) -> str:
     """
     Return the value of a field from the given JHoves XML output.
 
@@ -198,7 +204,6 @@ class JHoveTiffMeta(JHoveBaseMeta):
     """Metadata model for tiff files scraped with JHove"""
 
     _supported = {"image/tiff": ["6.0"]}
-    _allow_any_version = True
 
     @BaseMeta.metadata()
     def version(self):
@@ -449,3 +454,24 @@ class JHoveAiffMeta(JHoveBaseMeta):
         if "AIFF" in profile:
             return "1.3"
         return UNAV
+
+
+class JHoveGeoTiffMeta(JHoveBaseMeta):
+    """Metadata model for GeoTIFF files scraped with JHove."""
+
+    _supported = {"image/tiff": ["1.1"]}
+
+    @BaseMeta.metadata()
+    def stream_type(self) -> str:
+        """Return file type."""
+        return "image" if self._well_formed else UNAV
+
+    @BaseMeta.metadata()
+    def version(self) -> str:
+        """Return version."""
+        return "1.1" if self._well_formed else UNAV
+
+    @BaseMeta.metadata()
+    def mimetype(self) -> str:
+        """Return mimetype."""
+        return "image/tiff" if self._well_formed else UNAV

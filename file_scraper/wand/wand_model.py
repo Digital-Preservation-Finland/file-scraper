@@ -113,7 +113,7 @@ class WandImageMeta(BaseMeta):
 class WandTiffMeta(WandImageMeta):
     """Metadata models for tiff files scraped with Wand"""
 
-    _supported = {"image/tiff": []}
+    _supported = {"image/tiff": ["1.1", "6.0"]}
     _allow_any_version = True
 
     @BaseMeta.metadata()

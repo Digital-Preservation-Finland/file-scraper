@@ -533,6 +533,7 @@ def test_epub_detector(filepath, mimetype, version):
         ("image_jpeg/valid_2.2.1_exif_metadata.jpg", "image/jpeg", "2.2.1"),
         ("application_pdf/valid_A-1a.pdf", "application/pdf", "A-1a"),
         ("application_pdf/valid_A-2b.pdf", "application/pdf", "A-2b"),
+        ("image_tiff/valid_1.1_geotiff.tif", "image/tiff", "1.1"),
     ]
 )
 def test_exiftool_detector(filepath, mimetype, version):

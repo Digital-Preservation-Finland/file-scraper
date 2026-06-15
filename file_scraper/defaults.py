@@ -145,7 +145,10 @@ COMPATIBLE_VERSIONS = {
         "A-3a": ["1.2", "1.3", "1.4", "1.5", "1.6", "1.7"],
         "A-3b": ["1.2", "1.3", "1.4", "1.5", "1.6", "1.7"],
         "A-3u": ["1.2", "1.3", "1.4", "1.5", "1.6", "1.7"],
-    }
+    },
+    # GeoTIFF images have image/tiff MIME type and GeoTIFF version 1.1 is also
+    # a version 6.0 TIFF
+    "image/tiff": {"1.1": ["6.0"]}
 }
 
 COMPATIBLE_MIMETYPES = {

@@ -406,7 +406,7 @@ class Jp2FileMagicMeta(BinaryMagicBaseMeta):
 class TiffFileMagicMeta(BinaryMagicBaseMeta):
     """Metadata model for TIFF files."""
 
-    _supported = {"image/tiff": ["6.0"]}  # Supported mimetype
+    _supported = {"image/tiff": ["1.1", "6.0"]}  # Supported mimetype
     _allow_any_version = True
 
     @BaseMeta.metadata()

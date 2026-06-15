@@ -389,6 +389,7 @@ class ExifToolDetector(BaseDetector):
     - detect PDF/A conformance for PDF files
     - detect PDF/A version
     - detect JPEG/Exif version
+    - detect GeoTIFF version
     """
 
     def detect(self) -> None:
@@ -410,14 +411,13 @@ class ExifToolDetector(BaseDetector):
                 self.mimetype = metadata[0].get("File:MIMEType", None)
                 self._detect_pdf_a(metadata[0])
                 self._detect_exif_version(metadata[0])
+                self._detect_geotiff_version(metadata[0])
         except exiftool.exceptions.ExifToolExecuteError:
             LOGGER.info("ExifTool could not process file", exc_info=True)
             self._set_info_exiftool_not_supported()
 
     def _detect_pdf_a(self, metadata: dict) -> None:
-        """
-        Detect PDF/A and its version from metadata.
-        """
+        """Detect PDF/A and its version from metadata."""
         if metadata.get("XMP:Conformance") and metadata.get("XMP:Part"):
             conformance = metadata.get("XMP:Conformance")
             pdf_a_version = metadata.get("XMP:Part")
@@ -433,6 +433,14 @@ class ExifToolDetector(BaseDetector):
 
         if is_jpeg_exif:
             self.version = parse_exif_version(raw_version)
+
+    def _detect_geotiff_version(self, metadata: dict) -> None:
+        """Detect version of GeoTIFF."""
+        if (
+            version := metadata.get("GeoTiff:GeoTiffVersion")
+        ) and version.startswith("1"):
+            self.version = "1.1"
+            self._messages.append("GeoTIFF version detected by Exiftool")
 
     def _set_info_not_pdf_a(self) -> None:
         """
