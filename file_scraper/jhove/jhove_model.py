@@ -201,19 +201,29 @@ class JHoveJpegMeta(JHoveBaseMeta):
 
 
 class JHoveTiffMeta(JHoveBaseMeta):
-    """Metadata model for tiff files scraped with JHove"""
+    """Metadata model for tiff and GeoTIFF files scraped with JHove"""
 
-    _supported = {"image/tiff": ["6.0"]}
+    _supported = {"image/tiff": ["1.1", "6.0"]}
 
     @BaseMeta.metadata()
     def version(self):
         """
         Return version.
 
+        Differentiate GeoTIFFs by their profile of "Baseline GeoTIFF 1.0".
+
         If the well-formed status from extractor is False,
         then we do not know the actual version.
         """
-        return "6.0" if self._well_formed else UNAV
+        profile = get_field(self._report, "profile")
+
+        if not self._well_formed:
+            return UNAV
+
+        if profile and "Baseline GeoTIFF 1" in profile:
+            return "1.1"
+
+        return "6.0"
 
     @BaseMeta.metadata()
     def stream_type(self):
@@ -454,24 +464,3 @@ class JHoveAiffMeta(JHoveBaseMeta):
         if "AIFF" in profile:
             return "1.3"
         return UNAV
-
-
-class JHoveGeoTiffMeta(JHoveBaseMeta):
-    """Metadata model for GeoTIFF files scraped with JHove."""
-
-    _supported = {"image/tiff": ["1.1"]}
-
-    @BaseMeta.metadata()
-    def stream_type(self) -> str:
-        """Return file type."""
-        return "image" if self._well_formed else UNAV
-
-    @BaseMeta.metadata()
-    def version(self) -> str:
-        """Return version."""
-        return "1.1" if self._well_formed else UNAV
-
-    @BaseMeta.metadata()
-    def mimetype(self) -> str:
-        """Return mimetype."""
-        return "image/tiff" if self._well_formed else UNAV
