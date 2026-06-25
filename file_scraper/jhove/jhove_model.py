@@ -204,13 +204,15 @@ class JHoveTiffMeta(JHoveBaseMeta):
     """Metadata model for tiff and GeoTIFF files scraped with JHove"""
 
     _supported = {"image/tiff": ["1.1", "6.0"]}
+    _allow_any_version = True
 
     @BaseMeta.metadata()
     def version(self):
         """
         Return version.
 
-        Differentiate GeoTIFFs by their profile of "Baseline GeoTIFF 1.0".
+        Differentiate version 6.0 tiffs from GeoTIFFs by their profile of
+        "Baseline GeoTIFF 1.0".
 
         If the well-formed status from extractor is False,
         then we do not know the actual version.

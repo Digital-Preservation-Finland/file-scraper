@@ -104,14 +104,14 @@ This module tests that:
         - image/gif, 1989a
         - image/jpeg, 1.01
         - audio/x-wav, 2
+        - image/tiff, 6.0
+        - image/tiff, 1.1
     - The following MIME type and version pairs are supported by their
       respective extractors when well-formedness is checked. They are not
       supported with a made up version or when well-formedness is not checked.
         - application/pdf, 1.4
         - text/html, 4.01
         - application/xhtml+xml, 1.0
-        - image/tiff, 6.0
-        - image/tiff, 1.1
     - Utf8JHove reports MIME type text/plain with "", None or a made up version
       as not supported, as well as a made up MIME type.
     - JHove scarper works as designed when charset parameter for (X)HTML files
@@ -252,7 +252,8 @@ def test_old_namespace(filename, result_dict, evaluate_extractor, monkeypatch):
         filename=correct.filename, mimetype="image/gif"
     )
     extractor.extract()
-    assert "hul.harvard.edu" in extractor._base_extract().values()[0]
+    _, _, report = extractor._base_extract()
+    assert "hul.harvard.edu" in report.values()[0]
 
     evaluate_extractor(extractor, correct)
 
@@ -278,7 +279,7 @@ def test_old_namespace(filename, result_dict, evaluate_extractor, monkeypatch):
             "stderr_part": "File is too short"}),
         ("valid_1.1_geotiff.tif", {
             "purpose": "Test valid GeoTIFF file",
-            "stdout_part": "Well-Formed",
+            "stdout_part": "Well-Formed and valid",
             "stderr_part": ""}),
         ("invalid_1.1_geotiff_invalid_epsg.tif", {
             "purpose": "GeoTIFF file with invalid EPSG",
@@ -770,7 +771,9 @@ def test_extractor_aiff(filename, result_dict, evaluate_extractor):
     [
         ("image/gif", "1989a", JHoveGifExtractor),
         ("image/jpeg", "1.01", JHoveJpegExtractor),
-        ("audio/x-wav", "2", JHoveWavExtractor)
+        ("audio/x-wav", "2", JHoveWavExtractor),
+        ("image/tiff", "6.0", JHoveTiffExtractor),
+        ("image/tiff", "1.1", JHoveTiffExtractor),
     ]
 )
 def test_is_supported_allow(mime, ver, class_):
@@ -794,8 +797,6 @@ def test_is_supported_allow(mime, ver, class_):
         ("application/pdf", "1.4", JHovePdfExtractor),
         ("text/html", "4.01", JHoveHtmlExtractor),
         ("application/xhtml+xml", "1.0", JHoveHtmlExtractor),
-        ("image/tiff", "6.0", JHoveTiffExtractor),
-        ("image/tiff", "1.1", JHoveTiffExtractor)
     ]
 )
 def test_is_supported_deny(mime, ver, class_):

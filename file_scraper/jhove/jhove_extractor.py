@@ -51,23 +51,31 @@ class JHoveExtractorBase(BaseExtractor[JHoveMetaT]):
                 f"{shell.stderr}")
         report = lxml.etree.fromstring(shell.stdout_raw)
 
+        return shell.stdout, shell.stderr, report
+
+    def _base_analyze_report(self, stdout: str, stderr: str,
+                             report: lxml.etree._Element) -> None:
+        """Analyze JHove report and log status and potential errors"""
         status = get_field(report, "status")
         self._messages.append(status)
         if "Well-Formed and valid" not in status:
             self._errors.append("Validator returned error.")
-            self._errors.append(shell.stdout)
-            self._errors.append(shell.stderr)
+            self._errors.append(stdout)
+            self._errors.append(stderr)
 
+    def _base_streams_output(self, report: lxml.etree._Element) -> None:
+        """Add results to streams"""
         self.streams = list(
             self.iterate_models(
                 well_formed=self.well_formed,
                 report=report,
             )
         )
-        return report
 
     def _extract(self) -> None:
-        self._base_extract()
+        stdout, stderr, report = self._base_extract()
+        self._base_analyze_report(stdout, stderr, report)
+        self._base_streams_output(report)
 
     def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
@@ -147,122 +155,113 @@ class JHoveJpegExtractor(JHoveExtractorBase[JHoveJpegMeta]):
 
 
 class JHoveTiffExtractor(JHoveExtractorBase[JHoveTiffMeta]):
-    """Variables for scraping tiff files."""
+    """Variables for scraping TIFF and GeoTIFF files."""
 
     _jhove_module = "TIFF-hul"
     _supported_metadata = [JHoveTiffMeta]
 
-    # JHove error codes that will be ignored
+    # pylint: disable=too-few-public-methods
+    class _IgnoredError():
+        """Simple class for handling JHove errors we want to ignore"""
+
+        def __init__(self, err_id, err_msg, err_reason):
+            self.id = err_id
+            self.msg = err_msg
+            self.reason = err_reason
+
+        def __repr__(self):
+            return f"{self.msg} (reason: {self.reason})"
+
     # This is used for GeoTIFF 1.1 files, which JHove thinks are invalid
-    ignored_error_ids = {
-        "TIFF-HUL-66",  # ProjectedCSType out of range
-    }
+    ignored_errors = [
+            _IgnoredError("TIFF-HUL-66",
+                          "ProjectedCSType value out of range",
+                          "not relevant for OGC GeoTIFF 1.1")
+    ]
 
-    def _base_extract(self) -> lxml.etree._Element:
-        """Run JHove command and return XML output."""
-        shell = Shell(
-            ["jhove", "-h", "XML", "-m", self._jhove_module, self.filename]
-        )
+    def _extract(self) -> None:
+        stdout, stderr, report = self._base_extract()
+        self._tiff_analyze_report(stdout, stderr, report)
+        self._base_streams_output(report)
 
-        if shell.returncode != 0:
-            self._errors.append(
-                f"JHove returned invalid return code: {shell.returncode}\n"
-                f"{shell.stderr}"
-            )
-        report = lxml.etree.fromstring(shell.stdout_raw)
-
+    def _tiff_analyze_report(self, stdout: str, stderr: str,
+                             report: lxml.etree._Element) -> None:
+        """Analyze JHove report and log status and potential errors"""
         profile = get_field(report, "profile")
+        filtered_errors = []
+        epsg_error = ""
 
         if profile and "Baseline GeoTIFF 1" in profile:
-            real_errors, status = self._filter_and_update_report(report)
+            status, filtered_errors, epsg_error = self._check_errors(report)
         else:
             status = get_field(report, "status")
-            real_errors = []
 
         self._messages.append(status)
 
         if "Well-Formed and valid" not in status:
             self._errors.append("Validator returned error.")
-            self._errors.extend(real_errors)
-            self._errors.append(shell.stdout)
-            self._errors.append(shell.stderr)
+            self._errors.append(epsg_error)
+            self._errors.append(stdout)
+            self._errors.append(stderr)
+        elif filtered_errors:
+            self._messages.append("Found one or more errors, but they have "
+                                  "been deemed as false positives within "
+                                  "this framework. We'll ignore the following "
+                                  "errors and treat the file as valid: "
+                                  f"{filtered_errors}")
 
-        self.streams = list(
-            self.iterate_models(
-                well_formed=self.well_formed,
-                report=report,
-            )
-        )
-        return report
-
-    def _filter_and_update_report(
+    def _check_errors(
         self, report: lxml.etree._Element
-    ) -> tuple[list[str], str]:
-        """Filter JHove errors messages that should be ignored and update the
-        JHove XML report.
+    ) -> tuple[str, list[_IgnoredError], str]:
+        """Filter JHove errors that should be ignored and return status and
+        any errors that got filtered. Also check whether the EPSG code is valid
+        and return error message if it is not.
 
-        :param report: JHove report.
-        :returns: Tuple with list of real errors and status.
+        :param report: JHove report
+        :returns: Status, any errors that got filtered, and errors related to
+            the EPSG value.
         """
-        real_errors = []
-        messages_to_remove = []
+        filtered_errors = []
+        epsg_error = ""
+        real_errors = False
 
-        # Filter JHove messages and collect real errors
+        # Filter JHove messages and catch real errors
         for message in report.findall(".//{*}message"):
             severity = message.attrib.get("severity")
             msg_id = message.attrib.get("id")
             text = message.text or ""
+            ignored = False
 
-            if msg_id in self.ignored_error_ids:
-                messages_to_remove.append(message)
-                continue
+            for error in self.ignored_errors:
+                if msg_id == error.id and error.msg in text:
+                    filtered_errors.append(error)
+                    ignored = True
+                    break
 
-            if severity == "error":
-                real_errors.append(text)
+            if not ignored and severity == "error":
+                real_errors = True
 
-        # Remove errors that should be ignored from the report
-        for msg in messages_to_remove:
-            parent = msg.getparent()
-            if parent is not None:
-                parent.remove(msg)
+            # If we find even one real error, we know the file is not valid
+            if real_errors:
+                break
 
-        # EPSG check
+        status = get_field(report, "status")
+
+        # EPSG check, JHove doesn't check this
         epsg = self._get_epsg(report)
         if epsg is None:
-            real_errors.append("EPSG code not found")
+            epsg_error = "EPSG code not found"
         elif not self._valid_epsg(epsg):
-            real_errors.append("Invalid EPSG code")
+            epsg_error = "Invalid EPSG code"
 
-        status_text = self._update_status(report, real_errors)
+        if not (real_errors or epsg_error):
+            # No real errors, status is valid
+            status = "Well-Formed and valid"
+        elif epsg_error and "Well-Formed and valid" in status:
+            # Only EPSG error, status is not valid
+            status = "Well-Formed, but not valid"
 
-        return real_errors, status_text
-
-    @staticmethod
-    def _update_status(
-        report: lxml.etree._Element, real_errors: list[str]
-    ) -> str:
-        """Update status of the XML report and return it."""
-        status_elem = report.find(".//{*}status")
-        status_text = get_field(report, "status")
-
-        if not real_errors:
-            # No real errors, make sure status is valid
-            new_status = "Well-Formed and valid"
-
-            if status_elem is not None:
-                status_elem.text = new_status
-
-            status_text = new_status
-        elif "Well-Formed" in status_text:
-            # Real errors, make sure status is not valid
-            new_status = "Well-Formed, but not valid"
-
-            if status_elem is not None:
-                status_elem.text = new_status
-
-            status_text = new_status
-
-        return status_text
+        return status, filtered_errors, epsg_error
 
     @staticmethod
     def _get_epsg(report: lxml.etree._Element) -> str | None:
@@ -326,7 +325,10 @@ class JHoveWavExtractor(JHoveExtractorBase[JHoveWavMeta]):
         Scrape file.
         Add extra error message, if RF64 profile used.
         """
-        report = self._base_extract()
+        stdout, stderr, report = self._base_extract()
+        self._base_analyze_report(stdout, stderr, report)
+        self._base_streams_output(report)
+
         if "RF64" in get_field(report, "profile"):
             self._errors.append("RF64 is not a supported format")
 
