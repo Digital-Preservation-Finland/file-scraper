@@ -6,8 +6,8 @@ This module tests that:
         - For valid files containing one or more images, extractor messages
           contain "The file was analyzed".
         - For file where payload has been altered, extractor errors contain
-          "Failed to allocate memory for to read TIFF directory (0 elements of
-          12 bytes each)."
+          "Sanity check on directory count failed, zero tag directories not
+          supported".
         - For file with wrong byte order reported in the header, extractor errors
           contain "Not a TIFF file, bad version number 10752".
         - For an empty file, extractor errors contain "Cannot read TIFF header."
@@ -416,8 +416,8 @@ def test_extractor_colorspace(mimetype, filename, expected):
     ["filename", "mimetype", "stderr_part"],
     [
         ("invalid_6.0_payload_altered.tif", "image/tiff",
-         "Failed to allocate memory for to read TIFF directory (0 elements of"
-         " 12 bytes each)"),
+         "Sanity check on directory count failed, zero tag directories not "
+         "supported"),
         ("invalid_6.0_wrong_byte_order.tif", "image/tiff",
          "Not a TIFF file, bad version number 10752"),
         ("invalid__empty.tif", "image/tiff",
