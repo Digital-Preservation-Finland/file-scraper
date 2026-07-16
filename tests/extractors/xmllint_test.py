@@ -94,6 +94,11 @@ ROOTPATH = os.path.abspath(os.path.join(
             "purpose": "Test local no namespace XSD",
             "stdout_part": "Success",
             "stderr_part": ""},
+         {}),
+        ("valid_1.0_musicxml.xml", {
+            "purpose": "Test MusicXML file",
+            "stdout_part": "Success",
+            "stderr_part": ""},
          {})
     ]
 )

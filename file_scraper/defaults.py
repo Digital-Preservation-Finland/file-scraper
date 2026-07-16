@@ -43,6 +43,7 @@ PRIORITY_PRONOM = [
 MIMETYPE_DICT = {
     "application/csv": "text/csv",
     "application/vnd.ms-asf": "video/x-ms-asf",
+    "application/vnd.recordare.musicxml+xml": "text/xml",
     "application/x-wine-extension-ini": "text/plain",
     "application/x-subrip": "text/plain",
     "application/xml": "text/xml",
