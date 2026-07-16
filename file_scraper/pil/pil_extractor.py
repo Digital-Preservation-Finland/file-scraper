@@ -77,6 +77,10 @@ class PilExtractor(BaseExtractor[BasePilMeta]):
         # Raise the size limit to around a gigabyte for a 3 bpp image
         PIL.Image.MAX_IMAGE_PIXELS = 1024 * 1024 * 1024 // 3
 
+        # PIL cannot read multichannel GeoTIFF images with bit-depth > 8
+        # This setting will create a warning instead of UnidentifiedImageError
+        PIL.Image.WARN_POSSIBLE_FORMATS = True
+
         # Find out if we can use the minimal set of Pillow plugins to open
         # the file. If not, use a larger set. If the file can not be opened at
         # all, fail in the exception handler.

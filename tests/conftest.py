@@ -68,7 +68,7 @@ def evaluate_extractor() -> Callable[
         for stream_index, stream_metadata in correct.streams.items():
             if extractor._predefined_mimetype:
                 assert extractor.streams, (
-                    "Empty stream list resulted, possibly unexpected"
+                    "Empty stream list resulted, possibly unexpected "
                     "predefined mimetype: "
                     + str(extractor._predefined_mimetype)
                 )
