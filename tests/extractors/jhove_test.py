@@ -297,6 +297,11 @@ def test_old_namespace(filename, result_dict, evaluate_extractor, monkeypatch):
             "purpose": "GeoTIFF file with tags in wrong order",
             "stdout_part": "Not well-formed",
             "stderr_part": "Type mismatch for tag 34735"}),
+        ("invalid_1.1_geotiff_both_crs.tif", {
+            "purpose": "GeoTIFF file with both CRS defined",
+            "stdout_part": "Well-Formed, but not valid",
+            "stderr_part": "No CRS definition found or CRS definition is "
+            "invalid"}),
     ]
 )
 def test_extractor_tiff(filename, result_dict, evaluate_extractor):

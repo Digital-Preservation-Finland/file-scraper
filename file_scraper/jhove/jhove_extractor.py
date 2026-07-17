@@ -182,8 +182,8 @@ class JHoveTiffExtractor(JHoveExtractorBase[JHoveTiffMeta]):
         More info: https://docs.ogc.org/is/19-008r4/19-008r4.html#_requirements_for_definition_of_model_crs_when_model_is_from_geotiff_crs_register
 
         :var projected: EPSG Projected CRS code.
-        :var geodetic: EPSG Geographic 2D **or** Geocentric CRS code
-        :var vertical: EPSG Vertical CRS **or** EPSG Geographic 3D CRS code
+        :var geodetic: EPSG Geographic 2D **or** Geocentric CRS code.
+        :var vertical: EPSG Vertical CRS **or** EPSG Geographic 3D CRS code.
         """
 
         projected: str | None
