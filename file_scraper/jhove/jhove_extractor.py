@@ -1,6 +1,7 @@
 """Extractor for gif, html, jpeg, tif, pdf and wav files using JHove."""
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Literal, TypeVar
 
 try:
@@ -161,10 +162,10 @@ class JHoveTiffExtractor(JHoveExtractorBase[JHoveTiffMeta]):
     _supported_metadata = [JHoveTiffMeta]
 
     # pylint: disable=too-few-public-methods
-    class _IgnoredError():
+    class _IgnoredError:
         """Simple class for handling JHove errors we want to ignore"""
 
-        def __init__(self, err_id, err_msg, err_reason):
+        def __init__(self, err_id: str, err_msg: str, err_reason: str) -> None:
             self.id = err_id
             self.msg = err_msg
             self.reason = err_reason
@@ -172,11 +173,36 @@ class JHoveTiffExtractor(JHoveExtractorBase[JHoveTiffMeta]):
         def __repr__(self):
             return f"{self.msg} (reason: {self.reason})"
 
+    @dataclass
+    class CRSInfo:
+        """Dataclass to store Coordinate Reference System info. CRS should
+        contain either projected CRS or geodetic CRS, and an optional
+        supplementary vertical CRS.
+
+        More info: https://docs.ogc.org/is/19-008r4/19-008r4.html#_requirements_for_definition_of_model_crs_when_model_is_from_geotiff_crs_register
+
+        :var projected: EPSG Projected CRS code.
+        :var geodetic: EPSG Geographic 2D **or** Geocentric CRS code
+        :var vertical: EPSG Vertical CRS **or** EPSG Geographic 3D CRS code
+        """
+
+        projected: str | None
+        geodetic: str | None
+        vertical: str | None
+
+        def valid(self) -> bool:
+            """Check either projected or geodetic CRS is defined, but not both
+            at the same time.
+            """
+            return (self.projected is not None) ^ (self.geodetic is not None)
+
     # This is used for GeoTIFF 1.1 files, which JHove thinks are invalid
     ignored_errors = [
-            _IgnoredError("TIFF-HUL-66",
-                          "ProjectedCSType value out of range",
-                          "not relevant for OGC GeoTIFF 1.1")
+        _IgnoredError(
+            "TIFF-HUL-66",
+            "ProjectedCSType value out of range",
+            "not relevant for OGC GeoTIFF 1.1",
+        )
     ]
 
     def _extract(self) -> None:
@@ -184,15 +210,16 @@ class JHoveTiffExtractor(JHoveExtractorBase[JHoveTiffMeta]):
         self._tiff_analyze_report(stdout, stderr, report)
         self._base_streams_output(report)
 
-    def _tiff_analyze_report(self, stdout: str, stderr: str,
-                             report: lxml.etree._Element) -> None:
+    def _tiff_analyze_report(
+        self, stdout: str, stderr: str, report: lxml.etree._Element
+    ) -> None:
         """Analyze JHove report and log status and potential errors"""
         profile = get_field(report, "profile")
         filtered_errors = []
-        epsg_error = ""
+        crs_error = ""
 
         if profile and "Baseline GeoTIFF 1" in profile:
-            status, filtered_errors, epsg_error = self._check_errors(report)
+            status, filtered_errors, crs_error = self._check_errors(report)
         else:
             status = get_field(report, "status")
 
@@ -200,15 +227,17 @@ class JHoveTiffExtractor(JHoveExtractorBase[JHoveTiffMeta]):
 
         if "Well-Formed and valid" not in status:
             self._errors.append("Validator returned error.")
-            self._errors.append(epsg_error)
+            self._errors.append(crs_error)
             self._errors.append(stdout)
             self._errors.append(stderr)
         elif filtered_errors:
-            self._messages.append("Found one or more errors, but they have "
-                                  "been deemed as false positives within "
-                                  "this framework. We'll ignore the following "
-                                  "errors and treat the file as valid: "
-                                  f"{filtered_errors}")
+            self._messages.append(
+                "Found one or more errors, but they have "
+                "been deemed as false positives within "
+                "this framework. We'll ignore the following "
+                "errors and treat the file as valid: "
+                f"{filtered_errors}"
+            )
 
     def _check_errors(
         self, report: lxml.etree._Element
@@ -222,7 +251,6 @@ class JHoveTiffExtractor(JHoveExtractorBase[JHoveTiffMeta]):
             the EPSG value.
         """
         filtered_errors = []
-        epsg_error = ""
         real_errors = False
 
         # Filter JHove messages and catch real errors
@@ -245,29 +273,74 @@ class JHoveTiffExtractor(JHoveExtractorBase[JHoveTiffMeta]):
             if real_errors:
                 break
 
+        crs_error = self._check_crs(report)
         status = get_field(report, "status")
 
-        # EPSG check, JHove doesn't check this
-        epsg = self._get_epsg(report)
-        if epsg is None:
-            epsg_error = "EPSG code not found"
-        elif not self._valid_epsg(epsg):
-            epsg_error = "Invalid EPSG code"
-
-        if not (real_errors or epsg_error):
+        if not (real_errors or crs_error):
             # No real errors, status is valid
             status = "Well-Formed and valid"
-        elif epsg_error and "Well-Formed and valid" in status:
-            # Only EPSG error, status is not valid
+        elif crs_error and "Well-Formed and valid" in status:
+            # Only CRS error, status is not valid
             status = "Well-Formed, but not valid"
 
-        return status, filtered_errors, epsg_error
+        return status, filtered_errors, crs_error
+
+    def _check_crs(
+        self,
+        report: lxml.etree._Element,
+    ) -> str:
+        """Validate Coordinate Reference System (CRS).
+
+        :param report: JHove XML report.
+        :returns: CRS error or empty string.
+        """
+        crs_error = ""
+        crs_info = self._get_crs(report)
+
+        if not crs_info.valid():
+            # Both projected and geodetic are undefined, or both are defined
+            crs_error = "No CRS definition found or CRS definition is invalid."
+
+        if ((epsg := crs_info.projected) is not None) and (
+            not self._valid_epsg(epsg)
+        ):
+            # EPSG check, JHove doesn't check this
+            crs_error = "Invalid EPSG code"
+
+        return crs_error
+
+    def _get_crs(self, report: lxml.etree._Element,) -> CRSInfo:
+        """Find CRS info.
+
+        :param report: JHove XML report.
+        :returns: CRSInfo object.
+        """
+        crs_info = self.CRSInfo(None, None, None)
+
+        projected = self._find_property(report, "ProjectedCSType")
+        if projected is not None:
+            crs_info.projected = projected
+
+        geodetic = self._find_property(report, "GeographicType")
+        if geodetic is not None:
+            crs_info.geodetic = geodetic
+
+        vertical = self._find_property(report, "VerticalCSType")
+        if vertical is not None:
+            crs_info.vertical = vertical
+
+        return crs_info
 
     @staticmethod
-    def _get_epsg(report: lxml.etree._Element) -> str | None:
-        """Find EPSG code from JHove report."""
+    def _find_property(report: lxml.etree._Element, name: str) -> str | None:
+        """Find a property from JHove report.
+
+        :param report: JHove XML report.
+        :param name: Name of property.
+        :returns: Property value or None.
+        """
         elem = report.find(
-            ".//{*}property[{*}name='ProjectedCSType']/{*}values/{*}value"
+            f".//{{*}}property[{{*}}name='{name}']/{{*}}values/{{*}}value"
         )
         if elem is not None:
             return elem.text
