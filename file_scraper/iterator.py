@@ -1,62 +1,84 @@
 """Scraper iterator."""
-# flake8: noqa
+
 from __future__ import annotations
 
-from typing import Iterator, TYPE_CHECKING
-from file_scraper.base import BaseDetector, BaseExtractor
+from typing import TYPE_CHECKING
+
 from file_scraper.csv_extractor.csv_extractor import CsvExtractor
-from file_scraper.detectors import (EpubDetector,
-                                    FidoDetector,
-                                    MagicDetector,
-                                    AtlasTiDetector,
-                                    SiardDetector,
-                                    SegYDetector,
-                                    ODFDetector)
 from file_scraper.dbptk.dbptk_extractor import DbptkExtractor
+from file_scraper.detectors import (
+    AtlasTiDetector,
+    EpubDetector,
+    FidoDetector,
+    MagicDetector,
+    ODFDetector,
+    SegYDetector,
+    SiardDetector,
+)
 from file_scraper.dpx.dpx_extractor import DpxExtractor
-from file_scraper.dummy.dummy_extractor import (DetectedMimeVersionMetadataExtractor,
-                                                DetectedMimeVersionExtractor,
-                                                ExtractorNotFound)
-from file_scraper.ffmpeg.ffmpeg_extractor import FFMpegMetaExtractor, FFMpegExtractor
+from file_scraper.dummy.dummy_extractor import (
+    DetectedMimeVersionExtractor,
+    DetectedMimeVersionMetadataExtractor,
+    ExtractorNotFound,
+)
+from file_scraper.exiftool.exiftool_extractor import (
+    ExifToolDngExtractor,
+    ExifToolExifExtractor,
+)
+from file_scraper.ffmpeg.ffmpeg_extractor import (
+    FFMpegExtractor,
+    FFMpegMetaExtractor,
+)
 from file_scraper.ghostscript.ghostscript_extractor import GhostscriptExtractor
-from file_scraper.jhove.jhove_extractor import (JHoveAiffExtractor,
-                                                JHoveDngExtractor,
-                                                JHoveEpubExtractor,
-                                                JHoveGifExtractor,
-                                                JHoveHtmlExtractor,
-                                                JHoveJpegExtractor,
-                                                JHovePdfExtractor,
-                                                JHoveTiffExtractor,
-                                                JHoveWavExtractor)
+from file_scraper.jhove.jhove_extractor import (
+    JHoveAiffExtractor,
+    JHoveDngExtractor,
+    JHoveEpubExtractor,
+    JHoveGifExtractor,
+    JHoveHtmlExtractor,
+    JHoveJpegExtractor,
+    JHovePdfExtractor,
+    JHoveTiffExtractor,
+    JHoveWavExtractor,
+)
+from file_scraper.jpylyzer.jpylyzer_extractor import JpylyzerExtractor
 from file_scraper.json.json_extractor import JsonExtractor
 from file_scraper.logger import LOGGER
 from file_scraper.lxml_extractor.lxml_extractor import LxmlExtractor
-from file_scraper.magic_extractor.magic_extractor import (MagicBinaryExtractor,
-                                                          MagicTextExtractor)
+from file_scraper.magic_extractor.magic_extractor import (
+    MagicBinaryExtractor,
+    MagicTextExtractor,
+)
 from file_scraper.mediainfo.mediainfo_extractor import MediainfoExtractor
 from file_scraper.office.office_extractor import OfficeExtractor
 from file_scraper.pil.pil_extractor import PilExtractor
 from file_scraper.pngcheck.pngcheck_extractor import PngcheckExtractor
 from file_scraper.pspp.pspp_extractor import PsppExtractor
-from file_scraper.textfile.textfile_extractor import (TextEncodingMetaExtractor,
-                                                      TextEncodingExtractor,
-                                                      TextfileExtractor)
+from file_scraper.textfile.textfile_extractor import (
+    TextEncodingExtractor,
+    TextEncodingMetaExtractor,
+    TextfileExtractor,
+)
 from file_scraper.verapdf.verapdf_extractor import VerapdfExtractor
 from file_scraper.vnu.vnu_extractor import VnuExtractor
 from file_scraper.wand.wand_extractor import WandExtractor
-from file_scraper.warchaeology.warchaeology_extractor import WarchaeologyExtractor
-from file_scraper.warctools.warctools_extractor import (WarctoolsFullExtractor,
-                                                        WarctoolsExtractor)
+from file_scraper.warchaeology.warchaeology_extractor import (
+    WarchaeologyExtractor,
+)
+from file_scraper.warctools.warctools_extractor import (
+    WarctoolsExtractor,
+    WarctoolsFullExtractor,
+)
 from file_scraper.xmllint.xmllint_extractor import XmllintExtractor
-from file_scraper.exiftool.exiftool_extractor import (ExifToolDngExtractor,
-                                                      ExifToolExifExtractor)
-from file_scraper.jpylyzer.jpylyzer_extractor import JpylyzerExtractor
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
     from pathlib import Path
 
+    from file_scraper.base import BaseDetector, BaseExtractor
 
-def iter_detectors(path) -> Iterator[BaseDetector]:
+
+def iter_detectors(path: Path) -> Iterator[BaseDetector]:
     """
     Iterate detectors.
 
@@ -92,8 +114,8 @@ def iter_extractors(
     :param mimetype: Identified mimetype of the file
     :param version: Identified file format version
     :param charset: Identifier file charset
-    :param check_wellformed: True for the full well-formed check, False for just
-        identification and metadata scraping
+    :param check_wellformed: True for the full well-formed check, False for
+        just identification and metadata scraping
     :param params: Extra parameters needed for the extractor
     """
     extractor_found = False
@@ -156,7 +178,7 @@ def iter_extractors(
             )
 
     if not extractor_found:
-        yield ExtractorNotFound (
+        yield ExtractorNotFound(
             filename=path,
             mimetype=mimetype,
             version=version,
