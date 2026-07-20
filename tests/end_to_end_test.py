@@ -12,9 +12,11 @@ Integration test for scraper:
 
 from __future__ import annotations
 
+import logging
 import os
 import shutil
 from pathlib import Path
+from pprint import pformat
 
 import pytest
 from file_scraper.defaults import (
@@ -29,6 +31,8 @@ from file_scraper.defaults import (
 from file_scraper.scraper import Scraper
 
 from tests.common import filter_unap, get_files
+
+LOGGER = logging.getLogger("tests")
 
 # These files will result (:unav) for some elements
 # For GIFs and TIFFs with 3 images inside, the version is missing from
@@ -432,6 +436,13 @@ def test_valid_combined(fullname_filename, mimetype, version):
         mimetype=predefined_mimetype)
 
     scraper.scrape()
+
+    LOGGER.debug(
+        "\nInfo for %s:\n%s", fullname_filename, pformat(scraper.info)
+    )
+    LOGGER.debug(
+        "\nStreams for %s:\n%s", fullname_filename, pformat(scraper.streams)
+    )
 
     for _, info in scraper.info.items():
         assert not info["errors"]
