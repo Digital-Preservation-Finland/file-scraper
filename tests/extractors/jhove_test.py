@@ -265,6 +265,10 @@ def test_old_namespace(filename, result_dict, evaluate_extractor, monkeypatch):
             "purpose": "Test valid file.",
             "stdout_part": "Well-Formed and valid",
             "stderr_part": ""}),
+        ("valid_1.1_geotiff_multichannel_32bit.tif", {
+            "purpose": "Test valid multichannel 32 bit file",
+            "stdout_part": "",
+            "stderr_part": ""},),
         ("invalid_6.0_payload_altered.tif", {
             "purpose": "Test payload altered in file.",
             "stdout_part": "",

@@ -108,8 +108,8 @@ class BasePilMeta(BaseMeta):
 class TiffPilMeta(BasePilMeta):
     """Metadata model for TIFF images."""
 
-    _supported = {"image/tiff": ["1.1", "6.0"]}  # Supported mimetype
-    _allow_any_version = True
+    _supported = {"image/tiff": ["6.0"]}  # Supported mimetype
+    _allow_any_version = False
 
     @BaseMeta.metadata()
     def width(self):

@@ -10,9 +10,12 @@ This module tests that:
 from pathlib import Path
 
 import pytest
+from file_scraper.exiftool.exiftool_extractor import (
+    ExifToolDngExtractor,
+    ExifToolExifExtractor,
+    ExifToolGeoTiffExtractor,
+)
 
-from file_scraper.exiftool.exiftool_extractor import (ExifToolDngExtractor,
-                                                      ExifToolExifExtractor)
 from tests.common import parse_results, partial_message_included
 
 
@@ -104,3 +107,36 @@ def test_tools():
                                    mimetype="image/x-adobe-dng")
     assert extractor.tools() is not None
     assert extractor.tools()["ExifTool"]["version"][0].isdigit()
+
+
+@pytest.mark.parametrize(
+    ["filename", "result_dict"],
+    [
+        (
+            "valid_1.1_geotiff.tif",
+            {
+                "purpose": "Test valid GeoTIFF file",
+                "stdout_part": "",
+                "stderr_part": "",
+            },
+        ),
+        (
+            "valid_1.1_geotiff_multichannel_32bit.tif",
+            {
+                "purpose": "Test valid multichannel 32 bit file",
+                "stdout_part": "",
+                "stderr_part": "",
+            },
+        ),
+    ],
+)
+def test_extractor_geotiff(filename, result_dict, evaluate_extractor):
+    """Test extractor with GeoTIFF files."""
+    correct = parse_results(filename, "image/tiff", result_dict, False)
+
+    extractor = ExifToolGeoTiffExtractor(
+        filename=correct.filename, mimetype="image/tiff"
+    )
+    extractor.extract()
+
+    evaluate_extractor(extractor, correct)

@@ -477,7 +477,6 @@ def test_extractor_webp(filename, result_dict, evaluate_extractor):
 @pytest.mark.parametrize(
     ["mime", "ver"],
     [
-        ("image/tiff", "6.0"),
         ("image/jpeg", "1.01"),
         ("image/jp2", ""),
         ("image/png", "1.2"),
@@ -497,6 +496,20 @@ def test_is_supported(mime, ver):
     assert PilExtractor.is_supported(mime, ver, False)
     assert PilExtractor.is_supported(mime, "foo", True)
     assert not PilExtractor.is_supported("foo", ver, True)
+
+
+@pytest.mark.parametrize(
+    ["mime", "ver"],
+    [
+        ("image/tiff", "6.0"),
+    ]
+)
+def test_is_supported_specifc_version(mime, ver):
+    """Test is_supported method when any version is not allowed"""
+    assert PilExtractor.is_supported(mime, ver, True)
+    assert PilExtractor.is_supported(mime, ver, False)
+    assert not PilExtractor.is_supported("foo", ver, True)
+    assert not PilExtractor.is_supported(mime, "foo", True)
 
 
 def test_tools():

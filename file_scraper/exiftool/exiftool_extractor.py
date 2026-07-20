@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 from typing import Literal, TypeVar
+
 import exiftool
 from exiftool.exceptions import ExifToolExecuteError
 
@@ -11,6 +12,7 @@ from file_scraper.exiftool.exiftool_model import (
     ExifToolBaseMeta,
     ExifToolDngMeta,
     ExifToolExifMeta,
+    ExifToolGeoTiffMeta,
 )
 
 EXIF_ERROR = "ExifTool:Error"
@@ -95,3 +97,9 @@ class ExifToolExifExtractor(ExifToolExtractorBase[ExifToolExifMeta]):
     """Extractor for scraping Exif image files (i.e. JPEG/Exif)"""
 
     _supported_metadata = [ExifToolExifMeta]
+
+
+class ExifToolGeoTiffExtractor(ExifToolExtractorBase[ExifToolGeoTiffMeta]):
+    """Extractor for scraping GeoTIFF image files"""
+
+    _supported_metadata = [ExifToolGeoTiffMeta]

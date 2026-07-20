@@ -99,3 +99,102 @@ class ExifToolDngMeta(ExifToolBaseMeta):
             version = self._metadata["EXIF:DNGVersion"].replace(" ", ".")
             return version[:3]
         return UNAV
+
+
+class ExifToolGeoTiffMeta(ExifToolBaseMeta):
+    """Metadata model for GeoTIFF files"""
+
+    _supported = {"image/tiff": ["1.1"]}
+    _allow_any_version = False
+
+    @BaseMeta.metadata()
+    def samples_per_pixel(self) -> str:
+        """Return TIFF SamplesPerPixel."""
+        value = self._metadata.get("EXIF:SamplesPerPixel")
+        return str(value) if value is not None else UNAV
+
+    @BaseMeta.metadata()
+    def bps_unit(self):
+        """Return BitsPerSample unit."""
+        sample_format = self._metadata.get("EXIF:SampleFormat")
+
+        if not sample_format:
+            return UNAV
+
+        if isinstance(sample_format, str):
+            sample_format = int(sample_format.split()[0])
+
+        # For TIFF images, possible values are:
+        # 1 - Unsigned integer
+        # 2 - Signed integer
+        # 3 - IEE floating point
+        # 4 - Undefined
+
+        if sample_format == 3:
+            return "floating point"
+
+        if sample_format in {1, 2}:
+            return "integer"
+
+        return UNAV
+
+    @BaseMeta.metadata()
+    def bps_value(self) -> str:
+        """Return BitsPerSample."""
+        value = self._metadata.get("EXIF:BitsPerSample")
+        if not value:
+            return UNAV
+
+        if isinstance(value, str):
+            return value.split()[0]
+
+        return str(value)
+
+    @BaseMeta.metadata()
+    def byte_order(self) -> str:
+        """Return TIFF byte order."""
+        value = self._metadata.get("File:ExifByteOrder")
+
+        mapping = {
+            "II": "little endian",
+            "MM": "big endian",
+        }
+
+        return mapping.get(value, UNAV)
+
+    @BaseMeta.metadata()
+    def compression(self) -> str:
+        """Return compression type."""
+        value = self._metadata.get("EXIF:Compression")
+
+        mapping = {
+            1: "no",
+            5: "lzw",
+            7: "jpeg",
+            8: "zip",
+        }
+
+        return mapping.get(value, str(value) if value else UNAV)
+
+    @BaseMeta.metadata()
+    def colorspace(self) -> str:
+        """Return colorspace."""
+        value = self._metadata.get("EXIF:PhotometricInterpretation")
+
+        mapping = {
+            0: "whiteiszero",
+            1: "gray",
+            2: "rgb",
+            3: "palette",
+            5: "cmyk",
+            6: "ycbcr",
+        }
+
+        return mapping.get(value, UNAV)
+
+    @BaseMeta.metadata()
+    def version(self) -> str:
+        """Return version."""
+        if self._metadata.get("GeoTiff:GeoTiffVersion") is not None:
+            return "1.1"
+        return UNAV
