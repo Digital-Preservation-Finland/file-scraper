@@ -127,6 +127,10 @@ def generate_metadata_dict(
                 f"The Extractors produced conflicting values for {name}:"
                 f" {old_value} and {new_value}"
             )
+            LOGGER.debug(
+                "Conflicting value produced from model "
+                f"{model.__class__.__name__} for {name}: {new_value}"
+            )
 
         # TODO: Instead of logging the result after merging streams
         # (current_stream), it would be more useful to log the stream
