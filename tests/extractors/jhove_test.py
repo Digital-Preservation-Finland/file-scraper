@@ -130,8 +130,13 @@ This module tests that:
 from pathlib import Path
 
 import pytest
-from file_scraper.defaults import UNAV
+from file_scraper.defaults import (
+    UNAV,
+)
 from file_scraper.jhove.jhove_extractor import (
+    NOT_WELL_FORMED,
+    WELL_FORMED,
+    WELL_FORMED_NOT_VALID,
     JHoveAiffExtractor,
     JHoveDngExtractor,
     JHoveEpubExtractor,
@@ -165,7 +170,7 @@ for ver in ["1987", "1989"]:
                 f"valid_{ver}a.gif",
                 {
                     "purpose": "Test valid file.",
-                    "stdout_part": "Well-Formed and valid",
+                    "stdout_part": WELL_FORMED,
                     "stderr_part": "",
                 },
             ),
@@ -263,7 +268,7 @@ def test_old_namespace(filename, result_dict, evaluate_extractor, monkeypatch):
     [
         ("valid_6.0.tif", {
             "purpose": "Test valid file.",
-            "stdout_part": "Well-Formed and valid",
+            "stdout_part": WELL_FORMED,
             "stderr_part": ""}),
         ("valid_1.1_geotiff_multichannel_32bit.tif", {
             "purpose": "Test valid multichannel 32 bit file",
@@ -283,27 +288,27 @@ def test_old_namespace(filename, result_dict, evaluate_extractor, monkeypatch):
             "stderr_part": "File is too short"}),
         ("valid_1.1_geotiff.tif", {
             "purpose": "Test valid GeoTIFF file",
-            "stdout_part": "Well-Formed and valid",
+            "stdout_part": WELL_FORMED,
             "stderr_part": ""}),
         ("invalid_1.1_geotiff_invalid_epsg.tif", {
             "purpose": "GeoTIFF file with invalid EPSG",
-            "stdout_part": "Well-Formed, but not valid",
+            "stdout_part": WELL_FORMED_NOT_VALID,
             "stderr_part": "Invalid EPSG code"}),
         ("invalid_1.1_geotiff_wrong_byte_order.tif", {
             "purpose": "Big endian GeoTIFF file with little endian data",
-            "stdout_part": "Not well-formed",
+            "stdout_part": NOT_WELL_FORMED,
             "stderr_part": "No TIFF magic number"}),
         ("invalid_1.1_geotiff_zero_pixel_size.tif", {
             "purpose": "GeoTIFF file with zero pixel size",
-            "stdout_part": "Not well-formed",
+            "stdout_part": NOT_WELL_FORMED,
             "stderr_part": "Premature EOF"}),
         ("invalid_1.1_geotiff_wrong_tag_order.tif", {
             "purpose": "GeoTIFF file with tags in wrong order",
-            "stdout_part": "Not well-formed",
+            "stdout_part": NOT_WELL_FORMED,
             "stderr_part": "Type mismatch for tag 34735"}),
         ("invalid_1.1_geotiff_both_crs.tif", {
             "purpose": "GeoTIFF file with both CRS defined",
-            "stdout_part": "Well-Formed, but not valid",
+            "stdout_part": WELL_FORMED_NOT_VALID,
             "stderr_part": "No CRS definition found or CRS definition is "
             "invalid"}),
     ]
@@ -331,7 +336,7 @@ def test_extractor_tiff(filename, result_dict, evaluate_extractor):
     [
         ("valid_1.4.dng", {
             "purpose": "Test valid file.",
-            "stdout_part": "Well-Formed and valid",
+            "stdout_part": WELL_FORMED,
             "stderr_part": ""}),
         ("invalid_1.4_edited_header.dng", {
             "purpose": "Test invalid file with edited header.",
@@ -367,11 +372,11 @@ def test_extractor_dng(filename, result_dict, evaluate_extractor):
     [
         ("valid__utf8_without_bom.txt", {
             "purpose": "Test valid UTF-8 file.",
-            "stdout_part": "Well-Formed and valid",
+            "stdout_part": WELL_FORMED,
             "stderr_part": ""}),
         ("valid__ascii.txt", {
             "purpose": "Test valid ASCII file.",
-            "stdout_part": "Well-Formed and valid",
+            "stdout_part": WELL_FORMED,
             "stderr_part": ""}),
         ("valid__iso8859.txt", {
             "purpose": "Test valid ISO-8859 file, which is invalid.",
@@ -413,7 +418,7 @@ for ver in ["1.2", "1.3", "1.4", "1.5", "1.6", "A-1a"]:
                 f"valid_{ver}.pdf",
                 {
                     "purpose": "Test valid file.",
-                    "stdout_part": "Well-Formed and valid",
+                    "stdout_part": WELL_FORMED,
                     "stderr_part": "",
                 },
             ),
@@ -561,7 +566,7 @@ def test_extractor_invalid_pdfversion(version_in_filename, found_version):
     [
         ("valid_1.01.jpg", {
             "purpose": "Test valid file.",
-            "stdout_part": "Well-Formed and valid",
+            "stdout_part": WELL_FORMED,
             "stderr_part": ""}),
         ("invalid_1.01_data_changed.jpg", {
             "purpose": "Test image data change in file.",
@@ -602,7 +607,7 @@ def test_extractor_jpeg(filename, result_dict, evaluate_extractor):
     [
         ("valid_4.01.html", {
             "purpose": "Test valid file with correctly specified charset.",
-            "stdout_part": "Well-Formed and valid",
+            "stdout_part": WELL_FORMED,
             "stderr_part": ""},
          "text/html", "UTF-8"),
         ("valid_4.01.html", {
@@ -613,7 +618,7 @@ def test_extractor_jpeg(filename, result_dict, evaluate_extractor):
          "text/html", "ISO-8859-15"),
         ("valid_1.0.xhtml", {
             "purpose": "Test valid file.",
-            "stdout_part": "Well-Formed and valid",
+            "stdout_part": WELL_FORMED,
             "stderr_part": ""},
          "application/xhtml+xml", "UTF-8"),
         ("valid_5.html", {
@@ -699,11 +704,11 @@ def test_extractor_html(filename, result_dict, mimetype, charset,
     [
         ("valid__wav.wav", {
             "purpose": "Test valid file.",
-            "stdout_part": "Well-Formed and valid",
+            "stdout_part": WELL_FORMED,
             "stderr_part": ""}),
         ("valid_2_bwf.wav", {
             "purpose": "Test valid file.",
-            "stdout_part": "Well-Formed and valid",
+            "stdout_part": WELL_FORMED,
             "stderr_part": ""}),
         ("invalid_2_bwf_data_bytes_missing.wav", {
             "purpose": "Test data bytes missing.",
@@ -747,11 +752,11 @@ def test_extractor_wav(filename, result_dict, evaluate_extractor):
     [
         ("valid_1.3.aiff", {
             "purpose": "Test valid AIFF file.",
-            "stdout_part": "Well-Formed and valid",
+            "stdout_part": WELL_FORMED,
             "stderr_part": ""}),
         ("valid__aiff-c.aiff", {
             "purpose": "Test valid AIFF-C file.",
-            "stdout_part": "Well-Formed and valid",
+            "stdout_part": WELL_FORMED,
             "stderr_part": ""})
     ]
 )
@@ -891,19 +896,19 @@ def test_charset(filename, mimetype, charset, well_formed):
     [
         ("valid_3_pages.epub", {
             "purpose": "Test valid file.",
-            "stdout_part": "Well-Formed and valid",
+            "stdout_part": WELL_FORMED,
             "stderr_part": ""}),
         ("valid_3_calibre.epub", {
             "purpose": "Test valid file made with calibre.",
-            "stdout_part": "Well-Formed and valid",
+            "stdout_part": WELL_FORMED,
             "stderr_part": ""}),
         ("valid_2.0.1_calibre.epub", {
             "purpose": "Test valid file made with calibre.",
-            "stdout_part": "Well-Formed and valid",
+            "stdout_part": WELL_FORMED,
             "stderr_part": ""}),
         ("valid_3_libreoffice_writer2epub.epub", {
             "purpose": "Test valid file made with libreoffice extension.",
-            "stdout_part": "Well-Formed and valid",
+            "stdout_part": WELL_FORMED,
             "stderr_part": ""}),
         ("invalid_3_mimetype_not_first.epub", {
             "purpose": "Test invalid epub where mimetype is not first.",

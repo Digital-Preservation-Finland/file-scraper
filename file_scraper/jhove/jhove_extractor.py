@@ -29,6 +29,12 @@ from file_scraper.jhove.jhove_model import (
 from file_scraper.logger import LOGGER
 from file_scraper.shell import Shell
 
+# JHove well-formedness options
+WELL_FORMED = "Well-Formed and valid"
+WELL_FORMED_NOT_VALID = "Well-Formed, but not valid"
+NOT_WELL_FORMED = "Not well-formed"
+
+
 JHoveMetaT = TypeVar("JHoveMetaT", bound=JHoveBaseMeta)
 
 
@@ -59,7 +65,7 @@ class JHoveExtractorBase(BaseExtractor[JHoveMetaT]):
         """Analyze JHove report and log status and potential errors"""
         status = get_field(report, "status")
         self._messages.append(status)
-        if "Well-Formed and valid" not in status:
+        if WELL_FORMED not in status:
             self._errors.append("Validator returned error.")
             self._errors.append(stdout)
             self._errors.append(stderr)
@@ -179,8 +185,6 @@ class JHoveTiffExtractor(JHoveExtractorBase[JHoveTiffMeta]):
         contain either projected CRS or geodetic CRS, and an optional
         supplementary vertical CRS.
 
-        More info: https://docs.ogc.org/is/19-008r4/19-008r4.html#_requirements_for_definition_of_model_crs_when_model_is_from_geotiff_crs_register
-
         :var projected: EPSG Projected CRS code.
         :var geodetic: EPSG Geographic 2D **or** Geocentric CRS code.
         :var vertical: EPSG Vertical CRS **or** EPSG Geographic 3D CRS code.
@@ -225,7 +229,7 @@ class JHoveTiffExtractor(JHoveExtractorBase[JHoveTiffMeta]):
 
         self._messages.append(status)
 
-        if "Well-Formed and valid" not in status:
+        if WELL_FORMED not in status:
             self._errors.append("Validator returned error.")
             self._errors.append(crs_error)
             self._errors.append(stdout)
@@ -250,10 +254,32 @@ class JHoveTiffExtractor(JHoveExtractorBase[JHoveTiffMeta]):
         :returns: Status, any errors that got filtered, and errors related to
             the EPSG value.
         """
+        filtered_errors, real_errors = self._filter_report(report)
+
+        crs_error = self._check_crs(report)
+        status = get_field(report, "status")
+
+        if not (real_errors or crs_error):
+            # No real errors, status is valid
+            status = WELL_FORMED
+        elif crs_error and WELL_FORMED in status:
+            # Only CRS error, status is not valid
+            status = WELL_FORMED_NOT_VALID
+
+        return status, filtered_errors, crs_error
+
+    def _filter_report(
+        self, report: lxml.etree._Element
+    ) -> tuple[list[_IgnoredError], bool]:
+        """Filter JHove messages and catch real errors.
+
+        :param report: JHove XML report.
+        :returns: Tuple with list of JHove errors that were ignored and a
+            boolean value for if any real errors were found.
+        """
         filtered_errors = []
         real_errors = False
 
-        # Filter JHove messages and catch real errors
         for message in report.findall(".//{*}message"):
             severity = message.attrib.get("severity")
             msg_id = message.attrib.get("id")
@@ -272,18 +298,7 @@ class JHoveTiffExtractor(JHoveExtractorBase[JHoveTiffMeta]):
             # If we find even one real error, we know the file is not valid
             if real_errors:
                 break
-
-        crs_error = self._check_crs(report)
-        status = get_field(report, "status")
-
-        if not (real_errors or crs_error):
-            # No real errors, status is valid
-            status = "Well-Formed and valid"
-        elif crs_error and "Well-Formed and valid" in status:
-            # Only CRS error, status is not valid
-            status = "Well-Formed, but not valid"
-
-        return status, filtered_errors, crs_error
+        return filtered_errors, real_errors
 
     def _check_crs(
         self,
