@@ -1,15 +1,15 @@
-"""Extractor for dng files using ExifTool """
+"""Extractor for dng files using ExifTool"""
+
 from __future__ import annotations
 
 import json
-from typing import Literal, TypeVar
+from typing import Literal, Union
 
 import exiftool
 from exiftool.exceptions import ExifToolExecuteError
 
 from file_scraper.base import BaseExtractor
 from file_scraper.exiftool.exiftool_model import (
-    ExifToolBaseMeta,
     ExifToolDngMeta,
     ExifToolExifMeta,
     ExifToolGeoTiffMeta,
@@ -18,13 +18,17 @@ from file_scraper.exiftool.exiftool_model import (
 EXIF_ERROR = "ExifTool:Error"
 
 
-ExifToolMetaT = TypeVar("ExifToolMetaT", bound=ExifToolBaseMeta)
+ExifToolMeta = Union[ExifToolDngMeta, ExifToolExifMeta, ExifToolGeoTiffMeta]
 
 
-class ExifToolExtractorBase(BaseExtractor[ExifToolMetaT]):
-    """
-    Scraping methods for the ExifTool extractor
-    """
+class ExifToolExtractor(BaseExtractor[ExifToolMeta]):
+    """Scraping methods for the ExifTool extractor."""
+
+    _supported_metadata = [
+        ExifToolDngMeta,
+        ExifToolExifMeta,
+        ExifToolGeoTiffMeta,
+    ]
     _allow_unav_version = True
 
     @property
@@ -32,7 +36,7 @@ class ExifToolExtractorBase(BaseExtractor[ExifToolMetaT]):
         """ExifTool is not able to check well-formedness.
 
         :returns: False if ExifTool can not open or handle the file,
-                  None otherwise.
+            None otherwise.
         """
         valid = super().well_formed
         if not valid:
@@ -41,10 +45,7 @@ class ExifToolExtractorBase(BaseExtractor[ExifToolMetaT]):
         return None
 
     def _extract(self) -> None:
-        """
-        Scrape data from file.
-        """
-
+        """Scrape data from file."""
         try:
             with exiftool.ExifTool() as et:
                 metadata = et.get_metadata(self.filename)
@@ -64,7 +65,7 @@ class ExifToolExtractorBase(BaseExtractor[ExifToolMetaT]):
 
         self.streams = list(self.iterate_models(metadata=metadata))
 
-    def _parse_exif_version(self, exif_version):
+    def _parse_exif_version(self, exif_version: str) -> None:
         """Check that the Exif version is syntactically valid"""
         if len(exif_version) != 4:
             self._errors.append(
@@ -85,21 +86,3 @@ class ExifToolExtractorBase(BaseExtractor[ExifToolMetaT]):
         """
         with exiftool.ExifTool() as et:
             return {"ExifTool": {"version": et.version}}
-
-
-class ExifToolDngExtractor(ExifToolExtractorBase[ExifToolDngMeta]):
-    """Variables for scraping dng files."""
-
-    _supported_metadata = [ExifToolDngMeta]
-
-
-class ExifToolExifExtractor(ExifToolExtractorBase[ExifToolExifMeta]):
-    """Extractor for scraping Exif image files (i.e. JPEG/Exif)"""
-
-    _supported_metadata = [ExifToolExifMeta]
-
-
-class ExifToolGeoTiffExtractor(ExifToolExtractorBase[ExifToolGeoTiffMeta]):
-    """Extractor for scraping GeoTIFF image files"""
-
-    _supported_metadata = [ExifToolGeoTiffMeta]

@@ -21,11 +21,7 @@ from file_scraper.dummy.dummy_extractor import (
     DetectedMimeVersionMetadataExtractor,
     ExtractorNotFound,
 )
-from file_scraper.exiftool.exiftool_extractor import (
-    ExifToolDngExtractor,
-    ExifToolExifExtractor,
-    ExifToolGeoTiffExtractor,
-)
+from file_scraper.exiftool.exiftool_extractor import ExifToolExtractor
 from file_scraper.ffmpeg.ffmpeg_extractor import (
     FFMpegExtractor,
     FFMpegMetaExtractor,
@@ -127,9 +123,7 @@ def iter_extractors(
         DetectedMimeVersionMetadataExtractor,
         DetectedMimeVersionExtractor,
         DpxExtractor,
-        ExifToolDngExtractor,
-        ExifToolExifExtractor,
-        ExifToolGeoTiffExtractor,
+        ExifToolExtractor,
         FFMpegMetaExtractor,
         FFMpegExtractor,
         GhostscriptExtractor,
