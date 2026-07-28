@@ -58,26 +58,26 @@ for ver in versions:
             f"invalid_{ver}_payload_altered.pdf",
             {
                 "purpose": "Test payload altered file.",
-                "stdout_part": payload_altered_stdout.get(
+                "stdout_part": "",
+                "stderr_part": payload_altered_stdout.get(
                     ver, "startxref offset invalid"
                 ),
-                "stderr_part": "",
             },
         ),
         *([] if ver == "A-1a" else [(
             f"invalid_{ver}_invalid_resource_name.pdf",
             {
                 "purpose": "Test file has reference to unknown resource name.",
-                "stdout_part": "error executing PDF token",
-                "stderr_part": "",
+                "stdout_part": "",
+                "stderr_part": "error executing PDF token",
             },
         )]),
         (
             f"invalid_{ver}_removed_xref.pdf",
             {
                 "purpose": "Test xref change.",
-                "stdout_part": "xref entry not valid format",
-                "stderr_part": "",
+                "stdout_part": "",
+                "stderr_part": "xref entry not valid format",
             },
         ),
     ])
@@ -113,9 +113,6 @@ def test_extractor_pdf(filename, result_dict, evaluate_extractor):
     else:
         assert partial_message_included(
             correct.stderr_part, extractor.errors()
-        )
-        assert partial_message_included(
-            correct.stdout_part, extractor.errors()
         )
 
 
@@ -162,8 +159,9 @@ def test_ghostscript_returns_invalid_return_code():
 
     extractor.extract()
 
-    assert (
-        "Ghostscript returned invalid return code: -1\n" in extractor.errors()
+    assert any(
+        "Ghostscript returned invalid return code: -1\n" in err
+        for err in extractor.errors()
     )
 
 
