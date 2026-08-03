@@ -185,6 +185,7 @@ class FidoDetector(BaseDetector):
         fido.identify()
         self.mimetype = fido.mimetype
         self.version = fido.version
+        self._puid = fido.puid
 
         # FIDO detects at least some video/mp4 audio/mp4 files as
         # application/mp4 which is not currently supported
