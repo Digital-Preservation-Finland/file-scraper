@@ -98,12 +98,8 @@ export SETUPTOOLS_SCM_PRETEND_VERSION_FOR_FILE_SCRAPER=%{file_version}
 mkdir -p %{buildroot}/etc/file-scraper
 install -m 644 %{SOURCE1} %{buildroot}/etc/file-scraper/file-scraper.conf
 
-# TODO: executables with "-3" suffix are added to maintain compatibility with our systems.
-# executables with "-3" suffix should be deprecated.
-cp %{buildroot}%{_bindir}/scraper %{buildroot}%{_bindir}/scraper-3
-
 %files -n %{core_sp_name} -f %{pyproject_files}
-%{_bindir}/scraper*
+%{_bindir}/scraper
 %config(noreplace) /etc/file-scraper/file-scraper.conf
 
 # 'full' only contains dependencies and is thus empty
