@@ -144,3 +144,21 @@ class DetectedSiardVersionMeta(DetectedMimeVersionMeta):
         "application/x-siard": []
     }
     _allow_any_version = True
+
+
+class DetectedMSOfficeMeta(DetectedMimeVersionMeta):
+    """Variation of DetectedMimeVersionMeta for MS Office Word files.
+
+    This model is needed because the only proper extractor for these files is
+    OfficeExtractor, which should only be used for validation. When
+    well-formedness is not checked, this model is used to:
+
+    1. Avoid ExtractorNotFoundMeta
+    2. Set stream type to "binary"
+    """
+
+    _supported = {
+        "application/vnd.openxmlformats-officedocument.wordprocessingml."
+        "document": ["2007 onwards"],
+    }
+    _allow_any_version = True

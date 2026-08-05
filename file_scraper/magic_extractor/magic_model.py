@@ -269,8 +269,6 @@ class OfficeFileMagicMeta(BinaryMagicBaseMeta):
         "application/msword": ["97-2003"],
         "application/vnd.ms-excel": ["8X"],
         "application/vnd.ms-powerpoint": ["97-2003"],
-        "application/vnd.openxmlformats-officedocument.wordprocessingml."
-        "document": ["2007 onwards"],
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
             "2007 onwards"
         ],

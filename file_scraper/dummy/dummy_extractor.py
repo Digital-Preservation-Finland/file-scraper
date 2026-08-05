@@ -4,6 +4,7 @@ from file_scraper.defaults import UNAV
 from file_scraper.dummy.dummy_model import (
     DetectedEpubVersionMeta,
     DetectedMimeVersionMeta,
+    DetectedMSOfficeMeta,
     DetectedSiardVersionMeta,
     DetectedSpssVersionMeta,
     ExtractorNotFoundMeta,
@@ -115,6 +116,7 @@ class DetectedMimeVersionMetadataExtractor(DetectedMimeVersionExtractor):
         DetectedEpubVersionMeta,
         DetectedSpssVersionMeta,
         DetectedSiardVersionMeta,
+        DetectedMSOfficeMeta,
     ]
 
     @classmethod
