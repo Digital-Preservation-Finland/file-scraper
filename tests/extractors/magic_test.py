@@ -117,13 +117,6 @@ from tests.common import (parse_results, partial_message_included)
             MagicBinaryExtractor,
         ),
         (
-            "valid_2007 onwards.docx",
-            "application/vnd.openxmlformats-officedocument."
-            "wordprocessingml.document",
-            None,
-            MagicBinaryExtractor,
-        ),
-        (
             "valid_1.2.odp",
             "application/vnd.oasis.opendocument.presentation",
             None,
@@ -298,9 +291,6 @@ def test_extractor_valid(filename, mimetype, charset, extractor_class,
         ("invalid_1.2_missing_data.odt",
          "application/vnd.oasis.opendocument.text"),
         ("invalid_97-2003_missing_data.doc", "application/msword"),
-        ("invalid_2007 onwards_missing_data.docx",
-         "application/vnd.openxmlformats-"
-         "officedocument.wordprocessingml.document"),
         ("invalid_1.2_missing_data.odp",
          "application/vnd.oasis.opendocument.presentation"),
         ("invalid_97-2003_missing_data.ppt", "application/vnd.ms-powerpoint"),
@@ -417,25 +407,6 @@ def test_jpeg_exif_character_case():
     assert jpeg_meta.version() == UNAV
 
 
-def test_msoffice_word_detected():
-    """
-    Regression test for TPASPKT-1382. Ensure that MSOffice Word document's type
-    is detected correctly. Older file versions such as 5.39 shipped with RHEL9
-    only report the generic "Microsoft OOXML" instead of "Microsoft Word 2007+"
-    """
-    extractor = MagicBinaryExtractor(
-        filename=Path(
-            "tests/data/application_vnd.openxmlformats-officedocument"
-            ".wordprocessingml.document/valid_2007 onwards_word-dir-third.docx"
-        ),
-        mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    )
-    extractor.extract()
-
-    assert extractor.streams[0].mimetype() \
-        == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-
-
 @pytest.mark.parametrize(
     ["mime", "ver", "extractor_class"],
     [
@@ -444,8 +415,6 @@ def test_msoffice_word_detected():
         ("application/vnd.oasis.opendocument.text", "1.3",
          MagicBinaryExtractor),
         ("application/msword", "97-2003", MagicBinaryExtractor),
-        ("application/vnd.openxmlformats-officedocument.wordprocessingml"
-         ".document", "2007 onwards", MagicBinaryExtractor),
         ("application/vnd.oasis.opendocument.presentation", "1.2",
          MagicBinaryExtractor),
         ("application/vnd.oasis.opendocument.presentation", "1.3",

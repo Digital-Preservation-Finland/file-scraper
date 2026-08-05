@@ -34,6 +34,12 @@ WELLFORMED_EXTRACTORS = [
     "XmllintExtractor",
 ]
 
+DETECTED_MIMETYPES = [
+    "application/x-spss-por",
+    "application/epub+zip",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+]
+
 #flake8: noqa
 @pytest.mark.parametrize(
     ["mimetype", "version", "extractor_classes"],
@@ -64,7 +70,7 @@ WELLFORMED_EXTRACTORS = [
         ("application/vnd.oasis.opendocument.text", None, ["OfficeExtractor", "MagicBinaryExtractor"]),
         ("application/vnd.openxmlformats-officedocument.presentationml.presentation", "2007 onwards", ["OfficeExtractor", "MagicBinaryExtractor"]),
         ("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "2007 onwards", ["OfficeExtractor", "MagicBinaryExtractor"]),
-        ("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "2007 onwards", ["OfficeExtractor", "MagicBinaryExtractor"]),
+        ("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "2007 onwards", ["OfficeExtractor"]),
         ("application/warc", "1.0", ["WarctoolsFullExtractor", "WarchaeologyExtractor"]),
         ("application/x-spss-por", None, ["PsppExtractor"]),
         ("application/xhtml+xml", "1.0", ["JHoveHtmlExtractor", "MagicTextExtractor", "TextEncodingExtractor"]),
@@ -119,7 +125,7 @@ def test_iter_extractors(mimetype, version, extractor_classes):
     ]
     if mimetype == "application/mxf":
         extractor_classes = ["FFMpegMetaExtractor"]
-    if mimetype in ["application/x-spss-por", "application/epub+zip"]:
+    if mimetype in DETECTED_MIMETYPES:
         extractor_classes.append("DetectedMimeVersionMetadataExtractor")
 
     extractors = iter_extractors(
