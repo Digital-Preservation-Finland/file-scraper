@@ -842,9 +842,10 @@ def test_detect_filetype(fullname, expected_mimetype, expected_version):
         "tests/data/application_vnd.openxmlformats-officedocument"
         ".spreadsheetml.sheet/valid_2007 onwards.xlsx",
         "tests/data/application_msword/valid_97-2003.doc",
+        "tests/data/text_xml/valid_1.0_musicxml.xml"
     ):
         pytest.skip(
-            "The version of {fullname} is currently not detected without"
+            f"The version of {fullname} is currently not detected without"
             " extractors"
         )
 
