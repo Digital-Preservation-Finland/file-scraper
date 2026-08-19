@@ -628,3 +628,17 @@ def test_read_warc_version_detects_gzip_from_magic_bytes(
     """Detect WARC version from gzip file even when caller says gz=False."""
     path = Path("tests/data/application_warc") / filename
     assert FidoDetector.read_warc_version(path, gz=False) == expected_version
+
+
+@pytest.mark.parametrize(
+    ["filename"],
+    [
+        ("tests/data/text_html/valid_5.html",),
+        ("tests/data/text_html/valid_4.01.html",),
+    ],
+)
+def test_fido_detector_important_mimetype(filename):
+    """Test that FidoDetector results are important for HTML 4.01 and 5."""
+    detector = FidoDetector(Path(filename))
+    detector.detect()
+    assert detector.mimetype_is_important

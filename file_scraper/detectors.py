@@ -216,14 +216,14 @@ class FidoDetector(BaseDetector):
         Fido recognizes ARC files as text/html and OpenOffice Formula files
         as application/zip, therefore these are given to other detectors.
         """
-        arc_or_formula = self._puid in ["fmt/471", "fmt/100"]
-        nonstandard_mimetype = self.mimetype not in {
+        fido_supported_html_version = self._puid in {"fmt/471", "fmt/100"}
+        fido_supported_mimetype = self.mimetype not in {
             None,
             "text/html",
             "application/zip",
         }
 
-        return arc_or_formula or nonstandard_mimetype
+        return fido_supported_html_version or fido_supported_mimetype
 
     def tools(self) -> dict:
         """Return information about the software used by the extractor or
