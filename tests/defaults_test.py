@@ -37,7 +37,7 @@ def test_mimetype_dict(monkeypatch):
         "video/x-msvideo": "video/avi",
     }
     for key, value in TEST_MIMETYPE_DICT.items():
-        def mock_analyze(magic_lib, magic_type, path):
+        def mock_analyze(magic_lib, magic_type, path, magic_params=None):
             return key
         monkeypatch.setattr('file_scraper.detectors.magic_analyze',
                             mock_analyze)

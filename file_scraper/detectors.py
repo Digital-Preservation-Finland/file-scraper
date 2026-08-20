@@ -5,8 +5,7 @@ import errno
 import gzip
 import os
 import zipfile
-from pathlib import Path
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 import exiftool
 import lxml.etree
@@ -26,6 +25,9 @@ from file_scraper.defaults import (
 from file_scraper.logger import LOGGER
 from file_scraper.magiclib import magic_analyze, magiclib, magiclib_version
 from file_scraper.utils import is_zipfile, parse_exif_version
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class _FidoCachedFormats(Fido):
@@ -271,8 +273,24 @@ class MagicDetector(BaseDetector):
     def detect(self) -> None:
         """Detect mimetype."""
         magic_lib = magiclib()
-        mimetype = magic_analyze(magic_lib, magic_lib.MAGIC_MIME_TYPE,
-                                 self.filename)
+        mimetype = magic_analyze(
+            magic_lib,
+            magic_lib.MAGIC_MIME_TYPE,
+            self.filename,
+        )
+
+        file_ext_json = self.filename.suffix == ".json"
+        if mimetype == "text/plain" and file_ext_json:
+            # Mimetype for JSON files is detected as "text/plain" if the file
+            # is larger than MAGIC_PARAM_BYTES_MAX (which is 7 MB by default)
+            filesize = os.path.getsize(self.filename)
+            mimetype = magic_analyze(
+                magic_lib,
+                magic_lib.MAGIC_MIME_TYPE,
+                self.filename,
+                {magic_lib.MAGIC_PARAM_BYTES_MAX: filesize},
+            )
+
         if mimetype in MIMETYPE_DICT:
             self.mimetype = MIMETYPE_DICT[mimetype]
         else:
@@ -283,9 +301,7 @@ class MagicDetector(BaseDetector):
         file_extension_check = self.filename.suffix == ".dv"
         if mime_check and file_extension_check:
             analyze = magic_analyze(
-                magic_lib,
-                magic_lib.MAGIC_NONE,
-                self.filename
+                magic_lib, magic_lib.MAGIC_NONE, self.filename
             )
             if analyze == "DIF (DV) movie file (PAL)":
                 LOGGER.info(

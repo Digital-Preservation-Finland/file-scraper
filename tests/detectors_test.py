@@ -70,6 +70,7 @@ CHANGE_FIDO = {
     "application_json/valid__.json": None,
     "application_json/valid__ugly.json": None,
     "application_json/valid__empty_object.json": None,
+    "application_json/valid__20mb.json": None,
     "application_mxf/valid__jpeg2000_lossless-wavelet_lossy-"
         "subsampling.mxf": None,
     "text_csv/valid__ascii.csv": None,

@@ -1,27 +1,27 @@
 """Extractor for various binary and text file formats."""
 
+from os.path import getsize
 from typing import TypeVar
 
-from file_scraper.magiclib import magiclib, magic_analyze, magiclib_version
 from file_scraper.base import BaseExtractor
 from file_scraper.magic_extractor.magic_model import (
+    AiffFileMagicMeta,
     BaseMagicMeta,
     BinaryMagicBaseMeta,
+    GifFileMagicMeta,
+    HtmlFileMagicMeta,
+    Jp2FileMagicMeta,
+    JpegFileMagicMeta,
+    OfficeFileMagicMeta,
+    PdfFileMagicMeta,
+    PngFileMagicMeta,
     TextFileMagicMeta,
     TextMagicBaseMeta,
-    XmlFileMagicMeta,
-    XhtmlFileMagicMeta,
-    HtmlFileMagicMeta,
-    PdfFileMagicMeta,
-    OfficeFileMagicMeta,
-    PngFileMagicMeta,
-    JpegFileMagicMeta,
-    AiffFileMagicMeta,
-    Jp2FileMagicMeta,
     TiffFileMagicMeta,
-    GifFileMagicMeta,
+    XhtmlFileMagicMeta,
+    XmlFileMagicMeta,
 )
-
+from file_scraper.magiclib import magic_analyze, magiclib, magiclib_version
 
 MagicMetaT = TypeVar("MagicMetaT", bound=BaseMagicMeta)
 
@@ -61,13 +61,30 @@ class MagicBaseExtractor(BaseExtractor[MagicMetaT]):
 
         magic_result = {}
         for key, value in magicdict.items():
-            magic_result[key] = magic_analyze(magic_lib, value,
-                                              self.filename)
+            magic_result[key] = magic_analyze(
+                magic_lib,
+                value,
+                self.filename,
+            )
+
+        if (
+            self.filename.suffix == ".json"
+            and magic_result["magic_mime_type"] == "text/plain"
+        ):
+            # If a file ending in "".json" is detected as "text/plain", try to
+            # detect mimetype again with MAGIC_PARAM_BYTES_MAX set to the file
+            # size. JSON files larger than MAGIC_PARAM_BYTES_MAX (default 7 MB)
+            # are detected as "text/plain".
+            magic_result["magic_mime_type"] = magic_analyze(
+                magic_lib,
+                magic_lib.MAGIC_MIME_TYPE,
+                self.filename,
+                {magic_lib.MAGIC_PARAM_BYTES_MAX: getsize(self.filename)},
+            )
         return magic_result
 
     def _extract(self) -> None:
         """Populate streams with supported metadata objects."""
-
         magic_result = self._magic_call()
 
         self.streams = list(self.iterate_models(
@@ -94,6 +111,7 @@ class MagicTextExtractor(MagicBaseExtractor[TextMagicBaseMeta]):
     We have to allow (:unav) mimetype for text files, since we are not quite
     sure about the final mimetype. An XML file may also be plain text file.
     """
+
     _allow_unav_mime = True
     _supported_metadata: list[type[TextMagicBaseMeta]] = [
         TextFileMagicMeta,
@@ -111,6 +129,7 @@ class MagicBinaryExtractor(MagicBaseExtractor[BinaryMagicBaseMeta]):
     same time. Therefore it is pretty safe to disallow (:unav) as a mimetype
     result.
     """
+
     _supported_metadata: list[type[BinaryMagicBaseMeta]] = [
         PdfFileMagicMeta,
         OfficeFileMagicMeta,

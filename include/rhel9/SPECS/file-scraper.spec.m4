@@ -80,6 +80,7 @@ Requires:       warchaeology
 # Manually packaged Ghostscript and file with fixes not found in stock RHEL9
 Requires:       ghostscript-10.06
 Requires:       file-5.45
+Requires:       python3-file-magic >= 5.45
 
 %description -n %{full_sp_name}
 File scraper full: File detector, metadata collector and well-formed checker tools
