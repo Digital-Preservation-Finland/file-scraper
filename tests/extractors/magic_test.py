@@ -246,6 +246,7 @@ from tests.common import (parse_results, partial_message_included)
         ("valid_1.4.pdf", "application/pdf", None, MagicBinaryExtractor),
         ("valid_1.3.aiff", "audio/x-aiff", None, MagicBinaryExtractor),
         ("valid__aiff-c.aiff", "audio/x-aiff", None, MagicBinaryExtractor),
+        ("valid__20mb.json", "application/json", "UTF-8", MagicTextExtractor),
     ],
 )
 def test_extractor_valid(filename, mimetype, charset, extractor_class,
