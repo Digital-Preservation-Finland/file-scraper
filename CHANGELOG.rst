@@ -13,6 +13,10 @@ Added
 ^^^^^
 - Support for GeoTIFF files.
 
+Fixed
+^^^^^
+- Fix well-formed JSON files larger than 7 MB detected as ``text/plain`` instead of ``application/json``.
+
 3.1.1 - 2026-05-28
 ------------------
 
