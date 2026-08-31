@@ -16,6 +16,7 @@ Added
 Fixed
 ^^^^^
 - Fix well-formed JSON files larger than 7 MB detected as ``text/plain`` instead of ``application/json``.
+- Fix ``--fields`` flag for the command-line tool not validating the header properly for CSV files.
 
 3.1.1 - 2026-05-28
 ------------------

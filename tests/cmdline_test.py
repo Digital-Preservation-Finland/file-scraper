@@ -140,26 +140,6 @@ def test_flags(flag, output_contains):
     json.loads(result.stdout)
 
 
-def test_extra_arguments():
-    file_path = DATA_PATH / "text_csv/valid__ascii.csv"
-    runner = get_cli_runner()
-    result = runner.invoke(cli, ["scrape-file", str(file_path),
-                                 '--fields=["a","b","c"]'])
-    assert ("CSV not well-formed: field counts in the given header "
-            "parameter and the CSV header don't match.") in result.stdout
-    assert result.exit_code == 0
-
-
-def test_extra_arguments_with_space():
-    file_path = DATA_PATH / "text_csv/valid__ascii.csv"
-    runner = get_cli_runner()
-    result = runner.invoke(cli, ["scrape-file", str(file_path), '--fields',
-                                 '["a","b","c"]'])
-    assert ("CSV not well-formed: field counts in the given header parameter "
-            "and the CSV header don't match.") in result.stdout
-    assert result.exit_code == 0
-
-
 def test_missing_value_in_extra_argument():
     file_path = DATA_PATH / "text_csv/valid__ascii.csv"
     runner = get_cli_runner()
@@ -295,3 +275,42 @@ def test_detect_file(path, expected_mimetype, expected_version):
     result_json = json.loads(result.stdout)
     assert result_json["MIME type"] == expected_mimetype
     assert result_json["version"] == expected_version
+
+
+@pytest.mark.parametrize(
+    ["fields", "valid", "error"],
+    [
+        ("year,brand,model,detail,other", True, ""),
+        ("year, brand, model, detail, other", True, ""),
+        (
+            "12345",
+            False,
+            "CSV not well-formed: field counts in the given header parameter "
+            "and the CSV header don't match.",
+        ),
+        (
+            "year,model,brand,detail,other",
+            False,
+            "CSV not well-formed: field names in the given header parameter "
+            "and the CSV header don't match.",
+        ),
+    ],
+)
+def test_fields_flag(fields: str, valid: bool, error: str) -> None:
+    """Test that the fields flag works properly."""
+    runner = get_cli_runner()
+    result = json.loads(
+        runner.invoke(
+            cli,
+            [
+                "scrape-file",
+                "tests/data/text_csv/valid__ascii_header.csv",
+                "--fields",
+                fields,
+            ],
+        ).stdout
+    )
+
+    assert result["well-formed"] == valid
+    if not valid:
+        assert any(error in v for _, v in result["errors"].items())

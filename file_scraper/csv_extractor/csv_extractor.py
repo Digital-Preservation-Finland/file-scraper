@@ -24,6 +24,9 @@ class CsvExtractor(BaseExtractor[CsvMeta]):
         """Scrape CSV file."""
         fields = self._params.get("fields", [])
 
+        if isinstance(fields, str):
+            fields = [f.strip() for f in fields.split(",")]
+
         # These are read later if the scraping process is successful
         csvfile = None
         first_line = None
@@ -51,11 +54,18 @@ class CsvExtractor(BaseExtractor[CsvMeta]):
             first_row = next(reader)
             first_line = first_row
 
-            if fields and len(fields) != len(first_line):
-                self._errors.append(
-                    "CSV not well-formed: field counts in the given "
-                    "header parameter and the CSV header don't match."
-                )
+            if fields:
+                if len(fields) != len(first_line):
+                    self._errors.append(
+                        "CSV not well-formed: field counts in the given "
+                        "header parameter and the CSV header don't match."
+                    )
+
+                if fields != first_line:
+                    self._errors.append(
+                        "CSV not well-formed: field names in the given header "
+                        "parameter and the CSV header don't match."
+                    )
 
             for _ in reader:
                 # Read the whole file in case it contains errors. If there
