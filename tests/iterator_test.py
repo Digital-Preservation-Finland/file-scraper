@@ -7,37 +7,18 @@ This module tests that:
 """
 
 import pytest
-from file_scraper.iterator import iter_detectors, iter_extractors
+
+from file_scraper.iterator import iter_extractors, iter_detectors
+
 
 WELLFORMED_EXTRACTORS = [
-    "DpxExtractor",
-    "FFMpegExtractor",
-    "GhostscriptExtractor",
-    "JHoveAiffExtractor",
-    "JHoveEpubExtractor",
-    "JHoveGifExtractor",
-    "JHoveHtmlExtractor",
-    "JHoveJpegExtractor",
-    "JHoveTiffExtractor",
-    "JHovePdfExtractor",
-    "JHoveWavExtractor",
-    "JHoveUtf8Extractor",
-    "LxmlExtractor",
-    "OfficeExtractor",
-    "PngcheckExtractor",
-    "PsppExtractor",
-    "SchematronExtractor",
-    "TextEncodingExtractor",
-    "VerapdfExtractor",
-    "VnuExtractor",
-    "WarctoolsFullExtractor",
-    "XmllintExtractor",
-]
-
-DETECTED_MIMETYPES = [
-    "application/x-spss-por",
-    "application/epub+zip",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "DpxExtractor", "FFMpegExtractor", "GhostscriptExtractor", "JHoveAiffExtractor",
+    "JHoveEpubExtractor", "JHoveGifExtractor", "JHoveHtmlExtractor",
+    "JHoveJpegExtractor", "JHoveTiffExtractor", "JHovePdfExtractor",
+    "JHoveWavExtractor", "JHoveUtf8Extractor", "LxmlExtractor", "OfficeExtractor",
+    "PngcheckExtractor", "PsppExtractor", "SchematronExtractor",
+    "TextEncodingExtractor", "VerapdfExtractor", "VnuExtractor",
+    "WarctoolsFullExtractor", "XmllintExtractor"
 ]
 
 
@@ -129,11 +110,12 @@ DETECTED_MIMETYPES = [
         ("application/vnd.ms-powerpoint", "97-2003",
          ["OfficeExtractor", "MagicBinaryExtractor"]),
         ("application/vnd.openxmlformats-officedocument.wordprocessingml."
-         "document", "2007 onwards", ["OfficeExtractor"]),
+         "document", "2007 onwards", ["OfficeExtractor", "MagicBinaryExtractor"]),
         ("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
          "2007 onwards", ["OfficeExtractor", "MagicBinaryExtractor"]),
         ("application/vnd.openxmlformats-officedocument.presentationml."
-         "presentation", "2007 onwards", ["OfficeExtractor", "MagicBinaryExtractor"]),
+         "presentation", "2007 onwards", ["OfficeExtractor",
+                                          "MagicBinaryExtractor"]),
         ("audio/x-aiff", "1.3", ["FFMpegExtractor", "JHoveAiffExtractor",
                                  "MagicBinaryExtractor", "MediainfoExtractor"]),
         ("audio/x-ms-wma", "9", ["FFMpegExtractor", "MediainfoExtractor"]),
@@ -167,7 +149,7 @@ def test_iter_extractors(mimetype, version, extractor_classes):
     ]
     if mimetype == "application/mxf":
         extractor_classes = ["FFMpegMetaExtractor"]
-    if mimetype in DETECTED_MIMETYPES:
+    if mimetype in ["application/x-spss-por", "application/epub+zip"]:
         extractor_classes.append("DetectedMimeVersionMetadataExtractor")
 
     extractors = iter_extractors(
