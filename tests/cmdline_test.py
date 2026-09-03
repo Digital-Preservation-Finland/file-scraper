@@ -288,12 +288,6 @@ def test_detect_file(path, expected_mimetype, expected_version):
             "CSV not well-formed: field counts in the given header parameter "
             "and the CSV header don't match.",
         ),
-        (
-            "year,model,brand,detail,other",
-            False,
-            "CSV not well-formed: field names in the given header parameter "
-            "and the CSV header don't match.",
-        ),
     ],
 )
 def test_fields_flag(fields: str, valid: bool, error: str) -> None:

@@ -61,12 +61,6 @@ class CsvExtractor(BaseExtractor[CsvMeta]):
                         "header parameter and the CSV header don't match."
                     )
 
-                if fields != first_line:
-                    self._errors.append(
-                        "CSV not well-formed: field names in the given header "
-                        "parameter and the CSV header don't match."
-                    )
-
             for _ in reader:
                 # Read the whole file in case it contains errors. If there
                 # are any, an exception will be raised, triggering
