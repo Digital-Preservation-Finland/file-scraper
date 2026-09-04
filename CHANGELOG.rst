@@ -6,17 +6,37 @@ The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.1.0/>`
 and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`__.
 
 
+3.2.2 - 2026-09-04
+------------------
+
+Fixed
+^^^^^
+- Revert CSV first row validation of field values.
+
+3.2.1 - 2026-09-03
+------------------
+
+Fixed
+^^^^^
+- Fix MS Word file detection.
+
 3.2.0 - 2026-09-01
-----------
+------------------
 
 Added
 ^^^^^
-- Support for GeoTIFF files.
+- Support for GeoTIFF 1.1 files.
+
+Changed
+^^^^^^^
+- Fix metadata collection for multichannel high bit-depth TIFF files.
+- Refactor how messages from Ghostscript are interpreted when assessing the well-formedness of PDF files.
 
 Fixed
 ^^^^^
 - Fix well-formed JSON files larger than 7 MB detected as ``text/plain`` instead of ``application/json``.
 - Fix ``--fields`` flag for the command-line tool not validating the header properly for CSV files.
+- Fix PUID usage in FidoDetector.
 
 3.1.1 - 2026-05-28
 ------------------
