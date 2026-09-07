@@ -50,6 +50,10 @@ MIMETYPE = "image/x-dpx"
             "purpose": "Test wrong endian.",
             "stdout_part": "",
             "stderr_part": "is more than file size"}),
+        ("invalid_2.0_invalid_encryption_key.dpx", {
+            "purpose": "Test wrong invalid encryption key.",
+            "stdout_part": "",
+            "stderr_part": "key in header not set to NULL or undefined"}),
     ]
 )
 def test_extractor(filename, result_dict, evaluate_extractor):
