@@ -182,7 +182,7 @@ def test_fido_cache_halting_file(fido_cache_halting_file):
          "A-3b", "PDF/A version detected by Exiftool."),
         ("image_png/valid_1.2.png", "image/png", None, None),
         ("image_x-adobe-dng/valid_1.4.dng", "image/x-adobe-dng", None, None),
-        ("image_tiff/valid_6.0.tif", "image/tiff", None, None)
+        ("image_tiff/valid_6.0.tif", "image/tiff", "6.0", None)
     ]
 )
 def test_pdf_dng_detector(filepath, mimetype, version, message):

@@ -428,7 +428,7 @@ class ExifToolDetector(BaseDetector):
                 self.mimetype = metadata[0].get("File:MIMEType", None)
                 self._detect_pdf_a(metadata[0])
                 self._detect_exif_version(metadata[0])
-                self._detect_geotiff_version(metadata[0])
+                self._detect_tiff_version(metadata[0])
         except exiftool.exceptions.ExifToolExecuteError:
             LOGGER.info("ExifTool could not process file", exc_info=True)
             self._set_info_exiftool_not_supported()
@@ -451,13 +451,23 @@ class ExifToolDetector(BaseDetector):
         if is_jpeg_exif:
             self.version = parse_exif_version(raw_version)
 
-    def _detect_geotiff_version(self, metadata: dict) -> None:
-        """Detect version of GeoTIFF."""
+    def _detect_tiff_version(self, metadata: dict) -> None:
+        """Detect version of TIFF and GeoTIFF.
+
+        Because of backwards compatibility, all GeoTIFF files should be version
+        1.1, and all TIFF files version 6.0. If a GeoTiffVersion tag is found,
+        the file is assumed to be a GeoTIFF.
+        """
         if (
             version := metadata.get("GeoTiff:GeoTiffVersion")
         ) and version.startswith("1"):
             self.version = "1.1"
             self._messages.append("GeoTIFF version detected by Exiftool")
+        elif self.mimetype == "image/tiff":
+            # GeoTiff:GeoTiffVersion tag did not exist, but mimetype was
+            # image/tiff, therefore version must be 6.0
+            self.version = "6.0"
+            self._messages.append("TIFF version detected by Exiftool")
 
     def _set_info_not_pdf_a(self) -> None:
         """
