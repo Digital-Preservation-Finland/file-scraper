@@ -207,27 +207,6 @@ class JHoveTiffMeta(JHoveBaseMeta):
     _allow_any_version = True
 
     @BaseMeta.metadata()
-    def version(self):
-        """
-        Return version.
-
-        Differentiate version 6.0 tiffs from GeoTIFFs by their profile of
-        "Baseline GeoTIFF 1.0".
-
-        If the well-formed status from extractor is False,
-        then we do not know the actual version.
-        """
-        profile = get_field(self._report, "profile")
-
-        if not self._well_formed:
-            return UNAV
-
-        if profile and "Baseline GeoTIFF 1" in profile:
-            return "1.1"
-
-        return "6.0"
-
-    @BaseMeta.metadata()
     def stream_type(self):
         """
         Return file type.

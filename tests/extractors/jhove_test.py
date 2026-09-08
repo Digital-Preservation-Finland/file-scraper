@@ -324,6 +324,8 @@ def test_extractor_tiff(filename, result_dict, evaluate_extractor):
     correct = parse_results(filename, "image/tiff",
                             result_dict, True)
     correct.update_mimetype("image/tiff")
+    # Version is detected by ExifToolDetector for TIFF files.
+    correct.update_version(UNAV)
     extractor = JHoveTiffExtractor(filename=correct.filename,
                                    mimetype="image/tiff")
     extractor.extract()

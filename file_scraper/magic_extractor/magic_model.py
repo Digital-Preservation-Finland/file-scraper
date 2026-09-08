@@ -411,9 +411,7 @@ class TiffFileMagicMeta(BinaryMagicBaseMeta):
 
     @BaseMeta.metadata()
     def version(self):
-        """Return version."""
-        if self.mimetype() in self._supported:
-            return "6.0"
+        """Version is deteced in ExifToolDetector."""
         return UNAV
 
     @BaseMeta.metadata()

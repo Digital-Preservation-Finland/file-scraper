@@ -265,6 +265,9 @@ def test_extractor_valid(filename, mimetype, charset, extractor_class,
         "stderr_part": ""}
     correct = parse_results(filename, mimetype, result_dict, False,
                             {"charset": charset})
+    if mimetype == "image/tiff":
+        # Version is deteced by ExifToolDetector for TIFF files
+        correct.update_version(UNAV)
 
     office_unav_version_mimes = [
         "application/vnd.oasis.opendocument.text",
