@@ -182,9 +182,9 @@ class Scraper:
                 detected_mimetype,
                 detected_version,
             )
-            if detector.well_formed is False:
+            if exiftool_detector.well_formed is False:
                 self.well_formed = False
-            self.info[len(self.info)] = detector.info()
+            self.info[len(self.info)] = exiftool_detector.info()
 
         # If detector disagrees with the user evaluate the mimetypes to
         # disallow nonsense user input and guide user to more accurate
