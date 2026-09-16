@@ -92,6 +92,19 @@ VERSION_DICT = {
     },
 }
 
+# Mimetypes detected by magic that are mapped to a specific version
+MAGIC_VERSION_DICT = {
+    "application/msword": "97-2003",
+    "application/vnd.ms-excel": "8X",
+    "application/vnd.ms-powerpoint": "97-2003",
+    "application/vnd.openxmlformats-officedocument."
+    "wordprocessingml.document": "2007 onwards",
+    "application/vnd.openxmlformats-officedocument."
+    "spreadsheetml.sheet": "2007 onwards",
+    "application/vnd.openxmlformats-officedocument.presentationml."
+    "presentation": "2007 onwards",
+}
+
 # Dict between detectors' pronom results and known mimetypes and versions.
 # fmt/289 might be need to change to fmt/1355 when supported by FIDO.
 PRONOM_DICT = {

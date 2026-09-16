@@ -15,6 +15,7 @@ from fido.pronomutils import get_local_pronom_versions
 
 from file_scraper.base import BaseDetector
 from file_scraper.defaults import (
+    MAGIC_VERSION_DICT,
     MIMETYPE_DICT,
     PRIORITY_PRONOM,
     PRONOM_DICT,
@@ -308,6 +309,9 @@ class MagicDetector(BaseDetector):
                     "Magic detection overridden to 'video/dv' per manual check"
                 )
                 self.mimetype = "video/dv"
+
+        if (magic_version := MAGIC_VERSION_DICT.get(mimetype)) is not None:
+            self.version = magic_version
 
     def tools(self) -> dict[str, dict[str, str]]:
         """Return information about the software used by the extractor or
