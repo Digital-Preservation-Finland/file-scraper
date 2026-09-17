@@ -124,6 +124,8 @@ CHANGE_MAGIC = {
     "image_x-adobe-dng/valid_1.4.dng": "image/tiff",
     "application_x-siard/valid_2.1.1.siard": "application/zip",
     "application_x-siard/valid_2.2.siard": "application/zip",
+    "application_vnd.openxmlformats-officedocument.wordprocessingml.document/"
+    "valid_2007 onwards_customXml_first.docx": "application/octet-stream"
 }
 
 
