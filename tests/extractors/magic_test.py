@@ -111,12 +111,6 @@ from tests.common import (parse_results, partial_message_included)
             MagicBinaryExtractor,
         ),
         (
-            "valid_97-2003.doc",
-            "application/msword",
-            None,
-            MagicBinaryExtractor,
-        ),
-        (
             "valid_1.2.odp",
             "application/vnd.oasis.opendocument.presentation",
             None,
@@ -135,19 +129,6 @@ from tests.common import (parse_results, partial_message_included)
             MagicBinaryExtractor,
         ),
         (
-            "valid_97-2003.ppt",
-            "application/vnd.ms-powerpoint",
-            None,
-            MagicBinaryExtractor,
-        ),
-        (
-            "valid_2007 onwards.pptx",
-            "application/vnd.openxml"
-            "formats-officedocument.presentationml.presentation",
-            None,
-            MagicBinaryExtractor,
-        ),
-        (
             "valid_1.2.ods",
             "application/vnd.oasis.opendocument.spreadsheet",
             None,
@@ -162,18 +143,6 @@ from tests.common import (parse_results, partial_message_included)
         (
             "valid_1.4.ods",
             "application/vnd.oasis.opendocument.spreadsheet",
-            None,
-            MagicBinaryExtractor,
-        ),
-        (
-            "valid_8X.xls",
-            "application/vnd.ms-excel",
-            None,
-            MagicBinaryExtractor,
-        ),
-        (
-            "valid_2007 onwards.xlsx",
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             None,
             MagicBinaryExtractor,
         ),
@@ -290,23 +259,14 @@ def test_extractor_valid(filename, mimetype, charset, extractor_class,
     [
         ("invalid_1.2_missing_data.odt",
          "application/vnd.oasis.opendocument.text"),
-        ("invalid_97-2003_missing_data.doc", "application/msword"),
         ("invalid_1.2_missing_data.odp",
          "application/vnd.oasis.opendocument.presentation"),
-        ("invalid_97-2003_missing_data.ppt", "application/vnd.ms-powerpoint"),
-        ("invalid_2007 onwards_missing_data.pptx",
-         "application/vnd.openxmlformats-officedocument.presentationml."
-         "presentation"),
         ("invalid_1.2_missing_data.ods",
          "application/vnd.oasis.opendocument.spreadsheet"),
-        ("invalid_8X_missing_data.xls", "application/vnd.ms-excel"),
-        ("invalid_2007 onwards_missing_data.xlsx",
-         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
         ("invalid_1.2_missing_data.odg",
          "application/vnd.oasis.opendocument.graphics"),
         ("invalid_1.2_missing_data.odf",
          "application/vnd.oasis.opendocument.formula"),
-        ("invalid__empty.doc", "application/msword"),
     ])
 def test_invalid_office(filename, mimetype):
     """Test OfficeFileMagic extractor with invalid files."""
@@ -414,21 +374,14 @@ def test_jpeg_exif_character_case():
          MagicBinaryExtractor),
         ("application/vnd.oasis.opendocument.text", "1.3",
          MagicBinaryExtractor),
-        ("application/msword", "97-2003", MagicBinaryExtractor),
         ("application/vnd.oasis.opendocument.presentation", "1.2",
          MagicBinaryExtractor),
         ("application/vnd.oasis.opendocument.presentation", "1.3",
          MagicBinaryExtractor),
-        ("application/vnd.ms-powerpoint", "97-2003", MagicBinaryExtractor),
-        ("application/vnd.openxmlformats-officedocument.presentationml"
-         ".presentation", "2007 onwards", MagicBinaryExtractor),
         ("application/vnd.oasis.opendocument.spreadsheet", "1.2",
          MagicBinaryExtractor),
         ("application/vnd.oasis.opendocument.spreadsheet", "1.3",
          MagicBinaryExtractor),
-        ("application/vnd.ms-excel", "8X", MagicBinaryExtractor),
-        ("application/vnd.openxmlformats-officedocument.spreadsheetml"
-         ".sheet", "2007 onwards", MagicBinaryExtractor),
         ("application/vnd.oasis.opendocument.graphics", "1.2",
          MagicBinaryExtractor),
         ("application/vnd.oasis.opendocument.graphics", "1.3",

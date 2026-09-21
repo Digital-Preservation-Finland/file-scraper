@@ -37,7 +37,12 @@ WELLFORMED_EXTRACTORS = [
 DETECTED_MIMETYPES = [
     "application/x-spss-por",
     "application/epub+zip",
+    "application/msword",
+    "application/vnd.ms-excel",
+    "application/vnd.ms-powerpoint",
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation"
 ]
 
 #flake8: noqa
@@ -45,7 +50,7 @@ DETECTED_MIMETYPES = [
     ["mimetype", "version", "extractor_classes"],
     [
         ("application/epub+zip", "3", ["JHoveEpubExtractor"]),
-        ("application/msword", "97-2003", ["OfficeExtractor", "MagicBinaryExtractor"]),
+        ("application/msword", "97-2003", ["OfficeExtractor"]),
         ("application/mxf", None, ["FFMpegExtractor"]),
         ("application/pdf", "1.2", ["MagicBinaryExtractor", "JHovePdfExtractor", "GhostscriptExtractor"]),
         ("application/pdf", "1.3", ["MagicBinaryExtractor", "JHovePdfExtractor", "GhostscriptExtractor"]),
@@ -61,15 +66,15 @@ DETECTED_MIMETYPES = [
         ("application/pdf", "A-3a", ["MagicBinaryExtractor", "JHovePdfExtractor", "VerapdfExtractor", "GhostscriptExtractor"]),
         ("application/pdf", "A-3b", ["MagicBinaryExtractor", "JHovePdfExtractor", "VerapdfExtractor", "GhostscriptExtractor"]),
         ("application/pdf", "A-3u", ["MagicBinaryExtractor", "JHovePdfExtractor", "VerapdfExtractor", "GhostscriptExtractor"]),
-        ("application/vnd.ms-excel", "8X", ["OfficeExtractor", "MagicBinaryExtractor"]),
-        ("application/vnd.ms-powerpoint", "97-2003", ["OfficeExtractor", "MagicBinaryExtractor"]),
+        ("application/vnd.ms-excel", "8X", ["OfficeExtractor"]),
+        ("application/vnd.ms-powerpoint", "97-2003", ["OfficeExtractor"]),
         ("application/vnd.oasis.opendocument.formula", None, ["OfficeExtractor", "MagicBinaryExtractor"]),
         ("application/vnd.oasis.opendocument.graphics", None, ["OfficeExtractor", "MagicBinaryExtractor"]),
         ("application/vnd.oasis.opendocument.presentation", None, ["OfficeExtractor", "MagicBinaryExtractor"]),
         ("application/vnd.oasis.opendocument.spreadsheet", None, ["OfficeExtractor", "MagicBinaryExtractor"]),
         ("application/vnd.oasis.opendocument.text", None, ["OfficeExtractor", "MagicBinaryExtractor"]),
-        ("application/vnd.openxmlformats-officedocument.presentationml.presentation", "2007 onwards", ["OfficeExtractor", "MagicBinaryExtractor"]),
-        ("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "2007 onwards", ["OfficeExtractor", "MagicBinaryExtractor"]),
+        ("application/vnd.openxmlformats-officedocument.presentationml.presentation", "2007 onwards", ["OfficeExtractor"]),
+        ("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "2007 onwards", ["OfficeExtractor"]),
         ("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "2007 onwards", ["OfficeExtractor"]),
         ("application/warc", "1.0", ["WarctoolsFullExtractor", "WarchaeologyExtractor"]),
         ("application/x-spss-por", None, ["PsppExtractor"]),

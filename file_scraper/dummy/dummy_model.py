@@ -147,7 +147,7 @@ class DetectedSiardVersionMeta(DetectedMimeVersionMeta):
 
 
 class DetectedMSOfficeMeta(DetectedMimeVersionMeta):
-    """Variation of DetectedMimeVersionMeta for MS Office Word files.
+    """Variation of DetectedMimeVersionMeta for MS Office files.
 
     This model is needed because the only proper extractor for these files is
     OfficeExtractor, which should only be used for validation. When
@@ -158,7 +158,15 @@ class DetectedMSOfficeMeta(DetectedMimeVersionMeta):
     """
 
     _supported = {
+        "application/msword": ["97-2003"],
+        "application/vnd.ms-excel": ["8X"],
+        "application/vnd.ms-powerpoint": ["97-2003"],
         "application/vnd.openxmlformats-officedocument.wordprocessingml."
         "document": ["2007 onwards"],
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+            "2007 onwards"
+        ],
+        "application/vnd.openxmlformats-officedocument.presentationml."
+        "presentation": ["2007 onwards"],
     }
     _allow_any_version = True

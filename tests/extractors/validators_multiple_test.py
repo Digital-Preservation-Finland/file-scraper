@@ -56,36 +56,3 @@ def test_scrape_invalid_file():
 
     assert False in extractor_results
     assert "Error: source file could not be loaded\n" in extractor_errors
-
-
-def test_scrape_wrong_predefined_mimetype():
-    """Test extracting a file with wrong predefined mimetype.
-
-    A valid odt file with application/mdword as predefined mimetype.
-    OfficeExtractor will extract the file because it supports also
-    msword files, and therefore it it reports the file as well-formed.
-    However, it should report the actual mimetype of file, which is not
-    the predefined mimetype. This will cause conflict when extractor
-    results are merged, but it is not tested here.
-
-    """
-    extractor_results = []
-    extractor_errors = []
-    extractor_mimetypes = []
-    predefined_mimetype="application/msword"
-    for extractor in iter_extractors(
-        Path("tests/data/application_vnd.oasis.opendocument.text/"
-             "valid_1.2.odt"),
-        mimetype=predefined_mimetype,
-        version="97-2003",
-        charset=None,
-    ):
-        extractor.extract()
-        extractor_results.append(extractor.well_formed)
-        extractor_errors += extractor.errors()
-        extractor_mimetypes.append(extractor.streams[0].mimetype())
-
-    assert False not in extractor_results
-    assert not extractor_errors
-    assert "application/vnd.oasis.opendocument.text" in extractor_mimetypes
-    assert predefined_mimetype not in extractor_mimetypes

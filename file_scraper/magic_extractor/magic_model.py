@@ -266,14 +266,6 @@ class OfficeFileMagicMeta(BinaryMagicBaseMeta):
             "1.3",
             "1.4",
         ],
-        "application/msword": ["97-2003"],
-        "application/vnd.ms-excel": ["8X"],
-        "application/vnd.ms-powerpoint": ["97-2003"],
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
-            "2007 onwards"
-        ],
-        "application/vnd.openxmlformats-officedocument.presentationml."
-        "presentation": ["2007 onwards"],
     }
     _allow_any_version = True
 
