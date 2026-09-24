@@ -3,14 +3,13 @@
 import pytest
 from pathlib import Path
 from file_scraper.detectors import MagicDetector
-from file_scraper.defaults import PRONOM_DICT, VERSION_DICT
+from file_scraper.defaults import PRONOM_DICT
 
 
 @pytest.mark.parametrize(
     ["constant_dict", "expected_type"],
     [
         [PRONOM_DICT, tuple],
-        [VERSION_DICT, dict],
     ]
 )
 def test_constants_syntax(constant_dict, expected_type):

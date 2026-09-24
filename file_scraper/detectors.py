@@ -15,13 +15,11 @@ from fido.pronomutils import get_local_pronom_versions
 
 from file_scraper.base import BaseDetector
 from file_scraper.defaults import (
-    MAGIC_VERSION_DICT,
     MIMETYPE_DICT,
     PRIORITY_PRONOM,
     PRONOM_DICT,
     UNAP,
     UNKN,
-    VERSION_DICT,
 )
 from file_scraper.logger import LOGGER
 from file_scraper.magiclib import magic_analyze, magiclib, magiclib_version
@@ -29,6 +27,64 @@ from file_scraper.utils import is_zipfile, parse_exif_version
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+# Map FIDO version strings to actual versions
+FIDO_VERSION_DICT = {
+    "application/pdf": {
+        "1a": "A-1a",
+        "1b": "A-1b",
+        "2a": "A-2a",
+        "2b": "A-2b",
+        "2u": "A-2u",
+        "3a": "A-3a",
+        "3b": "A-3b",
+        "3u": "A-3u",
+    },
+    "application/vnd.ms-excel": {
+        "8": "8X",
+    },
+    "audio/x-wav": {
+        "2 Generic": "2",
+        # For example tests/data/audio_x-wav/valid_2_bwf.wav is
+        # detected as v0, but the extractors detect it as v2. Version
+        # from FIDO is ignored to avoid conflict.
+        "0 PCM Encoding": None,
+    },
+    "audio/flac": {
+        # The PRONOM registry reports the version number of FLAC as
+        # 1.2.1. This is actually the version number of FLAC tools
+        # containing the FLAC format specification. Although the latest
+        # FLAC tools version is 1.3.3, version 1.2.1 still includes the
+        # latest format change and was released in 2007.
+        #
+        # FLAC is standardized in RFC 9639 without a file format version
+        # information, so the version will be mapped to (:unap) by
+        # MediaInfoExtractor. The version from FIDO is omitted to avoid
+        # conflict. See KDKPAS-3383 for more information.
+        "1.2.1": None,
+    },
+    "image/gif": {
+        "87a": "1987a",
+        "89a": "1989a",
+    },
+    "image/png": {
+        # Fido does not detect PNG version correctly, so it is ignored.
+        "1.0": None,
+    },
+}
+
+# Mimetypes detected by magic that are mapped to a specific version
+MAGIC_VERSION_DICT = {
+    "application/msword": "97-2003",
+    "application/vnd.ms-excel": "8X",
+    "application/vnd.ms-powerpoint": "97-2003",
+    "application/vnd.openxmlformats-officedocument."
+    "wordprocessingml.document": "2007 onwards",
+    "application/vnd.openxmlformats-officedocument."
+    "spreadsheetml.sheet": "2007 onwards",
+    "application/vnd.openxmlformats-officedocument.presentationml."
+    "presentation": "2007 onwards",
+}
 
 
 class _FidoCachedFormats(Fido):
@@ -161,10 +217,10 @@ class _FidoReader(_FidoCachedFormats):
         if self.mimetype in MIMETYPE_DICT:
             self.mimetype = MIMETYPE_DICT[self.mimetype]
         if (
-            self.mimetype in VERSION_DICT
-            and self.version in VERSION_DICT[self.mimetype]
+            self.mimetype in FIDO_VERSION_DICT
+            and self.version in FIDO_VERSION_DICT[self.mimetype]
         ):
-            self.version = VERSION_DICT[self.mimetype][self.version]
+            self.version = FIDO_VERSION_DICT[self.mimetype][self.version]
 
 
 class FidoDetector(BaseDetector):
