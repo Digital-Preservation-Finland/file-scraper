@@ -56,3 +56,35 @@ def test_scrape_invalid_file():
 
     assert False in extractor_results
     assert "Error: source file could not be loaded\n" in extractor_errors
+
+
+def test_scrape_wrong_predefined_mimetype():
+    """Test extracting a file with wrong predefined mimetype.
+
+    A valid FLAC file with audio/aac as predefined mimetype. FFMpegExtractor
+    will extract the file because it supports both FLAD and AAC files, and
+    therefore it it reports the file a well-formed.
+
+    However, it should report the actual mimetype of file, which is not the
+    predefined mimetype. This will cause conflict when extractor results are
+    merged, but it is not tested here.
+    """
+    extractor_results = []
+    extractor_errors = []
+    extractor_mimetypes = []
+    predefined_mimetype = "audio/aac"
+    for extractor in iter_extractors(
+        Path("tests/data/audio_flac/valid__flac.flac"),
+        mimetype=predefined_mimetype,
+        version=None,
+        charset=None,
+    ):
+        extractor.extract()
+        extractor_results.append(extractor.well_formed)
+        extractor_errors += extractor.errors()
+        extractor_mimetypes.append(extractor.streams[0].mimetype())
+
+    assert False not in extractor_results
+    assert not extractor_errors
+    assert "audio/flac" in extractor_mimetypes
+    assert predefined_mimetype not in extractor_mimetypes
